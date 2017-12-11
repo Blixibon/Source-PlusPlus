@@ -5,7 +5,7 @@
 //=============================================================================//
 
 #include <windows.h>
-#include <dbghelp.h>
+
 #include "vmpi.h"
 #include "cmdlib.h"
 #include "vmpi_tools_shared.h"
@@ -227,6 +227,8 @@ done:
 	return iResult;
 }
 
+#pragma warning(push)
+#pragma warning(disable: 4838)
 void VMPI_HandleCrash( const char *pMessage, void *pvExceptionInfo, bool bAssert )
 {
 	static LONG crashHandlerCount = 0;
@@ -252,7 +254,7 @@ void VMPI_HandleCrash( const char *pMessage, void *pvExceptionInfo, bool bAssert
 			bool bSucceededWritingMinidump = WriteMiniDumpUsingExceptionInfo(
 				pvExPointers->ExceptionRecord->ExceptionCode,
 				pvExPointers,
-				( MINIDUMP_TYPE )( MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData ),
+				( int )( 0x1 | 0x40 | 0x100 ), // MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData
 				// ( MINIDUMP_TYPE )( MiniDumpWithDataSegs | MiniDumpWithFullMemory | MiniDumpWithHandleData | MiniDumpWithUnloadedModules | MiniDumpWithIndirectlyReferencedMemory | MiniDumpWithProcessThreadData | MiniDumpWithPrivateReadWriteMemory  ),
 				// ( MINIDUMP_TYPE )( MiniDumpNormal ),
 				tchMinidumpFileName );
@@ -270,6 +272,7 @@ void VMPI_HandleCrash( const char *pMessage, void *pvExceptionInfo, bool bAssert
 
 	InterlockedDecrement( &crashHandlerCount );
 }
+#pragma warning(pop)
 
 
 // This is called if we crash inside our crash handler. It just terminates the process immediately.
@@ -290,8 +293,8 @@ void VMPI_ExceptionFilter( unsigned long uCode, void *pvExceptionInfo )
 	#define ERR_RECORD( name ) { name, #name }
 	struct
 	{
-		int code;
-		char *pReason;
+		uint code;
+		const char *pReason;
 	} errors[] =
 	{
 		ERR_RECORD( EXCEPTION_ACCESS_VIOLATION ),
@@ -319,7 +322,7 @@ void VMPI_ExceptionFilter( unsigned long uCode, void *pvExceptionInfo )
 
 	int nErrors = sizeof( errors ) / sizeof( errors[0] );
 	int i=0;
-	char *pchReason = NULL;
+	const char *pchReason = NULL;
 	char chUnknownBuffer[32];
 	for ( i; ( i < nErrors ) && !pchReason; i++ )
 	{
