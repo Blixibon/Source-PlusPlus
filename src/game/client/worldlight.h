@@ -6,6 +6,8 @@
 // Author: Saul Rennison
 //
 //===========================================================================//
+#ifndef WORLDLIGHT_H
+#define WORLDLIGHT_H
 
 #pragma once
 
@@ -26,15 +28,12 @@ public:
 	//-------------------------------------------------------------------------
 	// Find the brightest light source at a point
 	//-------------------------------------------------------------------------
-	bool GetBrightestLightSource( const Vector & vecPosition, Vector & vecLightPos, Vector & vecLightBrightness ) const;
+	bool GetBrightestLightSource( const Vector& vecPosition, Vector& vecLightPos, Vector& vecLightBrightness ) const;
 
 	// CAutoGameSystem overrides
 public:
 	virtual void LevelInitPreEntity();
-	virtual void LevelInitPostEntity();
 	virtual void LevelShutdownPostEntity() { Clear(); }
-
-	virtual void PreRender();
 
 private:
 	void Clear();
@@ -47,3 +46,5 @@ private:
 // Singleton exposure
 //-----------------------------------------------------------------------------
 extern CWorldLights *g_pWorldLights;
+
+#endif // WORLDLIGHT_H
