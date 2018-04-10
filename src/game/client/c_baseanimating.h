@@ -75,6 +75,11 @@ struct RagdollInfo_t
 class CAttachmentData
 {
 public:
+	CAttachmentData()
+	{
+		m_nLastFramecount = 0;
+		m_bAnglesComputed = 0;
+	}
 	matrix3x4_t	m_AttachmentToWorld;
 	QAngle	m_angRotation;
 	Vector	m_vOriginVelocity;
