@@ -8,7 +8,17 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME "hl2mp"	[$HL2MP]
 $Macro GAMENAME "episodic"	[$EPISODIC]
 $Macro GAMENAME "hl2"		[$HL2]
-$Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_base.vpc"
+$Macro GAMENAME "mod_hl1"	[$HL1]
+//$Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_base.vpc"
+$Include "game_shader_dx9_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$PreprocessorDefinitions		"$BASE;DEFERRED"
+	}
+}
 
 $Project "Shaders (DEFERRED)"
 {

@@ -13,6 +13,7 @@
 #include "hl1_c_player.h"
 #include "hl1_player_shared.h"
 
+#define CHASE_CAM_DISTANCE CHASE_CAM_DISTANCE_MAX
 
 class C_HL1MP_Player : public C_HL1_Player
 {

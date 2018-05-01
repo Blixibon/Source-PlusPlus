@@ -387,13 +387,13 @@ void CHL1GameMovement::Duck( void )
 
 void CHL1GameMovement::HandleDuckingSpeedCrop()
 {
-	if ( !m_bSpeedCropped && ( player->GetFlags() & FL_DUCKING ) )
+	if ( !m_iSpeedCropped && ( player->GetFlags() & FL_DUCKING ) )
 	{
 		float frac = 0.33333333f;
 		mv->m_flForwardMove	*= frac;
 		mv->m_flSideMove	*= frac;
 		mv->m_flUpMove		*= frac;
-		m_bSpeedCropped		= true;
+		m_iSpeedCropped		= true;
 	}
 }
 

@@ -20,7 +20,7 @@ $Games
 	"CSTRIKE"
 	"PORTAL"
 
-	"DEFERRED"
+	//"DEFERRED"
 }
 
 // Makes the VPC scripts work in the SDK's context

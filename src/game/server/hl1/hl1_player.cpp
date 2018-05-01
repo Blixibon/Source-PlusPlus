@@ -581,7 +581,7 @@ void CHL1_Player::CheckTimeBasedDamage( void )
 		return;
 
 	// only check for time based damage approx. every 2 seconds
-	if (abs(gpGlobals->curtime - m_tbdPrev) < 2.0)
+	if (fabs(gpGlobals->curtime - m_tbdPrev) < 2.0)
 		return;
 	
 	m_tbdPrev = gpGlobals->curtime;
@@ -791,7 +791,7 @@ int	CHL1_Player::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	// go take the damage first
 
 	
-	if ( !g_pGameRules->FPlayerCanTakeDamage( this, info.GetAttacker() ) )
+	if ( !g_pGameRules->FPlayerCanTakeDamage( this, info.GetAttacker(), info ) )
 	{
 		// Refuse the damage
 		return 0;

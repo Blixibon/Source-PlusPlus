@@ -170,7 +170,7 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "sixense/in_sixense.h"
 #endif
 
-#ifdef DEFERREd
+#ifdef DEFERRED
 #include "deferred/deferred_shared_common.h"
 #endif
 
