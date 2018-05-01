@@ -94,8 +94,8 @@ bool CHL1GameMovement::CheckJumpButton( void )
 
 	// In the air now.
 	SetGroundEntity( NULL );
-	
-	m_pHL1Player->PlayStepSound( mv->m_vecAbsOrigin, player->GetSurfaceData(), 1.0, true );
+	Vector vec = mv->GetAbsOrigin();
+	m_pHL1Player->PlayStepSound( vec, player->GetSurfaceData(), 1.0, true );
 	
 	MoveHelper()->PlayerSetAnimation( PLAYER_JUMP );
 
@@ -161,7 +161,7 @@ bool CHL1GameMovement::CanUnduck()
 	trace_t trace;
 	Vector newOrigin;
 
-	VectorCopy( mv->m_vecAbsOrigin, newOrigin );
+	VectorCopy( mv->GetAbsOrigin(), newOrigin );
 
 	if ( player->GetGroundEntity() != NULL )
 	{
@@ -184,7 +184,7 @@ bool CHL1GameMovement::CanUnduck()
 
 	bool saveducked = player->m_Local.m_bDucked;
 	player->m_Local.m_bDucked = false;
-	TracePlayerBBox( mv->m_vecAbsOrigin, newOrigin, MASK_PLAYERSOLID, COLLISION_GROUP_PLAYER_MOVEMENT, trace );
+	TracePlayerBBox( mv->GetAbsOrigin(), newOrigin, MASK_PLAYERSOLID, COLLISION_GROUP_PLAYER_MOVEMENT, trace );
 	player->m_Local.m_bDucked = saveducked;
 	if ( trace.startsolid || ( trace.fraction != 1.0f ) )
 		return false;	
@@ -201,7 +201,7 @@ void CHL1GameMovement::FinishUnDuck( void )
 	trace_t trace;
 	Vector newOrigin;
 
-	VectorCopy( mv->m_vecAbsOrigin, newOrigin );
+	VectorCopy( mv->GetAbsOrigin(), newOrigin );
 
 	if ( player->GetGroundEntity() != NULL )
 	{
@@ -228,7 +228,8 @@ void CHL1GameMovement::FinishUnDuck( void )
 	player->SetViewOffset( GetPlayerViewOffset( false ) );
 	player->m_Local.m_flDucktime = 0;
 	
-	VectorCopy( newOrigin, mv->m_vecAbsOrigin );
+	//VectorCopy( newOrigin, mv->m_vecAbsOrigin );
+	mv->SetAbsOrigin(newOrigin);
 
 	// Recategorize position since ducking can change origin
 	CategorizePosition();
@@ -251,18 +252,20 @@ void CHL1GameMovement::FinishDuck( void )
 	player->AddFlag( FL_DUCKING );
 	player->m_Local.m_bDucking = false;
 
+	Vector vecOrigin = mv->GetAbsOrigin();
 	// HACKHACK - Fudge for collision bug - no time to fix this properly
 	if ( player->GetGroundEntity() != NULL )
 	{
 		for ( i = 0; i < 3; i++ )
 		{
-			mv->m_vecAbsOrigin[i] -= ( VEC_DUCK_HULL_MIN[i] - VEC_HULL_MIN[i] );
+			vecOrigin[i] -= ( VEC_DUCK_HULL_MIN[i] - VEC_HULL_MIN[i] );
 		}
 	}
 	else
 	{
-		VectorAdd( mv->m_vecAbsOrigin, viewDelta, mv->m_vecAbsOrigin );
+		VectorAdd(vecOrigin, viewDelta, vecOrigin);
 	}
+	mv->SetAbsOrigin(vecOrigin);
 
 	// See if we are stuck?
 	FixPlayerCrouchStuck( true );

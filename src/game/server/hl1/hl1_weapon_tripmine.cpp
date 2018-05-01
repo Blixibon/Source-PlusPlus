@@ -232,7 +232,7 @@ public:
 	void		Spawn( void );
 	void		Precache( void );
 
-	int			OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	int			OnTakeDamage( const CTakeDamageInfo &info );
 	
 	void		WarningThink( void );
 	void		PowerupThink( void );
@@ -533,7 +533,7 @@ void CTripmineGrenade::BeamBreakThink( void  )
 	SetNextThink( gpGlobals->curtime + 0.1 );
 }
 
-int CTripmineGrenade::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CTripmineGrenade::OnTakeDamage( const CTakeDamageInfo &info )
 {
 	if (gpGlobals->curtime < m_flPowerUp && info.GetDamage() < m_iHealth)
 	{
@@ -544,7 +544,7 @@ int CTripmineGrenade::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		KillBeam();
 		return 0;
 	}
-	return BaseClass::OnTakeDamage_Alive( info );
+	return BaseClass::OnTakeDamage( info );
 }
 
 void CTripmineGrenade::Event_Killed( const CTakeDamageInfo &info )

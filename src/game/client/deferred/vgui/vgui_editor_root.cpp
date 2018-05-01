@@ -615,9 +615,9 @@ void CVGUILightEditor::OnCursorMoved_Internal( int &x, int &y )
 				vecDelta[1].NormalizeInPlace();
 
 				float flAngle[2] = {
-					atan2( DotProduct( vDirections[ iDirIndices[iAxis][0] ], vecDelta[0] ),
+					atan2f( DotProduct( vDirections[ iDirIndices[iAxis][0] ], vecDelta[0] ),
 						DotProduct( vDirections[ iDirIndices[iAxis][1] ], vecDelta[0] ) ),
-					atan2( DotProduct( vDirections[ iDirIndices[iAxis][0] ], vecDelta[1] ),
+					atan2f( DotProduct( vDirections[ iDirIndices[iAxis][0] ], vecDelta[1] ),
 						DotProduct( vDirections[ iDirIndices[iAxis][1] ], vecDelta[1] ) ),
 				};
 

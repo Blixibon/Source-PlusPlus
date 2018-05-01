@@ -73,8 +73,8 @@ void CVGUIProjectable::LoadProjectableConfig( KeyValues *pKV )
 
 void CVGUIProjectable::ApplyConfig( KeyValues *pKV )
 {
-	SetFgColor( pKV->GetColor( "fgcolor", Color( 255,255,255,255 ) ) );
-	SetBgColor( pKV->GetColor( "bgcolor", Color( 0,0,0,0 ) ) );
+	SetFgColor( pKV->GetColor( "fgcolor" ) );
+	SetBgColor( pKV->GetColor( "bgcolor" ) );
 }
 
 void CVGUIProjectable::ApplySchemeSettings( vgui::IScheme *scheme )

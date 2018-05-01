@@ -103,13 +103,13 @@ lightData_Global_t CDeferredLightGlobal::GetState()
 {
 	lightData_Global_t data;
 
-	data.diff.Init( GetColor_Diffuse() );
-	data.ambh.Init( GetColor_Ambient_High() );
-	data.ambl.Init( GetColor_Ambient_Low() );
+	data.diff.Init(XYZ(GetColor_Diffuse()), 0 );
+	data.ambh.Init(XYZ(GetColor_Ambient_High()), 0 );
+	data.ambl.Init(XYZ(GetColor_Ambient_Low()), 0 );
 
 	Vector dir;
 	AngleVectors( GetAbsAngles(), &dir );
-	data.vecLight.Init( -dir );
+	data.vecLight.Init(XYZ(-dir), 0 );
 
 	if ( IsEnabled() &&
 		( data.diff.LengthSqr() > 0.01f ||

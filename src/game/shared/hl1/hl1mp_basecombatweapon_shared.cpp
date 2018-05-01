@@ -100,11 +100,11 @@ void CBaseHL1MPCombatWeapon::ApplyBoneMatrixTransform( matrix3x4_t& transform )
 {
 	BaseClass::ApplyBoneMatrixTransform( transform );
 
-	float scale = GetModelWidthScale();
+	/*float scale = GetModelWidthScale();
 	if ( scale != 1.0f )
 	{
 		VectorScale( transform[2], scale, transform[2] );
-	}
+	}*/
 }
 
 #endif

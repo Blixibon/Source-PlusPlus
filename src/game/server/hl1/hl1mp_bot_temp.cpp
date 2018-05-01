@@ -426,7 +426,7 @@ void Bot_Think( CHL1MP_Player *pBot )
 	}
 
 	// Fix up the m_fEffects flags
-	pBot->PostClientMessagesSent();
+	//pBot->PostClientMessagesSent();
 
 	RunPlayerMove( pBot, pBot->GetLocalAngles(), forwardmove, sidemove, upmove, buttons, impulse, frametime );
 }

@@ -1452,7 +1452,7 @@ void COrthoShadowView::CommitData()
 	shadowData.data.vecSlopeSettings.Init(
 		data.flSlopeScaleMin, data.flSlopeScaleMax, data.flNormalScaleMax, 1.0f / zFar
 		);
-	shadowData.data.vecOrigin.Init( origin );
+	shadowData.data.vecOrigin.Init( XYZ(origin), 0 );
 
 	Vector4D matrix_scale_offset( 0.5f, -0.5f, 0.5f, 0.5f );
 
@@ -1557,8 +1557,8 @@ void CSpotLightShadowView::CommitData()
 
 	sendShadowDataProj data;
 	data.index = m_iIndex;
-	data.data.vecForward.Init( fwd );
-	data.data.vecOrigin.Init( origin );
+	data.data.vecForward.Init( XYZ(fwd), 0 );
+	data.data.vecOrigin.Init( XYZ(origin), 0 );
 	// slope min, slope max, normal max, depth
 	//data.data.vecSlopeSettings.Init( 0.005f, 0.02f, 3, zFar );
 	data.data.vecSlopeSettings.Init( 0.001f, 0.005f, 3, 0 );
@@ -2363,7 +2363,7 @@ void CDeferredViewRender::BeginRadiosity( const CViewSetup &view )
 	Vector fwd;
 	AngleVectors( view.angles, &fwd );
 
-	float flAmtVertical = abs( DotProduct( fwd, Vector( 0, 0, 1 ) ) );
+	float flAmtVertical = fabs( DotProduct( fwd, Vector( 0, 0, 1 ) ) );
 	flAmtVertical = RemapValClamped( flAmtVertical, 0, 1, 1, 0.5f );
 
 	for ( int iCascade = 0; iCascade < 2; iCascade++ )

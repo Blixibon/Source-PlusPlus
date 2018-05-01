@@ -74,6 +74,13 @@ enum view_id_t
 	VIEW_INTRO_CAMERA = 6,
 	VIEW_SHADOW_DEPTH_TEXTURE = 7,
 	VIEW_SSAO = 8,
+
+#ifdef DEFERRED
+	// @Deferred - Biohazard
+	VIEW_DEFERRED_GBUFFER = 8,
+	VIEW_DEFERRED_SHADOW = 9,
+#endif
+
 	VIEW_ID_COUNT
 };
 view_id_t CurrentViewID();
@@ -449,7 +456,7 @@ public:
 	{
 		m_UnderWaterOverlayMaterial.Init( pMaterial );
 	}
-private:
+protected:
 	int				m_BuildWorldListsNumber;
 
 // General draw methods
@@ -469,7 +476,7 @@ private:
 	bool			ShouldDrawViewModel( bool drawViewmodel );
 public:
 	void			DrawViewModels( const CViewSetup &view, bool drawViewmodel );
-private:
+protected:
 	void			PerformScreenSpaceEffects( int x, int y, int w, int h );
 
 	// Overlays

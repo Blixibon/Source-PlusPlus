@@ -75,7 +75,11 @@ inline void vecToStringCol( Vector col, char *out, int maxLen )
 		col /= flMax;
 
 	col *= 255;
-	int it4[] = { XYZ( col ), flMax * 255 };
+	float ft4[] = { XYZ( col ), flMax * 255 };
+	int it4[4];
+
+	for (int i = 0; i < 4; i++)
+		it4[i] = Floor2Int(ft4[i]);
 
 	Q_snprintf( out, maxLen, "%i %i %i %i", it4[0], it4[1], it4[2], it4[3] );
 }
