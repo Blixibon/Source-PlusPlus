@@ -14,6 +14,11 @@
 #include "toolframework_client.h"
 #include "tier0/vprof.h"
 
+#ifdef DEFERRED
+#include "deferred\deferred_shared_common.h"
+#endif // DEFERRED
+
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -83,6 +88,26 @@ C_TEDynamicLight::~C_TEDynamicLight( void )
 void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay, int nLightIndex )
 {
+#ifdef DEFERRED
+	if (!GetLightingManager())
+		return;
+
+	def_light_temp_t *dl = new def_light_temp_t(time);
+	if (!dl)
+		return;
+
+	dl->iLighttype = DEFLIGHTTYPE_POINT;
+	dl->iFlags = (DEFLIGHT_COOKIE_ENABLED/*|DEFLIGHT_SHADOW_ENABLED|DEFLIGHT_VOLUMETRICS_ENABLED*/);
+	dl->pos = *org;
+	dl->flRadius = radius;
+	dl->col_diffuse.x = TexLightToLinear(r, exponent);
+	dl->col_diffuse.y = TexLightToLinear(g, exponent);
+	dl->col_diffuse.z = TexLightToLinear(b, exponent);
+	dl->flFalloffPower = exponent;
+	//dl->decay = decay;
+
+	GetLightingManager()->AddTempLight(dl);
+#else
 	dlight_t *dl = effects->CL_AllocDlight( nLightIndex );
 	if ( !dl )
 		return;
@@ -95,7 +120,7 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	dl->color.exponent	= exponent;
 	dl->die		= gpGlobals->curtime + time;
 	dl->decay	= decay;
-
+#endif
 	if ( ToolsEnabled() && clienttools->IsInRecordingMode() )
 	{
 		Color clr( r, g, b, 255 );

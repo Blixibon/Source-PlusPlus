@@ -273,6 +273,8 @@ public:
 // Entity flame, client-side implementation
 //
 
+struct def_light_t;
+
 #define	NUM_FLAMELETS	5
 
 class C_EntityFlame : public C_BaseEntity
@@ -297,6 +299,11 @@ protected:
 
 	void	CreateEffect( void );
 	void	StopEffect( void );
+
+#ifdef DEFERRED
+	def_light_t *m_pDefLight;
+#endif // DEFERRED
+
 };
 
 #endif //C_FIRE_SMOKE_H

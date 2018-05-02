@@ -16,6 +16,11 @@
 #include "dlight.h"
 #include "tier0/icommandline.h"
 
+#ifdef DEFERRED
+#include "deferred\deferred_shared_common.h"
+#endif // DEFERRED
+
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -278,6 +283,7 @@ C_EntityFlame::C_EntityFlame( void ) :
 m_hEffect( NULL )
 {
 	m_hOldAttached = NULL;
+	m_pDefLight = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -319,6 +325,14 @@ void C_EntityFlame::StopEffect( void )
 void C_EntityFlame::UpdateOnRemove( void )
 {
 	StopEffect();
+
+	if (m_pDefLight != NULL)
+	{
+		GetLightingManager()->RemoveLight(m_pDefLight);
+		delete m_pDefLight;
+		m_pDefLight = NULL;
+	}
+
 	BaseClass::UpdateOnRemove();
 }
 
@@ -382,6 +396,42 @@ void C_EntityFlame::Simulate( void )
 	if ( gpGlobals->frametime <= 0.0f )
 		return;
 
+#ifdef DEFERRED
+
+	if (GetLightingManager() && (IsEffectActive(EF_BRIGHTLIGHT) || IsEffectActive(EF_DIMLIGHT)))
+	{
+		if (!m_pDefLight)
+		{
+			def_light_t *dl = new def_light_t();
+			if (!dl)
+				return;
+
+			dl->iLighttype = DEFLIGHTTYPE_POINT;
+
+			m_pDefLight = dl;
+			GetLightingManager()->AddLight(dl);
+		}
+
+		m_pDefLight->iFlags |= (DEFLIGHT_COOKIE_ENABLED|DEFLIGHT_SHADOW_ENABLED);
+		m_pDefLight->pos = GetAbsOrigin();
+		m_pDefLight->pos[2] += 16;
+		m_pDefLight->flRadius = random->RandomFloat(400, 431);
+		m_pDefLight->col_diffuse.x = 254 / 255;
+		m_pDefLight->col_diffuse.y = 174 / 255;
+		m_pDefLight->col_diffuse.z = 10 / 255;
+		//dl->flFalloffPower = exponent;
+		//dl->decay = decay;
+
+		m_pDefLight->MakeDirtyXForms();
+	}
+	else if (m_pDefLight != NULL)
+	{
+		GetLightingManager()->RemoveLight(m_pDefLight);
+		delete m_pDefLight;
+		m_pDefLight = NULL;
+	}
+
+#else
 #ifdef HL2_EPISODIC 
 
 	if ( IsEffectActive(EF_BRIGHTLIGHT) || IsEffectActive(EF_DIMLIGHT) )
@@ -397,6 +447,7 @@ void C_EntityFlame::Simulate( void )
 	}
 
 #endif // HL2_EPISODIC 
+#endif // DEFERRED
 }
 
 //-----------------------------------------------------------------------------

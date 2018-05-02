@@ -67,12 +67,12 @@ void AddHL2(const char* path)
 {
 	// Crashes for some reason...
 	// We will keep this always in gameinfo for now...
-	/*filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_misc.vpk", path), "GAME", PATH_ADD_TO_HEAD);
-	filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_sound_misc.vpk", path), "GAME", PATH_ADD_TO_HEAD);
-	filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_textures.vpk", path), "GAME", PATH_ADD_TO_HEAD);
-	filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
-	filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_sound_vo_english.vpk", path), "GAME", PATH_ADD_TO_HEAD);
-	filesystem->AddSearchPath(CFmtStr("%s/hl2", path), "GAME", PATH_ADD_TO_HEAD);*/
+	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_misc.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_sound_misc.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_textures.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_sound_vo_english.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/hl2", path), "GAME", PATH_ADD_TO_HEAD);
 	g_pVGuiLocalize->AddFile("resource/hl2_%language%.txt");
 }
 

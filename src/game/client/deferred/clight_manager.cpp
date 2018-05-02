@@ -204,6 +204,8 @@ void CLightingManager::UpdateTemplights()
 		if( m_hDeferredTempLights[i]->fEndLifeTime < gpGlobals->curtime )
 		{
 			RemoveLight( m_hDeferredTempLights[i] );
+			if (m_hDeferredTempLights[i]->bAutoDelete)
+				delete m_hDeferredTempLights[i];
 			m_hDeferredTempLights.Remove( i );
 		}
 	}

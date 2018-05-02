@@ -129,6 +129,12 @@ void CDeferredManagerServer::LevelInitPreEntity()
 		const float ratio = light.constant_attn + 100 * light.linear_attn + 100 * 100 * light.quadratic_attn;
 		if ( ratio > 0 )
 			VectorScale( light.intensity, 1.f / ratio, intensity );
+
+		if (light.type == emit_surface)
+		{
+			intensity /= Sqr(100);
+		}
+
 		intensity *= 255.f;
 		V_sprintf_safe( string, "%f %f %f 255", intensity.x, intensity.y, intensity.z );
 		lightEntity->KeyValue( szParamDiffuse, string );
@@ -142,16 +148,16 @@ void CDeferredManagerServer::LevelInitPreEntity()
 			lightEntity->KeyValue( szParamSpotConeOuter, acos( light.stopdot2 ) * 180.f / M_PI_F );
 			lightEntity->KeyValue( szParamPower, light.exponent );
 		}
-		/*else if (light.type == emit_surface)
+		else if (light.type == emit_surface)
 		{
 			QAngle angle;
 			VectorAngles(light.normal, angle);
 			lightEntity->SetAbsAngles(angle);
 			lightEntity->KeyValue(szParamLightType, "1");
-			lightEntity->KeyValue(szParamSpotConeInner, 80.0f);
-			lightEntity->KeyValue(szParamSpotConeOuter, 90.0f);
-			lightEntity->KeyValue(szParamPower, light.exponent);
-		}*/
+			lightEntity->KeyValue(szParamSpotConeInner, 70.0f);
+			lightEntity->KeyValue(szParamSpotConeOuter, 100.0f);
+			//lightEntity->KeyValue(szParamPower, light.exponent);
+		}
 		else
 		{
 			lightEntity->KeyValue( szParamLightType, "0" );

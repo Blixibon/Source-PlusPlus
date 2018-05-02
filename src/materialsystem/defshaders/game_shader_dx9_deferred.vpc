@@ -5,9 +5,9 @@
 //-----------------------------------------------------------------------------
 
 $Macro SRCDIR		"..\.."
-$Macro GAMENAME "hl2mp"	[$HL2MP]
-$Macro GAMENAME "episodic"	[$EPISODIC]
-$Macro GAMENAME "hl2"		[$HL2]
+$Macro GAMENAME "mod_hl2mp"	[$HL2MP]
+$Macro GAMENAME "mod_episodic"	[$EPISODIC]
+$Macro GAMENAME "mod_hl2"		[$HL2]
 $Macro GAMENAME "mod_hl1"	[$HL1]
 //$Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_base.vpc"
 $Include "game_shader_dx9_base.vpc"

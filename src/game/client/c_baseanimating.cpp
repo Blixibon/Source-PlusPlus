@@ -60,6 +60,11 @@
 #include "c_baseobject.h"
 #endif
 
+#ifdef DEFERRED
+#include "deferred\deferred_shared_common.h"
+#endif // DEFERRED
+
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -3389,6 +3394,28 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 			QAngle dummyAngles;
 			GetAttachment( 1, vAttachment, dummyAngles );
 
+#ifdef DEFERRED
+			if (!GetLightingManager())
+				return;
+
+			def_light_temp_t *dl = new def_light_temp_t(0.05f);
+			if (!dl)
+				return;
+
+			int exponent = 5;
+
+			dl->iLighttype = DEFLIGHTTYPE_POINT;
+			dl->iFlags = (DEFLIGHT_COOKIE_ENABLED|DEFLIGHT_SHADOW_ENABLED/*|DEFLIGHT_VOLUMETRICS_ENABLED*/);
+			dl->pos = vAttachment;
+			dl->flRadius = random->RandomInt(32, 64);
+			dl->col_diffuse.x = TexLightToLinear(255, exponent);
+			dl->col_diffuse.y = TexLightToLinear(192, exponent);
+			dl->col_diffuse.z = TexLightToLinear(64, exponent);
+			dl->flFalloffPower = exponent;
+			//dl->decay = decay;
+
+			GetLightingManager()->AddTempLight(dl);
+#else
 			// Make an elight
 			dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + index );
 			el->origin = vAttachment;
@@ -3399,6 +3426,7 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 			el->color.g = 192;
 			el->color.b = 64;
 			el->color.exponent = 5;
+#endif
 		}
 	}
 }
