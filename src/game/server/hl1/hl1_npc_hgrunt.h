@@ -42,7 +42,7 @@ public:
 
 	int     GetSoundInterests ( void );
 
-	void    TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	void    TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 	int		OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
 
 	float	MaxYawSpeed( void );

@@ -371,14 +371,14 @@ void CHL1NPCTalker::StopFollowing( void )
 	BaseClass::StopFollowing();
 }
 
-void CHL1NPCTalker::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CHL1NPCTalker::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
 {
 	if ( info.GetDamage() >= 1.0 && !(info.GetDamageType() & DMG_SHOCK ) )
 	{
 		UTIL_BloodImpact( ptr->endpos, vecDir, BloodColor(), 4 );
 	}
 
-	BaseClass::TraceAttack( info, vecDir, ptr );
+	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
 
 void CHL1NPCTalker::FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )

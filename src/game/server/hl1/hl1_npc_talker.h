@@ -67,7 +67,7 @@ public:
 
 	Disposition_t IRelationType( CBaseEntity *pTarget );
 
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 
 	void			StartFollowing( CBaseEntity *pLeader );
 	void			StopFollowing( void );

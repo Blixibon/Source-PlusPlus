@@ -33,7 +33,7 @@ public:
 
 	bool CanBecomeRagdoll() { return false; }
 
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 	int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
 		
 /*	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );

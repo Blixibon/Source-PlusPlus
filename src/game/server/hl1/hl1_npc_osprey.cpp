@@ -1355,7 +1355,7 @@ void CBaseHelicopter::DrawDebugGeometryOverlays(void)
 // Input  :
 // Output : 
 //-----------------------------------------------------------------------------
-void CBaseHelicopter::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CBaseHelicopter::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
 {
 	CTakeDamageInfo dmgInfo = info;
 

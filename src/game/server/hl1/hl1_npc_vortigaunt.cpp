@@ -468,12 +468,12 @@ int CNPC_Vortigaunt::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 }
 
 
-void CNPC_Vortigaunt::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CNPC_Vortigaunt::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
 {
 	if ( info.GetDamageType() & DMG_SHOCK )
 		 return;
 
-	BaseClass::TraceAttack( info, vecDir, ptr );
+	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
 
 //=========================================================

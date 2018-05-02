@@ -110,7 +110,7 @@ void CDeferredManagerServer::LevelInitPreEntity()
 	{
 		const dworldlight_t& light = lights[i];
 
-		if ( light.type != emit_spotlight && light.type != emit_point )
+		if ( light.type != emit_spotlight && light.type != emit_point /*&& light.type != emit_surface*/)
 			continue;
 
 		const float radius = ComputeLightRadius( light );
@@ -142,6 +142,16 @@ void CDeferredManagerServer::LevelInitPreEntity()
 			lightEntity->KeyValue( szParamSpotConeOuter, acos( light.stopdot2 ) * 180.f / M_PI_F );
 			lightEntity->KeyValue( szParamPower, light.exponent );
 		}
+		/*else if (light.type == emit_surface)
+		{
+			QAngle angle;
+			VectorAngles(light.normal, angle);
+			lightEntity->SetAbsAngles(angle);
+			lightEntity->KeyValue(szParamLightType, "1");
+			lightEntity->KeyValue(szParamSpotConeInner, 80.0f);
+			lightEntity->KeyValue(szParamSpotConeOuter, 90.0f);
+			lightEntity->KeyValue(szParamPower, light.exponent);
+		}*/
 		else
 		{
 			lightEntity->KeyValue( szParamLightType, "0" );

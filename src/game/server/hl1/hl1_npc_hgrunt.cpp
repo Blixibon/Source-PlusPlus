@@ -823,7 +823,7 @@ int CNPC_HGrunt::GetSoundInterests( void )
 //=========================================================
 // TraceAttack - make sure we're not taking it in the helmet
 //=========================================================
-void CNPC_HGrunt::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr )
+void CNPC_HGrunt::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
 {
 	CTakeDamageInfo info = inputInfo;
 
@@ -841,7 +841,7 @@ void CNPC_HGrunt::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &v
 		// it's head shot anyways
 		ptr->hitgroup = HITGROUP_HEAD;
 	}
-	BaseClass::TraceAttack( info, vecDir, ptr );
+	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator);
 }
 
 

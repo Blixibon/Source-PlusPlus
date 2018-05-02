@@ -413,7 +413,7 @@ void CNPC_Barney::DeathSound( const CTakeDamageInfo &info )
 	}
 }
 
-void CNPC_Barney::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr )
+void CNPC_Barney::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
 {
 	CTakeDamageInfo info = inputInfo;
 
@@ -441,7 +441,7 @@ void CNPC_Barney::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &v
 		break;
 	}
 
-	BaseClass::TraceAttack( info, vecDir, ptr );
+	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
 
 void CNPC_Barney::Event_Killed( const CTakeDamageInfo &info )

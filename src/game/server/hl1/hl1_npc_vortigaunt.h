@@ -37,7 +37,7 @@ public:
 	int  RangeAttack1Conditions( float flDot, float flDist );
 
 	int  OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
-	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 	
 	void StartTask( const Task_t *pTask );
 

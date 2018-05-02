@@ -55,6 +55,14 @@ void AddEP1(const char* path)
 	g_pVGuiLocalize->AddFile("resource/episodic_%language%.txt");
 }
 
+void AddHL1(const char* path)
+{
+	filesystem->AddSearchPath(CFmtStr("%s/hl1/hl1_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/episodic/ep1_sound_vo_english.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	filesystem->AddSearchPath(CFmtStr("%s/hl1", path), "GAME", PATH_ADD_TO_HEAD);
+	g_pVGuiLocalize->AddFile("resource/hl1_%language%.txt");
+}
+
 void AddHL2(const char* path)
 {
 	// Crashes for some reason...
@@ -103,6 +111,13 @@ void MountExtraContent()
 
 		if (gameinfo->GetBool("lostcoastcontent"))
 			AddLostCoast(sdk2013SPPath);
+	}
+
+	if (steamapicontext->SteamApps()->BIsAppInstalled(280) && gameinfo->GetBool("hl1content"))
+	{
+		char cssPath[MAX_PATH];
+		steamapicontext->SteamApps()->GetAppInstallDir(280, cssPath, sizeof(cssPath));
+		AddHL1(cssPath);
 	}
 
 	if (steamapicontext->SteamApps()->BIsAppInstalled(243750) && gameinfo->GetBool("hl2mpcontent"))

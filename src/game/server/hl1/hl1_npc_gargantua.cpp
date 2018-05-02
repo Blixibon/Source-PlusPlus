@@ -1018,13 +1018,13 @@ void CNPC_Gargantua::Event_Killed( const CTakeDamageInfo &info )
 	m_takedamage = DAMAGE_NO;
 }
 
-void CNPC_Gargantua::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CNPC_Gargantua::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator)
 {
 	CTakeDamageInfo subInfo = info;
 
 	if ( !IsAlive() )
 	{
-		BaseClass::TraceAttack( subInfo, vecDir, ptr );
+		BaseClass::TraceAttack( subInfo, vecDir, ptr, pAccumulator );
 		return;
 	}
 
@@ -1057,7 +1057,7 @@ void CNPC_Gargantua::TraceAttack( const CTakeDamageInfo &info, const Vector &vec
 		subInfo.SetDamage( 0 );
 	}
 
-	BaseClass::TraceAttack( subInfo, vecDir, ptr );
+	BaseClass::TraceAttack( subInfo, vecDir, ptr, pAccumulator );
 }
 
 int CNPC_Gargantua::OnTakeDamage_Alive( const CTakeDamageInfo &info )
