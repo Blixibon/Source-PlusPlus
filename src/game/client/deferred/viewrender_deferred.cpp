@@ -541,6 +541,8 @@ void CBaseWorldViewDeferred::DrawSetup( float waterHeight, int nSetupFlags, floa
 	g_CurrentViewID = savedViewID;
 }
 
+static bool bForceDrawWorld = true;
+
 void CBaseWorldViewDeferred::DrawExecute( float waterHeight, view_id_t viewID, float waterZAdjust, bool bShadowDepth )
 {
 	const int savedViewID = g_CurrentViewID;
@@ -575,7 +577,7 @@ void CBaseWorldViewDeferred::DrawExecute( float waterHeight, view_id_t viewID, f
 	if ( m_DrawFlags & DF_DRAW_ENTITITES )
 		DrawOpaqueRenderablesDeferred();
 
-	if (!bShadowDepth)
+	if (!bShadowDepth || bForceDrawWorld)
 		DrawWorldDeferred( waterZAdjust );
 
 	if (!m_bDrawWorldNormal)

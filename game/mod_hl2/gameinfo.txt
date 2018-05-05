@@ -27,7 +27,7 @@
 			game				|all_source_engine_paths|hl2/hl2_misc.vpk
 			game+game_write		hl2
 			game				|all_source_engine_paths|hl2
-			game				"|all_source_engine_paths|../Half-Life 2/hl2"
+			//game				"|all_source_engine_paths|../Half-Life 2/hl2"
 			platform			|all_source_engine_paths|platform
 			
 			// Engine Crap

@@ -147,6 +147,31 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 	{
 		msg->SetInt( "$nocull", 1 );
 	}
+
+	if (pMat->HasProxy())
+	{
+		KeyValues *pkvMat = new KeyValues(pszOldShadername);
+		const char *pchMatName = pMat->GetName();
+		const char *pszDirName = "materials/";
+
+		char szFileName[MAX_PATH];
+		Q_strncpy(szFileName, pszDirName, MAX_PATH);
+		Q_strncat(szFileName, pchMatName, sizeof(szFileName), COPY_ALL_CHARACTERS);
+		Q_FixSlashes(szFileName);
+		Q_SetExtension(szFileName, ".vmt", sizeof(szFileName));
+
+		if (pkvMat->LoadFromFile(filesystem, szFileName, NULL))
+		{
+			KeyValues *pkvProxies = pkvMat->FindKey("Proxies");
+			if (pkvProxies)
+			{
+				KeyValues *pkvCopy = pkvProxies->MakeCopy();
+				msg->AddSubKey(pkvCopy);
+			}
+		}
+
+		pkvMat->deleteThis();
+	}
 	
 	pMat->SetShaderAndParams(msg);
 
@@ -186,7 +211,7 @@ IMaterial* CDeferredMaterialSystem::CreateMaterial( const char* pMaterialName, K
 
 IMaterial* CDeferredMaterialSystem::ReplaceMaterialInternal( IMaterial* pMat ) const
 {
-	if ( !pMat || pMat->IsErrorMaterial() )
+	if ( !pMat || pMat->IsErrorMaterial() || pMat->InMaterialPage())
 		return pMat;
 
 	const char* pShaderName = pMat->GetShaderName();

@@ -30,9 +30,11 @@ bool replMatPossible = false;
 //-----------------------------------------------------------------------------
 static const char * const pszShaderReplaceDict[][2] = {
 	///*
+#ifndef DEFERRED
 	"VertexLitGeneric",			"PP_VertexLitGeneric",
 	"LightmappedGeneric",		"PP_LightmappedGeneric",
 	"WorldVertexTransition",	"PP_WorldVertexTransition",
+#endif // !DEFERRED
 	"Teeth",					"PP_Teeth",
 	//"Cable",					"PP_Cable",
 	"DepthWrite",				"PP_DepthWrite",
@@ -173,6 +175,31 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_HALFLAMBERT))
 		msg->SetInt("$halflambert", 1);
 
+	if (pMat->HasProxy())
+	{
+		KeyValues *pkvMat = new KeyValues(pszOldShadername);
+		const char *pchMatName = pMat->GetName();
+		const char *pszDirName = "materials/";
+
+		char szFileName[MAX_PATH];
+		Q_strncpy(szFileName, pszDirName, MAX_PATH);
+		Q_strncat(szFileName, pchMatName, sizeof(szFileName), COPY_ALL_CHARACTERS);
+		Q_FixSlashes(szFileName);
+		Q_SetExtension(szFileName, ".vmt", sizeof(szFileName));
+
+		if (pkvMat->LoadFromFile(filesystem, szFileName, NULL))
+		{
+			KeyValues *pkvProxies = pkvMat->FindKey("Proxies");
+			if (pkvProxies)
+			{
+				KeyValues *pkvCopy = pkvProxies->MakeCopy();
+				msg->AddSubKey(pkvCopy);
+			}
+		}
+
+		pkvMat->deleteThis();
+	}
+
 	pMat->SetShaderAndParams(msg);
 
 	pMat->RefreshPreservingMaterialVars();
@@ -239,7 +266,7 @@ public:
 private:
 	IMaterial* ReplaceMaterialInternal( IMaterial* pMat ) const
 	{
-		if ( !pMat || pMat->IsErrorMaterial() || !replMatPossible)
+		if ( !pMat || pMat->IsErrorMaterial() || pMat->InMaterialPage() || !replMatPossible)
 			return pMat;
 
 		const char *pShaderName = pMat->GetShaderName();

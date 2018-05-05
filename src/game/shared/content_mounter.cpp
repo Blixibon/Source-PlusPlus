@@ -63,6 +63,14 @@ void AddHL1(const char* path)
 	g_pVGuiLocalize->AddFile("resource/hl1_%language%.txt");
 }
 
+void AddHL1MP(const char* path)
+{
+	filesystem->AddSearchPath(CFmtStr("%s/hl1mp/hl1mp_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/episodic/ep1_sound_vo_english.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	filesystem->AddSearchPath(CFmtStr("%s/hl1mp", path), "GAME", PATH_ADD_TO_HEAD);
+	g_pVGuiLocalize->AddFile("resource/hl1mp_%language%.txt");
+}
+
 void AddHL2(const char* path)
 {
 	// Crashes for some reason...
@@ -72,7 +80,7 @@ void AddHL2(const char* path)
 	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_textures.vpk", path), "GAME", PATH_ADD_TO_HEAD);
 	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
 	//filesystem->AddSearchPath(CFmtStr("%s/hl2/hl2_sound_vo_english.vpk", path), "GAME", PATH_ADD_TO_HEAD);
-	//filesystem->AddSearchPath(CFmtStr("%s/hl2", path), "GAME", PATH_ADD_TO_HEAD);
+	filesystem->AddSearchPath(CFmtStr("%s/hl2", path), "GAME", PATH_ADD_TO_TAIL);
 	g_pVGuiLocalize->AddFile("resource/hl2_%language%.txt");
 }
 
@@ -113,6 +121,14 @@ void MountExtraContent()
 			AddLostCoast(sdk2013SPPath);
 	}
 
+	if (steamapicontext->SteamApps()->BIsAppInstalled(360) && gameinfo->GetBool("hl1mpcontent"))
+	{
+		char cssPath[MAX_PATH];
+		steamapicontext->SteamApps()->GetAppInstallDir(360, cssPath, sizeof(cssPath));
+		AddHL1(cssPath);
+		AddHL1MP(cssPath);
+	}
+
 	if (steamapicontext->SteamApps()->BIsAppInstalled(280) && gameinfo->GetBool("hl1content"))
 	{
 		char cssPath[MAX_PATH];
@@ -126,6 +142,13 @@ void MountExtraContent()
 		steamapicontext->SteamApps()->GetAppInstallDir(243750, sdk2013MPPath, sizeof(sdk2013MPPath));
 		AddHL2(sdk2013MPPath);
 		AddHL2MP(sdk2013MPPath);
+	}
+
+	if (steamapicontext->SteamApps()->BIsAppInstalled(290930) && gameinfo->GetBool("hl2content"))
+	{
+		char hl2Path[MAX_PATH];
+		steamapicontext->SteamApps()->GetAppInstallDir(290930, hl2Path, sizeof(hl2Path));
+		AddHL2(hl2Path);
 	}
 
 	if (steamapicontext->SteamApps()->BIsAppInstalled(220) && (gameinfo->GetBool("hl2content") || gameinfo->GetBool("ep1content") || gameinfo->GetBool("ep2content")))

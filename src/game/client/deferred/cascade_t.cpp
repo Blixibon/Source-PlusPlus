@@ -12,7 +12,7 @@ static const cascade_t g_CascadeInfo[] = {
 #endif
 	},
 
-	{ 1024, 4096.0f,	10000.0f,		15000.0f,	4.0f,		6.0f,		20.0f,		0.25f,			true,	1
+	{ 1024, 4096.0f,	10000.0f,		15000.0f,	4.0f,		6.0f,		20.0f,		0.01f,			true,	1
 #if CSM_USE_COMPOSITED_TARGET
 	, 2048, 0
 #endif

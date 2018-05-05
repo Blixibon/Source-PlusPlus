@@ -6,6 +6,7 @@
 	type singleplayer_only
 	
 	hl1content 1
+	hl1mpcontent 1
 	supportsvr	1
 
 	FileSystem
