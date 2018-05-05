@@ -283,7 +283,9 @@ C_EntityFlame::C_EntityFlame( void ) :
 m_hEffect( NULL )
 {
 	m_hOldAttached = NULL;
+#ifdef DEFERRED
 	m_pDefLight = NULL;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -325,13 +327,14 @@ void C_EntityFlame::StopEffect( void )
 void C_EntityFlame::UpdateOnRemove( void )
 {
 	StopEffect();
-
+#ifdef DEFERRED
 	if (m_pDefLight != NULL)
 	{
 		GetLightingManager()->RemoveLight(m_pDefLight);
 		delete m_pDefLight;
 		m_pDefLight = NULL;
 	}
+#endif
 
 	BaseClass::UpdateOnRemove();
 }

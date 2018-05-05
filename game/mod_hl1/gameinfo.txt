@@ -3,7 +3,6 @@
 	game	"Half-Life"
 	title	"HALF-LIFE"
 	title2	""
-	type singleplayer_only
 	
 	hl1content 1
 	hl1mpcontent 1

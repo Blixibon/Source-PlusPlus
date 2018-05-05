@@ -1316,7 +1316,7 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 		CMatRenderContextPtr pRenderContext( materials );
 
 		// GSTRINGMIGRATION
-		if ( g_pCSMEnvLight != NULL && g_pCSMEnvLight->IsCascadedShadowMappingEnabled() )
+		if ( g_pCSMEnvLight != NULL && g_pCSMEnvLight->IsCascadedShadowMappingEnabled())
 		{
 			UpdateCascadedShadow( view );
 		}

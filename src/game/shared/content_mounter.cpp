@@ -144,12 +144,12 @@ void MountExtraContent()
 		AddHL2MP(sdk2013MPPath);
 	}
 
-	if (steamapicontext->SteamApps()->BIsAppInstalled(290930) && gameinfo->GetBool("hl2content"))
+	/*if (steamapicontext->SteamApps()->BIsAppInstalled(290930) && gameinfo->GetBool("hl2content"))
 	{
 		char hl2Path[MAX_PATH];
 		steamapicontext->SteamApps()->GetAppInstallDir(290930, hl2Path, sizeof(hl2Path));
 		AddHL2(hl2Path);
-	}
+	}*/
 
 	if (steamapicontext->SteamApps()->BIsAppInstalled(220) && (gameinfo->GetBool("hl2content") || gameinfo->GetBool("ep1content") || gameinfo->GetBool("ep2content")))
 	{

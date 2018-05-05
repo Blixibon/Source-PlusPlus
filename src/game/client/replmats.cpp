@@ -175,6 +175,12 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_HALFLAMBERT))
 		msg->SetInt("$halflambert", 1);
 
+	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK))
+		msg->SetInt("$normalmapalphaenvmapmask", 1);
+
+	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_BASEALPHAENVMAPMASK))
+		msg->SetInt("$basealphaenvmapmask", 1);
+
 	if (pMat->HasProxy())
 	{
 		KeyValues *pkvMat = new KeyValues(pszOldShadername);

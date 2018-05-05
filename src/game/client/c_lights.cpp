@@ -6,6 +6,7 @@
 #include "vgui_controls/Frame.h"
 #include "vgui/IInput.h"
 #include "ienginevgui.h"
+#include "view.h"
 
 #include "tier0/memdbgon.h"
 
@@ -57,7 +58,7 @@ void C_EnvLight::OnDataChanged( DataUpdateType_t type )
 bool C_EnvLight::IsCascadedShadowMappingEnabled() const
 {
 	const int &iCSMCvarEnabled = r_csm_enabled.GetInt();
-	return m_bCascadedShadowMappingEnabled && iCSMCvarEnabled == 1 || iCSMCvarEnabled == 2;
+	return ( (m_bCascadedShadowMappingEnabled && iCSMCvarEnabled == 1) || iCSMCvarEnabled == 2 ) && engine->IsSkyboxVisibleFromPoint(MainViewOrigin()) != SKYBOX_NOT_VISIBLE;
 }
 
 
