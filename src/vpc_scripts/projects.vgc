@@ -32,19 +32,32 @@ $Project "fgdlib"
 	"fgdlib\fgdlib.vpc" [$WIN32]
 }
 
+// $Project "game_shader_dx9"
+// {
+	// "materialsystem\stdshaders\game_shader_dx9_hl2mp.vpc"		[$HL2MP && !$DEFERRED]
+	// "materialsystem\stdshaders\game_shader_dx9_hl2.vpc"			[$HL2 && !$DEFERRED]
+	// "materialsystem\stdshaders\game_shader_dx9_episodic.vpc"	[$EPISODIC && !$DEFERRED]
+
+	// "materialsystem\stdshaders\game_shader_dx9_lostcoast.vpc"	[!$DEFERRED && $LOSTCOAST]
+	// "materialsystem\stdshaders\game_shader_dx9_cstrike.vpc"		[!$DEFERRED && $CSTRIKE]
+	// "materialsystem\stdshaders\game_shader_dx9_dod.vpc"			[!$DEFERRED && $DOD]
+	// "materialsystem\stdshaders\game_shader_dx9_hl1.vpc"			[!$DEFERRED && $HL1]
+	// "materialsystem\stdshaders\game_shader_dx9_portal.vpc"		[!$DEFERRED && $PORTAL]
+	
+	// "materialsystem\defshaders\game_shader_dx9_deferred.vpc" 	[$DEFERRED]
+// }
+
 $Project "game_shader_dx9"
 {
-	"materialsystem\stdshaders\game_shader_dx9_hl2mp.vpc"		[$HL2MP && !$DEFERRED]
-	"materialsystem\stdshaders\game_shader_dx9_hl2.vpc"			[$HL2 && !$DEFERRED]
-	"materialsystem\stdshaders\game_shader_dx9_episodic.vpc"	[$EPISODIC && !$DEFERRED]
+	"materialsystem\stdshaders\game_shader_dx9_hl2mp.vpc"		[$HL2MP]
+	"materialsystem\stdshaders\game_shader_dx9_hl2.vpc"			[$HL2]
+	"materialsystem\stdshaders\game_shader_dx9_episodic.vpc"	[$EPISODIC]
 
-	"materialsystem\stdshaders\game_shader_dx9_lostcoast.vpc"	[!$DEFERRED && $LOSTCOAST]
-	"materialsystem\stdshaders\game_shader_dx9_cstrike.vpc"		[!$DEFERRED && $CSTRIKE]
-	"materialsystem\stdshaders\game_shader_dx9_dod.vpc"			[!$DEFERRED && $DOD]
-	"materialsystem\stdshaders\game_shader_dx9_hl1.vpc"			[!$DEFERRED && $HL1]
-	"materialsystem\stdshaders\game_shader_dx9_portal.vpc"		[!$DEFERRED && $PORTAL]
-	
-	"materialsystem\defshaders\game_shader_dx9_deferred.vpc" 	[$DEFERRED]
+	"materialsystem\stdshaders\game_shader_dx9_lostcoast.vpc"	[$LOSTCOAST]
+	"materialsystem\stdshaders\game_shader_dx9_cstrike.vpc"		[$CSTRIKE]
+	"materialsystem\stdshaders\game_shader_dx9_dod.vpc"			[$DOD]
+	"materialsystem\stdshaders\game_shader_dx9_hl1.vpc"			[$HL1]
+	"materialsystem\stdshaders\game_shader_dx9_portal.vpc"		[$PORTAL]
 }
 
 $Project "glview"

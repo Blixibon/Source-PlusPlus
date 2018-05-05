@@ -101,7 +101,7 @@ void UTIL_StringToIntArray( int *pVector, int count, const char *pString );
 #define NETWORK_MASK_COOKIE		0x007F
 #define NETWORK_MASK_SEED		0xFFFF
 
-#include "../../materialsystem/defshaders/deferred_global_common.h"
+#include "../../materialsystem/stdshaders/deferred_global_common.h"
 
 enum LIGHT_PARAM_ID
 {

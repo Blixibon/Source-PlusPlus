@@ -8,7 +8,7 @@ rem == Set the absolute path to your mod's game directory here ==
 set GAMEDIR=%cd%\..\..\..\game\mod_hl2
 
 rem == Set the relative or absolute path to Source SDK Base 2013 Singleplayer\bin ==
-set SDKBINDIR=C:\Steam\SteamApps\common\Source SDK Base 2013 Multiplayer\bin
+set SDKBINDIR=C:\HlBin\bin
 
 rem ==  Set the Path to your mod's root source code ==
 rem This should already be correct, accepts relative paths only!
