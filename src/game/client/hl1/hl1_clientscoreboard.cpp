@@ -25,6 +25,8 @@
 
 #include "hl1mp_gamerules.h"
 
+#include "fmtstr.h"
+
 #if 1
 
 enum
@@ -370,7 +372,7 @@ void CHL1MPClientScoreBoardDialog::InitScoreboardSections()
 	// fill out the structure of the scoreboard
 	AddHeader();
 
-	if ( HL1MPRules()->IsTeamplay() )
+	if ( HL1MPRules() && HL1MPRules()->IsTeamplay() )
 	{
 		// add the team sections
 //		AddSection( TYPE_TEAM, 2 );
@@ -502,7 +504,30 @@ void CHL1MPClientScoreBoardDialog::AddSection(int teamType, int teamNumber)
 	int sectionID = GetSectionFromTeamNumber( teamNumber );
 	if ( teamType == TYPE_TEAM )
 	{
- 		m_pPlayerList->AddSection(sectionID, "", StaticPlayerSortFunc);
+		const char *pchTeamName = "";
+
+		if (teamNumber)
+		{
+			if (GameResources())
+				pchTeamName = GameResources()->GetTeamName(teamNumber);
+		}
+
+		wchar_t *pwchTName = new wchar_t[sizeof(pchTeamName)];
+		g_pVGuiLocalize->ConvertANSIToUnicode(pchTeamName, pwchTName, sizeof(pwchTName));
+
+		wchar_t *pwchTeamName = g_pVGuiLocalize->Find(CFmtStr("#team_%s", pchTeamName));
+
+		if (!pwchTeamName || wcslen(pwchTeamName) <= 0)
+		{
+			pwchTeamName = pwchTName;
+		}
+
+		SectionedListPanelHeader *header = new SectionedListPanelHeader(m_pPlayerList, pchTeamName, sectionID);
+		header->SetText(pwchTeamName);
+		
+ 		m_pPlayerList->AddSection(sectionID, header, StaticPlayerSortFunc);
+		
+		delete pwchTName;
 
 		// setup the columns
 		m_pPlayerList->AddColumnToSection(sectionID, "name", "", 0, scheme()->GetProportionalScaledValue( CSTRIKE_NAME_WIDTH ) );

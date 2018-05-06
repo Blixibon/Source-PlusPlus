@@ -19,7 +19,7 @@ STUB_WEAPON_CLASS( weapon_physcannon, PhysgunCannon, C_BaseCombatWeapon );
 // HL1 stuff
 //STUB_WEAPON_CLASS( weapon_357,			Weapon357,			C_BaseHL1CombatWeapon );
 //STUB_WEAPON_CLASS( weapon_crossbow,		WeaponCrossbow,		C_BaseHL1CombatWeapon );
-//STUB_WEAPON_CLASS( weapon_crowbar,		WeaponCrowbar,		C_BaseHL1CombatWeapon );
+STUB_WEAPON_CLASS( weapon_crowbar,		WeaponCrowbar,		C_BaseHL1CombatWeapon );
 //STUB_WEAPON_CLASS( weapon_egon,			WeaponEgon,			C_BaseHL1CombatWeapon );
 //STUB_WEAPON_CLASS( weapon_gauss,		WeaponGauss,		C_BaseHL1CombatWeapon );
 //STUB_WEAPON_CLASS( weapon_glock,		WeaponGlock,		C_BaseHL1CombatWeapon );

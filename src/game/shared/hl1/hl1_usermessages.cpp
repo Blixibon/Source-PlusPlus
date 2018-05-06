@@ -8,6 +8,7 @@
 #include "usermessages.h"
 #include "shake.h"
 #include "voice_gamemgr.h"
+#include "haptics\haptic_msgs.h"
 
 void RegisterUserMessages( void )
 {
@@ -33,4 +34,6 @@ void RegisterUserMessages( void )
 	usermessages->Register( "HintText", -1 );	// Displays hint text display
 	usermessages->Register( "KeyHintText", -1 );	// Displays hint text display
 	usermessages->Register( "AmmoDenied", 2 );
+
+	RegisterHapticMessages();
 }

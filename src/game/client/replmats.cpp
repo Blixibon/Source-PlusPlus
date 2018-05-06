@@ -34,6 +34,9 @@ static const char * const pszShaderReplaceDict[][2] = {
 	"VertexLitGeneric",			"PP_VertexLitGeneric",
 	"LightmappedGeneric",		"PP_LightmappedGeneric",
 	"WorldVertexTransition",	"PP_WorldVertexTransition",
+#ifdef HL1_CLIENT_DLL
+	"VertexLitGeneric_DX6",		"PP_VertexLitGeneric",
+#endif
 #endif // !DEFERRED
 	"Teeth",					"PP_Teeth",
 	//"Cable",					"PP_Cable",
@@ -181,11 +184,18 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_BASEALPHAENVMAPMASK))
 		msg->SetInt("$basealphaenvmapmask", 1);
 
+	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_SELFILLUM))
+		msg->SetInt("$selfillum", 1);
+
+	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_ENVMAPSPHERE))
+		msg->SetInt("$envmapsphere", 1);
+
 	if (pMat->HasProxy())
 	{
 		KeyValues *pkvMat = new KeyValues(pszOldShadername);
 		const char *pchMatName = pMat->GetName();
 		const char *pszDirName = "materials/";
+		bool bFound = false;
 
 		char szFileName[MAX_PATH];
 		Q_strncpy(szFileName, pszDirName, MAX_PATH);
@@ -194,6 +204,43 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 		Q_SetExtension(szFileName, ".vmt", sizeof(szFileName));
 
 		if (pkvMat->LoadFromFile(filesystem, szFileName, NULL))
+		{
+			if (!Q_strcmp(pkvMat->GetName(), pszOldShadername))
+				bFound = true;
+		}
+
+		if (!bFound)
+		{
+			KeyValues *pkvPatch = new KeyValues("Patch");
+			if (pkvPatch->LoadFromFile(filesystem, szFileName, NULL))
+			{
+				const char *pchIncludeMat = pkvPatch->GetString("include");
+				if (pchIncludeMat)
+				{
+					KeyValues *pkvIncluded = new KeyValues(pszOldShadername);
+					if (pkvIncluded->LoadFromFile(filesystem, pchIncludeMat, NULL))
+					{
+						pkvMat->deleteThis();
+						if (pkvPatch->FindKey("insert"))
+						{
+							pkvMat = pkvPatch->FindKey("insert")->MakeCopy();
+							pkvMat->SetName(pszOldShadername);
+							pkvMat->RecursiveMergeKeyValues(pkvIncluded);
+						}
+						else
+						{
+							pkvMat = pkvIncluded->MakeCopy();
+						}
+
+						bFound = true;
+					}
+					pkvIncluded->deleteThis();
+				}
+			}
+			pkvPatch->deleteThis();
+		}
+
+		if (bFound)
 		{
 			KeyValues *pkvProxies = pkvMat->FindKey("Proxies");
 			if (pkvProxies)
@@ -208,7 +255,9 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 
 	pMat->SetShaderAndParams(msg);
 
-	pMat->RefreshPreservingMaterialVars();
+	//pMat->RefreshPreservingMaterialVars();
+
+	pMat->Refresh();
 
 	msg->deleteThis();
 }

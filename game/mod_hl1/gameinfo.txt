@@ -6,7 +6,21 @@
 	
 	hl1content 1
 	hl1mpcontent 1
-	supportsvr	1
+	hashdcontent	1
+	supportsvr	0
+	
+	nocrosshair 0
+    nohimodel 1
+    nomodels 0
+    hidden_maps
+    {
+        "background02" 1
+        "background03" 1
+        "background07" 1
+        "background12" 1
+        "background15" 1
+        "test"         1
+    }
 
 	FileSystem
 	{

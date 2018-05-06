@@ -170,12 +170,12 @@
 	HudChat
 	{
 		"fieldName" "HudChat"
-		"visible" "0"
+		"visible" "1"
 		"enabled" "1"
-		"xpos"	"-1"
-		"ypos"	"-1"
-		"wide"	 "0"
-		"tall"	 "0"
+		"xpos"	"10"
+		"ypos"	"280"
+		"wide"	 "400"
+		"tall"	 "100"
 	}
 
 	HudHistoryResource
@@ -256,7 +256,8 @@
 		"text_xgap"	"8"
 		"text_ygap"	"8"
 		"TextColor"	"255 170 0 220"
+		"BackgroundColor"	"0 0 0 0"
 
-		"PaintBackgroundType"	"2"
+		"PaintBackgroundType"	"0"
 	}
 }

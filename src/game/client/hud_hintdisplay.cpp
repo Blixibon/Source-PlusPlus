@@ -105,6 +105,7 @@ void CHudHintDisplay::ApplySchemeSettings( vgui::IScheme *pScheme )
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	SetFgColor( GetSchemeColor("HintMessageFg", pScheme) );
+	SetBgColor(Color(0, 0, 0, 0));
 	m_hFont = pScheme->GetFont( "HudHintText", true );
 	m_pLabel->SetBgColor( GetSchemeColor("HintMessageBg", pScheme) );
 	m_pLabel->SetPaintBackgroundType( 2 );

@@ -121,19 +121,19 @@ void MountExtraContent()
 			AddLostCoast(sdk2013SPPath);
 	}
 
+	if (steamapicontext->SteamApps()->BIsAppInstalled(280) && gameinfo->GetBool("hl1content"))
+	{
+		char cssPath[MAX_PATH];
+		steamapicontext->SteamApps()->GetAppInstallDir(280, cssPath, sizeof(cssPath));
+		AddHL1(cssPath);
+	}
+
 	if (steamapicontext->SteamApps()->BIsAppInstalled(360) && gameinfo->GetBool("hl1mpcontent"))
 	{
 		char cssPath[MAX_PATH];
 		steamapicontext->SteamApps()->GetAppInstallDir(360, cssPath, sizeof(cssPath));
 		AddHL1(cssPath);
 		AddHL1MP(cssPath);
-	}
-
-	if (steamapicontext->SteamApps()->BIsAppInstalled(280) && gameinfo->GetBool("hl1content"))
-	{
-		char cssPath[MAX_PATH];
-		steamapicontext->SteamApps()->GetAppInstallDir(280, cssPath, sizeof(cssPath));
-		AddHL1(cssPath);
 	}
 
 	if (steamapicontext->SteamApps()->BIsAppInstalled(243750) && gameinfo->GetBool("hl2mpcontent"))

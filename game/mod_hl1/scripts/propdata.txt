@@ -162,16 +162,6 @@
 		"breakable_count"	"6"
 	}
 
-	// Extra large wooden objects
-	//	i.e posts
-	"Wooden.ExtraLarge"
-	{
-		"base"			"Wooden.Base"
-		"health"		"100"
-
-		"breakable_count"	"8"
-	}
-
 	// Huge wooden objects.
 	//	i.e Big Wardrobes, bookcases
 	"Wooden.Huge"
@@ -445,6 +435,34 @@
 	}
 
 
+//=================================================================================
+//		HL1 breakable types
+//=================================================================================
+
+	
+	"HL1.CeilingTile"
+	{		
+		"breakable_model"	"CeilingTile"
+		"breakable_count"	"4"
+	}
+
+	"HL1.ComputerGibs"
+	{		
+		"breakable_model"	"ComputerGibs"
+		"breakable_count"	"4"
+	}
+
+	"HL1.CinderGibs"
+	{		
+		"breakable_model"	"CinderGibs"
+		"breakable_count"	"4"
+	}
+
+	"HL1.FleshGibs"
+	{		
+		"breakable_model"	"FleshGibs"
+		"breakable_count"	"4"
+	}
 
 //=================================================================================
 //		BREAKABLE DATA. NOT PROPDATA TYPES.
@@ -486,6 +504,30 @@
 			"models\Gibs\metal_gib3.mdl"			"1"
 			"models\Gibs\metal_gib4.mdl"			"1"
 			"models\Gibs\metal_gib5.mdl"			"1"
+		}
+		"ComputerGibs"
+		{
+			"models\computergibs.mdl" "1"
+		}
+		"FleshGibs"
+		{
+			"models\fleshgibs.mdl"	"1"
+		}
+		"CeilingTile"
+		{
+			"models\ceilinggibs.mdl" "1"
+		}
+		"CeilingTile"
+		{
+			"models\cindergibs.mdl"	"1"
+		}
+		"WebGibs"
+		{
+			"models\webgibs.mdl"	"1"
+		}
+		"CinderBlocks"
+		{
+			"models\cindergibs.mdl"	"1"
 		}
 	}
 }

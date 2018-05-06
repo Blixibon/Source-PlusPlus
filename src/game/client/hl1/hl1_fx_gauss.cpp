@@ -39,7 +39,7 @@ void HL1GaussBeam( const CEffectData &data )
 
 	C_BaseEntity * pEnt = cl_entitylist->GetEnt( BEAMENT_ENTITY(nStartEntity) );
 
-	if ( !pEnt->IsPlayer() )
+	if ( !pEnt || !pEnt->IsPlayer() )
 		return;
 
 	C_BasePlayer * pPlayer = static_cast<C_BasePlayer*>(pEnt);
