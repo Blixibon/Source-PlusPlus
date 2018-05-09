@@ -75,6 +75,7 @@
 #endif // USE_MONITORS
 
 #include "c_lights.h"
+#include "env_wind_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1309,11 +1310,11 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	g_pClientShadowMgr->PreRender();
 
+	CMatRenderContextPtr pRenderContext(materials);
 	// Shadowed flashlights supported on ps_2_b and up...
 	if ( r_flashlightdepthtexture.GetBool() && (viewID == VIEW_MAIN) )
 	{
 		g_pClientShadowMgr->ComputeShadowDepthTextures( view );
-		CMatRenderContextPtr pRenderContext( materials );
 
 		// GSTRINGMIGRATION
 		if ( g_pCSMEnvLight != NULL && g_pCSMEnvLight->IsCascadedShadowMappingEnabled())
@@ -1325,6 +1326,12 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 			pRenderContext->SetIntRenderingParameter( INT_CASCADED_DEPTHTEXTURE, 0 );
 		}
 	}
+
+	Vector vecWind;
+	GetWindspeedAtTime(gpGlobals->curtime, vecWind);
+	pRenderContext->SetVectorRenderingParameter(VECTOR_RENDERPARM_WIND_DIRECTION, vecWind);
+	pRenderContext.SafeRelease();
+
 	m_BaseDrawFlags = baseDrawFlags;
 
 	SetupCurrentView( view.origin, view.angles, viewID );

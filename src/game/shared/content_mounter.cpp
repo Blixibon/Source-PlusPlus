@@ -63,6 +63,14 @@ void AddHL1(const char* path)
 	g_pVGuiLocalize->AddFile("resource/hl1_%language%.txt");
 }
 
+void AddHL1HD(const char* path)
+{
+	filesystem->AddSearchPath(CFmtStr("%s/hl1_hd/hl1_hd_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	//filesystem->AddSearchPath(CFmtStr("%s/episodic/ep1_sound_vo_english.vpk", path), "GAME", PATH_ADD_TO_HEAD);
+	filesystem->AddSearchPath(CFmtStr("%s/hl1_hd", path), "GAME", PATH_ADD_TO_HEAD);
+	g_pVGuiLocalize->AddFile("resource/hl1_%language%.txt");
+}
+
 void AddHL1MP(const char* path)
 {
 	filesystem->AddSearchPath(CFmtStr("%s/hl1mp/hl1mp_pak.vpk", path), "GAME", PATH_ADD_TO_HEAD);
@@ -121,18 +129,28 @@ void MountExtraContent()
 			AddLostCoast(sdk2013SPPath);
 	}
 
+	if (steamapicontext->SteamApps()->BIsAppInstalled(360) && gameinfo->GetBool("hl1mpcontent"))
+	{
+		char cssPath[MAX_PATH];
+		steamapicontext->SteamApps()->GetAppInstallDir(360, cssPath, sizeof(cssPath));
+		AddHL1(cssPath);
+		//AddHL1MP(cssPath);
+	}
+
 	if (steamapicontext->SteamApps()->BIsAppInstalled(280) && gameinfo->GetBool("hl1content"))
 	{
 		char cssPath[MAX_PATH];
 		steamapicontext->SteamApps()->GetAppInstallDir(280, cssPath, sizeof(cssPath));
 		AddHL1(cssPath);
+		if (gameinfo->GetBool("hashdcontent") && filesystem->FileExists("game_hd.txt", "MOD"))
+			AddHL1HD(cssPath);
 	}
 
 	if (steamapicontext->SteamApps()->BIsAppInstalled(360) && gameinfo->GetBool("hl1mpcontent"))
 	{
 		char cssPath[MAX_PATH];
 		steamapicontext->SteamApps()->GetAppInstallDir(360, cssPath, sizeof(cssPath));
-		AddHL1(cssPath);
+		//AddHL1(cssPath);
 		AddHL1MP(cssPath);
 	}
 

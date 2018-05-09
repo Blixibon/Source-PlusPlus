@@ -114,6 +114,12 @@ protected:
 	virtual void		DestroyGlowEffect( void );
 #endif // GLOWS_ENABLE
 
+	// Cold Breath
+	bool			CreateColdBreathEmitter(void);
+	void			DestroyColdBreathEmitter(void);
+	void			UpdateColdBreath(void);
+	void			EmitColdBreathParticles(void);
+
 	int			m_bloodColor;			// color of blood particless
 
 private:
@@ -134,6 +140,14 @@ private:
 private:
 	C_BaseCombatCharacter( const C_BaseCombatCharacter & ); // not defined, not accessible
 
+	
+	// Cold Breath
+	bool						m_bColdBreathOn;
+	float						m_flColdBreathTimeStart;
+	float						m_flColdBreathTimeEnd;
+	CSmartPtr<CSimpleEmitter>	m_hColdBreathEmitter;
+	PMaterialHandle				m_hColdBreathMaterial;
+	//int							m_iHeadAttach;
 
 //-----------------------
 #ifdef INVASION_CLIENT_DLL

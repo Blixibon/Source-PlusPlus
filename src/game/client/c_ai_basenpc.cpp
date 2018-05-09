@@ -8,7 +8,7 @@
 #include "c_ai_basenpc.h"
 #include "engine/ivdebugoverlay.h"
 
-#if defined( HL2_DLL ) || defined( HL2_EPISODIC )
+#if defined( HL2_CLIENT_DLL ) || defined( HL2_EPISODIC )
 #include "c_basehlplayer.h"
 #endif
 
@@ -67,7 +67,9 @@ void C_AI_BaseNPC::ClientThink( void )
 {
 	BaseClass::ClientThink();
 
-#ifdef HL2_DLL
+	UpdateColdBreath();
+
+#ifdef HL2_CLIENT_DLL
 	C_BaseHLPlayer *pPlayer = dynamic_cast<C_BaseHLPlayer*>( C_BasePlayer::GetLocalPlayer() );
 
 	if ( ShouldModifyPlayerSpeed() == true )
@@ -103,7 +105,9 @@ void C_AI_BaseNPC::ClientThink( void )
 #endif // HL2_DLL
 
 #ifdef HL2_EPISODIC
+#ifndef HL2_CLIENT_DLL
 	C_BaseHLPlayer *pPlayer = dynamic_cast<C_BaseHLPlayer*>( C_BasePlayer::GetLocalPlayer() );
+#endif
 
 	if ( pPlayer && m_flTimePingEffect > gpGlobals->curtime )
 	{
@@ -147,7 +151,7 @@ void C_AI_BaseNPC::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
-	if ( ( ShouldModifyPlayerSpeed() == true ) || ( m_flTimePingEffect > gpGlobals->curtime ) )
+	//if ( ( ShouldModifyPlayerSpeed() == true ) || ( m_flTimePingEffect > gpGlobals->curtime ) )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}

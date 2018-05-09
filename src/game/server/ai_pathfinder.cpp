@@ -47,6 +47,8 @@ const float MAX_LOCAL_NAV_DIST_FLY[2] = { (750*12), (750*12) };
 #define CLASS_ZOMBIE CLASS_ALIEN_MONSTER
 #endif
 
+#define NAV_LADDER_WAYPOINT_DIST_SCALE 2.0f
+
 
 //--------------------------------------------------------------------------------------------------------------
 /**
@@ -88,6 +90,9 @@ public:
 		if (area->IsConnected(fromArea, NUM_DIRECTIONS) == false && (m_bot->CapabilitiesGet() & bits_CAP_MOVE_JUMP) != bits_CAP_MOVE_JUMP)
 			return -1.0f;
 
+		if ((area->GetAttributes() & NAV_MESH_CROUCH) && m_bot->GetHullHeight() > HumanCrouchHeight) //(g_pGameRules->GetViewVectors()->m_vDuckHullMax.z)
+			return -1.0f;
+
 		//if (area->GetAttributes() & NAV_MESH_NO_HOSTAGES && m_bot->GetHostageEscortCount())
 		//{
 		//	// if we're leading hostages, don't try to go where they can't
@@ -118,6 +123,11 @@ public:
 			// zombies ignore all path penalties
 			if (m_bot->Classify() == CLASS_ZOMBIE)
 				return cost;
+
+			if (area->IsDamaging())
+			{
+				cost += 100.0f;
+			}
 
 			// add cost of "jump down" pain unless we're jumping into water
 			if (!area->IsUnderwater() && area->IsConnected(fromArea, NUM_DIRECTIONS) == false)
@@ -158,9 +168,6 @@ public:
 			// if this is a "crouch" or "walk" area, add penalty
 			if (area->GetAttributes() & (NAV_MESH_CROUCH | NAV_MESH_WALK))
 			{
-				if (m_bot->GetHullHeight() > (g_pGameRules->GetViewVectors()->m_vDuckHullMax.z))
-					return -1.0f;
-
 				// these areas are very slow to move through
 				float penalty = (m_route == FASTEST_ROUTE) ? 20.0f : 5.0f;
 
@@ -252,13 +259,13 @@ private:
 */
 static bool FindDescendingLadderApproachPoint(const CNavLadder *ladder, const CNavArea *area, Vector *pos)
 {
-	*pos = ladder->m_top - ladder->GetNormal() * 2.0f * HalfHumanWidth;
+	*pos = ladder->m_top - ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth;
 
 	trace_t result;
 	UTIL_TraceLine(ladder->m_top, *pos, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &result);
 	if (result.fraction < 1.0f)
 	{
-		*pos = ladder->m_top + ladder->GetNormal() * 2.0f * HalfHumanWidth;
+		*pos = ladder->m_top + ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth;
 
 		area->GetClosestPointOnArea(*pos, pos);
 	}
@@ -2053,12 +2060,32 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 						ladder->m_topLeftArea == area ||
 						ladder->m_topRightArea == area)
 					{
-						//to->ladder = ladder;
+						AI_Waypoint_t *baseway = nullptr;
+						AI_Waypoint_t *ladderway = nullptr;
+						AI_Waypoint_t *topway = nullptr;
+						
 						float flYaw = UTIL_VecToYaw(-ladder->GetNormal());
-						Vector bottom = ladder->m_bottom + ladder->GetNormal() * 2.0f * HalfHumanWidth;
-						Vector top = ladder->m_top + ladder->GetNormal() * 2.0f * HalfHumanWidth;
+						Vector bottom = ladder->m_bottom + ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth;
+						Vector top = ladder->m_top + (ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth) + Vector(0, 0, 2.0f);
 
-						newway = BuildClimbRoute(bottom, top, nullptr, endFlags, NO_NODE, buildFlags, flYaw);
+						baseway = BuildLocalRoute(fromclosestpoint, bottom, nullptr, 0, NO_NODE, buildFlags, goalTolerance);
+						if (!baseway)
+							return nullptr;
+
+						ladderway = BuildClimbRoute(bottom, top, nullptr, endFlags, NO_NODE, buildFlags, flYaw);
+						if (!ladderway)
+							return nullptr;
+
+						Vector approach;
+						FindDescendingLadderApproachPoint(ladder, area, &approach);
+
+						topway = BuildLocalRoute(top, approach, nullptr, 0, NO_NODE, buildFlags | bits_BUILD_CLIMB, goalTolerance);
+						if (!topway)
+							return nullptr;
+
+						AddWaypointLists(baseway, ladderway);
+						AddWaypointLists(baseway, topway);
+						newway = baseway;
 						break;
 					}
 				}
@@ -2085,8 +2112,8 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 						AI_Waypoint_t *baseway = nullptr;
 						AI_Waypoint_t *ladderway = nullptr;
 						float flYaw = UTIL_VecToYaw(-ladder->GetNormal());
-						Vector bottom = ladder->m_bottom + ladder->GetNormal() * 2.0f * HalfHumanWidth;
-						Vector top = ladder->m_top + ladder->GetNormal() * 2.0f * HalfHumanWidth;
+						Vector bottom = ladder->m_bottom + ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth;
+						Vector top = ladder->m_top + ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth;
 
 						Vector approach;
 						FindDescendingLadderApproachPoint(ladder, from, &approach);

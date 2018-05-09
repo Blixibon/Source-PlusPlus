@@ -1154,6 +1154,24 @@ void C_BaseFlex::SetupWeights( const matrix3x4_t *pBoneToWorld, int nFlexWeightC
 	if ( SetupGlobalWeights( pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights ) )
 	{
 		SetupLocalWeights( pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights );
+
+		// FIXME: this needs to get the mouth index from the shader
+		const studiohdr_t *pHdr = GetModelPtr()->GetRenderHdr();
+
+		
+		if (pHdr && pHdr->nummouths > 0)
+		{
+			mstudiomouth_t *pMouth = pHdr->pMouth(0);
+			float fIllum = pFlexWeights[pMouth->flexdesc];
+			if (fIllum < 0) fIllum = 0;
+			if (fIllum > 1) fIllum = 1;
+
+			m_flMouthOpenPct = fIllum;
+		}
+		else
+		{
+			m_flMouthOpenPct = 0.0f;
+		}
 	}
 }
 

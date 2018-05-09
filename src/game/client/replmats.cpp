@@ -205,7 +205,7 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 
 		if (pkvMat->LoadFromFile(filesystem, szFileName, NULL))
 		{
-			if (!Q_strcmp(pkvMat->GetName(), pszOldShadername))
+			if (Q_stristr(pszOldShadername, pkvMat->GetName()) == pszOldShadername)
 				bFound = true;
 		}
 

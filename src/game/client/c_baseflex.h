@@ -258,7 +258,6 @@ private:
 	LocalFlexController_t				m_iEyeUpdown;
 	LocalFlexController_t				m_iEyeRightleft;
 	bool			m_bSearchedForEyeFlexes;
-	int				m_iMouthAttachment;
 
 	float			m_flFlexDelayTime;
 	float			*m_flFlexDelayedWeight;
@@ -272,6 +271,8 @@ private:
 protected:
 
 	Emphasized_Phoneme m_PhonemeClasses[ NUM_PHONEME_CLASSES ];
+	int				m_iMouthAttachment;
+	float			m_flMouthOpenPct;
 
 private:
 

@@ -101,6 +101,8 @@ $Project
         $Lib	mathlib
         $Lib	shaderlib
     }
+	
+	$Shaders "pp_shaders.txt"
 
 	$File	"buildsdkshaders.bat"
 	$File	"buildshaders.bat"
