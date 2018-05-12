@@ -6,6 +6,8 @@
 // STATIC: "LIGHTMAPWATERFOG"           "0..1"
 // STATIC: "FLOWMAP"					"0..1"
 
+// DYNAMIC: "CASCADED_SHADOW"			"0..1"	[ps30]
+
 // Multitexture and basetexture are mutually exclusive.
 // SKIP: $MULTITEXTURE && $BASETEXTURE
 
@@ -15,15 +17,22 @@
 // Have to have the flashlight on to get flashlightshadows.
 // SKIP: ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTSHADOWS == 1 )
 
+// SKIP: ($CASCADED_SHADOW) && (!$LIGHTMAPWATERFOG)
+// SKIP: ($CASCADED_SHADOW) && ($FLASHLIGHT)
+
 // basetexture doesn't work with flashlight or lightmapwaterfog.  multitexture doesn't either.  We don't use basetexture or multitexture in newer code and instead use flowmap and flashlight.
 // SKIP: ( $FLASHLIGHT || $LIGHTMAPWATERFOG ) && ( ( $BASETEXTURE && !$FLOWMAP ) || $MULTITEXTURE )
+
+#define LIGHTMAPWATERFOG 1
+#define CASCADED_SHADOW 1
+#define NEW_SHADOW_FILTERS 1
 
 #include "common_vs_fxc.h"
 
 const float4 cBumpTexCoordTransform[2]	:  register( SHADER_SPECIFIC_CONST_1 );
 const float4 TexOffsets	:  register( SHADER_SPECIFIC_CONST_3 );
 
-#if FLASHLIGHT
+#if FLASHLIGHT || CASCADED_SHADOW
 	const float4x4 g_FlashlightWorldToTexture : register( SHADER_SPECIFIC_CONST_4 );
 #endif
 
@@ -49,7 +58,7 @@ struct VS_OUTPUT
 	float4 vReflectXY_vRefractYX	: TEXCOORD2;
 	float4 vProjPos					: TEXCOORD3;
 	float3 worldPos					: TEXCOORD4;
-	#if FLASHLIGHT
+	#if FLASHLIGHT || CASCADED_SHADOW
 		float4 flashlightSpacePos       : TEXCOORD5;
 	#endif
 	#if MULTITEXTURE
@@ -148,7 +157,7 @@ VS_OUTPUT main( const VS_INPUT v )
 	}
 	#endif
 	
-	#if FLASHLIGHT
+	#if FLASHLIGHT || CASCADED_SHADOW
 	{
 		o.flashlightSpacePos = mul( float4( vWorldPos, 1.0f ), g_FlashlightWorldToTexture );
 	}

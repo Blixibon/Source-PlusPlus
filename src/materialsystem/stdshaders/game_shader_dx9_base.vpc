@@ -103,6 +103,7 @@ $Project
     }
 	
 	$Shaders "pp_shaders.txt"
+	$Shaders "pp_shaders_sm3.txt"
 
 	$File	"buildsdkshaders.bat"
 	$File	"buildshaders.bat"

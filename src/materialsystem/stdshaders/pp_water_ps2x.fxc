@@ -17,6 +17,7 @@
 
 // DYNAMIC: "FLASHLIGHTSHADOWS"             "0..1"  [ps20b]
 // DYNAMIC: "FLASHLIGHTSHADOWS"             "0..0"  [ps20] [ = 0; ]
+// DYNAMIC: "CASCADED_SHADOW"			"0..1"	[ps30]
 
 // Multitexture and basetexture are mutually exclusive.
 // SKIP: $MULTITEXTURE && $BASETEXTURE
@@ -27,12 +28,17 @@
 // Have to have the flashlight on to get flashlightshadows.
 // SKIP: ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTSHADOWS == 1 )
 
+// SKIP: ($CASCADED_SHADOW) && (!$LIGHTMAPWATERFOG)
+// SKIP: ($CASCADED_SHADOW) && ($FLASHLIGHT)
+
 // basetexture doesn't work with flashlight or lightmapwaterfog.  multitexture doesn't either.  We don't use basetexture or multitexture in newer code and instead use flowmap and flashlight.
 // SKIP: ( $FLASHLIGHT || $LIGHTMAPWATERFOG ) && ( ( $BASETEXTURE && !$FLOWMAP ) || $MULTITEXTURE )
 
 #ifdef _X360
 	#define SHADER_SRGB_READ 1
 #endif
+
+
 
 #include "common_ps_fxc.h"
 #include "common_fog_ps_fxc.h"
@@ -56,7 +62,7 @@ sampler LightmapSampler				: register( s3 );
 	sampler FlowNoiseSampler		: register( s5 );
 #endif
 
-#if FLASHLIGHT
+#if FLASHLIGHT || CASCADED_SHADOW
 	sampler FlashlightSampler		: register( s6 );
 	sampler ShadowDepthSampler      : register( s7 );
 	sampler RandRotSampler          : register( s8 );
@@ -116,6 +122,17 @@ const float3 g_vWorldToViewWater1 : register( c23 );
 float4	g_vInvViewportTransform			: register( c24 );
 const float	g_flForcedFresnelValue		: register( c25 );
 
+#if CASCADED_SHADOW
+#define g_CascadedForward         g_FlashlightPos
+
+#define g_AmbientLightIdentifier  g_FlashlightAttenuationFactors.rgb
+#define g_AmbientLightMin         g_vShadowTweaks.rgb
+#define g_AmbientLightScale       g_vShadowTweaks.a
+
+//const float4x4 g_CascadedCloseShadow	: register( c20 ); // through c23
+const float3 g_CascadedStepData : register(c27);
+#endif
+
 struct PS_INPUT
 {
 	float2 vBumpTexCoord			: TEXCOORD0;
@@ -123,7 +140,7 @@ struct PS_INPUT
 	float4 vReflectXY_vRefractYX	: TEXCOORD2;
 	float4 vProjPos					: TEXCOORD3;
 	float3 worldPos					: TEXCOORD4;
-#if FLASHLIGHT
+#if FLASHLIGHT || CASCADED_SHADOW
 	float4 flashlightSpacePos       : TEXCOORD5;
 #endif
 #if MULTITEXTURE
@@ -449,7 +466,24 @@ float4 main( PS_INPUT i ) : COLOR
 		float3 lightmapSample = LightMapSample( LightmapSampler, i.lightmapTexCoord.xy );
 		float3 vLightmapColor = lightmapSample * LIGHT_MAP_SCALE * LINEAR_LIGHT_SCALE;
 		vLightmappedWaterFogColor.xyz *= vLightmapColor.rgb;
-	#endif
+
+    #if CASCADED_SHADOW
+        float flShadow = DoCascadedShadow( ShadowDepthSampler, RandRotSampler, vNormalWs.xyz,
+			g_CascadedForward, i.flashlightSpacePos.xyz, i.worldPos.xyz, 0, g_CascadedStepData,
+			i.vProjPos.xy / i.vProjPos.z, float4( 0.0005, 0.0, 0.0, 0.0 ) );
+        
+    float3 lightDelta = vLightmapColor - g_AmbientLightMin;
+    lightDelta -= dot(g_AmbientLightIdentifier, lightDelta) * g_AmbientLightIdentifier;
+    float flShadowMask = lightDelta.x * lightDelta.x + lightDelta.y * lightDelta.y + lightDelta.z * lightDelta.z;
+    flShadowMask = 1.0f - saturate(flShadowMask * g_AmbientLightScale);
+	
+	//float flShadowMask = 1.0f - saturate( length( cross( g_AmbientLightIdentifier, diffuseLighting - g_AmbientLightMin ) )
+	//	* g_AmbientLightScale );
+	
+    vLightmappedWaterFogColor = min(vLightmappedWaterFogColor, lerp(vLightmappedWaterFogColor, float4(g_AmbientLightMin, 1.0), float4(flShadow * flShadowMask)));
+    #endif
+
+    #endif
 
 	// blend between refraction and fog color.
 	#if ABOVEWATER

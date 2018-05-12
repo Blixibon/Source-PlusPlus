@@ -27,7 +27,7 @@ set ARG_EXTRA=
 
 %BUILD_SHADER% pp_shaders		-game %GAMEDIR% -source %SOURCEDIR%
 REM %BUILD_SHADER% sdk_shaders		-game %GAMEDIR% -source %SOURCEDIR%
-%BUILD_SHADER% pp_shaders			-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
+%BUILD_SHADER% pp_shaders_sm3			-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
 REM %BUILD_SHADER% sdk_shaders			-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
 
 
