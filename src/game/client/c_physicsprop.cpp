@@ -16,6 +16,7 @@
 #include "c_physicsprop.h"
 #include "tier0/vprof.h"
 #include "ivrenderview.h"
+#include "c_lights.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -58,7 +59,10 @@ bool C_PhysicsProp::OnInternalDrawModel( ClientModelRenderInfo_t *pInfo )
 {
 	CreateModelInstance();
 
-	if ( r_PhysPropStaticLighting.GetBool() && m_bAwakeLastTime != m_bAwake )
+	bool bStaticLighting = r_PhysPropStaticLighting.GetBool() &&
+		(g_pCSMEnvLight == NULL || !g_pCSMEnvLight->IsCascadedShadowMappingEnabled());
+
+	if (bStaticLighting && m_bAwakeLastTime != m_bAwake )
 	{
 		if ( m_bAwakeLastTime && !m_bAwake )
 		{
@@ -82,7 +86,7 @@ bool C_PhysicsProp::OnInternalDrawModel( ClientModelRenderInfo_t *pInfo )
 		}
 	}
 
-	if ( !m_bAwake && r_PhysPropStaticLighting.GetBool() )
+	if ( !m_bAwake && bStaticLighting)
 	{
 		// going to sleep, have static lighting
 		pInfo->flags |= STUDIO_STATIC_LIGHTING;

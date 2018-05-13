@@ -1,0 +1,58 @@
+// envmaptint_fix
+"PP_Water"
+{
+	"<DX90"
+	{
+		"$fallbackmaterial" "nature/toxicslime002a_dx70"
+	}
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ 1.00 .89 .80 ]"
+	"$envmapcontrast" "1"
+	
+	$forceexpensive 1
+$normalmap "nature/toxicslime002a_normal"
+$flowmap "liquids/toxic_rep_flowmapr"
+$flow_normaluvscale 160.0
+$flow_worlduvscale 8
+$flow_timeintervalinseconds 1
+$flow_uvscrolldistance 0.1 
+$flow_bumpstrength 0.6
+$flow_noise_texture "liquids/water_noise"
+$flow_noise_scale 0.00082
+$flow_debug 0
+//$basetexture "liquids/toxicslime_color"
+$color_flow_uvscale 100
+$color_flow_timeintervalinseconds 4.0
+$color_flow_uvscrolldistance 0.11
+$color_flow_lerpexp 0.98 
+$color_flow_displacebynormalstrength 0.007 
+$reflecttexture _rt_WaterReflection
+$reflectamount "0.4"
+$reflecttint "{ 190 205 205 }"
+
+"$refracttexture" "_rt_WaterRefraction"
+	//"$refracttint" "{255 250 245}"
+
+$lightmapwaterfog 1
+$abovewater 1
+
+	"$surfaceprop" "slime"
+	"%keywords" "wasteland"
+	"%compilewater" 1
+
+	"$bottommaterial" "nature/toxicslime002a_beneath"
+
+	"$fogenable" 1
+	"$fogcolor" "{29 99 39}"
+	"$fogstart" 1.00
+	"$fogend" 100.00
+
+	
+	"$basetexture" "Nature/toxicslime002a"
+
+	
+
+	
+
+}

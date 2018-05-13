@@ -1,4 +1,5 @@
-"UnlitGeneric"
+"ShowZ"
 {
 	"$basetexture"			"_rt_CascadedShadowDepth"
+	$alphadepth		1
 }

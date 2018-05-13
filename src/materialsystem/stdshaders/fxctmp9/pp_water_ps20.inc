@@ -107,6 +107,27 @@ public:
 #endif
 	}
 private:
+	int m_nCHROMATIC;
+#ifdef _DEBUG
+	bool m_bCHROMATIC;
+#endif
+public:
+	void SetCHROMATIC( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nCHROMATIC = i;
+#ifdef _DEBUG
+		m_bCHROMATIC = true;
+#endif
+	}
+	void SetCHROMATIC( bool i )
+	{
+		m_nCHROMATIC = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bCHROMATIC = true;
+#endif
+	}
+private:
 	int m_nFLOWMAP;
 #ifdef _DEBUG
 	bool m_bFLOWMAP;
@@ -235,6 +256,10 @@ public:
 #endif // _DEBUG
 		m_nABOVEWATER = 0;
 #ifdef _DEBUG
+		m_bCHROMATIC = false;
+#endif // _DEBUG
+		m_nCHROMATIC = 0;
+#ifdef _DEBUG
 		m_bFLOWMAP = false;
 #endif // _DEBUG
 		m_nFLOWMAP = 0;
@@ -260,13 +285,13 @@ public:
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllStaticVarsDefined = m_bBASETEXTURE && m_bMULTITEXTURE && m_bREFLECT && m_bREFRACT && m_bABOVEWATER && m_bFLOWMAP && m_bFLOW_DEBUG && m_bFLASHLIGHT && m_bLIGHTMAPWATERFOG && m_bFORCEFRESNEL;
+		bool bAllStaticVarsDefined = m_bBASETEXTURE && m_bMULTITEXTURE && m_bREFLECT && m_bREFRACT && m_bABOVEWATER && m_bCHROMATIC && m_bFLOWMAP && m_bFLOW_DEBUG && m_bFLASHLIGHT && m_bLIGHTMAPWATERFOG && m_bFORCEFRESNEL;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 2 * m_nBASETEXTURE ) + ( 4 * m_nMULTITEXTURE ) + ( 8 * m_nREFLECT ) + ( 16 * m_nREFRACT ) + ( 32 * m_nABOVEWATER ) + ( 64 * m_nFLOWMAP ) + ( 64 * m_nFLOW_DEBUG ) + ( 192 * m_nFLASHLIGHT ) + ( 192 * m_nLIGHTMAPWATERFOG ) + ( 192 * m_nFORCEFRESNEL ) + 0;
+		return ( 2 * m_nBASETEXTURE ) + ( 4 * m_nMULTITEXTURE ) + ( 8 * m_nREFLECT ) + ( 16 * m_nREFRACT ) + ( 32 * m_nABOVEWATER ) + ( 64 * m_nCHROMATIC ) + ( 128 * m_nFLOWMAP ) + ( 128 * m_nFLOW_DEBUG ) + ( 384 * m_nFLASHLIGHT ) + ( 384 * m_nLIGHTMAPWATERFOG ) + ( 384 * m_nFORCEFRESNEL ) + 0;
 	}
 };
-#define shaderStaticTest_pp_water_ps20 psh_forgot_to_set_static_BASETEXTURE + psh_forgot_to_set_static_MULTITEXTURE + psh_forgot_to_set_static_REFLECT + psh_forgot_to_set_static_REFRACT + psh_forgot_to_set_static_ABOVEWATER + psh_forgot_to_set_static_FLOWMAP + psh_forgot_to_set_static_FLOW_DEBUG + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_LIGHTMAPWATERFOG + psh_forgot_to_set_static_FORCEFRESNEL + 0
+#define shaderStaticTest_pp_water_ps20 psh_forgot_to_set_static_BASETEXTURE + psh_forgot_to_set_static_MULTITEXTURE + psh_forgot_to_set_static_REFLECT + psh_forgot_to_set_static_REFRACT + psh_forgot_to_set_static_ABOVEWATER + psh_forgot_to_set_static_CHROMATIC + psh_forgot_to_set_static_FLOWMAP + psh_forgot_to_set_static_FLOW_DEBUG + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_LIGHTMAPWATERFOG + psh_forgot_to_set_static_FORCEFRESNEL + 0
 class pp_water_ps20_Dynamic_Index
 {
 private:

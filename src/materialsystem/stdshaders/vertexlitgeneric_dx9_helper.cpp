@@ -1194,7 +1194,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				flParams[1] = GetFloatParam( info.m_nTreeSwayScrumbleFalloffExp, params, 1.0f );
 				flParams[2] = GetFloatParam( info.m_nTreeSwayFalloffExp, params, 1.0f );
 				flParams[3] = GetFloatParam( info.m_nTreeSwayScrumbleSpeed, params, 3.0f );
-				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_6, flParams );
+				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_3, flParams );
 
 				flParams[0] = GetFloatParam( info.m_nTreeSwaySpeedLerpStart, params, 3.0f );
 				flParams[1] = GetFloatParam( info.m_nTreeSwaySpeedLerpEnd, params, 6.0f );
@@ -1206,13 +1206,13 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				flParams[1] = GetFloatParam( info.m_nTreeSwayStartHeight, params, 0.1f );
 				flParams[2] = GetFloatParam( info.m_nTreeSwayRadius, params, 300.0f );
 				flParams[3] = GetFloatParam( info.m_nTreeSwayStartRadius, params, 0.2f );
-				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_8, flParams );
+				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_10, flParams );
 
 				flParams[0] = GetFloatParam( info.m_nTreeSwaySpeed, params, 1.0f );
 				flParams[1] = GetFloatParam( info.m_nTreeSwayStrength, params, 10.0f );
 				flParams[2] = GetFloatParam( info.m_nTreeSwayScrumbleFrequency, params, 12.0f );
 				flParams[3] = GetFloatParam( info.m_nTreeSwayScrumbleStrength, params, 10.0f );
-				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_9, flParams );
+				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_11, flParams );
 			}
 
 			pContextData->m_SemiStaticCmdsOut.End();
@@ -1566,7 +1566,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			const Vector& windDir = pShaderAPI->GetVectorRenderingParameter( VECTOR_RENDERPARM_WIND_DIRECTION );
 			fTempConst[2] = windDir.x;
 			fTempConst[3] = windDir.y;
-			DynamicCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, fTempConst );
+			DynamicCmdsOut.SetVertexShaderConstant(218, fTempConst );
 		}
 
 		DynamicCmdsOut.End();

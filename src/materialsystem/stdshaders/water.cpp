@@ -19,6 +19,9 @@
 #include "pp_water_ps20.inc"
 #include "pp_water_ps20b.inc"
 
+#include "pp_water_vs30.inc"
+#include "pp_water_ps30.inc"
+
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
 
@@ -79,6 +82,8 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 		SHADER_PARAM( COLOR_FLOW_TIMEINTERVALINSECONDS, SHADER_PARAM_TYPE_FLOAT, "", "" )
 		SHADER_PARAM( COLOR_FLOW_UVSCROLLDISTANCE, SHADER_PARAM_TYPE_FLOAT, "", "" )
 		SHADER_PARAM( COLOR_FLOW_LERPEXP, SHADER_PARAM_TYPE_FLOAT, "", "" )
+
+		SHADER_PARAM(CHROMATICSCALE, SHADER_PARAM_TYPE_FLOAT, "0.0", "Strength of chromatic dispersion")
 	END_SHADER_PARAMS
 
 	SHADER_INIT_PARAMS()
@@ -117,6 +122,11 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 		if( !params[REFLECTBLENDFACTOR]->IsDefined() )
 		{
 			params[REFLECTBLENDFACTOR]->SetFloatValue( 1.0f );
+		}
+
+		if (!params[CHROMATICSCALE]->IsDefined())
+		{
+			params[CHROMATICSCALE]->SetFloatValue(0.0);
 		}
 
 		InitFloatParam( FLOW_WORLDUVSCALE, params, 1.0f );
@@ -212,12 +222,14 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 		params[SCROLL1]->GetVecValue( Scroll1.Base(), 4 );
 
 		bool bHasFlowmap = params[FLOWMAP]->IsTexture();
-		bool hasFlashlight = UsingFlashlight( params );
+		bool hasFlashlight = false/*UsingFlashlight( params )*/;
 		bool bHasBaseTexture = params[BASETEXTURE]->IsTexture();
 		bool bHasMultiTexture = fabs( Scroll1.x ) > 0.0f;
 		bool bLightmapWaterFog = ( params[LIGHTMAPWATERFOG]->GetIntValue() != 0 );
 
 		bool bForceFresnel = ( params[FORCEFRESNEL]->GetFloatValue() != -1.0f );
+
+		bool bChromatic = (params[CHROMATICSCALE]->GetFloatValue() != 0.0f);
 
 		if ( bHasFlowmap )
 		{
@@ -299,46 +311,80 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 			}
 			pShaderShadow->VertexShaderVertexFormat( fmt, numTexCoords, 0, 0 );
 			
-			DECLARE_STATIC_VERTEX_SHADER( pp_water_vs20 );
-			SET_STATIC_VERTEX_SHADER_COMBO( MULTITEXTURE, bHasMultiTexture );
-			SET_STATIC_VERTEX_SHADER_COMBO( BASETEXTURE, bHasBaseTexture );
-			SET_STATIC_VERTEX_SHADER_COMBO( FLASHLIGHT, hasFlashlight );
-			SET_STATIC_VERTEX_SHADER_COMBO( LIGHTMAPWATERFOG, bLightmapWaterFog );
-			SET_STATIC_VERTEX_SHADER_COMBO( FLOWMAP, bHasFlowmap );
-			SET_STATIC_VERTEX_SHADER( pp_water_vs20 );
-
-			// "REFLECT" "0..1"
-			// "REFRACT" "0..1"
-			
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			if (!g_pHardwareConfig->SupportsShaderModel_3_0())
 			{
-				DECLARE_STATIC_PIXEL_SHADER( pp_water_ps20b );
-				SET_STATIC_PIXEL_SHADER_COMBO( REFLECT,  bReflection );
-				SET_STATIC_PIXEL_SHADER_COMBO( REFRACT,  bRefraction );
-				SET_STATIC_PIXEL_SHADER_COMBO( ABOVEWATER,  params[ABOVEWATER]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER_COMBO( MULTITEXTURE, bHasMultiTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( BASETEXTURE, bHasBaseTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, bHasFlowmap );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_DEBUG, clamp( params[ FLOW_DEBUG ]->GetIntValue(), 0, 2 ) );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, hasFlashlight );
-				SET_STATIC_PIXEL_SHADER_COMBO( LIGHTMAPWATERFOG, bLightmapWaterFog );
-				SET_STATIC_PIXEL_SHADER_COMBO( FORCEFRESNEL, bForceFresnel );
-				SET_STATIC_PIXEL_SHADER( pp_water_ps20b );
+				DECLARE_STATIC_VERTEX_SHADER(pp_water_vs20);
+				SET_STATIC_VERTEX_SHADER_COMBO(MULTITEXTURE, bHasMultiTexture);
+				SET_STATIC_VERTEX_SHADER_COMBO(BASETEXTURE, bHasBaseTexture);
+				SET_STATIC_VERTEX_SHADER_COMBO(FLASHLIGHT, hasFlashlight);
+				SET_STATIC_VERTEX_SHADER_COMBO(LIGHTMAPWATERFOG, bLightmapWaterFog);
+				SET_STATIC_VERTEX_SHADER_COMBO(FLOWMAP, bHasFlowmap);
+				SET_STATIC_VERTEX_SHADER(pp_water_vs20);
+
+				// "REFLECT" "0..1"
+				// "REFRACT" "0..1"
+
+				if (g_pHardwareConfig->SupportsPixelShaders_2_b())
+				{
+					DECLARE_STATIC_PIXEL_SHADER(pp_water_ps20b);
+					SET_STATIC_PIXEL_SHADER_COMBO(REFLECT, bReflection);
+					SET_STATIC_PIXEL_SHADER_COMBO(REFRACT, bRefraction);
+					SET_STATIC_PIXEL_SHADER_COMBO(ABOVEWATER, params[ABOVEWATER]->GetIntValue());
+					SET_STATIC_PIXEL_SHADER_COMBO(MULTITEXTURE, bHasMultiTexture);
+					SET_STATIC_PIXEL_SHADER_COMBO(BASETEXTURE, bHasBaseTexture);
+					SET_STATIC_PIXEL_SHADER_COMBO(FLOWMAP, bHasFlowmap);
+					SET_STATIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, clamp(params[FLOW_DEBUG]->GetIntValue(), 0, 2));
+					SET_STATIC_PIXEL_SHADER_COMBO(FLASHLIGHT, hasFlashlight);
+					SET_STATIC_PIXEL_SHADER_COMBO(LIGHTMAPWATERFOG, bLightmapWaterFog);
+					SET_STATIC_PIXEL_SHADER_COMBO(FORCEFRESNEL, bForceFresnel);
+					SET_STATIC_PIXEL_SHADER_COMBO(CHROMATIC, bChromatic);
+					SET_STATIC_PIXEL_SHADER(pp_water_ps20b);
+				}
+				else
+				{
+					DECLARE_STATIC_PIXEL_SHADER(pp_water_ps20);
+					SET_STATIC_PIXEL_SHADER_COMBO(REFLECT, bReflection);
+					SET_STATIC_PIXEL_SHADER_COMBO(REFRACT, bRefraction);
+					SET_STATIC_PIXEL_SHADER_COMBO(ABOVEWATER, params[ABOVEWATER]->GetIntValue());
+					SET_STATIC_PIXEL_SHADER_COMBO(MULTITEXTURE, bHasMultiTexture);
+					SET_STATIC_PIXEL_SHADER_COMBO(BASETEXTURE, bHasBaseTexture);
+					SET_STATIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, clamp(params[FLOW_DEBUG]->GetIntValue(), 0, 2));
+					SET_STATIC_PIXEL_SHADER_COMBO(FORCEFRESNEL, bForceFresnel);
+					SET_STATIC_PIXEL_SHADER_COMBO(LIGHTMAPWATERFOG, 0);
+					SET_STATIC_PIXEL_SHADER_COMBO(FLOWMAP, 0);
+					SET_STATIC_PIXEL_SHADER_COMBO(FLASHLIGHT, 0);
+					SET_STATIC_PIXEL_SHADER_COMBO(CHROMATIC, bChromatic);
+					SET_STATIC_PIXEL_SHADER(pp_water_ps20);
+				}
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( pp_water_ps20 );
-				SET_STATIC_PIXEL_SHADER_COMBO( REFLECT,  bReflection );
-				SET_STATIC_PIXEL_SHADER_COMBO( REFRACT,  bRefraction );
-				SET_STATIC_PIXEL_SHADER_COMBO( ABOVEWATER,  params[ABOVEWATER]->GetIntValue() );
-				SET_STATIC_PIXEL_SHADER_COMBO( MULTITEXTURE, bHasMultiTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( BASETEXTURE, bHasBaseTexture );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_DEBUG, clamp( params[ FLOW_DEBUG ]->GetIntValue(), 0, 2 ) );
-				SET_STATIC_PIXEL_SHADER_COMBO( FORCEFRESNEL, bForceFresnel );
-				SET_STATIC_PIXEL_SHADER_COMBO( LIGHTMAPWATERFOG, 0 );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, 0 );
-				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT, 0 );
-				SET_STATIC_PIXEL_SHADER( pp_water_ps20 );
+				DECLARE_STATIC_VERTEX_SHADER(pp_water_vs30);
+				SET_STATIC_VERTEX_SHADER_COMBO(MULTITEXTURE, bHasMultiTexture);
+				SET_STATIC_VERTEX_SHADER_COMBO(BASETEXTURE, bHasBaseTexture);
+				SET_STATIC_VERTEX_SHADER_COMBO(FLASHLIGHT, hasFlashlight);
+				SET_STATIC_VERTEX_SHADER_COMBO(LIGHTMAPWATERFOG, bLightmapWaterFog);
+				SET_STATIC_VERTEX_SHADER_COMBO(FLOWMAP, bHasFlowmap);
+				SET_STATIC_VERTEX_SHADER(pp_water_vs30);
+
+				// "REFLECT" "0..1"
+				// "REFRACT" "0..1"
+
+
+				DECLARE_STATIC_PIXEL_SHADER(pp_water_ps30);
+				SET_STATIC_PIXEL_SHADER_COMBO(REFLECT, bReflection);
+				SET_STATIC_PIXEL_SHADER_COMBO(REFRACT, bRefraction);
+				SET_STATIC_PIXEL_SHADER_COMBO(ABOVEWATER, params[ABOVEWATER]->GetIntValue());
+				SET_STATIC_PIXEL_SHADER_COMBO(MULTITEXTURE, bHasMultiTexture);
+				SET_STATIC_PIXEL_SHADER_COMBO(BASETEXTURE, bHasBaseTexture);
+				SET_STATIC_PIXEL_SHADER_COMBO(FLOWMAP, bHasFlowmap);
+				SET_STATIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, clamp(params[FLOW_DEBUG]->GetIntValue(), 0, 2));
+				SET_STATIC_PIXEL_SHADER_COMBO(FLASHLIGHT, hasFlashlight);
+				SET_STATIC_PIXEL_SHADER_COMBO(LIGHTMAPWATERFOG, bLightmapWaterFog);
+				SET_STATIC_PIXEL_SHADER_COMBO(FORCEFRESNEL, bForceFresnel);
+				SET_STATIC_PIXEL_SHADER_COMBO(CHROMATIC, bChromatic);
+				SET_STATIC_PIXEL_SHADER(pp_water_ps30);
+
 			}
 
 			FogToFogColor();
@@ -519,8 +565,11 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 				SetPixelShaderConstant( 9, FLOWMAPSCROLLRATE );
 			}
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( pp_water_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( pp_water_vs20 );
+			float fFocusOffset[4];
+			fFocusOffset[0] = params[CHROMATICSCALE]->GetFloatValue();
+			fFocusOffset[1] = fFocusOffset[2] = fFocusOffset[3] = fFocusOffset[0];
+			pShaderAPI->SetPixelShaderConstant(PSREG_CONSTANT_27, fFocusOffset);
+
 			
 			CCommandBufferBuilder< CFixedCommandStorageBuffer< 1000 > > DynamicCmdsOut;
 
@@ -565,19 +614,38 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 			vViewportMad[3] = ( float )viewport.m_nTopLeftY / ( float )nRtHeight;
 			DynamicCmdsOut.SetPixelShaderConstant( 24, vViewportMad, 1 );
 
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			if (!g_pHardwareConfig->SupportsShaderModel_3_0())
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( pp_water_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, ( pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z ) );
-				SET_DYNAMIC_PIXEL_SHADER( pp_water_ps20b );
+
+				DECLARE_DYNAMIC_VERTEX_SHADER(pp_water_vs20);
+				SET_DYNAMIC_VERTEX_SHADER(pp_water_vs20);
+
+				if (g_pHardwareConfig->SupportsPixelShaders_2_b())
+				{
+					DECLARE_DYNAMIC_PIXEL_SHADER(pp_water_ps20b);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(FLASHLIGHTSHADOWS, bFlashlightShadows);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, (pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z));
+					SET_DYNAMIC_PIXEL_SHADER(pp_water_ps20b);
+				}
+				else
+				{
+					DECLARE_DYNAMIC_PIXEL_SHADER(pp_water_ps20);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(FLASHLIGHTSHADOWS, 0);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, (pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z));
+					SET_DYNAMIC_PIXEL_SHADER(pp_water_ps20);
+				}
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( pp_water_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, 0 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, ( pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z ) );
-				SET_DYNAMIC_PIXEL_SHADER( pp_water_ps20 );
+				DECLARE_DYNAMIC_VERTEX_SHADER(pp_water_vs30);
+				SET_DYNAMIC_VERTEX_SHADER(pp_water_vs30);
+
+
+				DECLARE_DYNAMIC_PIXEL_SHADER(pp_water_ps30);
+				SET_DYNAMIC_PIXEL_SHADER_COMBO(FLASHLIGHTSHADOWS, bFlashlightShadows);
+				SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, (pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z));
+				SET_DYNAMIC_PIXEL_SHADER(pp_water_ps30);
+
 			}
 
 			DynamicCmdsOut.End();

@@ -107,6 +107,48 @@ public:
 #endif
 	}
 private:
+	int m_nCHROMATIC;
+#ifdef _DEBUG
+	bool m_bCHROMATIC;
+#endif
+public:
+	void SetCHROMATIC( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nCHROMATIC = i;
+#ifdef _DEBUG
+		m_bCHROMATIC = true;
+#endif
+	}
+	void SetCHROMATIC( bool i )
+	{
+		m_nCHROMATIC = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bCHROMATIC = true;
+#endif
+	}
+private:
+	int m_nFLOWMAP;
+#ifdef _DEBUG
+	bool m_bFLOWMAP;
+#endif
+public:
+	void SetFLOWMAP( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nFLOWMAP = i;
+#ifdef _DEBUG
+		m_bFLOWMAP = true;
+#endif
+	}
+	void SetFLOWMAP( bool i )
+	{
+		m_nFLOWMAP = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bFLOWMAP = true;
+#endif
+	}
+private:
 	int m_nFLOW_DEBUG;
 #ifdef _DEBUG
 	bool m_bFLOW_DEBUG;
@@ -128,6 +170,48 @@ public:
 #endif
 	}
 private:
+	int m_nFLASHLIGHT;
+#ifdef _DEBUG
+	bool m_bFLASHLIGHT;
+#endif
+public:
+	void SetFLASHLIGHT( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nFLASHLIGHT = i;
+#ifdef _DEBUG
+		m_bFLASHLIGHT = true;
+#endif
+	}
+	void SetFLASHLIGHT( bool i )
+	{
+		m_nFLASHLIGHT = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bFLASHLIGHT = true;
+#endif
+	}
+private:
+	int m_nLIGHTMAPWATERFOG;
+#ifdef _DEBUG
+	bool m_bLIGHTMAPWATERFOG;
+#endif
+public:
+	void SetLIGHTMAPWATERFOG( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nLIGHTMAPWATERFOG = i;
+#ifdef _DEBUG
+		m_bLIGHTMAPWATERFOG = true;
+#endif
+	}
+	void SetLIGHTMAPWATERFOG( bool i )
+	{
+		m_nLIGHTMAPWATERFOG = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bLIGHTMAPWATERFOG = true;
+#endif
+	}
+private:
 	int m_nFORCEFRESNEL;
 #ifdef _DEBUG
 	bool m_bFORCEFRESNEL;
@@ -146,6 +230,27 @@ public:
 		m_nFORCEFRESNEL = i ? 1 : 0;
 #ifdef _DEBUG
 		m_bFORCEFRESNEL = true;
+#endif
+	}
+private:
+	int m_nCONVERT_TO_SRGB;
+#ifdef _DEBUG
+	bool m_bCONVERT_TO_SRGB;
+#endif
+public:
+	void SetCONVERT_TO_SRGB( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nCONVERT_TO_SRGB = i;
+#ifdef _DEBUG
+		m_bCONVERT_TO_SRGB = true;
+#endif
+	}
+	void SetCONVERT_TO_SRGB( bool i )
+	{
+		m_nCONVERT_TO_SRGB = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bCONVERT_TO_SRGB = true;
 #endif
 	}
 public:
@@ -172,28 +277,69 @@ public:
 #endif // _DEBUG
 		m_nABOVEWATER = 0;
 #ifdef _DEBUG
+		m_bCHROMATIC = false;
+#endif // _DEBUG
+		m_nCHROMATIC = 0;
+#ifdef _DEBUG
+		m_bFLOWMAP = false;
+#endif // _DEBUG
+		m_nFLOWMAP = 0;
+#ifdef _DEBUG
 		m_bFLOW_DEBUG = false;
 #endif // _DEBUG
 		m_nFLOW_DEBUG = 0;
 #ifdef _DEBUG
+		m_bFLASHLIGHT = false;
+#endif // _DEBUG
+		m_nFLASHLIGHT = 0;
+#ifdef _DEBUG
+		m_bLIGHTMAPWATERFOG = false;
+#endif // _DEBUG
+		m_nLIGHTMAPWATERFOG = 0;
+#ifdef _DEBUG
 		m_bFORCEFRESNEL = false;
 #endif // _DEBUG
 		m_nFORCEFRESNEL = 0;
+#ifdef _DEBUG
+		m_bCONVERT_TO_SRGB = true;
+#endif // _DEBUG
+		m_nCONVERT_TO_SRGB =  g_pHardwareConfig->NeedsShaderSRGBConversion();
 	}
 	int GetIndex()
 	{
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllStaticVarsDefined = m_bBASETEXTURE && m_bMULTITEXTURE && m_bREFLECT && m_bREFRACT && m_bABOVEWATER && m_bFLOW_DEBUG && m_bFORCEFRESNEL;
+		bool bAllStaticVarsDefined = m_bBASETEXTURE && m_bMULTITEXTURE && m_bREFLECT && m_bREFRACT && m_bABOVEWATER && m_bCHROMATIC && m_bFLOWMAP && m_bFLOW_DEBUG && m_bFLASHLIGHT && m_bLIGHTMAPWATERFOG && m_bFORCEFRESNEL && m_bCONVERT_TO_SRGB;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 2 * m_nBASETEXTURE ) + ( 4 * m_nMULTITEXTURE ) + ( 8 * m_nREFLECT ) + ( 16 * m_nREFRACT ) + ( 32 * m_nABOVEWATER ) + ( 64 * m_nFLOW_DEBUG ) + ( 192 * m_nFORCEFRESNEL ) + 0;
+		return ( 4 * m_nBASETEXTURE ) + ( 8 * m_nMULTITEXTURE ) + ( 16 * m_nREFLECT ) + ( 32 * m_nREFRACT ) + ( 64 * m_nABOVEWATER ) + ( 128 * m_nCHROMATIC ) + ( 256 * m_nFLOWMAP ) + ( 512 * m_nFLOW_DEBUG ) + ( 1536 * m_nFLASHLIGHT ) + ( 3072 * m_nLIGHTMAPWATERFOG ) + ( 6144 * m_nFORCEFRESNEL ) + ( 12288 * m_nCONVERT_TO_SRGB ) + 0;
 	}
 };
-#define shaderStaticTest_pp_water_ps30 psh_forgot_to_set_static_BASETEXTURE + psh_forgot_to_set_static_MULTITEXTURE + psh_forgot_to_set_static_REFLECT + psh_forgot_to_set_static_REFRACT + psh_forgot_to_set_static_ABOVEWATER + psh_forgot_to_set_static_FLOW_DEBUG + psh_forgot_to_set_static_FORCEFRESNEL + 0
+#define shaderStaticTest_pp_water_ps30 psh_forgot_to_set_static_BASETEXTURE + psh_forgot_to_set_static_MULTITEXTURE + psh_forgot_to_set_static_REFLECT + psh_forgot_to_set_static_REFRACT + psh_forgot_to_set_static_ABOVEWATER + psh_forgot_to_set_static_CHROMATIC + psh_forgot_to_set_static_FLOWMAP + psh_forgot_to_set_static_FLOW_DEBUG + psh_forgot_to_set_static_FLASHLIGHT + psh_forgot_to_set_static_LIGHTMAPWATERFOG + psh_forgot_to_set_static_FORCEFRESNEL + 0
 class pp_water_ps30_Dynamic_Index
 {
+private:
+	int m_nFLASHLIGHTSHADOWS;
+#ifdef _DEBUG
+	bool m_bFLASHLIGHTSHADOWS;
+#endif
+public:
+	void SetFLASHLIGHTSHADOWS( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nFLASHLIGHTSHADOWS = i;
+#ifdef _DEBUG
+		m_bFLASHLIGHTSHADOWS = true;
+#endif
+	}
+	void SetFLASHLIGHTSHADOWS( bool i )
+	{
+		m_nFLASHLIGHTSHADOWS = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bFLASHLIGHTSHADOWS = true;
+#endif
+	}
 private:
 	int m_nPIXELFOGTYPE;
 #ifdef _DEBUG
@@ -219,6 +365,10 @@ public:
 	pp_water_ps30_Dynamic_Index()
 	{
 #ifdef _DEBUG
+		m_bFLASHLIGHTSHADOWS = false;
+#endif // _DEBUG
+		m_nFLASHLIGHTSHADOWS = 0;
+#ifdef _DEBUG
 		m_bPIXELFOGTYPE = false;
 #endif // _DEBUG
 		m_nPIXELFOGTYPE = 0;
@@ -228,10 +378,10 @@ public:
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllDynamicVarsDefined = m_bPIXELFOGTYPE;
+		bool bAllDynamicVarsDefined = m_bFLASHLIGHTSHADOWS && m_bPIXELFOGTYPE;
 		Assert( bAllDynamicVarsDefined );
 #endif // _DEBUG
-		return ( 1 * m_nPIXELFOGTYPE ) + 0;
+		return ( 1 * m_nFLASHLIGHTSHADOWS ) + ( 2 * m_nPIXELFOGTYPE ) + 0;
 	}
 };
-#define shaderDynamicTest_pp_water_ps30 psh_forgot_to_set_dynamic_PIXELFOGTYPE + 0
+#define shaderDynamicTest_pp_water_ps30 psh_forgot_to_set_dynamic_FLASHLIGHTSHADOWS + psh_forgot_to_set_dynamic_PIXELFOGTYPE + 0

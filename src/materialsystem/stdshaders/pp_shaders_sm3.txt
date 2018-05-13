@@ -24,8 +24,8 @@ pp_shadow_ps2x.fxc
 pp_shadow_vs20.fxc
 pp_skin_ps20b.fxc
 pp_skin_vs20.fxc
-pp_splinerope_ps2x.fxc
-pp_splinerope_vs20.fxc
+//pp_splinerope_ps2x.fxc
+//pp_splinerope_vs20.fxc
 pp_teeth_bump_ps2x.fxc
 pp_teeth_bump_vs20.fxc
 pp_teeth_flashlight_ps2x.fxc

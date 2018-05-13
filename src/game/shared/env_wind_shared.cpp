@@ -74,10 +74,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#ifdef CLIENT_DLL
-static ConVar	cl_winddir("cl_winddir", "0", FCVAR_CHEAT, "Weather effects wind direction angle");
-static ConVar	cl_windspeed("cl_windspeed", "0", FCVAR_CHEAT, "Weather effects wind speed scalar");
-#endif
+//#ifdef CLIENT_DLL
+//static ConVar	cl_winddir("cl_winddir", "0", FCVAR_CHEAT, "Weather effects wind direction angle");
+//static ConVar	cl_windspeed("cl_windspeed", "0", FCVAR_CHEAT, "Weather effects wind speed scalar");
+//#endif
 
 //-----------------------------------------------------------------------------
 // globals
@@ -293,6 +293,8 @@ void ResetWindspeed()
 void GetWindspeedAtTime( float flTime, Vector &vecVelocity )
 {
 #ifdef CLIENT_DLL
+	ConVarRef cl_windspeed("cl_windspeed");
+	ConVarRef cl_winddir("cl_winddir");
 	if (cl_windspeed.GetFloat() > 0.0f)
 	{
 		// Compute the wind direction
@@ -304,7 +306,7 @@ void GetWindspeedAtTime( float flTime, Vector &vecVelocity )
 
 		AngleVectors(windangle, &s_vecWindVelocity);
 		VectorScale(s_vecWindVelocity, windspeed, s_vecWindVelocity);
-		return;
+		//return;
 	}
 #endif
 	// For now, ignore history and time.. fix later when we use wind to affect

@@ -17,6 +17,7 @@
 			// Our Crap
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			gamebin				|gameinfo_path|bin
+			game+mod			|all_source_engine_paths|sdk/sdk_pak.vpk
 
 			// Needed Crap
 			game				|all_source_engine_paths|hl2/hl2_english.vpk
