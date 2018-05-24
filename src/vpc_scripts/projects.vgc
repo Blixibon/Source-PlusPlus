@@ -25,6 +25,8 @@ $Project "client"
 	"game\client\client_dod.vpc"		[($WIN32||$POSIX) && $DOD]
 	"game\client\client_hl1.vpc"		[($WIN32||$POSIX) && $HL1]
 	"game\client\client_portal.vpc"		[($WIN32||$POSIX) && $PORTAL]
+	
+	"game\client\client_tf2classic.vpc"		[($WIN32||$POSIX) && $TF2CLASSIC]
 }
 
 $Project "fgdlib"
@@ -43,6 +45,9 @@ $Project "game_shader_dx9"
 	"materialsystem\stdshaders\game_shader_dx9_dod.vpc"			[!$DEFERRED && $DOD]
 	"materialsystem\stdshaders\game_shader_dx9_hl1.vpc"			[!$DEFERRED && $HL1]
 	"materialsystem\stdshaders\game_shader_dx9_portal.vpc"		[!$DEFERRED && $PORTAL]
+	
+	"materialsystem\stdshaders\game_shader_dx9_tf2classic.vpc"		[!$DEFERRED && $PORTAL]
+	
 	
 	"materialsystem\defshaders\game_shader_dx9_deferred.vpc" 	[$DEFERRED]
 }
@@ -68,6 +73,8 @@ $Project "server"
 	"game\server\server_dod.vpc"		[($WIN32||$POSIX) && $DOD]
 	"game\server\server_hl1.vpc"		[($WIN32||$POSIX) && $HL1]
 	"game\server\server_portal.vpc"		[($WIN32||$POSIX) && $PORTAL]
+	
+	"game\server\server_tf2classic.vpc"		[($WIN32||$POSIX) && $TF2CLASSIC]
 }
 
 $Project "mathlib"
