@@ -1334,7 +1334,7 @@ public:
 	// Object model index
 	short							m_nModelIndex;
 
-#ifdef TF_CLIENT_DLL
+#if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
 	int								m_nModelIndexOverrides[MAX_VISION_MODES];
 #endif
 

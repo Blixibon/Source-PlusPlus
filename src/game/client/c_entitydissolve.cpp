@@ -572,7 +572,7 @@ void C_EntityDissolve::ClientThink( void )
 			{
 				pRagdoll->ReleaseRagdoll();
 			}
-#ifdef TF_CLIENT_DLL
+#if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
 			else
 			{
 				// Hide the ragdoll -- don't actually delete it or else things get unhappy when

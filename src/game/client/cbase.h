@@ -26,6 +26,7 @@ struct studiohdr_t;
 #include <const.h>
 
 #include "string_t.h"
+#include "gamestringpool.h"
 
 // These two have to be included very early
 #include <predictableid.h>

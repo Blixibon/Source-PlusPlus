@@ -32,10 +32,19 @@
 #include "tf_gamerules.h"
 #endif
 
+#if defined( TF_CLASSIC_CLIENT )
+#include "tf_mainmenu.h"
+#include "tf_mainmenu_interface.h"
+#endif
+
 using namespace vgui;
 
 void MP3Player_Create( vgui::VPANEL parent );
 void MP3Player_Destroy();
+
+#if defined( TF_CLASSIC_CLIENT )
+void OverrideMainMenu();
+#endif
 
 #include <vgui/IInputInternal.h>
 vgui::IInputInternal *g_InputInternal = NULL;
@@ -205,6 +214,11 @@ void VGui_CreateGlobalPanels( void )
 	loadingdisc->Create( gameToolParent );
 	messagechars->Create( gameToolParent );
 
+#if defined (TF_CLASSIC_CLIENT)
+	MainMenu->Create(NULL);
+	OverrideMainMenu();
+#endif
+
 	// Debugging or related tool
 	fps->Create( toolParent );
 #if defined( TRACK_BLOCKING_IO )
@@ -240,6 +254,11 @@ void VGui_Shutdown()
 	messagechars->Destroy();
 	loadingdisc->Destroy();
 	internalCenterPrint->Destroy();
+
+#if defined (TF_CLASSIC_CLIENT)
+	//verPanel->Destroy();
+	//MainMenu->Destroy();
+#endif
 
 	if ( g_pClientMode )
 	{

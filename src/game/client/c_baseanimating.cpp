@@ -55,7 +55,7 @@
 #include "studio_stats.h"
 #include "tier1/callqueue.h"
 
-#ifdef TF_CLIENT_DLL
+#if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
 #include "c_baseobject.h"
 #endif
@@ -1318,7 +1318,7 @@ void C_BaseAnimating::DelayedInitModelEffects( void )
 							return;
 						}
 					}
-					#ifdef TF_CLIENT_DLL
+#if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 					// Halloween Hack for Sentry Rockets
 					if ( !V_strcmp( "sentry_rocket", pszParticleEffect ) )
 					{
@@ -3142,7 +3142,7 @@ int C_BaseAnimating::DrawModel( int flags )
 
 	int drawn = 0;
 
-#ifdef TF_CLIENT_DLL
+#if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 	ValidateModelIndex();
 #endif
 

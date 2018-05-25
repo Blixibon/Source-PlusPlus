@@ -10,7 +10,7 @@
 #include "team_control_point_master.h"
 #include "teamplayroundbased_gamerules.h"
 
-#if defined ( TF_DLL )
+#if defined ( TF_DLL ) || defined ( TF_CLASSIC )
 #include "tf_gamerules.h"
 #endif
 
@@ -50,6 +50,10 @@ BEGIN_DATADESC( CTeamControlPointMaster )
 
 	DEFINE_OUTPUT( m_OnWonByTeam1,	"OnWonByTeam1" ),
 	DEFINE_OUTPUT( m_OnWonByTeam2,	"OnWonByTeam2" ),
+#if defined ( TF_CLASSIC )
+	DEFINE_OUTPUT(m_OnWonByTeam3, "OnWonByTeam3"),
+	DEFINE_OUTPUT(m_OnWonByTeam4, "OnWonByTeam4"),
+#endif
 
 END_DATADESC()
 
@@ -676,18 +680,28 @@ void CTeamControlPointMaster::CheckWinConditions( void )
 		{
 			bool bWinner = true;
 
-#if defined( TF_DLL)
-			if ( TFGameRules() && TFGameRules()->IsInKothMode() )
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
+			if (TFGameRules() && TFGameRules()->IsInKothMode())
 			{
 				CTeamRoundTimer *pTimer = NULL;
-				if ( iWinners == TF_TEAM_RED )
+				if (iWinners == TF_TEAM_RED)
 				{
 					pTimer = TFGameRules()->GetRedKothRoundTimer();
 				}
-				else if ( iWinners == TF_TEAM_BLUE )
+				else if (iWinners == TF_TEAM_BLUE)
 				{
 					pTimer = TFGameRules()->GetBlueKothRoundTimer();
 				}
+#ifdef TF_CLASSIC
+				else if (iWinners == TF_TEAM_GREEN)
+				{
+					pTimer = TFGameRules()->GetGreenKothRoundTimer();
+				}
+				else if (iWinners == TF_TEAM_YELLOW)
+				{
+					pTimer = TFGameRules()->GetYellowKothRoundTimer();
+				}
+#endif
 
 				if ( pTimer )
 				{
@@ -915,6 +929,14 @@ void CTeamControlPointMaster::FireTeamWinOutput( int iWinningTeam )
 	case 2:
 		m_OnWonByTeam2.FireOutput(this,this);
 		break;
+#ifdef TF_CLASSIC
+	case 3:
+		m_OnWonByTeam3.FireOutput(this, this);
+		break;
+	case 4:
+		m_OnWonByTeam4.FireOutput(this, this);
+		break;
+#endif
 	default:
 		Assert(0);
 		break;

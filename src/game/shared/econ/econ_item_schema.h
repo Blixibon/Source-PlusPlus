@@ -6,6 +6,8 @@
 #endif
 
 #include "tf_shareddefs.h"
+#include "ihasattributes.h"
+#include "attribute_manager.h"
 
 enum
 {

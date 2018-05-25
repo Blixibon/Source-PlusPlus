@@ -19,7 +19,7 @@
 #define ROUND_TO_TICKS( t )		( TICK_INTERVAL * TIME_TO_TICKS( t ) )
 #define TICK_NEVER_THINK		(-1)
 
-#if defined( TF_DLL )
+#if defined( TF_DLL ) || defined( TF_CLASSIC )
 #define ANIMATION_CYCLE_BITS		10
 #else
 #define ANIMATION_CYCLE_BITS		15
@@ -102,7 +102,7 @@ public:
 
 #define MAX_CLIMB_SPEED		200
 
-#if defined(TF_DLL) || defined(TF_CLIENT_DLL)
+#if defined(TF_DLL) || defined(TF_CLIENT_DLL) || defined(TF_CLASSIC) || defined(TF_CLASSIC_CLIENT)
 	#define TIME_TO_DUCK		0.2
 	#define TIME_TO_DUCK_MS		200.0f
 #else
@@ -228,14 +228,19 @@ enum CastVote
 //Since this is decided by the gamerules (and it can be whatever number as long as its less than MAX_PLAYERS).
 #if defined( CSTRIKE_DLL )
 	#define MAX_PLAYERS				65  // Absolute max players supported
+#elif defined ( TF_CLASSIC ) || defined ( TF_CLASSIC_CLIENT )
+#define MAX_PLAYERS				128 
 #else
 	#define MAX_PLAYERS				33  // Absolute max players supported
 #endif
 
 #define MAX_PLACE_NAME_LENGTH		18
 
+#if defined ( TF_CLASSIC ) || defined ( TF_CLASSIC_CLIENT )
+#define MAX_FOV						100
+#else
 #define MAX_FOV						90
-
+#endif
 //===================================================================================================================
 // Team Defines
 #define TEAM_ANY				-2
@@ -887,7 +892,7 @@ enum
 //-----------------------------------------------------------------------------
 // Commentary Mode
 //-----------------------------------------------------------------------------
-#if defined(TF_DLL) || defined(TF_CLIENT_DLL)
+#if defined(TF_DLL) || defined(TF_CLIENT_DLL) || defined(TF_CLASSIC) || defined(TF_CLASSIC_CLIENT)
 #define GAME_HAS_NO_USE_KEY
 
 #if defined( SPROP_COORD )
@@ -929,7 +934,7 @@ enum
 	kActivityLookup_Missing = -1,			// has been searched for but wasn't found
 };
 
-#if defined(TF_DLL) || defined(TF_CLIENT_DLL)
+#if defined(TF_DLL) || defined(TF_CLIENT_DLL) || defined(TF_CLASSIC) || defined (TF_CLASSIC_CLIENT)
 //-----------------------------------------------------------------------------
 // Vision Filters.
 //-----------------------------------------------------------------------------

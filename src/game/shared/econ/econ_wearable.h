@@ -14,6 +14,8 @@
 #include "particles_new.h"
 #endif
 
+#include "econ_entity.h"
+
 #define MAX_WEARABLES_SENT_FROM_SERVER	5
 #define PARTICLE_MODIFY_STRING_SIZE		128
 

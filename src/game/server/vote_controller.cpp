@@ -12,7 +12,7 @@
 #include "gameinterface.h"
 #include "fmtstr.h"
 
-#ifdef TF_DLL
+#if defined TF_DLL || defined TF_CLASSIC
 #include "tf/tf_gamerules.h"
 #include "tf/tf_voteissues.h"
 #endif
@@ -331,7 +331,7 @@ int CVoteController::UpdateTransmitState( void )
 //-----------------------------------------------------------------------------
 bool CVoteController::IsVoteSystemEnabled( void )
 {
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
 	if ( TFGameRules() && TFGameRules()->IsCompetitiveMode() )
 		return false;
 #endif // TF_DLL
@@ -987,7 +987,7 @@ void CVoteController::AddPlayerToNameLockedList( CSteamID steamID, float flDurat
 //-----------------------------------------------------------------------------
 bool CVoteController::IsPlayerBeingKicked( CBasePlayer *pPlayer )
 {
-#ifdef TF_DLL
+#if defined TF_DLL || defined TF_CLASSIC
 	if ( pPlayer && m_iActiveIssueIndex != INVALID_ISSUE )
 	{
 		CKickIssue *pKickIssue = dynamic_cast< CKickIssue* >( m_potentialIssues[m_iActiveIssueIndex] );
@@ -1136,7 +1136,7 @@ bool CBaseIssue::CanCallVote( int iEntIndex, const char *pszDetails, vote_create
 		return false;
 	}
 
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
 	if ( TFGameRules() && TFGameRules()->IsInWaitingForPlayers() && !TFGameRules()->IsInTournamentMode() )
 	{
 		nFailCode = VOTE_FAILED_WAITINGFORPLAYERS;

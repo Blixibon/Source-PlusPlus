@@ -33,6 +33,10 @@
 #endif // REPLAY_ENABLED
 #endif
 
+#if defined( TF_CLASSIC_CLIENT ) || defined( TF_CLASSIC )
+#include "tf_gamerules.h"
+#endif
+
 #if defined(TF_CLIENT_DLL) || defined(TF_DLL)
 	#include "tf_gamerules.h"
 	#include "tf_lobby.h"
@@ -174,7 +178,7 @@ ConVar mp_respawnwavetime( "mp_respawnwavetime", "10.0", FCVAR_NOTIFY | FCVAR_RE
 ConVar mp_capdeteriorate_time( "mp_capdeteriorate_time", "90.0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Time it takes for a full capture point to deteriorate." );
 ConVar mp_tournament( "mp_tournament", "0", FCVAR_REPLICATED | FCVAR_NOTIFY );
 
-#if defined( TF_CLIENT_DLL ) || defined( TF_DLL )
+#if defined( TF_CLIENT_DLL ) || defined( TF_DLL ) || defined ( TF_CLASSIC_CLIENT ) || defined ( TF_CLASSIC )
 ConVar mp_highlander( "mp_highlander", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "Allow only 1 of each player class type." );
 #endif
 
@@ -1051,7 +1055,7 @@ void CTeamplayRoundBasedRules::CheckRestartRound( void )
 				{
 					pFormat = ( iRestartDelay > 1 ) ? "#game_scramble_in_secs" : "#game_scramble_in_sec";
 
-#ifdef TF_DLL
+#if defined ( TF_DLL ) || defined ( TF_CLASSIC )
 					IGameEvent *event = gameeventmanager->CreateEvent( "teamplay_alert" );
 					if ( event )
 					{
@@ -1115,6 +1119,13 @@ bool CTeamplayRoundBasedRules::CheckTimeLimit( bool bAllowEnd /*= true*/ )
 		{
 			bSwitchDueToTime = false;
 		}
+
+#ifdef TF_CLASSIC
+		if (IsDeathmatch() == true)
+		{
+			bSwitchDueToTime = false;
+		}
+#endif
 
 		if ( GetTimeLeft() <= 0 || m_bChangelevelAfterStalemate || bSwitchDueToTime )
 		{
@@ -1829,7 +1840,7 @@ void CTeamplayRoundBasedRules::State_Think_TEAM_WIN( void )
 {
 	if ( gpGlobals->curtime > m_flStateTransitionTime )
 	{
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
 		IGameEvent *event = gameeventmanager->CreateEvent( "scorestats_accumulated_update" );
 		if ( event )
 		{
@@ -2118,29 +2129,104 @@ void CTeamplayRoundBasedRules::State_Think_STALEMATE( void )
 		return;
 	}
 
-	int iDeadTeam = TEAM_UNASSIGNED;
-	int iAliveTeam = TEAM_UNASSIGNED;
+#if defined ( TF_CLASSIC )
+	// If a game has more than 2 active teams, the old function won't work.
+	// Which is why we had to replace it with this one.
+	CUtlVector< CTeam* > pAliveTeams;
 
 	// If a team is fully killed, the other team has won
-	for ( int i = LAST_SHARED_TEAM+1; i < GetNumberOfTeams(); i++ )
+	for (int i = LAST_SHARED_TEAM + 1; i < GetNumberOfTeams(); i++)
 	{
 		CTeam *pTeam = GetGlobalTeam(i);
-		Assert( pTeam );
+		Assert(pTeam);
 
 		int iPlayers = pTeam->GetNumPlayers();
-		if ( iPlayers )
+		if (iPlayers)
 		{
 			bool bFoundLiveOne = false;
-			for ( int player = 0; player < iPlayers; player++ )
+			for (int player = 0; player < iPlayers; player++)
 			{
-				if ( pTeam->GetPlayer(player) && pTeam->GetPlayer(player)->IsAlive() )
+				if (pTeam->GetPlayer(player) && pTeam->GetPlayer(player)->IsAlive())
 				{
 					bFoundLiveOne = true;
 					break;
 				}
 			}
 
-			if ( bFoundLiveOne )
+			if (bFoundLiveOne && pTeam)
+			{
+				pAliveTeams.AddToTail(pTeam);
+			}
+		}
+	}
+
+	if (pAliveTeams.Count() == 1)
+	{
+		// The live team has won. 
+		int iAliveTeam = pAliveTeams[0]->GetTeamNumber();
+		bool bMasterHandled = false;
+		if (!m_bForceMapReset)
+		{
+			// We're not resetting the map, so give the winners control
+			// of all the points that were in play this round.
+			// Find the control point master.
+			CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
+			if (pMaster)
+			{
+				variant_t sVariant;
+				sVariant.SetInt(iAliveTeam);
+				pMaster->AcceptInput("SetWinnerAndForceCaps", NULL, NULL, sVariant, 0);
+				bMasterHandled = true;
+			}
+		}
+
+		if (!bMasterHandled)
+		{
+			SetWinningTeam(iAliveTeam, WINREASON_OPPONENTS_DEAD, m_bForceMapReset);
+		}
+	}
+	else if (pAliveTeams.IsEmpty() ||
+		(m_hStalemateTimer && TimerMayExpire() && m_hStalemateTimer->GetTimeRemaining() <= 0))
+	{
+		bool bFullReset = true;
+
+		CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
+
+		if (pMaster && pMaster->PlayingMiniRounds())
+		{
+			// we don't need to do a full map reset for maps with mini-rounds
+			bFullReset = false;
+		}
+
+		// Both teams are dead. Pure stalemate.
+		SetWinningTeam(TEAM_UNASSIGNED, WINREASON_STALEMATE, bFullReset, false);
+	}
+
+
+#else
+	int iDeadTeam = TEAM_UNASSIGNED;
+	int iAliveTeam = TEAM_UNASSIGNED;
+
+	// If a team is fully killed, the other team has won
+	for (int i = LAST_SHARED_TEAM + 1; i < GetNumberOfTeams(); i++)
+	{
+		CTeam *pTeam = GetGlobalTeam(i);
+		Assert(pTeam);
+
+		int iPlayers = pTeam->GetNumPlayers();
+		if (iPlayers)
+		{
+			bool bFoundLiveOne = false;
+			for (int player = 0; player < iPlayers; player++)
+			{
+				if (pTeam->GetPlayer(player) && pTeam->GetPlayer(player)->IsAlive())
+				{
+					bFoundLiveOne = true;
+					break;
+				}
+			}
+
+			if (bFoundLiveOne)
 			{
 				iAliveTeam = i;
 			}
@@ -2155,46 +2241,47 @@ void CTeamplayRoundBasedRules::State_Think_STALEMATE( void )
 		}
 	}
 
-	if ( iDeadTeam && iAliveTeam )
+	if (iDeadTeam && iAliveTeam)
 	{
 		// The live team has won. 
 		bool bMasterHandled = false;
-		if ( !m_bForceMapReset )
+		if (!m_bForceMapReset)
 		{
 			// We're not resetting the map, so give the winners control
 			// of all the points that were in play this round.
 			// Find the control point master.
 			CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
-			if ( pMaster )
+			if (pMaster)
 			{
 				variant_t sVariant;
-				sVariant.SetInt( iAliveTeam );
-				pMaster->AcceptInput( "SetWinnerAndForceCaps", NULL, NULL, sVariant, 0 );
+				sVariant.SetInt(iAliveTeam);
+				pMaster->AcceptInput("SetWinnerAndForceCaps", NULL, NULL, sVariant, 0);
 				bMasterHandled = true;
 			}
 		}
 
-		if ( !bMasterHandled )
+		if (!bMasterHandled)
 		{
-			SetWinningTeam( iAliveTeam, WINREASON_OPPONENTS_DEAD, m_bForceMapReset );
+			SetWinningTeam(iAliveTeam, WINREASON_OPPONENTS_DEAD, m_bForceMapReset);
 		}
 	}
-	else if ( ( iDeadTeam && iAliveTeam == TEAM_UNASSIGNED ) || 
-			  ( m_hStalemateTimer && TimerMayExpire() && m_hStalemateTimer->GetTimeRemaining() <= 0 ) )
+	else if ((iDeadTeam && iAliveTeam == TEAM_UNASSIGNED) ||
+		(m_hStalemateTimer && TimerMayExpire() && m_hStalemateTimer->GetTimeRemaining() <= 0))
 	{
 		bool bFullReset = true;
 
 		CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
 
-		if ( pMaster && pMaster->PlayingMiniRounds() )
+		if (pMaster && pMaster->PlayingMiniRounds())
 		{
 			// we don't need to do a full map reset for maps with mini-rounds
 			bFullReset = false;
 		}
 
 		// Both teams are dead. Pure stalemate.
-		SetWinningTeam( TEAM_UNASSIGNED, WINREASON_STALEMATE, bFullReset, false );
+		SetWinningTeam(TEAM_UNASSIGNED, WINREASON_STALEMATE, bFullReset, false);
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2404,7 +2491,7 @@ void CTeamplayRoundBasedRules::SetWinningTeam( int team, int iWinReason, bool bF
 		if ( nWinDelta >= mp_scrambleteams_auto_windifference.GetInt() )
 		{
 			// Let the server know we're going to scramble on round restart
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
 			IGameEvent *event = gameeventmanager->CreateEvent( "teamplay_alert" );
 			if ( event )
 			{
@@ -2991,6 +3078,14 @@ void CTeamplayRoundBasedRules::CheckRespawnWaves( void )
 //-----------------------------------------------------------------------------
 void CTeamplayRoundBasedRules::BalanceTeams( bool bRequireSwitcheesToBeDead )
 {
+#ifdef TF_CLASSIC
+	// No team balancing in DM since everybody should be on RED.
+	if (IsDeathmatch())
+	{
+		return;
+	}
+#endif
+
 	if ( mp_autoteambalance.GetBool() == false || ( IsInArenaMode() == true && tf_arena_use_queue.GetBool() == true ) )
 	{
 		return;
@@ -3201,7 +3296,7 @@ void CTeamplayRoundBasedRules::ResetScores( void )
 	m_bResetRoundsPlayed = true;
 	//m_flStopWatchTime = -1.0f;
 
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
 	IGameEvent *event = gameeventmanager->CreateEvent( "scorestats_accumulated_reset" );
 	if ( event )
 	{
@@ -3369,7 +3464,7 @@ string_t CTeamplayRoundBasedRules::GetLastPlayedRound( void )
 //-----------------------------------------------------------------------------
 CTeamRoundTimer *CTeamplayRoundBasedRules::GetActiveRoundTimer( void )
 {
-#ifdef TF_DLL
+#if defined( TF_DLL ) || defined ( TF_CLASSIC )
 	int iTimerEntIndex = ObjectiveResource()->GetTimerInHUD();
 	return ( dynamic_cast<CTeamRoundTimer *>( UTIL_EntityByIndex( iTimerEntIndex ) ) );
 #else
@@ -3418,7 +3513,7 @@ bool CTeamplayRoundBasedRules::IsInTournamentMode( void )
 //-----------------------------------------------------------------------------
 bool CTeamplayRoundBasedRules::IsInHighlanderMode( void )
 {
-#if defined( TF_CLIENT_DLL ) || defined( TF_DLL )
+#if defined( TF_CLIENT_DLL ) || defined( TF_DLL ) || defined ( TF_CLASSIC_CLIENT ) || defined ( TF_CLASSIC )
 	// can't use highlander mode and the queue system
 	if ( IsInArenaMode() == true && tf_arena_use_queue.GetBool() == true )
 		return false;
@@ -3497,7 +3592,14 @@ bool CTeamplayRoundBasedRules::WouldChangeUnbalanceTeams( int iNewTeam, int iCur
 
 	CTeam *pTeam;
 
-	for ( pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i) )
+#if defined( TF_CLASSIC ) || defined( TF_CLASSIC_CLIENT )
+	int iTeamCount = GetNumberOfTeams();
+	if (TFGameRules())
+		iTeamCount = TFGameRules()->IsFourTeamGame() ? 5 : 3;
+	for (pTeam = GetGlobalTeam(i); i <= iTeamCount; pTeam = GetGlobalTeam(++i))
+#else
+	for (pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i))
+#endif
 	{
 		if ( pTeam == pNewTeam )
 			continue;
@@ -3541,7 +3643,15 @@ bool CTeamplayRoundBasedRules::AreTeamsUnbalanced( int &iHeaviestTeam, int &iLig
 
 	int i = FIRST_GAME_TEAM;
 
-	for ( CTeam *pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i) )
+	
+#if defined( TF_CLASSIC ) || defined( TF_CLASSIC_CLIENT )
+	int iTeamCount = GetNumberOfTeams();
+	if (TFGameRules())
+		iTeamCount = TFGameRules()->IsFourTeamGame() ? 5 : 3;
+	for (CTeam *pTeam = GetGlobalTeam(i); i <= iTeamCount; pTeam = GetGlobalTeam(++i))
+#else
+	for (CTeam *pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i))
+#endif
 	{
 		int iNumPlayers = pTeam->GetNumPlayers();
 
