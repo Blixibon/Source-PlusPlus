@@ -21,6 +21,33 @@
         "background15" 1
         "test"         1
     }
+	
+	mount
+	{
+		280
+		{
+			"head"	"1"
+			"hl1"
+			{
+				"vpk"	"hl1_pak"
+			}
+		}
+		
+		360
+		{
+			"head"	"1"
+			
+			"hl1"
+			{
+				"vpk"	"hl1_pak"
+			}
+			
+			"hl1mp"
+			{
+				"vpk"	"hl1mp_pak"
+			}
+		}
+	}
 
 	FileSystem
 	{

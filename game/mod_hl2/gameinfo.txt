@@ -5,8 +5,19 @@
 	title2	""
 	type singleplayer_only
 	
-	hl2content 1
 	supportsvr	1
+	
+	mount
+	{
+		220
+		{
+			"head"	"0"
+			"hl2"
+			{
+			
+			}
+		}
+	}
 
 	FileSystem
 	{
