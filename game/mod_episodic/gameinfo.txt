@@ -5,7 +5,22 @@
 	title2	"== episode two =="
 	type singleplayer_only
 	
-	ep2content 1
+	mount
+	{
+		420
+		{
+			"head"	"1"
+			"episodic"
+			{
+				"vpk"	"ep1_pak"
+			}
+
+			"ep2"
+			{
+				"vpk"	"ep2_pak"
+			}
+		}
+	}
 	supportsvr	1
 
 	FileSystem
