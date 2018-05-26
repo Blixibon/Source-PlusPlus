@@ -20,6 +20,15 @@
 				"vpk"	"ep2_pak"
 			}
 		}
+		
+		gameinfoparent
+		{
+			"head"	"1"
+			"spp_shared"
+			{
+			
+			}
+		}
 	}
 	supportsvr	1
 
