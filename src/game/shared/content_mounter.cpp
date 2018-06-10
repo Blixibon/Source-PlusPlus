@@ -2,21 +2,36 @@
 #include "SteamCommon.h"
 #ifdef CLIENT_DLL
 #include "clientsteamcontext.h"
+#include "particlemgr.h"
 #endif
 #include "filesystem.h"
 #include "fmtstr.h"
 #include "content_mounter.h"
 #include "icommandline.h"
+#include "scenefilecache\ISceneFileCache.h"
 
 #ifdef _WIN32
-#include <Windows.h>
+#include "winlite.h"
 #endif
 
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
 
+extern ISceneFileCache *scenefilecache;
+
 #define GAMEINFOPATH_TOKEN		"|gameinfo_path|"
 #define BASESOURCEPATHS_TOKEN	"|all_source_engine_paths|"
+
+const char *GetGameDir()
+{
+	static char gamePath[256];
+#ifdef GAME_DLL
+	engine->GetGameDir(gamePath, 256);
+#else
+	V_strncpy(gamePath, engine->GetGameDirectory(), sizeof(gamePath));
+#endif
+	return gamePath;
+}
 
 static int SortStricmp(char * const * sz1, char * const * sz2)
 {
@@ -37,7 +52,7 @@ void MountExtraContent()
 		{
 			if (Q_strcmp(pMount->GetName(), "gameinfoparent") == 0)
 			{
-				const char *pchGameDir = CommandLine()->ParmValue("-game", engine->GetGameDirectory());
+				const char *pchGameDir = CommandLine()->ParmValue("-game", GetGameDir());
 				if (!Q_IsAbsolutePath(pchGameDir))
 				{
 					g_pFullFileSystem->RelativePathToFullPath_safe(pchGameDir, "MOD", path);
@@ -48,6 +63,7 @@ void MountExtraContent()
 				}
 
 				V_StripLastDir(path, sizeof(path));
+				V_StripTrailingSlash(path);
 			}
 			else if (Q_strcmp(pMount->GetName(), "sourcemods") == 0)
 			{
@@ -82,7 +98,11 @@ void MountExtraContent()
 			const SearchPathAdd_t head = pMount->GetBool( "head" ) ? PATH_ADD_TO_HEAD : PATH_ADD_TO_TAIL;
 			FOR_EACH_TRUE_SUBKEY( pMount, pModDir )
 			{
-				const char* const modDir = pModDir->GetName();
+				const char* modDir = pModDir->GetName();
+
+				if (FStrEq(modDir, GAMEINFOPATH_TOKEN))
+					modDir = V_GetFileName(GetGameDir());
+
 				const CFmtStr mod( "%s" CORRECT_PATH_SEPARATOR_S "%s", path, modDir );
 				filesystem->AddSearchPath( mod, "GAME", head );
 				filesystem->AddSearchPath( mod, "MOD", head );
@@ -202,10 +222,17 @@ void MountExtraContent()
 						Warning( "Unknown key \"%s\" in mounts\n", keyName );
 				}
 
-				CFmtStr localization( "resource/%s", modDir );
+				//const char *pchModName = V_GetFileName(modDir);
+				CFmtStr localization( "resource/%s", modDir);
 				localization.Append( "_%language%.txt" );
 				g_pVGuiLocalize->AddFile( localization );
 			}
 		}
 	}
+
+#ifdef CLIENT_DLL
+	//Re-init the particle manager
+	ParticleMgr()->Init(MAX_TOTAL_PARTICLES, materials);
+#endif
+	scenefilecache->Reload();
 }
