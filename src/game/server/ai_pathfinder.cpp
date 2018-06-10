@@ -47,6 +47,8 @@ const float MAX_LOCAL_NAV_DIST_FLY[2] = { (750*12), (750*12) };
 #define CLASS_ZOMBIE CLASS_ALIEN_MONSTER
 #endif
 
+#define HAS_ZOMBIE_CLASS (defined HL2_DLL || defined HL1_DLL)
+
 #define NAV_LADDER_WAYPOINT_DIST_SCALE 2.0f
 
 
@@ -120,9 +122,11 @@ public:
 			// compute distance travelled along path so far
 			float cost = dist + fromArea->GetCostSoFar();
 
+#if HAS_ZOMBIE_CLASS
 			// zombies ignore all path penalties
 			if (m_bot->Classify() == CLASS_ZOMBIE)
 				return cost;
+#endif
 
 			if (area->IsDamaging())
 			{

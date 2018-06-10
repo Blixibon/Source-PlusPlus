@@ -8,6 +8,6 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME "tf2classic"
 $Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_base.vpc"
 
-$Project "Shaders (TF2C)"
+$Project "Shaders (TF)"
 {
 }

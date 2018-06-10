@@ -692,7 +692,7 @@ void CObjectDispenser::ResetHealingTargets( void )
 		bool bHealingTarget = IsHealingTarget( pEnt );
 		bool bValidHealTarget = CouldHealTarget( pEnt );
 
-		if (ToTFPlayer(pEnt)->m_Shared.InCond(TF_COND_STEALTHED) && m_flNextStealthThink < gpGlobals->curtime)
+		if (ToTFPlayer(pEnt) && ToTFPlayer(pEnt)->m_Shared.InCond(TF_COND_STEALTHED) && m_flNextStealthThink < gpGlobals->curtime)
 		{
 			m_bStealthed = true;
 			NetworkStateChanged();

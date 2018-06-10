@@ -46,7 +46,7 @@ $Project "game_shader_dx9"
 	"materialsystem\stdshaders\game_shader_dx9_hl1.vpc"			[!$DEFERRED && $HL1]
 	"materialsystem\stdshaders\game_shader_dx9_portal.vpc"		[!$DEFERRED && $PORTAL]
 	
-	"materialsystem\stdshaders\game_shader_dx9_tf2classic.vpc"		[!$DEFERRED && $PORTAL]
+	"materialsystem\stdshaders\game_shader_dx9_tf2classic.vpc"		[!$DEFERRED && $TF2CLASSIC]
 	
 	
 	"materialsystem\defshaders\game_shader_dx9_deferred.vpc" 	[$DEFERRED]

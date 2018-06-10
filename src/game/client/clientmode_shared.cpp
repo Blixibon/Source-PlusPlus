@@ -1088,8 +1088,8 @@ void ClientModeShared::FireGameEvent( IGameEvent *event )
 					}
 #else
 					g_pVGuiLocalize->ConstructString(wszLocalized, sizeof(wszLocalized), g_pVGuiLocalize->Find("#game_player_joined_team"), 2, wszPlayerName, wszTeam);
-#endif				}
-
+#endif				
+				}
 				char szLocalized[100];
 				g_pVGuiLocalize->ConvertUnicodeToANSI( wszLocalized, szLocalized, sizeof(szLocalized) );
 

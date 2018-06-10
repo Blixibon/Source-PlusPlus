@@ -19,9 +19,10 @@
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "util_shared.h"
 
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS || defined TF_CLASSIC
 #include "game_item_schema.h"
 #include "econ_item_view.h"
+#include "econ_entity.h"
 #endif
 
 // For queuing and processing usercmds

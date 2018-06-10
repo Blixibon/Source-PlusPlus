@@ -17,7 +17,39 @@
 	}
 	InstancePath 	"maps/instances/"
 	advcrosshair 	1
-	supportsvr 	1 	
+	supportsvr 	1 
+
+	mount
+	{
+		sourcemods
+		{
+			"head"	"1"
+			
+			"tf2classic"
+			{
+				"custom"	"custom"
+			}
+			
+			"tf2vintage"
+			{
+				"custom"	"custom"
+			}
+		}
+	
+		gameinfoparent
+		{
+			"head"	"1"
+			"spp_shared"
+			{
+			
+			}
+			
+			"|gameinfo_path|"
+			{
+			
+			}
+		}
+	}	
 
 	FileSystem 
 	{ 

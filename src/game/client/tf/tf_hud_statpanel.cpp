@@ -37,6 +37,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#pragma warning( push )
+#pragma warning( disable : 4838 )
+
 DECLARE_HUDELEMENT_DEPTH( CTFStatPanel, 1 );
 DECLARE_HUD_MESSAGE( CTFStatPanel, PlayerStatsUpdate );
 
@@ -70,6 +73,8 @@ BEGIN_DMXELEMENT_UNPACK( ClassStats_t )
 	// RoundStats_t		accumulated;
 	// RoundStats_t		max;
 END_DMXELEMENT_UNPACK( ClassStats_t, s_ClassStatsUnpack )
+
+#pragma warning(pop)
 
 // priority order of stats to display record for; earlier position in list is highest
 TFStatType_t g_statPriority[] = { TFSTAT_HEADSHOTS, TFSTAT_BACKSTABS, TFSTAT_MAXSENTRYKILLS, TFSTAT_HEALING, TFSTAT_KILLS, TFSTAT_KILLASSISTS,  
