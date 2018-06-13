@@ -1,11 +1,15 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 
-#include <windows.h>
+#include <Windows.h>
+#pragma warning(push)
+#pragma warning(disable:4091)
+#include <dbghelp.h>
+#pragma warning(pop)
 #include "tier0/minidump.h"
 #include "tools_minidump.h"
 
@@ -20,11 +24,11 @@ static ToolsExceptionHandler g_pCustomExceptionHandler = NULL;
 static LONG __stdcall ToolsExceptionFilter( struct _EXCEPTION_POINTERS *ExceptionInfo )
 {
 	// Non VMPI workers write a minidump and show a crash dialog like normal.
-	int iType = 0;	// MiniDumpNormal
+	int iType = MiniDumpNormal;
 	if ( g_bToolsWriteFullMinidumps )
-		iType = 0x1 | 0x40;	// MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory
-		
-	WriteMiniDumpUsingExceptionInfo( ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo, iType );
+		iType = MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory;
+
+	WriteMiniDumpUsingExceptionInfo( ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo, (MINIDUMP_TYPE)iType );
 	return EXCEPTION_CONTINUE_SEARCH;
 }
 

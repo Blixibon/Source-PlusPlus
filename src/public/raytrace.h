@@ -8,7 +8,6 @@
 #include <mathlib/vector.h>
 #include <mathlib/ssemath.h>
 #include <mathlib/lightdesc.h>
-#include <assert.h>
 #include <tier1/utlvector.h>
 #include <mathlib/mathlib.h>
 #include <bspfile.h>
@@ -161,13 +160,13 @@ struct CacheOptimizedKDNode
 
 	inline int32 TriangleIndexStart(void) const
 	{
-		assert(NodeType()==KDNODE_STATE_LEAF);
+		Assert(NodeType()==KDNODE_STATE_LEAF);
 		return Children>>2;
 	}
 
 	inline int LeftChild(void) const
 	{
-		assert(NodeType()!=KDNODE_STATE_LEAF);
+		Assert(NodeType()!=KDNODE_STATE_LEAF);
 		return Children>>2;
 	}
 
@@ -178,7 +177,7 @@ struct CacheOptimizedKDNode
 
 	inline int NumberOfTrianglesInLeaf(void) const
 	{
-		assert(NodeType()==KDNODE_STATE_LEAF);
+		Assert(NodeType()==KDNODE_STATE_LEAF);
 		union { int32 i; float f; } u;
 		u.f=SplittingPlaneValue;
 		return u.i;
@@ -323,12 +322,12 @@ public:
 	void RenderScene(int width, int height,					// width and height of desired rendering
 					 int stride,							// actual width in pixels of target buffer
 					 uint32 *output_buffer,					// pointer to destination 
-					 Vector CameraOrigin,					// eye position
-					 Vector ULCorner,						// word space coordinates of upper left
+					 const Vector& CameraOrigin,			// eye position
+					 const Vector& ULCorner,				// word space coordinates of upper left
 															// monitor corner
-					 Vector URCorner,						// top right corner
-					 Vector LLCorner,						// lower left
-					 Vector LRCorner,						// lower right
+					 const Vector& URCorner,				// top right corner
+					 const Vector& LLCorner,				// lower left
+					 const Vector& LRCorner,				// lower right
 					 RayTraceLightingMode_t lightmode=DIRECT_LIGHTING);
 
 					 

@@ -53,7 +53,7 @@ CLampBeamProxy::~CLampBeamProxy( void )
 //-----------------------------------------------------------------------------
 bool CLampBeamProxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues )
 {
-	assert( pMaterial );
+	Assert( pMaterial );
 
 	// Need to get the color variable.
 	bool found;
@@ -75,7 +75,7 @@ void CLampBeamProxy::OnBind( C_BaseEntity *pEnt )
 	Vector vecLocal = pEnt->GetAbsOrigin() - CurrentViewOrigin();
 	VectorNormalize( vecLocal );
 
-	float fade = 1.0 - fabs( vecLocal.z );
+	float fade = 1.0f - fabsf( vecLocal.z );
 
 	m_pFadeValue->SetFloatValue( fade );
 }

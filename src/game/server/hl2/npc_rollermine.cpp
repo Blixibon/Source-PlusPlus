@@ -1115,7 +1115,7 @@ void CNPC_RollerMine::StartTask( const Task_t *pTask )
 
 			if ( pPhysicsObject == NULL )
 			{
-				assert(0);
+				Assert(0);
 				TaskFail("Roller lost internal physics object?");
 				return;
 			}
@@ -1131,7 +1131,7 @@ void CNPC_RollerMine::StartTask( const Task_t *pTask )
 			
 			if ( pPhysicsObject == NULL )
 			{
-				assert(0);
+				Assert(0);
 				TaskFail("Roller lost internal physics object?");
 				return;
 			}
@@ -1330,7 +1330,7 @@ void CNPC_RollerMine::RunTask( const Task_t *pTask )
 			
 			if ( pPhysicsObject == NULL )
 			{
-				assert(0);
+				Assert(0);
 				TaskFail("Roller lost internal physics object?");
 				return;
 			}
@@ -2005,7 +2005,6 @@ void CNPC_RollerMine::ShockTouch( CBaseEntity *pOther )
 
 	// jump up at a 30 degree angle away from the guy we hit
 	SetTouch( &CNPC_RollerMine::CloseTouch );
-	Vector vel;
 	pPhysics->SetVelocity( &impulse, NULL );
 	EmitSound( "NPC_RollerMine.Shock" );
 	// Do a shock effect

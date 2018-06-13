@@ -27,9 +27,6 @@
 #pragma warning(pop)
 #endif
 
-#include <assert.h>
-
-
 typedef enum
 {
 	TOKENSTRINGTOOLONG = -4,
@@ -45,9 +42,9 @@ typedef enum
 
 #define IsToken(s1, s2)	!strcmpi(s1, s2)
 
-#define MAX_TOKEN 128 + 1
-#define MAX_IDENT 64 + 1
-#define MAX_STRING 128 + 1
+#define MAX_TOKEN (128 + 1)
+#define MAX_IDENT (64 + 1)
+#define MAX_STRING (128 + 1)
 
 
 class TokenReader : private std::ifstream

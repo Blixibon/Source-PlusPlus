@@ -366,15 +366,10 @@ void CCamoMaterialProxy::GenerateCamoTexture( ITexture* pTexture, IVTFTexture *p
 	Vector mins, maxs;
 	mins = m_pEnt->WorldAlignMins();
 	maxs = m_pEnt->WorldAlignMaxs();
-	
-	Vector traceDirection;
-	Vector traceEnd;
-	trace_t	traceResult;
-	
+
 	Vector forward, right, up;
 	AngleVectors( entityAngles, &forward, &right, &up );
-	
-	Vector position, transformedPosition;
+
 	Vector maxsMinusMins = maxs - mins;
 
 	Vector diffuseColor[256];
@@ -426,9 +421,9 @@ void CCamoMaterialProxy::GenerateCamoTexture( ITexture* pTexture, IVTFTexture *p
 		for( x = 0; x < width; x++ )
 		{
 			int offset = 3 * ( x + y * width );
-			assert( offset < width * height * 3 );
+			Assert( offset < width * height * 3 );
 			int paletteID = m_pCamoPatternImage[x + y * width];
-			assert( paletteID < 256 );
+			Assert( paletteID < 256 );
 #if 1
 			imageData[offset + 0] = camoPalette[paletteID][0];
 			imageData[offset + 1] = camoPalette[paletteID][1];

@@ -77,7 +77,7 @@ void CDebugOverlay::ApplySchemeSettings(vgui::IScheme *pScheme)
 	// Use a large font
 //	m_hFont = pScheme->GetFont( "Default" );
 	m_hFont = pScheme->GetFont( "DebugOverlay" );
-	assert( m_hFont );
+	Assert( m_hFont );
 
 	int w, h;
 	vgui::surface()->GetScreenSize( w, h );
@@ -129,7 +129,7 @@ void CDebugOverlay::Paint()
 				{
 					float xPos		= screenPos[0];
 					float yPos		= screenPos[1]+ (pCurrText->lineOffset*13); // Line spacing;
-					g_pMatSystemSurface->DrawColoredText( m_hFont, xPos, yPos, r, g, b, a, pCurrText->text );
+					g_pMatSystemSurface->DrawColoredText( m_hFont, xPos, yPos, r, g, b, a, "%s", pCurrText->text );
 				}
 			}
 			else
@@ -138,7 +138,7 @@ void CDebugOverlay::Paint()
 				{	
 					float xPos		= screenPos[0];
 					float yPos		= screenPos[1]+ (pCurrText->lineOffset*13); // Line spacing;
-					g_pMatSystemSurface->DrawColoredText( m_hFont, xPos, yPos, r, g, b, a, pCurrText->text );
+					g_pMatSystemSurface->DrawColoredText( m_hFont, xPos, yPos, r, g, b, a, "%s", pCurrText->text );
 				}
 			}
 		}

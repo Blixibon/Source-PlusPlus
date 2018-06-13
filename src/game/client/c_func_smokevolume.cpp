@@ -326,9 +326,9 @@ void C_FuncSmokeVolume::Update( float fTimeDelta )
 	const Vector &curOrigin = GetAbsOrigin();
 	const QAngle &curAngles = GetAbsAngles();
 	if ( !VectorsAreEqual( curOrigin, m_vLastOrigin, 0.1 ) || 
-		fabs( curAngles.x - m_vLastAngles.x ) > 0.1 || 
-		fabs( curAngles.y - m_vLastAngles.y ) > 0.1 || 
-		fabs( curAngles.z - m_vLastAngles.z ) > 0.1 ||
+		fabsf( curAngles.x - m_vLastAngles.x ) > 0.1 || 
+		fabsf( curAngles.y - m_vLastAngles.y ) > 0.1 || 
+		fabsf( curAngles.z - m_vLastAngles.z ) > 0.1 ||
 		m_bFirstUpdate )
 	{
 		m_bFirstUpdate = false;
@@ -438,7 +438,7 @@ void C_FuncSmokeVolume::Update( float fTimeDelta )
 		else
 		{
 			SmokeParticleInfo *pOther = &m_pSmokeParticleInfos[pInfo->m_TradeIndex];
-			assert(pOther->m_TradeIndex == i);
+			Assert(pOther->m_TradeIndex == i);
 			
 			// This makes sure the trade only gets updated once per frame.
 			if(pInfo < pOther)
@@ -597,7 +597,7 @@ void C_FuncSmokeVolume::FillVolume()
 						int testX, testY, testZ;
 						int index = GetSmokeParticleIndex(x,y,z);
 						GetParticleInfoXYZ(index, testX, testY, testZ);
-						assert(testX == x && testY == y && testZ == z);
+						Assert(testX == x && testY == y && testZ == z);
 #endif
 
 						Vector vColor = EngineGetLightForPoint(vPos);

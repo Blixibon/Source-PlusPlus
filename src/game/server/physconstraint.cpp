@@ -970,7 +970,7 @@ static int GetUnitAxisIndex( const Vector &axis )
 	{
 		if ( axis[i] != 0 )
 		{
-			if ( fabs(axis[i]) == 1 )
+			if ( fabsf(axis[i]) == 1 )
 			{
 				if ( index  < 0 )
 				{

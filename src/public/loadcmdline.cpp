@@ -7,7 +7,7 @@
 
 #include "KeyValues.h"
 #include "tier1/strtools.h"
-#include "FileSystem_Tools.h"
+#include "filesystem_tools.h"
 #include "tier1/utlstring.h"
 
 // So we know whether or not we own argv's memory
@@ -76,7 +76,7 @@ void LoadCmdLineFromFile( int &argc, char **&argv, const char *keyname, const ch
 {
 	sFoundConfigArgs = false;
 
-	assert( g_pFileSystem );
+	Assert( g_pFileSystem );
 	if( !g_pFileSystem )
 		return;
 

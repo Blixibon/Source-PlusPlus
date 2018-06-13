@@ -29,7 +29,7 @@ CFXDiscreetLine::CFXDiscreetLine( const char *name, const Vector& start, const V
 	float velocity, float length, float clipLength, float scale, float life, const char *shader )
 : CClientSideEffect( name )
 {
-	assert( materials );
+	Assert( materials );
 	if ( materials == NULL )
 		return;
 
@@ -90,7 +90,7 @@ void CFXDiscreetLine::Draw( double frametime )
 	}
 
 	// Get our delta to calculate the tc offset
-	float	dDistance	= fabs( sDistance - eDistance );
+	float	dDistance	= fabsf( sDistance - eDistance );
 	float	dTotal		= ( m_fLength != 0.0f ) ? m_fLength : 0.01f;
 	float	fOffset		= ( dDistance / dTotal );
 

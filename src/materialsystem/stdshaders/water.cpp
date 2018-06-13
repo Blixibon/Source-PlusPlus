@@ -707,7 +707,7 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 				SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
 				Vector4D Scroll1;
 				params[SCROLL1]->GetVecValue( Scroll1.Base(), 4 );
-				SET_STATIC_PIXEL_SHADER_COMBO( MULTITEXTURE,fabs(Scroll1.x) > 0.0);
+				SET_STATIC_PIXEL_SHADER_COMBO( MULTITEXTURE,fabsf(Scroll1.x) > 0.0);
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, bHasFlowmap );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_DEBUG, clamp( params[ FLOW_DEBUG ]->GetIntValue(), 0, 2 ) );
 				SET_STATIC_PIXEL_SHADER( pp_watercheap_ps20b );
@@ -721,7 +721,7 @@ BEGIN_VS_SHADER(PP_Water_DX90,
 				SET_STATIC_PIXEL_SHADER_COMBO( HDRTYPE,  g_pHardwareConfig->GetHDRType() );
 				Vector4D Scroll1;
 				params[SCROLL1]->GetVecValue( Scroll1.Base(), 4 );
-				SET_STATIC_PIXEL_SHADER_COMBO( MULTITEXTURE,fabs(Scroll1.x) > 0.0);
+				SET_STATIC_PIXEL_SHADER_COMBO( MULTITEXTURE,fabsf(Scroll1.x) > 0.0);
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, bHasFlowmap );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_DEBUG, clamp( params[ FLOW_DEBUG ]->GetIntValue(), 0, 2 ) );
 				SET_STATIC_PIXEL_SHADER( pp_watercheap_ps20 );

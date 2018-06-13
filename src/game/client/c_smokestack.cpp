@@ -317,7 +317,7 @@ void C_SmokeStack::Update(float fTimeDelta)
 {
 	if( !m_pParticleMgr )
 	{
-		assert(false);
+		Assert(false);
 		return;
 	}
 
@@ -462,8 +462,7 @@ void C_SmokeStack::SimulateParticles( CParticleSimulateIterator *pIterator )
 		}
 		else
 		{
-			// Transform.						   
-			Vector tPos;
+			// Transform.
 			if( m_bTwist )
 			{
 				Vector vTwist(

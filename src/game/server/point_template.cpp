@@ -280,11 +280,10 @@ void CPointTemplate::PerformPrecache()
 
 	//HierarchicalSpawn_t *pSpawnList = (HierarchicalSpawn_t*)stackalloc( iTemplates * sizeof(HierarchicalSpawn_t) );
 
-	int i;
-	for ( i = 0; i < iTemplates; i++ )
+	for ( int i = 0; i < iTemplates; i++ )
 	{
 		//CBaseEntity *pEntity = NULL;
-		char *pMapData;
+		const char *pMapData;
 		int iTemplateIndex = m_hTemplates[i].iTemplateIndex;
 
 		// Some templates have Entity I/O connecting the entities within the template.
@@ -301,7 +300,7 @@ void CPointTemplate::PerformPrecache()
 		else
 		{
 			// Use the unmodified mapdata
-			pMapData = (char*)STRING( Templates_FindByIndex( iTemplateIndex ) );
+			pMapData = STRING( Templates_FindByIndex( iTemplateIndex ) );
 		}
 
 		nStringSize = Templates_GetStringSize( iTemplateIndex );
@@ -331,13 +330,13 @@ bool CPointTemplate::CreateInstance( const Vector &vecOrigin, const QAngle &vecA
 	// Tell the template system we're about to start a new template
 	Templates_StartUniqueInstance();
 
-	HierarchicalSpawn_t *pSpawnList = (HierarchicalSpawn_t*)stackalloc( iTemplates * sizeof(HierarchicalSpawn_t) );
+	HierarchicalSpawn_t *pSpawnList = static_cast<HierarchicalSpawn_t*>( stackalloc( iTemplates * sizeof(HierarchicalSpawn_t) ) );
 
 	int i;
 	for ( i = 0; i < iTemplates; i++ )
 	{
 		CBaseEntity *pEntity = NULL;
-		char *pMapData;
+		const char *pMapData;
 		int iTemplateIndex = m_hTemplates[i].iTemplateIndex;
 
 		// Some templates have Entity I/O connecting the entities within the template.
@@ -352,7 +351,7 @@ bool CPointTemplate::CreateInstance( const Vector &vecOrigin, const QAngle &vecA
 		else
 		{
 			// Use the unmodified mapdata
-			pMapData = (char*)STRING( Templates_FindByIndex( iTemplateIndex ) );
+			pMapData = STRING( Templates_FindByIndex( iTemplateIndex ) );
 		}
 
 		// Create the entity from the mapdata
@@ -368,10 +367,8 @@ bool CPointTemplate::CreateInstance( const Vector &vecOrigin, const QAngle &vecA
 		matNewTemplateToWorld.SetupMatrixOrgAngles( vecOrigin, vecAngles );
 		MatrixMultiply( matNewTemplateToWorld, m_hTemplates[i].matEntityToTemplate, matStoredLocalToWorld );
 
-		// Get the world origin & angles from the stored local coordinates
-		Vector vecNewOrigin;
 		QAngle vecNewAngles;
-		vecNewOrigin = matStoredLocalToWorld.GetTranslation();
+		Vector vecNewOrigin = matStoredLocalToWorld.GetTranslation();
 		MatrixToAngles( matStoredLocalToWorld, vecNewAngles );
 
 		// Set its origin & angles
