@@ -1,3 +1,5 @@
+// DYNAMIC: "UBERLIGHT"					"0..1"
+
 #include "common_vs_fxc.h"
 
 struct VS_INPUT
@@ -12,6 +14,9 @@ struct VS_OUTPUT
 	//float2 vTexCoord0				: TEXCOORD0;
 	float4 flashlightSpacePos		: TEXCOORD1;
 	float4 vProjPos					: TEXCOORD2;
+#if UBERLIGHT
+    float3 worldPos : TEXCOORD3;
+#endif
 };
 
 const float4x4 g_FlashlightWorldToTexture		:  register( SHADER_SPECIFIC_CONST_0 );
@@ -20,7 +25,10 @@ VS_OUTPUT main( const VS_INPUT v )
 {
 	VS_OUTPUT o;
 
-	float3 worldPos = mul( v.vPos, cModel[0] );
+    float3 worldPos = mul(v.vPos, cModel[0]);
+#if UBERLIGHT
+    o.worldPos = worldPos;
+#endif
 
 	float4 vProjPos = mul( v.vPos, cModelViewProj );
 	o.projPos = vProjPos;

@@ -1329,7 +1329,7 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	Vector vecWind;
 	GetWindspeedAtTime(gpGlobals->curtime, vecWind);
-	pRenderContext->SetVectorRenderingParameter(VECTOR_RENDERPARM_WIND_DIRECTION, vecWind);
+	pRenderContext->SetVectorRenderingParameter(VECTOR_RENDERPARM_WIND_DIRECTION, vecWind / 25.f);
 	pRenderContext.SafeRelease();
 
 	m_BaseDrawFlags = baseDrawFlags;

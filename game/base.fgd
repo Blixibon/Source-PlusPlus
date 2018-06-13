@@ -6506,7 +6506,7 @@
 	input LightColor(string) : "Set LightColor"
 	input Ambient(float) : "Set Ambient"
 	input SpotlightTexture(string) : "Set SpotlightTexture"
-	input EnableVolumetrics(void)		: "Enable Volumetrics"
+	input EnableVolumetrics(bool)		: "Enable Volumetrics"
 	input EnableUberLight(void)		: "Enable Uberlight"
 	input DisableUberLight(void)		: "Disable Uberlight"
 	

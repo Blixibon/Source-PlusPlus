@@ -62,17 +62,30 @@ BEGIN_VS_SHADER( light_volumetrics, "" )
 			// Reset render state manually since we're drawing from two materials
 			pShaderAPI->SetDefaultState();
 
+			VMatrix worldToTexture;
+			ITexture *pFlashlightDepthTexture;
+			const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightStateEx(worldToTexture, &pFlashlightDepthTexture);
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, worldToTexture.Base(), 4);
+
+			static IShaderDynamicAPI* shaderAPI;
+			shaderAPI = pShaderAPI;
+
+			auto func = [](int var, const float* pVec, int nConsts) {
+				shaderAPI->SetPixelShaderConstant(var, pVec, nConsts);
+			};
+
+			bool bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState(func, flashlightState);
+
 			// Set Vertex Shader Combos
 			DECLARE_DYNAMIC_VERTEX_SHADER( light_volumetrics_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO(UBERLIGHT, bUberlight);
 			SET_DYNAMIC_VERTEX_SHADER( light_volumetrics_vs30 );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( light_volumetrics_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO(UBERLIGHT, bUberlight);
 			SET_DYNAMIC_PIXEL_SHADER( light_volumetrics_ps30 );
 
-			VMatrix worldToTexture;
-			ITexture *pFlashlightDepthTexture;
-			const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
-			pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, worldToTexture.Base(), 4 );
+			
 
 			BindTexture( SHADER_SAMPLER0, flashlightState.m_pSpotlightTexture, flashlightState.m_nSpotlightTextureFrame );
 			BindTexture( SHADER_SAMPLER1, pFlashlightDepthTexture, 0 );
