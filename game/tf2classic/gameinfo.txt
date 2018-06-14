@@ -18,29 +18,14 @@
 	InstancePath 	"maps/instances/"
 	advcrosshair 	1
 	supportsvr 	1 
+	
+	content
+	{
+		tf2vintage 1
+	}
 
 	mount
-	{
-		sourcemods
-		{
-			"head"	"1"
-			
-			"tf2classic"
-			{
-				"custom"	"custom"
-			}
-			
-			"tf2vintage"
-			{
-				"custom"	"custom"
-				"path_id"
-				{
-					"mod"		"1"
-					"scenes"	"1"
-				}
-			}
-		}
-	
+	{	
 		|gameinfo_parent|
 		{
 			"head"	"1"

@@ -1271,7 +1271,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 		}
 
 		// Override the lighting desired if we have a lightmap set!
-		if ( bHasLightmapTexture )
+		if ( bHasLightmapTexture && !pCascadedDepthTexture )
 		{
 			lightState.m_bStaticLightVertex = false;
 			lightState.m_bStaticLightTexel = true;

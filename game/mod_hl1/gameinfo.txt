@@ -22,29 +22,23 @@
         "test"         1
     }
 	
+	content
+	{
+		hl1 1
+		hl1mp 1
+	}
+	
 	mount
 	{
-		280
+		|gameinfo_parent|
 		{
-			"head"	"1"
-			"hl1"
+			head 1
+			|gameinfo_path|
 			{
-				"vpk"	"hl1_pak"
-			}
-		}
-		
-		360
-		{
-			"head"	"1"
-			
-			"hl1"
-			{
-				"vpk"	"hl1_pak"
-			}
-			
-			"hl1mp"
-			{
-				"vpk"	"hl1mp_pak"
+				path_id
+				{
+					mod 1
+				}
 			}
 		}
 	}
@@ -58,6 +52,7 @@
 			// Our Crap
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			gamebin				|gameinfo_path|bin
+			shared				|gameinfo_path|../spp_shared
 
 			// Needed Crap
 			game				|all_source_engine_paths|hl2/hl2_english.vpk
