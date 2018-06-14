@@ -42,7 +42,7 @@
 	}
 	"cp_gravelpit"
 	{
-		"viewed"		"2"
+		"viewed"		"3"
 	}
 	"cp_dustbowl"
 	{
@@ -70,7 +70,7 @@
 	}
 	"pl_barnblitz"
 	{
-		"viewed"		"1"
+		"viewed"		"2"
 	}
 	"dm_wiseau"
 	{

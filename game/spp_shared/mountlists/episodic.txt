@@ -1,0 +1,34 @@
+"Mount"
+{
+	"deps"
+	{
+		"hl2"	1
+	}
+
+	420
+	{
+		"head"	"1"
+		"episodic"
+		{
+			"vpk"	"ep1_pak"
+		}
+
+		"ep2"
+		{
+			"vpk"	"ep2_pak"
+		}
+	}
+	
+	"|content_path|"
+	{
+		"head"	"1"
+		"episodic_scenes"
+		{
+			"path_id"
+			{
+				"game"	"0"
+				"scenes"	"1"
+			}
+		}
+	}
+}

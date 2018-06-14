@@ -1926,7 +1926,7 @@ bool CBaseObject::Repair( float flHealth )
 	{
 		// Reduce the construction time by the correct amount for the health passed in
 		float flConstructionTime = flHealth / ((GetMaxHealth() - OBJECT_CONSTRUCTION_STARTINGHEALTH) / m_flTotalConstructionTime);
-		m_flConstructionTimeLeft = max( 0, m_flConstructionTimeLeft - flConstructionTime);
+		m_flConstructionTimeLeft = max( .0f, m_flConstructionTimeLeft - flConstructionTime);
 		m_flConstructionTimeLeft = clamp( m_flConstructionTimeLeft, 0.0f, m_flTotalConstructionTime );
 		m_flPercentageConstructed = 1 - (m_flConstructionTimeLeft / m_flTotalConstructionTime);
 		m_flPercentageConstructed = clamp( m_flPercentageConstructed, 0.0f, 1.0f );
@@ -1934,7 +1934,7 @@ bool CBaseObject::Repair( float flHealth )
 		// Increase health.
 		// Only regenerate up to previous health while re-deploying.
 		int iMaxHealth = IsRedeploying() ? m_iGoalHealth : GetMaxHealth();
-		SetHealth( min( iMaxHealth, m_flHealth + flHealth ) );
+		SetHealth( min( static_cast<float>(iMaxHealth), m_flHealth + flHealth ) );
 
 		// Return true if we're constructed now
 		if ( m_flConstructionTimeLeft <= 0.0f )
@@ -1950,7 +1950,7 @@ bool CBaseObject::Repair( float flHealth )
 			return true;
 
 		// Increase health.
-		SetHealth( min( GetMaxHealth(), m_flHealth + flHealth ) );
+		SetHealth( min(static_cast<float>(GetMaxHealth()), m_flHealth + flHealth ) );
 
 		m_OnRepaired.FireOutput( this, this);
 
@@ -2381,7 +2381,7 @@ void CBaseObject::InputSetHealth( inputdata_t &inputdata )
 void CBaseObject::InputAddHealth( inputdata_t &inputdata )
 {
 	int iHealth = inputdata.value.Int();
-	SetHealth( min( GetMaxHealth(), m_flHealth + iHealth ) );
+	SetHealth( min(static_cast<float>(GetMaxHealth()), m_flHealth + iHealth ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -2565,7 +2565,7 @@ bool CBaseObject::Command_Repair( CTFPlayer *pActivator )
 
 			pActivator->RemoveBuildResources( iRepairCost );
 
-			float flNewHealth = min( GetMaxHealth(), m_flHealth + ( iRepairCost * 5 ) );
+			float flNewHealth = min(static_cast<float>(GetMaxHealth()), m_flHealth + ( iRepairCost * 5 ) );
 			SetHealth( flNewHealth );
 	
 			return ( iRepairCost > 0 );

@@ -26,7 +26,7 @@
 	}
 	"sniper"
 	{
-		"primary"		"1"
+		"primary"		"0"
 		"secondary"		"0"
 		"melee"		"0"
 		"pda"		"0"
@@ -38,7 +38,7 @@
 	}
 	"soldier"
 	{
-		"primary"		"2"
+		"primary"		"1"
 		"secondary"		"0"
 		"melee"		"0"
 		"pda"		"0"
@@ -50,7 +50,7 @@
 	}
 	"demoman"
 	{
-		"primary"		"2"
+		"primary"		"0"
 		"secondary"		"0"
 		"melee"		"0"
 		"pda"		"0"
@@ -74,9 +74,9 @@
 	}
 	"heavy"
 	{
-		"primary"		"1"
+		"primary"		"0"
 		"secondary"		"0"
-		"melee"		"0"
+		"melee"		"1"
 		"pda"		"0"
 		"pda2"		"0"
 		"building"		"0"

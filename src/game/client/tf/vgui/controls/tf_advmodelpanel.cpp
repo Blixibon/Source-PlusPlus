@@ -103,8 +103,8 @@ void CTFAdvModelPanel::OnThink()
 		Vector vecBoundsMins, vecBoundsMax;
 		GetBoundingBox(vecBoundsMins, vecBoundsMax);
 		int iMaxBounds = -vecBoundsMins.x + vecBoundsMax.x;
-		iMaxBounds = MAX(iMaxBounds, -vecBoundsMins.y + vecBoundsMax.y);
-		iMaxBounds = MAX(iMaxBounds, -vecBoundsMins.z + vecBoundsMax.z);
+		iMaxBounds = MAX(iMaxBounds, RoundFloatToInt(-vecBoundsMins.y + vecBoundsMax.y));
+		iMaxBounds = MAX(iMaxBounds, RoundFloatToInt (-vecBoundsMins.z + vecBoundsMax.z));
 		vecPos *= (float)iMaxBounds / 64.0f;
 
 		SetCameraPositionAndAngles(vecPos, angRot);

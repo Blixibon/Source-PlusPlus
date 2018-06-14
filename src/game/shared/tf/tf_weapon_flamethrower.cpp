@@ -576,14 +576,14 @@ void CTFFlameThrower::SecondaryAttack()
 			QAngle angPushDir = angDir;
 
 			if (tf2v_airblast.GetInt() == 2)
-				angPushDir[PITCH] = min(-45, angPushDir[PITCH]);
+				angPushDir[PITCH] = min(-45.0f, angPushDir[PITCH]);
 
 			// If the victim is on the ground assume that shooter is looking at least 45 degrees up.
 			else if (tf2v_airblast.GetInt() == 1)
 			{
 				if (pTFPlayer->GetGroundEntity() != NULL)
 				{
-					angPushDir[PITCH] = min(-45, angPushDir[PITCH]);
+					angPushDir[PITCH] = min(-45.0f, angPushDir[PITCH]);
 				}
 			}
 
@@ -1310,7 +1310,7 @@ void CTFFlameEntity::OnCollide( CBaseEntity *pOther )
 		flMultiplier = RemapValClamped( flDistance, tf_flamethrower_maxdamagedist.GetFloat()/2, tf_flamethrower_maxdamagedist.GetFloat(), 1.0, 0.6 );
 	}
 	float flDamage = m_flDmgAmount * flMultiplier;
-	flDamage = max( flDamage, 1.0 );
+	flDamage = max( flDamage, 1.0f );
 	if ( tf_debug_flamethrower.GetInt() )
 	{
 		Msg( "Flame touch dmg: %.1f\n", flDamage );

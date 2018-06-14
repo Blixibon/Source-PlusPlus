@@ -1,0 +1,18 @@
+"Mount"
+{
+	"|gameinfo_parent|"
+	{
+		"head"	"1"
+		
+		"spp_shared"
+		{
+			"path_id"
+			{
+				"mod"		"1"
+				"scenes"	"1"
+			}
+			
+			"vpk"	"sdk_pak"
+		}
+	}
+}

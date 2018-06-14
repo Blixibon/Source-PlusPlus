@@ -12,7 +12,7 @@
 #define PAM_ROTATE_TIME			0.075
 
 #define PAM_SCALE_SPEED			7
-#define PAM_MAX_SCALE			3
+#define PAM_MAX_SCALE			3.0f
 #define PAM_SPIN_SPEED			360
 
 //-----------------------------------------------------------------------------

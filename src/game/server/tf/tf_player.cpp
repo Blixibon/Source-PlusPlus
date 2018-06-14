@@ -3608,7 +3608,7 @@ int CTFPlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 				if ( bitsDamage & DMG_USEDISTANCEMOD )
 				{
-					float flDistance = max( 1.0, ( WorldSpaceCenter() - pAttacker->WorldSpaceCenter() ).Length() );
+					float flDistance = max( 1.0f, ( WorldSpaceCenter() - pAttacker->WorldSpaceCenter() ).Length() );
 					float flOptimalDistance = 512.0;
 
 					flCenter = RemapValClamped( flDistance / flOptimalDistance, 0.0, 2.0, 1.0, 0.0 );
@@ -3994,7 +3994,7 @@ int CTFPlayer::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( event )
 	{
 		event->SetInt( "userid", GetUserID() );
-		event->SetInt( "health", max( 0, m_iHealth ) );
+		event->SetInt( "health", max( 0, m_iHealth.Get() ) );
 		event->SetInt( "damageamount", ( iOldHealth - m_iHealth ) );
 		event->SetInt( "crit", info.GetDamageType() & DMG_CRITICAL ? 1 : 0 );
 

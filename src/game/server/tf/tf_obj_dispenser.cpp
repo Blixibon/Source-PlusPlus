@@ -552,7 +552,7 @@ bool CObjectDispenser::DispenseAmmo( CTFPlayer *pPlayer )
 	int iMetalToGive = DISPENSER_DROP_METAL + 10 * ( GetUpgradeLevel() - 1 );
 
 	if ( ( GetObjectFlags() & OF_IS_CART_OBJECT ) == 0 )
-		iMetalToGive = min( m_iAmmoMetal, iMetalToGive );
+		iMetalToGive = min( m_iAmmoMetal.Get(), iMetalToGive );
 
 	int iMetal = pPlayer->GiveAmmo( iMetalToGive, TF_AMMO_METAL, false, TF_AMMO_SOURCE_DISPENSER );
 	iTotalPickedUp += iMetal;
@@ -612,7 +612,7 @@ void CObjectDispenser::RefillThink( void )
 	// Auto-refill half the amount as tfc, but twice as often
 	if ( m_iAmmoMetal < DISPENSER_MAX_METAL_AMMO )
 	{
-		m_iAmmoMetal = min( m_iAmmoMetal + DISPENSER_MAX_METAL_AMMO * ( 0.1 + 0.025 * ( GetUpgradeLevel() - 1 ) ), DISPENSER_MAX_METAL_AMMO );
+		m_iAmmoMetal = min( RoundFloatToInt(m_iAmmoMetal + DISPENSER_MAX_METAL_AMMO * ( 0.1f + 0.025f * ( GetUpgradeLevel() - 1 ) )), DISPENSER_MAX_METAL_AMMO );
 		EmitSound( "Building_Dispenser.GenerateMetal" );
 	}
 

@@ -124,8 +124,8 @@ void CHudDemomanChargeMeter::OnTick( void )
 
 			if ( flChargeBeginTime > 0 )
 			{
-				float flTimeCharged = max( 0, gpGlobals->curtime - flChargeBeginTime );
-				float flPercentCharged = min( 1.0, flTimeCharged / flChargeMaxTime );
+				float flTimeCharged = max( .0f, gpGlobals->curtime - flChargeBeginTime );
+				float flPercentCharged = min( 1.0f, flTimeCharged / flChargeMaxTime );
 
 				m_pChargeMeter->SetProgress( flPercentCharged );
 			}

@@ -992,6 +992,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 
 	g_pcv_ThreadMode = g_pCVar->FindVar( "host_thread_mode" );
 
+	MountExtraContent();
+
 	if (!Initializer::InitializeAllObjects())
 		return false;
 
@@ -1096,7 +1098,6 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	HookHapticMessages(); // Always hook the messages
 #endif
 
-	MountExtraContent();
 
 	return true;
 }
@@ -2168,7 +2169,7 @@ void OnRenderStart()
 	// are at the correct location
 	view->OnRenderStart();
 
-	RopeManager()->OnRenderStart();
+	//RopeManager()->OnRenderStart();
 	
 	// This will place all entities in the correct position in world space and in the KD-tree
 	C_BaseAnimating::UpdateClientSideAnimations();

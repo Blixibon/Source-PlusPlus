@@ -1119,33 +1119,39 @@ void CTeamTrainWatcher::WatcherThink( void )
 		// divide speed into regions
 		// anything negative is -1
 
-		if ( flSpeed < 0 )
+		if (flSpeed < 0)
 		{
 			m_iTrainSpeedLevel = -1;
+			ObjectiveResource()->SetTrainSpeedLevel(GetTeamNumber(), m_iTrainSpeedLevel);
 
 			// even though our desired speed might be negative,
 			// our actual speed might be zero if we're at a dead end...
 			// this will turn off the < image when the train is done moving backwards
-			if ( pTrain->GetCurrentSpeed() == 0 )
+			if (pTrain->GetCurrentSpeed() == 0)
 			{
 				m_iTrainSpeedLevel = 0;
+				ObjectiveResource()->SetTrainSpeedLevel(GetTeamNumber(), m_iTrainSpeedLevel);
 			}
 		}
-		else if ( flSpeed > m_flSpeedLevels[2] )
+		else if (flSpeed > m_flSpeedLevels[2])
 		{
 			m_iTrainSpeedLevel = 3;
+			ObjectiveResource()->SetTrainSpeedLevel(GetTeamNumber(), m_iTrainSpeedLevel);
 		}
-		else if ( flSpeed > m_flSpeedLevels[1] )
+		else if (flSpeed > m_flSpeedLevels[1])
 		{
 			m_iTrainSpeedLevel = 2;
+			ObjectiveResource()->SetTrainSpeedLevel(GetTeamNumber(), m_iTrainSpeedLevel);
 		}
-		else if ( flSpeed > m_flSpeedLevels[0] )
+		else if (flSpeed > m_flSpeedLevels[0])
 		{
 			m_iTrainSpeedLevel = 1;
+			ObjectiveResource()->SetTrainSpeedLevel(GetTeamNumber(), m_iTrainSpeedLevel);
 		}
 		else
 		{
 			m_iTrainSpeedLevel = 0;
+			ObjectiveResource()->SetTrainSpeedLevel(GetTeamNumber(), m_iTrainSpeedLevel);
 		}
 
 		if ( m_iTrainSpeedLevel != iOldTrainSpeedLevel )
@@ -1238,6 +1244,8 @@ void CTeamTrainWatcher::WatcherThink( void )
 			}
 
 			m_flTotalProgress = clamp( 1.0 - ( flDistanceToGoal / m_flTotalPathDistance ), 0.0, 1.0 );
+
+			ObjectiveResource()->SetTotalProgress(GetTeamNumber(), clamp(1.0 - (flDistanceToGoal / m_flTotalPathDistance), 0.0, 1.0));
 
 			m_flTrainDistanceFromStart = m_flTotalPathDistance - flDistanceToGoal;
 
@@ -1534,7 +1542,7 @@ Vector CTeamTrainWatcher::GetNextCheckpointPosition( void ) const
 	return vec3_origin;
 }
 
-#if defined( STAGING_ONLY ) && defined( TF_DLL )
+#if (defined( STAGING_ONLY ) && defined( TF_DLL )) || defined( TF_CLASSIC )
 CON_COMMAND_F( tf_dumptrainstats, "Dump the stats for the current train watcher to the console", FCVAR_GAMEDLL )
 {
 	// Listenserver host or rcon access only!

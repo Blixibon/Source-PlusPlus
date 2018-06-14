@@ -791,7 +791,7 @@ void CTFPlayerShared::ConditionGameRulesThink(void)
 					}
 				}
 
-				m_flCondExpireTimeLeft.Set(i, max(m_flCondExpireTimeLeft[i] - flReduction, 0));
+				m_flCondExpireTimeLeft.Set(i, max(m_flCondExpireTimeLeft[i] - flReduction, .0f));
 
 				if (m_flCondExpireTimeLeft[i] == 0)
 				{

@@ -280,7 +280,7 @@ float CTFCompoundBow::GetProjectileGravity( void )
 //-----------------------------------------------------------------------------
 void CTFCompoundBow::GetProjectileFireSetup( CTFPlayer *pPlayer, Vector vecOffset, Vector *vecSrc, QAngle *angForward, bool bHitTeammates, bool bUseHitboxes )
 {
-	BaseClass::GetProjectileFireSetup( pPlayer, vecOffset, vecSrc, angForward, bHitTeammates, bUseHitboxes );
+	BaseClass::GetProjectileFireSetup( pPlayer, vecOffset, vecSrc, angForward, bHitTeammates/*, bUseHitboxes*/ );
 
 	// Make the shot wildly inaccurate if charged for too long.
 	if ( gpGlobals->curtime - m_flChargeBeginTime >= TF_BOW_CHARGE_TIRED_TIME )

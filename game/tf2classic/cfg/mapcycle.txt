@@ -14,3 +14,5 @@ cp_amaranth_rc2
 cp_powerhouse
 ctf_turbine
 cp_gorge
+pl_goldrush
+pl_badwater

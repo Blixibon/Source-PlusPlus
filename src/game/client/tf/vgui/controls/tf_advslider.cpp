@@ -248,11 +248,11 @@ void CTFAdvSlider::SetPercentage(float fPerc)
 	pButton->GetPos(scroll_x, scroll_y); //scroll local pos
 	float fPos;
 	if (!bVertical)
-		fPos = min(max(0.0, fPerc), 1.0) * (float)mx + (float)_x;
+		fPos = min(max(0.0f, fPerc), 1.0f) * (float)mx + (float)_x;
 	else
-		fPos = min(max(0.0, fPerc), 1.0) * (float)my + (float)_y;
+		fPos = min(max(0.0f, fPerc), 1.0f) * (float)my + (float)_y;
 
-	fValue = min(max(0.0, fPerc), 1.0) * (fMaxValue - fMinValue) + fMinValue;
+	fValue = min(max(0.0f, fPerc), 1.0f) * (fMaxValue - fMinValue) + fMinValue;
 	char sValue[30];
 	if (m_bShowInt)
 	{

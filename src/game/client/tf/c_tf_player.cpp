@@ -660,7 +660,7 @@ void C_TFRagdoll::ClientThink( void )
 		int iAlpha = GetRenderColor().a;
 		int iFadeSpeed = 600.0f;
 
-		iAlpha = max( iAlpha - ( iFadeSpeed * gpGlobals->frametime ), 0 );
+		iAlpha = max( iAlpha - ( iFadeSpeed * gpGlobals->frametime ), .0f );
 
 		SetRenderMode( kRenderTransAlpha );
 		SetRenderColorA( iAlpha );
@@ -2733,7 +2733,6 @@ void C_TFPlayer::AvoidPlayers( CUserCmd *pCmd )
 		if ( pAvoidPlayer->IsSolidFlagSet( FSOLID_NOT_SOLID ) )
 			continue;
 
-		Vector t1, t2;
 
 		vecAvoidCenter = pAvoidPlayer->GetAbsOrigin();
 		vecAvoidMin = pAvoidPlayer->GetPlayerMins();

@@ -657,6 +657,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	factories.physicsFactory = physicsFactory;
 	FactoryList_Store( factories );
 
+	MountExtraContent();
+
 	// load used game events  
 	gameeventmanager->LoadEventsFromFile("resource/gameevents.res");
 
@@ -688,7 +690,6 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetEventQueueSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetAchievementSaveRestoreBlockHandler() );
 
-	MountExtraContent();
 
 	// The string system must init first + shutdown last
 	IGameSystem::Add( GameStringSystem() );

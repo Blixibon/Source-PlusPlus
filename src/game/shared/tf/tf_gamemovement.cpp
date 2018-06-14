@@ -1658,7 +1658,7 @@ void CTFGameMovement::StepMove( Vector &vecDestination, trace_t &trace )
 	if ( bLowRoad )
 	{
 		// Save off upward results
-		Vector vecUpPos, vecUpVel;
+		Vector vecUpPos(0), vecUpVel(0);
 		if ( bUpRoad )
 		{
 			VectorCopy( mv->GetAbsOrigin(), vecUpPos );

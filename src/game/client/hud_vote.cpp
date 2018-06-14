@@ -51,6 +51,8 @@
 ConVar cl_vote_ui_active_after_voting( "cl_vote_ui_active_after_voting", "0" );
 ConVar cl_vote_ui_show_notification( "cl_vote_ui_show_notification", "0" );
 
+using namespace vgui;
+
 #if defined TF_CLIENT_DLL || defined TF_CLASSIC_CLIENT
 
 //-----------------------------------------------------------------------------

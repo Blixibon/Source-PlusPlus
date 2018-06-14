@@ -58,7 +58,7 @@ public:
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 	virtual void ShowPanel( bool bShow );
 	virtual void OnCommand( const char *command );
-	virtual void OnKeyCodePressed( KeyCode code );
+	virtual void OnKeyCodePressed(vgui::KeyCode code );
 
 	void OnTick();
 

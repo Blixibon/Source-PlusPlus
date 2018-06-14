@@ -29,10 +29,10 @@
 void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
 #endif
 
-#define TF_WEAPON_SNIPERRIFLE_CHARGE_PER_SEC	50.0
-#define TF_WEAPON_SNIPERRIFLE_UNCHARGE_PER_SEC	75.0
-#define	TF_WEAPON_SNIPERRIFLE_DAMAGE_MIN		50
-#define TF_WEAPON_SNIPERRIFLE_DAMAGE_MAX		150
+#define TF_WEAPON_SNIPERRIFLE_CHARGE_PER_SEC	50.0f
+#define TF_WEAPON_SNIPERRIFLE_UNCHARGE_PER_SEC	75.0f
+#define	TF_WEAPON_SNIPERRIFLE_DAMAGE_MIN		50.0f
+#define TF_WEAPON_SNIPERRIFLE_DAMAGE_MAX		150.0f
 #define TF_WEAPON_SNIPERRIFLE_RELOAD_TIME		1.5f
 #define TF_WEAPON_SNIPERRIFLE_ZOOM_TIME			0.3f
 
@@ -313,7 +313,7 @@ void CTFSniperRifle::ItemPostFrame( void )
 		}
 		else
 		{
-			m_flChargedDamage = max( 0, m_flChargedDamage - gpGlobals->frametime * TF_WEAPON_SNIPERRIFLE_UNCHARGE_PER_SEC );
+			m_flChargedDamage = max( .0f, m_flChargedDamage - gpGlobals->frametime * TF_WEAPON_SNIPERRIFLE_UNCHARGE_PER_SEC );
 		}
 	}
 
@@ -368,7 +368,7 @@ void CTFSniperRifle::Zoom( void )
 	ToggleZoom();
 
 	// at least 0.1 seconds from now, but don't stomp a previous value
-	m_flNextPrimaryAttack = max( m_flNextPrimaryAttack, gpGlobals->curtime + 0.1 );
+	m_flNextPrimaryAttack = max( m_flNextPrimaryAttack.Get(), gpGlobals->curtime + 0.1f );
 	m_flNextSecondaryAttack = gpGlobals->curtime + TF_WEAPON_SNIPERRIFLE_ZOOM_TIME;
 }
 
@@ -521,7 +521,7 @@ void CTFSniperRifle::SetRezoom( bool bRezoom, float flDelay )
 float CTFSniperRifle::GetProjectileDamage( void )
 {
 	// Uncharged? Min damage.
-	return max( m_flChargedDamage, TF_WEAPON_SNIPERRIFLE_DAMAGE_MIN );
+	return max( m_flChargedDamage.Get(), TF_WEAPON_SNIPERRIFLE_DAMAGE_MIN );
 }
 
 //-----------------------------------------------------------------------------
@@ -838,7 +838,7 @@ int CSniperDot::DrawModel( int flags )
 	if ( !pPlayer->IsDormant() )
 	{
 		Vector vecAttachment, vecDir;
-		QAngle angles;
+		//QAngle angles;
 
 		float flDist = MAX_TRACE_LENGTH;
 

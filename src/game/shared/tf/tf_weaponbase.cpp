@@ -2920,7 +2920,7 @@ float CalcViewModelBobHelper( CBasePlayer *player, BobState_t *pBobState )
 
 	//Find the speed of the player
 	float speed = player->GetLocalVelocity().Length2D();
-	float flmaxSpeedDelta = max( 0, (gpGlobals->curtime - pBobState->m_flLastBobTime ) * 320.0f );
+	float flmaxSpeedDelta = max( .0f, (gpGlobals->curtime - pBobState->m_flLastBobTime ) * 320.0f );
 
 	// don't allow too big speed changes
 	speed = clamp( speed, pBobState->m_flLastSpeed-flmaxSpeedDelta, pBobState->m_flLastSpeed+flmaxSpeedDelta );

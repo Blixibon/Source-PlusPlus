@@ -372,7 +372,7 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"image"			""
-		"scaleImage"		"1"	
+		"scaleImage"		"0"	
 		"color_outline"		"52 48 45 255"
 	}
 	"Player1Name"
@@ -443,7 +443,7 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"image"			""
-		"scaleImage"		"1"	
+		"scaleImage"		"0"	
 		"color_outline"		"52 48 45 255"
 	}
 	"Player2Name"
@@ -514,7 +514,7 @@
 		"visible"		"1"
 		"enabled"		"1"
 		"image"			""
-		"scaleImage"		"1"	
+		"scaleImage"		"0"	
 		"color_outline"		"52 48 45 255"
 	}
 	"Player3Name"

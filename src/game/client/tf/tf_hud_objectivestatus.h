@@ -119,7 +119,7 @@ private:
 	CExLabel			*m_pSuddenDeathLabel;
 	CTFImagePanel		*m_pSuddenDeathBG;
 
-	ScalableImagePanel  *m_pTimePanelBG;
+	vgui::ScalableImagePanel  *m_pTimePanelBG;
 
 	// delta stuff
 	int m_iTimerDeltaHead;

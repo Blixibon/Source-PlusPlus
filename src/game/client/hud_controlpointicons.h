@@ -226,7 +226,7 @@ public:
 		m_iCPIndex = iIndex;
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings(vgui::IScheme *pScheme );
 	virtual void OnSizeChanged(int newWide, int newTall);
 	virtual void PaintBackground( void );
 

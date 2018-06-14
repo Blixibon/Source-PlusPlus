@@ -7,21 +7,18 @@
 	
 	supportsvr	1
 	
+	content
+	{
+		"hl2"	1
+	}
+	
 	mount
 	{
-		220
-		{
-			"head"	"0"
-			"hl2"
-			{
-			
-			}
-		}
-		
-		gameinfoparent
+		|gameinfo_parent|
 		{
 			"head"	"1"
-			"spp_shared"
+			
+			"|gameinfo_path|"
 			{
 			
 			}
@@ -38,6 +35,7 @@
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			gamebin				|gameinfo_path|bin
 			game+mod			|all_source_engine_paths|sdk/sdk_pak.vpk
+			shared				|gameinfo_path|../spp_shared
 
 			// Needed Crap
 			game				|all_source_engine_paths|hl2/hl2_english.vpk

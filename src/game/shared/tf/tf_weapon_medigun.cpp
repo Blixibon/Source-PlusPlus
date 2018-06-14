@@ -663,7 +663,7 @@ bool CWeaponMedigun::FindAndHealTargets( void )
 						flChargeAmount /= (float)iTotalHealers;
 					}
 
-					float flNewLevel = min( m_flChargeLevel + flChargeAmount, 1.0 );
+					float flNewLevel = min( m_flChargeLevel + flChargeAmount, 1.0f );
 #ifdef GAME_DLL
 					if ( flNewLevel >= 1.0 && m_flChargeLevel < 1.0 )
 					{
@@ -694,7 +694,7 @@ void CWeaponMedigun::AddCharge( float flAmount )
 	if ( !flChargeRate ) // Can't earn uber.
 		return;
 
-	float flNewLevel = min( m_flChargeLevel + flAmount, 1.0 );
+	float flNewLevel = min( m_flChargeLevel + flAmount, 1.0f );
 
 #ifdef GAME_DLL
 	CTFPlayer *pPlayer = GetTFPlayerOwner();
@@ -740,7 +740,7 @@ void CWeaponMedigun::DrainCharge( void )
 			return;
 
 		float flChargeAmount = gpGlobals->frametime / weapon_medigun_chargerelease_rate.GetFloat();
-		m_flChargeLevel = max( m_flChargeLevel - flChargeAmount, 0.0 );
+		m_flChargeLevel = max( m_flChargeLevel - flChargeAmount, 0.0f );
 		if ( !m_flChargeLevel )
 		{
 			m_bChargeRelease = false;

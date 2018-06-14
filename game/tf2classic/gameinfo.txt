@@ -33,20 +33,27 @@
 			"tf2vintage"
 			{
 				"custom"	"custom"
+				"path_id"
+				{
+					"mod"		"1"
+					"scenes"	"1"
+				}
 			}
 		}
 	
-		gameinfoparent
+		|gameinfo_parent|
 		{
 			"head"	"1"
-			"spp_shared"
-			{
-			
-			}
 			
 			"|gameinfo_path|"
 			{
-			
+				"custom"	"custom"
+				
+				"path_id"
+				{
+					"mod"		"1"
+					"scenes"	"1"
+				}
 			}
 		}
 	}	
@@ -68,6 +75,7 @@
 			// as the first "mod" search path (after any user customizations).  This is also the one
 			// that's used when writing to the "mod" path.
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
+			shared				|gameinfo_path|../spp_shared
 
 			// Where the game's binaries are
 			gamebin				|gameinfo_path|bin	
