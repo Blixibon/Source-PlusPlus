@@ -27,6 +27,7 @@
 #include "tier0/memdbgon.h"
 
 #define PARTICLES_MANIFEST_FILE				"particles/particles_manifest.txt"
+#define PARTICLES_SHARED_MANIFEST_FILE		"particles/shared_particles_manifest.txt"
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -80,6 +81,28 @@ void GetParticleManifest( CUtlVector<CUtlString>& list )
 	else
 	{
 		Warning( "PARTICLE SYSTEM: Unable to load manifest file '%s'\n", PARTICLES_MANIFEST_FILE );
+	}
+
+	manifest->deleteThis();
+
+	// Open the manifest file, and read the particles specified inside it
+	manifest = new KeyValues(PARTICLES_MANIFEST_FILE);
+	if (manifest->LoadFromFile(filesystem, PARTICLES_SHARED_MANIFEST_FILE, "SHARED"))
+	{
+		for (KeyValues *sub = manifest->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey())
+		{
+			if (!Q_stricmp(sub->GetName(), "file"))
+			{
+				list.AddToTail(sub->GetString());
+				continue;
+			}
+
+			Warning("CParticleMgr::Init:  Manifest '%s' with bogus file type '%s', expecting 'file'\n", PARTICLES_SHARED_MANIFEST_FILE, sub->GetName());
+		}
+	}
+	else
+	{
+		Warning("PARTICLE SYSTEM: Unable to load manifest file '%s'\n", PARTICLES_SHARED_MANIFEST_FILE);
 	}
 
 	manifest->deleteThis();

@@ -14,7 +14,7 @@
 		"head"	"1"
 		"hl1_captions"
 		{
-			
+			vpk		hl1_captions
 		}
 	}
 }

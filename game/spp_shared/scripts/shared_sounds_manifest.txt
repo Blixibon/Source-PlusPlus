@@ -1,0 +1,4 @@
+"scripts/shared_sounds_manifest.txt"
+{
+	
+}

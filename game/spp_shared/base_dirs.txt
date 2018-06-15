@@ -13,6 +13,7 @@
 			}
 			
 			"vpk"	"sdk_pak"
+			vpk		p2_dissolve
 		}
 	}
 }
