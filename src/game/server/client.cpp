@@ -388,6 +388,8 @@ void ClientPrecache( void )
 	CBaseEntity::PrecacheScriptSound( "Bounce.Shell" );
 	CBaseEntity::PrecacheScriptSound( "Bounce.Concrete" );
 
+	PrecacheParticleSystem("dissolve");
+
 	ClientGamePrecache();
 }
 
