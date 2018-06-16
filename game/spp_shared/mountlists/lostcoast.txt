@@ -1,0 +1,17 @@
+"Mount"
+{
+	deps
+	{
+		hl2	1
+	}
+
+	340
+	{
+		"head"	"1"
+		"lostcoast"
+		{
+			vpk		lostcoast_pak
+		}
+	}
+	
+}

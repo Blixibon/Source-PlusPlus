@@ -15,16 +15,16 @@
 		}
 	}
 	
-	"|content_path|"
-	{
-		"head"	"1"
-		"hl2_scenes"
-		{
-			"path_id"
-			{
-				"game"	"0"
-				"scenes"	"1"
-			}
-		}
-	}
+	// "|content_path|"
+	// {
+		// "head"	"1"
+		// "hl2_scenes"
+		// {
+			// "path_id"
+			// {
+				// "game"	"0"
+				// "scenes"	"1"
+			// }
+		// }
+	// }
 }

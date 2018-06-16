@@ -1,4 +1,5 @@
 "scripts/shared_sounds_manifest.txt"
 {
-	
+	"precache_file"		"scripts/game_sounds_world_portal2.txt"
+	"precache_file"		"scripts/game_sounds_vfx.txt"
 }

@@ -1,5 +1,14 @@
 "Mount"
 {
+	"|content_path|"
+	{
+		"head"	"1"
+		"portal2_content"
+		{
+			vpk		portal2_sound_misc
+		}
+	}
+
 	"|gameinfo_parent|"
 	{
 		"head"	"1"

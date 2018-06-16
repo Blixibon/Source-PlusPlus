@@ -12,11 +12,10 @@
 	"|content_path|"
 	{
 		"head"	"1"
-		"hl2_scenes"
+		"hl2_extra"
 		{
 			"path_id"
 			{
-				"game"	"0"
 				"scenes"	"1"
 			}
 		}

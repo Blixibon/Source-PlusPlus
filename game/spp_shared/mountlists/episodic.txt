@@ -22,11 +22,10 @@
 	"|content_path|"
 	{
 		"head"	"1"
-		"episodic_scenes"
+		"episodic_extra"
 		{
 			"path_id"
 			{
-				"game"	"0"
 				"scenes"	"1"
 			}
 		}

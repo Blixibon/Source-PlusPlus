@@ -42,7 +42,7 @@
 	}
 	"cp_gravelpit"
 	{
-		"viewed"		"3"
+		"viewed"		"4"
 	}
 	"cp_dustbowl"
 	{
@@ -73,6 +73,10 @@
 		"viewed"		"2"
 	}
 	"dm_wiseau"
+	{
+		"viewed"		"1"
+	}
+	"pl_thundermountain"
 	{
 		"viewed"		"1"
 	}
