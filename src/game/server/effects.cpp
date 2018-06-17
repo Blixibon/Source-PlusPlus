@@ -1635,6 +1635,7 @@ BEGIN_DATADESC( CEnvWind )
 	DEFINE_KEYFIELD( m_EnvWindShared.m_flMaxGustDelay, FIELD_FLOAT, "maxgustdelay" ),
 	DEFINE_KEYFIELD( m_EnvWindShared.m_iGustDirChange, FIELD_INTEGER, "gustdirchange" ),
 	DEFINE_KEYFIELD( m_EnvWindShared.m_flGustDuration, FIELD_FLOAT, "gustduration" ),
+	DEFINE_KEYFIELD( m_EnvWindShared.m_windRadius, FIELD_FLOAT, "radius"),
 //	DEFINE_KEYFIELD( m_EnvWindShared.m_iszGustSound, FIELD_STRING, "gustsound" ),
 
 // Just here to quiet down classcheck
@@ -1669,6 +1670,8 @@ BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
 	SendPropFloat	(SENDINFO(m_flStartTime),	 0, SPROP_NOSCALE ),
 
 	SendPropFloat	(SENDINFO(m_flGustDuration), 0, SPROP_NOSCALE),
+
+	SendPropFloat(SENDINFO(m_windRadius), 0, SPROP_NOSCALE),
 	// Sound related
 //	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
 END_SEND_TABLE()

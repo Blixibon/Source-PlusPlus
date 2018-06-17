@@ -1000,7 +1000,7 @@
 	input   StopEffect(float) : "Stop the effect."
 ]
 
-@PointClass base(Targetname) = env_texturetoggle : 
+@PointClass base(Targetname) iconsprite("editor/env_texturetoggle.vmt") = env_texturetoggle : 
 	"An entity that allows you to change the textures on other brush-built entities."
 [
 	target(target_destination) : "Target Brush(es)." 
@@ -1040,7 +1040,7 @@
 	PSName(string) : "Particle System Entity" : "" : "Set this to the name of the env_smokestack that you want this light to affect."
 ]
 
-@PointClass base(Targetname, Angles) color(255 0 0) = env_sun : 
+@PointClass base(Targetname, Angles) iconsprite("editor/env_sun.vmt") = env_sun : 
 	"An entity to control & draw a sun effect in the sky."
 [
 	target(target_destination) : "Viewer entity" : : "Name of an entity used to determine where the sun is in the skybox. The sun should be lined up on a line from this entity to the env_sun entity."
@@ -2246,7 +2246,7 @@
 ]
 
 
-@PointClass base(Targetname, Angles) iconsprite("editor/env_wind.vmt") = env_wind : 
+@PointClass base(Targetname, Angles) iconsprite("editor/env_wind.vmt") sphere(radius) = env_wind : 
 	"An entity to control wind in the map. Partially functional."
 [
 	//gustsound(sound) : "Gust Sound Filename" : "" : "Sound to be played to simulate the gusting wind."
@@ -2258,6 +2258,8 @@
 
 	mingustdelay(integer) : "Min gust delay" : 10 : "Minimum time delay between random gusts."
 	maxgustdelay(integer) : "Max gust delay" : 20 : "Maximum time delay between random gusts."
+	
+	radius(float) : "Wind Radius" : -1
 
 	gustduration(integer) : "Gust Duration" : 5 : "How long will the wind gust for."
 
@@ -4431,7 +4433,7 @@
 	output Line(vector) : "Fired when the vector, from the start entity to the end entity, changes. Passes along the vector as a parameter."
 ]
 
-@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = logic_navigation : 
+@PointClass base(Targetname) iconsprite("editor/logic_navigation.vmt") = logic_navigation : 
 	"An entity that is used to set navigation properties on other entities. Useful to make NPCs ignore physics props in their way that they can easily push." 
 [
 	target(target_destination) : "Navigation Entity" : "Name of the entity to set navigation properties on."
@@ -4450,7 +4452,7 @@
 	input Toggle(void) : "Toggle on/off."
 ]
 
-@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = logic_autosave :
+@PointClass base(Targetname) iconsprite("editor/logic_autosave.vmt") = logic_autosave :
 	"An entity that is used to force an autosave."
 [
 	NewLevelUnit(choices) : "Force New Level Unit" : 0 : "If set, the save will discard any savedata from previous levels, for the purpose of keeping savegame filesizes down. Can only be safely used if there is no way for the player to return to previous levels." =
@@ -4481,7 +4483,7 @@
 	input Disable(void) : "Enable the entity"
 ]
 
-@PointClass base(Targetname) size(-8 -8 -8, 8 8 8) = point_template : 
+@PointClass base(Targetname) iconsprite("editor/point_template.vmt") = point_template : 
 	"Turns an entity, or set of entities, into a single template that can be instanced anywhere, and multiple times. "+
 	"If there are interdependencies (entity I/O, hierarchy, or other name references) between the entities "+
 	"in the template, the entities in the template will have their names changed and the interdependencies will "+
@@ -5679,6 +5681,10 @@
 		1 : "Snow"
 		2 : "Ash"
 		3 : "Snowfall"
+		4 : "Particle Rain"
+		5 : "Particle Ash"
+		6 : "Particle Rain Storm"
+		7 : "Particle Snow"
 	]
 ]
 
@@ -6597,7 +6603,7 @@
 	replace10(instance_variable) : "Replace" : : "This is a replacement parameter.  It goes in the form of $variable value.  All entities inside of that instance that have $variable somewhere will be replaced with the value contents.  Example: $color 255 0 0"
 ]
 
-@PointClass size( -8 -8 -8, 8 8 8 ) = func_instance_parms : 
+@PointClass iconsprite("editor/func_instance_parms.vmt") = func_instance_parms : 
 	"Place one copy of this entity inside of an instance.  Whenever you add a $parameter for the instance, get the properties " +
 	"of this entity.  It will auto-populate it with the variables and allow you to indicate the variable type."
 [

@@ -1479,6 +1479,7 @@ BEGIN_RECV_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
 	RecvPropFloat	(RECVINFO(m_flInitialWindSpeed)),
 	RecvPropFloat	(RECVINFO(m_flStartTime)),
 	RecvPropFloat	(RECVINFO(m_flGustDuration)),
+	RecvPropFloat(RECVINFO(m_windRadius)),
 //	RecvPropInt		(RECVINFO(m_iszGustSound)),
 END_RECV_TABLE()
 

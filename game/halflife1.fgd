@@ -1153,7 +1153,7 @@ size(choices) : "Hull Size" : 0 =
 //
 //-------------------------------------------------------------------------
 
-@PointClass base(EnvGlobal) size(-8 -8 -8, 8 8 8) = env_global : 
+@PointClass base(EnvGlobal) iconsprite("editor/env_global.vmt") = env_global : 
 	"An entity to control a game-specific global states."
 [
 	globalstate(choices) : "Global State to Set" =
@@ -1677,7 +1677,7 @@ size(choices) : "Hull Size" : 0 =
 [
 	gravity(integer) : "Gravity (0-1)" : 1
 ]
-@PointClass base(Targetname) = trigger_relay : "Trigger Relay"
+@PointClass base(Targetname) iconsprite("editor/trigger_relay.vmt") = trigger_relay : "Trigger Relay"
 [
 	spawnflags(flags) =
 	[

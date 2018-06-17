@@ -101,6 +101,7 @@ static CUtlLinkedList< CEnvWindShared * > s_windControllers;
 CEnvWindShared::CEnvWindShared() : m_WindAveQueue(10), m_WindVariationQueue(10)
 {
 	m_pWindSound = NULL;
+	m_windRadius = -1.0f;
 	s_windControllers.AddToTail( this );
 }
 
@@ -127,6 +128,8 @@ void CEnvWindShared::Init( int nEntIndex, int iRandomSeed, float flTime,
 	m_iInitialWindDir = (int)( anglemod( m_iInitialWindDir ) );
 
 	m_flAveWindSpeed = m_flWindSpeed = m_flInitialWindSpeed = flInitialWindSpeed;
+
+	
 
 	/*
 	// Cache in the wind sound...
