@@ -15,7 +15,11 @@
 #include "teamplay_gamerules.h"
 #include "team_control_point.h"
 #include "trigger_area_capture.h"
+#ifndef DOD_DLL
 #include "team_objectiveresource.h"
+#else
+#include "dod_objective_resource.h"
+#endif
 #include "team_control_point_round.h"
 
 #define CPM_THINK			"CTeamControlPointMasterCPMThink"

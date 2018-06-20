@@ -83,4 +83,9 @@ private:
 
 extern CDODObjectiveResource *g_pObjectiveResource;
 
+inline CDODObjectiveResource *ObjectiveResource()
+{
+	return g_pObjectiveResource;
+}
+
 #endif	//DOD_OBJECTIVE_RESOURCE_H

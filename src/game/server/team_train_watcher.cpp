@@ -10,6 +10,8 @@
 #include "trains.h"
 #ifndef DOD_DLL
 #include "team_objectiveresource.h"
+#else
+#include "dod_objective_resource.h"
 #endif
 #include "teamplayroundbased_gamerules.h"
 #include "team_control_point.h"
