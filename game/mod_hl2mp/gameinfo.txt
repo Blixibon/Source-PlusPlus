@@ -8,7 +8,23 @@
 	nohimodel 1
 	nocrosshair 1
 	
-	hl2mpcontent 1
+	content
+	{
+		"hl2mp"	1
+	}
+	
+	mount
+	{
+		|gameinfo_parent|
+		{
+			"head"	"1"
+			
+			"|gameinfo_path|"
+			{
+			
+			}
+		}
+	}
 	
 	hidden_maps
 	{
@@ -26,6 +42,8 @@
 			// Our Crap
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			gamebin				|gameinfo_path|bin
+			
+			shared				|gameinfo_path|../spp_shared
 
 			// Needed Crap
 			game+mod			hl2mp/hl2mp_english.vpk

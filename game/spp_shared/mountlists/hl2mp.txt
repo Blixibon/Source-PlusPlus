@@ -1,0 +1,14 @@
+"Mount"
+{
+	320
+	{
+		"head"	"1"
+		"hl2mp"
+		{
+			vpk		hl2mp_pak
+			
+			custom custom
+		}
+	}
+	
+}

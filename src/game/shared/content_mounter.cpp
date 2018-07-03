@@ -1,4 +1,6 @@
+#if defined(GAME_DLL) || defined(CLIENT_DLL)
 #include "cbase.h"
+#endif
 #include "SteamCommon.h"
 #ifdef CLIENT_DLL
 #include "clientsteamcontext.h"
@@ -8,6 +10,8 @@
 #include "content_mounter.h"
 #include "icommandline.h"
 #include "scenefilecache\ISceneFileCache.h"
+
+#include "KeyValues.h"
 
 #ifdef _WIN32
 #include "winlite.h"
@@ -35,7 +39,7 @@ const char *GetGameDir()
 	static char gamePath[256];
 #ifdef GAME_DLL
 	engine->GetGameDir(gamePath, 256);
-#else
+#elif defined(CLIENT_DLL)
 	V_strncpy(gamePath, engine->GetGameDirectory(), sizeof(gamePath));
 #endif
 	return gamePath;
@@ -266,7 +270,7 @@ void MountKV(IFileSystem* const pFileSystem, KeyValues *pKVModDir, SearchPathAdd
 	g_pVGuiLocalize->AddFile(localization);
 }
 
-void MountSection(KeyValues *pMounts)
+void MountSection(IFileSystem* const pFileSystem, KeyValues *pMounts)
 {
 	char path[MAX_PATH];
 	ISteamApps* const steamApps = steamapicontext->SteamApps();
@@ -276,23 +280,23 @@ void MountSection(KeyValues *pMounts)
 		if (FStrEq(pMount->GetName(), "deps"))
 			continue;
 
-		if (!GetDirPath(steamApps, g_pFullFileSystem, pMount->GetName(), path))
+		if (!GetDirPath(steamApps, pFileSystem, pMount->GetName(), path))
 			continue;
 
 		const SearchPathAdd_t head = pMount->GetBool("head") ? PATH_ADD_TO_HEAD : PATH_ADD_TO_TAIL;
 		FOR_EACH_TRUE_SUBKEY(pMount, pModDir)
 		{
-			MountKV(filesystem, pModDir, head, path);
+			MountKV(pFileSystem, pModDir, head, path);
 		}
 	}
 }
 
-void MountContentFile(const char *pchName);
+void MountContentFile(IFileSystem* const pFileSystem, const char *pchName);
 
-void MountFile(const char *pchFile, const char *pchPathId)
+void MountFile(IFileSystem* const pFileSystem, const char *pchFile, const char *pchPathId)
 {
 	KeyValuesAD pMounts("Mount");
-	if (pMounts->LoadFromFile(filesystem, pchFile, pchPathId))
+	if (pMounts->LoadFromFile(pFileSystem, pchFile, pchPathId))
 	{
 		KeyValues *pkvContent = pMounts->FindKey("deps");
 
@@ -300,17 +304,17 @@ void MountFile(const char *pchFile, const char *pchPathId)
 		{
 			for (KeyValues * kvValue = pkvContent->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
 			{
-				MountContentFile(kvValue->GetName());
+				MountContentFile(pFileSystem, kvValue->GetName());
 			}
 		}
 
-		MountSection(pMounts);
+		MountSection(pFileSystem, pMounts);
 	}
 }
 
 CUtlSymbolTable g_MountedFiles;
 
-void MountContentFile(const char *pchName)
+void MountContentFile(IFileSystem* const pFileSystem, const char *pchName)
 {
 	if (g_MountedFiles.Find(pchName).IsValid())
 		return;
@@ -320,7 +324,7 @@ void MountContentFile(const char *pchName)
 	char path[MAX_PATH];
 	V_sprintf_safe(path, "mountlists/%s.txt", pchName);
 
-	MountFile(path, PATHID_SHARED);
+	MountFile(pFileSystem, path, PATHID_SHARED);
 }
 
 void MountExtraContent()

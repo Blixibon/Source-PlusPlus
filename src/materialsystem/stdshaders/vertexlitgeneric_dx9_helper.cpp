@@ -1218,76 +1218,83 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			pContextData->m_SemiStaticCmdsOut.End();
 		}
 	}
-	if ( pShaderAPI )
+	if (pShaderAPI)
 	{
 		CCommandBufferBuilder< CFixedCommandStorageBuffer< 1000 > > DynamicCmdsOut;
-		DynamicCmdsOut.Call( pContextData->m_SemiStaticCmdsOut.Base() );
+		DynamicCmdsOut.Call(pContextData->m_SemiStaticCmdsOut.Base());
 
-		if ( bHasEnvmap )
+		if (bHasEnvmap)
 		{
-			DynamicCmdsOut.BindTexture( pShader, SHADER_SAMPLER1, info.m_nEnvmap, info.m_nEnvmapFrame );
+			DynamicCmdsOut.BindTexture(pShader, SHADER_SAMPLER1, info.m_nEnvmap, info.m_nEnvmapFrame);
 		}
 
 		ITexture *pCascadedDepthTexture = NULL;
 		bool bFlashlightShadows = false;
 		bool bUberlight = false;
-		if ( bHasFlashlight )
+		if (bHasFlashlight)
 		{
 			VMatrix worldToTexture;
 			ITexture *pFlashlightDepthTexture;
-			const FlashlightState_t& state = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
+			const FlashlightState_t& state = pShaderAPI->GetFlashlightStateEx(worldToTexture, &pFlashlightDepthTexture);
 			bFlashlightShadows = state.m_bEnableShadows;// && ( pFlashlightDepthTexture != NULL );
 
-			if( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && state.m_bEnableShadows )
+			if (pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && state.m_bEnableShadows)
 			{
-				pShader->BindTexture( SHADER_SAMPLER8, pFlashlightDepthTexture, 0 );
-				DynamicCmdsOut.BindStandardTexture( SHADER_SAMPLER6, TEXTURE_SHADOW_NOISE_2D );
+				pShader->BindTexture(SHADER_SAMPLER8, pFlashlightDepthTexture, 0);
+				DynamicCmdsOut.BindStandardTexture(SHADER_SAMPLER6, TEXTURE_SHADOW_NOISE_2D);
 			}
 
-			SetFlashLightColorFromState( state, pShaderAPI, 28, bFlashlightNoLambert );
+			SetFlashLightColorFromState(state, pShaderAPI, 28, bFlashlightNoLambert);
 
 			static CCommandBufferBuilder<CFixedCommandStorageBuffer<1000>>* cmdsOut;
 			cmdsOut = &DynamicCmdsOut;
 
-			auto func = []( int var, const float* pVec, int nConsts ) {
-				cmdsOut->SetPixelShaderConstant( var, pVec, nConsts );
+			auto func = [](int var, const float* pVec, int nConsts) {
+				cmdsOut->SetPixelShaderConstant(var, pVec, nConsts);
 			};
 
-			bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState( func, state );
+			bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState(func, state);
 
-			Assert( info.m_nFlashlightTexture >= 0 && info.m_nFlashlightTextureFrame >= 0 );
-			pShader->BindTexture( SHADER_SAMPLER7, state.m_pSpotlightTexture, state.m_nSpotlightTextureFrame );
+			Assert(info.m_nFlashlightTexture >= 0 && info.m_nFlashlightTextureFrame >= 0);
+			pShader->BindTexture(SHADER_SAMPLER7, state.m_pSpotlightTexture, state.m_nSpotlightTextureFrame);
 		}
-		else if ( !bSeamlessBase && !bSeamlessDetail && bVertexLitGeneric )
+		else if (!bSeamlessBase && !bSeamlessDetail && bVertexLitGeneric)
 		{
-			pCascadedDepthTexture = ( ITexture* )pShaderAPI->GetIntRenderingParameter( INT_CASCADED_DEPTHTEXTURE );
+			pCascadedDepthTexture = (ITexture*)pShaderAPI->GetIntRenderingParameter(INT_CASCADED_DEPTHTEXTURE);
 		}
 
 		// Set up light combo state
 		LightState_t lightState = { 0, false, false, false };
-		if ( bVertexLitGeneric && (!bHasFlashlight || IsX360() ) )
+		if (bVertexLitGeneric && (!bHasFlashlight || IsX360()))
 		{
-			pShaderAPI->GetDX9LightState( &lightState );
+			pShaderAPI->GetDX9LightState(&lightState);
 		}
 
-		// Override the lighting desired if we have a lightmap set!
-		if ( bHasLightmapTexture && !pCascadedDepthTexture )
+		if (!pCascadedDepthTexture)
+		{
+			// Override the lighting desired if we have a lightmap set!
+			if (bHasLightmapTexture)
+			{
+				lightState.m_bStaticLightVertex = false;
+				lightState.m_bStaticLightTexel = true;
+
+				// Usual case, not debugging.
+				if (!bHasMatLuxel)
+				{
+					DynamicCmdsOut.BindTexture(pShader, SHADER_SAMPLER12, info.m_nLightmap);
+				}
+				else
+				{
+					float dimensions[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+					DynamicCmdsOut.BindStandardTexture(SHADER_SAMPLER12, TEXTURE_DEBUG_LUXELS);
+					pShader->GetTextureDimensions(&dimensions[0], &dimensions[1], info.m_nLightmap);
+					DynamicCmdsOut.SetPixelShaderConstant(11, dimensions, 1);
+				}
+			}
+		}
+		else
 		{
 			lightState.m_bStaticLightVertex = false;
-			lightState.m_bStaticLightTexel = true;
-
-			// Usual case, not debugging.
-			if (!bHasMatLuxel)
-			{
-				DynamicCmdsOut.BindTexture( pShader, SHADER_SAMPLER12, info.m_nLightmap );
-			}
-			else
-			{
-				float dimensions[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-				DynamicCmdsOut.BindStandardTexture( SHADER_SAMPLER12, TEXTURE_DEBUG_LUXELS );
-				pShader->GetTextureDimensions( &dimensions[0], &dimensions[1], info.m_nLightmap );
-				DynamicCmdsOut.SetPixelShaderConstant( 11, dimensions, 1 );
-			}
 		}
 
 		MaterialFogMode_t fogType = pShaderAPI->GetSceneFogMode();
