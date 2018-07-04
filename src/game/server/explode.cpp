@@ -426,7 +426,7 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 	CBaseEntity *pOwner, int magnitude, int radius, bool doDamage, float flExplosionForce, bool bSurfaceOnly, bool bSilent, int iCustomDamageType )
 {
 	// For E3, no sparks
-	int nFlags = SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE;
+	int nFlags = SF_ENVEXPLOSION_NOSPARKS /*| SF_ENVEXPLOSION_NODLIGHTS*/ | SF_ENVEXPLOSION_NOSMOKE;
 	if ( !doDamage )
 	{
 		nFlags |= SF_ENVEXPLOSION_NODAMAGE;
@@ -452,7 +452,7 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 					 float flExplosionForce , bool bSurfaceOnly , bool bSilent , int iCustomDamageType )
 {
 	// For E3, no sparks
-	int nFlags = SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE;
+	int nFlags = SF_ENVEXPLOSION_NOSPARKS /*| SF_ENVEXPLOSION_NODLIGHTS*/ | SF_ENVEXPLOSION_NOSMOKE;
 	if ( !doDamage )
 	{
 		nFlags |= SF_ENVEXPLOSION_NODAMAGE;

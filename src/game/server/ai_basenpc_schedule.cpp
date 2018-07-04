@@ -34,6 +34,7 @@
 #include "ndebugoverlay.h"
 #include "tier0/vcrmode.h"
 #include "env_debughistory.h"
+#include "explode.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -44,6 +45,7 @@ extern ConVar ai_use_think_optimizations;
 #define ShouldUseEfficiency() ( ai_use_think_optimizations.GetBool() && ai_use_efficiency.GetBool() )
 
 ConVar	ai_simulate_task_overtime( "ai_simulate_task_overtime", "0" );
+ConVar	ai_failure_explode("ai_failure_explode", "0");
 
 #define MAX_TASKS_RUN 10
 
@@ -515,6 +517,10 @@ CAI_Schedule *CAI_BaseNPC::GetFailSchedule( void )
 	Assert( AI_IdIsLocal( failedTask ) );
 
 	int scheduleType = SelectFailSchedule( prevSchedule, failedTask, m_ScheduleState.taskFailureCode );
+
+	if ((ai_failure_explode.GetInt() > 0 && scheduleType == SCHED_FAIL) || ai_failure_explode.GetInt() > 1)
+		scheduleType = SCHED_FAIL_EXPLODE;
+
 	return GetScheduleOfType( scheduleType );
 }
 
@@ -3095,6 +3101,24 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		TaskComplete();
 		break;
 
+	case TASK_EXPLODE:
+	{
+		ExplosionCreate(GetAbsOrigin(), vec3_angle, this, 0, 125, false);
+		CTakeDamageInfo info(this, this, GetMaxHealth() * 2.0f, DMG_BLAST | DMG_ALWAYSGIB);
+
+		Vector fwd, up, rgt;
+		GetVectors(&fwd, &rgt, &up);
+
+		Vector vecDir = (.1f * fwd) + up;
+		vecDir += (rgt * RandomFloat(-.2f, .2f));
+
+		CalculateExplosiveDamageForce(&info, vecDir, GetAbsOrigin(), 1.25f);
+
+		TakeDamage(info);
+
+		TaskComplete();
+	}
+	break;
 	default:
 		{
 			DevMsg( "No StartTask entry for %s\n", TaskName( task ) );

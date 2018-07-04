@@ -1,6 +1,4 @@
-#if defined(GAME_DLL) || defined(CLIENT_DLL)
 #include "cbase.h"
-#endif
 #include "SteamCommon.h"
 #ifdef CLIENT_DLL
 #include "clientsteamcontext.h"
@@ -45,7 +43,7 @@ const char *GetGameDir()
 	return gamePath;
 }
 
-template <size_t maxLenInChars> bool GetDirPath(ISteamApps* const steamApps,IFileSystem* const pFileSystem, const char *pchPathName, OUT_Z_ARRAY char(&pchBuffer)[maxLenInChars])
+template <size_t maxLenInChars> bool GetDirPath(ISteamApps* const steamApps, IFileSystem* const pFileSystem, const char *pchPathName, OUT_Z_ARRAY char(&pchBuffer)[maxLenInChars])
 {
 	if (!steamApps || !pFileSystem)
 		return false;
@@ -338,17 +336,17 @@ void MountExtraContent()
 	{
 		for (KeyValues * kvValue = pkvContent->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
 		{
-			MountContentFile(kvValue->GetName());
+			MountContentFile(filesystem, kvValue->GetName());
 		}
 	}
 
 	// Mount shared base
-	MountFile("base_dirs.txt", PATHID_SHARED);
+	MountFile(filesystem, "base_dirs.txt", PATHID_SHARED);
 	
 	// Mount Mod
 	KeyValues *pkvMounts = gameinfo->FindKey("mount");
 	if (pkvMounts)
-		MountSection(pkvMounts);
+		MountSection(filesystem, pkvMounts);
 
 	filesystem->MarkPathIDByRequestOnly(PATHID_SHARED, true);
 	filesystem->MarkPathIDByRequestOnly("SCENES", true);

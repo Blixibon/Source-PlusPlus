@@ -53,6 +53,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#if !defined(CSTRIKE_DLL) && !defined(DOD_DLL)
+#define HAS_TRAIN_WATCHER
+#endif
+
 #ifndef CLIENT_DLL
 CUtlVector< CHandle<CTeamControlPointMaster> >		g_hControlPointMasters;
 
@@ -683,7 +687,7 @@ void CTeamplayRoundBasedRules::Think( void )
 //-----------------------------------------------------------------------------
 bool CTeamplayRoundBasedRules::TimerMayExpire( void )
 {
-#ifndef CSTRIKE_DLL
+#ifdef HAS_TRAIN_WATCHER
 	// team_train_watchers can also prevent timer expiring ( overtime )
 	CTeamTrainWatcher *pWatcher = dynamic_cast<CTeamTrainWatcher*>( gEntList.FindEntityByClassname( NULL, "team_train_watcher" ) );
 	while ( pWatcher )
@@ -821,7 +825,7 @@ void CTeamplayRoundBasedRules::SetOvertime( bool bOvertime )
 	{
 		// tell train watchers that we've transitioned to overtime
 
-#ifndef CSTRIKE_DLL
+#ifdef HAS_TRAIN_WATCHER
 		CTeamTrainWatcher *pWatcher = dynamic_cast<CTeamTrainWatcher*>( gEntList.FindEntityByClassname( NULL, "team_train_watcher" ) );
 		while ( pWatcher )
 		{

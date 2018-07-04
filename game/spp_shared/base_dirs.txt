@@ -5,7 +5,7 @@
 		"head"	"1"
 		"portal2_content"
 		{
-			vpk		portal2_sound_misc
+			
 		}
 	}
 

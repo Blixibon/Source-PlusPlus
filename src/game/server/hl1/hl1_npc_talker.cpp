@@ -33,6 +33,7 @@ ConVar hl1_fixup_sentence_sndlevel( "hl1_fixup_sentence_sndlevel", "1" );
 BEGIN_DATADESC( CHL1NPCTalker )
 
 	DEFINE_ENTITYFUNC( Touch ),
+	DEFINE_USEFUNC( FollowerUse ),
 	DEFINE_FIELD( m_bInBarnacleMouth,	FIELD_BOOLEAN ),
 
 END_DATADESC()
