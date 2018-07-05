@@ -219,7 +219,8 @@ bool CWorldLights::GetBrightestLightSource( const Vector& vecPosition, Vector& v
 			continue;
 
 		// Calculate intensity at our position
-		const float flRatio = Engine_WorldLightDistanceFalloff( light, vecDelta );
+		float flRatio = Engine_WorldLightDistanceFalloff( light, vecDelta );
+		flRatio *= engine->LightStyleValue(light.style);
 		Vector vecIntensity = light.intensity * flRatio;
 
 		// Is this light more intense than the one we already found?

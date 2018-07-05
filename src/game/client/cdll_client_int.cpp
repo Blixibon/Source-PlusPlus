@@ -2169,7 +2169,7 @@ void OnRenderStart()
 	// are at the correct location
 	view->OnRenderStart();
 
-	//RopeManager()->OnRenderStart();
+	RopeManager()->OnRenderStart();
 	
 	// This will place all entities in the correct position in world space and in the KD-tree
 	C_BaseAnimating::UpdateClientSideAnimations();

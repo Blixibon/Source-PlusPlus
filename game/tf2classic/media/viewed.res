@@ -34,7 +34,7 @@
 	}
 	"ctf_2fort"
 	{
-		"viewed"		"1"
+		"viewed"		"2"
 	}
 	"cp_well"
 	{
