@@ -58,6 +58,7 @@ public:
 	virtual void Spawn();
 	virtual void Precache();
 	virtual float GetAutoAimRadius() { return 24.0f; }
+	virtual void OnRestore();
 
 	void BreakablePropTouch( CBaseEntity *pOther );
 
@@ -75,6 +76,9 @@ public:
 	void InputSetHealth( inputdata_t &inputdata );
 
 	int	 GetNumBreakableChunks( void ) { return m_iNumBreakableChunks; }
+
+	static bool VismonExplosiveEvaluator(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer);
+	static bool VismonExplosiveCallback(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer);
 
 	virtual bool OverridePropdata() { return false; }
 	virtual IPhysicsObject *GetRootPhysicsObjectForBreak();

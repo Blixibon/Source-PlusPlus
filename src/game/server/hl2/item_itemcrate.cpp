@@ -8,6 +8,7 @@
 #include "props.h"
 #include "items.h"
 #include "item_dynamic_resupply.h"
+#include "cvisibilitymonitor.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -29,6 +30,7 @@ public:
 
 	void Precache( void );
 	void Spawn( void );
+	void OnRestore();
 
 	virtual int	ObjectCaps() { return BaseClass::ObjectCaps() | FCAP_WCEDIT_POSITION; };
 
@@ -131,8 +133,16 @@ void CItem_ItemCrate::Spawn( void )
 	SetModel( pszItemCrateModelName[m_CrateAppearance] );
 	AddEFlags( EFL_NO_ROTORWASH_PUSH );
 	BaseClass::Spawn( );
+
+	VisibilityMonitor_AddEntity(this, asw_visrange_generic.GetFloat(), nullptr, nullptr);
 }
 
+void CItem_ItemCrate::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	VisibilityMonitor_AddEntity(this, asw_visrange_generic.GetFloat(), nullptr, nullptr);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

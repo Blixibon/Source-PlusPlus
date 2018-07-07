@@ -43,6 +43,8 @@ extern int g_nKillCamMode;
 extern int g_nKillCamTarget1;
 extern int g_nKillCamTarget2;
 
+extern ConVar asw_visrange_generic;
+
 class C_CommandContext
 {
 public:

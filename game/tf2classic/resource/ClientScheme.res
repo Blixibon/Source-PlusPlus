@@ -1,13 +1,16 @@
-//
-// TRACKER SCHEME RESOURCE FILE
+///////////////////////////////////////////////////////////
+// Tracker scheme resource file
 //
 // sections:
-//		colors			- all the colors used by the scheme
-//		basesettings	- contains settings for app to use to draw controls
-//		fonts			- list of all the fonts used by app
-//		borders			- description of all the borders
+//		Colors			- all the colors used by the scheme
+//		BaseSettings	- contains settings for app to use to draw controls
+//		Fonts			- list of all the fonts used by app
+//		Borders			- description of all the borders
 //
-//
+///////////////////////////////////////////////////////////
+#base "ClientSchemeBase.res"
+
+
 Scheme
 {
 	//Name - currently overriden in code

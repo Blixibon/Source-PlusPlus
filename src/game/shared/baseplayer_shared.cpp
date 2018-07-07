@@ -91,6 +91,8 @@
 ConVar mp_usehwmmodels( "mp_usehwmmodels", "0", NULL, "Enable the use of the hw morph models. (-1 = never, 1 = always, 0 = based upon GPU)" ); // -1 = never, 0 = if hasfastvertextextures, 1 = always
 #endif
 
+ConVar asw_visrange_generic("asw_visrange_generic", "400", FCVAR_CHEAT | FCVAR_REPLICATED, "Vismon range");
+
 bool UseHWMorphModels()
 {
 // #ifdef CLIENT_DLL

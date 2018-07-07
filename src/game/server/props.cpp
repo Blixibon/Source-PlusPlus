@@ -41,6 +41,7 @@
 #include "physics_collisionevent.h"
 #include "gamestats.h"
 #include "vehicle_base.h"
+#include "cvisibilitymonitor.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -820,6 +821,81 @@ CBreakableProp::CBreakableProp()
 	m_bUsePuntSound = true;
 }
 
+bool CBreakableProp::VismonExplosiveCallback(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer)
+{
+	IGameEvent * event = gameeventmanager->CreateEvent("physics_visible");
+	if (event)
+	{
+		event->SetInt("userid", pViewingPlayer->GetUserID());
+		event->SetInt("subject", pVisibleEntity->entindex());
+		event->SetString("type", "explosive_near_enemy");
+		event->SetString("entityname", STRING(pVisibleEntity->GetEntityName()));
+		gameeventmanager->FireEvent(event);
+	}
+
+	return false;
+}
+
+bool CBreakableProp::VismonExplosiveEvaluator(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer)
+{
+	CBreakableProp *pProp = static_cast<CBreakableProp *> (pVisibleEntity);
+
+	bool bMultiplayer = g_pGameRules->IsMultiplayer();
+
+	if (bMultiplayer)
+	{
+		// Iterate over players
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer *pOtherPlayer = UTIL_PlayerByIndex(i);
+			if (!pOtherPlayer || pOtherPlayer == pViewingPlayer)
+				continue;
+
+			if (!pOtherPlayer->IsAlive())
+				continue;
+
+			int iPlrRelat = g_pGameRules->PlayerRelationship(pViewingPlayer, pOtherPlayer);
+
+			if (iPlrRelat == GR_TEAMMATE || iPlrRelat == GR_ALLY)
+				continue;
+
+			if (pOtherPlayer->GetAbsOrigin().DistToSqr(pProp->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
+				continue;
+
+			if (!pOtherPlayer->FVisible(pProp))
+				continue;
+
+			return true;
+		}
+	}
+
+	if (!bMultiplayer || g_pGameRules->FAllowNPCs())
+	{
+		// Iterate over AIs
+		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+		{
+			CAI_BaseNPC *pNPC = ppAIs[i];
+
+			if (!pNPC->IsAlive())
+				continue;
+
+			if (pNPC->GetAbsOrigin().DistToSqr(pProp->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
+				continue;
+
+			if (pNPC->IRelationType(pViewingPlayer) != D_HT)
+				continue;
+
+			if (!pNPC->FVisible(pProp))
+				continue;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -920,8 +996,22 @@ void CBreakableProp::Spawn()
 	m_hBreaker = NULL;
 
 	SetTouch( &CBreakableProp::BreakablePropTouch );
+
+	if (m_explodeDamage > 0 || m_explodeRadius > 0)
+	{
+		VisibilityMonitor_AddEntity(this, 2048.0f, &CBreakableProp::VismonExplosiveCallback, &CBreakableProp::VismonExplosiveEvaluator);
+	}
 }
 
+void CBreakableProp::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	if (m_explodeDamage > 0 || m_explodeRadius > 0)
+	{
+		VisibilityMonitor_AddEntity(this, 2048.0f, &CBreakableProp::VismonExplosiveCallback, &CBreakableProp::VismonExplosiveEvaluator);
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Disable auto fading under dx7 or when level fades are specified
@@ -1733,7 +1823,7 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 		MessageEnd();
 
 #ifndef HL2MP
-		UTIL_Remove( this );
+		RemoveDeferred();
 #endif
 		return;
 	}
@@ -1799,7 +1889,7 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 	}
 
 #ifndef HL2MP
-	UTIL_Remove( this );
+	RemoveDeferred();
 #endif
 }
 

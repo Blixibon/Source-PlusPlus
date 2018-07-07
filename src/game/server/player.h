@@ -180,6 +180,7 @@ enum PlayerConnectedState
 
 extern bool gInitHUD;
 extern ConVar *sv_cheats;
+extern ConVar asw_visrange_generic;
 
 class CBasePlayer;
 class CPlayerInfo : public IBotController, public IPlayerInfo

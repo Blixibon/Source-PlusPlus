@@ -526,6 +526,16 @@ $Project
 			$File	"$SRCDIR\game\shared\sixense\sixense_convars_extern.h"
 		}
 		
+		$Folder "Instructor"
+		{
+			$File	"hl2ce\c_baselesson.cpp"
+			$File	"hl2ce\c_baselesson.h"
+			$File	"hl2ce\c_gameinstructor.cpp"
+			$File	"hl2ce\c_gameinstructor.h"
+			$File	"hl2ce\hud_locator_target.cpp"
+			$File	"hl2ce\hud_locator_target.h"
+		}
+		
 		// Files not using precompiled header cbase.h
 
 		$File	"$SRCDIR\public\bone_setup.cpp"						\

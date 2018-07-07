@@ -712,6 +712,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	// load Mod specific game events ( MUST be before InitAllSystems() so it can pickup the mod specific events)
 	gameeventmanager->LoadEventsFromFile("resource/ModEvents.res");
 
+	gameeventmanager->LoadEventsFromFile("resource/InstructorEvents.res");
+
 #ifdef CSTRIKE_DLL // BOTPORT: TODO: move these ifdefs out
 	InstallBotControl();
 #endif

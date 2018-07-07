@@ -21,6 +21,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+ConVar keyhint_use_gameinstructor("cl_keyhint_use_instructor", "1", FCVAR_ARCHIVE);
+
 //-----------------------------------------------------------------------------
 // Purpose: Displays hints across the center of the screen
 //-----------------------------------------------------------------------------
@@ -464,6 +466,22 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 		m_Labels[i]->MarkForDeletion();
 	}
 	m_Labels.RemoveAll();
+
+	if (keyhint_use_gameinstructor.GetBool())
+	{
+		const char *pText = text;
+
+		if (pText[0] == '#')
+		{
+			pText++;
+		}
+
+		IGameEvent *pEvent = gameeventmanager->CreateEvent("client_keyhint");
+		pEvent->SetString("text", pText);
+		gameeventmanager->FireEventClientSide(pEvent);
+
+		return false;
+	}
 
 	// look up the text string
 	wchar_t *ws = g_pVGuiLocalize->Find( text );
