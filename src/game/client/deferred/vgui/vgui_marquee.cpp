@@ -4,6 +4,8 @@
 
 #include "vgui/ISurface.h"
 
+#include "tier0/memdbgon.h"
+
 
 using namespace vgui;
 
@@ -109,6 +111,6 @@ void CVGUIMarquee::OnThink()
 
 	m_flCurOffset += m_flMoveDir * gpGlobals->frametime;
 
-	while ( fabsf( m_flCurOffset ) > strWidth )
+	while ( abs( m_flCurOffset ) > strWidth )
 		m_flCurOffset -= strWidth * Sign( m_flCurOffset );
 }

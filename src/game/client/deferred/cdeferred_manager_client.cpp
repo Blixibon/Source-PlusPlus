@@ -1,12 +1,16 @@
-
 #include "cbase.h"
+
 #include "tier0/icommandline.h"
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "materialsystem/imaterialvar.h"
 #include "filesystem.h"
 #include "deferred/deferred_shared_common.h"
+#include "utlbuffer.h"
+#include "deferred_light_lump.h"
 
-#include "vgui_controls/messagebox.h"
+#include "vgui_controls/MessageBox.h"
+
+#include "tier0/memdbgon.h"
 
 static CDeferredManagerClient __g_defmanager;
 CDeferredManagerClient *GetDeferredManager()
@@ -28,20 +32,24 @@ CDeferredManagerClient::CDeferredManagerClient() : BaseClass( "DeferredManagerCl
 	Q_memset( m_pKV_Def, 0, sizeof(KeyValues*) * DEF_MAT_COUNT );
 }
 
+CDeferredManagerClient::~CDeferredManagerClient()
+{
+	for ( KeyValues* &values : m_pKV_Def )
+	{
+		values->deleteThis();
+		values = NULL;
+	}
+}
+
 bool CDeferredManagerClient::Init()
 {
 	AssertMsg( g_pCurrentViewRender == NULL, "viewrender already allocated?!" );
 
-	const bool bForceDeferred = CommandLine() && CommandLine()->FindParm("-forcedeferred") != 0;
-	bool bSM30 = g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 95;
-
-	if ( !bSM30 )
+	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 95 )
 	{
 		Warning( "The engine doesn't recognize your GPU to support SM3.0, running deferred anyway...\n" );
-		bSM30 = true;
 	}
 
-	if ( bSM30 || bForceDeferred )
 	{
 		const bool bGotDefShaderDll = ConnectDeferredExt();
 
@@ -156,7 +164,7 @@ void CDeferredManagerClient::InitializeDeferredMaterials()
 	{
 		filesystem->CreateDirHierarchy("materials/deferred", "MOD");
 	}
-	
+
 #if DEBUG
 	m_pKV_Def[ DEF_MAT_WIREFRAME_DEBUG ] = new KeyValues( "wireframe" );
 	if ( m_pKV_Def[ DEF_MAT_WIREFRAME_DEBUG ] != NULL )
@@ -552,13 +560,35 @@ void CDeferredManagerClient::InitializeDeferredMaterials()
 
 void CDeferredManagerClient::ShutdownDeferredMaterials()
 {
+	// not deleted on purpose!!!!!
 	for ( int i = 0; i < DEF_MAT_COUNT; i++ )
 	{
 		if ( m_pKV_Def[ i ] != NULL )
-		{
 			m_pKV_Def[ i ]->Clear();
-			m_pKV_Def[ i ]->deleteThis();
-		}
 		m_pKV_Def[ i ] = NULL;
 	}
+}
+
+void CDeferredManagerClient::LevelInitPreEntity()
+{
+	const int lumpSize = engine->GameLumpSize( GAMELUMP_DEFERRED_LIGHTS );
+	if ( !lumpSize || engine->GameLumpVersion( GAMELUMP_DEFERRED_LIGHTS ) != GAMELUMP_DEFERRED_LIGHTS_VERSION )
+		return;
+	CUtlBuffer buffer( 0, lumpSize, CUtlBuffer::READ_ONLY );
+	const bool success = engine->LoadGameLump( GAMELUMP_DEFERRED_LIGHTS, buffer.Base(), lumpSize );
+	if ( !success )
+		return;
+	const bool bHasGlobalLight = buffer.GetUnsignedChar();
+	def_lump_light_global_t globalLight;
+	buffer.GetObjects( &globalLight );
+	const int numLights = buffer.GetInt();
+	CUtlVector<def_lump_light_t> lumpLights;
+	lumpLights.EnsureCount( numLights );
+	buffer.GetObjects( lumpLights.Base(), numLights );
+	Warning( "Global light: %d | lights: %d\n", bHasGlobalLight, numLights );
+}
+
+void CDeferredManagerClient::LevelShutdownPostEntity()
+{
+
 }

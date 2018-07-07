@@ -223,14 +223,14 @@ private:
 
 struct def_light_temp_t : public def_light_t
 {
-	def_light_temp_t( float fLifeTime = 1.0f, bool bDelete = true )
+	def_light_temp_t( float fLifeTime = 1.0f )
 	{
 		fEndLifeTime = gpGlobals->curtime + fLifeTime;
-		bAutoDelete = bDelete;
+		fDecay = 1.f / fLifeTime;
 	}
 
 	float fEndLifeTime;
-	bool bAutoDelete;
+	float fDecay;
 };
 
 #endif

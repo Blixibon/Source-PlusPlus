@@ -46,16 +46,20 @@ class CDeferredManagerClient : public CAutoGameSystem
 public:
 
 	CDeferredManagerClient();
+	~CDeferredManagerClient();
 
 	virtual bool Init();
 	virtual void Shutdown();
 
-	inline bool IsDeferredRenderingEnabled();
+	inline bool IsDeferredRenderingEnabled() const;
 
 	ImageFormat GetShadowDepthFormat();
 	ImageFormat GetNullFormat();
 
-	inline IMaterial *GetDeferredMaterial( DEF_MATERIALS mat );
+	inline IMaterial *GetDeferredMaterial( DEF_MATERIALS mat ) const;
+
+	void LevelInitPreEntity();
+	void LevelShutdownPostEntity();
 
 private:
 
@@ -66,14 +70,16 @@ private:
 
 	IMaterial *m_pMat_Def[ DEF_MAT_COUNT ];
 	KeyValues *m_pKV_Def[ DEF_MAT_COUNT ];
+
+	CUtlVector<def_light_t*> m_lights;
 };
 
-bool CDeferredManagerClient::IsDeferredRenderingEnabled()
+bool CDeferredManagerClient::IsDeferredRenderingEnabled() const
 {
 	return m_bDefRenderingEnabled;
 }
 
-IMaterial *CDeferredManagerClient::GetDeferredMaterial( DEF_MATERIALS mat )
+IMaterial *CDeferredManagerClient::GetDeferredMaterial( DEF_MATERIALS mat ) const
 {
 	Assert( mat >= 0 && mat < DEF_MAT_COUNT );
 

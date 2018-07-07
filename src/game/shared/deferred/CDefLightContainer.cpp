@@ -2,6 +2,8 @@
 #include "cbase.h"
 #include "deferred/deferred_shared_common.h"
 
+#include "tier0/memdbgon.h"
+
 static CUtlVector< CDeferredLightContainer* >__g_pLightContainerDict;
 
 int GetNumLightContainers()
@@ -16,9 +18,13 @@ CDeferredLightContainer *GetLightContainer( int index )
 
 CDeferredLightContainer *FindAvailableContainer()
 {
-	for ( CDeferredLightContainer* container : __g_pLightContainerDict )
+	const int dictSize = __g_pLightContainerDict.Count();
+	for ( int i = 0; i < dictSize; ++i )
+	{
+		CDeferredLightContainer* container = __g_pLightContainerDict[i];
 		if ( container->GetLightsAmount() < DEFLIGHTCONTAINER_MAXLIGHTS )
 			return container;
+	}
 
 	return NULL;
 }

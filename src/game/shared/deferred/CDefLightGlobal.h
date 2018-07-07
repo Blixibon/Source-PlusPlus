@@ -49,6 +49,11 @@ private:
 
 	float m_flFadeTime;
 	CNetworkVar( int, m_iDefFlags );
+	
+#ifdef GAME_DLL
+public:
+	bool bGenerated;
+#endif
 };
 
 extern CDeferredLightGlobal *GetGlobalLight();

@@ -2,6 +2,8 @@
 #include "cbase.h"
 #include "deferred/deferred_shared_common.h"
 
+#include "tier0/memdbgon.h"
+
 static CDeferredLightGlobal *__g_pGlobalLight = NULL;
 CDeferredLightGlobal *GetGlobalLight()
 {
@@ -49,6 +51,9 @@ CDeferredLightGlobal::CDeferredLightGlobal()
 	__g_pGlobalLight = this;
 
 	m_iDefFlags = DEFLIGHTGLOBAL_ENABLED | DEFLIGHTGLOBAL_SHADOW_ENABLED;
+#ifdef GAME_DLL
+	bGenerated = false;
+#endif
 }
 
 CDeferredLightGlobal::~CDeferredLightGlobal()
@@ -103,13 +108,13 @@ lightData_Global_t CDeferredLightGlobal::GetState()
 {
 	lightData_Global_t data;
 
-	data.diff.Init(XYZ(GetColor_Diffuse()), 0 );
-	data.ambh.Init(XYZ(GetColor_Ambient_High()), 0 );
-	data.ambl.Init(XYZ(GetColor_Ambient_Low()), 0 );
+	data.diff.Init( GetColor_Diffuse() );
+	data.ambh.Init( GetColor_Ambient_High() );
+	data.ambl.Init( GetColor_Ambient_Low() );
 
 	Vector dir;
 	AngleVectors( GetAbsAngles(), &dir );
-	data.vecLight.Init(XYZ(-dir), 0 );
+	data.vecLight.Init( -dir );
 
 	if ( IsEnabled() &&
 		( data.diff.LengthSqr() > 0.01f ||

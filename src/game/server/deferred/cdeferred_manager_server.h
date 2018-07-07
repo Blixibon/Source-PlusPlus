@@ -5,13 +5,14 @@
 
 class CDeferredLight;
 
-class CDeferredManagerServer : public CAutoGameSystem
+class CDeferredManagerServer : public CBaseGameSystem
 {
-	typedef CAutoGameSystem BaseClass;
 public:
 
 	CDeferredManagerServer();
 	~CDeferredManagerServer();
+
+	const char* Name() { return "DeferredManagerServer"; }
 
 	virtual bool Init();
 	virtual void Shutdown();

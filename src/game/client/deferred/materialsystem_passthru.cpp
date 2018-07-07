@@ -1,6 +1,6 @@
 //====== Copyright © Sandern Corporation, All rights reserved. ===========//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -51,9 +51,9 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 		IMaterialVar *pVar = pParams[ i ];
 		const char *pVarName = pVar->GetName();
 
-		if (!V_stricmp("$flags", pVarName) || 
-			!V_stricmp("$flags_defined", pVarName) || 
-			!V_stricmp("$flags2", pVarName) || 
+		if (!V_stricmp("$flags", pVarName) ||
+			!V_stricmp("$flags_defined", pVarName) ||
+			!V_stricmp("$flags2", pVarName) ||
 			!V_stricmp("$flags_defined2", pVarName) )
 			continue;
 
@@ -126,9 +126,10 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 
 	const bool alphaBlending = pMat->IsTranslucent() || pMat->GetMaterialVarFlag( MATERIAL_VAR_TRANSLUCENT );
 	const bool translucentOverride = pMat->IsAlphaTested() || pMat->GetMaterialVarFlag( MATERIAL_VAR_ALPHATEST ) || alphaBlending;
+	const bool bSelfillum = pMat->GetMaterialVarFlag( MATERIAL_VAR_SELFILLUM );
 
-	const bool bDecal = ( pszOldShadername != NULL && Q_stristr( pszOldShadername, "decal" ) != NULL ) ||
-		( pszMatname != NULL && Q_stristr( pszMatname, "decal" ) != NULL ) ||
+	const bool bDecal = ( pszOldShadername != NULL && V_stristr( pszOldShadername, "decal" ) != NULL ) ||
+		/*( pszMatname != NULL && V_stristr( pszMatname, "decal" ) != NULL ) ||*/
 		pMat->GetMaterialVarFlag( MATERIAL_VAR_DECAL );
 
 	if ( bDecal )
@@ -143,37 +144,18 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 		msg->SetInt( "$alphatest", 1 );
 	}
 
-	if ( pMat->IsTwoSided() )
+	// Find a better solution to this...
+	if ( pMat->IsTwoSided() || ( FStrEq( pszOldShadername, "LightmappedGeneric" ) || FStrEq( pszOldShadername, "WorldVertexTransition" ) ) && !( V_stristr( pszMatname, "glass" ) || V_stristr( pszMatname, "window" ) ) )
 	{
 		msg->SetInt( "$nocull", 1 );
 	}
 
-	if (pMat->HasProxy())
+	if ( bSelfillum )
 	{
-		KeyValues *pkvMat = new KeyValues(pszOldShadername);
-		const char *pchMatName = pMat->GetName();
-		const char *pszDirName = "materials/";
-
-		char szFileName[MAX_PATH];
-		Q_strncpy(szFileName, pszDirName, MAX_PATH);
-		Q_strncat(szFileName, pchMatName, sizeof(szFileName), COPY_ALL_CHARACTERS);
-		Q_FixSlashes(szFileName);
-		Q_SetExtension(szFileName, ".vmt", sizeof(szFileName));
-
-		if (pkvMat->LoadFromFile(filesystem, szFileName, NULL))
-		{
-			KeyValues *pkvProxies = pkvMat->FindKey("Proxies");
-			if (pkvProxies)
-			{
-				KeyValues *pkvCopy = pkvProxies->MakeCopy();
-				msg->AddSubKey(pkvCopy);
-			}
-		}
-
-		pkvMat->deleteThis();
+		msg->SetInt( "$selfillum", 1 );
 	}
-	
-	pMat->SetShaderAndParams(msg);
+
+	pMat->SetShaderAndParams( msg );
 
 	pMat->RefreshPreservingMaterialVars();
 }
@@ -184,7 +166,7 @@ IMaterial* CDeferredMaterialSystem::FindProceduralMaterial( const char* pMateria
 	const char* pShaderName = pVMTKeyValues->GetName();
 	for ( const char* const* row : pszShaderReplaceDict )
 	{
-		if ( Q_stristr( pShaderName, row[0] ) == pShaderName )
+		if ( FStrEq( pShaderName, row[0] ) )
 		{
 			pVMTKeyValues->SetName( row[1] );
 			matCount++;
@@ -199,7 +181,7 @@ IMaterial* CDeferredMaterialSystem::CreateMaterial( const char* pMaterialName, K
 	const char* pShaderName = pVMTKeyValues->GetName();
 	for ( const char* const* row : pszShaderReplaceDict )
 	{
-		if ( Q_stristr( pShaderName, row[0] ) == pShaderName )
+		if ( FStrEq( pShaderName, row[0] ) )
 		{
 			pVMTKeyValues->SetName( row[1] );
 			matCount++;
@@ -211,7 +193,7 @@ IMaterial* CDeferredMaterialSystem::CreateMaterial( const char* pMaterialName, K
 
 IMaterial* CDeferredMaterialSystem::ReplaceMaterialInternal( IMaterial* pMat ) const
 {
-	if ( !pMat || pMat->IsErrorMaterial() || pMat->InMaterialPage())
+	if ( !pMat || pMat->IsErrorMaterial() )
 		return pMat;
 
 	const char* pShaderName = pMat->GetShaderName();
@@ -219,7 +201,7 @@ IMaterial* CDeferredMaterialSystem::ReplaceMaterialInternal( IMaterial* pMat ) c
 	{
 		for ( const char* const* row : pszShaderReplaceDict )
 		{
-			if ( Q_stristr( pShaderName, row[0] ) == pShaderName )
+			if ( FStrEq( pShaderName, row[0] ) )
 			{
 				ShaderReplaceReplMat( row[1], pMat );
 				matCount++;

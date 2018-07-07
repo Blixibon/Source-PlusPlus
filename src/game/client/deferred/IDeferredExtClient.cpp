@@ -1,6 +1,8 @@
 #include "cbase.h"
 #include "deferred/deferred_shared_common.h"
 
+#include "tier0/memdbgon.h"
+
 
 CSysModule *__g_pDeferredShaderModule = NULL;
 static IDeferredExtension *__g_defExt = NULL;
@@ -25,7 +27,7 @@ void ShutdownDeferredExt()
 	if ( !__g_defExt )
 		return;
 
-	delete [] __g_defExt->CommitLightData_Common( NULL, 0, 0, 0, 0, 0 );
+	__g_defExt->CommitLightData_Common( NULL );
 
 	__g_defExt = NULL;
 

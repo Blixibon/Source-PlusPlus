@@ -17,7 +17,7 @@ $Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
 $include "$SRCDIR\vpc_scripts\protobuf_builder.vpc"
 $Include "$SRCDIR\vpc_scripts\source_replay.vpc"	[$TF]
 $Include "$SRCDIR\game\protobuf_include.vpc"
-$Include "$SRCDIR\game\client\client_deferred_base.vpc" [$DEFERRED]
+$Include "$SRCDIR\game\client\client_deferred_base.vpc" //[$DEFERRED]
 
 $Configuration	"Debug"
 {
@@ -169,6 +169,32 @@ $Project
 			}
 			$File	"$SRCDIR\public\movieobjects\timeutils.h"
 		}
+	}
+	
+	$Folder	"Hooking"
+	{
+		$File	"$SRCDIR\thirdparty\subhook\subhook.c"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$PreprocessorDefinitions		"$BASE;SUBHOOK_STATIC"
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+					$DisableSpecificWarnings		"4316;4100;4244;4701;4310"
+				}
+			}
+		}
+	}
+	
+	$Folder "Shader editor"
+	{
+		$File	"ShaderEditor/SEdit_ModelRender.cpp"
+		$File	"ShaderEditor/SEdit_ModelRender.h"
+		$File	"ShaderEditor/ShaderEditorSystem.cpp"
+		$File	"ShaderEditor/ShaderEditorSystem.h"
+		$File	"ShaderEditor/ISEdit_ModelRender.h"
+		$File	"ShaderEditor/IVShaderEditor.h"
 	}
 		
 	$Folder	"Source Files"

@@ -55,8 +55,6 @@ $Project
 				$File	"deferred\cascade_t.cpp"
 				$File	"deferred\cdeferred_manager_client.cpp"
 				$File	"deferred\cdeferred_manager_client.h"
-				$File	"deferred\clight_editor.cpp"
-				$File	"deferred\clight_editor.h"
 				$File	"deferred\clight_manager.cpp"
 				$File	"deferred\clight_manager.h"
 				$File	"deferred\def_light_t.cpp"
@@ -73,21 +71,29 @@ $Project
 				$File	"deferred\flashlighteffect_deferred.h"
 				$File	"deferred\IDefCookie.h"
 				$File	"deferred\IDeferredExtClient.cpp"
-				$File	"deferred\materialsystem_passthru.cpp"
-				$File	"deferred\materialsystem_passthru.h"
-				$File	"deferred\viewrender_deferred.cpp"
-				$File	"deferred\viewrender_deferred.h"
+				$File	"deferred\viewrender_deferred_helper.cpp"
+				{
+					$Configuration
+					{
+						$Compiler
+						{
+							$AdditionalIncludeDirectories	"$BASE;$SRCDIR\thirdparty\subhook"
+						}
+					}
+				}
+				$File	"deferred\viewrender_deferred_helper.h"
+				$File	"$SRCDIR\public\deferred_light_lump.cpp"
+				{
+					$Configuration
+					{
+						$Compiler
+						{
+							$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+						}
+					}
+				}
+				$File	"$SRCDIR\public\deferred_light_lump.h"
 			}
-		}
-		
-		$Folder "Shader editor"
-		{
-			$File	"ShaderEditor/SEdit_ModelRender.cpp"
-			$File	"ShaderEditor/SEdit_ModelRender.h"
-			$File	"ShaderEditor/ShaderEditorSystem.cpp"
-			$File	"ShaderEditor/ShaderEditorSystem.h"
-			$File	"ShaderEditor/ISEdit_ModelRender.h"
-			$File	"ShaderEditor/IVShaderEditor.h"
 		}
 	}
 }

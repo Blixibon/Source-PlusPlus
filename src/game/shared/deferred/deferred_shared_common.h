@@ -70,16 +70,12 @@ inline Vector stringColToVec( const char *str )
 
 inline void vecToStringCol( Vector col, char *out, int maxLen )
 {
-	float flMax = MAX( col.x, MAX( col.y, col.z ) );
+	float flMax = Max( col.x, Max( col.y, col.z ) );
 	if ( flMax > 0 )
 		col /= flMax;
 
 	col *= 255;
-	float ft4[] = { XYZ( col ), flMax * 255 };
-	int it4[4];
-
-	for (int i = 0; i < 4; i++)
-		it4[i] = Floor2Int(ft4[i]);
+	int it4[] = { (int)col.x, (int)col.y, (int)col.z, (int)flMax * 255 };
 
 	Q_snprintf( out, maxLen, "%i %i %i %i", it4[0], it4[1], it4[2], it4[3] );
 }
@@ -101,7 +97,7 @@ void UTIL_StringToIntArray( int *pVector, int count, const char *pString );
 #define NETWORK_MASK_COOKIE		0x007F
 #define NETWORK_MASK_SEED		0xFFFF
 
-#include "../../materialsystem/defshaders/deferred_global_common.h"
+#include "../../materialsystem/stdshaders/deferred_global_common.h"
 
 enum LIGHT_PARAM_ID
 {

@@ -39,7 +39,7 @@ public:
 
 	int CountTempLights() const;
 	void AddTempLight( def_light_temp_t *l );
-	void UpdateTemplights();
+	void UpdateTemplights(float deltaTime);
 
 #if DEFCFG_USE_SSE
 	void AllocateSortDataBuffer();
@@ -97,7 +97,9 @@ private:
 
 #if DEFCFG_USE_SSE
 	def_light_presortdatax4_t* m_pSortDataX4;
-	unsigned int m_uiSortDataCount;			
+	int m_SortBufferDataSize;
+	unsigned int m_uiSortDataCount;
+	bool m_bSortDataNeedsRealloc;
 #endif
 
 	CUtlVector< def_light_t* > m_hDeferredLights;
