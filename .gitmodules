@@ -1,0 +1,3 @@
+[submodule "src/thirdparty/subhook"]
+	path = src/thirdparty/subhook
+	url = https://github.com/Petercov/subhook

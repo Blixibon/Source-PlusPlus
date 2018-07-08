@@ -7,6 +7,9 @@
 #include "vgui/IInput.h"
 #include "ienginevgui.h"
 #include "view.h"
+#include "engine\IStaticPropMgr.h"
+#include "cdll_client_int.h"
+#include "..\thirdparty\subhook\subhook.h"
 
 #include "tier0/memdbgon.h"
 
@@ -326,3 +329,56 @@ CON_COMMAND( csm_tweak, "" )
 		new CCSMTweakPanel(enginevgui->GetPanel(PANEL_CLIENTDLL));
 	}
 }
+
+//static subhook::Hook* PropHasBakedLightingDisabledHook = NULL;
+//bool(*PropHasBakedLightingDisabledOriginal)(IHandleEntity *pHandleEntity);
+//
+//
+//	bool PropHasBakedLightingDisabled(IHandleEntity *pHandleEntity)
+//	{
+//		if (g_pCSMEnvLight && g_pCSMEnvLight->IsCascadedShadowMappingEnabled())
+//			return true;
+//
+//		return PropHasBakedLightingDisabledOriginal(pHandleEntity);
+//	}
+//
+//
+//
+//static class AutoHook : public CAutoGameSystem
+//{
+//public:
+//	bool Init() OVERRIDE
+//	{
+//#ifdef WIN32
+//		int iOffset = 11;
+//#elif __linux__
+//		int iOffset = 13;
+//#else
+//#error	"Not supported platform!"
+//#endif
+//		//void **this_ptr = *(void ***)&staticpropmgr;
+//		void **vtable = *(void ***)staticpropmgr;
+//		void *func = vtable[iOffset];
+//
+//		//CStaticPropManagerDummy *pDummy = static_cast<CStaticPropManagerDummy *> (staticpropmgr);
+//
+////#define HOOK_FUNC( funcAddr, funcRepl ) 
+//
+//		{
+//			PropHasBakedLightingDisabledHook = new subhook::Hook(func, (void*)(&PropHasBakedLightingDisabled));
+//			Msg("Hooking " V_STRINGIFY(PropHasBakedLightingDisabled) " %ssuccessful\n", PropHasBakedLightingDisabledHook->Install() ? "" : "un");
+//			*reinterpret_cast<void**>(&PropHasBakedLightingDisabledOriginal) = PropHasBakedLightingDisabledHook->GetTrampoline();
+//		}
+//
+//#undef HOOK_FUNC
+//
+//		//g_WorldStaticMeshes = reinterpret_cast<CUtlVector<IMesh*>*>(reinterpret_cast<byte*>( engineDll ) + 0x5AD2A8);
+//
+//		return true;
+//	}
+//
+//	void Shutdown() OVERRIDE
+//	{
+//		delete PropHasBakedLightingDisabledHook;
+//	}
+//} autoHook;

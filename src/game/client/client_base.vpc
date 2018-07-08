@@ -170,6 +170,22 @@ $Project
 			$File	"$SRCDIR\public\movieobjects\timeutils.h"
 		}
 	}
+	
+	$Folder	"Hooking"
+	{
+		$File	"$SRCDIR\thirdparty\subhook\subhook.c"
+		{
+			$Configuration
+			{
+				$Compiler
+				{
+					$PreprocessorDefinitions		"$BASE;SUBHOOK_STATIC"
+					$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+					$DisableSpecificWarnings		"4316;4100;4244;4701;4310"
+				}
+			}
+		}
+	}
 		
 	$Folder	"Source Files"
 	{
