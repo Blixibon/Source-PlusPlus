@@ -2,11 +2,10 @@
 #ifndef COMMON_DEFERRED_FXC_H
 #define COMMON_DEFERRED_FXC_H
 
-// SKIP:		!$MODEL && $MORPHING_VTEX
 
+// SKIP:		!$MODEL && MORPHING
 // SKIP:		!$MODEL && $COMPRESSED_VERTS
 // SKIP:		!$MODEL && $SKINNING
-// SKIP:		!$MODEL && $MORPHING_VTEX
 
 #include "common_fxc.h"
 #include "deferred_global_common.h"

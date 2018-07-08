@@ -401,7 +401,7 @@ void C_EntityFlame::Simulate( void )
 
 #ifdef DEFERRED
 
-	if (GetLightingManager() && (IsEffectActive(EF_BRIGHTLIGHT) || IsEffectActive(EF_DIMLIGHT)))
+	if (IsEffectActive(EF_BRIGHTLIGHT) || IsEffectActive(EF_DIMLIGHT))
 	{
 		if (!m_pDefLight)
 		{
@@ -415,7 +415,7 @@ void C_EntityFlame::Simulate( void )
 			GetLightingManager()->AddLight(dl);
 		}
 
-		m_pDefLight->iFlags |= (DEFLIGHT_COOKIE_ENABLED|DEFLIGHT_SHADOW_ENABLED);
+		m_pDefLight->iFlags |= (DEFLIGHT_SHADOW_ENABLED);
 		m_pDefLight->pos = GetAbsOrigin();
 		m_pDefLight->pos[2] += 16;
 		m_pDefLight->flRadius = random->RandomFloat(400, 431);

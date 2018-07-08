@@ -18,10 +18,10 @@ CDeferredManagerClient *GetDeferredManager()
 	return &__g_defmanager;
 }
 
-static IViewRender *g_pCurrentViewRender = NULL;
+//static IViewRender *g_pCurrentViewRender = NULL;
 
-static CDeferredMaterialSystem g_DeferredMaterialSystem;
-static IMaterialSystem *g_pOldMatSystem;
+//static CDeferredMaterialSystem g_DeferredMaterialSystem;
+//static IMaterialSystem *g_pOldMatSystem;
 
 
 CDeferredManagerClient::CDeferredManagerClient() : BaseClass( "DeferredManagerClient" )
@@ -43,7 +43,7 @@ CDeferredManagerClient::~CDeferredManagerClient()
 
 bool CDeferredManagerClient::Init()
 {
-	AssertMsg( g_pCurrentViewRender == NULL, "viewrender already allocated?!" );
+	//AssertMsg( g_pCurrentViewRender == NULL, "viewrender already allocated?!" );
 
 	if ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 95 )
 	{
@@ -55,19 +55,19 @@ bool CDeferredManagerClient::Init()
 
 		if ( bGotDefShaderDll )
 		{
-			g_pOldMatSystem = materials;
+			//g_pOldMatSystem = materials;
 
-			g_DeferredMaterialSystem.InitPassThru( materials );
-			materials = &g_DeferredMaterialSystem;
-			engine->Mat_Stub( &g_DeferredMaterialSystem );
+			//g_DeferredMaterialSystem.InitPassThru( materials );
+			//materials = &g_DeferredMaterialSystem;
+			//engine->Mat_Stub( &g_DeferredMaterialSystem );
 
 			m_bDefRenderingEnabled = true;
 			GetDeferredExt()->EnableDeferredLighting();
 
-			g_pCurrentViewRender = new CDeferredViewRender();
+			//g_pCurrentViewRender = new CDeferredViewRender();
 
-			ConVarRef r_shadows( "r_shadows" );
-			r_shadows.SetValue( "0" );
+			//ConVarRef r_shadows( "r_shadows" );
+			//r_shadows.SetValue( "0" );
 
 			InitDeferredRTs( true );
 
@@ -79,10 +79,10 @@ bool CDeferredManagerClient::Init()
 
 	if ( !m_bDefRenderingEnabled )
 	{
-		Assert( g_pCurrentViewRender == NULL );
+		//Assert( g_pCurrentViewRender == NULL );
 
 		Warning( "Your hardware does not seem to support shader model 3.0. If you think that this is an error (hybrid GPUs), add -forcedeferred as start parameter.\n" );
-		g_pCurrentViewRender = new CViewRender();
+		//g_pCurrentViewRender = new CViewRender();
 	}
 	else
 	{
@@ -107,7 +107,7 @@ bool CDeferredManagerClient::Init()
 #endif
 	}
 
-	view = g_pCurrentViewRender;
+	//view = g_pCurrentViewRender;
 
 	return true;
 }
@@ -123,16 +123,16 @@ void CDeferredManagerClient::Shutdown()
 	{
 		materials->RemoveModeChangeCallBack( &DefRTsOnModeChanged );
 
-		materials = g_pOldMatSystem;
-		engine->Mat_Stub( g_pOldMatSystem );
+		//materials = g_pOldMatSystem;
+		//engine->Mat_Stub( g_pOldMatSystem );
 	}
 
-	if ( m_bDefRenderingEnabled )
+	/*if ( m_bDefRenderingEnabled )
 		delete static_cast<CDeferredViewRender*>( g_pCurrentViewRender );
 	else
 		delete static_cast<CViewRender*>( g_pCurrentViewRender );
 	g_pCurrentViewRender = NULL;
-	view = NULL;
+	view = NULL;*/
 }
 
 ImageFormat CDeferredManagerClient::GetShadowDepthFormat()

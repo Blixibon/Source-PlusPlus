@@ -9,6 +9,7 @@
 #include "BaseVSShader.h"
 #include "convar.h"
 #include "lightmappedgeneric_dx9_helper.h"
+#include "deferred_includes.h"
 
 static LightmappedGeneric_DX9_Vars_t s_info;
 
@@ -82,6 +83,73 @@ BEGIN_VS_SHADER( PP_LightmappedGeneric,
 		SHADER_PARAM( PHONGFRESNELRANGES, SHADER_PARAM_TYPE_VEC3, "[0  0.5  1]", "Parameters for remapping fresnel output" )
 		SHADER_PARAM( PHONGEXPONENT, SHADER_PARAM_TYPE_FLOAT, "5.0", "Phong exponent for local specular lights" )
 END_SHADER_PARAMS
+
+void SetupParmsGBuffer(defParms_gBuffer &p)
+		{
+			p.bModel = false;
+
+			p.iAlbedo = BASETEXTURE;
+#if DEFCFG_DEFERRED_SHADING == 1
+			p.iAlbedo2 = BASETEXTURE2;
+#endif
+			p.iBumpmap = BUMPMAP;
+			p.iBumpmap2 = BUMPMAP2;
+
+			//p.iPhongmap = PHONG_MAP;
+
+			p.iAlphatestRef = ALPHATESTREFERENCE;
+			//p.iLitface = SELFILLUM;
+			p.iPhongExp = PHONGEXPONENT;
+			p.iPhongExp2 = PHONGEXPONENT;
+			p.iSSBump = SSBUMP;
+
+			p.iBlendmodulate = BLENDMODULATETEXTURE;
+			p.iBlendmodulateTransform = BLENDMASKTRANSFORM;
+		}
+
+		void SetupParmsComposite(defParms_composite &p)
+		{
+			p.bModel = false;
+			p.iAlbedo = BASETEXTURE;
+			p.iAlbedo2 = BASETEXTURE2;
+
+			p.iEnvmap = ENVMAP;
+			p.iEnvmapMask = ENVMAPMASK;
+			p.iEnvmapMask2 = ENVMAPMASK;
+			p.iEnvmapTint = ENVMAPTINT;
+			p.iEnvmapContrast = ENVMAPCONTRAST;
+			p.iEnvmapSaturation = ENVMAPSATURATION;
+
+			p.iSelfIllumTint = SELFILLUMTINT;
+			//p.iSelfIllumMaskInEnvmapAlpha = SELFILLUM_ENVMAPMASK_ALPHA;
+			//p.iSelfIllumFresnelModulate = SELFILLUMFRESNEL;
+			//p.iSelfIllumMask = SELFILLUMMASK;
+
+			p.iAlphatestRef = ALPHATESTREFERENCE;
+
+			p.iPhongScale = PHONGBOOST;
+			p.iPhongFresnel = PHONGFRESNELRANGES;
+
+			p.iBlendmodulate = BLENDMODULATETEXTURE;
+			p.iBlendmodulateTransform = BLENDMASKTRANSFORM;
+
+			//p.iFresnelRanges = FRESNELRANGES;
+
+			//p.iEnvmapParallax = ENVMAPPARALLAX;
+			//p.iEnvmapOrigin = ENVMAPORIGIN;
+		}
+
+		bool DrawToGBuffer(IMaterialVar **params)
+		{
+#if DEFCFG_DEFERRED_SHADING == 1
+			return true;
+#else
+			const bool bIsDecal = IS_FLAG_SET(MATERIAL_VAR_DECAL);
+			const bool bTranslucent = IS_FLAG_SET(MATERIAL_VAR_TRANSLUCENT);
+
+			return !bTranslucent && !bIsDecal;
+#endif
+		}
 
 	void SetupVars( LightmappedGeneric_DX9_Vars_t& info )
 	{
@@ -165,16 +233,86 @@ END_SHADER_PARAMS
 	{
 		SetupVars( s_info );
 		InitParamsLightmappedGeneric_DX9( this, params, pMaterialName, s_info );
+
+		const bool bDrawToGBuffer = DrawToGBuffer(params);
+
+		if (bDrawToGBuffer)
+		{
+			defParms_gBuffer parms_gbuffer;
+			SetupParmsGBuffer(parms_gbuffer);
+			InitParmsGBuffer(parms_gbuffer, this, params);
+		}
+
+		defParms_composite parms_composite;
+		SetupParmsComposite(parms_composite);
+		InitParmsComposite(parms_composite, this, params);
 	}
 
 	SHADER_INIT
 	{
 		SetupVars( s_info );
 		InitLightmappedGeneric_DX9( this, params, s_info );
+
+		const bool bDrawToGBuffer = DrawToGBuffer(params);
+
+		if (bDrawToGBuffer)
+		{
+			defParms_gBuffer parms_gbuffer;
+			SetupParmsGBuffer(parms_gbuffer);
+			InitPassGBuffer(parms_gbuffer, this, params);
+		}
+
+		defParms_composite parms_composite;
+		SetupParmsComposite(parms_composite);
+		InitPassComposite(parms_composite, this, params);
 	}
 
 	SHADER_DRAW
 	{
 		DrawLightmappedGeneric_DX9( this, params, pShaderAPI, pShaderShadow, s_info, pContextDataPtr );
+
+	if (pShaderAPI != NULL && *pContextDataPtr == NULL)
+		*pContextDataPtr = new CDeferredPerMaterialContextData();
+
+	CDeferredPerMaterialContextData *pDefContext = reinterpret_cast< CDeferredPerMaterialContextData* >(*pContextDataPtr);
+
+	const int iDeferredRenderStage = pShaderAPI ?
+		pShaderAPI->GetIntRenderingParameter(INT_RENDERPARM_DEFERRED_RENDER_STAGE)
+		: DEFERRED_RENDER_STAGE_INVALID;
+
+	const bool bDrawToGBuffer = DrawToGBuffer(params);
+
+	Assert(pShaderAPI == NULL ||
+		iDeferredRenderStage != DEFERRED_RENDER_STAGE_INVALID);
+
+	if (bDrawToGBuffer)
+	{
+		if (pShaderShadow != NULL ||
+			iDeferredRenderStage == DEFERRED_RENDER_STAGE_GBUFFER)
+		{
+			defParms_gBuffer parms_gbuffer;
+			SetupParmsGBuffer(parms_gbuffer);
+			DrawPassGBuffer(parms_gbuffer, this, params, pShaderShadow, pShaderAPI,
+				vertexCompression, pDefContext);
+		}
+		else
+			Draw(false);
+	}
+
+#if ( DEFCFG_DEFERRED_SHADING == 0 )
+	if (pShaderShadow != NULL ||
+		iDeferredRenderStage == DEFERRED_RENDER_STAGE_COMPOSITION)
+	{
+		defParms_composite parms_composite;
+		SetupParmsComposite(parms_composite);
+		DrawPassComposite(parms_composite, this, params, pShaderShadow, pShaderAPI,
+			vertexCompression, pDefContext);
+	}
+	else
+		Draw(false);
+#endif
+
+	if (pShaderAPI != NULL && pDefContext->m_bMaterialVarsChanged)
+		pDefContext->m_bMaterialVarsChanged = false;
 	}
 END_SHADER

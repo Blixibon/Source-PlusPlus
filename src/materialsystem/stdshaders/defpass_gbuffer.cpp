@@ -3,7 +3,7 @@
 
 #include "gbuffer_vs30.inc"
 #include "gbuffer_ps30.inc"
-#include "gbuffer_defshading_ps30.inc"
+//#include "gbuffer_defshading_ps30.inc"
 
 #include "tier0/memdbgon.h"
 
