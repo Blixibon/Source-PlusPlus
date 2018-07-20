@@ -28,6 +28,26 @@ void RecvProxyArrayLength_PlayerArray( void *pStruct, int objectID, int currentA
 		pTeam->m_aPlayers.SetSize( currentArrayLength );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: RecvProxy that converts the Player's NPC UtlVector to entindexes
+//-----------------------------------------------------------------------------
+void RecvProxy_TeamNPCList(const CRecvProxyData *pData, void *pStruct, void *pOut)
+{
+	C_Team *pPlayer = (C_Team*)pStruct;
+	CBaseHandle *pHandle = (CBaseHandle*)(&(pPlayer->m_aNPCs[pData->m_iElement]));
+	RecvProxy_IntToEHandle(pData, pStruct, pHandle);
+}
+
+void RecvProxyArrayLength_TeamNPCs(void *pStruct, int NPCID, int currentArrayLength)
+{
+	C_Team *pPlayer = (C_Team*)pStruct;
+
+	if (pPlayer->m_aNPCs.Count() != currentArrayLength)
+	{
+		pPlayer->m_aNPCs.SetSize(currentArrayLength);
+	}
+}
+
 
 IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_Team, DT_Team, CTeam)
 	RecvPropInt( RECVINFO(m_iTeamNum)),
@@ -40,8 +60,14 @@ IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_Team, DT_Team, CTeam)
 		RecvPropInt( "player_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_PlayerList ), 
 		MAX_PLAYERS, 
 		0, 
-		"player_array"
-		)
+		"player_array"),
+
+	RecvPropArray2(
+		RecvProxyArrayLength_TeamNPCs,
+		RecvPropInt("team_npc_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_TeamNPCList),
+		1024,
+		0,
+		"team_npc_array"),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_Team )
@@ -231,6 +257,20 @@ C_Team *GetPlayersTeam( int iPlayerIndex )
 C_Team *GetPlayersTeam( C_BasePlayer *pPlayer )
 {
 	return GetPlayersTeam( pPlayer->entindex() );
+}
+
+//-----------------------------------------------------------------------------
+// Gets the ith NPC on the team (may return NULL) 
+//-----------------------------------------------------------------------------
+C_AI_BaseNPC* C_Team::GetNPC(int num)
+{
+	Assert(num >= 0 && num < m_aNPCs.Count());
+	return m_aNPCs[num];
+}
+
+int C_Team::GetNumNPCs(void)
+{
+	return m_aNPCs.Count();
 }
 
 //-----------------------------------------------------------------------------

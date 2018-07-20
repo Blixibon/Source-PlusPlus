@@ -404,6 +404,7 @@ public:
 	virtual void	ItemPostFrame( void );
 	virtual void	ItemBusyFrame( void );
 	virtual bool	SendWeaponAnim( int iActivity );
+	bool			IsSniper() { return true; }
 
 #ifndef CLIENT_DLL
 	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );

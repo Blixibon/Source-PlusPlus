@@ -25,7 +25,7 @@
 	#include "voice_gamemgr.h"
 	#include "team.h"
 	#include "dod_player.h"
-	#include "dod_bot_temp.h"
+	//#include "dod_bot_temp.h"
 	#include "game.h"
 	#include "dod_shareddefs.h"
 	#include "player_resource.h"
@@ -390,47 +390,47 @@ static CDODViewVectors g_DODViewVectors(
 	}
 
 
-	// Handler for the "bot" command.
-	CON_COMMAND_F( bot, "Add a bot.", FCVAR_CHEAT )
-	{
-		//CDODPlayer *pPlayer = CDODPlayer::Instance( UTIL_GetCommandClientIndex() );
+	//// Handler for the "bot" command.
+	//CON_COMMAND_F( bot, "Add a bot.", FCVAR_CHEAT )
+	//{
+	//	//CDODPlayer *pPlayer = CDODPlayer::Instance( UTIL_GetCommandClientIndex() );
 
-		// The bot command uses switches like command-line switches.
-		// -count <count> tells how many bots to spawn.
-		// -team <index> selects the bot's team. Default is -1 which chooses randomly.
-		//	Note: if you do -team !, then it
-		// -class <index> selects the bot's class. Default is -1 which chooses randomly.
-		// -frozen prevents the bots from running around when they spawn in.
+	//	// The bot command uses switches like command-line switches.
+	//	// -count <count> tells how many bots to spawn.
+	//	// -team <index> selects the bot's team. Default is -1 which chooses randomly.
+	//	//	Note: if you do -team !, then it
+	//	// -class <index> selects the bot's class. Default is -1 which chooses randomly.
+	//	// -frozen prevents the bots from running around when they spawn in.
 
-		// Look at -count.
-		int count = args.FindArgInt( "-count", 1 );
-		count = clamp( count, 1, 16 );
+	//	// Look at -count.
+	//	int count = args.FindArgInt( "-count", 1 );
+	//	count = clamp( count, 1, 16 );
 
-		int iTeam = TEAM_ALLIES;
-		const char *pVal = args.FindArg( "-team" );
-		if ( pVal )
-		{
-			iTeam = atoi( pVal );
-			iTeam = clamp( iTeam, 0, (GetNumberOfTeams()-1) );
-		}
+	//	int iTeam = TEAM_ALLIES;
+	//	const char *pVal = args.FindArg( "-team" );
+	//	if ( pVal )
+	//	{
+	//		iTeam = atoi( pVal );
+	//		iTeam = clamp( iTeam, 0, (GetNumberOfTeams()-1) );
+	//	}
 
-		int iClass = 0;
-		pVal = args.FindArg( "-class" );
-		if ( pVal )
-		{
-			iClass = atoi( pVal );
-			iClass = clamp( iClass, 0, 10 );
-		}
+	//	int iClass = 0;
+	//	pVal = args.FindArg( "-class" );
+	//	if ( pVal )
+	//	{
+	//		iClass = atoi( pVal );
+	//		iClass = clamp( iClass, 0, 10 );
+	//	}
 
-		// Look at -frozen.
-		bool bFrozen = !!args.FindArg( "-frozen" );
+	//	// Look at -frozen.
+	//	bool bFrozen = !!args.FindArg( "-frozen" );
 
-		// Ok, spawn all the bots.
-		while ( --count >= 0 )
-		{
-			BotPutInServer( bFrozen, iTeam, iClass );
-		}
-	}
+	//	// Ok, spawn all the bots.
+	//	while ( --count >= 0 )
+	//	{
+	//		BotPutInServer( bFrozen, iTeam, iClass );
+	//	}
+	//}
 
 
 	void RestartRound_f()

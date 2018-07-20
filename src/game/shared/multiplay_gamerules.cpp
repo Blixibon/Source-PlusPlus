@@ -1114,7 +1114,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	//=========================================================
 	bool CMultiplayRules::FAllowNPCs( void )
 	{
-		return allowNPCs.GetBool();
+		return allowNPCs.GetBool() || IsCoOp();
 	}
 
 	//=========================================================

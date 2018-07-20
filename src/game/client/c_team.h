@@ -14,6 +14,7 @@
 #include "shareddefs.h"
 #include "utlvector.h"
 #include "client_thinklist.h"
+#include "c_ai_basenpc.h"
 
 
 class C_BasePlayer;
@@ -50,6 +51,9 @@ public:
 
 	void	RemoveAllPlayers();
 
+	int				GetNumNPCs(void);
+	C_AI_BaseNPC	*GetNPC(int num);
+
 
 // IClientThinkable overrides.
 public:
@@ -61,6 +65,7 @@ public:
 
 	// Data received from the server
 	CUtlVector< int > m_aPlayers;
+	CUtlVector< CHandle<C_AI_BaseNPC> > m_aNPCs;
 	char	m_szTeamname[ MAX_TEAM_NAME_LENGTH ];
 	int		m_iScore;
 	int		m_iRoundsWon;

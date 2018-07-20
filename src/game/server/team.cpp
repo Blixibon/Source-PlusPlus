@@ -35,6 +35,31 @@ int SendProxyArrayLength_PlayerArray( const void *pStruct, int objectID )
 	return pTeam->m_aPlayers.Count();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: SendProxy that converts the UtlVector list of NPCs to entindexes, where it's reassembled on the client
+//-----------------------------------------------------------------------------
+void SendProxy_TeamNPCList(const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int NPCID)
+{
+	CTeam *pTeam = (CTeam*)pStruct;
+
+	Assert(iElement < pTeam->GetNumNPCs());
+
+	const CAI_BaseNPC *pNPC = pTeam->GetNPC(iElement);
+
+	CHandle<CAI_BaseNPC> hNPC;
+	hNPC.Set(pNPC);
+
+	SendProxy_EHandleToInt(pProp, pStruct, &hNPC, pOut, iElement, NPCID);
+}
+
+int SendProxyArrayLength_TeamNPCs(const void *pStruct, int objectID)
+{
+	CTeam *pTeam = (CTeam*)pStruct;
+	int iNPCs = pTeam->GetNumNPCs();
+	Assert(iNPCs <= 1024);
+	return iNPCs;
+}
+
 
 // Datatable
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CTeam, DT_Team)
@@ -49,7 +74,15 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTeam, DT_Team)
 		MAX_PLAYERS, 
 		0, 
 		"player_array"
-		)
+	),
+
+	SendPropArray2(
+		SendProxyArrayLength_TeamNPCs,
+		SendPropInt("team_npc_array_element", 0, SIZEOF_IGNORE, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED, SendProxy_TeamNPCList),
+		1024,
+		0,
+		"team_npc_array"
+	),
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( team_manager, CTeam );
@@ -343,4 +376,59 @@ int CTeam::GetAliveMembers( void )
 	}
 
 	return iAlive;
+}
+
+//------------------------------------------------------------------------------------------------------------------
+// NPCs
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+// Purpose: Add the specified NPC to this team. Remove them from their current team, if any.
+//-----------------------------------------------------------------------------
+void CTeam::AddNPC(CAI_BaseNPC *pNPC)
+{
+	bool bOnList = IsNPCOnTeam(pNPC);
+
+	Assert(!bOnList);
+
+	if (!bOnList)
+	{
+		m_aNPCs.AddToTail(pNPC);
+	}
+
+	NetworkStateChanged();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Remove this NPC from the team
+//-----------------------------------------------------------------------------
+void CTeam::RemoveNPC(CAI_BaseNPC *pNPC)
+{
+	m_aNPCs.FindAndRemove(pNPC);
+	NetworkStateChanged();
+}
+
+//-----------------------------------------------------------------------------
+// Returns true if NPC is in the team's list of NPCs
+//-----------------------------------------------------------------------------
+bool CTeam::IsNPCOnTeam(CAI_BaseNPC *pNPC) const
+{
+	return (m_aNPCs.Find(pNPC) != -1);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Return the number of NPCs in this team.
+//-----------------------------------------------------------------------------
+int CTeam::GetNumNPCs(void)
+{
+	return m_aNPCs.Count();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Get a specific NPC
+//-----------------------------------------------------------------------------
+CAI_BaseNPC *CTeam::GetNPC(int iIndex)
+{
+	Assert(iIndex >= 0 && iIndex < m_aNPCs.Count());
+	return m_aNPCs[iIndex];
 }

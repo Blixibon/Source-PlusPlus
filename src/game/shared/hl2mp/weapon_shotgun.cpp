@@ -60,6 +60,7 @@ public:
 	void SecondaryAttack( void );
 	void DryFire( void );
 	virtual float GetFireRate( void ) { return 0.7; };
+	bool	IsShotgun() { return true; }
 
 #ifndef CLIENT_DLL
 	DECLARE_ACTTABLE();

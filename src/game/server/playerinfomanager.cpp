@@ -99,7 +99,7 @@ IBotController *CPluginBotManager::GetBotController( edict_t *pEdict )
 	CBasePlayer *pPlayer = ( ( CBasePlayer * )CBaseEntity::Instance( pEdict ));
 	if ( pPlayer && pPlayer->IsBot() )
 	{
-		return pPlayer->GetBotController();
+		return pPlayer->GetIBotController();
 	}
 	else
 	{

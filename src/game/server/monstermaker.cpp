@@ -28,7 +28,7 @@ static void DispatchActivate( CBaseEntity *pEntity )
 	mdlcache->SetAsyncLoad( MDLCACHE_ANIMBLOCK, bAsyncAnims );
 }
 
-ConVar ai_inhibit_spawners( "ai_inhibit_spawners", "0", FCVAR_CHEAT );
+static ConVar ai_inhibit_spawners( "ai_inhibit_spawners", "0", FCVAR_CHEAT );
 
 
 LINK_ENTITY_TO_CLASS( info_npc_spawn_destination, CNPCSpawnDestination );

@@ -187,7 +187,7 @@ void GameStartFrame( void )
 
 	gpGlobals->teamplay = teamplay.GetInt() ? true : false;
 
-	Bot_RunAll();
+	//Bot_RunAll();
 }
 
 //=========================================================

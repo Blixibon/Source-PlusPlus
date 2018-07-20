@@ -1,0 +1,26 @@
+//-----------------------------------------------------------------------------
+//	CLIENT_NEXTBOT.VPC
+//
+//	Project script for NextBot files
+//-----------------------------------------------------------------------------
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\client\NextBot"
+		$PreprocessorDefinitions		"$BASE;NEXT_BOT"
+	}
+}
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"Next Generation Bots"
+		{
+			$File	"NextBot\c_NextBot.cpp"
+			$File	"NextBot\c_NextBot.h"
+		}
+	}
+}

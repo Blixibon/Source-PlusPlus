@@ -21,6 +21,10 @@
 #include "colorcorrection.h"
 #include "env_tonemap_controller.h"
 
+//#ifdef INSOURCE_BOTS
+//#include "interfaces\ibot.h"
+//#endif
+
 #if defined USES_ECON_ITEMS || defined TF_CLASSIC
 #include "game_item_schema.h"
 #include "econ_item_view.h"
@@ -233,10 +237,12 @@ public:
 
 	virtual CBotCmd GetLastUserCommand();
 
-private:
+public:
 	CBasePlayer *m_pParent;
 };
 
+class IBot;
+class CSquad;
 
 class CBasePlayer : public CBaseCombatCharacter
 {
@@ -249,13 +255,73 @@ protected:
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+#ifdef INSOURCE_BOTS
+protected:
+	IBot * m_pBotController; 
+	CAI_Senses *m_pSenses; 
+	
+public:
+	
+	virtual IBot *GetBotController() {
+	
+		return m_pBotController; 
+}
+
+virtual void SetBotController(IBot *pBot); 
+virtual void SetUpBot(); 
+
+
+virtual CAI_Senses *GetSenses() {
+		
+			return m_pSenses; 
+	}
+		
+			virtual const CAI_Senses *GetSenses() const {
+			
+				return m_pSenses; 
+		}
+			
+				virtual void CreateSenses(); 
+				
+				virtual void SetDistLook(float flDistLook); 
+				
+				virtual int GetSoundInterests(); 
+				virtual int GetSoundPriority(CSound *pSound); 
+				
+				virtual bool QueryHearSound(CSound *pSound); 
+				virtual bool QuerySeeEntity(CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC = false); 
+				
+				virtual void OnLooked(int iDistance); 
+				virtual void OnListened(); 
+				
+				virtual CSound *GetLoudestSoundOfType(int iType); 
+				virtual bool SoundIsVisible(CSound *pSound); 
+				
+				virtual CSound *GetBestSound(int validTypes = ALL_SOUNDS); 
+				virtual CSound *GetBestScent(void);
+#endif
 
 	CBasePlayer();
 	~CBasePlayer();
 
 	// IPlayerInfo passthrough (because we can't do multiple inheritance)
 	IPlayerInfo *GetPlayerInfo() { return &m_PlayerInfo; }
-	IBotController *GetBotController() { return &m_PlayerInfo; }
+	IBotController *GetIBotController() { return &m_PlayerInfo; }
+
+	// Squad
+	virtual CSquad *GetSquad() {
+		return NULL;
+	}
+
+	virtual void SetSquad(CSquad *pSquad) { }
+	virtual void SetSquad(const char *name) { }
+
+	virtual void OnNewLeader(CBasePlayer *pMember) { }
+	virtual void OnMemberTakeDamage(CBasePlayer *pMember, const CTakeDamageInfo &info) { }
+	virtual void OnMemberDeath(CBasePlayer *pMember, const CTakeDamageInfo &info) { }
+	virtual void OnMemberReportEnemy(CBasePlayer *pMember, CBaseEntity *pEnemy) { }
+
+	virtual void Kick();
 
 	virtual void			SetModel( const char *szModelName );
 	void					SetBodyPitch( float flPitch );
@@ -1401,6 +1467,14 @@ inline CBasePlayer *ToBasePlayer( CBaseEntity *pEntity )
 #else
 	return static_cast<CBasePlayer *>( pEntity );
 #endif
+}
+
+inline CBasePlayer *ToBasePlayer(int iEntindex)
+{
+	if (iEntindex < 1 || iEntindex > gpGlobals->maxClients)
+		return NULL;
+
+	return UTIL_PlayerByIndex(iEntindex);
 }
 
 inline const CBasePlayer *ToBasePlayer( const CBaseEntity *pEntity )

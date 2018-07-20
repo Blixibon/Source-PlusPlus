@@ -512,6 +512,11 @@ public:
 		return (m_timestamp > 0.0f);
 	}
 
+	float GetStartTime() const
+	{
+		return m_timestamp;
+	}
+
 	/// if not started, elapsed time is very large
 	float GetElapsedTime( void ) const
 	{

@@ -19,6 +19,7 @@ class CHL2MP_Player;
 #include "hl2mp_player_shared.h"
 #include "hl2mp_gamerules.h"
 #include "utldict.h"
+#include "bots\interfaces\ibot.h"
 
 //=============================================================================
 // >> HL2MP_Player
@@ -51,6 +52,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
+	//DECLARE_BOT_PLAYER();
 
 	virtual void Precache( void );
 	virtual void Spawn( void );

@@ -69,6 +69,12 @@
 #include "dt_utlvector_send.h"
 #include "vote_controller.h"
 #include "ai_speech.h"
+#include "bot.h"
+#include "ai_senses.h"
+
+#ifdef INSOURCE_BOTS
+#include "interfaces\ibot.h"
+#endif
 
 #if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC )
 #include "econ_wearable.h"
@@ -651,6 +657,7 @@ CBasePlayer::CBasePlayer( )
 CBasePlayer::~CBasePlayer( )
 {
 	VPhysicsDestroyObject();
+	SetBotController(NULL);
 }
 
 //-----------------------------------------------------------------------------
@@ -1411,6 +1418,10 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		OnDamagedByExplosion( info );
 	}
 
+	if (GetBotController()) {
+		GetBotController()->OnTakeDamage(inputInfo);
+	}
+
 	return fTookDamage;
 }
 
@@ -1735,6 +1746,10 @@ void CBasePlayer::Event_Killed( const CTakeDamageInfo &info )
 	m_flDeathTime = gpGlobals->curtime;
 
 	ClearLastKnownArea();
+
+	if (GetBotController()) {
+		GetBotController()->OnDeath(info);
+	}
 
 	BaseClass::Event_Killed( info );
 }
@@ -5117,6 +5132,10 @@ void CBasePlayer::Spawn( void )
 	UpdateLastKnownArea();
 
 	m_weaponFiredTimer.Invalidate();
+
+	if (GetBotController()) {
+		GetBotController()->Spawn();
+	}
 }
 
 void CBasePlayer::Activate( void )
@@ -9542,3 +9561,28 @@ void CBasePlayer::OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTrigger )
 {
 	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
 }
+
+//================================================================================
+// Expulsa al jugador del servidor
+//================================================================================
+void CBasePlayer::Kick()
+{
+	// Le quitamos todas las cosas
+	RemoveAllItems(true);
+
+	// Lo matamos para eliminar linternas y otras cosas
+	if (IsAlive()) {
+		CommitSuicide();
+	}
+
+	//GetPlayerInfo()->GetUserID();
+	//GetPlayerInfo()->GetNetworkIDString();
+
+	//engine->ServerCommand( UTIL_VarArgs( "kick %s\n", GetPlayerName() ) );
+	engine->ServerCommand(UTIL_VarArgs("kickid %i\n", GetPlayerInfo()->GetUserID()));
+	Msg("Kicking (%i) %s (%s)\n", GetPlayerInfo()->GetUserID(), GetPlayerName(), GetPlayerInfo()->GetNetworkIDString());
+}
+
+#define BotPlayerClass CBasePlayer
+#include "bots\implement_bot_player.h"
+#undef BotPlayerClass

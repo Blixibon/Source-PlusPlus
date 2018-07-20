@@ -157,10 +157,10 @@ void GameStartFrame( void )
 
 	gpGlobals->teamplay = (teamplay.GetInt() != 0);
 
-#ifdef DEBUG
-	extern void Bot_RunAll();
-	Bot_RunAll();
-#endif
+//#ifdef DEBUG
+//	extern void Bot_RunAll();
+//	Bot_RunAll();
+//#endif
 }
 
 //=========================================================

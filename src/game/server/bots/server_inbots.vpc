@@ -1,0 +1,106 @@
+//-----------------------------------------------------------------------------
+//	SERVER_INBOTS.VPC
+//
+//	Project script for insource bots files
+//-----------------------------------------------------------------------------
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\server\bots"
+		$PreprocessorDefinitions		"$BASE;INSOURCE_BOTS"
+	}
+}
+
+$Project
+{
+	$Folder	"Source Files"
+	{	
+		$File	"ai_behavior_climb.cpp"
+	
+		$Folder "Insource Bots"
+		{
+			$Folder "Components"
+			{
+				$File	"bots\components\bot_component_attack.cpp"
+				$File	"bots\components\bot_component_decision.cpp"
+				$File	"bots\components\bot_component_follow.cpp"
+				$File	"bots\components\bot_component_locomotion.cpp"
+				$File	"bots\components\bot_component_memory.cpp"
+				$File	"bots\components\bot_component_vision.cpp"
+				$File	"bots\components\bot_components.h"
+			}
+
+			$Folder "Entities"
+			{
+				$File	"bots\bot_maker.cpp"
+				$File	"bots\bot_maker.h"
+				$File	"bots\bot_squad.cpp"
+				$File	"bots\bot_squad.h"
+			}
+
+			$Folder "Interfaces"
+			{
+				$File	"bots\interfaces\ibot.h"
+				$File	"bots\interfaces\ibotattack.h"
+				$File	"bots\interfaces\ibotcomponent.h"
+				$File	"bots\interfaces\ibotdecision.h"
+				$File	"bots\interfaces\ibotfollow.h"
+				$File	"bots\interfaces\ibotlocomotion.h"
+				$File	"bots\interfaces\ibotmemory.h"
+				$File	"bots\interfaces\ibotschedule.h"
+				$File	"bots\interfaces\ibotvision.h"
+			}
+
+			$Folder "Navigation"
+			{
+				$File	"bots\interfaces\improv_locomotor.h"
+				$File	"bots\nav_path.cpp"
+				$File	"bots\nav_path.h"
+			}
+
+			$Folder "Schedules"
+			{
+				$File	"bots\schedules\bot_schedule_call_backup.cpp"
+				$File	"bots\schedules\bot_schedule_change_weapon.cpp"
+				$File	"bots\schedules\bot_schedule_cover.cpp"
+				$File	"bots\schedules\bot_schedule_defend_spawn.cpp"
+				$File	"bots\schedules\bot_schedule_help_dejected_friend.cpp"
+				$File	"bots\schedules\bot_schedule_hide_and_heal.cpp"
+				$File	"bots\schedules\bot_schedule_hide_and_reload.cpp"
+				$File	"bots\schedules\bot_schedule_hunt_enemy.cpp"
+				$File	"bots\schedules\bot_schedule_investigate_location.cpp"
+				//$File	"bots\schedules\bot_schedule_investigate_sound.cpp"
+				$File	"bots\schedules\bot_schedule_move_aside.cpp"
+				$File	"bots\schedules\bot_schedule_reload.cpp"
+				$File	"bots\schedules\bot_schedules.h"
+				$File	"bots\schedules\bot_schedule.cpp"
+			}
+
+			$Folder "Squad"
+			{
+				$File	"bots\squad.cpp"
+				$File	"bots\squad.h"
+				$File	"bots\squad_manager.cpp"
+				$File	"bots\squad_manager.h"
+			}
+
+			$File	"bots\bot.cpp"
+			$File	"bots\bot.h"
+			$File	"bots\bot_ai.cpp"
+			$File	"bots\bot_debug.cpp"
+			$File	"bots\bot_defs.h"
+			$File	"bots\bot_manager.cpp"
+			$File	"bots\bot_manager.h"
+			$File	"bots\bot_memory.cpp"
+			$File	"bots\bot_senses.cpp"
+			$File	"bots\bot_skill.cpp"
+			$File	"bots\bot_state.cpp"
+			$File	"bots\bot_utils.cpp"
+			$File	"bots\bot_utils.h"
+			$File	"bots\in_utils.cpp"
+			$File	"bots\in_utils.h"
+		}
+	}
+}

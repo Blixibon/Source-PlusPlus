@@ -61,6 +61,13 @@ public:
 	virtual int  GetNumPlayers( void );
 	virtual CBasePlayer *GetPlayer( int iIndex );
 
+	// NPCs.
+	void			AddNPC(CAI_BaseNPC *pNPC);
+	void			RemoveNPC(CAI_BaseNPC *pNPC);
+	bool			IsNPCOnTeam(CAI_BaseNPC *pNPC) const;
+	int				GetNumNPCs(void);
+	CAI_BaseNPC		*GetNPC(int num);
+
 	//-----------------------------------------------------------------------------
 	// Scoring
 	//-----------------------------------------------------------------------------
@@ -81,6 +88,7 @@ public:
 public:
 	CUtlVector< CTeamSpawnPoint * > m_aSpawnPoints;
 	CUtlVector< CBasePlayer * >		m_aPlayers;
+	CUtlVector< CAI_BaseNPC * >		m_aNPCs;
 
 	// Data
 	CNetworkString( m_szTeamname, MAX_TEAM_NAME_LENGTH );
