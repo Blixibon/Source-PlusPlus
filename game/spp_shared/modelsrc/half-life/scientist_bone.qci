@@ -1,0 +1,115 @@
+
+$DefineBone "Bip01" "" -0.113742 0.27046 38.496143 0 -89.999928 0 0 0 0 0 0 0
+$DefineBone "Bip01 Pelvis" "Bip01" 0.27046 0 0 -89.980216 -89.999928 0 0 0 0 0 0 0
+$DefineBone "Bip01 Spine" "Bip01 Pelvis" 3.928665 0.383633 0.000004 -0.000057 1.045648 -0.000229 0 0 0 0 0 0
+$DefineBone "Bip01 Spine1" "Bip01 Spine" 3.442966 -0.003536 0 0 0.50002 0 0 0 0 0 0 0
+$DefineBone "Bip01 Spine2" "Bip01 Spine1" 4.441444 -0.003536 0 0 0.999983 0 0 0 0 0 0 0
+$DefineBone "Bip01 Spine3" "Bip01 Spine2" 4.441387 -0.003537 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 Neck" "Bip01 Spine3" 4.441391 -0.00204 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Clavicle" "Bip01 Neck" 0 0.002036 1.614274 -78.540824 179.95516 -0.000802 0 0 0 0 0 0
+$DefineBone "Bip01 L UpperArm" "Bip01 L Clavicle" 5.073841 0 0.000004 67.195811 4.909848 3.487537 0 0 0 0 0 0
+$DefineBone "Bip01 L Forearm" "Bip01 L UpperArm" 12.008148 0 0 -0.000001 -16.819863 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Hand" "Bip01 L Forearm" 10.249352 -0.000001 0 11.500007 -0.000001 -89.954378 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger0" "Bip01 L Hand" 1.181374 0.259444 -1.427525 15.500003 -0.012662 -0.047326 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger01" "Bip01 L Finger0" 0.625233 0.000001 0 0.000004 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger02" "Bip01 L Finger01" 1.041842 -0.000001 -0.000002 0.000004 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger1" "Bip01 L Hand" 3.078701 -0.001586 -0.932039 3.499972 -0.002807 -0.045722 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger11" "Bip01 L Finger1" 1.037907 0 0 0.000001 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger12" "Bip01 L Finger11" 1.045435 0 -0.000001 0.000001 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger2" "Bip01 L Hand" 3.037216 -0.002121 -0.118179 1.500005 -0.001203 -0.045665 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger21" "Bip01 L Finger2" 1.172003 -0.000001 0 0.000002 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger22" "Bip01 L Finger21" 1.160927 -0.000001 -0.000002 0.000002 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger3" "Bip01 L Hand" 3.016582 -0.002115 0.630063 -0.500019 0.000401 -0.045607 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger31" "Bip01 L Finger3" 1.172903 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger32" "Bip01 L Finger31" 1.10693 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger4" "Bip01 L Hand" 3.018032 0.000839 1.326849 -5.499992 0.004412 -0.045836 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger41" "Bip01 L Finger4" 0.966919 -0.000001 0 0.000001 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Finger42" "Bip01 L Finger41" 0.889191 0 0 0.000001 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Clavicle" "Bip01 Neck" 0.000004 0.002045 -1.614274 78.540824 179.953616 -0.000802 0 0 0 0 0 0
+$DefineBone "Bip01 R UpperArm" "Bip01 R Clavicle" 4.700061 0 -0.000004 -67.422068 7.024808 -5.474269 0 0 0 0 0 0
+$DefineBone "Bip01 R Forearm" "Bip01 R UpperArm" 12.049675 0 0 0.000001 -18.33648 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Hand" "Bip01 R Forearm" 10.34169 0.000001 0 -4.999972 0.000004 89.954378 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger0" "Bip01 R Hand" 1.183586 0.034757 1.438863 -14.774403 12.365575 -2.199468 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger01" "Bip01 R Finger0" 0.607801 -0.000001 0 0.000002 0 0.000002 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger02" "Bip01 R Finger01" 1.063065 -0.000001 0 0.000002 0 0.000002 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger1" "Bip01 R Hand" 2.980022 0.000245 0.949515 -1.99813 7.001601 -0.076603 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger11" "Bip01 R Finger1" 1.136772 0.000001 -0.000001 0.000003 -0.000002 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger12" "Bip01 R Finger11" 0.915119 -0.000001 -0.000001 0.000003 -0.000002 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger2" "Bip01 R Hand" 2.949263 0.002913 0.177524 -0.013002 6.998906 0.167133 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger21" "Bip01 R Finger2" 1.294392 -0.000001 -0.000001 0.000004 -0.000001 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger22" "Bip01 R Finger21" 1.18392 0.000001 0 0.000004 -0.000001 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger3" "Bip01 R Hand" 2.929024 0.004853 -0.564109 2.972051 7.011856 0.41127 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger31" "Bip01 R Finger3" 1.243109 -0.000001 0 0.000004 -0.000002 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger32" "Bip01 R Finger31" 1.045437 -0.000001 0 0.000004 -0.000002 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger4" "Bip01 R Hand" 2.925028 0.005853 -1.260346 7.4382 7.065714 0.964863 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger41" "Bip01 R Finger4" 1.019745 0 0 0.000004 -0.000001 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Finger42" "Bip01 R Finger41" 0.829235 0 0 0.000004 -0.000001 0.000001 0 0 0 0 0 0
+$DefineBone "Tie" "Bip01 Spine3" 2.738956 3.890889 0.113747 -89.999983 177.454368 0 0 0 0 0 0 0
+$DefineBone "Tie1" "Tie" 0 -1.023687 -1.922726 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie2" "Tie1" 0 -0.558375 -1.80481 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie3" "Tie2" 0 -0.325718 -1.929485 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie4" "Tie3" 0 0.046531 -1.430431 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie5" "Tie4" 0 0 -1.347565 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie6" "Tie5" 0 -0.046531 -2.135517 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie7" "Tie6" 0 -0.279187 -2.151382 0 0 0 0 0 0 0 0 0
+$DefineBone "Tie8" "Tie7" 0 0 -2.561729 0 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Thigh" "Bip01 Spine" -3.935009 -0.311884 3.416453 -1.523724 176.355035 -179.946731 0 0 0 0 0 0
+$DefineBone "Bip01 L Calf" "Bip01 L Thigh" 19.302958 0 0 0 -9.826972 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Foot" "Bip01 L Calf" 15.657714 0 0 -1.524526 7.228094 -9.484286 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe0" "Bip01 L Foot" 3.741828 7.474069 0 0.000001 89.999983 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Thigh" "Bip01 Spine" -3.935009 -0.311865 -3.416451 1.302219 176.3995 179.900327 0 0 0 0 0 0
+$DefineBone "Bip01 R Calf" "Bip01 R Thigh" 19.302956 0 0 0 -10.054436 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Foot" "Bip01 R Calf" 15.657715 0 0 1.30537 7.501163 8.041405 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe0" "Bip01 R Foot" 3.741827 7.351522 0 -0.000001 89.999983 0 0 0 0 0 0 0
+$DefineBone "Coat Master" "Bip01 Pelvis" 3.610321 -4.629949 0.120559 -89.999983 179.999966 0 0 0 0 0 0 0
+$DefineBone "Coat22" "Coat Master" 0.020904 0.162877 -3.733181 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat23" "Coat22" -0.019352 0.13742 -3.405712 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat24" "Coat23" -0.129526 0.107196 -3.486162 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat25" "Coat24" 0.07 -0.152187 -3.063759 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat26" "Coat25" 0.024384 -0.095503 -3.858786 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat15" "Coat Master" -4.333785 -0.761639 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat16" "Coat15" -0.099011 -0.156 -3.733181 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat17" "Coat16" -0.261977 0 -3.405712 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat18" "Coat17" -0.129526 -0.01802 -3.48616 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat19" "Coat18" 0.164917 -0.024583 -3.063761 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat8" "Coat15" -2.410296 -3.621078 0.000004 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat9" "Coat8" -0.09901 -0.156 -3.733181 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat10" "Coat9" -0.261977 0 -3.405708 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat11" "Coat10" -0.129526 -0.01802 -3.486164 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat12" "Coat11" 0.164917 -0.024583 -3.063761 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat13" "Coat12" -0.126291 -0.415926 -3.858786 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat1" "Coat8" 1.358692 -4.612459 -0.000004 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat2" "Coat1" -0.09901 -0.156 -3.733181 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat3" "Coat2" -0.261977 0 -3.405712 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat4" "Coat3" -0.129526 -0.01802 -3.48616 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat5" "Coat4" 0.164917 -0.024583 -3.063761 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat6" "Coat5" -0.126291 -0.415926 -3.858786 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat28" "Coat Master" 4.275345 -0.770885 0.001637 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat29" "Coat28" 0.085648 -0.123393 -3.713001 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat30" "Coat29" 0.251454 0 -3.436527 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat31" "Coat30" 0.178288 -0.048473 -3.449568 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat32" "Coat31" -0.175338 -0.023416 -3.08745 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat33" "Coat32" 0.107031 -0.397894 -3.844215 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat35" "Coat28" 2.622022 -3.591586 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat36" "Coat35" 0.085648 -0.123393 -3.713005 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat37" "Coat36" 0.251454 0 -3.436531 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat38" "Coat37" 0.178288 -0.048474 -3.44957 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat39" "Coat38" -0.175338 -0.023416 -3.08745 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat40" "Coat39" 0.107031 -0.397894 -3.844213 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat42" "Coat35" -1.320248 -4.6442 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat43" "Coat42" 0.085648 -0.123393 -3.712997 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat44" "Coat43" 0.251454 0 -3.436531 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat45" "Coat44" 0.178288 -0.048473 -3.449566 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat46" "Coat45" -0.175338 -0.023416 -3.08745 0 0 0 0 0 0 0 0 0
+$DefineBone "Coat47" "Coat46" 0.107031 -0.397894 -3.844215 0 0 0 0 0 0 0 0 0
+$DefineBone "Bip01 Head" "Bip01 Neck" 2.562344 0 0 0 -2.545709 0 0 0 0 0 0 0
+$DefineBone "Bip01 Head1" "Bip01 Head" 8.541122 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "L_eyebrow" "Bip01 Head1" -3.702484 3.207059 1.404841 -89.999983 -179.999911 0 0 0 0 0 0 0
+$DefineBone "C_eyebrow" "Bip01 Head1" -3.872147 3.207061 0.113746 -89.999983 -179.999911 0 0 0 0 0 0 0
+$DefineBone "R_eyebrow" "Bip01 Head1" -3.702477 3.207063 -1.237172 -89.999983 -179.999911 0 0 0 0 0 0 0
+$DefineBone "R_Eye" "Bip01 Head1" -4.882301 4.254779 -1.016848 -85.239163 118.958646 60.006962 0 0 0 0 0 0
+$DefineBone "Eyelids" "Bip01 Head1" -4.887398 4.344111 0.122031 -89.999983 -179.499941 0 0 0 0 0 0 0
+$DefineBone "L_Eye" "Bip01 Head1" -4.882294 4.270531 1.21663 -85.239163 118.958646 60.006962 0 0 0 0 0 0
+$DefineBone "Mouth" "Bip01 Head1" -7.351521 1.350579 0.144448 -0.000115 90.000154 -179.999966 0 0 0 0 0 0
+$DefineBone "Needle" "Bip01 R Hand" 4.991369 -0.677071 0.532282 -9.885587 133.047223 -109.122095 0 0 0 0 0 0
+

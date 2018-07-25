@@ -25,6 +25,14 @@ public:
 	virtual float	GetViewModelFOV( void );
 
 	virtual int		GetDeathMessageStartHeight( void );
+
+	virtual void	LevelInit(const char *newmap);
+	virtual void	LevelShutdown(void);
+	virtual void	Update();
+	virtual void	OnColorCorrectionWeightsReset(void);
+
+protected:
+	ClientCCHandle_t m_CCHandle;
 };
 
 

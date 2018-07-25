@@ -8176,7 +8176,14 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 
 	case SCRIPT_EVENT_SOUND_VOICE:
 		{
-			EmitSound( pEvent->options );
+			CPASAttenuationFilter filter(this, pEvent->options);
+
+			EmitSound_t params;
+			params.m_pSoundName = pEvent->options;
+			params.m_bWarnOnDirectWaveReference = false;
+			params.m_nChannel = CHAN_VOICE;
+
+			EmitSound(filter, entindex(), params);
 		}
 		break;
 

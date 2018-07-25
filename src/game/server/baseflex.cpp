@@ -61,14 +61,14 @@ IMPLEMENT_SERVERCLASS_ST(CBaseFlex, DT_BaseFlex)
 	SendPropArray3	(SENDINFO_ARRAY3(m_flexWeight), SendPropFloat(SENDINFO_ARRAY(m_flexWeight), 12, SPROP_ROUNDDOWN, 0.0f, 1.0f ) /*, SendProxy_FlexWeights*/ ),
 	SendPropInt		(SENDINFO(m_blinktoggle), 1, SPROP_UNSIGNED ),
 	SendPropVector	(SENDINFO(m_viewtarget), -1, SPROP_COORD),
-#ifdef HL2_DLL
+//#ifdef HL2_DLL
 	SendPropFloat	( SENDINFO_VECTORELEM(m_vecViewOffset, 0), 0, SPROP_NOSCALE ),
 	SendPropFloat	( SENDINFO_VECTORELEM(m_vecViewOffset, 1), 0, SPROP_NOSCALE ),
 	SendPropFloat	( SENDINFO_VECTORELEM(m_vecViewOffset, 2), 0, SPROP_NOSCALE ),
 
 	SendPropVector	( SENDINFO(m_vecLean), -1, SPROP_COORD ),
 	SendPropVector	( SENDINFO(m_vecShift), -1, SPROP_COORD ),
-#endif
+//#endif
 
 END_SEND_TABLE()
 
@@ -86,12 +86,12 @@ BEGIN_DATADESC( CBaseFlex )
 	//						m_bUpdateLayerPriorities
 	DEFINE_FIELD( m_flLastFlexAnimationTime, FIELD_TIME ),
 
-#ifdef HL2_DLL
+//#ifdef HL2_DLL
 	//DEFINE_FIELD( m_vecPrevOrigin, FIELD_POSITION_VECTOR ),
 	//DEFINE_FIELD( m_vecPrevVelocity, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecLean, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecShift, FIELD_VECTOR ),
-#endif
+//#endif
 
 END_DATADESC()
 
@@ -2111,7 +2111,7 @@ void CBaseFlex::Teleport( const Vector *newPosition, const QAngle *newAngles, co
 
 void CBaseFlex::DoBodyLean( void )
 {
-#ifdef HL2_DLL
+//#ifdef HL2_DLL
 	CAI_BaseNPC *myNpc = MyNPCPointer( );
 
 	if (myNpc)
@@ -2169,7 +2169,7 @@ void CBaseFlex::DoBodyLean( void )
 			vecDelta.x, vecDelta.y, vecDelta.z );
 		*/
 	}
-#endif
+//#endif
 }
 
 

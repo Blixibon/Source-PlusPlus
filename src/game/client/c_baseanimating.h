@@ -133,6 +133,35 @@ public:
 
 	virtual void	GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles );
 
+	virtual float	GetHL1MouthOpenPct()
+	{
+		if (!GetMouth()->NeedsEnvelope())
+			return 0.0f;
+
+		double value = GetMouth()->mouthopen / 64.0;
+
+		//float raw = value;
+
+		if (value > 1.0)
+			value = 1.0;
+
+		//float start, end;
+		//GetPoseParameterRange(index, start, end);
+
+		//value = (1.0 - value) * 0.0 + value * 1.0;
+
+		return value;
+	}
+
+	virtual float	GetHL2MouthOpenPct() { return 0.0f; }
+
+	virtual float	GetVisibleMouthOpenPct() { return GetHL1MouthOpenPct(); }
+
+	virtual float	GetMouthOpenPct()
+	{
+		return Clamp(GetHL1MouthOpenPct() + GetHL2MouthOpenPct(), 0.0f, 1.0f);
+	}
+
 	// Computes a box that surrounds all hitboxes
 	bool ComputeHitboxSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );
 	bool ComputeEntitySpaceHitboxSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );

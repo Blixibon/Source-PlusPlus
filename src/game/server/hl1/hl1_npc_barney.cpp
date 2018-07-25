@@ -102,7 +102,7 @@ void CNPC_Barney::Spawn()
 {
 	Precache( );
 
-	SetModel( "models/barney.mdl");
+	SetModel("models/half-life/barney.mdl");
 
 	SetRenderColor( 255, 255, 255, 255 );
 
@@ -138,7 +138,7 @@ void CNPC_Barney::Precache()
 {
 	m_iAmmoType = GetAmmoDef()->Index("9mmRound");
 
-	PrecacheModel("models/barney.mdl");
+	PrecacheModel("models/half-life/barney.mdl");
 
 	PrecacheScriptSound( "Barney.FirePistol" );
 	PrecacheScriptSound( "Barney.Pain" );
@@ -555,13 +555,13 @@ void CNPC_Barney::HandleAnimEvent( animevent_t *pEvent )
 
 	case BARNEY_AE_DRAW:
 		// barney's bodygroup switches here so he can pull gun from holster
-		SetBodygroup( 1, BARNEY_BODY_GUNDRAWN);
+		SetBodygroup( 2, BARNEY_BODY_GUNDRAWN);
 		m_fGunDrawn = true;
 		break;
 
 	case BARNEY_AE_HOLSTER:
 		// change bodygroup to replace gun in holster
-		SetBodygroup( 1, BARNEY_BODY_GUNHOLSTERED);
+		SetBodygroup( 2, BARNEY_BODY_GUNHOLSTERED);
 		m_fGunDrawn = false;
 		break;
 
@@ -917,8 +917,8 @@ END_DATADESC()
 //=========================================================
 void CNPC_DeadBarney::Spawn( void )
 {
-	PrecacheModel("models/barney.mdl");
-	SetModel( "models/barney.mdl");
+	PrecacheModel("models/half-life/barney.mdl");
+	SetModel("models/half-life/barney.mdl");
 
 	ClearEffects();
 	SetSequence( 0 );

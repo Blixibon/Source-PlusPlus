@@ -18,6 +18,7 @@ float WeightForPhoneme( char *text );
 
 int NumPhonemes();
 int TextToPhonemeIndex( const char *text );
+int PhonemeCodeToIndex(int code);
 const char *NameForPhonemeByIndex( int index );
 int CodeForPhonemeByIndex( int index );
 const char *DescForPhonemeByIndex( int index );

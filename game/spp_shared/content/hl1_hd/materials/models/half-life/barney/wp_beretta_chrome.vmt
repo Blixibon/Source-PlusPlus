@@ -1,0 +1,9 @@
+"Vertexlitgeneric"
+{
+	"$envmap" "models/half-life/barney/wp_beretta_Chrome"
+	"$envmapsphere"			1
+	"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+}

@@ -1,0 +1,31 @@
+
+// Clipping box or view bounding box.
+$CBox 0 0 0 0 0 0
+
+// Bounding box or hull. Used for collision with a world object.
+$BBox 0 0 0 0 0 0
+
+// Hitbox info. Used for damage-based collision.
+$HBoxSet "default"
+$HBox 103 "Bip01 Pelvis" -5 -5.49 -7.31 4.11 5.7 6.83 ""
+$HBox 106 "Bip01 L Thigh" 0 -4.63 -3.12 18.799999 5.04 4.47 ""
+$HBox 106 "Bip01 L Calf" 0 -4.84 -3.31 14.88 3.28 3.24 ""
+$HBox 106 "Bip01 L Foot" 0 -2.57 -2.73 6.21 9.16 2.33 ""
+$HBox 107 "Bip01 R Thigh" 0 -4.63 -4.45 18.799999 5.04 3.14 ""
+$HBox 107 "Bip01 R Calf" 0 -4.84 -3.21 14.88 3.28 3.34 ""
+$HBox 107 "Bip01 R Foot" 0 -2.57 -2.3 6.21 9.16 2.76 ""
+$HBox 103 "Bip01 Spine" 0 -5.05 -7.13 9.64 7.02 7.15 ""
+$HBox 102 "Bip01 Spine1" 0 -6.18 -7.62 13.18 7.28 7.64 ""
+$HBox 103 "Armour Front" -4.89 -2.04 -4.91 4.91 0.36 0 ""
+$HBox 103 "Armour Back" -5.79 -0.68 -8.53 5.81 1.86 0 ""
+$HBox 108 "Holster" -1.95 -10.65 -5.01 0.86 2.63 1.91 ""
+$HBox 105 "Bip01 R UpperArm" -2.14 -3.46 -2.27 11.47 3.01 4.34 ""
+$HBox 105 "Bip01 R Forearm" 0 -2.56 -2.12 10.06 2.7 2.44 ""
+$HBox 105 "Bip01 R Hand" 0 -0.97 -2.13 11.07 1.35 4.71 ""
+$HBox 105 "Bip01 R Finger01" 0 -0.15 -0.58 1.57 1.31 0.94 ""
+$HBox 104 "Bip01 L UpperArm" -2.15 -3.46 -4.37 11.46 3.01 2.24 ""
+$HBox 104 "Bip01 L Forearm" 0 -2.56 -2.47 10.05 2.69 2.1 ""
+$HBox 104 "Bip01 L Hand" 0 -0.94 -2.01 4.61 1.16 1.79 ""
+$HBox 101 "Bip01 Head" -0.52 -4.96 -4.53 10.61 6.84 4.48 ""
+$HBox 101 "Mouth" 0 -1.83 -1.94 3.47 0.52 2.02 ""
+$HBox 102 "ID Tag" -1.79 -1.44 -3.47 2.35 0.67 0.15 ""

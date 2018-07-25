@@ -1626,7 +1626,11 @@ void CBaseAnimating::CalculateIKLocks( float currentTime )
 		CTraceFilterSkipNPCs traceFilter( this, GetCollisionGroup() );
 		Vector up;
 		GetVectors( NULL, NULL, &up );
+
 		// FIXME: check number of slots?
+		float minHeight = FLT_MAX;
+		float maxHeight = -FLT_MAX;
+
 		for (int i = 0; i < m_pIk->m_target.Count(); i++)
 		{
 			trace_t trace;
@@ -1679,11 +1683,33 @@ void CBaseAnimating::CalculateIKLocks( float currentTime )
 						{
 							pTarget->SetPosWithNormalOffset( trace.endpos, trace.plane.normal );
 							pTarget->SetNormal( trace.plane.normal );
+
+							if (pTarget->est.release < 0.1)
+							{
+								// keep track of ground height
+								float offset = DotProduct(pTarget->est.pos, up);
+								if (minHeight > offset)
+									minHeight = offset;
+
+								if (maxHeight < offset)
+									maxHeight = offset;
+							}
 						}
 						else
 						{
 							pTarget->SetPos( trace.endpos );
 							pTarget->SetAngles( GetAbsAngles() );
+
+							if (pTarget->est.release < 0.1)
+							{
+								// keep track of ground height
+								float offset = DotProduct(pTarget->est.pos, up);
+								if (minHeight > offset)
+									minHeight = offset;
+
+								if (maxHeight < offset)
+									maxHeight = offset;
+							}
 						}
 
 					}
@@ -1695,6 +1721,11 @@ void CBaseAnimating::CalculateIKLocks( float currentTime )
 				}
 				break;
 			}
+		}
+
+		if (gpGlobals->maxClients > 1 && minHeight < FLT_MAX)
+		{
+			SetIKGroundContactInfo(minHeight, maxHeight);
 		}
 	}
 }

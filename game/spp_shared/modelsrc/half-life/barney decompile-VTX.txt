@@ -1,0 +1,80 @@
+// Created by Crowbar 0.56
+====== File Size ======
+	46,334
+====== File Seek Log ======
+--- Summary ---
+	0 - 46,334
+------------------------
+--- Each Section or Loop ---
+	0 - 35 VTX File Header
+	36 - 59 theVtxFileData.theVtxBodyParts 3
+	60 - 67 aBodyPart.theVtxModels 1
+	68 - 75 aBodyPart.theVtxModels 1
+	76 - 99 aBodyPart.theVtxModels 3
+	100 - 111 aModel.theVtxModelLods 1
+	112 - 123 aModel.theVtxModelLods 1
+	124 - 135 aModel.theVtxModelLods 1
+	136 - 147 aModel.theVtxModelLods 1
+	148 - 159 aModel.theVtxModelLods 1
+	160 - 195 aModelLod.theVtxMeshes 4
+	196 - 231 aModelLod.theVtxMeshes 4
+	232 - 240 aModelLod.theVtxMeshes 1
+	241 - 258 aModelLod.theVtxMeshes 2
+	259 - 283 aMesh.theVtxStripGroups 1
+	284 - 308 aMesh.theVtxStripGroups 1
+	309 - 333 aMesh.theVtxStripGroups 1
+	334 - 358 aMesh.theVtxStripGroups 1
+	359 - 383 aMesh.theVtxStripGroups 1
+	384 - 408 aMesh.theVtxStripGroups 1
+	409 - 433 aMesh.theVtxStripGroups 1
+	434 - 458 aMesh.theVtxStripGroups 1
+	459 - 483 aMesh.theVtxStripGroups 1
+	484 - 508 aMesh.theVtxStripGroups 1
+	509 - 533 aMesh.theVtxStripGroups 1
+	534 - 560 aStripGroup.theVtxStrips 1
+	561 - 587 aStripGroup.theVtxStrips 1
+	588 - 614 aStripGroup.theVtxStrips 1
+	615 - 641 aStripGroup.theVtxStrips 1
+	642 - 668 aStripGroup.theVtxStrips 1
+	669 - 695 aStripGroup.theVtxStrips 1
+	696 - 722 aStripGroup.theVtxStrips 1
+	723 - 749 aStripGroup.theVtxStrips 1
+	750 - 776 aStripGroup.theVtxStrips 1
+	777 - 803 aStripGroup.theVtxStrips 1
+	804 - 830 aStripGroup.theVtxStrips 1
+	831 - 4,736 aStripGroup.theVtxVertexes 434
+	4,737 - 4,916 aStripGroup.theVtxVertexes 20
+	4,917 - 15,338 aStripGroup.theVtxVertexes 1158
+	15,339 - 18,245 aStripGroup.theVtxVertexes 323
+	18,246 - 21,044 aStripGroup.theVtxVertexes 311
+	21,045 - 21,593 aStripGroup.theVtxVertexes 61
+	21,594 - 23,411 aStripGroup.theVtxVertexes 202
+	23,412 - 23,933 aStripGroup.theVtxVertexes 58
+	23,934 - 24,365 aStripGroup.theVtxVertexes 48
+	24,366 - 26,165 aStripGroup.theVtxVertexes 200
+	26,166 - 26,273 aStripGroup.theVtxVertexes 12
+	26,274 - 28,961 aStripGroup.theVtxIndexes 1344
+	28,962 - 29,117 aStripGroup.theVtxIndexes 78
+	29,118 - 37,361 aStripGroup.theVtxIndexes 4122
+	37,362 - 39,755 aStripGroup.theVtxIndexes 1197
+	39,756 - 42,401 aStripGroup.theVtxIndexes 1323
+	42,402 - 43,001 aStripGroup.theVtxIndexes 300
+	43,002 - 44,129 aStripGroup.theVtxIndexes 564
+	44,130 - 44,321 aStripGroup.theVtxIndexes 96
+	44,322 - 44,549 aStripGroup.theVtxIndexes 114
+	44,550 - 45,653 aStripGroup.theVtxIndexes 552
+	45,654 - 45,725 aStripGroup.theVtxIndexes 36
+	45,726 - 45,997 aStrip.theVtxBoneStateChanges 34
+	45,998 - 46,005 aStrip.theVtxBoneStateChanges 1
+	46,006 - 46,117 aStrip.theVtxBoneStateChanges 14
+	46,118 - 46,157 aStrip.theVtxBoneStateChanges 5
+	46,158 - 46,229 aStrip.theVtxBoneStateChanges 9
+	46,230 - 46,237 aStrip.theVtxBoneStateChanges 1
+	46,238 - 46,253 aStrip.theVtxBoneStateChanges 2
+	46,254 - 46,261 aStrip.theVtxBoneStateChanges 1
+	46,262 - 46,269 aStrip.theVtxBoneStateChanges 1
+	46,270 - 46,317 aStrip.theVtxBoneStateChanges 6
+	46,318 - 46,325 aStrip.theVtxBoneStateChanges 1
+	46,326 - 46,333 theVtxFileData.theVtxMaterialReplacementLists 1
+	46,334 - 46,334 END OF FILE + 1 (File size)
+========================

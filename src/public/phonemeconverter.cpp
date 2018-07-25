@@ -180,6 +180,18 @@ int TextToPhonemeIndex( const char *text )
 	return -1;
 }
 
+int PhonemeCodeToIndex(int code)
+{
+	for (int i = 0; i < ARRAYSIZE(g_Phonemes); ++i)
+	{
+		PhonemeMap_t *test = &g_Phonemes[i];
+		if (test->code == code)
+			return i;
+	}
+
+	return -1;
+}
+
 int CodeForPhonemeByIndex( int index )
 {
 	if ( index < 0 || index >= NumPhonemes() )

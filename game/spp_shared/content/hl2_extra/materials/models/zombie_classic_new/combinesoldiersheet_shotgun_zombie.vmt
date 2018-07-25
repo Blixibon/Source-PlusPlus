@@ -1,0 +1,14 @@
+
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/Zombie_Classic_new/combinesoldiersheet_shotgun_zombie"
+	"$bumpmap" "Models/Zombie_Classic_new/combinesoldiersheet_shotgun_zombie_normal"
+	"$alphatest" "1"
+	"$model" "1"
+	"$phong" "1"
+	"$phongboost" "3"
+	"$halflambert" "1"
+	"$phongexponenttexture" "Models/Zombie_Classic_new/combinesoldiersheet_zombie_variant_phong"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5  1]"
+}

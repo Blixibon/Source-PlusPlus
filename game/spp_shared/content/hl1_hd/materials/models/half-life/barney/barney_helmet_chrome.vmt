@@ -1,0 +1,16 @@
+"Vertexlitgeneric"
+{
+	$basetexture "detail/metal_detail_01"
+	"$envmap" "models/half-life/barney/barney_helmet_Chrome"
+	//"$envmapsphere"			1
+	//"$envmapmode" 1
+
+	// requred to see specular on dx6+7 at all
+	//"$multipass" 1
+	
+	"$phong" "1"
+        $phongexponent "15"
+	"$phongboost" "2"
+//	"$phongalbedotint" "1"
+	"$phongfresnelranges" "[0.5 0.7 1]"
+}

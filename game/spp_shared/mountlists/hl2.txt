@@ -18,6 +18,8 @@
 			{
 				"scenes"	"1"
 			}
+			
+			vpk		enhanced_citizens
 		}
 	}
 }

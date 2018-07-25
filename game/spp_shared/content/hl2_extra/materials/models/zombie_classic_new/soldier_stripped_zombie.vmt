@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/zombie_classic_new/soldier_stripped_zombie"
+	"$bumpmap" "Models/Zombie_classic_new/soldier_stripped_zombie_normal"
+	"$model" "1"
+	"$phong" "1"
+	"$phongboost" "5"
+	"$halflambert" "1"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5  1]"
+}

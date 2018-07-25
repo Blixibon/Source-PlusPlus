@@ -50,7 +50,7 @@ void CPlayerMove::StartCommand( CBasePlayer *player, CUserCmd *cmd )
 	CBaseEntity::SetPredictionRandomSeed( cmd );
 	CBaseEntity::SetPredictionPlayer( player );
 	
-#if defined (HL2_DLL)
+//#if defined (HL2_DLL)
 	// pull out backchannel data and move this out
 
 	int i;
@@ -68,7 +68,7 @@ void CPlayerMove::StartCommand( CBasePlayer *player, CUserCmd *cmd )
 		}
 	}
 
-#endif
+//#endif
 }
 
 //-----------------------------------------------------------------------------

@@ -1,0 +1,1559 @@
+
+$SectionFrames 30 149
+
+$PoseParameter "mouth" 0 90 loop 0
+$PoseParameter "head_yaw" -90 90 loop 0
+
+$IKChain "lfoot" "Bip01 L Foot" knee 0.732 0.681 0
+$IKChain "rfoot" "Bip01 R Foot" knee 0.739 0.674 0
+
+$Animation "mdldecompiler_delta.smd" "scientist_anims\mdldecompiler_delta.smd" {
+	fps 30
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Animation "mouth_close" "scientist_anims\mouth_close.smd" {
+	fps 30
+}
+
+$Animation "mouth_open" "scientist_anims\mouth_open.smd" {
+	fps 30
+}
+
+$Animation "neck_right" "scientist_anims\neck_right.smd" {
+	fps 30
+}
+
+$Animation "neck_center" "scientist_anims\neck_center.smd" {
+	fps 30
+}
+
+$Animation "neck_left" "scientist_anims\neck_left.smd" {
+	fps 30
+}
+
+$Sequence "ragdoll" {
+	"scientist_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "walk" {
+	"scientist_anims\walk.smd"
+	activity "ACT_WALK" -1
+	{ event AE_CL_HL1_WALK_LEFT 0 "" }
+	{ event AE_CL_HL1_WALK_RIGHT 8 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 17
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+	walkframe 16 LX
+}
+
+$Sequence "walk_scared" {
+	"scientist_anims\walk_scared.smd"
+	activity "ACT_WALK_SCARED" -1
+	{ event AE_CL_HL1_WALK_LEFT 0 "" }
+	{ event AE_CL_HL1_WALK_RIGHT 8 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+	walkframe 16 LX
+}
+
+$Sequence "run" {
+	"scientist_anims\run.smd"
+	activity "ACT_RUN" -1
+	{ event AE_CL_HL1_RUN_LEFT 0 "" }
+	{ event AE_CL_HL1_RUN_RIGHT 9 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+	walkframe 18 LX
+}
+
+$Sequence "run1" {
+	"scientist_anims\run1.smd"
+	activity "ACT_RUN_SCARED" 1
+	{ event AE_CL_HL1_RUN_LEFT 0 "" }
+	{ event AE_CL_HL1_RUN_RIGHT 9 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+	walkframe 17 LX
+}
+
+$Sequence "run2" {
+	"scientist_anims\run2.smd"
+	{ event AE_CL_HL1_RUN_LEFT 0 "" }
+	{ event AE_CL_HL1_RUN_RIGHT 9 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+	walkframe 18 LX
+}
+
+$Sequence "180_Left" {
+	"scientist_anims\180_Left.smd"
+	activity "ACT_TURN_LEFT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 19
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "180_Right" {
+	"scientist_anims\180_Right.smd"
+	activity "ACT_TURN_RIGHT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 19
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "flinch" {
+	"scientist_anims\flinch.smd"
+	activity "ACT_BIG_FLINCH" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "flinch1" {
+	"scientist_anims\flinch1.smd"
+	activity "ACT_SMALL_FLINCH" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "laflinch" {
+	"scientist_anims\laflinch.smd"
+	activity "ACT_FLINCH_LEFTARM" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "raflinch" {
+	"scientist_anims\raflinch.smd"
+	activity "ACT_FLINCH_RIGHTARM" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "llflinch" {
+	"scientist_anims\llflinch.smd"
+	activity "ACT_FLINCH_LEFTLEG" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "rlflinch" {
+	"scientist_anims\rlflinch.smd"
+	activity "ACT_FLINCH_RIGHTLEG" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle1" {
+	"scientist_anims\idle1.smd"
+	activity "ACT_IDLE" 50
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle3" {
+	"scientist_anims\idle3.smd"
+	activity "ACT_IDLE" 3
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle4" {
+	"scientist_anims\idle4.smd"
+	activity "ACT_IDLE" 2
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle5" {
+	"scientist_anims\idle5.smd"
+	activity "ACT_IDLE" 3
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle6" {
+	"scientist_anims\idle6.smd"
+	activity "ACT_IDLE" 3
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle7" {
+	"scientist_anims\idle7.smd"
+	activity "ACT_IDLE" 10
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crouchstand" {
+	"scientist_anims\crouchstand.smd"
+	activity "ACT_STAND" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crouch_idle" {
+	"scientist_anims\crouch_idle.smd"
+	activity "ACT_CROUCHIDLE" 1
+	{ event 1100 9 "event_crouchidle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crouch_idle2" {
+	"scientist_anims\crouch_idle2.smd"
+	activity "ACT_CROUCHIDLE" 1
+	{ event 1100 12 "event_crouchidle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crouch_idle3" {
+	"scientist_anims\crouch_idle3.smd"
+	activity "ACT_CROUCHIDLE" 1
+	{ event 1100 23 "event_crouchidle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crouch_idle3_2" {
+	"scientist_anims\crouch_idle3_2.smd"
+	activity "ACT_CROUCHIDLE" 1
+	{ event 1100 9 "event_crouchidle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "panic" {
+	"scientist_anims\panic.smd"
+	activity "ACT_EXCITED" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fear1" {
+	"scientist_anims\fear1.smd"
+	activity "ACT_FEAR_DISPLAY" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fear2" {
+	"scientist_anims\fear2.smd"
+	activity "ACT_FEAR_DISPLAY" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eye_wipe" {
+	"scientist_anims\eye_wipe.smd"
+	activity "ACT_FEAR_DISPLAY" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 19
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pull_needle" {
+	"scientist_anims\pull_needle.smd"
+	activity "ACT_ARM" -1
+	{ event 2 15 "" }
+	//{ event 1100 30 "event_mattack needlepulled" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "return_needle" {
+	"scientist_anims\return_needle.smd"
+	activity "ACT_DISARM" -1
+	{ event 3 15 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "give_shot" {
+	"scientist_anims\give_shot.smd"
+	activity "ACT_MELEE_ATTACK1" -1
+	{ event 1 22 "" }
+	//{ event 1100 30 "event_mattack shotgiven" }
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "diesimple" {
+	"scientist_anims\diesimple.smd"
+	activity "ACT_DIESIMPLE" 1
+	{ event AE_NPC_BODYDROP_LIGHT 8 "" }
+	{ event AE_NPC_RAGDOLL 8 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "diesimple_rose" {
+	"scientist_anims\diesimple_rose.smd"
+	activity "ACT_DIESIMPLE" 1
+	{ event AE_NPC_BODYDROP_LIGHT 8 "" }
+	{ event AE_NPC_RAGDOLL 8 "event_dropdead" }
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dieforward" {
+	"scientist_anims\dieforward.smd"
+	activity "ACT_DIE_HEADSHOT" 1
+	{ event AE_NPC_RAGDOLL 25 "event_dropdead" }
+	{ event AE_NPC_BODYDROP_LIGHT 26 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dieforward1" {
+	"scientist_anims\dieforward1.smd"
+	activity "ACT_DIEFORWARD" -1
+	{ event AE_NPC_RAGDOLL 9 "event_dropdead" }
+	{ event AE_NPC_BODYDROP_LIGHT 11 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "diebackward" {
+	"scientist_anims\diebackward.smd"
+	activity "ACT_DIEBACKWARD" -1
+	{ event AE_NPC_RAGDOLL 6 "event_dropdead" }
+	{ event AE_NPC_BODYDROP_LIGHT 8 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "headshot" {
+	"scientist_anims\headshot.smd"
+	activity "ACT_DIE_HEADSHOT" 20
+	{ event AE_NPC_RAGDOLL 17 "event_dropdead" }
+	{ event AE_NPC_BODYDROP_LIGHT 18 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "gutshot" {
+	"scientist_anims\gutshot.smd"
+	activity "ACT_DIE_GUTSHOT" -1
+	{ event AE_NPC_RAGDOLL 15 "event_dropdead" }
+	{ event AE_NPC_BODYDROP_LIGHT 16 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "lying_on_back" {
+	"scientist_anims\lying_on_back.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "lying_on_stomach" {
+	"scientist_anims\lying_on_stomach.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dead_sitting" {
+	"scientist_anims\dead_sitting.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dead_table1" {
+	"scientist_anims\dead_table1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dead_table2" {
+	"scientist_anims\dead_table2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dead_table3" {
+	"scientist_anims\dead_table3.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "barnacled1" {
+	"scientist_anims\barnacled1.smd"
+	activity "ACT_BARNACLE_HIT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "barnacled2" {
+	"scientist_anims\barnacled2.smd"
+	activity "ACT_BARNACLE_PULL" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 23
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "barnacled3" {
+	"scientist_anims\barnacled3.smd"
+	activity "ACT_BARNACLE_CHOMP" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "barnacled4" {
+	"scientist_anims\barnacled4.smd"
+	activity "ACT_BARNACLE_CHEW" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "console" {
+	"scientist_anims\console.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "checktie" {
+	"scientist_anims\checktie.smd"
+	{ event 1008 1 "NPC_Scientist.CheckTie" }
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dryhands" {
+	"scientist_anims\dryhands.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "tieshoe" {
+	"scientist_anims\tieshoe.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "writeboard" {
+	"scientist_anims\writeboard.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 8
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "studycart" {
+	"scientist_anims\studycart.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 6
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "lean" {
+	"scientist_anims\lean.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pondering" {
+	"scientist_anims\pondering.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pondering2" {
+	"scientist_anims\pondering2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pondering3" {
+	"scientist_anims\pondering3.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "buysoda" {
+	"scientist_anims\buysoda.smd"
+	{ event AE_CL_PLAYSOUND 25 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 40 "Weapons.BulletHit1" }
+	{ event AE_CL_PLAYSOUND 44 "Weapons.BulletHit2" }
+	fadein 0.2
+	fadeout 0.2
+	fps 8
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pause" {
+	"scientist_anims\pause.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "yes" {
+	"scientist_anims\yes.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "no" {
+	"scientist_anims\no.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "push_button" {
+	"scientist_anims\push_button.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "converse1" {
+	"scientist_anims\converse1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "converse2" {
+	"scientist_anims\converse2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "retina" {
+	"scientist_anims\retina.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "talkleft" {
+	"scientist_anims\talkleft.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "talkright" {
+	"scientist_anims\talkright.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "deskidle" {
+	"scientist_anims\deskidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 5
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "coffee" {
+	"scientist_anims\coffee.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "franticbutton" {
+	"scientist_anims\franticbutton.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitlookleft" {
+	"scientist_anims\sitlookleft.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitlookright" {
+	"scientist_anims\sitlookright.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitscared" {
+	"scientist_anims\sitscared.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitting2" {
+	"scientist_anims\sitting2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitting3" {
+	"scientist_anims\sitting3.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "cprscientist" {
+	"scientist_anims\cprscientist.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "cprscientistrevive" {
+	"scientist_anims\cprscientistrevive.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "cowering_in_corner" {
+	"scientist_anims\cowering_in_corner.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sstruggleidle" {
+	"scientist_anims\sstruggleidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sstruggle" {
+	"scientist_anims\sstruggle.smd"
+	{ event 1000 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "headcrabbed" {
+	"scientist_anims\headcrabbed.smd"
+	{ event 1000 82 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "c1a0_catwalkidle" {
+	"scientist_anims\c1a0_catwalkidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "c1a0_catwalk" {
+	"scientist_anims\c1a0_catwalk.smd"
+	{ event 1000 1 "" }
+	{ event 1008 1 "NPC_Scientist.StayBack" }
+	{ event 1008 21 "NPC_Scientist.CatScream" }
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ceiling_dangle" {
+	"scientist_anims\ceiling_dangle.smd"
+	{ event 1000 1 "" }
+	{ event 1001 1 "" }
+	{ event AE_SV_PLAYSOUND 4 "NPC_Scientist.DragOff" }
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ventpull1" {
+	"scientist_anims\ventpull1.smd"
+	{ event 1000 1 "" }
+	{ event 1001 1 "" }
+	{ event AE_SV_PLAYSOUND 8 "NPC_Scientist.VentPull1" }
+	{ event AE_SV_PLAYSOUND 16 "NPC_Scientist.VentPull2" }
+	{ event AE_SV_PLAYSOUND 28 "NPC_Scientist.VentPull3" }
+	{ event AE_SV_PLAYSOUND 31 "NPC_Scientist.VentPull1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ventpull2" {
+	"scientist_anims\ventpull2.smd"
+	{ event 1000 1 "" }
+	{ event 1001 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ventpullidle1" {
+	"scientist_anims\ventpullidle1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ventpullidle2" {
+	"scientist_anims\ventpullidle2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitidle" {
+	"scientist_anims\sitidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sitstand" {
+	"scientist_anims\sitstand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "panic1" {
+	"scientist_anims\panic1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "keypad" {
+	"scientist_anims\keypad.smd"
+	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "wave" {
+	"scientist_anims\wave.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pulldoor" {
+	"scientist_anims\pulldoor.smd"
+	{ event AE_CL_PLAYSOUND 11 "NPC.ButtonLatchLocked2" }
+	{ event AE_CL_PLAYSOUND 26 "NPC.ButtonLatchLocked1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "beatdoor" {
+	"scientist_anims\beatdoor.smd"
+	{ event AE_CL_PLAYSOUND 9 "NPC.ButtonLatchUnlocked1" }
+	{ event AE_CL_PLAYSOUND 20 "NPC.ButtonLatchUnlocked2" }
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fallingloop" {
+	"scientist_anims\fallingloop.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 35
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crawlwindow" {
+	"scientist_anims\crawlwindow.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "divewindow" {
+	"scientist_anims\divewindow.smd"
+	{ event 1001 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "locked_door" {
+	"scientist_anims\locked_door.smd"
+	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked1.wav" }
+	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked2.wav" }
+	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked1.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "push_button2" {
+	"scientist_anims\push_button2.smd"
+	{ event 1008 1 "NPC_Scientist.DarkRoom" }
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "unlock_door" {
+	"scientist_anims\unlock_door.smd"
+	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked1.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "quicklook" {
+	"scientist_anims\quicklook.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "handrailidle" {
+	"scientist_anims\handrailidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "handrail" {
+	"scientist_anims\handrail.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "hanging_idle" {
+	"scientist_anims\hanging_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fall_elevator" {
+	"scientist_anims\fall_elevator.smd"
+	{ event 1000 1 "" }
+	{ event 1008 13 "NPC_Scientist.Scream3" }
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fall" {
+	"scientist_anims\fall.smd"
+	{ event 1000 0 "" }
+	{ event 1008 0 "*scientist/scream3.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "scientist_get_pulled" {
+	"scientist_anims\scientist_get_pulled.smd"
+	{ event 1000 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 17
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "hanging_idle2" {
+	"scientist_anims\hanging_idle2.smd"
+	{ event 1008 0 "*scientist/c1a2_sci_dangling.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "scientist_idlewall" {
+	"scientist_anims\scientist_idlewall.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ickyjump_sci" {
+	"scientist_anims\ickyjump_sci.smd"
+	{ event 1000 1 "" }
+	{ event 1001 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "haulscientist" {
+	"scientist_anims\haulscientist.smd"
+	{ event 1000 1 "" }
+	{ event 1001 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 17
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "c1a4_wounded_idle" {
+	"scientist_anims\c1a4_wounded_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 6
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "c1a4_dying_speech" {
+	"scientist_anims\c1a4_dying_speech.smd"
+	{ event 1000 1 "" }
+	{ event 1008 1 "NPC_Scientist.Rocket" }
+	{ event 1008 45 "NPC_Scientist.Pain3" }
+	fadein 0.2
+	fadeout 0.2
+	fps 7
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "tentacle_grab" {
+	"scientist_anims\tentacle_grab.smd"
+	{ event 1000 1 "" }
+	{ event 1008 4 "NPC_Scientist.Scream02" }
+	{ event 1008 65 "NPC_Scientist.Tentacle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "helicack" {
+	"scientist_anims\helicack.smd"
+	{ event 1003 0 "gunmedown" }
+	{ event 1000 0 "" }
+	{ event 1008 0 "*scientist/sci_pain4.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "windive" {
+	"scientist_anims\windive.smd"
+	{ event 1000 0 "" }
+	{ event 1001 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "scicrashidle" {
+	"scientist_anims\scicrashidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 34
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "scicrash" {
+	"scientist_anims\scicrash.smd"
+	{ event 1000 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "onguard" {
+	"scientist_anims\onguard.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 6
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "seeya" {
+	"scientist_anims\seeya.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 17
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "rocketcrawl" {
+	"scientist_anims\rocketcrawl.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 6
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "portal" {
+	"scientist_anims\portal.smd"
+	{ event AE_CL_PLAYSOUND 19 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 22 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 25 "NPC.ButtonBlip2" }
+	{ event AE_CL_PLAYSOUND 32 "NPC.ButtonBlip2" }
+	{ event AE_CL_PLAYSOUND 47 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 98 "NPC.ButtonBlip2" }
+	{ event AE_CL_PLAYSOUND 102 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 110 "NPC.ButtonBlip2" }
+	{ event AE_CL_PLAYSOUND 119 "NPC.ButtonBlip1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "gluonshow" {
+	"scientist_anims\gluonshow.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "crouch" {
+	"scientist_anims\crouch.smd"
+	activity "ACT_CROUCH" -1
+	//{ event 1100 27 "event_crouchidle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "kneel" {
+	"scientist_anims\kneel.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "suv_dead" {
+	"scientist_anims\suv_dead.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "sci_keypad" {
+	"scientist_anims\sci_keypad.smd"
+	{ event AE_CL_PLAYSOUND 7 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 13 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 19 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 24 "*buttons/blip1.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "checktie2" {
+	"scientist_anims\checktie2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "messhall_dead1" {
+	"scientist_anims\messhall_dead1.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fence_clutch" {
+	"scientist_anims\fence_clutch.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fence_idle1" {
+	"scientist_anims\fence_idle1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fence_idle2" {
+	"scientist_anims\fence_idle2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fence_scared" {
+	"scientist_anims\fence_scared.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fence_return" {
+	"scientist_anims\fence_return.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "peek" {
+	"scientist_anims\peek.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "blown_back" {
+	"scientist_anims\blown_back.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "clutch_stomach" {
+	"scientist_anims\clutch_stomach.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "clutch_stomach_nope" {
+	"scientist_anims\clutch_stomach_nope.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "interogation1" {
+	"scientist_anims\interogation1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 23
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "interogation2" {
+	"scientist_anims\interogation2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 23
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "slump_idle" {
+	"scientist_anims\slump_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "slump" {
+	"scientist_anims\slump.smd"
+	{ event 1000 1 "" }
+	{ event 1004 32 "*common/bodydrop3.wav" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "scientist_mouth" {
+	"mouth_close"
+	"mouth_open"
+	autoplay
+	blend "mouth" 0 90
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+}
+
+$Sequence "scientist_neckturn" {
+	"neck_right"
+	"neck_center"
+	"neck_left"
+	autoplay
+	blend "head_yaw" -90 90
+	blendwidth 3
+	delta
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

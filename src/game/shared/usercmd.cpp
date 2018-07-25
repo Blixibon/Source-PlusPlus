@@ -169,8 +169,8 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-#if defined( HL2_CLIENT_DLL )
-	if ( to->entitygroundcontact.Count() != 0 )
+//#if defined( HL2_CLIENT_DLL )
+	if ( gpGlobals->maxClients == 1 && to->entitygroundcontact.Count() != 0 )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteShort( to->entitygroundcontact.Count() );
@@ -186,7 +186,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 	{
 		buf->WriteOneBit( 0 );
 	}
-#endif
+//#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -289,7 +289,7 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 		move->mousedy = buf->ReadShort();
 	}
 
-#if defined( HL2_DLL )
+//#if defined( HL2_DLL )
 	if ( buf->ReadOneBit() )
 	{
 		move->entitygroundcontact.SetCount( buf->ReadShort() );
@@ -302,5 +302,5 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 			move->entitygroundcontact[i].maxheight = buf->ReadBitCoord( );
 		}
 	}
-#endif
+//#endif
 }

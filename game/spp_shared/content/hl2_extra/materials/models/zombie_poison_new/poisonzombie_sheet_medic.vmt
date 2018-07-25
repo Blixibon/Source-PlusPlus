@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/Zombie_Poison_new/PoisonZombie_sheet_medic"
+//	"$envmap" "env_cubemap"
+	"$bumpmap" "Models/Zombie_Poison_new/PoisonZombie_sheet_normal"
+	"$model" "1"
+	"$phong" "1"
+	"$phongboost" "6"
+//	"$halflambert" "1"
+	"$phongexponenttexture" "Models/zombie_poison_new/poisonZombie_phong"			
+	"$phongfresnelranges"	"[0 .5  1]"
+
+}

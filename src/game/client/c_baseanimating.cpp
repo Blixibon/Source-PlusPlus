@@ -2638,12 +2638,12 @@ void C_BaseAnimating::CalculateIKLocks( float currentTime )
 		}
 	}
 
-#if defined( HL2_CLIENT_DLL )
-	if (minHeight < FLT_MAX)
+//#if defined( HL2_CLIENT_DLL )
+	if (gpGlobals->maxClients == 1 && minHeight < FLT_MAX)
 	{
 		input->AddIKGroundContactInfo( entindex(), minHeight, maxHeight );
 	}
-#endif
+//#endif
 
 	CBaseEntity::PopEnableAbsRecomputations();
 	partition->SuppressLists( curSuppressed, true );
@@ -2684,12 +2684,14 @@ void C_BaseAnimating::ControlMouth( CStudioHdr *pstudiohdr )
 
 	if ( index != -1 )
 	{
-		float value = GetMouth()->mouthopen / 64.0;
+		/*float value = GetMouth()->mouthopen / 64.0;
 
 		float raw = value;
 
 		if ( value > 1.0 )  
-			 value = 1.0;
+			 value = 1.0;*/
+		float value = GetMouthOpenPct();
+		float raw = value;
 
 		float start, end;
 		GetPoseParameterRange( index, start, end );
@@ -3768,6 +3770,169 @@ void MaterialFootstepSound( C_BaseAnimating *pEnt, bool bLeftFoot, float flVolum
 	}
 }
 
+struct HL1Foot_t
+{
+	const char *m_pNameLeft;
+	const char *m_pNameRight;
+};
+
+static HL1Foot_t s_pHL1FootSounds[26] =
+{
+	{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_ANTLION
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_BLOODYFLESH	
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_CONCRETE		
+{ "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_DIRT			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_EGGSHELL		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_FLESH			
+{ "HL1.Grate.StepLeft", "HL1.Grate.StepRight" },	// CHAR_TEX_GRATE			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_ALIENFLESH		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_CLIP			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_PLASTIC		
+{ "HL1.Metal.StepLeft", "HL1.Metal.StepRight" },	// CHAR_TEX_METAL			
+{ "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_SAND			
+{ "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_FOLIAGE		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_COMPUTER		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Slosh.StepLeft", "HL1.Slosh.StepRight" },	// CHAR_TEX_SLOSH			
+{ "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },			// CHAR_TEX_TILE			
+{ "HL1.Wade.StepLeft", "HL1.Wade.StepRight" },	// CHAR_TEX_WADE		
+{ "HL1.Vent.StepLeft", "HL1.Vent.StepRight" },	// CHAR_TEX_VENT			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_WOOD			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },	// CHAR_TEX_GLASS			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_WARPSHIELD		
+};
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void HL1MaterialFootstepSound(C_BaseEntity *pEnt, bool bLeftFoot, float flVolume)
+{
+	if (pEnt == nullptr)
+		return;
+
+	trace_t tr;
+	Vector traceStart = pEnt->GetAbsOrigin();
+	//QAngle angles;
+
+	//int attachment;
+
+	//!!!PERF - These string lookups here aren't the swiftest, but
+	// this doesn't get called very frequently unless a lot of NPCs
+	// are using this code.
+	//if (bLeftFoot)
+	//{
+	//	attachment = pEnt->LookupAttachment("LeftFoot");
+	//}
+	//else
+	//{
+	//	attachment = pEnt->LookupAttachment("RightFoot");
+	//}
+
+	//if (attachment == -1)
+	//{
+	//	// Exit if this NPC doesn't have the proper attachments.
+	//	return;
+	//}
+
+	float height = pEnt->GetCollideable()->OBBMaxs()[2] - pEnt->GetCollideable()->OBBMins()[2];
+	Vector knee;
+
+	//pEnt->GetAttachment(attachment, traceStart, angles);
+
+	VectorCopy(traceStart, knee);
+	knee[2] = traceStart[2] + 0.2 * height;
+
+	surfacedata_t *psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("default"));
+
+	// find out what we're stepping in or on...
+	if (enginetrace->GetPointContents(knee) & MASK_WATER)
+	{
+		static int iSkipStep = 0;
+
+		if (iSkipStep == 0)
+		{
+			iSkipStep++;
+			return;
+		}
+
+		if (iSkipStep++ == 3)
+		{
+			iSkipStep = 0;
+		}
+		psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("wade"));
+		flVolume = 1.0f;
+	}
+	else if (enginetrace->GetPointContents(traceStart) & MASK_WATER)
+	{
+		psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("water"));
+
+		//trace_t	waterTrace;
+		//
+		//UTIL_TraceLine(knee, traceStart, (CONTENTS_WATER | CONTENTS_SLIME), pEnt, COLLISION_GROUP_NONE, &waterTrace);
+
+		//if (waterTrace.fraction < 1.0f)
+		//{
+		//	CEffectData	data;
+
+		//	data.m_fFlags = 0;
+		//	data.m_vOrigin = waterTrace.endpos;
+		//	data.m_vNormal = waterTrace.plane.normal;
+		//	data.m_flScale = 4.0f;
+
+		//	// See if we hit slime
+		//	if (waterTrace.contents & CONTENTS_SLIME)
+		//	{
+		//		data.m_fFlags |= FX_WATER_IN_SLIME;
+		//	}
+
+		//	DispatchEffect("watersplash", data);
+		//}
+	}
+	else
+	{
+		UTIL_TraceLine(traceStart + Vector(0, 0, 4), traceStart - Vector(0, 0, 48.0f), MASK_SHOT_HULL, pEnt, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction < 1.0 && tr.m_pEnt)
+		{
+			psurf = physprops->GetSurfaceData(tr.surface.surfaceProps);
+		}
+	}
+
+	if (psurf)
+	{
+		EmitSound_t params;
+		const HL1Foot_t &effect = s_pHL1FootSounds[psurf->game.material - 'A'];
+		if (bLeftFoot)
+		{
+			params.m_pSoundName = effect.m_pNameLeft;
+		}
+		else
+		{
+			params.m_pSoundName = effect.m_pNameRight;
+		}
+
+		if (!enginesound->IsSoundPrecached(params.m_pSoundName))
+			enginesound->PrecacheSound(params.m_pSoundName);
+
+
+		CPASAttenuationFilter filter(pEnt, params.m_pSoundName);
+
+		params.m_bWarnOnDirectWaveReference = true;
+		params.m_flVolume = flVolume;
+
+		pEnt->EmitSound(filter, pEnt->entindex(), params);
+	}
+}
+
+void HL1FootCallback(const CEffectData &data)
+{
+	HL1MaterialFootstepSound(data.GetEntity(), data.m_nHitBox != 0, data.m_flScale);
+}
+
+DECLARE_CLIENT_EFFECT("HL1FootStep", HL1FootCallback);
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *origin - 
@@ -3928,6 +4093,30 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			MaterialFootstepSound( this, false, VOL_NORM );
 		}
 		break;
+
+	case AE_CL_HL1_WALK_LEFT:
+	{
+		HL1MaterialFootstepSound(this, true, VOL_NORM * 0.5f);
+	}
+	break;
+
+	case AE_CL_HL1_WALK_RIGHT:
+	{
+		HL1MaterialFootstepSound(this, false, VOL_NORM * 0.5f);
+	}
+	break;
+
+	case AE_CL_HL1_RUN_LEFT:
+	{
+		HL1MaterialFootstepSound(this, true, VOL_NORM);
+	}
+	break;
+
+	case AE_CL_HL1_RUN_RIGHT:
+	{
+		HL1MaterialFootstepSound(this, false, VOL_NORM);
+	}
+	break;
 
 	// Eject brass
 	case CL_EVENT_EJECTBRASS1:

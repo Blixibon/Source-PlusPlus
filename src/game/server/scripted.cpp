@@ -1923,6 +1923,8 @@ public:
 	void DelayThink( void );
 	int	 ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
+	int DrawDebugTextOverlays(void);
+
 	// Input handlers
 	void InputBeginSentence( inputdata_t &inputdata );
 
@@ -2068,6 +2070,27 @@ void CAI_ScriptedSentence::Spawn( void )
 		m_flVolume = 1.0;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Draw any debug text overlays
+// Output : Current text offset from the top
+//-----------------------------------------------------------------------------
+int CAI_ScriptedSentence::DrawDebugTextOverlays(void)
+{
+	int text_offset = BaseClass::DrawDebugTextOverlays();
+
+	if (m_debugOverlays & OVERLAY_TEXT_BIT)
+	{
+		char tempstr[512];
+
+		// print refire time
+		Q_snprintf(tempstr, sizeof(tempstr), "target entity: %s", STRING(m_iszEntity));
+		EntityText(text_offset, tempstr, 0);
+		text_offset++;
+
+		
+	}
+	return text_offset;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

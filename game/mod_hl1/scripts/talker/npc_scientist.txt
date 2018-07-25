@@ -5,6 +5,7 @@ response ScientistFear sentence SC_FEAR delay 5 soundlevel "SNDLVL_NORM"
 response ScientistHeal sentence SC_HEAL delay 2 soundlevel "SNDLVL_NORM"
 response ScientistScream sentence SC_SCREAM delay "3,6" soundlevel "SNDLVL_NORM"
 response ScientistPOk sentence SC_POK delay 2 soundlevel "SNDLVL_NORM"
+//response ScientistPOK speak "vo/canals/airboat_drivehard.wav" delay 2 soundlevel "SNDLVL_NORM"
 
 response "ScientistAnswer" sentence "SC_ANSWER" defaultdelay
 response "ScientistStare" sentence "SC_STARE" delay "5,7.5"

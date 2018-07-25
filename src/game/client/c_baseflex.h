@@ -146,6 +146,24 @@ public:
 
 	virtual void OnThreadedDrawSetup();
 
+	virtual float	GetHL2MouthOpenPct();
+
+	virtual float	GetVisibleMouthOpenPct()
+	{
+		// FIXME: this needs to get the mouth index from the shader
+		const studiohdr_t *pHdr = GetModelPtr()->GetRenderHdr();
+
+
+		if (pHdr && pHdr->nummouths > 0)
+		{
+			return Clamp(GetHL1MouthOpenPct() + m_flMouthOpenPct, 0.0f, 1.0f);
+		}
+		else
+		{
+			return GetMouthOpenPct();
+		}
+	}
+
 	// model specific
 	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed );
 	static void		LinkToGlobalFlexControllers( CStudioHdr *hdr );
@@ -268,11 +286,15 @@ private:
 	static char		*g_flexcontroller[MAXSTUDIOFLEXCTRL*4]; // room for global set of flexcontrollers
 	static float	g_flexweight[MAXSTUDIOFLEXDESC];
 
+	int				m_iMouthOpenComputedFrame;
+	float			m_flComputedMouthOpen;
+
 protected:
 
 	Emphasized_Phoneme m_PhonemeClasses[ NUM_PHONEME_CLASSES ];
 	int				m_iMouthAttachment;
 	float			m_flMouthOpenPct;
+	CUtlMap<int, float> m_vflPhonemeWeights;
 
 private:
 
@@ -286,14 +308,14 @@ private:
 	bool			SetupEmphasisBlend( Emphasized_Phoneme *classes, int phoneme );
 	void			ComputeBlendedSetting( Emphasized_Phoneme *classes, float emphasis_intensity );
 
-#ifdef HL2_CLIENT_DLL
+//#ifdef HL2_CLIENT_DLL
 public:
 
 	Vector			m_vecLean;
 	CInterpolatedVar< Vector >	m_iv_vecLean;
 	Vector			m_vecShift;
 	CInterpolatedVar< Vector >	m_iv_vecShift;
-#endif
+//#endif
 };
 
 

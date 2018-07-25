@@ -8,4 +8,13 @@
 			"vpk"	"hl1_pak"
 		}
 	}
+	
+	"|content_path|"
+	{
+		"head"	"1"
+		"hl1_hd"
+		{
+			
+		}
+	}
 }

@@ -10,9 +10,12 @@
 #include "clientmode_hlnormal.h"
 #include "hl1_clientmode.h"
 #include "hl1_clientscoreboard.h"
+#include "colorcorrectionmgr.h"
 
 // default FOV for HL1
 ConVar default_fov( "default_fov", "90", FCVAR_CHEAT );
+
+ConVar hl1_cc("cl_halflife_color", "0.4f", FCVAR_ARCHIVE);
 
 // The current client mode. Always ClientModeNormal in HL.
 IClientMode *g_pClientMode = NULL;
@@ -100,6 +103,7 @@ protected:
 //-----------------------------------------------------------------------------
 ClientModeHL1Normal::ClientModeHL1Normal()
 {
+	m_CCHandle = INVALID_CLIENT_CCHANDLE;
 }
 
 //-----------------------------------------------------------------------------
@@ -107,6 +111,10 @@ ClientModeHL1Normal::ClientModeHL1Normal()
 //-----------------------------------------------------------------------------
 ClientModeHL1Normal::~ClientModeHL1Normal()
 {
+	if (m_CCHandle != INVALID_CLIENT_CCHANDLE)
+	{
+		g_pColorCorrectionMgr->RemoveColorCorrection(m_CCHandle);
+	}
 }
 
 void ClientModeHL1Normal::InitViewport()
@@ -139,6 +147,59 @@ ClientModeHL1Normal* GetClientModeHL1Normal()
 	Assert( dynamic_cast< ClientModeHL1Normal* >( GetClientModeNormal() ) );
 
 	return static_cast< ClientModeHL1Normal* >( GetClientModeNormal() );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+// Input  : *newmap -
+//-----------------------------------------------------------------------------
+void ClientModeHL1Normal::LevelInit(const char *newmap)
+{
+	BaseClass::LevelInit(newmap);
+
+	/*if (m_CCHandle == INVALID_CLIENT_CCHANDLE)
+	{
+		m_CCHandle = g_pColorCorrectionMgr->AddColorCorrection("scripts/colorcorrection/half-life1.raw");
+	}*/
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void ClientModeHL1Normal::LevelShutdown(void)
+{
+	/*if (m_CCHandle != INVALID_CLIENT_CCHANDLE)
+	{
+		g_pColorCorrectionMgr->RemoveColorCorrection(m_CCHandle);
+	}*/
+
+	BaseClass::LevelShutdown();
+}
+
+void ClientModeHL1Normal::Update()
+{
+	BaseClass::Update();
+
+	if (/*engine->IsInGame() && */m_CCHandle == INVALID_CLIENT_CCHANDLE)
+	{
+		m_CCHandle = g_pColorCorrectionMgr->AddColorCorrection("scripts/colorcorrection/half-life1.raw");
+	}
+
+	/*if (m_CCHandle != INVALID_CLIENT_CCHANDLE)
+	{
+		g_pColorCorrectionMgr->SetColorCorrectionWeight(m_CCHandle, hl1_cc.GetFloat());
+	}*/
+}
+
+void ClientModeHL1Normal::OnColorCorrectionWeightsReset()
+{
+	BaseClass::OnColorCorrectionWeightsReset();
+
+	if (m_CCHandle != INVALID_CLIENT_CCHANDLE)
+	{
+		g_pColorCorrectionMgr->SetColorCorrectionWeight(m_CCHandle, hl1_cc.GetFloat());
+	}
 }
 
 IViewPortPanel* CHudViewport::CreatePanelByName( const char *szPanelName )

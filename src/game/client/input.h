@@ -102,10 +102,10 @@ public:
 	virtual		float		CAM_CapYaw( float fVal ) const { return fVal; }
 	virtual		float		CAM_CapPitch( float fVal ) const { return fVal; }
 	
-#if defined( HL2_CLIENT_DLL )
+//#if defined( HL2_CLIENT_DLL )
 	// IK back channel info
 	virtual		void		AddIKGroundContactInfo( int entindex, float minheight, float maxheight );
-#endif
+//#endif
 	virtual		void		LevelInit( void );
 
 	virtual		void		CAM_SetCameraThirdData( CameraThirdData_t *pCameraData, const QAngle &vecCameraOffset );
@@ -265,9 +265,9 @@ private:
 	// Set until polled by CreateMove and cleared
 	CHandle< C_BaseCombatWeapon > m_hSelectedWeapon;
 
-#if defined( HL2_CLIENT_DLL )
+//#if defined( HL2_CLIENT_DLL )
 	CUtlVector< CEntityGroundContact > m_EntityGroundContact;
-#endif
+//#endif
 };
 
 extern kbutton_t in_strafe;

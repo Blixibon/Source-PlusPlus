@@ -20,6 +20,7 @@
 #include "choreoscene.h"
 #include "choreoactor.h"
 #include "toolframework_client.h"
+#include "phonemeconverter.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,14 +42,14 @@ IMPLEMENT_CLIENTCLASS_DT(C_BaseFlex, DT_BaseFlex, CBaseFlex)
 	RecvPropInt(RECVINFO(m_blinktoggle)),
 	RecvPropVector(RECVINFO(m_viewtarget)),
 
-#ifdef HL2_CLIENT_DLL
+//#ifdef HL2_CLIENT_DLL
 	RecvPropFloat( RECVINFO(m_vecViewOffset[0]) ),
 	RecvPropFloat( RECVINFO(m_vecViewOffset[1]) ),
 	RecvPropFloat( RECVINFO(m_vecViewOffset[2]) ),
 
 	RecvPropVector(RECVINFO(m_vecLean)),
 	RecvPropVector(RECVINFO(m_vecShift)),
-#endif
+//#endif
 
 END_RECV_TABLE()
 
@@ -142,11 +143,13 @@ C_BaseFlex::C_BaseFlex() :
 	/// Make sure size is correct
 	Assert( PHONEME_CLASS_STRONG + 1 == NUM_PHONEME_CLASSES );
 
-#ifdef HL2_CLIENT_DLL
+//#ifdef HL2_CLIENT_DLL
 	// Get general lean vector
 	AddVar( &m_vecLean, &m_iv_vecLean, LATCH_ANIMATION_VAR );
 	AddVar( &m_vecShift, &m_iv_vecShift, LATCH_ANIMATION_VAR );
-#endif
+//#endif
+
+	m_vflPhonemeWeights.EnsureCapacity(NumPhonemes());
 }
 
 C_BaseFlex::~C_BaseFlex()
@@ -213,6 +216,9 @@ CStudioHdr *C_BaseFlex::OnNewModel()
 			memset( m_flFlexDelayedWeight, 0, sizeof( float ) * m_cFlexDelayedWeight );
 		}
 
+		if (hdr->numflexcontrollers() > 0)
+			MouthInfo().ActivateEnvelope();
+
 		m_iv_flexWeight.SetMaxCount( hdr->numflexcontrollers() );
 
 		m_iMouthAttachment = LookupAttachment( "mouth" );
@@ -228,7 +234,7 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 {
 	BaseClass::StandardBlendingRules( hdr, pos, q, currentTime, boneMask );
 
-#ifdef HL2_CLIENT_DLL
+//#ifdef HL2_CLIENT_DLL
 	// shift pelvis, rotate body
 	if (hdr->GetNumIKChains() != 0 && (m_vecShift.x != 0.0 || m_vecShift.y != 0.0))
 	{
@@ -269,7 +275,7 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 		// DevMsgRT( "   (%.2f) %.2f %.2f %.2f\n", angle, p1.x, p1.y, p1.z );
 		// auto_ik.SolveAllLocks( pos, q );
 	}
-#endif
+//#endif
 }
 
 
@@ -726,6 +732,8 @@ void C_BaseFlex::AddViseme( Emphasized_Phoneme *classes, float emphasis_intensit
 {
 	int type;
 
+	m_vflPhonemeWeights.InsertOrReplace(phoneme, scale);
+
 	// Setup weights for any emphasis blends
 	bool skip = SetupEmphasisBlend( classes, phoneme );
 	// Uh-oh, missing or unknown phoneme???
@@ -923,7 +931,7 @@ void C_BaseFlex::AddVisemesForSentence( Emphasized_Phoneme *classes, float empha
 void C_BaseFlex::ProcessVisemes( Emphasized_Phoneme *classes )
 {
 	// Any sounds being played?
-	if ( !MouthInfo().IsActive() )
+	if ( !MouthInfo().IsActive() && !MouthInfo().NeedsEnvelope())
 		return;
 
 	// Multiple phoneme tracks can overlap, look across all such tracks.
@@ -970,6 +978,26 @@ void C_BaseFlex::ProcessVisemes( Emphasized_Phoneme *classes )
 
 		// Blend and add visemes together
 		AddVisemesForSentence( classes, emphasis_intensity, sentence, t, dt, juststarted );
+	}
+
+	if (GetModelPtr() && GetModelPtr()->numflexcontrollers() > 0 /* && MouthInfo().NeedsEnvelope()*/)
+	{
+		static int flexes[] = {
+		AddGlobalFlexController("jaw_drop"),
+		AddGlobalFlexController("left_part"),
+		AddGlobalFlexController("right_part"),
+		AddGlobalFlexController("left_mouth_drop"),
+		AddGlobalFlexController("right_mouth_drop")
+		};
+
+		float flWeight = GetHL1MouthOpenPct();
+
+		for (int i = 0; i < ARRAYSIZE(flexes); i++)
+		{
+			int iGFlex = flexes[i];
+
+			g_flexweight[iGFlex] += flWeight;
+		}
 	}
 }
 
@@ -1222,6 +1250,10 @@ bool C_BaseFlex::SetupGlobalWeights( const matrix3x4_t *pBoneToWorld, int nFlexW
 		{
 			memset( pFlexDelayedWeights, 0, nSizeInBytes );
 		}
+
+		// Drive the mouth from .wav file playback...
+		ProcessVisemes(m_PhonemeClasses);
+
 		return false;
 	}
 
@@ -2066,6 +2098,115 @@ void C_BaseFlex::AddFlexAnimation( CSceneEventInfo *info )
 	}
 
 	info->m_bStarted = true;
+}
+
+typedef struct phonemeweight_s
+{
+	double mini;
+	double maxi;
+
+	phonemeweight_s(double val) : mini(val), maxi(val)
+	{}
+
+	phonemeweight_s(double low, double high) : mini(low), maxi(high)
+	{}
+
+	double Get()
+	{
+		if (mini == maxi)
+			return mini;
+
+		double rand = RandomFloat();
+
+		return (1.0 - rand) * mini + rand * maxi;
+	}
+
+} phonemeweight_t;
+
+static phonemeweight_t g_PhonemeMouthOpenPct[] =
+{
+	0.1,
+	0.0,
+	0.0,
+	0.1,
+	0.1,
+	0.0,
+	0.0,
+	0.4,
+	0.1,
+	0.25,
+	0.7,
+	0.4,
+	0.2,
+	0.2,
+	0.1,
+	0.1,
+	0.1,
+	{0.1, 0.3}, //Occilate
+	0.1,
+	0.2,
+	0.3,
+	0.3,
+	0.3,
+	0.4,
+	0.9,
+	0.8,
+	0.7,
+	0.74,
+	0.9,
+	1.0,
+	0.58,
+	0.1,
+	0.6,
+	0.6,
+	0.8,
+	0.95,
+	0.6,
+	0.6,
+	0.75,
+	0.5,
+	0.3,
+	0.3,
+	0.6,
+	0.65,
+	0.08,
+	0.2,
+	0.1,
+
+	// Added
+	0.65,
+	0.2,
+	0.7, // or possibly +0x026a (ih)
+	0.1, // nx
+	0.6, // // vOWel,   // aa + uh???
+	0.55,
+
+	// Silence
+	0.0,
+};
+
+float C_BaseFlex::GetHL2MouthOpenPct()
+{
+	Assert(ARRAYSIZE(g_PhonemeMouthOpenPct) == NumPhonemes());
+
+	if (m_iMouthOpenComputedFrame < gpGlobals->framecount)
+	{
+		m_iMouthOpenComputedFrame = gpGlobals->framecount;
+		double dMouthOpen = 0.0;
+		for (unsigned int i = 0; i < m_vflPhonemeWeights.Count(); i++)
+		{
+			int iCode = m_vflPhonemeWeights.Key(i);
+			float flWeight = m_vflPhonemeWeights.Element(i);
+			int iIndex = PhonemeCodeToIndex(iCode);
+
+			double dWeight = flWeight * WeightForPhonemeCode(iCode) * g_PhonemeMouthOpenPct[iIndex].Get();
+			dWeight = Clamp(dWeight, 0.0, 1.0);
+
+			dMouthOpen += dWeight;
+		}
+		m_flComputedMouthOpen = dMouthOpen;
+	}
+	return m_flComputedMouthOpen;
 }
 
 void CSceneEventInfo::InitWeight( C_BaseFlex *pActor )

@@ -2,4 +2,5 @@
 {
 	"precache_file"		"scripts/game_sounds_world_portal2.txt"
 	"precache_file"		"scripts/game_sounds_vfx.txt"
+	"precache_file"		"scripts/game_sounds_footsteps_hl1.soundscript"
 }

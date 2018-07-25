@@ -197,6 +197,8 @@ $Project
 		$File	"worldlight.cpp"
 		$File	"vis_tester.cpp"
 		$File	"replmats.cpp"
+
+		$File	"materialproxy_lightedmouth.cpp"
 		
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
 		
@@ -585,7 +587,8 @@ $Project
 				"in_mouse.cpp"										\
 				"mumble.cpp"						\
 				"$SRCDIR\public\renamed_recvtable_compat.cpp"		\
-				"rendertexture.cpp"									
+				"rendertexture.cpp"									\
+				"$SRCDIR\public\phonemeconverter.cpp"
 				{
 					$Configuration
 					{

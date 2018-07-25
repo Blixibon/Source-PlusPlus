@@ -90,7 +90,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_Scientist::Precache( void )
 {
-	PrecacheModel( "models/scientist.mdl" );
+	PrecacheModel( "models/half-life/scientist.mdl" );
 
 	PrecacheScriptSound( "Scientist.Pain" );
 
@@ -148,7 +148,7 @@ void CNPC_Scientist::Spawn( void )
 
 	Precache();
 
-	SetModel( "models/scientist.mdl" );
+	SetModel( "models/half-life/scientist.mdl" );
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -909,8 +909,8 @@ LINK_ENTITY_TO_CLASS( monster_scientist_dead, CNPC_DeadScientist );
 //
 void CNPC_DeadScientist::Spawn( void )
 {
-	PrecacheModel("models/scientist.mdl");
-	SetModel( "models/scientist.mdl" );
+	PrecacheModel("models/half-life/scientist.mdl");
+	SetModel( "models/half-life/scientist.mdl" );
 
 	ClearEffects();
 	SetSequence( 0 );
@@ -983,8 +983,8 @@ SITTING_ANIM_sitting3
 //
 void CNPC_SittingScientist::Spawn( )
 {
-	PrecacheModel("models/scientist.mdl");
-	SetModel("models/scientist.mdl");
+	PrecacheModel("models/half-life/scientist.mdl");
+	SetModel("models/half-life/scientist.mdl");
 	Precache();
 
 	InitBoneControllers();

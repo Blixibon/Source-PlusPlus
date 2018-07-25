@@ -1262,7 +1262,7 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 	ReplayCamera()->CreateMove( cmd );
 #endif
 
-#if defined( HL2_CLIENT_DLL )
+//#if defined( HL2_CLIENT_DLL )
 	// copy backchannel data
 	int i;
 	for (i = 0; i < m_EntityGroundContact.Count(); i++)
@@ -1270,7 +1270,7 @@ void CInput::CreateMove ( int sequence_number, float input_sample_frametime, boo
 		cmd->entitygroundcontact.AddToTail( m_EntityGroundContact[i] );
 	}
 	m_EntityGroundContact.RemoveAll();
-#endif
+//#endif
 
 	pVerified->m_cmd = *cmd;
 	pVerified->m_crc = cmd->GetChecksum();
@@ -1525,7 +1525,7 @@ float CInput::GetLastForwardMove( void )
 }
 
 
-#if defined( HL2_CLIENT_DLL )
+//#if defined( HL2_CLIENT_DLL )
 //-----------------------------------------------------------------------------
 // Purpose: back channel contact info for ground contact
 // Output :
@@ -1548,7 +1548,7 @@ void CInput::AddIKGroundContactInfo( int entindex, float minheight, float maxhei
 
 	m_EntityGroundContact.AddToTail( data );
 }
-#endif
+//#endif
 
 
 static ConCommand startcommandermousemove("+commandermousemove", IN_CommanderMouseMoveDown);
@@ -1684,9 +1684,9 @@ void CInput::Shutdown_All(void)
 
 void CInput::LevelInit( void )
 {
-#if defined( HL2_CLIENT_DLL )
+//#if defined( HL2_CLIENT_DLL )
 	// Remove any IK information
 	m_EntityGroundContact.RemoveAll();
-#endif
+//#endif
 }
 

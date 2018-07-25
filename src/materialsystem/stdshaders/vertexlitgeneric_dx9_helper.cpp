@@ -1270,7 +1270,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			pShaderAPI->GetDX9LightState(&lightState);
 		}
 
-		if (!pCascadedDepthTexture)
+		//if (!pCascadedDepthTexture)
 		{
 			// Override the lighting desired if we have a lightmap set!
 			if (bHasLightmapTexture)
@@ -1292,10 +1292,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				}
 			}
 		}
-		else
+		/*else
 		{
 			lightState.m_bStaticLightVertex = false;
-		}
+		}*/
 
 		MaterialFogMode_t fogType = pShaderAPI->GetSceneFogMode();
 		int fogIndex = ( fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z ) ? 1 : 0;

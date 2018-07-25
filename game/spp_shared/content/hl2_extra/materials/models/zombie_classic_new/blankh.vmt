@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$model" "1"
+	"$alphatest" "1"
+	"$baseTexture" 	"Models/zombie_classic_new/blank"
+	"$nodecal" "1" 
+}
+
+
+

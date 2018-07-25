@@ -1,0 +1,241 @@
+"HL1.Default.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_step1.wav"
+		"wave"		"player/pl_step2.wav"
+	}
+}
+
+"HL1.Default.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_step3.wav"
+		"wave"		"player/pl_step4.wav"
+	}
+}
+
+"HL1.Dirt.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_dirt1.wav"
+		"wave"		"player/pl_dirt2.wav"
+	}
+}
+
+"HL1.Dirt.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_dirt3.wav"
+		"wave"		"player/pl_dirt4.wav"
+	}
+}
+
+"HL1.Metal.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_metal1.wav"
+		"wave"		"player/pl_metal2.wav"
+	}
+}
+
+"HL1.Metal.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_metal3.wav"
+		"wave"		"player/pl_metal4.wav"
+	}
+}
+
+"HL1.Grate.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_grate1.wav"
+		"wave"		"player/pl_grate2.wav"
+	}
+}
+
+"HL1.Grate.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_grate3.wav"
+		"wave"		"player/pl_grate4.wav"
+	}
+}
+
+"HL1.Tile.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_tile1.wav"
+		"wave"		"player/pl_tile2.wav"
+		"wave"		"player/pl_tile5.wav"
+	}
+}
+
+"HL1.Tile.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_tile3.wav"
+		"wave"		"player/pl_tile4.wav"
+		"wave"		"player/pl_tile5.wav"
+	}
+}
+
+"HL1.Vent.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_duct1.wav"
+		"wave"		"player/pl_duct2.wav"
+	}
+}
+
+"HL1.Vent.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_duct3.wav"
+		"wave"		"player/pl_duct4.wav"
+	}
+}
+
+"HL1.Wade.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_wade1.wav"
+		"wave"		"player/pl_wade2.wav"
+	}
+}
+
+"HL1.Wade.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_wade3.wav"
+		"wave"		"player/pl_wade4.wav"
+	}
+}
+
+"HL1.Slosh.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_slosh1.wav"
+		"wave"		"player/pl_slosh2.wav"
+	}
+}
+
+"HL1.Slosh.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_slosh3.wav"
+		"wave"		"player/pl_slosh4.wav"
+	}
+}
