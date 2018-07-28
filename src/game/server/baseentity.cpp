@@ -95,7 +95,7 @@ int g_nInsideDispatchUpdateTransmitState = 0;
 // When this is false, throw an assert in debug when GetAbsAnything is called. Used when hierachy is incomplete/invalid.
 bool CBaseEntity::s_bAbsQueriesValid = true;
 
-
+ConVar ent_show_contexts("ent_show_contexts", "0", 0, "Show entity contexts in ent_text display");
 ConVar sv_netvisdist( "sv_netvisdist", "10000", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Test networking visibility distance" );
 
 // This table encodes edict data.
@@ -1002,36 +1002,102 @@ int CBaseEntity::DrawDebugTextOverlays(void)
 	int offset = 1;
 	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
 	{
+		int r = 0;
+		int g = 255;
+		int b = 0;
+
 		char tempstr[512];
-		Q_snprintf( tempstr, sizeof(tempstr), "(%d) Name: %s (%s)", entindex(), GetDebugName(), GetClassname() );
-		EntityText(offset,tempstr, 0);
+		Q_snprintf(tempstr, sizeof(tempstr), "(%d) Name: %s (%s)", entindex(), GetDebugName(), GetClassname());
+		EntityText(offset, tempstr, 0, r, g, b);
 		offset++;
 
-		if( m_iGlobalname != NULL_STRING )
+		if (m_iGlobalname != NULL_STRING)
 		{
-			Q_snprintf( tempstr, sizeof(tempstr), "GLOBALNAME: %s", STRING(m_iGlobalname) );
-			EntityText(offset,tempstr, 0);
+			Q_snprintf(tempstr, sizeof(tempstr), "GLOBALNAME: %s", STRING(m_iGlobalname));
+			EntityText(offset, tempstr, 0);
 			offset++;
 		}
 
-		Vector vecOrigin = GetAbsOrigin();
-		Q_snprintf( tempstr, sizeof(tempstr), "Position: %0.1f, %0.1f, %0.1f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z );
-		EntityText( offset, tempstr, 0 );
+		//if (debug_overlay_fullposition.GetBool())
+		//{
+		//	Vector vecOrigin = GetAbsOrigin();
+		//	Q_snprintf(tempstr, sizeof(tempstr), "pos: (%f, %f, %f)\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
+		//	EntityText(offset, tempstr, 0);
+		//	offset++;
+
+		//	QAngle angOrientation = GetAbsAngles();
+		//	Q_snprintf(tempstr, sizeof(tempstr), "ang: (%f, %f, %f)\n", angOrientation.x, angOrientation.y, angOrientation.z);
+		//	EntityText(offset, tempstr, 0);
+		//	offset++;
+
+		//	Q_snprintf(tempstr, sizeof(tempstr), "cell: (%d, %d, %d)\n", m_cellX, m_cellY, m_cellZ);
+		//	EntityText(offset, tempstr, 0);
+		//	offset++;
+
+		//	register int const cellwidth = m_cellwidth; // Load it into a register
+		//	Vector cellOrigin;
+		//	cellOrigin.x = CellInCoord(cellwidth, m_cellX, m_vecOrigin->x);
+		//	cellOrigin.y = CellInCoord(cellwidth, m_cellY, m_vecOrigin->y);
+		//	cellOrigin.z = CellInCoord(cellwidth, m_cellZ, m_vecOrigin->z);
+
+		//	Q_snprintf(tempstr, sizeof(tempstr), "celloffset: (%f, %f, %f)\n", cellOrigin.x, cellOrigin.y, cellOrigin.z);
+		//	EntityText(offset, tempstr, 0);
+		//	offset++;
+		//}
+		//else
+		{
+			Vector vecOrigin = GetAbsOrigin();
+			Q_snprintf(tempstr, sizeof(tempstr), "Position: %0.3f, %0.3f, %0.3f\n", vecOrigin.x, vecOrigin.y, vecOrigin.z);
+			EntityText(offset, tempstr, 0);
+			offset++;
+
+			QAngle angOrientation = GetAbsAngles();
+			Q_snprintf(tempstr, sizeof(tempstr), "Angles: (%f, %f, %f)\n", angOrientation.x, angOrientation.y, angOrientation.z);
+			EntityText(offset, tempstr, 0);
+			offset++;
+		}
+
+		if (!BlocksLOS())
+		{
+			EntityText(offset, "Doesn't block LOS", 0);
+			offset++;
+		}
+
+		if (GetModelName() != NULL_STRING || GetBaseAnimating())
+		{
+			Q_snprintf(tempstr, sizeof(tempstr), "Model:%s", STRING(GetModelName()));
+			EntityText(offset, tempstr, 0, 255, 255, 0);
+			offset++;
+		}
+
+		if (m_hDamageFilter.Get() != NULL)
+		{
+			Q_snprintf(tempstr, sizeof(tempstr), "DAMAGE FILTER:%s", m_hDamageFilter->GetDebugName());
+			EntityText(offset, tempstr, 0, r, g, b);
+			offset++;
+		}
+
+		if (ent_show_contexts.GetBool())
+		{
+			int count = GetContextCount();
+			if (count)
+			{
+				for (int i = 0; i < count; ++i)
+				{
+					Q_snprintf(tempstr, sizeof(tempstr), "Context: %s:%s", GetContextName(i), GetContextValue(i));
+					EntityText(offset, tempstr, 0, r, g, b);
+					offset++;
+				}
+			}
+		}
+
+		Q_snprintf(tempstr, sizeof(tempstr), "Flags :%d", GetFlags());
+		EntityText(offset, tempstr, 0);
 		offset++;
 
-		if( GetModelName() != NULL_STRING || GetBaseAnimating() )
-		{
-			Q_snprintf(tempstr, sizeof(tempstr), "Model:%s", STRING(GetModelName()) );
-			EntityText(offset,tempstr,0);
-			offset++;
-		}
-
-		if( m_hDamageFilter.Get() != NULL )
-		{
-			Q_snprintf( tempstr, sizeof(tempstr), "DAMAGE FILTER:%s", m_hDamageFilter->GetDebugName() );
-			EntityText( offset,tempstr,0 );
-			offset++;
-		}
+		Q_snprintf(tempstr, sizeof(tempstr), "Effects :%d (EF_NODRAW=%d)", GetEffects(), GetEffects() & EF_NODRAW);
+		EntityText(offset, tempstr, 0);
+		offset++;
 	}
 
 	if (m_debugOverlays & OVERLAY_VIEWOFFSET)

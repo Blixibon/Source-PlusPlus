@@ -119,6 +119,7 @@ void CNPC_Scientist::TalkInit()
 	m_szFriends[0] = "monster_scientist";
 	m_szFriends[1] = "monster_sitting_scientist";
 	m_szFriends[2] = "monster_barney";
+	m_szFriends[3] = "monster_otis";
 
 	// get voice for head
 	switch (m_nBody % 3)

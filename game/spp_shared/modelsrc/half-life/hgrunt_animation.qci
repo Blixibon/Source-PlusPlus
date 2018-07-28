@@ -1,0 +1,1118 @@
+
+$SectionFrames 30 120
+
+$PoseParameter "XR" -45 45 loop 0
+$PoseParameter "mouth" 0 90 loop 0
+
+$Animation "mdldecompiler_delta.smd" "hgrunt_anims\mdldecompiler_delta.smd" {
+	fps 30
+}
+
+$Animation "mouth_close" "hgrunt_anims\mouth_close.smd" {
+	fps 30
+}
+
+$Animation "mouth_open" "hgrunt_anims\mouth_open.smd" {
+	fps 30
+}
+
+$Sequence "ragdoll" {
+	"hgrunt_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+}
+
+$Sequence "walk1" {
+	"hgrunt_anims\walk1.smd"
+	activity "ACT_WALK" -1
+	{ event 1100 3 "event_emit Step" }
+	{ event 1100 24 "event_emit Step" }
+	{ event 1100 45 "event_emit Step" }
+	{ event 1100 66 "event_emit Step" }
+	fadein 0.2
+	fadeout 0.2
+	fps 35
+	loop
+	walkframe 85 LX
+}
+
+$Sequence "walk1_pistol" {
+	"hgrunt_anims\walk1_pistol.smd"
+	activity "ACT_WALK_AIM_RELAXED" -1
+	{ event 1100 3 "event_emit Step" }
+	{ event 1100 24 "event_emit Step" }
+	{ event 1100 45 "event_emit Step" }
+	{ event 1100 66 "event_emit Step" }
+	fadein 0.2
+	fadeout 0.2
+	fps 35
+	loop
+	walkframe 85 LX
+}
+
+$Sequence "run" {
+	"hgrunt_anims\run.smd"
+	activity "ACT_RUN" -1
+	{ event 1100 0 "event_emit Step" }
+	{ event 1100 12 "event_emit Step" }
+	fadein 0.2
+	fadeout 0.2
+	fps 40
+	loop
+	walkframe 24 LX
+}
+
+$Sequence "run_pistol" {
+	"hgrunt_anims\run_pistol.smd"
+	activity "ACT_RUN_RELAXED" -1
+	{ event 1100 0 "event_emit Step" }
+	{ event 1100 12 "event_emit Step" }
+	fadein 0.2
+	fadeout 0.2
+	fps 40
+	loop
+	walkframe 18 LX
+}
+
+$Sequence "victorydance" {
+	"hgrunt_anims\victorydance.smd"
+	activity "ACT_VICTORY_DANCE" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 21
+}
+
+$Sequence "cower" {
+	"hgrunt_anims\cower.smd"
+	activity "ACT_COWER" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+}
+
+$Sequence "smflinch" {
+	"hgrunt_anims\smflinch.smd"
+	activity "ACT_SMALL_FLINCH" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "leftlegsmflinch" {
+	"hgrunt_anims\leftlegsmflinch.smd"
+	activity "ACT_FLINCH_LEFTLEG" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "rightlegsmflinch" {
+	"hgrunt_anims\rightlegsmflinch.smd"
+	activity "ACT_FLINCH_RIGHTLEG" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "rightarmflinch" {
+	"hgrunt_anims\rightarmflinch.smd"
+	activity "ACT_FLINCH_RIGHTARM" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "leftarmflinch" {
+	"hgrunt_anims\leftarmflinch.smd"
+	activity "ACT_FLINCH_LEFTARM" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "launchgrenade" {
+	"hgrunt_anims\launchgrenade.smd"
+	activity "ACT_ARM" -1
+	{ event 1100 25 "event_rattack grenadelauncher" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "throwgrenade" {
+	"hgrunt_anims\throwgrenade.smd"
+	activity "ACT_RANGE_ATTACK2" -1
+	{ event 1100 15 "event_rattack grenade_take" }
+	{ event 1100 36 "event_rattack grenade_throw" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "idle1" {
+	"hgrunt_anims\idle1.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+}
+
+$Sequence "idle2" {
+	"hgrunt_anims\idle2.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+}
+
+$Sequence "idle1_pistol" {
+	"hgrunt_anims\idle1_pistol.smd"
+	activity "ACT_IDLE_RELAXED" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+}
+
+$Sequence "idle2_pistol" {
+	"hgrunt_anims\idle2_pistol.smd"
+	activity "ACT_IDLE_RELAXED" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+}
+
+$Sequence "combatidle" {
+	"hgrunt_anims\combatidle.smd"
+	activity "ACT_IDLE_ANGRY" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "frontkick" {
+	"hgrunt_anims\frontkick.smd"
+	activity "ACT_MELEE_ATTACK1" -1
+	{ event 1100 14 "event_mattack kick" }
+	fadein 0.2
+	fadeout 0.2
+	fps 35
+}
+
+$Sequence "crouching_idle" {
+	"hgrunt_anims\crouching_idle.smd"
+	activity "ACT_CROUCHIDLE" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+}
+
+$Sequence "crouching_wait" {
+	"hgrunt_anims\crouching_wait.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+}
+
+$Sequence "crouching_mp5" {
+	"hgrunt_anims\crouching_mp5.smd"
+	"hgrunt_anims\crouching_mp5_2.smd"
+	activity "ACT_RANGE_ATTACK1_LOW" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 0 "event_burstsound" }
+	{ event 1100 0 "event_rattack burstfire" }
+	{ event 1100 2 "event_rattack burstfire" }
+	{ event 1100 4 "event_rattack burstfire" }
+	{ event 1100 11 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "standing_mp5" {
+	"hgrunt_anims\standing_mp5.smd"
+	"hgrunt_anims\standing_mp5_2.smd"
+	activity "ACT_SIGNAL_ADVANCE" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 0 "event_burstsound" }
+	{ event 1100 0 "event_rattack burstfire" }
+	{ event 1100 2 "event_rattack burstfire" }
+	{ event 1100 4 "event_rattack burstfire" }
+	{ event 1100 11 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "reload_mp5" {
+	"hgrunt_anims\reload_mp5.smd"
+	activity "ACT_RELOAD" -1
+	{ event 1100 23 "event_emit Reload" }
+	{ event 1100 47 "event_reload" }
+	{ event 1100 60 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 36
+}
+
+$Sequence "crouching_shotgun" {
+	"hgrunt_anims\crouching_shotgun.smd"
+	"hgrunt_anims\crouching_shotgun_2.smd"
+	activity "ACT_RANGE_ATTACK2_LOW" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 0 "event_burstsound" }
+	{ event 1100 1 "event_rattack burstfire" }
+	{ event 1100 11 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "standing_shotgun" {
+	"hgrunt_anims\standing_shotgun.smd"
+	"hgrunt_anims\standing_shotgun_2.smd"
+	activity "ACT_SIGNAL_FORWARD" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 0 "event_burstsound" }
+	{ event 1100 1 "event_rattack burstfire" }
+	{ event 1100 11 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "reload_shotgun" {
+	"hgrunt_anims\reload_shotgun.smd"
+	activity "ACT_RELOAD_LOW" -1
+	{ event 1100 23 "event_emit Reload" }
+	{ event 1100 47 "event_reload" }
+	{ event 1100 60 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 36
+}
+
+$Sequence "crouching_pistol" {
+	"hgrunt_anims\crouching_pistol.smd"
+	"hgrunt_anims\crouching_pistol_2.smd"
+	activity "ACT_MELEE_ATTACK2" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 2 "event_burstsound" }
+	{ event 1100 2 "event_rattack burstfire" }
+	{ event 1100 11 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "standing_pistol" {
+	"hgrunt_anims\standing_pistol.smd"
+	"hgrunt_anims\standing_pistol_2.smd"
+	activity "ACT_SIGNAL_GROUP" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 2 "event_burstsound" }
+	{ event 1100 2 "event_rattack burstfire" }
+	{ event 1100 11 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "reload_pistol" {
+	"hgrunt_anims\reload_pistol.smd"
+	activity "ACT_LOOKBACK_LEFT" -1
+	{ event 1100 37 "event_emit Reload" }
+	{ event 1100 49 "event_reload" }
+	{ event 1100 69 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "crouching_saw" {
+	"hgrunt_anims\crouching_saw.smd"
+	"hgrunt_anims\crouching_saw_2.smd"
+	activity "ACT_SPECIAL_ATTACK2" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 0 "event_burstsound" }
+	{ event 1100 2 "event_rattack burstfire" }
+	{ event 1100 2 "event_burstsound" }
+	{ event 1100 4 "event_rattack burstfire" }
+	{ event 1100 4 "event_burstsound" }
+	{ event 1100 6 "event_rattack burstfire" }
+	{ event 1100 6 "event_burstsound" }
+	{ event 1100 8 "event_rattack burstfire" }
+	{ event 1100 8 "event_burstsound" }
+	{ event 1100 10 "event_rattack burstfire" }
+	{ event 1100 10 "event_burstsound" }
+	{ event 1100 12 "event_rattack burstfire" }
+	{ event 1100 12 "event_burstsound" }
+	{ event 1100 14 "event_rattack burstfire" }
+	{ event 1100 14 "event_burstsound" }
+	{ event 1100 16 "event_rattack burstfire" }
+	{ event 1100 16 "event_burstsound" }
+	{ event 1100 18 "event_rattack burstfire" }
+	{ event 1100 18 "event_burstsound" }
+	{ event 1100 20 "event_rattack burstfire" }
+	{ event 1100 20 "event_burstsound" }
+	{ event 1100 25 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "standing_saw" {
+	"hgrunt_anims\standing_saw.smd"
+	"hgrunt_anims\standing_saw_2.smd"
+	activity "ACT_SIGNAL_LEFT" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 1100 0 "event_burstsound" }
+	{ event 1100 2 "event_rattack burstfire" }
+	{ event 1100 2 "event_burstsound" }
+	{ event 1100 4 "event_rattack burstfire" }
+	{ event 1100 4 "event_burstsound" }
+	{ event 1100 6 "event_rattack burstfire" }
+	{ event 1100 6 "event_burstsound" }
+	{ event 1100 8 "event_rattack burstfire" }
+	{ event 1100 8 "event_burstsound" }
+	{ event 1100 10 "event_rattack burstfire" }
+	{ event 1100 10 "event_burstsound" }
+	{ event 1100 12 "event_rattack burstfire" }
+	{ event 1100 12 "event_burstsound" }
+	{ event 1100 14 "event_rattack burstfire" }
+	{ event 1100 14 "event_burstsound" }
+	{ event 1100 16 "event_rattack burstfire" }
+	{ event 1100 16 "event_burstsound" }
+	{ event 1100 18 "event_rattack burstfire" }
+	{ event 1100 18 "event_burstsound" }
+	{ event 1100 20 "event_rattack burstfire" }
+	{ event 1100 20 "event_burstsound" }
+	{ event 1100 25 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "reload_saw" {
+	"hgrunt_anims\reload_saw.smd"
+	activity "ACT_SIGNAL_HALT" -1
+	{ event 1100 40 "event_emit Reload" }
+	{ event 1100 47 "event_reload" }
+	{ event 1100 69 "event_rattack shoot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 40
+}
+
+$Sequence "advance_signal" {
+	"hgrunt_anims\advance_signal.smd"
+	activity "ACT_SIGNAL1" -1
+	{ event 10 7 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+}
+
+$Sequence "flank_signal" {
+	"hgrunt_anims\flank_signal.smd"
+	activity "ACT_SIGNAL2" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 19
+}
+
+$Sequence "retreat_signal" {
+	"hgrunt_anims\retreat_signal.smd"
+	activity "ACT_SIGNAL3" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+}
+
+$Sequence "drop_grenade" {
+	"hgrunt_anims\drop_grenade.smd"
+	activity "ACT_SPECIAL_ATTACK1" -1
+	{ event 9 31 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 40
+}
+
+$Sequence "limpingwalk" {
+	"hgrunt_anims\limpingwalk.smd"
+	activity "ACT_WALK_HURT" -1
+	{ event 1100 2 "event_emit Step" }
+	{ event 1100 23 "event_emit Step" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	walkframe 42 LX
+}
+
+$Sequence "limpingrun" {
+	"hgrunt_anims\limpingrun.smd"
+	activity "ACT_RUN_HURT" -1
+	{ event 1100 8 "event_emit Step" }
+	{ event 1100 16 "event_emit Step" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	walkframe 17 LX
+}
+
+$Sequence "180L" {
+	"hgrunt_anims\180L.smd"
+	activity "ACT_TURN_LEFT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+}
+
+$Sequence "180R" {
+	"hgrunt_anims\180R.smd"
+	activity "ACT_TURN_RIGHT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+}
+
+$Sequence "strafeleft" {
+	"hgrunt_anims\strafeleft.smd"
+	activity "ACT_STRAFE_LEFT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "straferight" {
+	"hgrunt_anims\straferight.smd"
+	activity "ACT_STRAFE_RIGHT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "dieback1" {
+	"hgrunt_anims\dieback1.smd"
+	activity "ACT_DIEBACKWARD" 1
+	{ event 11 5 "" }
+	{ event 1100 15 "event_dropdead" }
+	{ event 2001 17 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+}
+
+$Sequence "dieforward" {
+	"hgrunt_anims\dieforward.smd"
+	activity "ACT_DIEFORWARD" -1
+	{ event 11 12 "" }
+	{ event 2001 19 "" }
+	{ event 1100 27 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "diesimple" {
+	"hgrunt_anims\diesimple.smd"
+	activity "ACT_DIESIMPLE" -1
+	{ event 11 3 "" }
+	{ event 1100 7 "event_dropdead" }
+	{ event 2001 10 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+}
+
+$Sequence "diebackwards" {
+	"hgrunt_anims\diebackwards.smd"
+	activity "ACT_DIEBACKWARD" 1
+	{ event 11 6 "" }
+	{ event 1100 8 "event_dropdead" }
+	{ event 2001 12 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "dieheadshot" {
+	"hgrunt_anims\dieheadshot.smd"
+	activity "ACT_DIE_HEADSHOT" -1
+	{ event 11 1 "" }
+	{ event 1100 15 "event_dropdead" }
+	{ event 2001 20 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "diegutshot" {
+	"hgrunt_anims\diegutshot.smd"
+	activity "ACT_DIE_GUTSHOT" -1
+	{ event 11 0 "" }
+	{ event 2001 29 "" }
+	{ event 1100 59 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "barnacled1" {
+	"hgrunt_anims\barnacled1.smd"
+	activity "ACT_BARNACLE_HIT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+}
+
+$Sequence "barnacled2" {
+	"hgrunt_anims\barnacled2.smd"
+	activity "ACT_BARNACLE_PULL" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "barnacled3" {
+	"hgrunt_anims\barnacled3.smd"
+	activity "ACT_BARNACLE_CHOMP" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+}
+
+$Sequence "barnacled4" {
+	"hgrunt_anims\barnacled4.smd"
+	activity "ACT_BARNACLE_CHEW" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+}
+
+$Sequence "dead_on_stomach" {
+	"hgrunt_anims\dead_on_stomach.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+}
+
+$Sequence "deadstomach" {
+	"hgrunt_anims\deadstomach.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+}
+
+$Sequence "deadside" {
+	"hgrunt_anims\deadside.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+}
+
+$Sequence "deadsitting" {
+	"hgrunt_anims\deadsitting.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+}
+
+$Sequence "repel_jump" {
+	"hgrunt_anims\repel_jump.smd"
+	activity "ACT_HOVER" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "repel_repel" {
+	"hgrunt_anims\repel_repel.smd"
+	activity "ACT_GLIDE" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	loop
+}
+
+$Sequence "repel_shoot" {
+	"hgrunt_anims\repel_shoot.smd"
+	"hgrunt_anims\repel_shoot_2.smd"
+	activity "ACT_FLY" -1
+	blend "XR" -45 45
+	blendwidth 2
+	{ event 4 0 "" }
+	{ event 5 2 "" }
+	{ event 6 4 "" }
+	{ event 5001 0 "" }
+	{ event 5001 2 "" }
+	{ event 5001 4 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	loop
+}
+
+$Sequence "repel_land" {
+	"hgrunt_anims\repel_land.smd"
+	activity "ACT_LAND" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "repel_die" {
+	"hgrunt_anims\repel_die.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+}
+
+$Sequence "dragholeidle" {
+	"hgrunt_anims\dragholeidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+}
+
+$Sequence "draghole" {
+	"hgrunt_anims\draghole.smd"
+	{ event 1000 1 "" }
+	{ event 1004 20 "NPC.BustFlesh1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 5
+}
+
+$Sequence "bustwall" {
+	"hgrunt_anims\bustwall.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "hoprail" {
+	"hgrunt_anims\hoprail.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "cpr" {
+	"hgrunt_anims\cpr.smd"
+	{ event 1000 120 "" }
+	{ event 1001 120 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "hgrunt_on_stretcher" {
+	"hgrunt_anims\hgrunt_on_stretcher.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 34
+}
+
+$Sequence "holding_on" {
+	"hgrunt_anims\holding_on.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+}
+
+$Sequence "mic_idle1" {
+	"hgrunt_anims\mic_idle1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "mic_idle2" {
+	"hgrunt_anims\mic_idle2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "mic_idle3" {
+	"hgrunt_anims\mic_idle3.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "mic_idle4" {
+	"hgrunt_anims\mic_idle4.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "mic_stand" {
+	"hgrunt_anims\mic_stand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "interogation" {
+	"hgrunt_anims\interogation.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "interogation_idle" {
+	"hgrunt_anims\interogation_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "shoot_shotgun" {
+	"hgrunt_anims\shoot_shotgun.smd"
+	{ event 4 12 "" }
+	{ event 5001 12 "51" }
+	{ event 2 28 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+}
+
+$Sequence "open_floor_grate" {
+	"hgrunt_anims\open_floor_grate.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+}
+
+$Sequence "react" {
+	"hgrunt_anims\react.smd"
+	{ event 1000 1 "" }
+	{ event 1001 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "sitting" {
+	"hgrunt_anims\sitting.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+}
+
+$Sequence "sitting2" {
+	"hgrunt_anims\sitting2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 8
+	loop
+}
+
+$Sequence "sitting3" {
+	"hgrunt_anims\sitting3.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 6
+	loop
+}
+
+$Sequence "crawling" {
+	"hgrunt_anims\crawling.smd"
+	{ event 1001 120 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 17
+}
+
+$Sequence "converse1" {
+	"hgrunt_anims\converse1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+}
+
+$Sequence "converse2" {
+	"hgrunt_anims\converse2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+}
+
+$Sequence "startleleft" {
+	"hgrunt_anims\startleleft.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+}
+
+$Sequence "startleright" {
+	"hgrunt_anims\startleright.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+}
+
+$Sequence "divecover" {
+	"hgrunt_anims\divecover.smd"
+	activity "ACT_LEAP" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "defuse" {
+	"hgrunt_anims\defuse.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+}
+
+$Sequence "corner1" {
+	"hgrunt_anims\corner1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+}
+
+$Sequence "corner2" {
+	"hgrunt_anims\corner2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+}
+
+$Sequence "stone_toss" {
+	"hgrunt_anims\stone_toss.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+}
+
+$Sequence "cliffdie" {
+	"hgrunt_anims\cliffdie.smd"
+	{ event 1001 1 "" }
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 36
+}
+
+$Sequence "diveaside_idle" {
+	"hgrunt_anims\diveaside_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "diveaside" {
+	"hgrunt_anims\diveaside.smd"
+	{ event 4 1 "" }
+	{ event 5 1 "" }
+	{ event 6 1 "" }
+	{ event 4 1 "" }
+	{ event 5 1 "" }
+	{ event 6 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "kneeldive_idle" {
+	"hgrunt_anims\kneeldive_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "kneeldive" {
+	"hgrunt_anims\kneeldive.smd"
+	{ event 4 1 "" }
+	{ event 5 1 "" }
+	{ event 6 1 "" }
+	{ event 4 1 "" }
+	{ event 5 1 "" }
+	{ event 6 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "WM_button" {
+	"hgrunt_anims\WM_button.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "WM_moatjump" {
+	"hgrunt_anims\WM_moatjump.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "bustwindow" {
+	"hgrunt_anims\bustwindow.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+}
+
+$Sequence "dragright" {
+	"hgrunt_anims\dragright.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+}
+
+$Sequence "dragleft" {
+	"hgrunt_anims\dragleft.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+}
+
+$Sequence "trackwave" {
+	"hgrunt_anims\trackwave.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+	loop
+}
+
+$Sequence "trackdive" {
+	"hgrunt_anims\trackdive.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+}
+
+$Sequence "flyback" {
+	"hgrunt_anims\flyback.smd"
+	{ event 1008 1 "NPC.Electro4" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+}
+
+$Sequence "impaled" {
+	"hgrunt_anims\impaled.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+}
+
+$Sequence "jumptracks" {
+	"hgrunt_anims\jumptracks.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "pipetoss" {
+	"hgrunt_anims\pipetoss.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "plunger" {
+	"hgrunt_anims\plunger.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+}
+
+$Sequence "soldier_dump" {
+	"hgrunt_anims\soldier_dump.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+}
+
+$Sequence "soldier_dump_idle" {
+	"hgrunt_anims\soldier_dump_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+}
+
+$Sequence "soldier_shoot_ahead" {
+	"hgrunt_anims\soldier_shoot_ahead.smd"
+	activity "ACT_RANGE_ATTACK1" -1
+	{ event 1100 2 "event_rattack burst_mp5" }
+	{ event 1100 7 "event_rattack burst_mp5" }
+	{ event 1100 12 "event_rattack burst_mp5" }
+	fadein 0.2
+	fadeout 0.2
+	fps 32
+	loop
+}
+
+$Sequence "soldier_kick" {
+	"hgrunt_anims\soldier_kick.smd"
+	{ event 1003 13 "00xy_frontkick" }
+	fadein 0.2
+	fadeout 0.2
+	fps 35
+}
+
+$Sequence "barney_mouth" {
+	"mouth_close"
+	"mouth_open"
+	autoplay
+	blend "mouth" 0 90
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

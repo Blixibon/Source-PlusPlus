@@ -1,0 +1,4 @@
+// HL1 Talkers
+#include "talker/hl1_npc_barney.txt"
+#include "talker/hl1_npc_scientist.txt"
+#include "talker/hl1_npc_otis.txt"

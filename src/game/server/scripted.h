@@ -78,6 +78,7 @@ class CAI_ScriptedSequence : public CBaseEntity
 	DECLARE_CLASS( CAI_ScriptedSequence, CBaseEntity );
 public:
 	void Spawn( void );
+	virtual bool KeyValue(const char *szKeyName, const char *szValue);
 	virtual void Blocked( CBaseEntity *pOther );
 	virtual void Touch( CBaseEntity *pOther );
 	virtual int	 ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
@@ -94,7 +95,7 @@ public:
 	void DelayStart( bool bDelay );
 	bool FindEntity( void );
 	void StartScript( void );
-	void FireScriptEvent( int nEvent );
+	void FireScriptEvent( const char *pchEvent, CBaseEntity *pActivator);
 	void OnBeginSequence( void );
 
 	void SetTarget( CBaseEntity *pTarget ) { m_hTargetEnt = pTarget; };
@@ -211,6 +212,7 @@ private:
 	COutputEvent m_OnCancelSequence;
 	COutputEvent m_OnCancelFailedSequence;	// Fired when a scene is cancelled before it's ever run
 	COutputEvent m_OnScriptEvent[MAX_SCRIPT_EVENTS];
+	CUtlVector<string_t> m_ScriptEventNames[MAX_SCRIPT_EVENTS];
 
 	static void ScriptEntityCancel( CBaseEntity *pentCine, bool bPretendSuccess = false );
 

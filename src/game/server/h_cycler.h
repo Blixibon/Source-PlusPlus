@@ -27,6 +27,8 @@ public:
 	//void Pain( float flDamage );
 	void Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
+	virtual void		HandleAnimEvent(animevent_t *pEvent);
+
 	// Don't treat as a live target
 	virtual bool IsAlive( void ) { return false; }
 

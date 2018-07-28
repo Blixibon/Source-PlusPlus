@@ -517,7 +517,7 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 {
 	BaseClass::PrescheduleThink();
 
-#ifdef HL2_DLL
+//#ifdef HL2_DLL
 	// Vital allies regenerate
 	if( GetHealth() >= GetMaxHealth() )
 	{
@@ -541,7 +541,7 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 		TakeHealth( flHealthRegen, DMG_GENERIC );
 	}
 
-#ifdef HL2_EPISODIC
+//#ifdef HL2_EPISODIC
 	if ( (GetState() == NPC_STATE_IDLE || GetState() == NPC_STATE_ALERT) 
 		 && !HasCondition(COND_RECEIVED_ORDERS) && !IsInAScript() )
 	{
@@ -561,9 +561,9 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 			}
 		}
 	}
-#endif // HL2_EPISODIC
+//#endif // HL2_EPISODIC
 
-#endif // HL2_DLL
+//#endif // HL2_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -739,7 +739,7 @@ bool CAI_PlayerAlly::SelectQuestionAndAnswerSpeech( AISpeechSelection_t *pSelect
 //-----------------------------------------------------------------------------
 void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response *response )
 {
-#ifdef HL2_EPISODIC
+//#ifdef HL2_EPISODIC
 	CAI_AllySpeechManager *pSpeechManager = GetAllySpeechManager();
 	ConceptInfo_t *pConceptInfo	= pSpeechManager->GetConceptInfo( concept );
 	if ( pConceptInfo && (pConceptInfo->flags & AICF_QUESTION) && GetSpeechTarget() )
@@ -801,7 +801,7 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 	}
 
 	m_hPotentialSpeechTarget = NULL;
-#endif // HL2_EPISODIC
+//#endif // HL2_EPISODIC
 }
 
 //-----------------------------------------------------------------------------
@@ -910,13 +910,13 @@ int CAI_PlayerAlly::SelectNonCombatSpeech( AISpeechSelection_t *pSelection )
 {
 	bool bResult = false;
 
-	#ifdef HL2_EPISODIC
+	//#ifdef HL2_EPISODIC
 	// See if we can Q&A first
 	if ( GetState() == NPC_STATE_IDLE || GetState() == NPC_STATE_ALERT )
 	{
 		bResult = SelectQuestionAndAnswerSpeech( pSelection );
 	}
-	#endif // HL2_EPISODIC
+	//#endif // HL2_EPISODIC
 
 	if ( !bResult )
 	{

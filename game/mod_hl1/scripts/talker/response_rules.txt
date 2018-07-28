@@ -52,5 +52,4 @@ criterion "ConceptTalkTourGuideCatchUp" "Concept" "TLK_TGCATCHUP" required
 criterion "ConceptTalkTourGuideEndTour" "Concept" "TLK_TGENDTOUR" required
 
 // HL1 Talkers
-#include "talker/npc_barney.txt"
-#include "talker/npc_scientist.txt"
+#include "talker/hl1_talkers.txt"

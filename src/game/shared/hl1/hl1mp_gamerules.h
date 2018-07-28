@@ -75,7 +75,7 @@ private:
 
 inline CHL1MPRules* HL1MPRules()
 {
-	return static_cast<CHL1MPRules*>(g_pGameRules);
+	return dynamic_cast<CHL1MPRules*>(g_pGameRules);
 }
 
 

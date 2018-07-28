@@ -2,7 +2,7 @@
 {
 	"deps"
 	{
-		"hl2"	1
+		"lostcoast"	1
 	}
 
 	420

@@ -77,9 +77,6 @@ public:
 
 	int	 GetNumBreakableChunks( void ) { return m_iNumBreakableChunks; }
 
-	static bool VismonExplosiveEvaluator(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer);
-	static bool VismonExplosiveCallback(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer);
-
 	virtual bool OverridePropdata() { return false; }
 	virtual IPhysicsObject *GetRootPhysicsObjectForBreak();
 

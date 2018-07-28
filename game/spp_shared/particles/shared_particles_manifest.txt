@@ -3,4 +3,5 @@ particles_manifest
 	"file"		"particles/spark_fx.pcf"
 	"file"		"particles/rain_fx.pcf"
 	"file"		"particles/rain_storm_fx.pcf"
+	"file"		"particles/tfa_lightningfx.pcf"
 }

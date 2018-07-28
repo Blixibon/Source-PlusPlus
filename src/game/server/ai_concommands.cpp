@@ -14,6 +14,7 @@
 #include "ai_networkmanager.h"
 #include "ndebugoverlay.h"
 #include "datacache/imdlcache.h"
+#include "scripted.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -658,6 +659,53 @@ void CC_NPC_Teleport( void )
 }
 
 static ConCommand npc_teleport("npc_teleport", CC_NPC_Teleport, "Selected NPC will teleport to the location that the player is looking (shown with a purple box)\n\tArguments:	-none-", FCVAR_CHEAT);
+
+void CC_NPC_Sequence(const CCommand &command)
+{
+	if (command.ArgC() < 2)
+		return;
+
+	for (CAI_BaseNPC *npc = gEntList.NextEntByClass((CAI_BaseNPC *)NULL); npc != nullptr; npc = gEntList.NextEntByClass(npc))
+	{
+		if (npc->m_debugOverlays & OVERLAY_NPC_SELECTED_BIT)
+		{
+			// Create a scripted sequence name that's guaranteed to be unique
+			char szSSName[256];
+			{
+				Q_snprintf(szSSName, sizeof(szSSName), "debugss_%s%d", npc->GetDebugName(), npc->entindex());
+			}
+
+			string_t iszSSName = AllocPooledString(szSSName);
+
+			// Spawn a scripted sequence for this NPC to play the interaction anim
+			CAI_ScriptedSequence *pMySequence = (CAI_ScriptedSequence*)CreateEntityByName("scripted_sequence");
+			pMySequence->KeyValue("m_iszPlay", command.Arg(1));
+			pMySequence->KeyValue("m_fMoveTo", "5");
+			pMySequence->SetAbsOrigin(npc->GetAbsOrigin());
+
+			QAngle angDesired = npc->GetAbsAngles();
+
+			pMySequence->SetAbsAngles(angDesired);
+			pMySequence->ForceSetTargetEntity(npc, true);
+			pMySequence->SetName(iszSSName);
+			pMySequence->AddSpawnFlags(SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE);
+
+			pMySequence->Spawn();
+			pMySequence->Activate();
+
+			// Setup the outputs for both sequences. The first kills them both when it finishes
+			pMySequence->KeyValue("OnCancelFailedSequence", UTIL_VarArgs("%s,Kill,,0,-1", szSSName));
+			pMySequence->KeyValue("OnEndSequence", UTIL_VarArgs("%s,Kill,,0,-1", szSSName));
+
+			variant_t emptyVariant;
+
+			// Tell both sequences to start
+			pMySequence->AcceptInput("BeginSequence", npc, npc, emptyVariant, 0);
+		}
+	}
+}
+
+static ConCommand npc_animation("npc_animation", CC_NPC_Sequence, "Selected NPCs will play the specified sequence\n\tArguments:	-sequence-", FCVAR_CHEAT);
 
 static ConVar npc_go_do_run( "npc_go_do_run", "1", 0, "Set whether should run on NPC go" );
 

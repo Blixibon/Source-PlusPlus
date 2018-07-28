@@ -31,6 +31,8 @@
 
 ConVar ai_task_pre_script(  "ai_task_pre_script", "0", FCVAR_NONE );
 
+#define SCRIPT_EVENT_NAME_KEY "ScriptEventName"
+
 
 //
 // targetname "me" - there can be more than one with the same name, and they act in concert
@@ -198,6 +200,23 @@ void CAI_ScriptedSequence::ScriptEntityCancel( CBaseEntity *pentCine, bool bPret
 	}
 }
 
+bool CAI_ScriptedSequence::KeyValue(const char *szKeyName, const char *szValue)
+{
+	if (Q_stristr(szKeyName, SCRIPT_EVENT_NAME_KEY) == szKeyName)
+	{
+		for (int i = 0; i < MAX_SCRIPT_EVENTS; i++)
+		{
+			CFmtStr Key(SCRIPT_EVENT_NAME_KEY "%.2i", i);
+			if (FStrEq(Key.Access(), szKeyName))
+			{
+				m_ScriptEventNames[i].AddToTail(AllocPooledString(szValue));
+				return true;
+			}
+		}
+	}
+
+	return BaseClass::KeyValue(szKeyName, szValue);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Called before spawning, after keyvalues have been parsed.
@@ -278,16 +297,78 @@ bool CAI_ScriptedSequence::FCanOverrideState( void )
 	return false;
 }
 
+FORCEINLINE bool NamesMatch(const char *pszQuery, string_t nameToMatch)
+{
+	if (nameToMatch == NULL_STRING)
+		return (!pszQuery || *pszQuery == 0 || *pszQuery == '*');
+
+	const char *pszNameToMatch = STRING(nameToMatch);
+
+	// If the pointers are identical, we're identical
+	if (pszNameToMatch == pszQuery)
+		return true;
+
+	while (*pszNameToMatch && *pszQuery)
+	{
+		unsigned char cName = *pszNameToMatch;
+		unsigned char cQuery = *pszQuery;
+		// simple ascii case conversion
+		if (cName == cQuery)
+			;
+		else if (cName - 'A' <= (unsigned char)'Z' - 'A' && cName - 'A' + 'a' == cQuery)
+			;
+		else if (cName - 'a' <= (unsigned char)'z' - 'a' && cName - 'a' + 'A' == cQuery)
+			;
+		else
+			break;
+		++pszNameToMatch;
+		++pszQuery;
+	}
+
+	if (*pszQuery == 0 && *pszNameToMatch == 0)
+		return true;
+
+	// @TODO (toml 03-18-03): Perhaps support real wildcards. Right now, only thing supported is trailing *
+	if (*pszQuery == '*' || *pszNameToMatch == '*')
+		return true;
+
+	return false;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Fires a script event by number.
 // Input  : nEvent - One based index of the script event from the , from 1 to 8.
 //-----------------------------------------------------------------------------
-void CAI_ScriptedSequence::FireScriptEvent( int nEvent )
+void CAI_ScriptedSequence::FireScriptEvent(const char *pchEvent, CBaseEntity *pActivator)
 {
+	bool bFiredEvent = false;
+
+	int nEvent = V_atoi(pchEvent);
 	if ( ( nEvent >= 1 ) && ( nEvent <= MAX_SCRIPT_EVENTS ) )
 	{
-		m_OnScriptEvent[nEvent - 1].FireOutput( this, this );
+		m_OnScriptEvent[nEvent - 1].FireOutput(pActivator, this );
+		bFiredEvent = true;
+	}
+	else
+	{
+		for (int i = 0; i < MAX_SCRIPT_EVENTS; i++)
+		{
+			CUtlVector<string_t> &VEC = m_ScriptEventNames[i];
+			for (int j = 0; j < VEC.Count(); j++)
+			{
+				if (NamesMatch(pchEvent, VEC[j]))
+				{
+					m_OnScriptEvent[i].FireOutput(pActivator, this);
+					bFiredEvent = true;
+					break;
+				}
+			}
+		}
+	}
+
+	if (!bFiredEvent)
+	{
+		DevWarning("WARNING: scripted_sequence (%s) has no output for script event (%s) received from entity %s (%s)\n", GetDebugName(), pchEvent, pActivator->GetDebugName(), STRING(pActivator->GetModelName()));
 	}
 }
 

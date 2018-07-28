@@ -721,8 +721,8 @@ CAmmoDef *GetAmmoDef()
 	{
 		bInitted = true;
 		
-		def.AddAmmoType( "9mmRound",		DMG_BULLET | DMG_NEVERGIB,	TRACER_LINE, "sk_plr_dmg_9mm_bullet",	"sk_npc_dmg_9mm_bullet","sk_max_9mm_bullet",	BULLET_IMPULSE(500, 1325), 0 );
-		def.AddAmmoType( "357Round",		DMG_BULLET | DMG_NEVERGIB,	TRACER_NONE, "sk_plr_dmg_357_bullet",	NULL,					"sk_max_357_bullet",	BULLET_IMPULSE(650, 6000), 0 );
+		def.AddAmmoType( "9mmRound",		DMG_BULLET | DMG_NEVERGIB,	TRACER_LINE, "sk_plr_dmg_9mm_bullet",	"sk_npc_dmg_9mm_bullet",	"sk_max_9mm_bullet",	BULLET_IMPULSE(500, 1325), 0 );
+		def.AddAmmoType( "357Round",		DMG_BULLET | DMG_NEVERGIB,	TRACER_LINE, "sk_plr_dmg_357_bullet",	"sk_npc_dmg_12mm_bullet",	"sk_max_357_bullet",	BULLET_IMPULSE(650, 6000), 0 );
 		def.AddAmmoType( "Buckshot",		DMG_BULLET | DMG_BUCKSHOT,	TRACER_LINE, "sk_plr_dmg_buckshot",		NULL,					"sk_max_buckshot",		BULLET_IMPULSE(200, 1200), 0 );
 		def.AddAmmoType( "XBowBolt",		DMG_BULLET | DMG_NEVERGIB,	TRACER_LINE, "sk_plr_dmg_xbow_bolt_plr",NULL,					"sk_max_xbow_bolt",		BULLET_IMPULSE( 200, 1200), 0 );
 		def.AddAmmoType( "MP5_Grenade",		DMG_BURN | DMG_BLAST,		TRACER_NONE, "sk_plr_dmg_mp5_grenade",	NULL,					"sk_max_mp5_grenade",	0, 0 );
@@ -734,7 +734,7 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType( "TripMine",		DMG_BURN | DMG_BLAST,		TRACER_NONE, "sk_plr_dmg_tripmine",		NULL,					"sk_max_tripmine",		0, 0 );
 		def.AddAmmoType( "Satchel",			DMG_BURN | DMG_BLAST,		TRACER_NONE, "sk_plr_dmg_satchel",		NULL,					"sk_max_satchel",		0, 0 );
 
-		def.AddAmmoType( "12mmRound",		DMG_BULLET | DMG_NEVERGIB,	TRACER_LINE, NULL,						"sk_npc_dmg_12mm_bullet",NULL,					BULLET_IMPULSE(300, 1200), 0 );
+		def.AddAmmoType( "12mmRound",		DMG_BULLET | DMG_NEVERGIB, TRACER_LINE_AND_WHIZ, NULL,						"sk_npc_dmg_12mm_bullet",NULL,					BULLET_IMPULSE(300, 1200), 0 );
 
 		def.AddAmmoType( "Gravity",			DMG_CRUSH,					TRACER_NONE, 0,							0,						8,					0, 0 );
 	}

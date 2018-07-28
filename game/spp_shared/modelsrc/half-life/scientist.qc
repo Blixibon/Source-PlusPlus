@@ -61,6 +61,9 @@ $MostlyOpaque
 
 $Attachment "eyes" "Bip01 Head" 5.05 1.82 0.21 rotate 0 80 90
 $Attachment "forward" "Bip01 Spine1" 0 0 0 rotate 0 90 90
+$attachment "chest" "Bip01 Spine3" 0.00 5.00 0.00 rotate -0 90 90
+$attachment "gutblood" "Bip01 Spine1" 0.00 7.00 0.00 rotate -0 90 90
+$attachment "mouth" "Mouth" 3.50 0.50 0.00 rotate -0 0 0
 
 $Include "scientist_box.qci"
 

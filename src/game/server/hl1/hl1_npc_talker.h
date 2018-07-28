@@ -53,6 +53,7 @@ public:
 	}
 
 	virtual void Precache();
+	virtual void		PostNPCInit();
 
 	void	StartTask( const Task_t *pTask );
 	void	RunTask( const Task_t *pTask );
@@ -97,6 +98,7 @@ public:
 
 	bool	m_bInBarnacleMouth;
 
+	bool	m_bStartSuspicious;
 
 	enum
 	{

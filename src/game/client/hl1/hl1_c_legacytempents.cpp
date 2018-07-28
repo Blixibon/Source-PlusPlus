@@ -66,7 +66,7 @@ void CHL1TempEnts::MuzzleFlash( const Vector& pos1, const QAngle& angles, int ty
 	QAngle				ang;
 
 	//ADRIANHL1 No Muzzleflashes until I get the model source.
-	return;
+	//return;
 
 	index = type % 10;
 	index = index % NUM_MUZZLE_SPRITES;

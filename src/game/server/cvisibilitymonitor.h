@@ -23,3 +23,10 @@ typedef bool (*VisibilityMonitorEvaluator)( CBaseEntity *pVisibleEntity, CBasePl
 
 extern void VisibilityMonitor_AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator );
 extern void VisibilityMonitor_RemoveEntity( CBaseEntity *pEntity );
+
+namespace VismonDefaultCallback
+{
+	bool VismonExplosiveEvaluator(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer);
+	bool VismonExplosiveCallback(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer);
+	extern const float flExplosiveVisDist;
+}

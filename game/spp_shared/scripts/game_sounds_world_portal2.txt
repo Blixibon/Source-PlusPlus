@@ -10183,7 +10183,7 @@
 {
 	"channel"		"CHAN_AUTO"
 	"soundlevel"		"SNDLVL_NORM"
-	"volume"		"0.00"
+	"volume"		"0.70"
 	"pitch"		"100,120"
 	"rndwave"
 	{

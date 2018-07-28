@@ -494,8 +494,8 @@ $Sequence "dead_sitting" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "dead_table1" {
@@ -503,8 +503,8 @@ $Sequence "dead_table1" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "dead_table2" {
@@ -512,8 +512,8 @@ $Sequence "dead_table2" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "dead_table3" {
@@ -521,8 +521,8 @@ $Sequence "dead_table3" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "barnacled1" {
@@ -531,8 +531,8 @@ $Sequence "barnacled1" {
 	fadein 0.2
 	fadeout 0.2
 	fps 18
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "barnacled2" {
@@ -542,8 +542,8 @@ $Sequence "barnacled2" {
 	fadeout 0.2
 	fps 23
 	loop
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "barnacled3" {
@@ -552,8 +552,8 @@ $Sequence "barnacled3" {
 	fadein 0.2
 	fadeout 0.2
 	fps 14
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "barnacled4" {
@@ -563,8 +563,8 @@ $Sequence "barnacled4" {
 	fadeout 0.2
 	fps 15
 	loop
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "console" {
@@ -652,6 +652,7 @@ $Sequence "pondering2" {
 
 $Sequence "pondering3" {
 	"scientist_anims\pondering3.smd"
+	activity "ACT_SIGNAL3" 1
 	fadein 0.2
 	fadeout 0.2
 	fps 12
@@ -709,6 +710,7 @@ $Sequence "push_button" {
 
 $Sequence "converse1" {
 	"scientist_anims\converse1.smd"
+	activity "ACT_SIGNAL3" 1
 	fadein 0.2
 	fadeout 0.2
 	fps 7
@@ -718,6 +720,7 @@ $Sequence "converse1" {
 
 $Sequence "converse2" {
 	"scientist_anims\converse2.smd"
+	activity "ACT_SIGNAL3" 1
 	fadein 0.2
 	fadeout 0.2
 	fps 7
@@ -997,10 +1000,10 @@ $Sequence "panic1" {
 
 $Sequence "keypad" {
 	"scientist_anims\keypad.smd"
-	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
-	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
-	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
-	{ event AE_CL_PLAYSOUND 0 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 0 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 0 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 0 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 0 "NPC.ButtonBlip1" }
 	fadein 0.2
 	fadeout 0.2
 	fps 18
@@ -1069,9 +1072,9 @@ $Sequence "divewindow" {
 
 $Sequence "locked_door" {
 	"scientist_anims\locked_door.smd"
-	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked1.wav" }
-	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked2.wav" }
-	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked1.wav" }
+	{ event AE_CL_PLAYSOUND 10 "NPC.ButtonLatchLocked2" }
+	{ event AE_CL_PLAYSOUND 20 "NPC.ButtonLatchLocked1" }
+	{ event AE_CL_PLAYSOUND 30 "NPC.ButtonLatchLocked1" }
 	fadein 0.2
 	fadeout 0.2
 	fps 16
@@ -1091,7 +1094,7 @@ $Sequence "push_button2" {
 
 $Sequence "unlock_door" {
 	"scientist_anims\unlock_door.smd"
-	{ event AE_CL_PLAYSOUND 0 "*buttons/latchlocked1.wav" }
+	{ event AE_CL_PLAYSOUND 60 "NPC.ButtonLatchUnlocked1" }
 	fadein 0.2
 	fadeout 0.2
 	fps 15
@@ -1151,7 +1154,7 @@ $Sequence "fall_elevator" {
 $Sequence "fall" {
 	"scientist_anims\fall.smd"
 	{ event 1000 0 "" }
-	{ event 1008 0 "*scientist/scream3.wav" }
+	{ event 1008 26 "NPC_Scientist.Scream3" }
 	fadein 0.2
 	fadeout 0.2
 	fps 20
@@ -1171,7 +1174,7 @@ $Sequence "scientist_get_pulled" {
 
 $Sequence "hanging_idle2" {
 	"scientist_anims\hanging_idle2.smd"
-	{ event 1008 0 "*scientist/c1a2_sci_dangling.wav" }
+	{ event 1008 0 "NPC_Scientist.Dangling" }
 	fadein 0.2
 	fadeout 0.2
 	fps 20
@@ -1248,9 +1251,9 @@ $Sequence "tentacle_grab" {
 
 $Sequence "helicack" {
 	"scientist_anims\helicack.smd"
-	{ event 1003 0 "gunmedown" }
+	{ event 1003 20 "gunmedown" }
 	{ event 1000 0 "" }
-	{ event 1008 0 "*scientist/sci_pain4.wav" }
+	{ event 1008 24 "NPC_Scientist.Pain4" }
 	fadein 0.2
 	fadeout 0.2
 	fps 18
@@ -1372,16 +1375,16 @@ $Sequence "suv_dead" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "sci_keypad" {
 	"scientist_anims\sci_keypad.smd"
-	{ event AE_CL_PLAYSOUND 7 "*buttons/blip1.wav" }
-	{ event AE_CL_PLAYSOUND 13 "*buttons/blip1.wav" }
-	{ event AE_CL_PLAYSOUND 19 "*buttons/blip1.wav" }
-	{ event AE_CL_PLAYSOUND 24 "*buttons/blip1.wav" }
+	{ event AE_CL_PLAYSOUND 7 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 13 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 19 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 24 "NPC.ButtonBlip1" }
 	fadein 0.2
 	fadeout 0.2
 	fps 10
@@ -1404,8 +1407,8 @@ $Sequence "messhall_dead1" {
 	fadein 0.2
 	fadeout 0.2
 	fps 14
-	ikrule "lfoot" footstep
-	ikrule "rfoot" footstep
+	ikrule "lfoot" release
+	ikrule "rfoot" release
 }
 
 $Sequence "fence_clutch" {
@@ -1467,6 +1470,9 @@ $Sequence "peek" {
 $Sequence "blown_back" {
 	"scientist_anims\blown_back.smd"
 	{ event 1000 1 "" }
+	{ event AE_CLIENT_EFFECT_ATTACH 39 "BloodImpact 4" }
+	{ event AE_CLIENT_EFFECT_ATTACH 39 "BloodImpact 4" }
+	{ event AE_CLIENT_EFFECT_ATTACH 39 "BloodImpact 4" }
 	fadein 0.2
 	fadeout 0.2
 	fps 28
@@ -1524,7 +1530,7 @@ $Sequence "slump_idle" {
 $Sequence "slump" {
 	"scientist_anims\slump.smd"
 	{ event 1000 1 "" }
-	{ event 1004 32 "*common/bodydrop3.wav" }
+	{ event 1004 32 "NPC_Scientist.BodyDrop_Light" }
 	fadein 0.2
 	fadeout 0.2
 	fps 30

@@ -111,7 +111,7 @@ ClientModeHL1Normal::ClientModeHL1Normal()
 //-----------------------------------------------------------------------------
 ClientModeHL1Normal::~ClientModeHL1Normal()
 {
-	if (m_CCHandle != INVALID_CLIENT_CCHANDLE)
+	if (g_pMaterialSystem != nullptr && m_CCHandle != INVALID_CLIENT_CCHANDLE)
 	{
 		g_pColorCorrectionMgr->RemoveColorCorrection(m_CCHandle);
 	}
@@ -206,7 +206,7 @@ IViewPortPanel* CHudViewport::CreatePanelByName( const char *szPanelName )
 {
 	IViewPortPanel* newpanel = NULL;
 
-	if ( Q_strcmp( PANEL_SCOREBOARD, szPanelName) == 0 )
+	if (g_pGameRules && g_pGameRules->IsMultiplayer() && Q_strcmp( PANEL_SCOREBOARD, szPanelName) == 0 )
 	{
 		newpanel = new CHL1MPClientScoreBoardDialog( this );
 		return newpanel;

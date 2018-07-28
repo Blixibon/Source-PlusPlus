@@ -29,23 +29,13 @@ $EyePosition 0 0 63
 
 $CDMaterials "models\half-life\barney\"
 
-$Opaque
-
-// This list shows the VMT file names used in the SMD files.
-// "barney_hands_wht.vmt"
-// "barney_tie.vmt"
-// "barney_body.vmt"
-// "barney_legs.vmt"
-// "barney_head_helmet_wht.vmt"
-// "barney_helmet_Chrome.vmt"
-// "barney_helmet.vmt"
-// "barney_id_helmet_wht.vmt"
-// "wp_beretta.vmt"
-// "wp_beretta_Chrome.vmt"
-
 $Attachment "gun" "Bip01 R Hand" 15 3.5 5 rotate 0 0 0
-$Attachment "eyes" "Bip01 Head" 0 0 0 rotate 0 90 90
+$Attachment "neck" "Bip01 Head" 0 0 0 rotate 0 90 90
 $Attachment "forward" "Bip01 Spine" 0 0 0 rotate 0 90 90
+$attachment "gutblood" "Bip01 Spine" 4.00 7.00 0.00 rotate -0 90 90
+$attachment "chest" "Bip01 Spine1" 4.00 6.80 0.00 rotate -0 90 90
+$attachment "eyes" "Bip01 Head" 4.50 5.50 -0.00 rotate -0 90 90
+$attachment "mouth" "Mouth" 3.50 0.50 0.00 rotate -0 0 0
 
 $Include "barney_box.qci"
 

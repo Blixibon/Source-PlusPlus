@@ -237,6 +237,14 @@ void CHL1NPCTalker::Precache()
 	PrecacheScriptSound( "Barney.Close" );
 }
 
+void CHL1NPCTalker::PostNPCInit()
+{
+	BaseClass::PostNPCInit();
+
+	if (m_bStartSuspicious)
+		Remember(bits_MEMORY_SUSPICIOUS);
+}
+
 bool CHL1NPCTalker::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
 {
 	if (interactionType == g_interactionBarnacleVictimDangle)

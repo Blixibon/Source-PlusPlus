@@ -9,6 +9,8 @@
 
 #include "cbase.h"
 #include "cvisibilitymonitor.h"
+#include "props_shared.h"
+#include "ai_basenpc.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -381,3 +383,85 @@ void VisibilityMonitor_RemoveEntity( CBaseEntity *pEntity )
 	VisibilityMonitor.RemoveEntity( pEntity );
 }
 
+namespace VismonDefaultCallback
+{
+	bool VismonExplosiveCallback(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer)
+	{
+		IGameEvent * event = gameeventmanager->CreateEvent("physics_visible");
+		if (event)
+		{
+			event->SetInt("userid", pViewingPlayer->GetUserID());
+			event->SetInt("subject", pVisibleEntity->entindex());
+			event->SetString("type", "explosive_near_enemy");
+			event->SetString("entityname", STRING(pVisibleEntity->GetEntityName()));
+			gameeventmanager->FireEvent(event);
+		}
+
+		return false;
+	}
+
+	bool VismonExplosiveEvaluator(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer)
+	{
+		IBreakableWithPropData *pProp = dynamic_cast<IBreakableWithPropData *> (pVisibleEntity);
+
+		if (!pProp)
+			return false;
+
+		bool bMultiplayer = g_pGameRules->IsMultiplayer();
+
+		if (bMultiplayer)
+		{
+			// Iterate over players
+			for (int i = 1; i <= gpGlobals->maxClients; i++)
+			{
+				CBasePlayer *pOtherPlayer = UTIL_PlayerByIndex(i);
+				if (!pOtherPlayer || pOtherPlayer == pViewingPlayer)
+					continue;
+
+				if (!pOtherPlayer->IsAlive())
+					continue;
+
+				int iPlrRelat = g_pGameRules->PlayerRelationship(pViewingPlayer, pOtherPlayer);
+
+				if (iPlrRelat == GR_TEAMMATE || iPlrRelat == GR_ALLY)
+					continue;
+
+				if (pOtherPlayer->GetAbsOrigin().DistToSqr(pVisibleEntity->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
+					continue;
+
+				if (!pOtherPlayer->FVisible(pVisibleEntity))
+					continue;
+
+				return true;
+			}
+		}
+
+		if (!bMultiplayer || g_pGameRules->FAllowNPCs())
+		{
+			// Iterate over AIs
+			CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+			for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+			{
+				CAI_BaseNPC *pNPC = ppAIs[i];
+
+				if (!pNPC->IsAlive())
+					continue;
+
+				if (pNPC->GetAbsOrigin().DistToSqr(pVisibleEntity->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
+					continue;
+
+				if (pNPC->IRelationType(pViewingPlayer) != D_HT)
+					continue;
+
+				if (!pNPC->FVisible(pVisibleEntity))
+					continue;
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	const float flExplosiveVisDist = 2048.0f;
+}

@@ -21,7 +21,7 @@
 			
 			"|gameinfo_path|"
 			{
-				"paths"
+				"path_id"
 				{
 					"mod"	1
 				}

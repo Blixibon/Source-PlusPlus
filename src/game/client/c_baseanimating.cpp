@@ -4240,6 +4240,8 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 		{
 			int iAttachment;
 			int iParam;
+			int iBloodColor;
+			float flScale;
 			char token[128];
 			char effectFunc[128];
 
@@ -4254,6 +4256,12 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 			p = nexttoken(token, p, ' ');
 			iParam = token[0] ? atoi(token) : 0;
 
+			p = nexttoken(token, p, ' ');
+			flScale = token[0] ? atof(token) : 1.0f;
+
+			p = nexttoken(token, p, ' ');
+			iBloodColor = token[0] ? atoi(token) : BLOOD_COLOR_RED;
+
 			if ( iAttachment != -1 && m_Attachments.Count() >= iAttachment )
 			{
 				GetAttachment( iAttachment, attachOrigin, attachAngles );
@@ -4264,8 +4272,9 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 				data.m_vAngles = attachAngles;
 				AngleVectors( attachAngles, &data.m_vNormal );
 				data.m_hEntity = GetRefEHandle();
-				data.m_nAttachmentIndex = iAttachment + 1;
+				data.m_nAttachmentIndex = iAttachment;
 				data.m_fFlags = iParam;
+				data.m_nColor = iBloodColor;
 
 				DispatchEffect( effectFunc, data );
 			}

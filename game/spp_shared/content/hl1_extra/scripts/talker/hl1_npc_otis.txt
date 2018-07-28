@@ -1,0 +1,162 @@
+
+
+response OtisAttack sentence OT_ATTACK
+response OtisMad sentence OT_MAD delay 4 soundlevel "SNDLVL_NORM"
+response OtisShot sentence OT_SHOT delay 4 soundlevel "SNDLVL_NORM"
+response OtisKill sentence OT_KILL delay 4 soundlevel "SNDLVL_NORM"
+response OtisPOk sentence OT_POK delay 2 soundlevel "SNDLVL_NORM"
+
+response "OtisAnswer" sentence "OT_ANSWER" defaultdelay
+response "OtisStare" sentence "OT_STARE" delay "5,7.5"
+response "OtisOk" sentence "OT_OK" defaultdelay
+response "OtisWait" sentence "OT_WAIT" defaultdelay
+response "OtisStop" sentence "OT_STOP" delay "2,2.5"  soundlevel "SNDLVL_NORM"
+response "OtisScared" sentence "OT_SCARED" delay "0,0.4"
+response "OtisCureA" sentence "OT_CUREA"  defaultdelay speakonce
+response "OtisCureB" sentence "OT_CUREB"  defaultdelay speakonce
+response "OtisCureC" sentence "OT_CUREC"  defaultdelay speakonce
+response "OtisSmell" sentence "OT_SMELL" defaultdelay respeakdelay "60"
+response "OtisWound" sentence "OT_WOUND"  speakonce defaultdelay
+response "OtisMortal" sentence "OT_MORTAL"  speakonce defaultdelay
+
+response "OtisQuestionPreDisaster" sentence "OT_PQUEST" defaultdelay
+response "OtisQuestionPostDisaster" sentence "OT_QUESTION" defaultdelay
+response "OtisIdlePostDisaster" sentence "OT_IDLE" defaultdelay
+response "OtisHelloPostDisaster" sentence "OT_HELLO" delay "3,3.5" speakonce
+
+criterion "ConceptOtisAttack" "Concept" "OT_ATTACK" required
+criterion "ConceptOtisMad" "Concept" "OT_MAD" required
+criterion "ConceptOtisShot" "Concept" "OT_SHOT" required
+criterion "ConceptOtisKill" "Concept" "OT_KILL" required
+criterion "ConceptOtisPOk" "Concept" "OT_POK" required
+
+criterion "IsOtis" "classname" "monster_otis" required
+
+rule OtisAttack
+{
+	criteria IsOtis ConceptOtisAttack
+	response OtisAttack
+}
+rule OtisMad
+{
+	criteria IsOtis ConceptOtisMad
+	response OtisMad
+}
+rule OtisShot
+{
+	criteria IsOtis ConceptOtisShot
+	response OtisShot
+}
+rule OtisKill
+{
+	criteria IsOtis ConceptOtisKIll
+	response OtisKill
+}
+rule OtisPOk
+{
+	criteria IsOtis ConceptOtisPOk
+	response OtisPOk
+}
+
+rule OtisTlkAnswer
+{
+	criteria		IsOtis ConceptTalkAnswer
+	response		OtisAnswer
+}
+rule OtisTlkStare
+{
+	criteria		IsOtis ConceptTalkStare
+	response		OtisStare
+}
+
+rule OtisTlkStartFollow
+{
+	criteria		IsOtis ConceptTalkStartFollow
+	response		OtisOk
+}
+
+rule OtisTlkStopFollow
+{
+	criteria		IsOtis ConceptTalkStopFollow
+	response		OtisWait
+}
+
+rule OtisTlkStop
+{
+	criteria		IsOtis ConceptTalkStop
+	response		OtisStop
+}
+
+rule OtisTlkNoShoot
+{
+	criteria		IsOtis ConceptTalkNoShoot
+	response		OtisScared
+}
+
+rule OtisPlayerHurt1
+{
+	criteria		IsOtis ConceptTalkPlayerHurt1
+	response		OtisCureA
+}
+rule OtisPlayerHurt2
+{
+	criteria		IsOtis ConceptTalkPlayerHurt2
+	response		OtisCureB
+}
+rule OtisPlayerHurt3
+{
+	criteria		IsOtis ConceptTalkPlayerHurt3
+	response		OtisCureC
+}
+
+rule OtisTlkSmell
+{
+	criteria		IsOtis ConceptTalkSmell
+	response		OtisSmell
+}
+rule OtisTlkWound
+{
+	criteria		IsOtis ConceptTalkWound
+	response		OtisWound
+}
+rule OtisTlkMortal
+{
+	criteria		IsOtis ConceptTalkMortal
+	response		OtisMortal
+}
+
+
+// Pre disaster
+rule OtisTlkHelloPre
+{
+	criteria		IsOtis ConceptTalkHello IsPreDisaster
+	response		NullResponse
+}
+
+rule OtisTlkQuestionPre
+{
+	criteria		IsOtis ConceptTalkQuestion IsPreDisaster
+	response		OtisQuestionPreDisaster
+}
+rule OtisTlkIdlePre
+{
+	criteria		IsOtis ConceptTalkIdle IsPreDisaster
+	response		NullResponse
+}
+
+rule OtisTlkHelloPost
+{
+	criteria		IsOtis ConceptTalkHello IsPostDisaster
+	response		OtisHelloPostDisaster
+}
+
+rule OtisTlkQuestionPost
+{
+	criteria		IsOtis ConceptTalkQuestion IsPostDisaster
+	response		OtisQuestionPostDisaster
+}
+rule OtisTlkIdlePost
+{
+	criteria		IsOtis ConceptTalkIdle IsPostDisaster
+	response		OtisIdlePostDisaster
+}

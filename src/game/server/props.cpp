@@ -821,81 +821,6 @@ CBreakableProp::CBreakableProp()
 	m_bUsePuntSound = true;
 }
 
-bool CBreakableProp::VismonExplosiveCallback(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer)
-{
-	IGameEvent * event = gameeventmanager->CreateEvent("physics_visible");
-	if (event)
-	{
-		event->SetInt("userid", pViewingPlayer->GetUserID());
-		event->SetInt("subject", pVisibleEntity->entindex());
-		event->SetString("type", "explosive_near_enemy");
-		event->SetString("entityname", STRING(pVisibleEntity->GetEntityName()));
-		gameeventmanager->FireEvent(event);
-	}
-
-	return false;
-}
-
-bool CBreakableProp::VismonExplosiveEvaluator(CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer)
-{
-	CBreakableProp *pProp = static_cast<CBreakableProp *> (pVisibleEntity);
-
-	bool bMultiplayer = g_pGameRules->IsMultiplayer();
-
-	if (bMultiplayer)
-	{
-		// Iterate over players
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer *pOtherPlayer = UTIL_PlayerByIndex(i);
-			if (!pOtherPlayer || pOtherPlayer == pViewingPlayer)
-				continue;
-
-			if (!pOtherPlayer->IsAlive())
-				continue;
-
-			int iPlrRelat = g_pGameRules->PlayerRelationship(pViewingPlayer, pOtherPlayer);
-
-			if (iPlrRelat == GR_TEAMMATE || iPlrRelat == GR_ALLY)
-				continue;
-
-			if (pOtherPlayer->GetAbsOrigin().DistToSqr(pProp->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
-				continue;
-
-			if (!pOtherPlayer->FVisible(pProp))
-				continue;
-
-			return true;
-		}
-	}
-
-	if (!bMultiplayer || g_pGameRules->FAllowNPCs())
-	{
-		// Iterate over AIs
-		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-		for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
-		{
-			CAI_BaseNPC *pNPC = ppAIs[i];
-
-			if (!pNPC->IsAlive())
-				continue;
-
-			if (pNPC->GetAbsOrigin().DistToSqr(pProp->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
-				continue;
-
-			if (pNPC->IRelationType(pViewingPlayer) != D_HT)
-				continue;
-
-			if (!pNPC->FVisible(pProp))
-				continue;
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -999,7 +924,7 @@ void CBreakableProp::Spawn()
 
 	if (m_explodeDamage > 0 || m_explodeRadius > 0)
 	{
-		VisibilityMonitor_AddEntity(this, 2048.0f, &CBreakableProp::VismonExplosiveCallback, &CBreakableProp::VismonExplosiveEvaluator);
+		VisibilityMonitor_AddEntity(this, VismonDefaultCallback::flExplosiveVisDist, &VismonDefaultCallback::VismonExplosiveCallback, &VismonDefaultCallback::VismonExplosiveEvaluator);
 	}
 }
 
@@ -1009,7 +934,7 @@ void CBreakableProp::OnRestore()
 
 	if (m_explodeDamage > 0 || m_explodeRadius > 0)
 	{
-		VisibilityMonitor_AddEntity(this, 2048.0f, &CBreakableProp::VismonExplosiveCallback, &CBreakableProp::VismonExplosiveEvaluator);
+		VisibilityMonitor_AddEntity(this, VismonDefaultCallback::flExplosiveVisDist, &VismonDefaultCallback::VismonExplosiveCallback, &VismonDefaultCallback::VismonExplosiveEvaluator);
 	}
 }
 
@@ -3387,49 +3312,53 @@ int CPhysicsProp::DrawDebugTextOverlays(void)
 
 	if (m_debugOverlays & OVERLAY_TEXT_BIT)
 	{
+		int r = 255;
+		int g = 255;
+		int b = 255;
+
 		if (VPhysicsGetObject())
 		{
 			char tempstr[512];
-			Q_snprintf(tempstr, sizeof(tempstr),"Mass: %.2f kg / %.2f lb (%s)", VPhysicsGetObject()->GetMass(), kg2lbs(VPhysicsGetObject()->GetMass()), GetMassEquivalent(VPhysicsGetObject()->GetMass()));
-			EntityText( text_offset, tempstr, 0);
+			Q_snprintf(tempstr, sizeof(tempstr), "Mass: %.2f kg / %.2f lb (%s)", VPhysicsGetObject()->GetMass(), kg2lbs(VPhysicsGetObject()->GetMass()), GetMassEquivalent(VPhysicsGetObject()->GetMass()));
+			EntityText(text_offset, tempstr, 0, r, g, b);
 			text_offset++;
 
 			{
 				vphysics_objectstress_t stressOut;
-				float stress = CalculateObjectStress( VPhysicsGetObject(), this, &stressOut );
-				Q_snprintf(tempstr, sizeof(tempstr),"Stress: %.2f (%.2f / %.2f)", stress, stressOut.exertedStress, stressOut.receivedStress );
-				EntityText( text_offset, tempstr, 0);
+				float stress = CalculateObjectStress(VPhysicsGetObject(), this, &stressOut);
+				Q_snprintf(tempstr, sizeof(tempstr), "Stress: %.2f (%.2f / %.2f)", stress, stressOut.exertedStress, stressOut.receivedStress);
+				EntityText(text_offset, tempstr, 0, r, g, b);
 				text_offset++;
 			}
 
-			if ( !VPhysicsGetObject()->IsMoveable() )
+			if (!VPhysicsGetObject()->IsMoveable())
 			{
-				Q_snprintf(tempstr, sizeof(tempstr),"Motion Disabled" );
-				EntityText( text_offset, tempstr, 0);
+				Q_snprintf(tempstr, sizeof(tempstr), "Motion Disabled");
+				EntityText(text_offset, tempstr, 0, r, g, b);
 				text_offset++;
 			}
 
-			if ( m_iszBasePropData != NULL_STRING )
+			if (m_iszBasePropData != NULL_STRING)
 			{
-				Q_snprintf(tempstr, sizeof(tempstr),"Base PropData: %s", STRING(m_iszBasePropData) );
-				EntityText( text_offset, tempstr, 0);
+				Q_snprintf(tempstr, sizeof(tempstr), "Base PropData: %s", STRING(m_iszBasePropData));
+				EntityText(text_offset, tempstr, 0, r, g, b);
 				text_offset++;
 			}
 
-			if ( m_iNumBreakableChunks != 0 )
+			if (m_iNumBreakableChunks != 0)
 			{
 				IBreakableWithPropData *pBreakableInterface = assert_cast<IBreakableWithPropData*>(this);
-				Q_snprintf(tempstr, sizeof(tempstr),"Breakable Chunks: %d (Max Size %d)", m_iNumBreakableChunks, pBreakableInterface->GetMaxBreakableSize() );
-				EntityText( text_offset, tempstr, 0);
+				Q_snprintf(tempstr, sizeof(tempstr), "Breakable Chunks: %d (Max Size %d)", (int)m_iNumBreakableChunks, pBreakableInterface->GetMaxBreakableSize());
+				EntityText(text_offset, tempstr, 0, r, g, b);
 				text_offset++;
 			}
 
-			Q_snprintf(tempstr, sizeof(tempstr),"Skin: %d", m_nSkin.Get() );
-			EntityText( text_offset, tempstr, 0);
+			Q_snprintf(tempstr, sizeof(tempstr), "Skin: %d", m_nSkin.Get());
+			EntityText(text_offset, tempstr, 0, r, g, b);
 			text_offset++;
 
-			Q_snprintf(tempstr, sizeof(tempstr),"Health: %d, collision group %d", GetHealth(), GetCollisionGroup() );
-			EntityText( text_offset, tempstr, 0);
+			Q_snprintf(tempstr, sizeof(tempstr), "Health: %d, collision group %d", GetHealth(), GetCollisionGroup());
+			EntityText(text_offset, tempstr, 0, r, g, b);
 			text_offset++;
 		}
 	}

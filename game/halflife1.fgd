@@ -119,10 +119,23 @@ size(choices) : "Hull Size" : 0 =
 		2 : "Water"
 	]
 ]
-@NPCClass base(BaseNPC) studio("models/barney.mdl") = monster_barney : "Barney"
+@NPCClass base(TalkNPC) studio("models/barney.mdl") = monster_barney : "Barney"
 [
-	UseSentence(String) : "Use Sentence"
-	UnUseSentence(String) : "Un-Use Sentence"
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+@PointClass base(BaseNPC) size(-16 -16 0, 16 16 72) = monster_barney_dead : "Dead Barney" 
+[
+	pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On side"
+        2 : "On stomach"
+		3 : "Stuffed in Vent"
+    ]
 ]
 @NPCClass base(BaseNPC) studio("models/Sentry.mdl") = monster_sentry : "Sentry Turret Gun"
 [
@@ -401,9 +414,43 @@ size(choices) : "Hull Size" : 0 =
 @PointClass base(Targetname, RenderFields, Angles) studio("models/fungus(small).mdl") = xen_spore_small : "Xen Spore (small)" []
 @PointClass base(Targetname, RenderFields, Angles) studio("models/fungus.mdl") = xen_spore_medium : "Xen Spore (medium)" []
 @PointClass base(Targetname, RenderFields, Angles) studio("models/fungus_large.mdl") = xen_spore_large : "Xen Spore (large)" []
-@NPCClass base(BaseNPC) studio("models/scientist.mdl") = monster_scientist : "Scientist"
+@NPCClass base(TalkNPC) studio("models/scientist.mdl") = monster_scientist : "Scientist"
 [
 	body(integer) : "Body" : -1 : "-1 = Random\n0 = Glasses\n1 = Einstein\n2 = Luther\n3 = Slick"
+]
+
+@PointClass base(TalkNPC) studio("models/opfor/otis.mdl") = monster_otis : "Otis"
+[
+	bodystate(Choices) : "bodystate" : -1 =
+	[
+		-1 : "Random"
+		0 : "Gun Holstered"
+		1 : "Gun Drawn"
+		3 : "Donut"
+	]
+	head(Choices) : "head" : -1 =
+	[
+		-1 : "Random"
+		0 : "Bald Head"
+		1 : "Head with hair"
+	]
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@PointClass base(BaseNPC) size(-16 -16 0, 16 16 72) = monster_otis_dead : "Dead Otis" 
+[
+    pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On side"
+        2 : "On stomach"
+		3 : "Stuffed in Vent"
+		4 : "Dead Sitting"
+    ]
 ]
 
 @PointClass base(BaseNPC, RenderFields, Shadow) studio() = monster_generic : "Generic Script NPC"

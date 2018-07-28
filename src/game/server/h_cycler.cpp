@@ -12,6 +12,7 @@
 #include "vstdlib/random.h"
 #include "h_cycler.h"
 #include "Sprite.h"
+#include "npcevent.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -144,6 +145,18 @@ void CCycler::Think( void )
 		m_flCycle = 0;
 		if (!m_animate)
 			m_flPlaybackRate = 0.0;	// FIX: don't reset framerate
+	}
+}
+
+void CCycler::HandleAnimEvent(animevent_t *pEvent)
+{
+	switch (pEvent->event)
+	{
+	case AE_RAGDOLL:
+	case AE_NPC_RAGDOLL:
+		break;
+	default:
+		BaseClass::HandleAnimEvent(pEvent);
 	}
 }
 

@@ -659,6 +659,19 @@
 	"wave"		"player/pl_metal4.wav"
 }
 
+"NPC_Scientist.BodyDrop_Light"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_85dB"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"common/bodydrop3.wav"
+		"wave"		"scientist/bodydrop1.wav"
+	}
+}
+
 
 // Vortigaunt
 "NPC_Vortigaunt.Word3"

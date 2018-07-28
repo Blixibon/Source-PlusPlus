@@ -1,0 +1,734 @@
+
+$SectionFrames 30 159
+
+$PoseParameter "aim_pitch" -50 50 loop 0
+$PoseParameter "mouth" 0 90 loop 0
+$PoseParameter "head_yaw" -60 60 loop 0
+
+$IKChain "lfoot" "Bip01 L Foot" knee 0.743 0.669 -0.01
+$IKChain "rfoot" "Bip01 R Foot" knee 0.74 0.671 -0.05
+
+$Animation "mdldecompiler_delta.smd" "otis_anims\mdldecompiler_delta.smd" {
+	fps 30
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Animation "mouth_close" "otis_anims\mouth_close.smd" {
+	fps 30
+}
+
+$Animation "mouth_open" "otis_anims\mouth_open.smd" {
+	fps 30
+}
+
+$Animation "neck_right" "otis_anims\neck_right.smd" {
+	fps 30
+}
+
+$Animation "neck_center" "otis_anims\neck_center.smd" {
+	fps 30
+}
+
+$Animation "neck_left" "otis_anims\neck_left.smd" {
+	fps 30
+}
+
+$Sequence "ragdoll" {
+	"otis_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "idle1" {
+	"otis_anims\idle1.smd"
+	activity "ACT_IDLE" 50
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle2" {
+	"otis_anims\idle2.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle3" {
+	"otis_anims\idle3.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "idle4" {
+	"otis_anims\idle4.smd"
+	activity "ACT_IDLE" 10
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "walk" {
+	"otis_anims\walk.smd"
+	activity "ACT_WALK" -1
+	{ event AE_CL_HL1_WALK_RIGHT 3 "" }
+	{ event AE_CL_HL1_WALK_LEFT 18 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "lfoot" footstep contact 18 range 14 18 27 30
+	ikrule "rfoot" footstep contact 3 range 1 1 14 18
+	ikrule "rfoot" footstep contact 28 range 28 30 31 .. 
+	walkframe 31 LX
+}
+
+$Sequence "run" {
+	"otis_anims\run.smd"
+	activity "ACT_RUN" -1
+	{ event AE_CL_HL1_RUN_LEFT 5 "event_emit Foot" }
+	{ event AE_CL_HL1_RUN_RIGHT 13 "event_emit Foot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	loop
+	ikrule "lfoot" footstep contact 5 range 3 4 5 6
+	ikrule "rfoot" footstep contact 13 range 11 12 13 15
+	walkframe 22 LX
+}
+
+$Sequence "shootgun" {
+	"otis_anims\shootgun.smd"
+	"otis_anims\shootgun_2.smd"
+	activity "ACT_RANGE_ATTACK1" -1
+	blend "aim_pitch" -50 50
+	blendwidth 2
+	{ event 3 1 "" }
+	{ event AE_NPC_MUZZLEFLASH 1 "PISTOL gun" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "shootgun2" {
+	"otis_anims\shootgun2.smd"
+	"otis_anims\shootgun2_2.smd"
+	blend "aim_pitch" -50 50
+	blendwidth 2
+	{ event 3 1 "" }
+	{ event AE_NPC_MUZZLEFLASH 1 "PISTOL gun" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "draw" {
+	"otis_anims\draw.smd"
+	activity "ACT_ARM" -1
+	{ event 2 7 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "disarm" {
+	"otis_anims\disarm.smd"
+	activity "ACT_DISARM" -1
+	{ event 4 16 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "reload" {
+	"otis_anims\reload.smd"
+	activity "ACT_RELOAD" -1
+	{ event AE_CL_PLAYSOUND 10 "NPC_Otis.Reload" }
+	//{ event 3017 10 "" }
+	{ event 3018 24 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "turnleft" {
+	"otis_anims\turnleft.smd"
+	activity "ACT_TURN_LEFT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "turnright" {
+	"otis_anims\turnright.smd"
+	activity "ACT_TURN_RIGHT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "laflinch" {
+	"otis_anims\laflinch.smd"
+	activity "ACT_FLINCH_LEFTARM" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "raflinch" {
+	"otis_anims\raflinch.smd"
+	activity "ACT_FLINCH_RIGHTARM" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "llflinch" {
+	"otis_anims\llflinch.smd"
+	activity "ACT_FLINCH_LEFTLEG" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "rlflinch" {
+	"otis_anims\rlflinch.smd"
+	activity "ACT_FLINCH_RIGHTLEG" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "smlflinch" {
+	"otis_anims\smlflinch.smd"
+	activity "ACT_SMALL_FLINCH" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "cower_stand" {
+	"otis_anims\cower_stand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "locked_door" {
+	"otis_anims\locked_door.smd"
+	{ event AE_CL_PLAYSOUND 18 "NPC.ButtonLatchLocked2" }
+	{ event AE_CL_PLAYSOUND 36 "NPC.ButtonLatchLocked1" }
+	{ event AE_CL_PLAYSOUND 48 "NPC.ButtonLatchLocked1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fall_loop" {
+	"otis_anims\fall_loop.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "barn_wave" {
+	"otis_anims\barn_wave.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "beat_grunt" {
+	"otis_anims\beat_grunt.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "beat_gruntidle" {
+	"otis_anims\beat_gruntidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "flashlight" {
+	"otis_anims\flashlight.smd"
+	{ event AE_CL_PLAYSOUND 5 "Weapons.BulletHit1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "diesimple" {
+	"otis_anims\diesimple.smd"
+	activity "ACT_DIE_HEADSHOT" 1
+	{ event AE_NPC_BODYDROP_LIGHT 5 "" }
+	{ event AE_NPC_RAGDOLL 17 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+	walkframe 26
+}
+
+$Sequence "dieviolent" {
+	"otis_anims\dieviolent.smd"
+	activity "ACT_DIE_HEADSHOT" 1
+	{ event AE_NPC_BODYDROP_LIGHT 10 "" }
+	{ event AE_NPC_RAGDOLL 10 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+	walkframe 14
+}
+
+$Sequence "diegutshot" {
+	"otis_anims\diegutshot.smd"
+	activity "ACT_DIE_GUTSHOT" -1
+	{ event AE_NPC_RAGDOLL 32 "" }
+	{ event AE_NPC_BODYDROP_LIGHT 33 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "dieforward" {
+	"otis_anims\dieforward.smd"
+	activity "ACT_DIEFORWARD" -1
+	{ event AE_NPC_RAGDOLL 8 "" }
+	{ event AE_NPC_BODYDROP_LIGHT 8 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+	walkframe 8
+}
+
+$Sequence "diebackward" {
+	"otis_anims\diebackward.smd"
+	activity "ACT_DIEBACKWARD" -1
+	{ event AE_NPC_BODYDROP_LIGHT 19 "" }
+	{ event AE_NPC_RAGDOLL 19 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+	walkframe 26
+}
+
+$Sequence "diecrump" {
+	"otis_anims\diecrump.smd"
+	activity "ACT_DIESIMPLE" -1
+	{ event AE_NPC_RAGDOLL 13 "" }
+	{ event AE_NPC_BODYDROP_LIGHT 13 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+	walkframe 11
+}
+
+$Sequence "barnaclehit" {
+	"otis_anims\barnaclehit.smd"
+	activity "ACT_BARNACLE_HIT" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "barnaclepull" {
+	"otis_anims\barnaclepull.smd"
+	activity "ACT_BARNACLE_PULL" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 45
+	loop
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "barnaclecrunch" {
+	"otis_anims\barnaclecrunch.smd"
+	activity "ACT_BARNACLE_CHOMP" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 5
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "barnaclechew" {
+	"otis_anims\barnaclechew.smd"
+	activity "ACT_BARNACLE_CHEW" -1
+	fadein 0.2
+	fadeout 0.2
+	fps 5
+	loop
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "lying_on_back" {
+	"otis_anims\lying_on_back.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "lying_on_side" {
+	"otis_anims\lying_on_side.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "lying_on_stomach" {
+	"otis_anims\lying_on_stomach.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "stuffed_in_vent" {
+	"otis_anims\stuffed_in_vent.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "dead_sitting" {
+	"otis_anims\dead_sitting.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "standing_idle" {
+	"otis_anims\standing_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "cprbarney" {
+	"otis_anims\cprbarney.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "cprbarneyrevive" {
+	"otis_anims\cprbarneyrevive.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep contact 120 range 114 120 . .
+	ikrule "rfoot" footstep contact 150 range 148 150 . .
+}
+
+$Sequence "barney_dragvent" {
+	"otis_anims\barney_dragvent.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "dying_barney" {
+	"otis_anims\dying_barney.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "dying_barneyidle" {
+	"otis_anims\dying_barneyidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	loop
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "dying_friend" {
+	"otis_anims\dying_friend.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dying_friendidle" {
+	"otis_anims\dying_friendidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "c1a3_bidle" {
+	"otis_anims\c1a3_bidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 3
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "intropush" {
+	"otis_anims\intropush.smd"
+	{ event AE_CL_PLAYSOUND 15 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 24 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 34 "NPC.ButtonBlip1" }
+	{ event AE_CL_PLAYSOUND 44 "NPC.ButtonBlip1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "fence" {
+	"otis_anims\fence.smd"
+	{ event 1000 49 "" }
+	{ event 1003 49 "lightning" }
+	{ event 1001 49 "" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 49 "tfa_lightning_model follow_rootbone" }
+	{ event AE_CL_PLAYSOUND 51 "NPC.Electro4" }
+	{ event 1008 85 "NPC_Barney.Pain2" }
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep range . . 40 45
+}
+
+$Sequence "wave" {
+	"otis_anims\wave.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "unlatch" {
+	"otis_anims\unlatch.smd"
+	{ event 1003 7 "barney_door_lock" }
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "retina" {
+	"otis_anims\retina.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "relaxstand" {
+	"otis_anims\relaxstand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 10
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "trackswitch" {
+	"otis_anims\trackswitch.smd"
+	{ event 1003 14 "trainarmswitch" }
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pepsiswing" {
+	"otis_anims\pepsiswing.smd"
+	{ event 1003 1 "die" }
+	{ event 1003 8 "swing" }
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pepsipush" {
+	"otis_anims\pepsipush.smd"
+	{ event 1003 51 "topple" }
+	{ event 1003 90 "horror" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "buttonpush" {
+	"otis_anims\buttonpush.smd"
+	{ event 1003 7 "button" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "cowering" {
+	"otis_anims\cowering.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "candygrab" {
+	"otis_anims\candygrab.smd"
+	{ event 1008 1 "NPC_Otis.Candy" }
+	{ event AE_CL_PLAYSOUND 12 "World.SparkLaserCutter" }
+	{ event AE_CL_PLAYSOUND 46 "World.SparkLaserCutter" }
+	{ event AE_CL_PLAYSOUND 84 "World.SparkLaserCutter" }
+	{ event 1005 90 "~OT_MISC" }
+	{ event AE_CL_PLAYSOUND 115 "World.SparkLaserCutter" }
+	{ event AE_CL_PLAYSOUND 172 "World.SparkLaserCutter" }
+	{ event AE_CL_PLAYSOUND 182 "Metal_Box.Strain" }
+	{ event AE_CL_PLAYSOUND 212 "World.SparkLaserCutter" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "barney_mouth" {
+	"mouth_close"
+	"mouth_open"
+	autoplay
+	blend "mouth" 0 90
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "barney_neckturn" {
+	"neck_right"
+	"neck_center"
+	"neck_left"
+	autoplay
+	blend "head_yaw" -60 60
+	blendwidth 3
+	delta
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

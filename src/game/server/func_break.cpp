@@ -21,6 +21,8 @@
 #include "util.h"
 #include "physics_impact_damage.h"
 #include "tier0/icommandline.h"
+#include "cvisibilitymonitor.h"
+#include "ai_basenpc.h"
 
 #ifdef PORTAL
 	#include "portal_shareddefs.h"
@@ -301,6 +303,21 @@ void CBreakable::Spawn( void )
 	}
 
 	CreateVPhysics();
+
+	if (Explodable())
+	{
+		VisibilityMonitor_AddEntity(this, VismonDefaultCallback::flExplosiveVisDist, &VismonDefaultCallback::VismonExplosiveCallback, &VismonDefaultCallback::VismonExplosiveEvaluator);
+	}
+}
+
+void CBreakable::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	if (Explodable())
+	{
+		VisibilityMonitor_AddEntity(this, VismonDefaultCallback::flExplosiveVisDist, &VismonDefaultCallback::VismonExplosiveCallback, &VismonDefaultCallback::VismonExplosiveEvaluator);
+	}
 }
 
 //-----------------------------------------------------------------------------

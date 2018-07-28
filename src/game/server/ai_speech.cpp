@@ -580,6 +580,9 @@ int CAI_Expresser::SpeakRawSentence( const char *pszSentence, float delay, float
 	}
 	else
 	{
+		if (pszSentence[0] == '~')
+			pszSentence++;
+
 		sentenceIndex = SENTENCEG_PlayRndSz( GetOuter()->NetworkProp()->edict(), pszSentence, volume, soundlevel, 0, GetVoicePitch() );
 	}
 
