@@ -1,0 +1,202 @@
+// Choreo version 1
+actor "@sphere"
+{
+  channel "anim"
+  {
+    event sequence "sphere_idle_neutral"
+    {
+      time 0.007576 10.532069
+      param "sphere_idle_neutral"
+    }
+  }
+  channel "gest"
+  {
+    event gesture "sphere_tuberide_short_twirl"
+    {
+      time 0.015152 2.015152
+      param "sphere_tuberide_short_twirl"
+      event_ramp
+      {
+        0.0000 1.0000
+        1.1208 1.0000
+      }
+    }
+    event gesture "sphere_big_laugh"
+    {
+      time 1.159091 2.625758
+      param "sphere_big_laugh"
+      event_ramp
+      {
+        0.0000 0.0000
+        0.0849 0.5786
+        0.1208 0.5929
+        0.6113 0.5000
+        0.7453 0.0000
+      }
+    }
+    event gesture "g_happy_pose"
+    {
+      time 1.310606 6.269697
+      param "g_happy_pose"
+      sequenceduration 0.300000
+    }
+    event gesture "g_emphasis_open"
+    {
+      time 2.143940 2.825758
+      param "g_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_shake_fast"
+    {
+      time 4.560606 5.893940
+      param "g_plug_shake_fast"
+      sequenceduration 1.333333
+    }
+    event gesture "sphere_idle_angry"
+    {
+      time 4.409091 7.075758
+      param "sphere_idle_angry"
+      event_ramp
+      {
+        0.2887 0.7071
+        1.4830 0.6857
+        1.5075 0.6857
+        1.8377 0.0000
+      }
+      sequenceduration 2.666667
+    }
+    event gesture "sphere_low_blink"
+    {
+      time 5.606061 6.672728
+      param "sphere_low_blink"
+      event_ramp
+      {
+        0.2075 1.0000
+        0.7377 1.0000
+      }
+      sequenceduration 0.900000
+    }
+    event gesture "g_emphasis_open"
+    {
+      time 6.242424 6.787879
+      param "g_emphasis_open"
+      event_ramp
+      {
+        0.2491 1.0000
+      }
+      sequenceduration 1.000000
+    }
+    event gesture "sphere_idle_concerned"
+    {
+      time 6.500000 8.272728
+      param "sphere_idle_concerned"
+      event_ramp
+      {
+        0.2925 0.6071
+        1.7727 0.5929
+      }
+      sequenceduration 2.666667
+    }
+    event gesture "g_lower_lid_close"
+    {
+      time 6.613636 8.253031
+      param "g_lower_lid_close"
+      event_ramp
+      {
+        0.1717 0.3071
+        1.6394 0.3214
+      }
+      sequenceduration 0.366667
+    }
+    event gesture "sphere_swagger"
+    {
+      time 7.825758 10.359091
+      param "sphere_swagger"
+      event_ramp
+      {
+        0.4000 1.0000
+        0.5028 1.0000
+        0.7750 0.0000
+      }
+      sequenceduration 2.533333
+    }
+    event gesture "g_happy_pose"
+    {
+      time 8.219697 10.519697
+      param "g_happy_pose"
+      sequenceduration 0.300000
+    }
+    event gesture "g_Explode_All"
+    {
+      time 8.030303 8.496969
+      param "g_Explode_All"
+      event_ramp
+      {
+        0.2763 0.2857
+      }
+      sequenceduration 0.966667
+    }
+    event gesture "g_emphasis_open"
+    {
+      time 9.712122 10.348486
+      param "g_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_lower_lid_close"
+    {
+      time 9.250000 10.525759
+      param "g_lower_lid_close"
+      event_ramp
+      {
+        0.1717 0.1571
+        1.2758 0.1571
+      }
+      sequenceduration 0.366667
+    }
+    event gesture "sphere_eye_pop"
+    {
+      time 8.727272 9.413635
+      param "sphere_eye_pop"
+      event_ramp
+      {
+        0.3725 0.6714
+        0.6725 0.0000
+      }
+      sequenceduration 0.466667
+    }
+    event gesture "g_lid_close_High"
+    {
+      time 3.257576 3.624242
+      param "g_lid_close_center"
+      event_ramp
+      {
+        0.1667 0.7786
+      }
+      sequenceduration 0.366667
+    }
+  }
+  channel "vo"
+  {
+    event speak "sp_a2_tube_ride02"
+    {
+      time 0.100000 10.366123
+      param "sphere03.sp_a2_tube_ride02"
+      param2 "VOL_NORM"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "88"
+  "RampTool" "72"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

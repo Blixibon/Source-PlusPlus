@@ -1,4 +1,3 @@
-
 "UnlitGeneric"
 {
 	"$baseTexture" "vgui/hud/icon_commentary_small"
@@ -7,5 +6,5 @@
 	"$vertexalpha" "1"
 	"$ignorez"     "1"
 	"$no_fullbright" "1"	
-	"$vertextcolor" "1"
+	"$vertexcolor" "1"
 }

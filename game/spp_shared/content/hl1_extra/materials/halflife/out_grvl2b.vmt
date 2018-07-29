@@ -1,0 +1,22 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$detail" "detail\detaildirt001a"
+	"$detailscale" "2.5"
+	"$detailblendfactor" "1"
+	"$detailblendmode" "0"
+	"$basetexture" "halflife/out_grvl2b"
+	"$surfaceprop" "dirt"
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}
+	}
+}

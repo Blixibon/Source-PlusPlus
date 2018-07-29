@@ -1,0 +1,19 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$detail" "detail/detail_noise1_2"
+	"$detailscale" 2.5
+	"$basetexture" "halflife/silo2_wet4c"
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}
+	}
+}

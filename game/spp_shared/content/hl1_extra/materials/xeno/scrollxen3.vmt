@@ -1,0 +1,19 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$basetexture" "xeno/scrollxen3"
+	"$selfillum" 1
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" 2.00
+			"texturescrollangle" 180.00
+		}
+
+	}
+}

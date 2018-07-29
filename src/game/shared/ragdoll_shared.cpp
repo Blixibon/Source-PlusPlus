@@ -1181,7 +1181,6 @@ C_EntityDissolve *DissolveEffect( C_BaseEntity *pTarget, float flTime )
 	{
 		pTarget->AddFlag( FL_DISSOLVING );
 		pDissolve->SetParent( pTarget );
-		pDissolve->OnDataChanged( DATA_UPDATE_CREATED );
 		pDissolve->SetAbsOrigin( pTarget->GetAbsOrigin() );
 
 		pDissolve->m_flStartTime = flTime;
@@ -1197,6 +1196,9 @@ C_EntityDissolve *DissolveEffect( C_BaseEntity *pTarget, float flTime )
 
 		// Let this entity know it needs to delete itself when it's done
 		pDissolve->SetServerLinkState( false );
+		// Do this last
+		pDissolve->OnDataChanged(DATA_UPDATE_CREATED);
+
 		pTarget->SetEffectEntity( pDissolve );
 	}
 

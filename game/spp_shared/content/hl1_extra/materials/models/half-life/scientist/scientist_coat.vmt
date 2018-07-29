@@ -1,4 +1,5 @@
-"VertexLitGeneric"
+"Vertexlitgeneric"
 {
 	"$baseTexture" "models/half-life/scientist/scientist_coat"
+	"$bumpmap" "models/half-life/scientist/scientist_coat_normal"
 }

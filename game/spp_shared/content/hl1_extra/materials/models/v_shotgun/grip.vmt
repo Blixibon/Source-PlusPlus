@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/v_shotgun/grip"
+	"$bumpmap"	"models/v_shotgun/grip_normals"
+}

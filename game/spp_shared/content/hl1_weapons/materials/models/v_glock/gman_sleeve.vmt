@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_glock/gman_sleeve"
+	"$nolod" 1
+}

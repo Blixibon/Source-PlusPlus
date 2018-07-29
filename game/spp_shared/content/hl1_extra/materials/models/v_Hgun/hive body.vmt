@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\v_Hgun/hive body_textured"
+	"$bumpmap"	"models/v_hgun/hive body_n"	
+}

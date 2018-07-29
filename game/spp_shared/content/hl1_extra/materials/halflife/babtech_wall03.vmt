@@ -1,0 +1,27 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$detail" "detail\metal_detail_01"
+	"$detailscale" "2.5"
+	"$detailblendfactor" ".65"
+	"$detailblendmode" "0"
+	"$basetexture" "halflife/babtech_wall03"
+	"$surfaceprop" "metal"
+
+	"$texscale"	2
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"ToggleTexture"
+		{
+			"toggletexturevar" "$basetexture"
+			"toggletextureframenumvar" "$frame"
+		}
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}		
+	}
+}

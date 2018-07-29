@@ -1958,6 +1958,8 @@ void CViewRender::CleanupMain3DView( const CViewSetup &view )
 
 void CViewRender::UpdateCascadedShadow( const CViewSetup &view )
 {
+	static ConVarRef frustrumcull("r_frustumcullworld");
+
 	static CTextureReference s_CascadedShadowDepthTexture;
 	static CTextureReference s_CascadedShadowColorTexture;
 	if ( !s_CascadedShadowDepthTexture.IsValid() )
@@ -1969,6 +1971,9 @@ void CViewRender::UpdateCascadedShadow( const CViewSetup &view )
 	{
 		s_CascadedShadowColorTexture.Init( "_rt_CascadedShadowColor", TEXTURE_GROUP_OTHER );
 	}
+
+	bool bFrustrumCulling = frustrumcull.GetBool();
+	frustrumcull.SetValue(false);
 
 	ITexture *pDepthTexture = s_CascadedShadowDepthTexture;
 	CMatRenderContextPtr pRenderContext( materials );
@@ -2144,6 +2149,8 @@ void CViewRender::UpdateCascadedShadow( const CViewSetup &view )
 	}
 
 	s_iCSMSwapIndex = ( s_iCSMSwapIndex + 1 ) % 2;
+
+	frustrumcull.SetValue(bFrustrumCulling);
 }
 
 //-----------------------------------------------------------------------------

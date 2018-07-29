@@ -1,0 +1,20 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$detail" "detail/dt_wood1"
+	"$detailscale" 2.5
+	"$basetexture" "halflife/fities_dr02"
+	"$surfaceprop" "wood"
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}
+	}
+}

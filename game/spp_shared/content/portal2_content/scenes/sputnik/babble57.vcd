@@ -1,0 +1,113 @@
+// Choreo version 1
+actor "@core01"
+{
+  channel "audio"
+  {
+    event speak "core01.babble57"
+    {
+      time 0.000000 5.250612
+      param "core01.babble57"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "LookAt"
+  {
+  }
+  channel "FaceTo"
+  {
+  }
+  channel "MoveTo"
+  {
+  }
+  channel "Animation"
+  {
+    event sequence "sphere_idle_neutral"
+    {
+      time -0.027778 7.799105
+      param "sphere_idle_neutral"
+      event_ramp
+      {
+        0.0000 1.0000
+        7.5462 1.0000
+      }
+    }
+  }
+  channel "Gesture"
+  {
+    event gesture "sphere_glance_subtle"
+    {
+      time 0.122222 2.638889
+      param "sphere_glance_subtle"
+      sequenceduration 3.100000
+    }
+    event gesture "sphere_glance_subtle"
+    {
+      time 2.629512 5.322221
+      param "sphere_glance_subtle"
+      event_ramp
+      {
+        0.0100 1.0000
+        2.5014 0.9790
+      }
+      sequenceduration 3.100000
+    }
+    event gesture "g_emphasis_open"
+    {
+      time 4.805555 5.338888
+      param "g_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 3.296298 4.296299
+      param "g_plug_emphasis_open"
+      event_ramp
+      {
+        0.4656 1.0000
+      }
+      sequenceduration 1.000000
+    }
+    event gesture "g_lid_close_Center"
+    {
+      time 5.137302 5.503969
+      param "g_lid_close_Center"
+      event_ramp
+      {
+        0.1781 1.0000
+      }
+      sequenceduration 0.366667
+    }
+    event gesture "sphere_idle_concerned"
+    {
+      time 5.133334 7.800001
+      param "sphere_idle_concerned"
+      event_ramp
+      {
+        0.2000 1.0000
+        2.4762 1.0000
+        2.6667 0.0000
+      }
+      sequenceduration 2.666667
+    }
+  }
+  channel "Trigger"
+  {
+  }
+  channel "Eye"
+  {
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "64"
+  "ExpressionTool" "100"
+  "RampTool" "42"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

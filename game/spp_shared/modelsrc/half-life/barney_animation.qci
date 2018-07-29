@@ -1053,3 +1053,5 @@ $Sequence "barney_neckturn" {
 	fadeout 0.2
 	fps 30
 }
+
+$IncludeModel "bshift/barney_animations.mdl"

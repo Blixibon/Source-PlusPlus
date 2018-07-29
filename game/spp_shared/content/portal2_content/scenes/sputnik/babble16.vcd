@@ -1,0 +1,113 @@
+// Choreo version 1
+actor "@core01"
+{
+  channel "audio"
+  {
+    event speak "core01.babble16"
+    {
+      time 0.000000 6.817959
+      param "core01.babble16"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "LookAt"
+  {
+  }
+  channel "FaceTo"
+  {
+  }
+  channel "MoveTo"
+  {
+  }
+  channel "Animation"
+  {
+    event gesture "g_happy_pose"
+    {
+      time 0.023148 6.827778
+      param "g_happy_pose"
+      event_ramp
+      {
+        0.1485 1.0000
+        6.5091 1.0000
+      }
+      sequenceduration 0.300000
+    }
+  }
+  channel "Gesture"
+  {
+    event gesture "sphere_glance_agitated"
+    {
+      time 0.192308 6.017949
+      param "sphere_glance_agitated"
+      event_ramp
+      {
+        0.0000 1.0000
+        3.8023 1.0000
+        3.9811 0.1019
+      }
+      sequenceduration 3.466667
+    }
+    event gesture "g_angry_pose"
+    {
+      time 3.797008 6.837749
+      param "g_angry_pose"
+      sequenceduration 0.300000
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 3.888890 4.425927
+      param "g_plug_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_shake_fast"
+    {
+      time 4.333333 5.666667
+      param "g_plug_shake_fast"
+      sequenceduration 1.333333
+    }
+    event gesture "g_Explode_All"
+    {
+      time 3.916667 4.401852
+      param "g_Explode_All"
+      event_ramp
+      {
+        0.2182 0.1975
+      }
+      sequenceduration 0.966667
+    }
+    event gesture "g_emphasis_open"
+    {
+      time 5.657408 6.375001
+      param "g_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_eye_pupil_small"
+    {
+      time 5.847222 6.833333
+      param "g_eye_pupil_small"
+      event_ramp
+      {
+        0.1242 0.3631
+        0.8909 0.3439
+      }
+      sequenceduration 1.000000
+    }
+  }
+  channel "Trigger"
+  {
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "144"
+  "ExpressionTool" "100"
+  "RampTool" "66"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

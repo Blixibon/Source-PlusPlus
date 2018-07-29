@@ -1,0 +1,49 @@
+// Choreo version 1
+actor "@sphere"
+{
+  channel "anim"
+  {
+  }
+  channel "gest"
+  {
+    event gesture "g_happy_pose"
+    {
+      time 0.236111 1.008334
+      param "g_happy_pose"
+      event_ramp
+      {
+        0.0396 1.0000
+        0.5854 1.0000
+      }
+      sequenceduration 0.300000
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 0.011111 1.011111
+      param "g_plug_emphasis_open"
+    }
+  }
+  channel "vo"
+  {
+    event speak "C:\Program Files\Steam\steamapps\badglock440\garrysmod\garrysmod\sound\vo\wheatley\fgb_hello01.wav"
+    {
+      time 0.100000 0.544082
+      param "sphere03.fgb_hello01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "240"
+  "RampTool" "106"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

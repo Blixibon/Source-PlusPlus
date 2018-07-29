@@ -1,0 +1,18 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+
+	"$basetexture" "xeno/c4a1a_swmpwl3"
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}
+	}
+}

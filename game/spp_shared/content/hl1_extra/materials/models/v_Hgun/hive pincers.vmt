@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture"	"models\v_Hgun/hive pincers_textured"
+	"$bumpmap"	"models/v_hgun/hive pincers_n"
+}

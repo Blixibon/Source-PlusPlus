@@ -1,0 +1,97 @@
+// Choreo version 1
+actor "@core01"
+{
+  channel "audio"
+  {
+    event speak "core01.babble62"
+    {
+      time 0.000000 2.664490
+      param "core01.babble62"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "LookAt"
+  {
+  }
+  channel "FaceTo"
+  {
+  }
+  channel "MoveTo"
+  {
+  }
+  channel "Animation"
+  {
+    event gesture "g_happy_pose"
+    {
+      time 0.026666 2.633333
+      param "g_happy_pose"
+      event_ramp
+      {
+        0.1515 1.0000
+        2.4273 1.0000
+      }
+      sequenceduration 0.300000
+    }
+  }
+  channel "Gesture"
+  {
+    event gesture "g_plug_look_N"
+    {
+      time 0.080000 2.640000
+      param "g_plug_look_N"
+      sequenceduration 0.366667
+    }
+    event gesture "g_plug_sceptical_pose"
+    {
+      time 1.633333 2.633333
+      param "g_plug_sceptical_pose"
+      event_ramp
+      {
+        0.1455 0.1899
+        0.6000 0.2152
+        0.7455 0.4747
+        0.9364 0.4873
+      }
+      sequenceduration 0.300000
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 2.113334 2.640000
+      param "g_plug_emphasis_open"
+      event_ramp
+      {
+        0.2636 0.5443
+      }
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_shake_fast"
+    {
+      time 1.240000 2.573333
+      param "g_plug_shake_fast"
+      event_ramp
+      {
+        0.0000 1.0000
+        0.7273 1.0000
+        0.8424 0.0000
+      }
+      sequenceduration 1.333333
+    }
+  }
+  channel "Trigger"
+  {
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "ExpressionTool" "100"
+  "RampTool" "66"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_crowbar/gman_sleeve"
+	"$nolod" 1
+}

@@ -1,0 +1,257 @@
+
+$PoseParameter "aim_pitch" -50 50 loop 0
+$PoseParameter "mouth" 0 90 loop 0
+$PoseParameter "head_yaw" -90 90 loop 0
+
+$IKChain "lfoot" "Bip01 L Foot" knee 0.716 0.698 0
+$IKChain "rfoot" "Bip01 R Foot" knee 0.715 0.699 0
+
+$Sequence "range_fire" {
+	"barney_anims\range_fire.smd"
+	{ event 2 1 "" }
+	{ event AE_NPC_MUZZLEFLASH 9 "PISTOL gun" }
+	{ event 3 9 "" }
+	{ event AE_NPC_MUZZLEFLASH 31 "PISTOL gun" }
+	{ event 3 31 "" }
+	{ event AE_NPC_MUZZLEFLASH 53 "PISTOL gun" }
+	{ event 3 53 "" }
+	{ event AE_NPC_MUZZLEFLASH 75 "PISTOL gun" }
+	{ event 3 75 "" }
+	{ event AE_NPC_MUZZLEFLASH 97 "PISTOL gun" }
+	{ event 3 97 "" }
+	{ event AE_NPC_MUZZLEFLASH 119 "PISTOL gun" }
+	{ event 3 119 "" }
+	{ event 1003 150 "end_range_fire" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "range_pushbutton" {
+	"barney_anims\range_pushbutton.smd"
+	{ event 2 1 "" }
+	{ event 1003 20 "rangebutton" }
+	{ event 1003 43 "end_range_pushbutton" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "range_reload" {
+	"barney_anims\range_reload.smd"
+	{ event 2 1 "" }
+	{ event 1003 41 "end_range_reload" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "adjust_armor" {
+	"barney_anims\adjust_armor.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "wash_hands" {
+	"barney_anims\wash_hands.smd"
+	{ event 1003 12 "faucet_on" }
+	{ event 1003 67 "faucet_off" }
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dry_hands" {
+	"barney_anims\dry_hands.smd"
+	{ event 1003 12 "blower_on" }
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eaten" {
+	"barney_anims\eaten.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 21
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "eaten_loop" {
+	"barney_anims\eaten_loop.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	loop
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "tugged" {
+	"barney_anims\tugged.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep range . . 137 138
+	ikrule "rfoot" footstep range . . 137 138
+}
+
+$Sequence "tugged_idle" {
+	"barney_anims\tugged_idle.smd"
+	{ event 1000 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "block_gate" {
+	"barney_anims\block_gate.smd"
+	{ event 1000 315 "" }
+	{ event 1003 315 "cage_door_master_relay" }
+	{ event 1003 292 "barney_dies_seq_relay_ct" }
+	{ event 1008 315 "common/bodydrop3.WAV" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep range . . 308 314
+	ikrule "rfoot" footstep range 255 260 308 310
+}
+
+$Sequence "block_gate_idle" {
+	"barney_anims\block_gate_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" release
+}
+
+$Sequence "gatedie" {
+	"barney_anims\gatedie.smd"
+	{ event 2001 5 "" }
+	{ event 1000 0 "" }
+	{ event 1003 1 "cage_door_master_relay" }
+	fadein 0.2
+	fadeout 0.2
+	fps 34
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "tram_dive" {
+	"barney_anims\tram_dive.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 27
+	ikrule "lfoot" footstep range . . 38 40
+	ikrule "rfoot" footstep range . . 38 39
+}
+
+$Sequence "tram_slouch" {
+	"barney_anims\tram_slouch.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "tram_slouch_fly" {
+	"barney_anims\tram_slouch_fly.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "playgame1" {
+	"barney_anims\playgame1.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "playgame2" {
+	"barney_anims\playgame2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "raise_flag" {
+	"barney_anims\raise_flag.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eating" {
+	"barney_anims\eating.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 13
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "console_sitting" {
+	"barney_anims\console_sitting.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 25
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "console_stand" {
+	"barney_anims\console_stand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 27
+	walkframe 11 LX
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "adjust_idle" {
+	"barney_anims\adjust_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 27
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}

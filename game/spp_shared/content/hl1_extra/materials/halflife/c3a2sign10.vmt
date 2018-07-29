@@ -1,0 +1,29 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmapPlusMaskedSphericalEnvMap
+	"$detail" "detail/detail_noise1"
+	"$detailscale" 10
+	"$basetexture" "halflife/c3a2sign10"
+	"$envmapsphere" 1
+	"$envmap" "environment maps/envmap001a"
+	"$envmapmask" "halflife/c3a2sign10r"
+	"$surfaceprop" "metal"
+
+
+
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+    "Proxies"
+     {
+
+            "TextureTransform"
+            {
+		   "scaleVar"	"$texscale"
+		   "translateVar" "$baseTextureOffset"
+                   "resultVar"    "$baseTextureTransform"
+            }
+     }
+}
+
+

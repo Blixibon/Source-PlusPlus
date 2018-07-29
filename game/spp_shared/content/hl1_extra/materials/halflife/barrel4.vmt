@@ -1,0 +1,24 @@
+"LightmappedGeneric"
+{
+	"$detail" "detail\metal_detail_01"
+	"$detailscale" "2.5"
+	"$detailblendfactor" ".65"
+	"$detailblendmode" "0"
+	"$basetexture" "halflife/barrel4"
+	"$envmapsphere" 1
+	"$envmap" "environment maps/envmap001a"
+	"$envmapmask" "halflife/barrel4r"
+	"$surfaceprop" "metal_barrellight_hl"
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}
+	}
+}

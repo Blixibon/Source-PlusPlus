@@ -1,0 +1,10 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmap
+	"$detail" "detail\metal_detail_01"
+	"$detailscale" "2.5"
+	"$detailblendfactor" ".65"
+	"$detailblendmode" "0"
+	"$basetexture" "halflife/-1silo2_p2b"
+	"$surfaceprop" "metal"
+}

@@ -423,7 +423,7 @@ namespace VismonDefaultCallback
 
 				int iPlrRelat = g_pGameRules->PlayerRelationship(pViewingPlayer, pOtherPlayer);
 
-				if (iPlrRelat == GR_TEAMMATE || iPlrRelat == GR_ALLY)
+				if (iPlrRelat == GR_TEAMMATE || iPlrRelat == GR_ALLY || iPlrRelat == GR_NEUTRAL)
 					continue;
 
 				if (pOtherPlayer->GetAbsOrigin().DistToSqr(pVisibleEntity->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))

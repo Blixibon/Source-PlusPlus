@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models/v_crossbow/rubberglovechrome"
+	"$envmapsphere"			0
+	"$envmapmode" 0
+
+	// requred to see specular on dx6+7 at all
+	"$multipass" 1
+}

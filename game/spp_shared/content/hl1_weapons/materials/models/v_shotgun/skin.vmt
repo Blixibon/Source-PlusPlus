@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_shotgun/skin"
+	"$nolod" 1
+}

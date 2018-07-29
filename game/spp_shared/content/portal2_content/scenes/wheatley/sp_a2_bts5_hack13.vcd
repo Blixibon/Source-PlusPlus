@@ -1,0 +1,132 @@
+// Choreo version 1
+actor "@sphere"
+{
+  channel "anim"
+  {
+    event sequence "sphere_idle_neutral"
+    {
+      time -0.000000 11.165244
+      param "sphere_idle_neutral"
+    }
+  }
+  channel "gest"
+  {
+    event gesture "g_plug_angry_pose"
+    {
+      time 0.140350 4.098246
+      param "g_plug_angry_pose"
+      sequenceduration 0.300000
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 0.236843 1.236843
+      param "g_plug_emphasis_open"
+    }
+    event gesture "g_plug_shake_fast"
+    {
+      time 1.587719 2.921052
+      param "g_plug_shake_fast"
+      event_ramp
+      {
+        0.0000 1.0000
+        0.6150 1.0000
+        0.7600 0.0000
+      }
+      sequenceduration 1.333333
+    }
+    event gesture "sphere_annoyed_eye_roll"
+    {
+      time 3.859649 5.526315
+      param "sphere_annoyed_eye_roll"
+      event_ramp
+      {
+        0.0000 0.5187
+        1.3150 0.5313
+        1.3900 0.5250
+        1.6667 0.0000
+      }
+      sequenceduration 1.666667
+    }
+    event gesture "sphere_idle_happy"
+    {
+      time 3.701755 8.278948
+      param "sphere_idle_happy"
+      event_ramp
+      {
+        0.4850 1.0000
+        4.5772 1.0000
+      }
+      sequenceduration 3.033333
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 3.456140 4.228070
+      param "g_plug_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_nod_fast"
+    {
+      time 6.307017 8.073685
+      param "g_plug_nod_fast"
+      sequenceduration 1.766667
+    }
+    event gesture "sphere_low_blink"
+    {
+      time 7.649123 8.549123
+      param "sphere_low_blink"
+      event_ramp
+      {
+        0.1700 1.0000
+        0.7500 1.0000
+        0.9000 0.0000
+      }
+      sequenceduration 0.900000
+    }
+    event gesture "g_plug_shake_fast"
+    {
+      time 8.394737 9.728069
+      param "g_plug_shake_fast"
+      event_ramp
+      {
+        0.0000 0.0000
+        0.1350 1.0000
+        0.6150 1.0000
+        0.7600 0.0000
+      }
+      sequenceduration 1.333333
+    }
+    event gesture "g_Explode_All"
+    {
+      time 3.877193 5.264913
+      param "g_Explode_All"
+      event_ramp
+      {
+        0.5950 0.1500
+      }
+      sequenceduration 0.966667
+    }
+  }
+  channel "vo"
+  {
+    event speak "sp_a2_bts5_hack13"
+    {
+      time 0.100000 9.190613
+      param "sphere03.sp_a2_bts5_hack13"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "76"
+  "RampTool" "40"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

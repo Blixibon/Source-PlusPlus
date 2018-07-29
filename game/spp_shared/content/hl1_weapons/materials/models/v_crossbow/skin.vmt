@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_crossbow/skin"
+	"$nolod" 1
+}

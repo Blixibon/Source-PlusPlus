@@ -1,0 +1,133 @@
+// Choreo version 1
+actor "@core01"
+{
+  channel "audio"
+  {
+    event speak "core01.babble61"
+    {
+      time 0.000000 1.436735
+      param "core01.babble61"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "LookAt"
+  {
+  }
+  channel "FaceTo"
+  {
+  }
+  channel "MoveTo"
+  {
+  }
+  channel "Animation"
+  {
+    event gesture "g_happy_pose"
+    {
+      time 0.041666 2.175000
+      param "g_happy_pose"
+      event_ramp
+      {
+        0.2394 1.0000
+        1.3576 1.0000
+      }
+      sequenceduration 0.300000
+    }
+  }
+  channel "Gesture"
+  {
+    event gesture "g_emphasis_open"
+    {
+      time 0.024999 0.516666
+      param "g_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_look_NE"
+    {
+      time 0.116666 1.175000
+      param "g_plug_look_NE"
+      sequenceduration 0.366667
+    }
+    event gesture "g_plug_scared_pose"
+    {
+      time 0.733333 1.441667
+      param "g_plug_scared_pose"
+      event_ramp
+      {
+        0.2576 0.5633
+        0.7083 0.5380
+      }
+      sequenceduration 0.300000
+    }
+    event gesture "g_plug_shake_fast"
+    {
+      time 0.908333 2.241667
+      param "g_plug_shake_fast"
+      event_ramp
+      {
+        0.0000 1.0000
+        0.5394 1.0000
+        0.6394 0.0000
+      }
+      sequenceduration 1.333333
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 0.675000 1.133333
+      param "g_plug_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_plug_look_s"
+    {
+      time 1.058333 1.725000
+      param "g_plug_look_s"
+      event_ramp
+      {
+        0.0000 1.0000
+        0.5030 1.0000
+      }
+      sequenceduration 0.366667
+    }
+    event gesture "g_plug_look_w"
+    {
+      time 1.158333 1.741667
+      param "g_plug_look_w"
+      event_ramp
+      {
+        0.1333 1.0000
+        0.4485 1.0000
+        0.5833 0.0000
+      }
+      sequenceduration 0.366667
+    }
+    event gesture "g_Explode_All"
+    {
+      time 0.800000 1.800000
+      param "g_Explode_All"
+      event_ramp
+      {
+        0.2091 0.1013
+        0.3212 0.0000
+        0.4606 0.1392
+        0.8652 0.1582
+      }
+      sequenceduration 0.966667
+    }
+  }
+  channel "Trigger"
+  {
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "RampTool" "66"
+  "ExpressionTool" "100"
+  "CChoreoView" "80"
+}
+fps 60
+snap off
+ignorePhonemes off

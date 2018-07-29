@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_crowbar/hand"
+	"$nolod" 1
+}

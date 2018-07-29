@@ -1,0 +1,45 @@
+// Choreo version 1
+actor "@core03"
+{
+  channel "audio"
+  {
+    event speak "core02.fact04"
+    {
+      time 0.000000 2.533878
+      param "core02.fact04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "LookAt"
+  {
+  }
+  channel "FaceTo"
+  {
+  }
+  channel "MoveTo"
+  {
+  }
+  channel "Animation"
+  {
+  }
+  channel "Gesture"
+  {
+  }
+  channel "Trigger"
+  {
+  }
+}
+
+scalesettings
+{
+  "SceneRampTool" "100"
+  "GestureTool" "100"
+  "RampTool" "46"
+  "ExpressionTool" "100"
+  "CChoreoView" "68"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -1,0 +1,61 @@
+// Choreo version 1
+actor "@sphere"
+{
+  channel "anim"
+  {
+    event sequence "sphere_idle_neutral"
+    {
+      time -0.000000 6.716413
+      param "sphere_idle_neutral"
+    }
+  }
+  channel "gest"
+  {
+    event gesture "sphere_react_portal_happy"
+    {
+      time 0.027778 2.357407
+      param "sphere_react_portal_happy"
+      event_ramp
+      {
+        0.3264 1.0000
+        2.0083 1.0000
+      }
+      sequenceduration 1.866667
+    }
+    event gesture "g_plug_emphasis_open"
+    {
+      time 1.009259 1.638889
+      param "g_emphasis_open"
+      sequenceduration 1.000000
+    }
+    event gesture "g_happy_pose"
+    {
+      time 2.074074 6.744444
+      param "g_happy_pose"
+      sequenceduration 0.300000
+    }
+  }
+  channel "vo"
+  {
+    event speak "sp_a2_bts6_tuberide01"
+    {
+      time 0.368519 1.831376
+      param "sphere03.sp_a2_bts6_tuberide01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "72"
+  "RampTool" "106"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

@@ -1,0 +1,55 @@
+// Choreo version 1
+event stoppoint "end"
+{
+  time 2.250001 -1.000000
+  param "noaction"
+}
+actor "@sphere"
+{
+  channel "audio"
+  {
+    event speak "sphere03.sp_a2_wheatley_ows12"
+    {
+      time 0.000000 0.574694
+      param "sphere03.sp_a2_wheatley_ows12"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+  channel "LookAt"
+  {
+  }
+  channel "FaceTo"
+  {
+  }
+  channel "MoveTo"
+  {
+  }
+  channel "Animation"
+  {
+  }
+  channel "Gesture"
+  {
+    event gesture "sphere_damaged_twitch"
+    {
+      time 0.031250 0.531250
+      param "g_damaged_twitch"
+    }
+  }
+  channel "Trigger"
+  {
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "64"
+  "ExpressionTool" "100"
+  "RampTool" "66"
+  "GestureTool" "100"
+  "SceneRampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

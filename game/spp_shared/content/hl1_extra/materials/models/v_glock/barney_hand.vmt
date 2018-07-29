@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_glock/barney_hand"
+	"$nolod" 1
+}

@@ -1,4 +1,23 @@
-"VertexLitGeneric"
+"Vertexlitgeneric"
 {
-	"$baseTexture" "models/half-life/barney/barney_helmet"
+	"$baseTexture" "models/half-life/barney/barney_helmet3"
+	"$bumpmap" "models/half-life/barney/barney_helmet3_normal"
+	"$surfaceprop" "metal"
+	"$model" 1
+	"$phong" "1"
+	"$phongexponent" "20"
+	"$phongboost" ".2"
+	"$phongfresnelranges"	"[.15 5 1]"
+	"$phongtint" "[ .70 .70 .90]"
+//	"$basealphanormalmapenvmapmask" "1"
+
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .01 .01 .02]"
+	"$envmapconstrast" "10"
+	"$envmapsaturation" ".2"
+
+	// Rim lighting parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "5"
+	"$rimlightboost" ".5"
 }

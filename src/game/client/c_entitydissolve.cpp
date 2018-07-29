@@ -552,7 +552,7 @@ void C_EntityDissolve::ClientThink( void )
 
 		m_hEffect->SetControlPoint(1, tr.endpos);
 
-		if (GetRenderColor().a == 0)
+		if (IsServerEntity() && GetRenderColor().a == 0)
 		{
 			ParticleProp()->StopEmission(m_hEffect);
 			m_hEffect = NULL;

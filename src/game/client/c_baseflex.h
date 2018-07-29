@@ -135,6 +135,7 @@ public:
 	virtual			~C_BaseFlex();
 
 	virtual void Spawn();
+	virtual void Simulate();
 
 	virtual void InitPhonemeMappings();
 

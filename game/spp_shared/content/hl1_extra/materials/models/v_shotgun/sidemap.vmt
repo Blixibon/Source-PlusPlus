@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/v_shotgun/sidemap"
+	"$bumpmap"	"models/v_shotgun/sidemap_normals"
+}

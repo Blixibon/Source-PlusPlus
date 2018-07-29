@@ -149,6 +149,8 @@ C_BaseFlex::C_BaseFlex() :
 	AddVar( &m_vecShift, &m_iv_vecShift, LATCH_ANIMATION_VAR );
 //#endif
 
+
+	SetDefLessFunc(m_vflPhonemeWeights);
 	m_vflPhonemeWeights.EnsureCapacity(NumPhonemes());
 }
 
@@ -718,6 +720,17 @@ void C_BaseFlex::ComputeBlendedSetting( Emphasized_Phoneme *classes, float empha
 	{
 		// Assume 0.5 (neutral) becomes a scaling of 1.0f
 		classes[ PHONEME_CLASS_NORMAL ].amount = 2.0f * emphasis_intensity;
+	}
+}
+
+void C_BaseFlex::Simulate()
+{
+	BaseClass::Simulate();
+
+	if (GetModelPtr() && GetModelPtr()->numflexcontrollers() < 1 && GetHL1MouthOpenPct() < FLT_EPSILON)
+	{
+		// Do this manually for m_vflPhonemeWeights
+		ProcessVisemes(m_PhonemeClasses);
 	}
 }
 

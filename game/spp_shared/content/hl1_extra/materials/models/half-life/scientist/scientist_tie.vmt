@@ -1,4 +1,6 @@
-"VertexLitGeneric"
+"Vertexlitgeneric"
 {
 	"$baseTexture" "models/half-life/scientist/scientist_tie"
+	"$translucent" 1
+	"$alphatest" 1
 }

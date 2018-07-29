@@ -1,0 +1,43 @@
+"Refract"
+{
+ 	"$model" 1
+
+	"Refract_DX60"
+	{
+		"$fallbackmaterial" "halflife/+2waterfold"
+	}
+ 	"$refractamount" ".2"
+ 	"$bluramount" "1"
+	"$REFRACTTINT" "{120 120 64}"
+	"$scale" "[4 2]"
+	"$dudvmap" "dev/water_dudv"
+ 	"$normalmap" "dev/water_normal"
+ 	"$surfaceprop" "water"
+	"$dudvframe" "0"
+	"$bumpframe" "0"
+//	"$nocull" 1
+	"Proxies"
+	{
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$dudvmap"
+			"animatedtextureframenumvar" "$dudvframe"
+			"animatedtextureframerate" 30.00
+		}
+
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$normalmap"
+			"animatedtextureframenumvar" "$bumpframe"
+			"animatedtextureframerate" 30.00
+		}
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$bumptransform"
+			"texturescrollrate" 3.00
+			"texturescrollangle" 270.00
+		}
+
+	}
+}

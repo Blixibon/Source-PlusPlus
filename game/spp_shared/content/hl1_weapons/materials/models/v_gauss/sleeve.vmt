@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_gauss/sleeve"
+	"$nolod" 1
+}

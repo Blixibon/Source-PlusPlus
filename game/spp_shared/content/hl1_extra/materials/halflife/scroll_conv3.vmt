@@ -1,0 +1,14 @@
+"UnlitGeneric"
+{
+	// Original shader: basetexture
+	"$detail" "detail/dt_fabric2"
+	"$detailscale" 3.0
+	"$basetexture" "halflife/scroll_conv3"
+	"Proxies"
+	{
+		"ConveyorScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+		}
+	}
+}

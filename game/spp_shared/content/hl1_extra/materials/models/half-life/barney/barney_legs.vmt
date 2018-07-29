@@ -1,4 +1,5 @@
 "VertexLitGeneric"
 {
 	"$baseTexture" "models/half-life/barney/barney_legs"
+	"$bumpmap"		"models/half-life/barney/barney_legs_normal"
 }

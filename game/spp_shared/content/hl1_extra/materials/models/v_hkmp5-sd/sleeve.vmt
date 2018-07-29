@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/v_hkmp5-sd/sleeve"
+	"$nolod" 1
+}

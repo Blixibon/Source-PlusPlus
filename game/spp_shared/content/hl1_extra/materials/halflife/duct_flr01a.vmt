@@ -1,0 +1,27 @@
+"LightmappedGeneric"
+{
+	// Original shader: BaseTimesLightmapPlusMaskedSphericalEnvMap
+	"$detail" "detail\metal_detail_01"
+	"$detailscale" "2.5"
+	"$detailblendfactor" ".65"
+	"$detailblendmode" "0"
+	"$basetexture" "halflife/duct_flr01a"
+	"$envmap" "environment maps/ductenv1"
+	"$surfaceprop" "metalvent"
+	"$basealphaenvmapmask" "1"
+	"$envmapcontrast" 2
+	"$envmaptint" "[ .2 .2 .2 ]"
+
+	"$texscale"	4
+	"$baseTextureOffset" "[0.5 0.5]"
+	"Proxies"
+	{
+		"TextureTransform"
+		{
+			"translateVar" "$baseTextureOffset"
+			"scaleVar"     "$texscale"
+			"resultVar"    "$baseTextureTransform"
+		}
+
+	}
+}

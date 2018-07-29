@@ -1,0 +1,18 @@
+"UnlitGeneric"
+{
+	// Original shader: BaseTexture
+	"$detail" "detail/scrollxen2"
+//	"$detail2" "detail/scrollxen2"
+
+	"$detailscale" 1.0
+	"$basetexture" "xeno/scrollxen2"
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" 2.00
+			"texturescrollangle" 90.00
+		}
+	}
+}
