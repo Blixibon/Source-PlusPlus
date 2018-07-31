@@ -14,4 +14,15 @@
 		}
 	}
 	
+	"|content_path|"
+	{
+		"head"	"1"
+		"lostcoast_extra"
+		{
+			"path_id"
+			{
+				"scenes"	"1"
+			}
+		}
+	}
 }

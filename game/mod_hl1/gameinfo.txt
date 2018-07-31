@@ -30,6 +30,15 @@
 	
 	mount
 	{
+		"|content_path|"
+		{
+			"head"	"1"
+			"hl1_weapons"
+			{
+			
+			}
+		}
+	
 		|gameinfo_parent|
 		{
 			head 1

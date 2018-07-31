@@ -245,10 +245,10 @@ void CNPC_CombineS::OnChangeActivity( Activity eNewActivity )
 #if HL2_EPISODIC
 	// Give each trooper a varied look for his march. Done here because if you do it earlier (eg Spawn, StartTask), the
 	// pose param gets overwritten.
-	if (m_iUseMarch)
+	/*if (m_iUseMarch)
 	{
 		SetPoseParameter("casual", RandomFloat());
-	}
+	}*/
 #endif
 }
 
@@ -413,7 +413,7 @@ Activity CNPC_CombineS::NPC_TranslateActivity( Activity eNewActivity )
 	// If the special ep2_outland_05 "use march" flag is set, use the more casual marching anim.
 	if ( m_iUseMarch && eNewActivity == ACT_WALK )
 	{
-		eNewActivity = ACT_WALK_MARCH;
+		eNewActivity = ACT_WALK_EASY;
 	}
 
 	return BaseClass::NPC_TranslateActivity( eNewActivity );

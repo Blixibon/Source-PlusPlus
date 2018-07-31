@@ -813,10 +813,9 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 
 	CChoreoScene *pScene;
 	void *pBuffer = NULL;
-	size_t bufsize = scenefilecache->GetSceneBufferSize( loadfile );
-	if (bufsize <= 0)
+
 	{
-		int fileSize = filesystem->ReadFileEx(loadfile, "SCENES", &pBuffer, true);
+		int fileSize = filesystem->ReadFileEx(loadfile, "SCENES", &pBuffer, true, true);
 
 		if (fileSize)
 		{
@@ -826,39 +825,16 @@ CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 		else
 			return NULL;
 	}
-	else
+	
+	if (pScene)
 	{
-		pBuffer = new char[bufsize];
-		if (!scenefilecache->GetSceneData(filename, (byte *)pBuffer, bufsize))
-		{
-			delete[] pBuffer;
-			return NULL;
-		}
-
-		if (IsBufferBinaryVCD((char *)pBuffer, bufsize))
-		{
-			pScene = new CChoreoScene(this);
-			CUtlBuffer buf(pBuffer, bufsize, CUtlBuffer::READ_ONLY);
-			if (!pScene->RestoreFromBinaryBuffer(buf, loadfile, &g_ChoreoStringPool))
-			{
-				Warning("Unable to restore binary scene '%s'\n", loadfile);
-				delete pScene;
-				pScene = NULL;
-			}
-			else
-			{
-				pScene->SetPrintFunc(Scene_Printf);
-				pScene->SetEventCallbackInterface(this);
-			}
-		}
-		else
-		{
-			g_TokenProcessor.SetBuffer((char *)pBuffer);
-			pScene = ChoreoLoadScene(loadfile, this, &g_TokenProcessor, Scene_Printf);
-		}
+		pScene->SetPrintFunc(Scene_Printf);
+		pScene->SetEventCallbackInterface(this);
 	}
 
-	delete[] pBuffer;
+	
+	filesystem->FreeOptimalReadBuffer(pBuffer);
+
 	return pScene;
 }
 

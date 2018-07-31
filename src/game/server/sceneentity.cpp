@@ -33,6 +33,7 @@
 #include "SceneCache.h"
 #include "scripted.h"
 #include "env_debughistory.h"
+#include "UtlStringMap.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -195,6 +196,78 @@ void LocalScene_Printf( const char *pFormat, ... )
 	ADD_DEBUG_HISTORY( HISTORY_SCENE_PRINT, UTIL_VarArgs( "(%0.2f) %s", gpGlobals->curtime, msg ) );
 }
 #endif
+
+class CSceneFileCache : public CAutoGameSystem
+{
+public:
+	CSceneFileCache() : CAutoGameSystem("CSceneFileCache")
+	{}
+
+	void LevelShutdownPostEntity()
+	{
+		m_Scenes.PurgeAndDeleteElements();
+	}
+
+	// Add a choreo scene to the cache.
+	// The cache now owns the scene and may delete it
+	int AddScene(CChoreoScene *, const char *);
+
+	CChoreoScene *GetScene(const char *);
+	CChoreoScene *GetScene(int);
+
+	int			Find(const char *);
+
+	bool		IsValid(int id)
+	{
+		return id != m_Scenes.InvalidIndex();
+	}
+
+protected:
+	CUtlStringMap<CChoreoScene *> m_Scenes;
+};
+
+int CSceneFileCache::AddScene(CChoreoScene *pScene, const char *pchFileName)
+{
+	if (m_Scenes.Defined(pchFileName))
+	{
+		delete pScene;
+		return m_Scenes.InvalidIndex();
+	}
+
+	m_Scenes[pchFileName] = pScene;
+
+	return m_Scenes.GetNumStrings() - 1;
+}
+
+int CSceneFileCache::Find(const char *pchScene)
+{
+	return m_Scenes.Find(pchScene);
+}
+
+CChoreoScene *CSceneFileCache::GetScene(const char *pchScene)
+{
+	UtlSymId_t id = Find(pchScene);
+
+	return GetScene(id);
+}
+
+CChoreoScene *CSceneFileCache::GetScene(int iIndex)
+{
+	if (!IsValid(iIndex))
+		return nullptr;
+
+	const CChoreoScene *pStatic = m_Scenes[iIndex];
+	if (!pStatic)
+		return nullptr;
+
+	CChoreoScene *pScene = new CChoreoScene(nullptr);
+
+	*pScene = *pStatic;
+
+	return pScene;
+}
+
+static CSceneFileCache g_SceneFileCache;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -395,6 +468,7 @@ public:
 
 	// Scene load/unload
 	static CChoreoScene			*LoadScene( const char *filename, IChoreoEventCallback *pCallback );
+	static void				PrecacheScene(CChoreoScene *scene);
 
 	void					UnloadScene( void );
 
@@ -543,7 +617,6 @@ private:
 	void					ClearSchedules( CChoreoScene *scene );
 
 	float					GetSoundSystemLatency( void );
-	void					PrecacheScene( CChoreoScene *scene );
 
 	CChoreoScene			*GenerateSceneForSound( CBaseFlex *pFlexActor, const char *soundname );
 
@@ -920,7 +993,7 @@ float CSceneEntity::GetSoundSystemLatency( void )
 // Purpose: 
 // Input  : *scene - 
 //-----------------------------------------------------------------------------
-void CSceneEntity::PrecacheScene( CChoreoScene *scene )
+void CSceneEntity::PrecacheScene( CChoreoScene *scene)
 {
 	Assert( scene );
 
@@ -962,7 +1035,7 @@ void CSceneEntity::PrecacheScene( CChoreoScene *scene )
 					CChoreoScene *subscene = event->GetSubScene();
 					if ( !subscene )
 					{
-						subscene = LoadScene( event->GetParameters(), this );
+						subscene = LoadScene( event->GetParameters(), nullptr);
 						subscene->SetSubScene( true );
 						event->SetSubScene( subscene );
 
@@ -3309,7 +3382,7 @@ bool CSceneEntity::ShouldNetwork() const
 
 CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallback *pCallback )
 {
-	DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
+	//DevMsg( 2, "Blocking load of scene from '%s'\n", filename );
 
 	CChoreoScene *pScene = NULL;
 	char loadfile[MAX_PATH];
@@ -3317,44 +3390,36 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
 	Q_FixSlashes( loadfile );
 
-	// binary compiled vcd
-	void *pBuffer;
-	int fileSize;
-	if ( !CopySceneFileIntoMemory( loadfile, &pBuffer, &fileSize ) )
+	void *pBuffer = 0;
+
+	int iIndex = g_SceneFileCache.Find(loadfile);
+	if (!g_SceneFileCache.IsValid(iIndex))
 	{
+
 		int fileSize = filesystem->ReadFileEx(loadfile, "SCENES", &pBuffer, true);
 		if (fileSize)
 		{
 			g_TokenProcessor.SetBuffer((char*)pBuffer);
-			pScene = ChoreoLoadScene(loadfile, pCallback, &g_TokenProcessor, LocalScene_Printf);
+			CChoreoScene *pCacheScene = ChoreoLoadScene(loadfile, nullptr, &g_TokenProcessor, nullptr);
+
+			iIndex = g_SceneFileCache.AddScene(pCacheScene, loadfile);
 		}
 		else
 		{
 			MissingSceneWarning(loadfile);
 			return NULL;
 		}
+
+		FreeSceneFileMemory(pBuffer);
 	}
 
-	if (!pScene)
+	pScene = g_SceneFileCache.GetScene(iIndex);
+
+	if (pScene)
 	{
-		pScene = new CChoreoScene(NULL);
-		CUtlBuffer buf(pBuffer, fileSize, CUtlBuffer::READ_ONLY);
-		if (!pScene->RestoreFromBinaryBuffer(buf, loadfile, &g_ChoreoStringPool))
-		{
-			Warning("CSceneEntity::LoadScene: Unable to load binary scene '%s'\n", loadfile);
-			delete pScene;
-			pScene = NULL;
-		}
-		else
-		{
-			pScene->SetPrintFunc(LocalScene_Printf);
-			pScene->SetEventCallbackInterface(pCallback);
-		}
+		pScene->SetPrintFunc(LocalScene_Printf);
+		pScene->SetEventCallbackInterface(pCallback);
 	}
-
-	FreeSceneFileMemory( pBuffer );
-
-	
 
 	return pScene;
 }
@@ -4576,15 +4641,16 @@ void StopScriptedScene( CBaseFlex *pActor, EHANDLE hSceneEnt )
 //-----------------------------------------------------------------------------
 float GetSceneDuration( char const *pszScene )
 {
-	unsigned int msecs = 0;
+	float flSecs = 0.0f;
 
-	SceneCachedData_t cachedData;
-	if ( scenefilecache->GetSceneCachedData( pszScene, &cachedData ) )
+	CChoreoScene *pScene = CSceneEntity::LoadScene(pszScene, nullptr);
+	if (pScene)
 	{
-		msecs = cachedData.msecs;
+		flSecs = pScene->FindStopTime();
+		delete pScene;
 	}
 
-	return (float)msecs * 0.001f;
+	return flSecs;
 }
 
 //-----------------------------------------------------------------------------
@@ -4594,12 +4660,23 @@ float GetSceneDuration( char const *pszScene )
 //-----------------------------------------------------------------------------
 int GetSceneSpeechCount( char const *pszScene )
 {
-	SceneCachedData_t cachedData;
-	if ( scenefilecache->GetSceneCachedData( pszScene, &cachedData ) )
+	int iNum = 0;
+
+	CChoreoScene *pScene = CSceneEntity::LoadScene(pszScene, nullptr);
+	if (pScene)
 	{
-		return cachedData.numSounds;
+		for (int i = 0; i < pScene->GetNumEvents(); i++)
+		{
+			CChoreoEvent *pEvent = pScene->GetEvent(i);
+
+			if (pEvent->GetType() == CChoreoEvent::SPEAK)
+				iNum++;
+		}
+
+		delete pScene;
 	}
-	return 0;
+
+	return iNum;
 }
 
 //-----------------------------------------------------------------------------
@@ -4622,7 +4699,7 @@ void PrecacheInstancedScene( char const *pszScene )
 	}
 
 	// verify existence, cache is pre-populated, should be there
-	SceneCachedData_t sceneData;
+	/*SceneCachedData_t sceneData;
 	if ( !scenefilecache->GetSceneCachedData( pszScene, &sceneData ) )
 	{
 		// Scenes are sloppy and don't always exist.
@@ -4639,6 +4716,16 @@ void PrecacheInstancedScene( char const *pszScene )
 			short stringId = scenefilecache->GetSceneCachedSound( sceneData.sceneId, i );
 			CBaseEntity::PrecacheScriptSound( scenefilecache->GetSceneString( stringId ) );
 		}
+	}*/
+
+	CChoreoScene *pScene;
+
+	pScene = CSceneEntity::LoadScene(pszScene, NULL);
+
+	if (pScene)
+	{
+		CSceneEntity::PrecacheScene(pScene);
+		delete pScene;
 	}
 
 	g_pStringTableClientSideChoreoScenes->AddString( CBaseEntity::IsServer(), pszScene );

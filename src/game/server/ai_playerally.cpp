@@ -655,7 +655,7 @@ bool CAI_PlayerAlly::SelectIdleSpeech( AISpeechSelection_t *pSelection )
 //-----------------------------------------------------------------------------
 bool CAI_PlayerAlly::SelectAlertSpeech( AISpeechSelection_t *pSelection )
 {
-#ifdef HL2_EPISODIC
+//#ifdef HL2_EPISODIC
 	CBasePlayer *pTarget = assert_cast<CBasePlayer *>(FindSpeechTarget( AIST_PLAYERS | AIST_FACING_TARGET ));
 	if ( pTarget )
 	{
@@ -669,7 +669,7 @@ bool CAI_PlayerAlly::SelectAlertSpeech( AISpeechSelection_t *pSelection )
 			}
 		}
 	}
-#endif
+//#endif
 
 	return SelectIdleSpeech( pSelection );
 }

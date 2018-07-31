@@ -5,7 +5,10 @@
 		"head"	"1"
 		"portal2_content"
 		{
-			
+			"path_id"
+			{
+				scenes 1
+			}
 		}
 	}
 

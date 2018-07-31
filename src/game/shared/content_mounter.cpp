@@ -351,5 +351,5 @@ void MountExtraContent()
 	filesystem->MarkPathIDByRequestOnly(PATHID_SHARED, true);
 	filesystem->MarkPathIDByRequestOnly("SCENES", true);
 
-	scenefilecache->Reload();
+	//scenefilecache->Reload();
 }
