@@ -76,6 +76,7 @@ $Project
 		$File	"vertexlitgeneric_dx9_helper.cpp"
 		$File	"water.cpp"
 		$File	"worldvertextransition.cpp"
+		$File	"DepthOfField_dx9.cpp"
 	}
 
 	$Folder	"Header Files"
