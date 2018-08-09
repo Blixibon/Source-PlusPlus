@@ -1,7 +1,7 @@
 #ifndef C_LIGHT_MANAGER_H
 #define C_LIGHT_MANAGER_H
 
-class CViewSetup;
+class CNewViewSetup;
 class CDeferredViewRender;
 #if DEFCFG_USE_SSE
 struct def_light_presortdatax4_t;
@@ -25,10 +25,10 @@ public:
 
 	void SetRenderWorldLights( bool bRender );
 
-	void LightSetup( const CViewSetup &setup );
+	void LightSetup( const CNewViewSetup &setup );
 	void LightTearDown();
 	void SetRenderConstants( const VMatrix &ScreenToWorld,
-		const CViewSetup &setup );
+		const CNewViewSetup &setup );
 
 	void OnCookieStringReceived( const char *pszString, const int &index );
 	void OnMaterialReload();
@@ -58,10 +58,10 @@ public:
 	void SortLights();
 
 	// draw all lights set up for rendering
-	void RenderLights( const CViewSetup &view, CDeferredViewRender *pCaller );
+	void RenderLights( const CNewViewSetup &view, CDeferredViewRender *pCaller );
 
 	// add volumes to scene after composition
-	void RenderVolumetrics( const CViewSetup &view );
+	void RenderVolumetrics( const CNewViewSetup &view );
 
 	// debugging crap
 	void DoSceneDebug();
@@ -114,7 +114,7 @@ private:
 
 	FORCEINLINE float DoLightStyle( def_light_t *l );
 	FORCEINLINE int WriteLight( def_light_t *l, float *pfl4 );
-	FORCEINLINE void DrawVolumePrepass( bool bDoModelTransform, const CViewSetup &view, def_light_t *l );
+	FORCEINLINE void DrawVolumePrepass( bool bDoModelTransform, const CNewViewSetup &view, def_light_t *l );
 
 #if DEBUG
 	bool m_bVolatileLists;

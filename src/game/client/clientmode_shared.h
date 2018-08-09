@@ -18,7 +18,7 @@
 
 class CBaseHudChat;
 class CBaseHudWeaponSelection;
-class CViewSetup;
+class CNewViewSetup;
 class C_BaseEntity;
 class C_BasePlayer;
 
@@ -67,7 +67,7 @@ public:
 	virtual void	Layout();
 
 	virtual void	ReloadScheme( bool flushLowLevel );
-	virtual void	OverrideView( CViewSetup *pSetup );
+	virtual void	OverrideView( CNewViewSetup *pSetup );
 	virtual bool	ShouldDrawDetailObjects( );
 	virtual bool	ShouldDrawEntity(C_BaseEntity *pEnt);
 	virtual bool	ShouldDrawLocalPlayer( C_BasePlayer *pPlayer );
@@ -77,7 +77,7 @@ public:
 	virtual bool	ShouldBlackoutAroundHUD() OVERRIDE;
 	virtual HeadtrackMovementMode_t ShouldOverrideHeadtrackControl() OVERRIDE;
 	virtual void	AdjustEngineViewport( int& x, int& y, int& width, int& height );
-	virtual void	PreRender(CViewSetup *pSetup);
+	virtual void	PreRender(CNewViewSetup *pSetup);
 	virtual void	PostRender();
 	virtual void	PostRenderVGui();
 	virtual void	ProcessInput(bool bActive);
@@ -125,7 +125,7 @@ public:
 	// HPE_END
 	//=============================================================================
 
-	virtual bool	DoPostScreenSpaceEffects( const CViewSetup *pSetup );
+	virtual bool	DoPostScreenSpaceEffects( const CNewViewSetup *pSetup );
 
 	virtual void	DisplayReplayMessage( const char *pLocalizeName, float flDuration, bool bUrgent,
 										  const char *pSound, bool bDlg );

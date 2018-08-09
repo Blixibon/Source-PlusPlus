@@ -131,6 +131,38 @@ public:
     VMatrix     m_ViewToProjection;
 };
 
+class CNewViewSetup : public CViewSetup
+{
+public:
+	CNewViewSetup() : CViewSetup()
+	{
+		// These match mat_dof convars
+		m_flNearBlurDepth = 20.0;
+		m_flNearFocusDepth = 100.0;
+		m_flFarFocusDepth = 250.0;
+		m_flFarBlurDepth = 1000.0;
+		m_flNearBlurRadius = 10.0;
+		m_flFarBlurRadius = 5.0;
+		m_nDoFQuality = 0;
 
+		m_bDoDepthOfField = false;
+	}
+
+	CNewViewSetup(const CViewSetup &src) : CNewViewSetup()
+	{
+		*static_cast<CViewSetup *>(this) = src;
+	}
+
+	// Camera settings to control depth of field
+	float		m_flNearBlurDepth;
+	float		m_flNearFocusDepth;
+	float		m_flFarFocusDepth;
+	float		m_flFarBlurDepth;
+	float		m_flNearBlurRadius;
+	float		m_flFarBlurRadius;
+	int			m_nDoFQuality;
+
+	bool		m_bDoDepthOfField : 1;
+};
 
 #endif // VIEW_SHARED_H

@@ -224,7 +224,7 @@ ClientModeTFNormal* GetClientModeTFNormal()
 //-----------------------------------------------------------------------------
 // Purpose: Fixes some bugs from base class.
 //-----------------------------------------------------------------------------
-void ClientModeTFNormal::OverrideView( CViewSetup *pSetup )
+void ClientModeTFNormal::OverrideView( CNewViewSetup *pSetup )
 {
 	QAngle camAngles;
 
@@ -313,7 +313,7 @@ bool ClientModeTFNormal::ShouldDrawViewModel()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool ClientModeTFNormal::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
+bool ClientModeTFNormal::DoPostScreenSpaceEffects( const CNewViewSetup *pSetup )
 {
 	if ( !IsInFreezeCam() )
 		g_GlowObjectManager.RenderGlowEffects( pSetup, 0 );

@@ -11,7 +11,7 @@
 #pragma once
 #endif
 
-class CViewSetup;
+class CNewViewSetup;
 
 //-----------------------------------------------------------------------------
 // Purpose: Implements the debugging elements of view rendering
@@ -21,8 +21,8 @@ class CDebugViewRender
 	DECLARE_CLASS_NOBASE( CDebugViewRender );
 public:
 	// Draws all the debugging info
-	static void	Draw3DDebuggingInfo( const CViewSetup &view );
-	static void	Draw2DDebuggingInfo( const CViewSetup &view );
+	static void	Draw3DDebuggingInfo( const CNewViewSetup &view );
+	static void	Draw2DDebuggingInfo( const CNewViewSetup &view );
 	static void GenerateOverdrawForTesting();
 };
 

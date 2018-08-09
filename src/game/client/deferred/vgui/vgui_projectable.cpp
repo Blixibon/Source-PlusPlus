@@ -97,7 +97,7 @@ void CVGUIProjectable::DrawSelfToRT( ITexture *pTarget, bool bClear )
 	Assert( pTarget->GetActualWidth() == PROJECTABLE_VGUI_RES );
 	Assert( pTarget->GetActualHeight() == PROJECTABLE_VGUI_RES );
 
-	CViewSetup setup;
+	CNewViewSetup setup;
 	setup.x = setup.y = 0;
 	setup.width = PROJECTABLE_VGUI_RES;
 	setup.height = PROJECTABLE_VGUI_RES;

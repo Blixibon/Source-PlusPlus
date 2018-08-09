@@ -9037,6 +9037,16 @@ int CAI_BaseNPC::DrawDebugTextOverlays(void)
 		text_offset++;
 
 		// --------------
+		// Print Class
+		// --------------
+		if (g_pGameRules)
+		{
+			Q_snprintf(tempstr, sizeof(tempstr), "Class: %s", g_pGameRules->AIClassText(Classify()));
+			EntityText(text_offset, tempstr, 0, r, g, b);
+			text_offset++;
+		}
+
+		// --------------
 		// Print State
 		// --------------
 		static const char *pStateNames[] = { "None", "Idle", "Alert", "Combat", "Scripted", "PlayDead", "Dead" };

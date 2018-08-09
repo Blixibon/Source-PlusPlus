@@ -1,0 +1,217 @@
+// Created by Crowbar 0.56
+====== File Size ======
+	41,560
+====== File Seek Log ======
+--- Summary ---
+	0 - 26,545
+	26,548 - 41,558
+	41,560 - 41,560
+------------------------
+--- Each Section or Loop ---
+	0 - 79 MDL File Header 00; MDL File Header 00
+	80 - 407 MDL File Header 01; MDL File Header 01
+	408 - 663 MDL File Header 02; MDL File Header 02
+	664 - 10,599 theMdlFileData.theBones 46
+	10,600 - 11,519 theMdlFileData.theAttachments 10
+	11,520 - 11,531 theMdlFileData.theHitboxSets 1
+	11,532 - 12,551 aHitboxSet.theHitboxes 15
+	12,552 - 12,597 theMdlFileData.theBoneTableByName
+	12,598 - 12,599 theMdlFileData.theBoneTableByName alignment [ 00 00 ]
+	12,600 - 13,999 theMdlFileData.theAnimationDescs 14
+	14,000 - 14,043 anAnimationDesc.theMovements 1
+	14,044 - 14,087 anAnimationDesc.theMovements 1
+	14,088 - 14,131 anAnimationDesc.theMovements 1
+	14,132 - 14,175 anAnimationDesc.theMovements 1
+	14,176 - 14,307 anAnimationDesc.theMovements 3
+	14,308 - 14,729 anAnimationDesc.spanOffset (zeroframes/saveframes) [@refpose] [spanFrameCount = 9] [spanCount = 1]
+	14,730 - 15,995 anAnimationDesc.spanOffset (zeroframes/saveframes) [@Idle01] [spanFrameCount = 9] [spanCount = 3]
+	15,996 - 17,261 anAnimationDesc.spanOffset (zeroframes/saveframes) [@FireWalk] [spanFrameCount = 9] [spanCount = 3]
+	17,262 - 18,527 anAnimationDesc.spanOffset (zeroframes/saveframes) [@Walk] [spanFrameCount = 9] [spanCount = 3]
+	18,528 - 19,371 anAnimationDesc.spanOffset (zeroframes/saveframes) [@Run] [spanFrameCount = 8] [spanCount = 2]
+	19,372 - 20,637 anAnimationDesc.spanOffset (zeroframes/saveframes) [@headcrab2Leap] [spanFrameCount = 9] [spanCount = 3]
+	20,638 - 21,903 anAnimationDesc.spanOffset (zeroframes/saveframes) [@Throw] [spanFrameCount = 9] [spanCount = 3]
+	21,904 - 23,169 anAnimationDesc.spanOffset (zeroframes/saveframes) [@melee_01] [spanFrameCount = 9] [spanCount = 3]
+	23,170 - 24,435 anAnimationDesc.spanOffset (zeroframes/saveframes) [@releasecrab] [spanFrameCount = 9] [spanCount = 3]
+	24,436 - 24,857 anAnimationDesc.spanOffset (zeroframes/saveframes) [@FlinchL] [spanFrameCount = 9] [spanCount = 1]
+	24,858 - 25,279 anAnimationDesc.spanOffset (zeroframes/saveframes) [@FlinchR] [spanFrameCount = 9] [spanCount = 1]
+	25,280 - 25,701 anAnimationDesc.spanOffset (zeroframes/saveframes) [@FlinchC] [spanFrameCount = 9] [spanCount = 1]
+	25,702 - 26,123 anAnimationDesc.spanOffset (zeroframes/saveframes) [@ThrowWarning] [spanFrameCount = 9] [spanCount = 1]
+	26,124 - 26,545 anAnimationDesc.spanOffset (zeroframes/saveframes) [@ragdoll] [spanFrameCount = 1] [spanCount = 1]
+	26,546 - 26,547 [ERROR] Unread bytes (all zeroes) [ 00 00 ]
+	26,548 - 29,515 theMdlFileData.theSequenceDescs 14
+	29,516 - 29,699 aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46; aSeqDesc.theBoneWeights 46
+	29,700 - 29,701 aSeqDesc.theAnimDescIndexes 1
+	29,702 - 29,703 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	29,704 - 29,705 aSeqDesc.theAnimDescIndexes 1
+	29,706 - 29,707 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	29,708 - 29,867 aSeqDesc.theEvents 2
+	29,868 - 29,869 aSeqDesc.theAnimDescIndexes 1
+	29,870 - 29,871 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	29,872 - 30,031 aSeqDesc.theEvents 2
+	30,032 - 30,033 aSeqDesc.theAnimDescIndexes 1
+	30,034 - 30,035 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,036 - 30,037 aSeqDesc.theAnimDescIndexes 1
+	30,038 - 30,039 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,040 - 30,199 aSeqDesc.theEvents 2
+	30,200 - 30,201 aSeqDesc.theAnimDescIndexes 1
+	30,202 - 30,203 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,204 - 30,443 aSeqDesc.theEvents 3
+	30,444 - 30,445 aSeqDesc.theAnimDescIndexes 1
+	30,446 - 30,447 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,448 - 30,607 aSeqDesc.theEvents 2
+	30,608 - 30,609 aSeqDesc.theAnimDescIndexes 1
+	30,610 - 30,611 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,612 - 30,613 aSeqDesc.theAnimDescIndexes 1
+	30,614 - 30,615 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,616 - 30,617 aSeqDesc.theAnimDescIndexes 1
+	30,618 - 30,619 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,620 - 30,621 aSeqDesc.theAnimDescIndexes 1
+	30,622 - 30,623 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,624 - 30,625 aSeqDesc.theAnimDescIndexes 1
+	30,626 - 30,627 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,628 - 30,707 aSeqDesc.theEvents 1
+	30,708 - 30,709 aSeqDesc.theAnimDescIndexes 1
+	30,710 - 30,711 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,712 - 30,713 aSeqDesc.theAnimDescIndexes 1
+	30,714 - 30,715 aSeqDesc.theAnimDescIndexes alignment [ 00 00 ]
+	30,716 - 30,811 theMdlFileData.theBodyParts 6
+	30,812 - 30,959 aBodyPart.theModels 1
+	30,960 - 31,255 aBodyPart.theModels 2
+	31,256 - 31,551 aBodyPart.theModels 2
+	31,552 - 31,847 aBodyPart.theModels 2
+	31,848 - 32,143 aBodyPart.theModels 2
+	32,144 - 32,439 aBodyPart.theModels 2
+	32,440 - 32,555 aModel.theMeshes 1
+	32,556 - 32,671 aModel.theMeshes 1
+	32,672 - 32,787 aModel.theMeshes 1
+	32,788 - 32,903 aModel.theMeshes 1
+	32,904 - 33,019 aModel.theMeshes 1
+	33,020 - 33,135 aModel.theMeshes 1
+	33,136 - 33,167 theAnimBlocks 4; theAnimBlocks 4
+	33,168 - 33,295 theMdlFileData.theTextures 2
+	33,296 - 33,303 theMdlFileData.theTexturePaths 2
+	33,304 - 33,307 theMdlFileData.theSkinFamilies 1
+	33,308 - 33,371 theMdlFileData.theLinearBoneTable header
+	33,372 - 33,555 theMdlFileData.theLinearBoneTable.theFlags
+	33,556 - 33,739 theMdlFileData.theLinearBoneTable.theParents
+	33,740 - 34,291 theMdlFileData.theLinearBoneTable.thePositions
+	34,292 - 35,027 theMdlFileData.theLinearBoneTable.theQuaternions
+	35,028 - 35,579 theMdlFileData.theLinearBoneTable.theRotations
+	35,580 - 37,787 theMdlFileData.theLinearBoneTable.thePoseToBoneDataColumns
+	37,788 - 38,339 theMdlFileData.theLinearBoneTable.thePositionScales
+	38,340 - 38,891 theMdlFileData.theLinearBoneTable.theRotationScales
+	38,892 - 39,627 theMdlFileData.theLinearBoneTable.theQAlignments
+	39,628 - 39,628 aSeqDesc.theActivityName = ; aSeqDesc.theActivityName = 
+	39,629 - 39,634 theSurfacePropName = flesh; theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh; aBone.theSurfacePropName = flesh
+	39,635 - 39,651 aBone.theName = ValveBiped.Bip01
+	39,652 - 39,674 aBone.theName = ValveBiped.Bip01_Spine
+	39,675 - 39,698 aBone.theName = ValveBiped.Bip01_Spine1
+	39,699 - 39,722 aBone.theName = ValveBiped.Bip01_Spine2
+	39,723 - 39,746 aBone.theName = ValveBiped.Bip01_Spine4
+	39,747 - 39,774 aBone.theName = ValveBiped.Bip01_L_Clavicle
+	39,775 - 39,802 aBone.theName = ValveBiped.Bip01_L_UpperArm
+	39,803 - 39,829 aBone.theName = ValveBiped.Bip01_L_Forearm
+	39,830 - 39,853 aBone.theName = ValveBiped.Bip01_L_Hand
+	39,854 - 39,880 aBone.theName = ValveBiped.Bip01_L_Finger1
+	39,881 - 39,908 aBone.theName = ValveBiped.Bip01_L_Finger11
+	39,909 - 39,935 aBone.theName = ValveBiped.Bip01_L_Finger2
+	39,936 - 39,963 aBone.theName = ValveBiped.Bip01_L_Finger21
+	39,964 - 39,990 aBone.theName = ValveBiped.Bip01_L_Finger3
+	39,991 - 40,018 aBone.theName = ValveBiped.Bip01_L_Finger31
+	40,019 - 40,046 aBone.theName = ValveBiped.Bip01_L_Finger32
+	40,047 - 40,074 aBone.theName = ValveBiped.Bip01_R_Clavicle
+	40,075 - 40,102 aBone.theName = ValveBiped.Bip01_R_UpperArm
+	40,103 - 40,129 aBone.theName = ValveBiped.Bip01_R_Forearm
+	40,130 - 40,153 aBone.theName = ValveBiped.Bip01_R_Hand
+	40,154 - 40,180 aBone.theName = ValveBiped.Bip01_R_Finger3
+	40,181 - 40,204 aBone.theName = ValveBiped.Bip01_Pelvis
+	40,205 - 40,229 aBone.theName = ValveBiped.Bip01_L_Thigh
+	40,230 - 40,253 aBone.theName = ValveBiped.Bip01_L_Calf
+	40,254 - 40,277 aBone.theName = ValveBiped.Bip01_L_Foot
+	40,278 - 40,301 aBone.theName = ValveBiped.Bip01_L_Toe0
+	40,302 - 40,326 aBone.theName = ValveBiped.Bip01_R_Thigh
+	40,327 - 40,350 aBone.theName = ValveBiped.Bip01_R_Calf
+	40,351 - 40,374 aBone.theName = ValveBiped.Bip01_R_Foot
+	40,375 - 40,398 aBone.theName = ValveBiped.Bip01_R_Toe0
+	40,399 - 40,424 aBone.theName = ValveBiped.Headcrab_Cube1
+	40,425 - 40,450 aBone.theName = ValveBiped.Headcrab_Cube2
+	40,451 - 40,476 aBone.theName = ValveBiped.Headcrab_Cube4
+	40,477 - 40,502 aBone.theName = ValveBiped.Headcrab_Cube3
+	40,503 - 40,525 aBone.theName = ValveBiped.HC5_Bodybox
+	40,526 - 40,550 aBone.theName = ValveBiped.HCB_hipsFront
+	40,551 - 40,566 aBone.theName = ValveBiped.bone
+	40,567 - 40,583 aBone.theName = ValveBiped.bone1
+	40,584 - 40,600 aBone.theName = ValveBiped.bone2
+	40,601 - 40,617 aBone.theName = ValveBiped.bone3
+	40,618 - 40,634 aBone.theName = ValveBiped.bone4
+	40,635 - 40,651 aBone.theName = ValveBiped.bone5
+	40,652 - 40,668 aBone.theName = ValveBiped.bone8
+	40,669 - 40,685 aBone.theName = ValveBiped.bone9
+	40,686 - 40,702 aBone.theName = ValveBiped.bone6
+	40,703 - 40,719 aBone.theName = ValveBiped.bone7
+	40,720 - 40,724 anAttachment.theName = eyes
+	40,725 - 40,729 anAttachment.theName = head
+	40,730 - 40,735 anAttachment.theName = chest
+	40,736 - 40,745 anAttachment.theName = headcrab1; aBodyPart.theName = headcrab1
+	40,746 - 40,755 anAttachment.theName = headcrab2; aBodyPart.theName = headcrab2
+	40,756 - 40,765 anAttachment.theName = headcrab3; aBodyPart.theName = headcrab3
+	40,766 - 40,775 anAttachment.theName = headcrab4; aBodyPart.theName = headcrab4
+	40,776 - 40,785 anAttachment.theName = headcrab5; aBodyPart.theName = headcrab5
+	40,786 - 40,796 anAttachment.theName = Blood_Left
+	40,797 - 40,808 anAttachment.theName = Blood_Right
+	40,809 - 40,816 aHitboxSet.theName = default
+	40,817 - 40,825 anAnimationDesc.theName = @refpose
+	40,826 - 40,833 anAnimationDesc.theName = @Idle01
+	40,834 - 40,843 anAnimationDesc.theName = @FireWalk
+	40,844 - 40,849 anAnimationDesc.theName = @Walk
+	40,850 - 40,854 anAnimationDesc.theName = @Run
+	40,855 - 40,869 anAnimationDesc.theName = @headcrab2Leap
+	40,870 - 40,876 anAnimationDesc.theName = @Throw
+	40,877 - 40,886 anAnimationDesc.theName = @melee_01
+	40,887 - 40,899 anAnimationDesc.theName = @releasecrab
+	40,900 - 40,908 anAnimationDesc.theName = @FlinchL
+	40,909 - 40,917 anAnimationDesc.theName = @FlinchR
+	40,918 - 40,926 anAnimationDesc.theName = @FlinchC
+	40,927 - 40,940 anAnimationDesc.theName = @ThrowWarning
+	40,941 - 40,949 anAnimationDesc.theName = @ragdoll
+	40,950 - 40,957 aSeqDesc.theName = refpose
+	40,958 - 40,964 aSeqDesc.theName = Idle01
+	40,965 - 40,973 aSeqDesc.theActivityName = ACT_IDLE
+	40,974 - 40,982 aSeqDesc.theName = FireWalk
+	40,983 - 41,003 aSeqDesc.theActivityName = ACT_ZOM_WALK_ON_FIRE
+	41,004 - 41,023 anEvent.theName = AE_ZOMBIE_STEP_LEFT; anEvent.theName = AE_ZOMBIE_STEP_LEFT
+	41,024 - 41,044 anEvent.theName = AE_ZOMBIE_STEP_RIGHT; anEvent.theName = AE_ZOMBIE_STEP_RIGHT
+	41,045 - 41,049 aSeqDesc.theName = Walk
+	41,050 - 41,058 aSeqDesc.theActivityName = ACT_WALK
+	41,059 - 41,062 aSeqDesc.theName = Run
+	41,063 - 41,076 aSeqDesc.theName = headcrab2Leap
+	41,077 - 41,094 aSeqDesc.theActivityName = ACT_RANGE_ATTACK1
+	41,095 - 41,123 anEvent.theName = AE_ZOMBIE_POISON_PICKUP_CRAB; anEvent.theName = AE_ZOMBIE_POISON_PICKUP_CRAB
+	41,124 - 41,151 anEvent.theName = AE_ZOMBIE_POISON_THROW_CRAB; anEvent.theName = AE_ZOMBIE_POISON_THROW_CRAB
+	41,152 - 41,157 aSeqDesc.theName = Throw
+	41,158 - 41,175 aSeqDesc.theActivityName = ACT_RANGE_ATTACK2
+	41,176 - 41,204 anEvent.theName = AE_ZOMBIE_POISON_THROW_SOUND
+	41,205 - 41,213 aSeqDesc.theName = melee_01
+	41,214 - 41,231 aSeqDesc.theActivityName = ACT_MELEE_ATTACK1
+	41,232 - 41,255 anEvent.theName = AE_ZOMBIE_ATTACK_SCREAM
+	41,256 - 41,278 anEvent.theName = AE_ZOMBIE_ATTACK_RIGHT
+	41,279 - 41,290 aSeqDesc.theName = releasecrab
+	41,291 - 41,310 aSeqDesc.theActivityName = ACT_ZOM_RELEASECRAB
+	41,311 - 41,318 aSeqDesc.theName = FlinchL
+	41,319 - 41,335 aSeqDesc.theActivityName = ACT_SMALL_FLINCH; aSeqDesc.theActivityName = ACT_SMALL_FLINCH; aSeqDesc.theActivityName = ACT_SMALL_FLINCH
+	41,336 - 41,343 aSeqDesc.theName = FlinchR
+	41,344 - 41,351 aSeqDesc.theName = FlinchC
+	41,352 - 41,364 aSeqDesc.theName = ThrowWarning
+	41,365 - 41,389 aSeqDesc.theActivityName = ACT_ZOMBIE_POISON_THREAT
+	41,390 - 41,423 anEvent.theName = AE_ZOMBIE_POISON_THROW_WARN_SOUND
+	41,424 - 41,431 aSeqDesc.theName = ragdoll
+	41,432 - 41,446 aSeqDesc.theActivityName = ACT_DIERAGDOLL
+	41,447 - 41,453 aBodyPart.theName = studio
+	41,454 - 41,478 theAnimBlockRelativePathFileName = models/Zombie/Poison.ani; theAnimBlockRelativePathFileName = models/Zombie/Poison.ani
+	41,479 - 41,497 aTexture.thePathFileName = PoisonZombie_sheet
+	41,498 - 41,513 aTexture.thePathFileName = Blackcrab_sheet
+	41,514 - 41,536 aTexturePath = models\headcrab_black\
+	41,537 - 41,558 aTexturePath = models\zombie_poison\
+	41,559 - 41,559 [ERROR] Unread bytes (all zeroes) [ 00 ]
+	41,560 - 41,560 END OF FILE + 1 (File size)
+========================

@@ -21,6 +21,8 @@
 
 extern ISceneFileCache *scenefilecache;
 
+KeyValues *g_pWritePathsToHere = nullptr;
+
 #define GAMEINFOPATH_TOKEN		"|gameinfo_path|"
 #define GAMEINFOPARENT_TOKEN	"|gameinfo_parent|"
 #define SHAREDCONTENTPATH_TOKEN "|content_path|"
@@ -115,6 +117,33 @@ void AddSearchPaths(IFileSystem* const pFileSystem, const char *path, SearchPath
 	for (int i = 0; i < pathIDs.Count(); i++)
 	{
 		pFileSystem->AddSearchPath(path, pathIDs.Element(i), addType);
+	}
+
+	if (g_pWritePathsToHere != nullptr)
+	{
+		CFmtStr paths("%s", pathIDs[0]);
+		for (int i = 1; i < pathIDs.Count(); i++)
+		{
+			paths.AppendFormat("+%s", pathIDs[i]);
+		}
+
+		KeyValues *pKV = new KeyValues(paths.Access());
+		pKV->SetStringValue(path);
+		if (addType == PATH_ADD_TO_TAIL)
+		{
+			g_pWritePathsToHere->AddSubKey(pKV);
+		}
+		else
+		{
+			KeyValues *pPeer = g_pWritePathsToHere->GetFirstSubKey()->MakeCopy();
+			KeyValues *pNext = g_pWritePathsToHere->GetFirstSubKey()->GetNextKey();
+			pPeer->SetNextKey(pNext);
+			KeyValues &kvFirst = *g_pWritePathsToHere->GetFirstSubKey();
+			kvFirst.SetNextKey(nullptr);
+			kvFirst = *pKV;
+			kvFirst.SetNextKey(pPeer);
+			pKV->deleteThis();
+		}
 	}
 }
 
@@ -330,6 +359,16 @@ void MountExtraContent()
 	KeyValuesAD gameinfo("GameInfo");
 	gameinfo->LoadFromFile(filesystem, "gameinfo.txt");
 
+	KeyValues *pKVHammer = nullptr;
+#ifdef CLIENT_DLL
+	if (CommandLine()->FindParm("-hammerprep"))
+	{
+		pKVHammer = gameinfo->MakeCopy();
+		g_pWritePathsToHere = pKVHammer->FindKey("FileSystem", true)->FindKey("SearchPaths", true);
+		Warning("[CLIENT] Writing search paths for hammer...\n");
+	}
+#endif
+
 	KeyValues *pkvContent = gameinfo->FindKey("content");
 
 	if (pkvContent)
@@ -350,6 +389,18 @@ void MountExtraContent()
 
 	filesystem->MarkPathIDByRequestOnly(PATHID_SHARED, true);
 	filesystem->MarkPathIDByRequestOnly("SCENES", true);
+
+	if (g_pWritePathsToHere != nullptr)
+		g_pWritePathsToHere = nullptr;
+
+	if (pKVHammer != nullptr)
+	{
+		pKVHammer->SaveToFile(filesystem, "gameinfo_hammer.txt", "MOD_WRITE");
+		pKVHammer->deleteThis();
+		pKVHammer = nullptr;
+
+		Warning("Finished writing search paths to 'gameinfo_hammer.txt'\n");
+	}
 
 	//scenefilecache->Reload();
 }

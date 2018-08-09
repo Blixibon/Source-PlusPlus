@@ -12,7 +12,10 @@
 #endif
 
 void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, bool bPostVGui = false );
-void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h );
+void DoImageSpaceMotionBlur( const CNewViewSetup &view, int x, int y, int w, int h );
 void DumpTGAofRenderTarget( const int width, const int height, const char *pFilename );
+
+bool IsDepthOfFieldEnabled(const CNewViewSetup *view = nullptr);
+void DoDepthOfField(const CNewViewSetup &view);
 
 #endif // VIEWPOSTPROCESS_H

@@ -1,0 +1,8 @@
+//"LightmappedGeneric"
+"UnlitGeneric"
+{
+	"$basetexture" "VGUI/chapters/episodic/chapter2"
+	"$vertexalpha" 1
+	"$gammaColorRead" "1"
+	"$linearWrite" "1"
+}

@@ -8,9 +8,11 @@
 #include "cbase.h"					// for pch
 #include "prop_combine_ball.h"		// for base class
 #include "te_effect_dispatch.h"		// for the explosion/impact effects
+#ifdef PORTAL
 #include "prop_portal.h"			// Special case code for passing through portals. We need the class definition.
-#include "soundenvelope.h"
 #include "physicsshadowclone.h"
+#endif
+#include "soundenvelope.h"
 
 // resource file names
 #define IMPACT_DECAL_NAME	"decals/smscorch1model"
@@ -41,10 +43,11 @@ public:
 	virtual void StartTouch( CBaseEntity *pOther );
 	virtual void NotifySystemEvent( CBaseEntity *pNotify, notify_system_event_t eventType, const notify_system_event_params_t &params );
 
+#ifdef PORTAL
 	CHandle<CProp_Portal>		m_hTouchedPortal;	// Pointer to the portal we are touched most recently
 	bool						m_bTouchingPortal1;	// Are we touching portal 1
 	bool						m_bTouchingPortal2;	// Are we touching portal 2
-
+#endif
 	// Remember the last known direction of travel, incase our velocity is cleared.
 	Vector						m_vLastKnownDirection;
 
@@ -62,10 +65,11 @@ LINK_ENTITY_TO_CLASS( prop_energy_ball, CPropEnergyBall );
 
 
 BEGIN_DATADESC( CPropEnergyBall )
-
+#ifdef PORTAL
 	DEFINE_FIELD( m_hTouchedPortal,			FIELD_EHANDLE ),
 	DEFINE_FIELD( m_bTouchingPortal1,		FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bTouchingPortal2,		FIELD_BOOLEAN ),
+#endif
 	DEFINE_FIELD( m_vLastKnownDirection,	FIELD_VECTOR ),
 	DEFINE_FIELD( m_fMinLifeAfterPortal,	FIELD_FLOAT ),
 	DEFINE_FIELD( m_bIsInfiniteLife,		FIELD_BOOLEAN ),
@@ -137,9 +141,10 @@ void CPropEnergyBall::Spawn()
 	Precache();
 
 	BaseClass::Spawn();
-
+#ifdef PORTAL
 	m_bTouchingPortal1 = false;
 	m_bTouchingPortal2 = false;
+#endif
 	m_bIsInfiniteLife  = false;
 	m_fTimeTillDeath = -1;
 	m_fMinLifeAfterPortal = 5;
@@ -169,15 +174,15 @@ void CPropEnergyBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEven
 	// It's ok to change direction, but maintain speed = m_flSpeed.
 	Vector vecFinalVelocity = pEvent->postVelocity[index];
 	VectorNormalize( vecFinalVelocity );
-
+#ifdef PORTAL
 	if ( m_bTouchingPortal2 || m_bTouchingPortal1 )
 	{
 		AssertMsg ( m_hTouchedPortal.Get(), "Touching a portal, but recorded an invalid handle." );
 	}
-
+#endif
 	// Used for deciding if we play our impact effects/sounds
 	bool bIsEnteringPortalAndLockingAxisForward = false;
-
+#ifdef PORTAL
 	// Fixed bounce axis when in a portal environment
 	if ( (m_bTouchingPortal2 || m_bTouchingPortal1) && m_hTouchedPortal.Get() )
 	{
@@ -213,7 +218,7 @@ void CPropEnergyBall::VPhysicsCollision( int index, gamevcollisionevent_t *pEven
 			}
 		}
 	}
-
+#endif
 
 	// Plant a decal on any solid brushes we hit
 	if ( !bIsEnteringPortalAndLockingAxisForward )
@@ -260,6 +265,7 @@ void CPropEnergyBall::NotifySystemEvent(CBaseEntity *pNotify, notify_system_even
 	// On teleport, we record a pointer to the portal we are arriving at
 	if ( eventType == NOTIFY_EVENT_TELEPORT )
 	{
+#ifdef PORTAL
 		CProp_Portal *pEnteredPortal = dynamic_cast<CProp_Portal*>( pNotify );
 		if( pEnteredPortal )
 		{
@@ -280,7 +286,7 @@ void CPropEnergyBall::NotifySystemEvent(CBaseEntity *pNotify, notify_system_even
 		{
 			m_hTouchedPortal = NULL;
 		}
-
+#endif
 		// If an energy ball passes a portal (teleports), add a make sure its life is >= sk_energy_ball_min_life_after_portal
 		float fCurTimeTillDeath = GetNextThink( "ExplodeTimerContext" );
 		// If we are set to die, then refresh that time if it is below a set threshold
@@ -364,14 +370,14 @@ void CPropEnergyBall::ExplodeThink( )
 void CPropEnergyBall::StartTouch( CBaseEntity *pOther )
 {
 	Assert( pOther );
-
+#ifdef PORTAL
 	if( CPhysicsShadowClone::IsShadowClone( pOther ) )
 	{
 		CBaseEntity *pCloned = ((CPhysicsShadowClone *)pOther)->GetClonedEntity();
 		if( pCloned )
 			pOther = pCloned;
 	}
-
+#endif
 	// Kill the player on hit.
 	if ( pOther->IsPlayer() )
 	{
@@ -381,7 +387,7 @@ void CPropEnergyBall::StartTouch( CBaseEntity *pOther )
 		// Destruct when we hit the player
 		SetContextThink( &CPropCombineBall::ExplodeThink, gpGlobals->curtime, "ExplodeTimerContext" );
 	}
-
+#ifdef PORTAL
 	CProp_Portal* pPortal = dynamic_cast<CProp_Portal*>(pOther);
 	// If toucher is a prop portal
 	if ( pPortal )
@@ -400,12 +406,13 @@ void CPropEnergyBall::StartTouch( CBaseEntity *pOther )
 			m_bTouchingPortal2 = true;
 		}
 	}
-
+#endif
 	BaseClass::StartTouch( pOther );
 }
 
 void CPropEnergyBall::EndTouch( CBaseEntity *pOther )
 {
+#ifdef PORTAL
 	CProp_Portal* pPortal = dynamic_cast<CProp_Portal*>(pOther);
 
 	if ( pPortal )
@@ -420,7 +427,7 @@ void CPropEnergyBall::EndTouch( CBaseEntity *pOther )
 			m_bTouchingPortal2 = false;
 		}
 	}
-
+#endif
 	BaseClass::EndTouch( pOther );
 
 }

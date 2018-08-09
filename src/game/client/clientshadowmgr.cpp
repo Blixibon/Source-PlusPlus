@@ -984,7 +984,7 @@ private:
 	bool	IsFlashlightTarget( ClientShadowHandle_t shadowHandle, IClientRenderable *pRenderable );
 
 	// Builds a list of active shadows requiring shadow depth renders
-	int		BuildActiveShadowDepthList( const CViewSetup &viewSetup, int nMaxDepthShadows, ClientShadowHandle_t *pActiveDepthShadows );
+	int		BuildActiveShadowDepthList( const CNewViewSetup &viewSetup, int nMaxDepthShadows, ClientShadowHandle_t *pActiveDepthShadows );
 
 	// Sets the view's active flashlight render state
 	void	SetViewFlashlightState( int nActiveFlashlightCount, ClientShadowHandle_t* pActiveFlashlights );
@@ -1057,7 +1057,7 @@ class CVisibleShadowList : public IClientLeafShadowEnum
 public:
 
 	CVisibleShadowList();
-	int FindShadows( const CViewSetup *pView, int nLeafCount, LeafIndex_t *pLeafList );
+	int FindShadows( const CNewViewSetup *pView, int nLeafCount, LeafIndex_t *pLeafList );
 	int GetVisibleShadowCount() const;
 
 	const VisibleShadowInfo_t &GetVisibleShadow( int i ) const;
@@ -1205,7 +1205,7 @@ void CVisibleShadowList::PrioritySort()
 //-----------------------------------------------------------------------------
 // CVisibleShadowList - Main entry point for finding shadows in the leaf list
 //-----------------------------------------------------------------------------
-int CVisibleShadowList::FindShadows( const CViewSetup *pView, int nLeafCount, LeafIndex_t *pLeafList )
+int CVisibleShadowList::FindShadows( const CNewViewSetup *pView, int nLeafCount, LeafIndex_t *pLeafList )
 {
 	VPROF_BUDGET( "CVisibleShadowList::FindShadows", VPROF_BUDGETGROUP_SHADOW_RENDERING );
 
@@ -3963,7 +3963,7 @@ void CClientShadowMgr::AdvanceFrame()
 //-----------------------------------------------------------------------------
 // Re-render shadow depth textures that lie in the leaf list
 //-----------------------------------------------------------------------------
-int CClientShadowMgr::BuildActiveShadowDepthList( const CViewSetup &viewSetup, int nMaxDepthShadows, ClientShadowHandle_t *pActiveDepthShadows )
+int CClientShadowMgr::BuildActiveShadowDepthList( const CNewViewSetup &viewSetup, int nMaxDepthShadows, ClientShadowHandle_t *pActiveDepthShadows )
 {
 	int nActiveDepthShadowCount = 0;
 	for ( ClientShadowHandle_t i = m_Shadows.Head(); i != m_Shadows.InvalidIndex(); i = m_Shadows.Next(i) )
@@ -4087,7 +4087,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		m_ActiveDepthTextureHandle = shadow.m_ShadowHandle;
 		m_ActiveDepthTextureShadows[ j ] = shadow.m_ShadowHandle;
 
-		CViewSetup shadowView;
+		CNewViewSetup shadowView;
 		shadowView.m_flAspectRatio = 1.0f;
 		shadowView.x = shadowView.y = 0;
 		shadowView.width = shadowDepthTexture->GetActualWidth();
@@ -4156,7 +4156,8 @@ void CClientShadowMgr::ComputeShadowTextures( const CViewSetup &view, int leafCo
 
 	MDLCACHE_CRITICAL_SECTION();
 	// First grab all shadow textures we may want to render
-	int nCount = s_VisibleShadowList.FindShadows( &view, leafCount, pLeafList );
+	CNewViewSetup nView(view);
+	int nCount = s_VisibleShadowList.FindShadows( &nView, leafCount, pLeafList );
 	if ( nCount == 0 )
 		return;
 

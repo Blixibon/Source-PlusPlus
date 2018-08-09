@@ -76,8 +76,8 @@ public:
 	//---------------------------------------------------------
 	// VR utilities for use in the client
 	//---------------------------------------------------------
-	bool OverrideView ( CViewSetup *pViewMiddle, Vector *pViewModelOrigin, QAngle *pViewModelAngles, HeadtrackMovementMode_t hmmMovementOverride );
-	bool OverrideStereoView( CViewSetup *pViewMiddle, CViewSetup *pViewLeft, CViewSetup *pViewRight );
+	bool OverrideView ( CNewViewSetup *pViewMiddle, Vector *pViewModelOrigin, QAngle *pViewModelAngles, HeadtrackMovementMode_t hmmMovementOverride );
+	bool OverrideStereoView( CNewViewSetup *pViewMiddle, CNewViewSetup *pViewLeft, CNewViewSetup *pViewRight );
 	bool OverridePlayerMotion( float flInputSampleFrametime, const QAngle &oldAngles, const QAngle &curAngles, const Vector &curMotion, QAngle *pNewAngles, Vector *pNewMotion );
 	bool OverrideWeaponHudAimVectors ( Vector *pAimOrigin, Vector *pAimDirection );
 	bool CurrentlyZoomed();
@@ -96,7 +96,7 @@ public:
 	void OverrideViewModelTransform( Vector & vmorigin, QAngle & vmangles, bool bUseLargeOverride );
 	void AlignTorsoAndViewToWeapon();
 	void PostProcessFrame( StereoEye_t eEye );
-	void OverlayHUDQuadWithUndistort( const CViewSetup &view, bool bDoUndistort, bool bBlackout, bool bTranslucent );
+	void OverlayHUDQuadWithUndistort( const CNewViewSetup &view, bool bDoUndistort, bool bBlackout, bool bTranslucent );
 
 	//---------------------------------------------------------
 	// Enter/leave VR mode

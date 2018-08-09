@@ -1,0 +1,64 @@
+// Main menu background PA
+response "announce_menu1"
+{
+	sequential
+	//sentence !HEV_DET3 speakonce soundlevel SNDLVL_NONE
+	sentence !SLC_BIO_1 soundlevel SNDLVL_NONE
+}
+
+// Criteria wants to match the "concept" key (specified for the 'speaker' entity in the .vmf)
+criterion concept_menu_speaker "concept" "menu_speaker" required
+criterion "Isbackground1" "map" "background01" required
+
+rule "make_announcment_menu1"
+{
+	// If the speaker is the 'train_speaker' then make an announement from 'announce'
+	"criteria"			concept_menu_speaker Isbackground1
+	"response"			"announce_menu1"
+}
+// Test speakers
+response "test_speaker_response1"
+{
+	sequential
+	sentence !HEV_DET3 speakonce
+	sentence !SLC_BIO_1
+}
+
+response "test_speaker_response2"
+{
+	speak "canals.stn6_incoming"
+	speak "canals.vort_reckoning"
+}
+
+response "dieing_overwatch"
+{
+	response dieing_overwatch_full
+}
+
+response "dieing_overwatch_full"
+{
+	sentence !OVER_DETER delay 10 soundlevel SNDLVL_NONE
+}
+criterion "WorldIsDeadCitadel" worldepisodic_citadel 1 weight 3 required
+criterion concept_test_speaker concept test_speaker required
+criterion Isspeaker1 speaker_num 1 required
+criterion Isspeaker2 speaker_num 2 required
+criterion IsOverwatchVoice name "overvoice" required
+
+rule "dieing_citadel_voice"
+{
+	"criteria"			ConceptTalkIdle IsOverwatchVoice WorldIsDeadCitadel
+	"response"			dieing_overwatch
+}
+
+rule "test_speaker_rule1"
+{
+	"criteria"			concept_test_speaker Isspeaker1
+	"response"			test_speaker_response1
+}
+
+rule "test_speaker_rule2"
+{
+	"criteria"			concept_test_speaker Isspeaker2
+	"response"			dieing_overwatch_full
+}

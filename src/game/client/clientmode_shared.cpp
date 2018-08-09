@@ -427,7 +427,7 @@ bool ClientModeShared::CreateMove( float flInputSampleTime, CUserCmd *cmd )
 // Purpose:
 // Input  : *pSetup -
 //-----------------------------------------------------------------------------
-void ClientModeShared::OverrideView( CViewSetup *pSetup )
+void ClientModeShared::OverrideView( CNewViewSetup *pSetup )
 {
 	QAngle camAngles;
 
@@ -587,7 +587,7 @@ void ClientModeShared::AdjustEngineViewport( int& x, int& y, int& width, int& he
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void ClientModeShared::PreRender( CViewSetup *pSetup )
+void ClientModeShared::PreRender( CNewViewSetup *pSetup )
 {
 }
 
@@ -787,7 +787,7 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup *pSetup )
+bool ClientModeShared::DoPostScreenSpaceEffects( const CNewViewSetup *pSetup )
 {
 #if defined( REPLAY_ENABLED )
 	if ( engine->IsPlayingDemo() )

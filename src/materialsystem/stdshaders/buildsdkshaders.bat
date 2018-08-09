@@ -25,10 +25,15 @@ set tt_all_chkpt=%tt_start%
 set BUILD_SHADER=call buildshaders.bat
 set ARG_EXTRA=
 
-%BUILD_SHADER% pp_shaders		-game %GAMEDIR% -source %SOURCEDIR%
-REM %BUILD_SHADER% sdk_shaders		-game %GAMEDIR% -source %SOURCEDIR%
+if not "%shaders_lite%" == "1" (
+%BUILD_SHADER% pp_shaders				-game %GAMEDIR% -source %SOURCEDIR%
+%BUILD_SHADER% pp_shaders_lite			-game %GAMEDIR% -source %SOURCEDIR%
 %BUILD_SHADER% pp_shaders_sm3			-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
-REM %BUILD_SHADER% sdk_shaders			-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
+%BUILD_SHADER% pp_shaders_lite_sm3		-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
+) else (
+%BUILD_SHADER% pp_shaders_lite			-game %GAMEDIR% -source %SOURCEDIR%
+%BUILD_SHADER% pp_shaders_lite_sm3		-game %GAMEDIR% -source %SOURCEDIR% -dx9_30	-force30 
+)
 
 
 rem echo.

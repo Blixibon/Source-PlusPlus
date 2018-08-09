@@ -296,7 +296,7 @@ public:
 		m_Entries.RemoveAll();
 	}
 
-	bool Find( const CViewSetup &viewSetup, IWorldRenderList **ppList, ClientWorldListInfo_t **ppListInfo )
+	bool Find( const CNewViewSetup &viewSetup, IWorldRenderList **ppList, ClientWorldListInfo_t **ppListInfo )
 	{
 		Entry_t lookup( viewSetup );
 
@@ -313,7 +313,7 @@ public:
 		return false;
 	}
 
-	void Add( const CViewSetup &viewSetup, IWorldRenderList *pList, ClientWorldListInfo_t *pListInfo )
+	void Add( const CNewViewSetup &viewSetup, IWorldRenderList *pList, ClientWorldListInfo_t *pListInfo )
 	{
 		m_Entries.Insert( new Entry_t( viewSetup, pList, pListInfo ) );
 	}
@@ -321,7 +321,7 @@ public:
 private:
 	struct Entry_t
 	{
-		Entry_t( const CViewSetup &viewSetup, IWorldRenderList *pList = NULL, ClientWorldListInfo_t *pListInfo = NULL ) :
+		Entry_t( const CNewViewSetup &viewSetup, IWorldRenderList *pList = NULL, ClientWorldListInfo_t *pListInfo = NULL ) :
 			pList( ( pList ) ? InlineAddRef( pList ) : NULL ),
 			pListInfo( ( pListInfo ) ? InlineAddRef( pListInfo ) : NULL )
 		{
@@ -353,7 +353,7 @@ private:
 				pListInfo->Release();
 		}
 
-		// The fields from CViewSetup that would actually affect the list
+		// The fields from CNewViewSetup that would actually affect the list
 		float	m_OrthoLeft;
 		float	m_OrthoTop;
 		float	m_OrthoRight;
@@ -409,7 +409,7 @@ public:
 	  {
 	  }
 
-	bool			Setup( const CViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible );
+	bool			Setup( const CNewViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible );
 	void			Draw();
 
 protected:
@@ -443,7 +443,7 @@ public:
 		  m_pRenderTarget( NULL )
 	  {}
 
-	  bool			Setup( const CViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible, ITexture *pRenderTarget = NULL );
+	  bool			Setup( const CNewViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible, ITexture *pRenderTarget = NULL );
 
 	  //Skybox drawing through portals with workarounds to fix area bits, position/scaling, view id's..........
 	  void			Draw();
@@ -465,7 +465,7 @@ class CShadowDepthView : public CRendering3dView
 public:
 	CShadowDepthView(CViewRender *pMainView) : CRendering3dView( pMainView ) {}
 
-	void Setup( const CViewSetup &shadowViewIn, ITexture *pRenderTarget, ITexture *pDepthTexture );
+	void Setup( const CNewViewSetup &shadowViewIn, ITexture *pRenderTarget, ITexture *pDepthTexture );
 	void Draw();
 
 private:
@@ -482,7 +482,7 @@ class CFreezeFrameView : public CRendering3dView
 public:
 	CFreezeFrameView(CViewRender *pMainView) : CRendering3dView( pMainView ) {}
 
-	void Setup( const CViewSetup &view );
+	void Setup( const CNewViewSetup &view );
 	void Draw();
 
 private:
@@ -521,7 +521,7 @@ class CSimpleWorldView : public CBaseWorldView
 public:
 	CSimpleWorldView(CViewRender *pMainView) : CBaseWorldView( pMainView ) {}
 
-	void			Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info, ViewCustomVisibility_t *pCustomVisibility = NULL );
+	void			Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info, ViewCustomVisibility_t *pCustomVisibility = NULL );
 	void			Draw();
 
 private:
@@ -542,7 +542,7 @@ public:
 		m_SoftwareIntersectionView( pMainView )
 	{}
 
-	//	void Setup( const CViewSetup &, const WaterRenderInfo_t& info );
+	//	void Setup( const CNewViewSetup &, const WaterRenderInfo_t& info );
 
 protected:
 	void			CalcWaterEyeAdjustments( const VisibleFogVolumeInfo_t &fogInfo, float &newWaterHeight, float &waterZAdjust, bool bSoftwareUserClipPlane );
@@ -586,7 +586,7 @@ public:
 		m_IntersectionView( pMainView )
 	{}
 
-	void Setup(  const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo );
+	void Setup(  const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo );
 	void			Draw();
 
 	class CReflectionView : public CBaseWorldView
@@ -653,7 +653,7 @@ public:
 		m_RefractionView( pMainView )
 	{}
 
-	void			Setup( const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info );
+	void			Setup( const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info );
 	void			Draw();
 
 	class CRefractionView : public CBaseWorldView
@@ -691,7 +691,7 @@ public:
 	virtual bool AdjustView( float flWaterHeight );
 	virtual void PushView( float waterHeight );
 	virtual void PopView( );
-	void Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, const cplane_t &reflectionPlane );
+	void Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, const cplane_t &reflectionPlane );
 	void Draw();
 
 	cplane_t m_ReflectionPlane;
@@ -708,7 +708,7 @@ public:
 	virtual bool AdjustView( float flWaterHeight );
 	virtual void PushView( float waterHeight );
 	virtual void PopView( );
-	void Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, const cplane_t &reflectionPlane );
+	void Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, const cplane_t &reflectionPlane );
 	void Draw();
 
 	cplane_t m_ReflectionPlane;
@@ -823,6 +823,8 @@ CLIENTEFFECT_REGISTER_BEGIN( PrecachePostProcessingEffects )
 	CLIENTEFFECT_MATERIAL( "dev/engine_post" )
 	CLIENTEFFECT_MATERIAL( "dev/motion_blur" )
 	CLIENTEFFECT_MATERIAL( "dev/upscale" )
+	CLIENTEFFECT_MATERIAL("dev/depth_of_field")
+	CLIENTEFFECT_MATERIAL("dev/blurgaussian_3x3")
 
 #ifdef TF_CLIENT_DLL
 	CLIENTEFFECT_MATERIAL( "dev/pyro_blur_filter_y" )
@@ -936,6 +938,11 @@ bool IsMainView ( view_id_t id )
 #else
 	return (id == VIEW_MAIN);
 #endif
+}
+
+bool CurrentViewIsMain()
+{
+	return IsMainView(CurrentViewID());
 }
 
 void FinishCurrentView()
@@ -1058,7 +1065,7 @@ void CViewRender::DrawRenderablesInList( CUtlVector< IClientRenderable * > &list
 // Purpose: Actually draw the view model
 // Input  : drawViewModel -
 //-----------------------------------------------------------------------------
-void CViewRender::DrawViewModels( const CViewSetup &view, bool drawViewmodel )
+void CViewRender::DrawViewModels( const CNewViewSetup &view, bool drawViewmodel )
 {
 	VPROF( "CViewRender::DrawViewModel" );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
@@ -1078,7 +1085,7 @@ void CViewRender::DrawViewModels( const CViewSetup &view, bool drawViewmodel )
 	pRenderContext->MatrixMode( MATERIAL_PROJECTION );
 	pRenderContext->PushMatrix();
 
-	CViewSetup viewModelSetup( view );
+	CNewViewSetup viewModelSetup( view );
 	viewModelSetup.zNear = view.zNearViewmodel;
 	viewModelSetup.zFar = view.zFarViewmodel;
 	viewModelSetup.fov = view.fovViewmodel;
@@ -1317,7 +1324,7 @@ void CViewRender::SetCurrentlyDrawingEntity( C_BaseEntity *pEnt )
 	m_pCurrentlyDrawingEntity = pEnt;
 }
 
-bool CViewRender::UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CViewSetup &shadowViewIn )
+bool CViewRender::UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CNewViewSetup &shadowViewIn )
 {
 	VPROF_INCREMENT_COUNTER( "shadow depth textures rendered", 1 );
 
@@ -1339,7 +1346,7 @@ bool CViewRender::UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *p
 //-----------------------------------------------------------------------------
 // Purpose: Renders world and all entities, etc.
 //-----------------------------------------------------------------------------
-void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxVisible, const CViewSetup &view,
+void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxVisible, const CNewViewSetup &view,
 								int nClearFlags, view_id_t viewID, bool bDrawViewModel, int baseDrawFlags, ViewCustomVisibility_t *pCustomVisibility )
 {
 	VPROF( "CViewRender::ViewDrawScene" );
@@ -1877,7 +1884,7 @@ void CViewRender::DisableFog( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CViewRender::SetupVis( const CViewSetup& view, unsigned int &visFlags, ViewCustomVisibility_t *pCustomVisibility )
+void CViewRender::SetupVis( const CNewViewSetup& view, unsigned int &visFlags, ViewCustomVisibility_t *pCustomVisibility )
 {
 	VPROF( "CViewRender::SetupVis" );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
@@ -1908,11 +1915,11 @@ void CViewRender::RenderPlayerSprites()
 //-----------------------------------------------------------------------------
 // Sets up, cleans up the main 3D view
 //-----------------------------------------------------------------------------
-void CViewRender::SetupMain3DView( const CViewSetup &view, int &nClearFlags )
+void CViewRender::SetupMain3DView( const CNewViewSetup &view, int &nClearFlags )
 {
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
-	// FIXME: I really want these fields removed from CViewSetup
+	// FIXME: I really want these fields removed from CNewViewSetup
 	// and passed in as independent flags
 	// Clear the color here if requested.
 
@@ -1951,12 +1958,12 @@ void CViewRender::SetupMain3DView( const CViewSetup &view, int &nClearFlags )
 	}
 }
 
-void CViewRender::CleanupMain3DView( const CViewSetup &view )
+void CViewRender::CleanupMain3DView( const CNewViewSetup &view )
 {
 	render->PopView( GetFrustum() );
 }
 
-void CViewRender::UpdateCascadedShadow( const CViewSetup &view )
+void CViewRender::UpdateCascadedShadow( const CNewViewSetup &view )
 {
 	static ConVarRef frustrumcull("r_frustumcullworld");
 
@@ -2015,7 +2022,7 @@ void CViewRender::UpdateCascadedShadow( const CViewSetup &view )
 	Vector vecMainViewFwd;
 	AngleVectors( view.angles, &vecMainViewFwd );
 
-	CViewSetup cascadedShadowView;
+	CNewViewSetup cascadedShadowView;
 	cascadedShadowView.angles = angCascadedAngles;
 	cascadedShadowView.m_bOrtho = true;
 
@@ -2156,7 +2163,7 @@ void CViewRender::UpdateCascadedShadow( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // Queues up an overlay rendering
 //-----------------------------------------------------------------------------
-void CViewRender::QueueOverlayRenderView( const CViewSetup &view, int nClearFlags, int whatToDraw )
+void CViewRender::QueueOverlayRenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw )
 {
 	// Can't have 2 in a single scene
 	Assert( !m_bDrawOverlay );
@@ -2206,7 +2213,7 @@ const char *COM_GetModDirectory();
 //			whatToDraw -
 //-----------------------------------------------------------------------------
 // This renders the entire 3D view.
-void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw )
+void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw )
 {
 	m_UnderWaterOverlayMaterial.Shutdown();					// underwater view will set
 
@@ -2240,7 +2247,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 			( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70 ) &&
 			( ( whatToDraw & RENDERVIEW_SUPPRESSMONITORRENDERING ) == 0 ) )
 		{
-			CViewSetup viewMiddle = GetView( STEREO_EYE_MONO );
+			CNewViewSetup viewMiddle = GetView( STEREO_EYE_MONO );
 			DrawMonitors( viewMiddle );
 		}
 	#endif
@@ -2308,9 +2315,19 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 		RenderPlayerSprites();
 
 		// Image-space motion blur
-		if ( !building_cubemaps.GetBool() && view.m_bDoBloomAndToneMapping ) // We probably should use a different view. variable here
+		if ( !building_cubemaps.GetBool() ) // We probably should use a different view. variable here
 		{
-			if ( ( mat_motion_blur_enabled.GetInt() ) && ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 ) )
+			if (IsDepthOfFieldEnabled(&view))
+			{
+				pRenderContext.GetFrom(materials);
+				{
+					PIXEVENT(pRenderContext, "DoDepthOfField()");
+					DoDepthOfField(view);
+				}
+				pRenderContext.SafeRelease();
+			}
+
+			if ( ( mat_motion_blur_enabled.GetInt() ) && ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 ) && (view.m_bDoBloomAndToneMapping) )
 			{
 				pRenderContext.GetFrom( materials );
 				{
@@ -2416,8 +2433,8 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 			tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "DrawOverlay" );
 
 			// This allows us to be ok if there are nested overlay views
-			CViewSetup currentView = m_CurrentView;
-			CViewSetup tempView = m_OverlayViewSetup;
+			CNewViewSetup currentView = m_CurrentView;
+			CNewViewSetup tempView = m_OverlayViewSetup;
 			tempView.fov = ScaleFOVByWidthRatio( tempView.fov, tempView.m_flAspectRatio / ( 4.0f / 3.0f ) );
 			tempView.m_bDoBloomAndToneMapping = false;	// FIXME: Hack to get Mark up and running
 			m_bDrawOverlay = false;
@@ -2629,14 +2646,14 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CViewRender::Render2DEffectsPreHUD( const CViewSetup &view )
+void CViewRender::Render2DEffectsPreHUD( const CNewViewSetup &view )
 {
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CViewRender::Render2DEffectsPostHUD( const CViewSetup &view )
+void CViewRender::Render2DEffectsPostHUD( const CNewViewSetup &view )
 {
 }
 
@@ -2816,7 +2833,7 @@ void CViewRender::DetermineWaterRenderInfo( const VisibleFogVolumeInfo_t &fogVol
 //-----------------------------------------------------------------------------
 // Draws the world and all entities
 //-----------------------------------------------------------------------------
-void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CViewSetup &viewIn, int nClearFlags, ViewCustomVisibility_t *pCustomVisibility )
+void CViewRender::DrawWorldAndEntities( bool bDrawSkybox, const CNewViewSetup &viewIn, int nClearFlags, ViewCustomVisibility_t *pCustomVisibility )
 {
 	MDLCACHE_CRITICAL_SECTION();
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
@@ -2973,11 +2990,11 @@ bool DoesViewPlaneIntersectWater( float waterZ, int leafWaterDataID )
 //			&view - the camera view to render from
 //			nClearFlags -  how to clear the buffer
 //-----------------------------------------------------------------------------
-void CViewRender::ViewDrawScene_PortalStencil( const CViewSetup &viewIn, ViewCustomVisibility_t *pCustomVisibility )
+void CViewRender::ViewDrawScene_PortalStencil( const CNewViewSetup &viewIn, ViewCustomVisibility_t *pCustomVisibility )
 {
 	VPROF( "CViewRender::ViewDrawScene_PortalStencil" );
 
-	CViewSetup view( viewIn );
+	CNewViewSetup view( viewIn );
 
 	// Record old view stats
 	Vector vecOldOrigin = CurrentViewOrigin();
@@ -3107,7 +3124,7 @@ void CViewRender::ViewDrawScene_PortalStencil( const CViewSetup &viewIn, ViewCus
 		pPrimaryWaterRefractionTexture->SwapContents( pReplacementWaterRefractionTexture );
 }
 
-void CViewRender::Draw3dSkyboxworld_Portal( const CViewSetup &view, int &nClearFlags, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible, ITexture *pRenderTarget )
+void CViewRender::Draw3dSkyboxworld_Portal( const CNewViewSetup &view, int &nClearFlags, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible, ITexture *pRenderTarget )
 {
 	CRefPtr<CPortalSkyboxView> pSkyView = new CPortalSkyboxView( this );
 	if ( ( bDrew3dSkybox = pSkyView->Setup( view, &nClearFlags, &nSkyboxVisible, pRenderTarget ) ) == true )
@@ -3142,7 +3159,7 @@ void CViewRender::GetWaterLODParams( float &flCheapWaterStartDistance, float &fl
 // Input  : &view -
 //			&introData -
 //-----------------------------------------------------------------------------
-void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, const IntroData_t &introData )
+void CViewRender::ViewDrawScene_Intro( const CNewViewSetup &view, int nClearFlags, const IntroData_t &introData )
 {
 	VPROF( "CViewRender::ViewDrawScene" );
 
@@ -3169,7 +3186,7 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, 
 
 	if( introData.m_bDrawPrimary  )
 	{
-		CViewSetup playerView( view );
+		CNewViewSetup playerView( view );
 		playerView.origin = introData.m_vecCameraView;
 		playerView.angles = introData.m_vecCameraViewAngles;
 		if ( introData.m_playerViewFOV )
@@ -3333,7 +3350,7 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup &view, int nClearFlags, 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt,
-	const CViewSetup &cameraView, C_BasePlayer *localPlayer, int x, int y, int width, int height )
+	const CNewViewSetup &cameraView, C_BasePlayer *localPlayer, int x, int y, int width, int height )
 {
 #ifdef USE_MONITORS
 	VPROF_INCREMENT_COUNTER( "cameras rendered", 1 );
@@ -3343,7 +3360,7 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 
 	bool fogEnabled = pCameraEnt->IsFogEnabled();
 
-	CViewSetup monitorView = cameraView;
+	CNewViewSetup monitorView = cameraView;
 
 	fogparams_t *pFogParams = NULL;
 
@@ -3403,7 +3420,7 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 	return true;
 }
 
-void CViewRender::DrawMonitors( const CViewSetup &cameraView )
+void CViewRender::DrawMonitors( const CNewViewSetup &cameraView )
 {
 #ifdef PORTAL
 	g_pPortalRender->DrawPortalsToTextures( this, cameraView );
@@ -3547,10 +3564,10 @@ CRendering3dView::CRendering3dView(CViewRender *pMainView) :
 //-----------------------------------------------------------------------------
 // Sort entities in a back-to-front ordering
 //-----------------------------------------------------------------------------
-void CRendering3dView::Setup( const CViewSetup &setup )
+void CRendering3dView::Setup( const CNewViewSetup &setup )
 {
 	// @MULTICORE (toml 8/15/2006): don't reset if parameters don't require it. For now, just reset
-	memcpy( static_cast<CViewSetup *>(this), &setup, sizeof( setup ) );
+	memcpy( static_cast<CNewViewSetup *>(this), &setup, sizeof( setup ) );
 	ReleaseLists();
 
 	m_pRenderablesList = new CClientRenderablesList;
@@ -5108,7 +5125,7 @@ void CSkyboxView::DrawInternal( view_id_t iSkyBoxViewID, bool bInvokePreAndPostR
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool CSkyboxView::Setup( const CViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible )
+bool CSkyboxView::Setup( const CNewViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible )
 {
 	BaseClass::Setup( view );
 
@@ -5160,7 +5177,7 @@ void CSkyboxView::Draw()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool CPortalSkyboxView::Setup( const CViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible, ITexture *pRenderTarget )
+bool CPortalSkyboxView::Setup( const CNewViewSetup &view, int *pClearFlags, SkyboxVisibility_t *pSkyboxVisible, ITexture *pRenderTarget )
 {
 	if ( !BaseClass::Setup( view, pClearFlags, pSkyboxVisible ) )
 		return false;
@@ -5217,7 +5234,7 @@ void CPortalSkyboxView::Draw()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CShadowDepthView::Setup( const CViewSetup &shadowViewIn, ITexture *pRenderTarget, ITexture *pDepthTexture )
+void CShadowDepthView::Setup( const CNewViewSetup &shadowViewIn, ITexture *pRenderTarget, ITexture *pDepthTexture )
 {
 	BaseClass::Setup( shadowViewIn );
 	m_pRenderTarget = pRenderTarget;
@@ -5314,7 +5331,7 @@ void CShadowDepthView::Draw()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CFreezeFrameView::Setup( const CViewSetup &shadowViewIn )
+void CFreezeFrameView::Setup( const CNewViewSetup &shadowViewIn )
 {
 	BaseClass::Setup( shadowViewIn );
 
@@ -5836,7 +5853,7 @@ void CBaseWorldView::DrawDepthOfField( )
 //-----------------------------------------------------------------------------
 // Draws the scene when there's no water or only cheap water
 //-----------------------------------------------------------------------------
-void CSimpleWorldView::Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, ViewCustomVisibility_t *pCustomVisibility )
+void CSimpleWorldView::Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, ViewCustomVisibility_t *pCustomVisibility )
 {
 	BaseClass::Setup( view );
 
@@ -5985,7 +6002,7 @@ void CBaseWaterView::CSoftwareIntersectionView::Draw()
 //-----------------------------------------------------------------------------
 // Draws the scene when the view point is above the level of the water
 //-----------------------------------------------------------------------------
-void CAboveWaterView::Setup( const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
+void CAboveWaterView::Setup( const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
 {
 	BaseClass::Setup( view );
 
@@ -6237,7 +6254,7 @@ void CAboveWaterView::CIntersectionView::Draw()
 //-----------------------------------------------------------------------------
 // Draws the scene when the view point is under the level of the water
 //-----------------------------------------------------------------------------
-void CUnderWaterView::Setup( const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
+void CUnderWaterView::Setup( const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
 {
 	BaseClass::Setup( view );
 
@@ -6391,7 +6408,7 @@ void CUnderWaterView::CRefractionView::Draw()
 //-----------------------------------------------------------------------------
 // Draws the scene when the view contains reflective glass
 //-----------------------------------------------------------------------------
-void CReflectiveGlassView::Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox,
+void CReflectiveGlassView::Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox,
 	const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, const cplane_t &reflectionPlane )
 {
 	BaseClass::Setup( view, nClearFlags, bDrawSkybox, fogInfo, waterInfo, NULL );
@@ -6475,7 +6492,7 @@ void CReflectiveGlassView::Draw()
 //-----------------------------------------------------------------------------
 // Draws the scene when the view contains reflective glass
 //-----------------------------------------------------------------------------
-void CRefractiveGlassView::Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox,
+void CRefractiveGlassView::Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox,
 	const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, const cplane_t &reflectionPlane )
 {
 	BaseClass::Setup( view, nClearFlags, bDrawSkybox, fogInfo, waterInfo, NULL );

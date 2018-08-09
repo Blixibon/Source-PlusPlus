@@ -737,7 +737,7 @@ bool CAI_PlayerAlly::SelectQuestionAndAnswerSpeech( AISpeechSelection_t *pSelect
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response *response )
+void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response &response )
 {
 //#ifdef HL2_EPISODIC
 	CAI_AllySpeechManager *pSpeechManager = GetAllySpeechManager();

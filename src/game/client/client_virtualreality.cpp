@@ -388,7 +388,7 @@ void CClientVirtualReality::DrawMainMenu()
 
 
 	// render the main view
-	CViewSetup viewEye[STEREO_EYE_MAX];
+	CNewViewSetup viewEye[STEREO_EYE_MAX];
 	viewEye[ STEREO_EYE_MONO ].zNear = 0.1;
 	viewEye[ STEREO_EYE_MONO ].zFar = 10000.f;
 	viewEye[ STEREO_EYE_MONO ].angles.Init();
@@ -435,7 +435,7 @@ void CClientVirtualReality::DrawMainMenu()
 //		Offset the incoming view appropriately.
 //		Set up the "middle eye" from that.
 // --------------------------------------------------------------------
-bool CClientVirtualReality::OverrideView ( CViewSetup *pViewMiddle, Vector *pViewModelOrigin, QAngle *pViewModelAngles, HeadtrackMovementMode_t hmmMovementOverride )
+bool CClientVirtualReality::OverrideView ( CNewViewSetup *pViewMiddle, Vector *pViewModelOrigin, QAngle *pViewModelAngles, HeadtrackMovementMode_t hmmMovementOverride )
 {
 	if( !UseVR() )
 	{
@@ -597,7 +597,7 @@ bool CClientVirtualReality::OverrideWeaponHudAimVectors ( Vector *pAimOrigin, Ve
 //		Set up the left and right eyes from the middle eye if stereo is on.
 //		Advise calling soonish after OverrideView().
 // --------------------------------------------------------------------
-bool CClientVirtualReality::OverrideStereoView( CViewSetup *pViewMiddle, CViewSetup *pViewLeft, CViewSetup *pViewRight  )
+bool CClientVirtualReality::OverrideStereoView( CNewViewSetup *pViewMiddle, CNewViewSetup *pViewLeft, CNewViewSetup *pViewRight  )
 {
 	// Everything in here is in Source coordinate space.
 	if( !UseVR() )
@@ -1320,7 +1320,7 @@ void CClientVirtualReality::PostProcessFrame( StereoEye_t eEye )
 // Pastes the HUD directly onto the backbuffer / render target.
 // (higher quality than the RenderHUDQuad() path but can't always be used)
 // --------------------------------------------------------------------
-void CClientVirtualReality::OverlayHUDQuadWithUndistort( const CViewSetup &eyeView, bool bDoUndistort, bool bBlackout, bool bTranslucent )
+void CClientVirtualReality::OverlayHUDQuadWithUndistort( const CNewViewSetup &eyeView, bool bDoUndistort, bool bBlackout, bool bTranslucent )
 {
 	if ( ! UseVR() )
 		return;

@@ -234,9 +234,9 @@ void CZombie::Precache( void )
 {
 	BaseClass::Precache();
 
-	PrecacheModel( "models/zombie/classic.mdl" );
-	PrecacheModel( "models/zombie/classic_torso.mdl" );
-	PrecacheModel( "models/zombie/classic_legs.mdl" );
+	PrecacheModel( "models/zombie_new/classic_new.mdl" );
+	PrecacheModel( "models/zombie_new/classic_new_torso.mdl" );
+	PrecacheModel( "models/zombie_new/classic_new_legs.mdl" );
 
 	PrecacheScriptSound( "Zombie.FootstepRight" );
 	PrecacheScriptSound( "Zombie.FootstepLeft" );
@@ -463,14 +463,14 @@ const char *CZombie::GetHeadcrabModel( void )
 //-----------------------------------------------------------------------------
 const char *CZombie::GetLegsModel( void )
 {
-	return "models/zombie/classic_legs.mdl";
+	return "models/zombie_new/classic_new_legs.mdl";
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 const char *CZombie::GetTorsoModel( void )
 {
-	return "models/zombie/classic_torso.mdl";
+	return "models/zombie_new/classic_new_torso.mdl";
 }
 
 
@@ -482,12 +482,12 @@ void CZombie::SetZombieModel( void )
 
 	if ( m_fIsTorso )
 	{
-		SetModel( "models/zombie/classic_torso.mdl" );
+		SetModel( "models/zombie_new/classic_new_torso.mdl" );
 		SetHullType( HULL_TINY );
 	}
 	else
 	{
-		SetModel( "models/zombie/classic.mdl" );
+		SetModel( "models/zombie_new/classic_new.mdl" );
 		SetHullType( HULL_HUMAN );
 	}
 

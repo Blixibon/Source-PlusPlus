@@ -181,7 +181,7 @@ public:
 
 
 	DECLARE_DATADESC();
-private:
+protected:
 	enum
 	{
 		HUMANOID_LATCHED_EYE	= 0x0001,
@@ -237,7 +237,7 @@ protected:
 	string_t				m_iszCombatExpression;
 	string_t				m_iszDeathExpression;
 
-private:
+protected:
 	//---------------------------------
 
 	//PoseParameter_t			m_ParameterBodyTransY;		// "body_trans_Y"

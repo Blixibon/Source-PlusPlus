@@ -24,8 +24,8 @@ public:
 	virtual void	DrawStencilMask( void );
 	virtual void	DrawPostStencilFixes( void );
 	
-	virtual void	RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CViewSetup &cameraView );
-	virtual void	RenderPortalViewToTexture( CViewRender *pViewRender, const CViewSetup &cameraView );
+	virtual void	RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CNewViewSetup &cameraView );
+	virtual void	RenderPortalViewToTexture( CViewRender *pViewRender, const CNewViewSetup &cameraView );
 	
 	void			AddToVisAsExitPortal( ViewCustomVisibility_t *pCustomVisibility );
 	virtual bool	DoesExitViewIntersectWaterPlane( float waterZ, int leafWaterDataID ) const;
@@ -36,9 +36,9 @@ public:
 	virtual const Vector&	GetFogOrigin( void ) const;
 	virtual void			ShiftFogForExitPortalView() const;
 
-	virtual bool	ShouldUpdatePortalView_BasedOnView( const CViewSetup &currentView, Frustum currentFrustum ); //portal is both visible, and will display at least some portion of a remote view
+	virtual bool	ShouldUpdatePortalView_BasedOnView( const CNewViewSetup &currentView, Frustum currentFrustum ); //portal is both visible, and will display at least some portion of a remote view
 	virtual CPortalRenderable* GetLinkedPortal() const;
-	virtual bool	ShouldUpdateDepthDoublerTexture( const CViewSetup &viewSetup );
+	virtual bool	ShouldUpdateDepthDoublerTexture( const CNewViewSetup &viewSetup );
 	virtual void	DrawPortal( void ); //sort of like what you'd expect to happen in C_BaseAnimating::DrawModel() if portals were fully compatible with models
 
 	virtual void	GetToolRecordingState( bool bActive, KeyValues *msg );

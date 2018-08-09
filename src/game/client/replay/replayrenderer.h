@@ -59,10 +59,10 @@ private:
 	float			GetFramerate() const;
 	void			ComputeSampleCounts( int *pNSamplesPerTimeStep, int *pNTotalSamples ) const;
 	float			GetViewModelFOVOffset();
-	void			SetupDOFMatrixSkewView( const Vector &pos, const QAngle &angles, int nSample, CViewSetup& viewSetup );
+	void			SetupDOFMatrixSkewView( const Vector &pos, const QAngle &angles, int nSample, CNewViewSetup& viewSetup );
 	void			BeginRenderingSample( int nSample, int x, int y, int nWidth, int nHeight, float fTonemapScale );
 	void			EndRendering();
-	void			SetupSampleView( int x, int y, int w, int h, int nSample, CViewSetup& viewSetup );
+	void			SetupSampleView( int x, int y, int w, int h, int nSample, CNewViewSetup& viewSetup );
 	void			InitBuffers( const RenderMovieParams_t &params );
 	void			DrawResolvingQuad( int nWidth, int nHeight );
 	float			GetRenderLength( const CReplay *pReplay );
@@ -73,7 +73,7 @@ private:
 	double			GetShutterSpeed() const;
 	void			ClearToBlack( CTextureReference &buf, int x, int y, int nWidth, int nHeight );
 	bool			SetupJitterTable();
-	void			GetViewSetup( CViewSetup &viewsetup );
+	void			GetViewSetup( CNewViewSetup &viewsetup );
 
 	bool				m_bIsAudioSyncFrame;
 

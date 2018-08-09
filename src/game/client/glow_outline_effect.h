@@ -17,7 +17,7 @@
 #ifdef GLOWS_ENABLE
 
 class C_BaseEntity;
-class CViewSetup;
+class CNewViewSetup;
 class CMatRenderContextPtr;
 
 static const int GLOW_FOR_ALL_SPLIT_SCREEN_SLOTS = -1;
@@ -113,12 +113,12 @@ public:
 		return false;
 	}
 
-	void RenderGlowEffects( const CViewSetup *pSetup, int nSplitScreenSlot );
+	void RenderGlowEffects( const CNewViewSetup *pSetup, int nSplitScreenSlot );
 
 private:
 
-	void RenderGlowModels( const CViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext );
-	void ApplyEntityGlowEffects( const CViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext, float flBloomScale, int x, int y, int w, int h );
+	void RenderGlowModels( const CNewViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext );
+	void ApplyEntityGlowEffects( const CNewViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext, float flBloomScale, int x, int y, int w, int h );
 
 	struct GlowObjectDefinition_t
 	{

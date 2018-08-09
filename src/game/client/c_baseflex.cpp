@@ -943,6 +943,11 @@ void C_BaseFlex::AddVisemesForSentence( Emphasized_Phoneme *classes, float empha
 //-----------------------------------------------------------------------------
 void C_BaseFlex::ProcessVisemes( Emphasized_Phoneme *classes )
 {
+	for (unsigned int i = 0; i < m_vflPhonemeWeights.Count(); i++)
+	{
+		m_vflPhonemeWeights[i] = (m_vflPhonemeWeights[i] * 0.95);
+	}
+
 	// Any sounds being played?
 	if ( !MouthInfo().IsActive() && !MouthInfo().NeedsEnvelope())
 		return;
@@ -993,7 +998,7 @@ void C_BaseFlex::ProcessVisemes( Emphasized_Phoneme *classes )
 		AddVisemesForSentence( classes, emphasis_intensity, sentence, t, dt, juststarted );
 	}
 
-	if (GetModelPtr() && GetModelPtr()->numflexcontrollers() > 0 /* && MouthInfo().NeedsEnvelope()*/)
+	if (GetModelPtr() && GetModelPtr()->numflexcontrollers() > 0 /* && MouthInfo().NeedsEnvelope()*/ && !MouthInfo().IsActive())
 	{
 		static int flexes[] = {
 		AddGlobalFlexController("jaw_drop"),

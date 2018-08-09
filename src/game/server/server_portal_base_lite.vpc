@@ -1,0 +1,24 @@
+//-----------------------------------------------------------------------------
+//	SERVER_PORTAL.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Include "$SRCDIR\game\server\server_episodic_base.vpc"
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"Portal"
+		{
+			$File	"portal\npc_portal_turret_floor.cpp"
+			$File	"portal\npc_portal_turret_ground.cpp"
+			//$File	"portal\npc_rocket_turret.cpp"
+			$File	"portal\npc_security_camera.cpp"
+			$File	"portal\prop_energy_ball.cpp"
+			$File	"portal\prop_glados_core.cpp"
+			$File	"peter\npc_personality_core.cpp"
+		}
+	}
+}

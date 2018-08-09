@@ -116,6 +116,9 @@ enum sharedtasks_e
 		// Set m_hTargetEnt to nearest player
 		TASK_TARGET_PLAYER,
 
+		// Set m_hTargetEnt to the current enemy.
+		TASK_TARGET_ENEMY,
+
 		// Walk to m_hTargetEnt's location
 		TASK_SCRIPT_WALK_TO_TARGET,
 

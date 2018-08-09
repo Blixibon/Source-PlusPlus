@@ -514,7 +514,7 @@ static void OverlayColorRamp( bool bHalfSpace )
 //-----------------------------------------------------------------------------
 // Draws all the debugging info
 //-----------------------------------------------------------------------------
-void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &view )
+void CDebugViewRender::Draw3DDebuggingInfo( const CNewViewSetup &view )
 {
 	VPROF("CViewRender::Draw3DDebuggingInfo");
 
@@ -529,7 +529,7 @@ void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // Draws all the debugging info
 //-----------------------------------------------------------------------------
-void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
+void CDebugViewRender::Draw2DDebuggingInfo( const CNewViewSetup &view )
 {
 	if ( IsX360() && IsRetail() )
 		return;

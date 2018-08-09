@@ -8,7 +8,9 @@
 #include "cbase.h"
 #include "c_ai_basenpc.h"
 #include "beam_shared.h"
+#ifdef PORTAL
 #include "prop_portal_shared.h"
+#endif
 
 
 #define FLOOR_TURRET_PORTAL_EYE_ATTACHMENT 1
@@ -149,11 +151,18 @@ void C_NPC_Portal_FloorTurret::LaserOn( void )
 	rayPath.Init( vecMuzzle, vecMuzzle + vecMuzzleDir * FLOOR_TURRET_PORTAL_LASER_RANGE );
 
 	CTraceFilterSkipClassname traceFilter( this, "prop_energy_ball", COLLISION_GROUP_NONE );
-
-	if ( UTIL_Portal_TraceRay_Beam( rayPath, MASK_SHOT, &traceFilter, &fEndFraction ) )
+#ifdef PORTAL
+	if (UTIL_Portal_TraceRay_Beam(rayPath, MASK_SHOT, &traceFilter, &fEndFraction))
 		vEndPoint = vecMuzzle + vecMuzzleDir * FLOOR_TURRET_PORTAL_LASER_RANGE;	// Trace went through portal and endpoint is unknown
 	else
+#else
+	trace_t tr;
+	enginetrace->TraceRay(rayPath, MASK_SHOT, &traceFilter, &tr);
+	fEndFraction = tr.fraction + 0.0001f;
+#endif // PORTAL
 		vEndPoint = vecMuzzle + vecMuzzleDir * FLOOR_TURRET_PORTAL_LASER_RANGE * fEndFraction;	// Trace hit a wall
+
+
 
 	// The beam is backwards, sort of. The endpoint is the sniper. This is
 	// so that the beam can be tapered to very thin where it emits from the turret.

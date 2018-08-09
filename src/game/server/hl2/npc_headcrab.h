@@ -38,6 +38,8 @@ public:
 	bool	HasHeadroom();
 	void	LeapTouch ( CBaseEntity *pOther );
 	virtual void TouchDamage( CBaseEntity *pOther );
+	// Return true if something happens
+	virtual bool TouchAlly(CBaseEntity *pOther) { return false; }
 	bool	CorpseGib( const CTakeDamageInfo &info );
 	void	Touch( CBaseEntity *pOther );
 	Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
@@ -46,7 +48,7 @@ public:
 	void	Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 
 	float	MaxYawSpeed( void );
-	void	GatherConditions( void );
+	virtual void	GatherConditions( void );
 	void	PrescheduleThink( void );
 	Class_T Classify( void );
 	void	HandleAnimEvent( animevent_t *pEvent );
@@ -245,6 +247,7 @@ public:
 	void TouchDamage( CBaseEntity *pOther );
 	void BiteSound( void );
 	void AttackSound( void );
+	virtual bool TouchAlly(CBaseEntity *pOther);
 
 	//
 	// CAI_BaseNPC implementation.
@@ -253,6 +256,7 @@ public:
 	virtual void BuildScheduleTestBits( void );
 	virtual int SelectSchedule( void );
 	virtual int TranslateSchedule( int scheduleType );
+	void	GatherConditions(void);
 
 	virtual Activity NPC_TranslateActivity( Activity eNewActivity );
 	virtual void HandleAnimEvent( animevent_t *pEvent );
@@ -290,6 +294,8 @@ private:
 	bool m_bPanicState;
 	float m_flPanicStopTime;
 	float m_flNextHopTime;		// Keeps us from hopping too often due to damage.
+
+	AIHANDLE m_hTargetZombie;
 };
 
 

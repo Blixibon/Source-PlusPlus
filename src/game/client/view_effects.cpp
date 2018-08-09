@@ -595,7 +595,7 @@ void CViewEffects::ClearAllFades( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: 
-// Input  : context - Which call to Render is this ( CViewSetup::context )
+// Input  : context - Which call to Render is this ( CNewViewSetup::context )
 //			*r - 
 //			*g - 
 //			*b - 

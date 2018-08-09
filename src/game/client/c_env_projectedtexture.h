@@ -71,7 +71,7 @@ public:
 private:
 
 	void RebuildVolumetricMesh();
-	void GetShadowViewSetup( CViewSetup &setup );
+	void GetShadowViewSetup( CNewViewSetup &setup );
 
 	CTextureReference m_SpotlightTexture;
 

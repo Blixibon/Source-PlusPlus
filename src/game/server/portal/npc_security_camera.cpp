@@ -23,9 +23,11 @@
 #include "basehlcombatweapon_shared.h"
 #include "iservervehicle.h"
 #include "physics_prop_ragdoll.h"
+#ifdef PORTAL
 #include "portal_util_shared.h"
 #include "prop_portal.h"
 #include "portal_player.h"
+#endif
 #include "world.h"
 #include "ai_baseactor.h"		// for Glados ent playing VCDs
 #include "sceneentity.h"		// precacheing vcds
@@ -662,7 +664,7 @@ void CNPC_SecurityCamera::ActiveThink( void )
 	//Calculate dir and dist to enemy
 	Vector	vecDirToEnemy = vecMidEnemy - vecMid;	
 	float	flDistToEnemy = VectorNormalize( vecDirToEnemy );
-
+#ifdef PORTAL
 	CProp_Portal *pPortal = NULL;
 
 	if ( pEnemy->IsAlive() )
@@ -697,7 +699,7 @@ void CNPC_SecurityCamera::ActiveThink( void )
 			pPortal = NULL;
 		}
 	}
-
+#endif
 	// Add noise to the look position
 	--m_iTicksTillNextNoise;
 
@@ -712,12 +714,12 @@ void CNPC_SecurityCamera::ActiveThink( void )
 
 	//We want to look at the enemy's eyes so we don't jitter
 	Vector vEnemyEyes = pEnemy->EyePosition();
-
+#ifdef PORTAL
 	if ( pPortal )
 	{
 		UTIL_Portal_PointTransform( pPortal->m_hLinkedPortal->MatrixThisToLinked(), vEnemyEyes, vEnemyEyes );
 	}
-
+#endif
 	Vector	vecDirToEnemyEyes = ( vEnemyEyes + m_vNoisePos ) - vecMid;
 	VectorNormalize( vecDirToEnemyEyes );
 
@@ -819,12 +821,14 @@ void CNPC_SecurityCamera::SearchThink( void )
 				}
 				else
 				{
+#ifdef PORTAL
 					CProp_Portal *pPortal = FInViewConeThroughPortal( pPlayer );
 					if ( pPortal && FVisibleThroughPortal( pPortal, pPlayer ) )
 					{
 						pEnemy = pPlayer;
 						break;
 					}
+#endif
 				}
 			}
 		}
@@ -1112,15 +1116,17 @@ bool CNPC_SecurityCamera::CanBeAnEnemyOf( CBaseEntity *pEnemy )
 void PlayDismountSounds()
 {
 	// Play GLaDOS's audio reaction
+#ifdef PORTAL
 	CPortal_Player* pPlayer = ToPortalPlayer( UTIL_PlayerByIndex( 1 ) );
+#endif
 	CAI_BaseActor* pGlaDOS  = (CAI_BaseActor*)gEntList.FindEntityByName( NULL, "Aperture_AI" );
-	
+#ifdef PORTAL
 	if ( !pPlayer || !pGlaDOS )
 	{
 		DevMsg( 2, "Could not play CNPC_SecurityCamera dismount scene, make sure actor named 'Aperture_AI' is present in map.\n" );
 		return;
 	}
-
+#endif
 	IGameEvent *event = gameeventmanager->CreateEvent( "security_camera_detached" );
 	if ( event )
 	{
@@ -1133,10 +1139,13 @@ void PlayDismountSounds()
 	{
 		return;
 	}
-
+#ifdef PORTAL
 	pPlayer->IncNumCamerasDetatched();
 	int iNumCamerasDetatched = pPlayer->GetNumCamerasDetatched();
-
+#else
+	static int iNumCamerasDetatched = 0;
+	iNumCamerasDetatched++;
+#endif
 	// If they've knocked down every one possible, play special '1' sound.
 	if ( iNumCamerasDetatched == SECURITY_CAMERA_TOTAL_TO_KNOCK_DOWN )
 	{

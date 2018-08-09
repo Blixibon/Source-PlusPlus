@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+  "$basetexture" "vgui/chapters/bms/chapter-1.vtf"
+  "$vertexalpha" 1
+  "$gammaColorRead" "1"
+  "$linearWrite" "1"
+}

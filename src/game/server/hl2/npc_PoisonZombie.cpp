@@ -22,7 +22,9 @@
 #include "ai_task.h"
 #include "activitylist.h"
 #include "engine/IEngineSound.h"
-#include "npc_BaseZombie.h"
+#include "npc_poisonzombie.h"
+#include "ai_memory.h"
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -134,101 +136,9 @@ static const char *pMoanSounds[] =
 //-----------------------------------------------------------------------------
 ConVar sk_zombie_poison_health( "sk_zombie_poison_health", "0");
 ConVar sk_zombie_poison_dmg_spit( "sk_zombie_poison_dmg_spit","0");
+ConVar sk_crab_regen_time("sk_crab_regen_time", "0.3003", FCVAR_NONE, "Time taken for a headcrab in a nest to regenerate a point of health.");
+extern ConVar	sk_headcrab_poison_health;
 
-class CNPC_PoisonZombie : public CAI_BlendingHost<CNPC_BaseZombie>
-{
-	DECLARE_CLASS( CNPC_PoisonZombie, CAI_BlendingHost<CNPC_BaseZombie> );
-
-public:
-
-	//
-	// CBaseZombie implemenation.
-	//
-	virtual Vector HeadTarget( const Vector &posSrc );
-	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
-	virtual bool IsChopped( const CTakeDamageInfo &info )	{ return false; }
-
-	//
-	// CAI_BaseNPC implementation.
-	//
-	virtual float MaxYawSpeed( void );
-
-	virtual int RangeAttack1Conditions( float flDot, float flDist );
-	virtual int RangeAttack2Conditions( float flDot, float flDist );
-
-	virtual float GetClawAttackRange() const { return 70; }
-
-	virtual void PrescheduleThink( void );
-	virtual void BuildScheduleTestBits( void );
-	virtual int SelectSchedule( void );
-	virtual int SelectFailSchedule( int nFailedSchedule, int nFailedTask, AI_TaskFailureCode_t eTaskFailCode );
-	virtual int TranslateSchedule( int scheduleType );
-
-	virtual bool ShouldPlayIdleSound( void );
-
-	//
-	// CBaseAnimating implementation.
-	//
-	virtual void HandleAnimEvent( animevent_t *pEvent );
-
-	//
-	// CBaseEntity implementation.
-	//
-	virtual void Spawn( void );
-	virtual void Precache( void );
-	virtual void SetZombieModel( void );
-
-	virtual Class_T Classify( void );
-	virtual void Event_Killed( const CTakeDamageInfo &info );
-	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
-
-	DECLARE_DATADESC();
-	DEFINE_CUSTOM_AI;
-
-	void PainSound( const CTakeDamageInfo &info );
-	void AlertSound( void );
-	void IdleSound( void );
-	void AttackSound( void );
-	void AttackHitSound( void );
-	void AttackMissSound( void );
-	void FootstepSound( bool fRightFoot );
-	void FootscuffSound( bool fRightFoot ) {};
-
-	virtual void StopLoopingSounds( void );
-
-protected:
-
-	virtual void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
-	virtual bool MustCloseToAttack( void );
-
-	virtual const char *GetMoanSound( int nSoundIndex );
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
-
-private:
-
-	void BreatheOffShort( void );
-
-	void EnableCrab( int nCrab, bool bEnable );
-	int RandomThrowCrab( void );
-	void EvacuateNest( bool bExplosion, float flDamage, CBaseEntity *pAttacker );
-
-	CSoundPatch *m_pFastBreathSound;
-	CSoundPatch *m_pSlowBreathSound;
-
-	int m_nCrabCount;				// How many headcrabs we have on our back.
-	bool m_bCrabs[MAX_CRABS];		// Which crabs in particular are on our back.
-	float m_flNextCrabThrowTime;	// The next time we are allowed to throw a headcrab.
-
-	float m_flNextPainSoundTime;
-
-	bool m_bNearEnemy;
-
-	// NOT serialized:
-	int m_nThrowCrab;				// The crab we are about to throw.
-};
 
 LINK_ENTITY_TO_CLASS( npc_poisonzombie, CNPC_PoisonZombie );
 
@@ -256,7 +166,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CNPC_PoisonZombie::Precache( void )
 {
-	PrecacheModel("models/zombie/poison.mdl");
+	PrecacheModel("models/zombie_new/poison_new.mdl");
 
 	PrecacheScriptSound( "NPC_PoisonZombie.Die" );
 	PrecacheScriptSound( "NPC_PoisonZombie.ThrowWarn" );
@@ -345,7 +255,7 @@ void CNPC_PoisonZombie::Spawn( void )
 
 	for ( int i = 0; i < MAX_CRABS; i++ )
 	{
-		EnableCrab( i, ( nBitMask & ( 1 << i ) ) != 0 );
+		EnableCrab( i, ( nBitMask & ( 1 << i ) ) != 0, sk_headcrab_poison_health.GetFloat() );
 	}
 }
 
@@ -393,7 +303,7 @@ const char *CNPC_PoisonZombie::GetHeadcrabModel( void )
 //-----------------------------------------------------------------------------
 // Purpose: Turns the given crab on or off.
 //-----------------------------------------------------------------------------
-void CNPC_PoisonZombie::EnableCrab( int nCrab, bool bEnable )
+void CNPC_PoisonZombie::EnableCrab( int nCrab, bool bEnable, float flHealth )
 {
 	ASSERT( ( nCrab >= 0 ) && ( nCrab < MAX_CRABS ) );
 
@@ -402,6 +312,7 @@ void CNPC_PoisonZombie::EnableCrab( int nCrab, bool bEnable )
 		if (m_bCrabs[nCrab] != bEnable)
 		{
 			m_nCrabCount += bEnable ? 1 : -1;
+			m_flCrabHealth[nCrab] = (flHealth > 0.0f) ? flHealth : m_flCrabHealth[nCrab];
 		}
 
 		m_bCrabs[nCrab] = bEnable;
@@ -505,7 +416,7 @@ void CNPC_PoisonZombie::SetZombieModel( void )
 	}
 	else
 	{
-		SetModel( "models/zombie/poison.mdl" );
+		SetModel( "models/zombie_new/poison_new.mdl" );
 		SetHullType(HULL_HUMAN);
 	}
 
@@ -688,6 +599,12 @@ void CNPC_PoisonZombie::HandleAnimEvent( animevent_t *pEvent )
 
 		pCrab->Spawn();
 
+		int iHealth = Floor2Int(m_flCrabHealth[m_nThrowCrab]);
+		//float flHealthAdd = m_flCrabHealth[m_nThrowCrab] - (float)iHealth;
+
+		pCrab->SetHealth(iHealth);
+		//pCrab->TakeHealth(flHealthAdd, DMG_GENERIC);
+
 		pCrab->SetLocalAngles( GetLocalAngles() );
 		pCrab->SetActivity( ACT_RANGE_ATTACK1 );
 		pCrab->SetNextThink( gpGlobals->curtime );
@@ -749,6 +666,66 @@ int CNPC_PoisonZombie::RandomThrowCrab( void )
 	return nCrab;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Returns the index of a randomly chosen crab to throw.
+//-----------------------------------------------------------------------------
+int CNPC_PoisonZombie::RandomAddCrab(void)
+{
+	// FIXME: this could take a long time, theoretically
+	int nCrab = -1;
+	do
+	{
+		int nTest = random->RandomInt(0, 2);
+		if (!m_bCrabs[nTest])
+		{
+			nCrab = nTest;
+		}
+	} while (nCrab == -1);
+
+	return nCrab;
+}
+
+bool CNPC_PoisonZombie::CanAddToNest()
+{
+	if (m_nCrabCount >= MAX_CRABS)
+		return false;
+
+	return true;
+}
+
+bool CNPC_PoisonZombie::AddCrabToNest(CBlackHeadcrab *pCrab)
+{
+	if (!CanAddToNest())
+		return false;
+
+	if (pCrab == nullptr)
+		return false;
+
+	int nCrab = RandomAddCrab();
+	EnableCrab(nCrab, true, pCrab->GetHealth());
+
+	CAI_Enemies *pCrabEnemies = pCrab->GetEnemies();
+
+	AIEnemiesIter_t	iter;
+	for (AI_EnemyInfo_t *pMemory = pCrabEnemies->GetFirst(&iter); pMemory != NULL; pMemory = pCrabEnemies->GetNext(&iter))
+	{
+		if (!pMemory->hEnemy.IsValid())
+			continue;
+
+		AI_EnemyInfo_t *pMyMemory = GetEnemies()->Find(pMemory->hEnemy.Get());
+		if (pMyMemory != nullptr)
+		{
+			if (pMyMemory->timeLastSeen >= pMemory->timeLastSeen)
+				continue;
+		}
+
+		UpdateEnemyMemory(pMemory->hEnemy.Get(), pMemory->vLastKnownLocation, pCrab);
+	}
+
+	pCrab->RemoveDeferred();
+
+	return true;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: The nest is dead! Evacuate the nest!
@@ -793,6 +770,12 @@ void CNPC_PoisonZombie::EvacuateNest( bool bExplosion, float flDamage, CBaseEnti
 
 			CBlackHeadcrab *pCrab = (CBlackHeadcrab *)CreateNoSpawn( GetHeadcrabClassname(), vecPosition, vecAngles, this );
 			pCrab->Spawn();
+
+			int iHealth = Floor2Int(m_flCrabHealth[i]);
+			//float flHealthAdd = m_flCrabHealth[i] - (float)iHealth;
+
+			pCrab->SetHealth(iHealth);
+			//pCrab->TakeHealth(flHealthAdd, DMG_GENERIC);
 
 			if( !HeadcrabFits(pCrab) )
 			{
@@ -863,9 +846,43 @@ void CNPC_PoisonZombie::PrescheduleThink( void )
 		m_bNearEnemy = false;
 	}
 
+
 	BaseClass::PrescheduleThink();
 }
 
+void CNPC_PoisonZombie::NPCThink(void)
+{
+	BaseClass::NPCThink();
+
+	int iDeltaTicks = gpGlobals->tickcount - GetLastThinkTick();
+	HealCrabs(TICKS_TO_TIME(iDeltaTicks));
+}
+
+void CNPC_PoisonZombie::HealCrabs(float flDelta)
+{
+	if (m_nCrabCount <= 0)
+		return;
+
+	if (flDelta <= 0.0f)
+		return;
+
+	for (int i = 0; i < MAX_CRABS; i++)
+	{
+		if (m_bCrabs[i] && m_flCrabHealth[i] < sk_headcrab_poison_health.GetFloat())
+		{
+			float flHealthPerSecond = 1.0f / sk_crab_regen_time.GetFloat();
+
+			float flHealthRegen = flHealthPerSecond * flDelta;
+
+			if (g_pGameRules->IsSkillLevel(SKILL_HARD))
+				flHealthRegen *= 1.5f;
+			else if (g_pGameRules->IsSkillLevel(SKILL_EASY))
+				flHealthRegen *= 0.5f;
+
+			m_flCrabHealth[i] = Min(m_flCrabHealth[i] + flHealthRegen, sk_headcrab_poison_health.GetFloat());
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Allows for modification of the interrupt mask for the current schedule.

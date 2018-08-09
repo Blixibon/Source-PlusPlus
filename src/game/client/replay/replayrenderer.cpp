@@ -545,7 +545,7 @@ float CReplayRenderer::GetViewModelFOVOffset()
 	return flVMDefaultFov - flDefaultFov;
 }
 
-void CReplayRenderer::SetupSampleView( int x, int y, int w, int h, int nSample, CViewSetup& viewSetup )
+void CReplayRenderer::SetupSampleView( int x, int y, int w, int h, int nSample, CNewViewSetup& viewSetup )
 {
 	// Frustum stuff
 
@@ -579,7 +579,7 @@ void CReplayRenderer::SetupSampleView( int x, int y, int w, int h, int nSample, 
 	viewSetup.m_bCacheFullSceneState = m_bCacheFullSceneState;
 }
 
-void CReplayRenderer::SetupDOFMatrixSkewView( const Vector &pos, const QAngle &angles, int nSample, CViewSetup& viewSetup )
+void CReplayRenderer::SetupDOFMatrixSkewView( const Vector &pos, const QAngle &angles, int nSample, CNewViewSetup& viewSetup )
 {
 	Vector vPosition = pos;
 
@@ -916,7 +916,7 @@ void CReplayRenderer::LayoffFrame( int nFrame )
 #endif
 }
 
-void CReplayRenderer::GetViewSetup( CViewSetup &viewsetup )
+void CReplayRenderer::GetViewSetup( CNewViewSetup &viewsetup )
 {
 	extern ConVar v_viewmodel_fov;
 
@@ -929,7 +929,7 @@ void CReplayRenderer::GetViewSetup( CViewSetup &viewsetup )
 
 void CReplayRenderer::RenderLayoffFrame( DmeTime_t time, int nCurSample, int nNumTotalSamples )
 {
-	CViewSetup viewSetup;
+	CNewViewSetup viewSetup;
 	GetViewSetup( viewSetup );
 
 	int x=0, y=0, w=m_RenderParams.m_Settings.m_nWidth, h=m_RenderParams.m_Settings.m_nHeight;

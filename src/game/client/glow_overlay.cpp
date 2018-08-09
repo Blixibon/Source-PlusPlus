@@ -231,7 +231,7 @@ void CGlowOverlay::UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFull
 	{
 		if ( m_bInSky )
 		{
-			const CViewSetup *pViewSetup = view->GetViewSetup();
+			const CNewViewSetup *pViewSetup = view->GetViewSetup();
 			pixelvis_queryparams_t params;
 			params.Init( CurrentViewOrigin() + m_vDirection * (pViewSetup->zFar * 0.999f), m_flProxyRadius, CalcGlowAspect() );
 			params.bSizeInScreenspace = true;

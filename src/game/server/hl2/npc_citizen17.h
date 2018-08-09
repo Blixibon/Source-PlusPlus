@@ -8,7 +8,7 @@
 #ifndef	NPC_CITIZEN_H
 #define	NPC_CITIZEN_H
 
-#include "npc_playercompanion.h"
+#include "peter\npc_playerfollower.h"
 
 #include "ai_behavior_functank.h"
 
@@ -44,7 +44,9 @@ enum CitizenType_t
 	CT_DOWNTRODDEN,
 	CT_REFUGEE,
 	CT_REBEL,
-	CT_UNIQUE
+	CT_UNIQUE,
+	CT_HOSTAGE,
+	CT_LOYALIST
 };
 
 //-----------------------------------------------------------------------------
@@ -63,9 +65,9 @@ enum CitizenExpressionTypes_t
 
 //-------------------------------------
 
-class CNPC_Citizen : public CNPC_PlayerCompanion
+class CNPC_Citizen : public CNPC_PlayerFollower
 {
-	DECLARE_CLASS( CNPC_Citizen, CNPC_PlayerCompanion );
+	DECLARE_CLASS( CNPC_Citizen, CNPC_PlayerFollower);
 public:
 	CNPC_Citizen()
 	 :	m_iHead( -1 )
@@ -83,19 +85,20 @@ public:
 	void			Activate();
 	virtual void	OnGivenWeapon( CBaseCombatWeapon *pNewWeapon );
 	void			FixupMattWeapon();
+	virtual bool	ShouldAutosquad();
 
 #ifdef HL2_EPISODIC
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
 #endif//HL2_EPISODIC
 
-	void			OnRestore();
+	//void			OnRestore();
 	
 	//---------------------------------
 	string_t 		GetModelName() const;
 	
 	Class_T 		Classify();
 
-	bool 			ShouldAlwaysThink();
+	//bool 			ShouldAlwaysThink();
 
 	//---------------------------------
 	// Behavior
@@ -120,8 +123,8 @@ public:
 	bool			ShouldDeferToFollowBehavior();
 	int 			TranslateSchedule( int scheduleType );
 
-	bool			ShouldAcceptGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal );
-	void			OnClearGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal );
+	//bool			ShouldAcceptGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal );
+	//void			OnClearGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal );
 	
 	void 			StartTask( const Task_t *pTask );
 	void 			RunTask( const Task_t *pTask );
@@ -168,33 +171,33 @@ public:
 	bool 			IsCommandable();
 	bool			IsPlayerAlly( CBasePlayer *pPlayer = NULL );
 	bool			CanJoinPlayerSquad();
-	bool			WasInPlayerSquad();
-	bool			HaveCommandGoal() const;
-	bool			IsCommandMoving();
-	bool			ShouldAutoSummon();
+	//bool			WasInPlayerSquad();
+	//bool			HaveCommandGoal() const;
+	//bool			IsCommandMoving();
+	//bool			ShouldAutoSummon();
 	bool 			IsValidCommandTarget( CBaseEntity *pTarget );
 	bool 			NearCommandGoal();
 	bool 			VeryFarFromCommandGoal();
-	bool 			TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies );
-	void 			MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies );
-	void			OnMoveOrder();
-	void 			CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	//bool 			TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies );
+	//void 			MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies );
+	//void			OnMoveOrder();
+	//void 			CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	bool			ShouldSpeakRadio( CBaseEntity *pListener );
 	void			OnMoveToCommandGoalFailed();
-	void			AddToPlayerSquad();
-	void			RemoveFromPlayerSquad();
-	void 			TogglePlayerSquadState();
-	void			UpdatePlayerSquad();
-	static int __cdecl PlayerSquadCandidateSortFunc( const SquadCandidate_t *, const SquadCandidate_t * );
-	void 			FixupPlayerSquad();
-	void 			ClearFollowTarget();
-	void 			UpdateFollowCommandPoint();
-	bool			IsFollowingCommandPoint();
-	CAI_BaseNPC *	GetSquadCommandRepresentative();
+	//void			AddToPlayerSquad();
+	//void			RemoveFromPlayerSquad();
+	//void 			TogglePlayerSquadState();
+	//void			UpdatePlayerSquad();
+	//static int __cdecl PlayerSquadCandidateSortFunc( const SquadCandidate_t *, const SquadCandidate_t * );
+	//void 			FixupPlayerSquad();
+	//void 			ClearFollowTarget();
+	//void 			UpdateFollowCommandPoint();
+	//bool			IsFollowingCommandPoint();
+	//CAI_BaseNPC *	GetSquadCommandRepresentative();
 	void			SetSquad( CAI_Squad *pSquad );
 	void			AddInsignia();
 	void			RemoveInsignia();
-	bool			SpeakCommandResponse( AIConcept_t concept, const char *modifiers = NULL );
+	//bool			SpeakCommandResponse( AIConcept_t concept, const char *modifiers = NULL );
 	
 	//---------------------------------
 	// Scanner interaction
@@ -298,21 +301,21 @@ private:
 	int				m_iAmmoAmount;
 	bool			m_bRPGAvoidPlayer;
 	bool			m_bShouldPatrol;
-	string_t		m_iszOriginalSquad;
-	float			m_flTimeJoinedPlayerSquad;
-	bool			m_bWasInPlayerSquad;
-	float			m_flTimeLastCloseToPlayer;
-	string_t		m_iszDenyCommandConcept;
+	//string_t		m_iszOriginalSquad;
+	//float			m_flTimeJoinedPlayerSquad;
+	//bool			m_bWasInPlayerSquad;
+	//float			m_flTimeLastCloseToPlayer;
+	//string_t		m_iszDenyCommandConcept;
 
-	CSimpleSimTimer	m_AutoSummonTimer;
-	Vector			m_vAutoSummonAnchor;
+	//CSimpleSimTimer	m_AutoSummonTimer;
+	//Vector			m_vAutoSummonAnchor;
 
 	CitizenType_t	m_Type;
 	CitizenExpressionTypes_t	m_ExpressionType;
 
 	int				m_iHead;
 
-	static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
+	//static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
 
 	float			m_flTimePlayerStare;	// The game time at which the player started staring at me.
 	float			m_flTimeNextHealStare;	// Next time I'm allowed to heal a player who is staring at me.
@@ -320,20 +323,20 @@ private:
 	//-----------------------------------------------------
 	//	Outputs
 	//-----------------------------------------------------
-	COutputEvent		m_OnJoinedPlayerSquad;
-	COutputEvent		m_OnLeftPlayerSquad;
-	COutputEvent		m_OnFollowOrder;
-	COutputEvent		m_OnStationOrder; 
-	COutputEvent		m_OnPlayerUse;
+	//COutputEvent		m_OnJoinedPlayerSquad;
+	//COutputEvent		m_OnLeftPlayerSquad;
+	//COutputEvent		m_OnFollowOrder;
+	//COutputEvent		m_OnStationOrder; 
+	//COutputEvent		m_OnPlayerUse;
 	COutputEvent		m_OnNavFailBlocked;
 
 	//-----------------------------------------------------
 	CAI_FuncTankBehavior	m_FuncTankBehavior;
 
-	CHandle<CAI_FollowGoal>	m_hSavedFollowGoalEnt;
+	//CHandle<CAI_FollowGoal>	m_hSavedFollowGoalEnt;
 
 	bool					m_bNotifyNavFailBlocked;
-	bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
+	//bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
 	
 	//-----------------------------------------------------
 	

@@ -22,6 +22,8 @@ CEP2GameStats::CEP2GameStats( void )
 	Q_memset( m_flInchesRemainder, 0, sizeof( m_flInchesRemainder ) );
 	m_pCurrentMap = NULL;
 	m_dictMapStats.Purge();
+
+	gamestats = &s_CEP2GameStats_Singleton;
 }
 
 const char *CEP2GameStats::GetStatSaveFileName( void )

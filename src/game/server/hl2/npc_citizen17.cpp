@@ -47,7 +47,7 @@
 extern ConVar sk_healthkit;
 extern ConVar sk_healthvial;
 
-const int MAX_PLAYER_SQUAD = 4;
+//const int MAX_PLAYER_SQUAD = 4;
 
 ConVar	sk_citizen_health				( "sk_citizen_health",					"0");
 ConVar	sk_citizen_heal_player			( "sk_citizen_heal_player",				"25");
@@ -93,7 +93,7 @@ ConVar player_squad_autosummon_player_tolerance( "player_squad_autosummon_player
 ConVar player_squad_autosummon_time_after_combat( "player_squad_autosummon_time_after_combat", "8" );
 ConVar player_squad_autosummon_debug( "player_squad_autosummon_debug", "0" );
 
-#define ShouldAutosquad() (npc_citizen_auto_player_squad.GetBool())
+//#define ShouldAutosquad() (npc_citizen_auto_player_squad.GetBool())
 
 enum SquadSlot_T
 {
@@ -320,27 +320,27 @@ BEGIN_DATADESC( CNPC_Citizen )
 	DEFINE_KEYFIELD(	m_iAmmoAmount, 				FIELD_INTEGER,	"ammoamount" ),
 	DEFINE_FIELD( 		m_bRPGAvoidPlayer, 			FIELD_BOOLEAN ),
 	DEFINE_FIELD( 		m_bShouldPatrol, 			FIELD_BOOLEAN ),
-	DEFINE_FIELD( 		m_iszOriginalSquad, 		FIELD_STRING ),
-	DEFINE_FIELD( 		m_flTimeJoinedPlayerSquad,	FIELD_TIME ),
-	DEFINE_FIELD( 		m_bWasInPlayerSquad, FIELD_BOOLEAN ),
-	DEFINE_FIELD( 		m_flTimeLastCloseToPlayer,	FIELD_TIME ),
-	DEFINE_EMBEDDED(	m_AutoSummonTimer ),
-	DEFINE_FIELD(		m_vAutoSummonAnchor, FIELD_POSITION_VECTOR ),
+	//DEFINE_FIELD( 		m_iszOriginalSquad, 		FIELD_STRING ),
+	//DEFINE_FIELD( 		m_flTimeJoinedPlayerSquad,	FIELD_TIME ),
+	//DEFINE_FIELD( 		m_bWasInPlayerSquad, FIELD_BOOLEAN ),
+	//DEFINE_FIELD( 		m_flTimeLastCloseToPlayer,	FIELD_TIME ),
+	//DEFINE_EMBEDDED(	m_AutoSummonTimer ),
+	//DEFINE_FIELD(		m_vAutoSummonAnchor, FIELD_POSITION_VECTOR ),
 	DEFINE_KEYFIELD(	m_Type, 					FIELD_INTEGER,	"citizentype" ),
 	DEFINE_KEYFIELD(	m_ExpressionType,			FIELD_INTEGER,	"expressiontype" ),
 	DEFINE_FIELD(		m_iHead,					FIELD_INTEGER ),
 	DEFINE_FIELD(		m_flTimePlayerStare,		FIELD_TIME ),
 	DEFINE_FIELD(		m_flTimeNextHealStare,		FIELD_TIME ),
-	DEFINE_FIELD( 		m_hSavedFollowGoalEnt,		FIELD_EHANDLE ),
+	//DEFINE_FIELD( 		m_hSavedFollowGoalEnt,		FIELD_EHANDLE ),
 	DEFINE_KEYFIELD(	m_bNotifyNavFailBlocked,	FIELD_BOOLEAN, "notifynavfailblocked" ),
-	DEFINE_KEYFIELD(	m_bNeverLeavePlayerSquad,	FIELD_BOOLEAN, "neverleaveplayersquad" ),
-	DEFINE_KEYFIELD(	m_iszDenyCommandConcept,	FIELD_STRING, "denycommandconcept" ),
+	//DEFINE_KEYFIELD(	m_bNeverLeavePlayerSquad,	FIELD_BOOLEAN, "neverleaveplayersquad" ),
+	//DEFINE_KEYFIELD(	m_iszDenyCommandConcept,	FIELD_STRING, "denycommandconcept" ),
 
-	DEFINE_OUTPUT(		m_OnJoinedPlayerSquad,	"OnJoinedPlayerSquad" ),
-	DEFINE_OUTPUT(		m_OnLeftPlayerSquad,	"OnLeftPlayerSquad" ),
-	DEFINE_OUTPUT(		m_OnFollowOrder,		"OnFollowOrder" ),
-	DEFINE_OUTPUT(		m_OnStationOrder,		"OnStationOrder" ),
-	DEFINE_OUTPUT(		m_OnPlayerUse,			"OnPlayerUse" ),
+	//DEFINE_OUTPUT(		m_OnJoinedPlayerSquad,	"OnJoinedPlayerSquad" ),
+	//DEFINE_OUTPUT(		m_OnLeftPlayerSquad,	"OnLeftPlayerSquad" ),
+	//DEFINE_OUTPUT(		m_OnFollowOrder,		"OnFollowOrder" ),
+	//DEFINE_OUTPUT(		m_OnStationOrder,		"OnStationOrder" ),
+	//DEFINE_OUTPUT(		m_OnPlayerUse,			"OnPlayerUse" ),
 	DEFINE_OUTPUT(		m_OnNavFailBlocked,		"OnNavFailBlocked" ),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,	"RemoveFromPlayerSquad", InputRemoveFromPlayerSquad ),
@@ -357,7 +357,7 @@ BEGIN_DATADESC( CNPC_Citizen )
 	DEFINE_INPUTFUNC( FIELD_VOID,   "ThrowHealthKit", InputForceHealthKitToss ),
 #endif
 
-	DEFINE_USEFUNC( CommanderUse ),
+	//DEFINE_USEFUNC( CommanderUse ),
 	DEFINE_USEFUNC( SimpleUse ),
 
 END_DATADESC()
@@ -365,7 +365,12 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
-CSimpleSimTimer CNPC_Citizen::gm_PlayerSquadEvaluateTimer;
+//CSimpleSimTimer CNPC_Citizen::gm_PlayerSquadEvaluateTimer;
+
+bool CNPC_Citizen::ShouldAutosquad()
+{
+	return npc_citizen_auto_player_squad.GetBool();
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -428,7 +433,7 @@ void CNPC_Citizen::PrecacheAllOfType( CitizenType_t type )
 {
 	if ( m_Type == CT_UNIQUE )
 		return;
-
+	/*
 	int nHeads = ARRAYSIZE( g_ppszRandomHeads );
 	int i;
 	for ( i = 0; i < nHeads; ++i )
@@ -447,6 +452,17 @@ void CNPC_Citizen::PrecacheAllOfType( CitizenType_t type )
 			{
 				PrecacheModel( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr(g_ppszModelLocs[m_Type], "m")), g_ppszRandomHeads[i] ) );
 			}
+		}
+	}
+	*/
+
+	int nHeads = ARRAYSIZE(g_ppszRandomHeads);
+	int i;
+	for (i = 0; i < nHeads; ++i)
+	{
+		if (!IsExcludedHead(type, false, i))
+		{
+			PrecacheModel(CFmtStr("models/minic23/citizens/%s", g_ppszRandomHeads[i]));
 		}
 	}
 }
@@ -473,8 +489,65 @@ void CNPC_Citizen::Spawn()
 		gm_PlayerSquadEvaluateTimer.Force();
 	}
 
-	if ( IsAmmoResupplier() )
-		m_nSkin = 2;
+	/*if ( IsAmmoResupplier() )
+		m_nSkin = 2;*/
+	if (m_Type != CT_UNIQUE)
+	{
+		m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+
+		int beanies = FindBodygroupByName("beanies");
+		//int glasses = FindBodygroupByName("glasses");
+		int hands = FindBodygroupByName("hands");
+		int legs = FindBodygroupByName("legs");
+		int torso = FindBodygroupByName("torso");
+
+		/*if (glasses >= 0 && soundemitterbase->GetActorGender(STRING(GetModelName())) == GENDER_MALE)
+		SetBodygroup(glasses, RandomInt(0, 1));*/
+
+		if (beanies >= 0)
+			SetBodygroup(beanies, RandomInt(0, GetBodygroupCount(beanies) - 1));
+
+		if (legs >= 0)
+		{
+			SetBodygroup(legs, RandomInt(0, GetBodygroupCount(legs) - 1));
+		}
+
+		if (hands >= 0 && (m_Type > CT_DOWNTRODDEN && m_Type < CT_HOSTAGE))
+			SetBodygroup(hands, RandomInt(0, GetBodygroupCount(hands) - 1));
+
+		if (torso >= 0)
+		{
+			switch (m_Type)
+			{
+			default:
+			case CT_DOWNTRODDEN:
+				SetBodygroup(torso, RandomInt(0, 2));
+				break;
+
+			case CT_REFUGEE:
+				if (IsMedic())
+					SetBodygroup(torso, 9);
+				else
+					SetBodygroup(torso, RandomInt(3, 4));
+				break;
+
+			case CT_REBEL:
+				if (IsMedic())
+					SetBodygroup(torso, RandomInt(7, 8));
+				else
+					SetBodygroup(torso, RandomInt(5, 6));
+				break;
+
+			case CT_HOSTAGE:
+				SetBodygroup(torso, RandomInt(10, 11));
+				break;
+
+			case CT_LOYALIST:
+				SetBodygroup(torso, RandomInt(12, 14));
+				break;
+			}
+		}
+	}
 	
 	m_bRPGAvoidPlayer = false;
 
@@ -522,6 +595,7 @@ void CNPC_Citizen::Spawn()
 	NPCInit();
 
 	SetUse( &CNPC_Citizen::CommanderUse );
+	SetFollowerBaseUse(&CNPC_Citizen::SimpleUse);
 	Assert( !ShouldAutosquad() || !IsInPlayerSquad() );
 
 	m_bWasInPlayerSquad = IsInPlayerSquad();
@@ -534,28 +608,16 @@ void CNPC_Citizen::Spawn()
 //-----------------------------------------------------------------------------
 void CNPC_Citizen::PostNPCInit()
 {
-	if ( !gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME ) )
-	{
-		CreateEntityByName( COMMAND_POINT_CLASSNAME );
-	}
-	
-	if ( IsInPlayerSquad() )
-	{
-		if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
-			DevMsg( "Error: Spawning citizen in player squad but exceeds squad limit of %d members\n", MAX_PLAYER_SQUAD );
+	BaseClass::PostNPCInit();
 
-		FixupPlayerSquad();
-	}
-	else
+	if (!IsInPlayerSquad())
 	{
-		if ( ( m_spawnflags & SF_CITIZEN_FOLLOW ) && AI_IsSinglePlayer() )
+		if ((m_spawnflags & SF_CITIZEN_FOLLOW) && AI_IsSinglePlayer())
 		{
-			m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
-			m_FollowBehavior.SetParameters( AIF_SIMPLE );
+			m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
+			m_FollowBehavior.SetParameters(AIF_SIMPLE);
 		}
 	}
-
-	BaseClass::PostNPCInit();
 }
 
 //-----------------------------------------------------------------------------
@@ -714,7 +776,9 @@ void CNPC_Citizen::SelectModel()
 	// Unique citizen models are left alone
 	if ( m_Type != CT_UNIQUE )
 	{
-		SetModelName( AllocPooledString( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr(g_ppszModelLocs[ m_Type ], ( IsMedic() ) ? "m" : "" )), pszModelName ) ) );
+		SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s", pszModelName)));
+
+		//SetModelName( AllocPooledString( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr(g_ppszModelLocs[ m_Type ], ( IsMedic() ) ? "m" : "" )), pszModelName ) ) );
 	}
 }
 
@@ -730,6 +794,7 @@ void CNPC_Citizen::SelectExpressionType()
 	switch ( m_Type )
 	{
 	case CT_DOWNTRODDEN:
+	case CT_HOSTAGE:
 		m_ExpressionType = (CitizenExpressionTypes_t)RandomInt( CIT_EXP_SCARED, CIT_EXP_NORMAL );
 		break;
 	case CT_REFUGEE:
@@ -738,7 +803,9 @@ void CNPC_Citizen::SelectExpressionType()
 	case CT_REBEL:
 		m_ExpressionType = (CitizenExpressionTypes_t)RandomInt( CIT_EXP_SCARED, CIT_EXP_ANGRY );
 		break;
-
+	case CT_LOYALIST:
+		m_ExpressionType = CIT_EXP_ANGRY;
+		break;
 	case CT_DEFAULT:
 	case CT_UNIQUE:
 	default:
@@ -779,7 +846,7 @@ void CNPC_Citizen::Activate()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Citizen::OnRestore()
+/*void CNPC_Citizen::OnRestore()
 {
 	gm_PlayerSquadEvaluateTimer.Force();
 
@@ -789,7 +856,7 @@ void CNPC_Citizen::OnRestore()
 	{
 		CreateEntityByName( COMMAND_POINT_CLASSNAME );
 	}
-}
+}*/
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -829,10 +896,10 @@ Class_T	CNPC_Citizen::Classify()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_Citizen::ShouldAlwaysThink() 
-{ 
-	return ( BaseClass::ShouldAlwaysThink() || IsInPlayerSquad() ); 
-}
+//bool CNPC_Citizen::ShouldAlwaysThink() 
+//{ 
+//	return ( BaseClass::ShouldAlwaysThink() || IsInPlayerSquad() ); 
+//}
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1011,8 +1078,8 @@ void CNPC_Citizen::PrescheduleThink()
 {
 	BaseClass::PrescheduleThink();
 
-	UpdatePlayerSquad();
-	UpdateFollowCommandPoint();
+	/*UpdatePlayerSquad();
+	UpdateFollowCommandPoint();*/
 
 	if ( !npc_citizen_insignia.GetBool() && npc_citizen_squad_marker.GetBool() && IsInPlayerSquad() )
 	{
@@ -1515,31 +1582,31 @@ int CNPC_Citizen::TranslateSchedule( int scheduleType )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_Citizen::ShouldAcceptGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal )
-{
-	if ( BaseClass::ShouldAcceptGoal( pBehavior, pGoal ) )
-	{
-		CAI_FollowBehavior *pFollowBehavior = dynamic_cast<CAI_FollowBehavior *>(pBehavior );
-		if ( pFollowBehavior )
-		{
-			if ( IsInPlayerSquad() )
-			{
-				m_hSavedFollowGoalEnt = (CAI_FollowGoal *)pGoal;
-				return false;
-			}
-		}
-		return true;
-	}
-	return false;
-}
+//bool CNPC_Citizen::ShouldAcceptGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal )
+//{
+//	if ( BaseClass::ShouldAcceptGoal( pBehavior, pGoal ) )
+//	{
+//		CAI_FollowBehavior *pFollowBehavior = dynamic_cast<CAI_FollowBehavior *>(pBehavior );
+//		if ( pFollowBehavior )
+//		{
+//			if ( IsInPlayerSquad() )
+//			{
+//				m_hSavedFollowGoalEnt = (CAI_FollowGoal *)pGoal;
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Citizen::OnClearGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal )
-{
-	if ( m_hSavedFollowGoalEnt == pGoal )
-		m_hSavedFollowGoalEnt = NULL;
-}
+//void CNPC_Citizen::OnClearGoal( CAI_BehaviorBase *pBehavior, CAI_GoalEntity *pGoal )
+//{
+//	if ( m_hSavedFollowGoalEnt == pGoal )
+//		m_hSavedFollowGoalEnt = NULL;
+//}
 
 
 //-----------------------------------------------------------------------------
@@ -2340,156 +2407,156 @@ bool CNPC_Citizen::CanJoinPlayerSquad()
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::WasInPlayerSquad()
-{
-	return m_bWasInPlayerSquad;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::HaveCommandGoal() const			
-{	
-	if (GetCommandGoal() != vec3_invalid)
-		return true;
-	return false;
-}
-
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::IsCommandMoving()
-{
-	if ( AI_IsSinglePlayer() && IsInPlayerSquad() )
-	{
-		if ( m_FollowBehavior.GetFollowTarget() == UTIL_GetLocalPlayer() ||
-			 IsFollowingCommandPoint() )
-		{
-			return ( m_FollowBehavior.IsMovingToFollowTarget() );
-		}
-	}
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::ShouldAutoSummon()
-{
-	if ( !AI_IsSinglePlayer() || !IsFollowingCommandPoint() || !IsInPlayerSquad() )
-		return false;
-
-	CHL2_Player *pPlayer = (CHL2_Player *)UTIL_GetLocalPlayer();
-	
-	float distMovedSq = ( pPlayer->GetAbsOrigin() - m_vAutoSummonAnchor ).LengthSqr();
-	float moveTolerance = player_squad_autosummon_move_tolerance.GetFloat() * 12;
-	const Vector &vCommandGoal = GetCommandGoal();
-
-	if ( distMovedSq < Square(moveTolerance * 10) && (GetAbsOrigin() - vCommandGoal).LengthSqr() > Square(10*12) && IsCommandMoving() )
-	{
-		m_AutoSummonTimer.Set( player_squad_autosummon_time.GetFloat() );
-		if ( player_squad_autosummon_debug.GetBool() )
-			DevMsg( "Waiting for arrival before initiating autosummon logic\n");
-	}
-	else if ( m_AutoSummonTimer.Expired() )
-	{
-		bool bSetFollow = false;
-		bool bTestEnemies = true;
-		
-		// Auto summon unconditionally if a significant amount of time has passed
-		if ( gpGlobals->curtime - m_AutoSummonTimer.GetNext() > player_squad_autosummon_time.GetFloat() * 2 )
-		{
-			bSetFollow = true;
-			if ( player_squad_autosummon_debug.GetBool() )
-				DevMsg( "Auto summoning squad: long time (%f)\n", ( gpGlobals->curtime - m_AutoSummonTimer.GetNext() ) + player_squad_autosummon_time.GetFloat() );
-		}
-			
-		// Player must move for autosummon
-		if ( distMovedSq > Square(12) )
-		{
-			bool bCommandPointIsVisible = pPlayer->FVisible( vCommandGoal + pPlayer->GetViewOffset() );
-
-			// Auto summon if the player is close by the command point
-			if ( !bSetFollow && bCommandPointIsVisible && distMovedSq > Square(24) )
-			{
-				float closenessTolerance = player_squad_autosummon_player_tolerance.GetFloat() * 12;
-				if ( (pPlayer->GetAbsOrigin() - vCommandGoal).LengthSqr() < Square( closenessTolerance ) &&
-					 ((m_vAutoSummonAnchor - vCommandGoal).LengthSqr() > Square( closenessTolerance )) )
-				{
-					bSetFollow = true;
-					if ( player_squad_autosummon_debug.GetBool() )
-						DevMsg( "Auto summoning squad: player close to command point (%f)\n", (GetAbsOrigin() - vCommandGoal).Length() );
-				}
-			}
-			
-			// Auto summon if moved a moderate distance and can't see command point, or moved a great distance
-			if ( !bSetFollow )
-			{
-				if ( distMovedSq > Square( moveTolerance * 2 ) )
-				{
-					bSetFollow = true;
-					bTestEnemies = ( distMovedSq < Square( moveTolerance * 10 ) );
-					if ( player_squad_autosummon_debug.GetBool() )
-						DevMsg( "Auto summoning squad: player very far from anchor (%f)\n", sqrt(distMovedSq) );
-				}
-				else if ( distMovedSq > Square( moveTolerance ) )
-				{
-					if ( !bCommandPointIsVisible )
-					{
-						bSetFollow = true;
-						if ( player_squad_autosummon_debug.GetBool() )
-							DevMsg( "Auto summoning squad: player far from anchor (%f)\n", sqrt(distMovedSq) );
-					}
-				}
-			}
-		}
-		
-		// Auto summon only if there are no readily apparent enemies
-		if ( bSetFollow && bTestEnemies )
-		{
-			for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
-			{
-				CAI_BaseNPC *pNpc = g_AI_Manager.AccessAIs()[i];
-				float timeSinceCombatTolerance = player_squad_autosummon_time_after_combat.GetFloat();
-				
-				if ( pNpc->IsInPlayerSquad() )
-				{
-					if ( gpGlobals->curtime - pNpc->GetLastAttackTime() > timeSinceCombatTolerance || 
-						 gpGlobals->curtime - pNpc->GetLastDamageTime() > timeSinceCombatTolerance )
-						continue;
-				}
-				else if ( pNpc->GetEnemy() )
-				{
-					CBaseEntity *pNpcEnemy = pNpc->GetEnemy();
-					if ( !IsSniper( pNpc ) && ( gpGlobals->curtime - pNpc->GetEnemyLastTimeSeen() ) > timeSinceCombatTolerance )
-						continue;
-
-					if ( pNpcEnemy == pPlayer )
-					{
-						if ( pNpc->CanBeAnEnemyOf( pPlayer ) )
-						{
-							bSetFollow = false;
-							break;
-						}
-					}
-					else if ( pNpcEnemy->IsNPC() && ( pNpcEnemy->MyNPCPointer()->GetSquad() == GetSquad() || pNpcEnemy->Classify() == CLASS_PLAYER_ALLY_VITAL ) )
-					{
-						if ( pNpc->CanBeAnEnemyOf( this ) )
-						{
-							bSetFollow = false;
-							break;
-						}
-					}
-				}
-			}
-			if ( !bSetFollow && player_squad_autosummon_debug.GetBool() )
-				DevMsg( "Auto summon REVOKED: Combat recent \n");
-		}
-		
-		return bSetFollow;
-	}
-	return false;
-}
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::WasInPlayerSquad()
+//{
+//	return m_bWasInPlayerSquad;
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::HaveCommandGoal() const			
+//{	
+//	if (GetCommandGoal() != vec3_invalid)
+//		return true;
+//	return false;
+//}
+//
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::IsCommandMoving()
+//{
+//	if ( AI_IsSinglePlayer() && IsInPlayerSquad() )
+//	{
+//		if ( m_FollowBehavior.GetFollowTarget() == UTIL_GetLocalPlayer() ||
+//			 IsFollowingCommandPoint() )
+//		{
+//			return ( m_FollowBehavior.IsMovingToFollowTarget() );
+//		}
+//	}
+//	return false;
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::ShouldAutoSummon()
+//{
+//	if ( !AI_IsSinglePlayer() || !IsFollowingCommandPoint() || !IsInPlayerSquad() )
+//		return false;
+//
+//	CHL2_Player *pPlayer = (CHL2_Player *)UTIL_GetLocalPlayer();
+//	
+//	float distMovedSq = ( pPlayer->GetAbsOrigin() - m_vAutoSummonAnchor ).LengthSqr();
+//	float moveTolerance = player_squad_autosummon_move_tolerance.GetFloat() * 12;
+//	const Vector &vCommandGoal = GetCommandGoal();
+//
+//	if ( distMovedSq < Square(moveTolerance * 10) && (GetAbsOrigin() - vCommandGoal).LengthSqr() > Square(10*12) && IsCommandMoving() )
+//	{
+//		m_AutoSummonTimer.Set( player_squad_autosummon_time.GetFloat() );
+//		if ( player_squad_autosummon_debug.GetBool() )
+//			DevMsg( "Waiting for arrival before initiating autosummon logic\n");
+//	}
+//	else if ( m_AutoSummonTimer.Expired() )
+//	{
+//		bool bSetFollow = false;
+//		bool bTestEnemies = true;
+//		
+//		// Auto summon unconditionally if a significant amount of time has passed
+//		if ( gpGlobals->curtime - m_AutoSummonTimer.GetNext() > player_squad_autosummon_time.GetFloat() * 2 )
+//		{
+//			bSetFollow = true;
+//			if ( player_squad_autosummon_debug.GetBool() )
+//				DevMsg( "Auto summoning squad: long time (%f)\n", ( gpGlobals->curtime - m_AutoSummonTimer.GetNext() ) + player_squad_autosummon_time.GetFloat() );
+//		}
+//			
+//		// Player must move for autosummon
+//		if ( distMovedSq > Square(12) )
+//		{
+//			bool bCommandPointIsVisible = pPlayer->FVisible( vCommandGoal + pPlayer->GetViewOffset() );
+//
+//			// Auto summon if the player is close by the command point
+//			if ( !bSetFollow && bCommandPointIsVisible && distMovedSq > Square(24) )
+//			{
+//				float closenessTolerance = player_squad_autosummon_player_tolerance.GetFloat() * 12;
+//				if ( (pPlayer->GetAbsOrigin() - vCommandGoal).LengthSqr() < Square( closenessTolerance ) &&
+//					 ((m_vAutoSummonAnchor - vCommandGoal).LengthSqr() > Square( closenessTolerance )) )
+//				{
+//					bSetFollow = true;
+//					if ( player_squad_autosummon_debug.GetBool() )
+//						DevMsg( "Auto summoning squad: player close to command point (%f)\n", (GetAbsOrigin() - vCommandGoal).Length() );
+//				}
+//			}
+//			
+//			// Auto summon if moved a moderate distance and can't see command point, or moved a great distance
+//			if ( !bSetFollow )
+//			{
+//				if ( distMovedSq > Square( moveTolerance * 2 ) )
+//				{
+//					bSetFollow = true;
+//					bTestEnemies = ( distMovedSq < Square( moveTolerance * 10 ) );
+//					if ( player_squad_autosummon_debug.GetBool() )
+//						DevMsg( "Auto summoning squad: player very far from anchor (%f)\n", sqrt(distMovedSq) );
+//				}
+//				else if ( distMovedSq > Square( moveTolerance ) )
+//				{
+//					if ( !bCommandPointIsVisible )
+//					{
+//						bSetFollow = true;
+//						if ( player_squad_autosummon_debug.GetBool() )
+//							DevMsg( "Auto summoning squad: player far from anchor (%f)\n", sqrt(distMovedSq) );
+//					}
+//				}
+//			}
+//		}
+//		
+//		// Auto summon only if there are no readily apparent enemies
+//		if ( bSetFollow && bTestEnemies )
+//		{
+//			for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
+//			{
+//				CAI_BaseNPC *pNpc = g_AI_Manager.AccessAIs()[i];
+//				float timeSinceCombatTolerance = player_squad_autosummon_time_after_combat.GetFloat();
+//				
+//				if ( pNpc->IsInPlayerSquad() )
+//				{
+//					if ( gpGlobals->curtime - pNpc->GetLastAttackTime() > timeSinceCombatTolerance || 
+//						 gpGlobals->curtime - pNpc->GetLastDamageTime() > timeSinceCombatTolerance )
+//						continue;
+//				}
+//				else if ( pNpc->GetEnemy() )
+//				{
+//					CBaseEntity *pNpcEnemy = pNpc->GetEnemy();
+//					if ( !IsSniper( pNpc ) && ( gpGlobals->curtime - pNpc->GetEnemyLastTimeSeen() ) > timeSinceCombatTolerance )
+//						continue;
+//
+//					if ( pNpcEnemy == pPlayer )
+//					{
+//						if ( pNpc->CanBeAnEnemyOf( pPlayer ) )
+//						{
+//							bSetFollow = false;
+//							break;
+//						}
+//					}
+//					else if ( pNpcEnemy->IsNPC() && ( pNpcEnemy->MyNPCPointer()->GetSquad() == GetSquad() || pNpcEnemy->Classify() == CLASS_PLAYER_ALLY_VITAL ) )
+//					{
+//						if ( pNpc->CanBeAnEnemyOf( this ) )
+//						{
+//							bSetFollow = false;
+//							break;
+//						}
+//					}
+//				}
+//			}
+//			if ( !bSetFollow && player_squad_autosummon_debug.GetBool() )
+//				DevMsg( "Auto summon REVOKED: Combat recent \n");
+//		}
+//		
+//		return bSetFollow;
+//	}
+//	return false;
+//}
 
 //-----------------------------------------------------------------------------
 // Is this entity something that the citizen should interact with (return true)
@@ -2500,183 +2567,183 @@ bool CNPC_Citizen::IsValidCommandTarget( CBaseEntity *pTarget )
 	return false;
 }
 
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::SpeakCommandResponse( AIConcept_t concept, const char *modifiers )
-{
-	return SpeakIfAllowed( concept, 
-						   CFmtStr( "numselected:%d,"
-									"useradio:%d%s",
-									( GetSquad() ) ? GetSquad()->NumMembers() : 1,
-									ShouldSpeakRadio( AI_GetSinglePlayer() ),
-									( modifiers ) ? CFmtStr(",%s", modifiers).operator const char *() : "" ) );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: return TRUE if the commander mode should try to give this order
-//			to more people. return FALSE otherwise. For instance, we don't
-//			try to send all 3 selectedcitizens to pick up the same gun.
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies )
-{
-	if ( pTarget->IsPlayer() )
-	{
-		// I'm the target! Toggle follow!
-		if( m_FollowBehavior.GetFollowTarget() != pTarget )
-		{
-			ClearFollowTarget();
-			SetCommandGoal( vec3_invalid );
-
-			// Turn follow on!
-			m_AssaultBehavior.Disable();
-			m_FollowBehavior.SetFollowTarget( pTarget );
-			m_FollowBehavior.SetParameters( AIF_SIMPLE );			
-			SpeakCommandResponse( TLK_STARTFOLLOW );
-
-			m_OnFollowOrder.FireOutput( this, this );
-		}
-		else if ( m_FollowBehavior.GetFollowTarget() == pTarget )
-		{
-			// Stop following.
-			m_FollowBehavior.SetFollowTarget( NULL );
-			SpeakCommandResponse( TLK_STOPFOLLOW );
-		}
-	}
-
-	return true;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Turn off following before processing a move order.
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies )
-{
-	if ( !AI_IsSinglePlayer() )
-		return;
-
-	if( hl2_episodic.GetBool() && m_iszDenyCommandConcept != NULL_STRING )
-	{
-		SpeakCommandResponse( STRING(m_iszDenyCommandConcept) );
-		return;
-	}
-
-	CHL2_Player *pPlayer = (CHL2_Player *)UTIL_GetLocalPlayer();
-
-	m_AutoSummonTimer.Set( player_squad_autosummon_time.GetFloat() );
-	m_vAutoSummonAnchor = pPlayer->GetAbsOrigin();
-
-	if( m_StandoffBehavior.IsRunning() )
-	{
-		m_StandoffBehavior.SetStandoffGoalPosition( vecDest );
-	}
-
-	// If in assault, cancel and move.
-	if( m_AssaultBehavior.HasHitRallyPoint() && !m_AssaultBehavior.HasHitAssaultPoint() )
-	{
-		m_AssaultBehavior.Disable();
-		ClearSchedule( "Moving from rally point to assault point" );
-	}
-
-	bool spoke = false;
-
-	CAI_BaseNPC *pClosest = NULL;
-	float closestDistSq = FLT_MAX;
-
-	for( int i = 0 ; i < numAllies ; i++ )
-	{
-		if( Allies[i]->IsInPlayerSquad() )
-		{
-			Assert( Allies[i]->IsCommandable() );
-			float distSq = ( pPlayer->GetAbsOrigin() - Allies[i]->GetAbsOrigin() ).LengthSqr();
-			if( distSq < closestDistSq )
-			{
-				pClosest = Allies[i];
-				closestDistSq = distSq;
-			}
-		}
-	}
-
-	if( m_FollowBehavior.GetFollowTarget() && !IsFollowingCommandPoint() )
-	{
-		ClearFollowTarget();
-#if 0
-		if ( ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr() < Square( 180 ) &&
-			 ( ( vecDest - pPlayer->GetAbsOrigin() ).LengthSqr() < Square( 120 ) || 
-			   ( vecDest - GetAbsOrigin() ).LengthSqr() < Square( 120 ) ) )
-		{
-			if ( pClosest == this )
-				SpeakIfAllowed( TLK_STOPFOLLOW );
-			spoke = true;
-		}
-#endif
-	}
-
-	if ( !spoke && pClosest == this )
-	{
-		float destDistToPlayer = ( vecDest - pPlayer->GetAbsOrigin() ).Length();
-		float destDistToClosest = ( vecDest - GetAbsOrigin() ).Length();
-		CFmtStr modifiers( "commandpoint_dist_to_player:%.0f,"
-						   "commandpoint_dist_to_npc:%.0f",
-						   destDistToPlayer,
-						   destDistToClosest );
-
-		SpeakCommandResponse( TLK_COMMANDED, modifiers );
-	}
-
-	m_OnStationOrder.FireOutput( this, this );
-
-	BaseClass::MoveOrder( vecDest, Allies, numAllies );
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::OnMoveOrder()
-{
-	SetReadinessLevel( AIRL_STIMULATED, false, false );
-	BaseClass::OnMoveOrder();
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
-{
-	m_OnPlayerUse.FireOutput( pActivator, pCaller );
-
-	// Under these conditions, citizens will refuse to go with the player.
-	// Robin: NPCs should always respond to +USE even if someone else has the semaphore.
-	if ( !AI_IsSinglePlayer() || !CanJoinPlayerSquad() )
-	{
-		SimpleUse( pActivator, pCaller, useType, value );
-		return;
-	}
-	
-	if ( pActivator == UTIL_GetLocalPlayer() )
-	{
-		// Don't say hi after you've been addressed by the player
-		SetSpokeConcept( TLK_HELLO, NULL );	
-
-		if ( npc_citizen_auto_player_squad_allow_use.GetBool() )
-		{
-			if ( !ShouldAutosquad() )
-				TogglePlayerSquadState();
-			else if ( !IsInPlayerSquad() && npc_citizen_auto_player_squad_allow_use.GetBool() )
-				AddToPlayerSquad();
-		}
-		else if ( GetCurSchedule() && ConditionInterruptsCurSchedule( COND_IDLE_INTERRUPT ) )
-		{
-			if ( SpeakIfAllowed( TLK_QUESTION, NULL, true ) )
-			{
-				if ( random->RandomInt( 1, 4 ) < 4 )
-				{
-					CBaseEntity *pRespondant = FindSpeechTarget( AIST_NPCS );
-					if ( pRespondant )
-					{
-						g_EventQueue.AddEvent( pRespondant, "SpeakIdleResponse", ( GetTimeSpeechComplete() - gpGlobals->curtime ) + .2, this, this );
-					}
-				}
-			}
-		}
-	}
-}
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::SpeakCommandResponse( AIConcept_t concept, const char *modifiers )
+//{
+//	return SpeakIfAllowed( concept, 
+//						   CFmtStr( "numselected:%d,"
+//									"useradio:%d%s",
+//									( GetSquad() ) ? GetSquad()->NumMembers() : 1,
+//									ShouldSpeakRadio( AI_GetSinglePlayer() ),
+//									( modifiers ) ? CFmtStr(",%s", modifiers).operator const char *() : "" ) );
+//}
+//
+////-----------------------------------------------------------------------------
+//// Purpose: return TRUE if the commander mode should try to give this order
+////			to more people. return FALSE otherwise. For instance, we don't
+////			try to send all 3 selectedcitizens to pick up the same gun.
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::TargetOrder( CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies )
+//{
+//	if ( pTarget->IsPlayer() )
+//	{
+//		// I'm the target! Toggle follow!
+//		if( m_FollowBehavior.GetFollowTarget() != pTarget )
+//		{
+//			ClearFollowTarget();
+//			SetCommandGoal( vec3_invalid );
+//
+//			// Turn follow on!
+//			m_AssaultBehavior.Disable();
+//			m_FollowBehavior.SetFollowTarget( pTarget );
+//			m_FollowBehavior.SetParameters( AIF_SIMPLE );			
+//			SpeakCommandResponse( TLK_STARTFOLLOW );
+//
+//			m_OnFollowOrder.FireOutput( this, this );
+//		}
+//		else if ( m_FollowBehavior.GetFollowTarget() == pTarget )
+//		{
+//			// Stop following.
+//			m_FollowBehavior.SetFollowTarget( NULL );
+//			SpeakCommandResponse( TLK_STOPFOLLOW );
+//		}
+//	}
+//
+//	return true;
+//}
+//
+////-----------------------------------------------------------------------------
+//// Purpose: Turn off following before processing a move order.
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::MoveOrder( const Vector &vecDest, CAI_BaseNPC **Allies, int numAllies )
+//{
+//	if ( !AI_IsSinglePlayer() )
+//		return;
+//
+//	if( hl2_episodic.GetBool() && m_iszDenyCommandConcept != NULL_STRING )
+//	{
+//		SpeakCommandResponse( STRING(m_iszDenyCommandConcept) );
+//		return;
+//	}
+//
+//	CHL2_Player *pPlayer = (CHL2_Player *)UTIL_GetLocalPlayer();
+//
+//	m_AutoSummonTimer.Set( player_squad_autosummon_time.GetFloat() );
+//	m_vAutoSummonAnchor = pPlayer->GetAbsOrigin();
+//
+//	if( m_StandoffBehavior.IsRunning() )
+//	{
+//		m_StandoffBehavior.SetStandoffGoalPosition( vecDest );
+//	}
+//
+//	// If in assault, cancel and move.
+//	if( m_AssaultBehavior.HasHitRallyPoint() && !m_AssaultBehavior.HasHitAssaultPoint() )
+//	{
+//		m_AssaultBehavior.Disable();
+//		ClearSchedule( "Moving from rally point to assault point" );
+//	}
+//
+//	bool spoke = false;
+//
+//	CAI_BaseNPC *pClosest = NULL;
+//	float closestDistSq = FLT_MAX;
+//
+//	for( int i = 0 ; i < numAllies ; i++ )
+//	{
+//		if( Allies[i]->IsInPlayerSquad() )
+//		{
+//			Assert( Allies[i]->IsCommandable() );
+//			float distSq = ( pPlayer->GetAbsOrigin() - Allies[i]->GetAbsOrigin() ).LengthSqr();
+//			if( distSq < closestDistSq )
+//			{
+//				pClosest = Allies[i];
+//				closestDistSq = distSq;
+//			}
+//		}
+//	}
+//
+//	if( m_FollowBehavior.GetFollowTarget() && !IsFollowingCommandPoint() )
+//	{
+//		ClearFollowTarget();
+//#if 0
+//		if ( ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr() < Square( 180 ) &&
+//			 ( ( vecDest - pPlayer->GetAbsOrigin() ).LengthSqr() < Square( 120 ) || 
+//			   ( vecDest - GetAbsOrigin() ).LengthSqr() < Square( 120 ) ) )
+//		{
+//			if ( pClosest == this )
+//				SpeakIfAllowed( TLK_STOPFOLLOW );
+//			spoke = true;
+//		}
+//#endif
+//	}
+//
+//	if ( !spoke && pClosest == this )
+//	{
+//		float destDistToPlayer = ( vecDest - pPlayer->GetAbsOrigin() ).Length();
+//		float destDistToClosest = ( vecDest - GetAbsOrigin() ).Length();
+//		CFmtStr modifiers( "commandpoint_dist_to_player:%.0f,"
+//						   "commandpoint_dist_to_npc:%.0f",
+//						   destDistToPlayer,
+//						   destDistToClosest );
+//
+//		SpeakCommandResponse( TLK_COMMANDED, modifiers );
+//	}
+//
+//	m_OnStationOrder.FireOutput( this, this );
+//
+//	BaseClass::MoveOrder( vecDest, Allies, numAllies );
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::OnMoveOrder()
+//{
+//	SetReadinessLevel( AIRL_STIMULATED, false, false );
+//	BaseClass::OnMoveOrder();
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::CommanderUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+//{
+//	m_OnPlayerUse.FireOutput( pActivator, pCaller );
+//
+//	// Under these conditions, citizens will refuse to go with the player.
+//	// Robin: NPCs should always respond to +USE even if someone else has the semaphore.
+//	if ( !AI_IsSinglePlayer() || !CanJoinPlayerSquad() )
+//	{
+//		SimpleUse( pActivator, pCaller, useType, value );
+//		return;
+//	}
+//	
+//	if ( pActivator == UTIL_GetLocalPlayer() )
+//	{
+//		// Don't say hi after you've been addressed by the player
+//		SetSpokeConcept( TLK_HELLO, NULL );	
+//
+//		if ( npc_citizen_auto_player_squad_allow_use.GetBool() )
+//		{
+//			if ( !ShouldAutosquad() )
+//				TogglePlayerSquadState();
+//			else if ( !IsInPlayerSquad() && npc_citizen_auto_player_squad_allow_use.GetBool() )
+//				AddToPlayerSquad();
+//		}
+//		else if ( GetCurSchedule() && ConditionInterruptsCurSchedule( COND_IDLE_INTERRUPT ) )
+//		{
+//			if ( SpeakIfAllowed( TLK_QUESTION, NULL, true ) )
+//			{
+//				if ( random->RandomInt( 1, 4 ) < 4 )
+//				{
+//					CBaseEntity *pRespondant = FindSpeechTarget( AIST_NPCS );
+//					if ( pRespondant )
+//					{
+//						g_EventQueue.AddEvent( pRespondant, "SpeakIdleResponse", ( GetTimeSpeechComplete() - gpGlobals->curtime ) + .2, this, this );
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -2711,569 +2778,569 @@ void CNPC_Citizen::OnMoveToCommandGoalFailed()
 }
 
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::AddToPlayerSquad()
-{
-	Assert( !IsInPlayerSquad() );
-
-	AddToSquad( AllocPooledString(PLAYER_SQUADNAME) );
-	m_hSavedFollowGoalEnt = m_FollowBehavior.GetFollowGoal();
-	m_FollowBehavior.SetFollowGoalDirect( NULL );
-
-	FixupPlayerSquad();
-
-	SetCondition( COND_PLAYER_ADDED_TO_SQUAD );
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::RemoveFromPlayerSquad()
-{
-	Assert( IsInPlayerSquad() );
-
-	ClearFollowTarget();
-	ClearCommandGoal();
-	if ( m_iszOriginalSquad != NULL_STRING && strcmp( STRING( m_iszOriginalSquad ), PLAYER_SQUADNAME ) != 0 )
-		AddToSquad( m_iszOriginalSquad );
-	else
-		RemoveFromSquad();
-	
-	if ( m_hSavedFollowGoalEnt )
-		m_FollowBehavior.SetFollowGoal( m_hSavedFollowGoalEnt );
-
-	SetCondition( COND_PLAYER_REMOVED_FROM_SQUAD );
-
-	// Don't evaluate the player squad for 2 seconds. 
-	gm_PlayerSquadEvaluateTimer.Set( 2.0 );
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::TogglePlayerSquadState()
-{
-	if ( !AI_IsSinglePlayer() )
-		return;
-
-	if ( !IsInPlayerSquad() )
-	{
-		AddToPlayerSquad();
-
-		if ( HaveCommandGoal() )
-		{
-			SpeakCommandResponse( TLK_COMMANDED );
-		}
-		else if ( m_FollowBehavior.GetFollowTarget() == UTIL_GetLocalPlayer() )
-		{
-			SpeakCommandResponse( TLK_STARTFOLLOW );
-		}
-	}
-	else
-	{
-		SpeakCommandResponse( TLK_STOPFOLLOW );
-		RemoveFromPlayerSquad();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-struct SquadCandidate_t
-{
-	CNPC_Citizen *pCitizen;
-	bool		  bIsInSquad;
-	float		  distSq;
-	int			  iSquadIndex;
-};
-
-void CNPC_Citizen::UpdatePlayerSquad()
-{
-	if ( !AI_IsSinglePlayer() )
-		return;
-
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-	if ( ( pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D() ).LengthSqr() < Square(20*12) )
-		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
-
-	if ( !gm_PlayerSquadEvaluateTimer.Expired() )
-		return;
-
-	gm_PlayerSquadEvaluateTimer.Set( 2.0 );
-
-	// Remove stragglers
-	CAI_Squad *pPlayerSquad = g_AI_SquadManager.FindSquad( MAKE_STRING( PLAYER_SQUADNAME ) );
-	if ( pPlayerSquad )
-	{
-		CUtlVectorFixed<CNPC_Citizen *, MAX_PLAYER_SQUAD> squadMembersToRemove;
-		AISquadIter_t iter;
-
-		for ( CAI_BaseNPC *pPlayerSquadMember = pPlayerSquad->GetFirstMember(&iter); pPlayerSquadMember; pPlayerSquadMember = pPlayerSquad->GetNextMember(&iter) )
-		{
-			if ( pPlayerSquadMember->GetClassname() != GetClassname() )
-				continue;
-
-			CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(pPlayerSquadMember);
-
-			if ( !pCitizen->m_bNeverLeavePlayerSquad &&
-				 pCitizen->m_FollowBehavior.GetFollowTarget() &&
-				 !pCitizen->m_FollowBehavior.FollowTargetVisible() && 
-				 pCitizen->m_FollowBehavior.GetNumFailedFollowAttempts() > 0 && 
-				 gpGlobals->curtime - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted() > 20 &&
-				 ( fabsf(( pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().z - pCitizen->GetAbsOrigin().z )) > 196 ||
-				   ( pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D() ).LengthSqr() > Square(50*12) ) )
-			{
-				if ( DebuggingCommanderMode() )
-				{
-					DevMsg( "Player follower is lost (%d, %f, %d)\n", 
-						 pCitizen->m_FollowBehavior.GetNumFailedFollowAttempts(), 
-						 gpGlobals->curtime - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted(), 
-						 (int)((pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D() ).Length()) );
-				}
-
-				squadMembersToRemove.AddToTail( pCitizen );
-			}
-		}
-
-		for ( int i = 0; i < squadMembersToRemove.Count(); i++ )
-		{
-			squadMembersToRemove[i]->RemoveFromPlayerSquad();
-		}
-	}
-
-	// Autosquadding
-	const float JOIN_PLAYER_XY_TOLERANCE_SQ = Square(36*12);
-	const float UNCONDITIONAL_JOIN_PLAYER_XY_TOLERANCE_SQ = Square(12*12);
-	const float UNCONDITIONAL_JOIN_PLAYER_Z_TOLERANCE = 5*12;
-	const float SECOND_TIER_JOIN_DIST_SQ = Square(48*12);
-	if ( pPlayer && ShouldAutosquad() && !(pPlayer->GetFlags() & FL_NOTARGET ) && pPlayer->IsAlive() )
-	{
-		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-		CUtlVector<SquadCandidate_t> candidates;
-		const Vector &vPlayerPos = pPlayer->GetAbsOrigin();
-		bool bFoundNewGuy = false;
-		int i;
-
-		for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
-		{
-			if ( ppAIs[i]->GetState() == NPC_STATE_DEAD )
-				continue;
-
-			if ( ppAIs[i]->GetClassname() != GetClassname() )
-				continue;
-
-			CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(ppAIs[i]);
-			int iNew;
-
-			if ( pCitizen->IsInPlayerSquad() )
-			{
-				iNew = candidates.AddToTail();
-				candidates[iNew].pCitizen = pCitizen;
-				candidates[iNew].bIsInSquad = true;
-				candidates[iNew].distSq = 0;
-				candidates[iNew].iSquadIndex = pCitizen->GetSquad()->GetSquadIndex( pCitizen );
-			}
-			else
-			{
-				float distSq = (vPlayerPos.AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D()).LengthSqr(); 
-				if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ && 
-					( pCitizen->m_flTimeJoinedPlayerSquad == 0 || gpGlobals->curtime - pCitizen->m_flTimeJoinedPlayerSquad > 60.0 ) && 
-					( pCitizen->m_flTimeLastCloseToPlayer == 0 || gpGlobals->curtime - pCitizen->m_flTimeLastCloseToPlayer > 15.0 ) )
-					continue;
-
-				if ( !pCitizen->CanJoinPlayerSquad() )
-					continue;
-
-				bool bShouldAdd = false;
-
-				if ( pCitizen->HasCondition( COND_SEE_PLAYER ) )
-					bShouldAdd = true;
-				else
-				{
-					bool bPlayerVisible = pCitizen->FVisible( pPlayer );
-					if ( bPlayerVisible )
-					{
-						if ( pCitizen->HasCondition( COND_HEAR_PLAYER ) )
-							bShouldAdd = true;
-						else if ( distSq < UNCONDITIONAL_JOIN_PLAYER_XY_TOLERANCE_SQ && fabsf(vPlayerPos.z - pCitizen->GetAbsOrigin().z) < UNCONDITIONAL_JOIN_PLAYER_Z_TOLERANCE )
-							bShouldAdd = true;
-					}
-				}
-
-				if ( bShouldAdd )
-				{
-					// @TODO (toml 05-25-04): probably everyone in a squad should be a candidate if one of them sees the player
-					AI_Waypoint_t *pPathToPlayer = pCitizen->GetPathfinder()->BuildRoute( pCitizen->GetAbsOrigin(), vPlayerPos, pPlayer, 5*12, NAV_NONE, true );
-					GetPathfinder()->UnlockRouteNodes( pPathToPlayer );
-
-					if ( !pPathToPlayer )
-						continue;
-
-					CAI_Path tempPath;
-					tempPath.SetWaypoints( pPathToPlayer ); // path object will delete waypoints
-
-					iNew = candidates.AddToTail();
-					candidates[iNew].pCitizen = pCitizen;
-					candidates[iNew].bIsInSquad = false;
-					candidates[iNew].distSq = distSq;
-					candidates[iNew].iSquadIndex = -1;
-					
-					bFoundNewGuy = true;
-				}
-			}
-		}
-		
-		if ( bFoundNewGuy )
-		{
-			// Look for second order guys
-			int initialCount = candidates.Count();
-			for ( i = 0; i < initialCount; i++ )
-				candidates[i].pCitizen->AddSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE ); // Prevents double-add
-			for ( i = 0; i < initialCount; i++ )
-			{
-				if ( candidates[i].iSquadIndex == -1 )
-				{
-					for ( int j = 0; j < g_AI_Manager.NumAIs(); j++ )
-					{
-						if ( ppAIs[j]->GetState() == NPC_STATE_DEAD )
-							continue;
-
-						if ( ppAIs[j]->GetClassname() != GetClassname() )
-							continue;
-
-						if ( ppAIs[j]->HasSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE ) )
-							continue; 
-
-						CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(ppAIs[j]);
-
-						float distSq = (vPlayerPos - pCitizen->GetAbsOrigin()).Length2DSqr(); 
-						if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ )
-							continue;
-
-						distSq = (candidates[i].pCitizen->GetAbsOrigin() - pCitizen->GetAbsOrigin()).Length2DSqr(); 
-						if ( distSq > SECOND_TIER_JOIN_DIST_SQ )
-							continue;
-
-						if ( !pCitizen->CanJoinPlayerSquad() )
-							continue;
-
-						if ( !pCitizen->FVisible( pPlayer ) )
-							continue;
-
-						int iNew = candidates.AddToTail();
-						candidates[iNew].pCitizen = pCitizen;
-						candidates[iNew].bIsInSquad = false;
-						candidates[iNew].distSq = distSq;
-						candidates[iNew].iSquadIndex = -1;
-						pCitizen->AddSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE ); // Prevents double-add
-					}
-				}
-			}
-			for ( i = 0; i < candidates.Count(); i++ )
-				candidates[i].pCitizen->RemoveSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE );
-
-			if ( candidates.Count() > MAX_PLAYER_SQUAD )
-			{
-				candidates.Sort( PlayerSquadCandidateSortFunc );
-
-				for ( i = MAX_PLAYER_SQUAD; i < candidates.Count(); i++ )
-				{
-					if ( candidates[i].pCitizen->IsInPlayerSquad() )
-					{
-						candidates[i].pCitizen->RemoveFromPlayerSquad();
-					}
-				}
-			}
-
-			if ( candidates.Count() )
-			{
-				CNPC_Citizen *pClosest = NULL;
-				float closestDistSq = FLT_MAX;
-				int nJoined = 0;
-
-				for ( i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++ )
-				{
-					if ( !candidates[i].pCitizen->IsInPlayerSquad() )
-					{
-						candidates[i].pCitizen->AddToPlayerSquad();
-						nJoined++;
-
-						if ( candidates[i].distSq < closestDistSq )
-						{
-							pClosest = candidates[i].pCitizen;
-							closestDistSq = candidates[i].distSq;
-						}
-					}
-				}
-
-				if ( pClosest )
-				{
-					if ( !pClosest->SpokeConcept( TLK_JOINPLAYER ) )
-					{
-						pClosest->SpeakCommandResponse( TLK_JOINPLAYER, CFmtStr( "numjoining:%d", nJoined ) );
-					}
-					else
-					{
-						pClosest->SpeakCommandResponse( TLK_STARTFOLLOW );
-					}
-
-					for ( i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++ )
-					{
-						candidates[i].pCitizen->SetSpokeConcept( TLK_JOINPLAYER, NULL ); 
-					}
-				}
-			}
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-int CNPC_Citizen::PlayerSquadCandidateSortFunc( const SquadCandidate_t *pLeft, const SquadCandidate_t *pRight )
-{
-	// "Bigger" means less approprate 
-	CNPC_Citizen *pLeftCitizen = pLeft->pCitizen;
-	CNPC_Citizen *pRightCitizen = pRight->pCitizen;
-
-	// Medics are better than anyone
-	if ( pLeftCitizen->IsMedic() && !pRightCitizen->IsMedic() )
-		return -1;
-
-	if ( !pLeftCitizen->IsMedic() && pRightCitizen->IsMedic() )
-		return 1;
-
-	CBaseCombatWeapon *pLeftWeapon = pLeftCitizen->GetActiveWeapon();
-	CBaseCombatWeapon *pRightWeapon = pRightCitizen->GetActiveWeapon();
-	
-	// People with weapons are better than those without
-	if ( pLeftWeapon && !pRightWeapon )
-		return -1;
-		
-	if ( !pLeftWeapon && pRightWeapon )
-		return 1;
-	
-	// Existing squad members are better than non-members
-	if ( pLeft->bIsInSquad && !pRight->bIsInSquad )
-		return -1;
-
-	if ( !pLeft->bIsInSquad && pRight->bIsInSquad )
-		return 1;
-
-	// New squad members are better than older ones
-	if ( pLeft->bIsInSquad && pRight->bIsInSquad )
-		return pRight->iSquadIndex - pLeft->iSquadIndex;
-
-	// Finally, just take the closer
-	return (int)(pRight->distSq - pLeft->distSq);
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::FixupPlayerSquad()
-{
-	if ( !AI_IsSinglePlayer() )
-		return;
-
-	m_flTimeJoinedPlayerSquad = gpGlobals->curtime;
-	m_bWasInPlayerSquad = true;
-	if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
-	{
-		CAI_BaseNPC *pFirstMember = m_pSquad->GetFirstMember(NULL);
-		m_pSquad->RemoveFromSquad( pFirstMember );
-		pFirstMember->ClearCommandGoal();
-
-		CNPC_Citizen *pFirstMemberCitizen = dynamic_cast< CNPC_Citizen * >( pFirstMember );
-		if ( pFirstMemberCitizen )
-		{
-			pFirstMemberCitizen->ClearFollowTarget();
-		}
-		else
-		{
-			CAI_FollowBehavior *pOldMemberFollowBehavior;
-			if ( pFirstMember->GetBehavior( &pOldMemberFollowBehavior ) )
-			{
-				pOldMemberFollowBehavior->SetFollowTarget( NULL );
-			}
-		}
-	}
-
-	ClearFollowTarget();
-
-	CAI_BaseNPC *pLeader = NULL;
-	AISquadIter_t iter;
-	for ( CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter) )
-	{
-		if ( pAllyNpc->IsCommandable() )
-		{
-			pLeader = pAllyNpc;
-			break;
-		}
-	}
-
-	if ( pLeader && pLeader != this )
-	{
-		const Vector &commandGoal = pLeader->GetCommandGoal();
-		if ( commandGoal != vec3_invalid )
-		{
-			SetCommandGoal( commandGoal );
-			SetCondition( COND_RECEIVED_ORDERS ); 
-			OnMoveOrder();
-		}
-		else
-		{
-			CAI_FollowBehavior *pLeaderFollowBehavior;
-			if ( pLeader->GetBehavior( &pLeaderFollowBehavior ) )
-			{
-				m_FollowBehavior.SetFollowTarget( pLeaderFollowBehavior->GetFollowTarget() );
-				m_FollowBehavior.SetParameters( m_FollowBehavior.GetFormation() );
-			}
-
-		}
-	}
-	else
-	{
-		m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
-		m_FollowBehavior.SetParameters( AIF_SIMPLE );
-	}
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::ClearFollowTarget()
-{
-	m_FollowBehavior.SetFollowTarget( NULL );
-	m_FollowBehavior.SetParameters( AIF_SIMPLE );
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Citizen::UpdateFollowCommandPoint()
-{
-	if ( !AI_IsSinglePlayer() )
-		return;
-
-	if ( IsInPlayerSquad() )
-	{
-		if ( HaveCommandGoal() )
-		{
-			CBaseEntity *pFollowTarget = m_FollowBehavior.GetFollowTarget();
-			CBaseEntity *pCommandPoint = gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME );
-			
-			if( !pCommandPoint )
-			{
-				DevMsg("**\nVERY BAD THING\nCommand point vanished! Creating a new one\n**\n");
-				pCommandPoint = CreateEntityByName( COMMAND_POINT_CLASSNAME );
-			}
-
-			if ( pFollowTarget != pCommandPoint )
-			{
-				pFollowTarget = pCommandPoint;
-				m_FollowBehavior.SetFollowTarget( pFollowTarget );
-				m_FollowBehavior.SetParameters( AIF_COMMANDER );
-			}
-			
-			if ( ( pCommandPoint->GetAbsOrigin() - GetCommandGoal() ).LengthSqr() > 0.01 )
-			{
-				UTIL_SetOrigin( pCommandPoint, GetCommandGoal(), false );
-			}
-		}
-		else
-		{
-			if ( IsFollowingCommandPoint() )
-				ClearFollowTarget();
-			if ( m_FollowBehavior.GetFollowTarget() != UTIL_GetLocalPlayer() )
-			{
-				DevMsg( "Expected to be following player, but not\n" );
-				m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
-				m_FollowBehavior.SetParameters( AIF_SIMPLE );
-			}
-		}
-	}
-	else if ( IsFollowingCommandPoint() )
-		ClearFollowTarget();
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Citizen::IsFollowingCommandPoint()
-{
-	CBaseEntity *pFollowTarget = m_FollowBehavior.GetFollowTarget();
-	if ( pFollowTarget )
-		return FClassnameIs( pFollowTarget, COMMAND_POINT_CLASSNAME );
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-struct SquadMemberInfo_t
-{
-	CNPC_Citizen *	pMember;
-	bool			bSeesPlayer;
-	float			distSq;
-};
-
-int __cdecl SquadSortFunc( const SquadMemberInfo_t *pLeft, const SquadMemberInfo_t *pRight )
-{
-	if ( pLeft->bSeesPlayer && !pRight->bSeesPlayer )
-	{
-		return -1;
-	}
-
-	if ( !pLeft->bSeesPlayer && pRight->bSeesPlayer )
-	{
-		return 1;
-	}
-
-	return ( pLeft->distSq - pRight->distSq );
-}
-
-CAI_BaseNPC *CNPC_Citizen::GetSquadCommandRepresentative()
-{
-	if ( !AI_IsSinglePlayer() )
-		return NULL;
-
-	if ( IsInPlayerSquad() )
-	{
-		static float lastTime;
-		static AIHANDLE hCurrent;
-
-		if ( gpGlobals->curtime - lastTime > 2.0 || !hCurrent || !hCurrent->IsInPlayerSquad() ) // hCurrent will be NULL after level change
-		{
-			lastTime = gpGlobals->curtime;
-			hCurrent = NULL;
-
-			CUtlVectorFixed<SquadMemberInfo_t, MAX_SQUAD_MEMBERS> candidates;
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-
-			if ( pPlayer )
-			{
-				AISquadIter_t iter;
-				for ( CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter) )
-				{
-					if ( pAllyNpc->IsCommandable() && dynamic_cast<CNPC_Citizen *>(pAllyNpc) )
-					{
-						int i = candidates.AddToTail();
-						candidates[i].pMember = (CNPC_Citizen *)(pAllyNpc);
-						candidates[i].bSeesPlayer = pAllyNpc->HasCondition( COND_SEE_PLAYER );
-						candidates[i].distSq = ( pAllyNpc->GetAbsOrigin() - pPlayer->GetAbsOrigin() ).LengthSqr();
-					}
-				}
-
-				if ( candidates.Count() > 0 )
-				{
-					candidates.Sort( SquadSortFunc );
-					hCurrent = candidates[0].pMember;
-				}
-			}
-		}
-
-		if ( hCurrent != NULL )
-		{
-			Assert( dynamic_cast<CNPC_Citizen *>(hCurrent.Get()) && hCurrent->IsInPlayerSquad() );
-			return hCurrent;
-		}
-	}
-	return NULL;
-}
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::AddToPlayerSquad()
+//{
+//	Assert( !IsInPlayerSquad() );
+//
+//	AddToSquad( AllocPooledString(PLAYER_SQUADNAME) );
+//	m_hSavedFollowGoalEnt = m_FollowBehavior.GetFollowGoal();
+//	m_FollowBehavior.SetFollowGoalDirect( NULL );
+//
+//	FixupPlayerSquad();
+//
+//	SetCondition( COND_PLAYER_ADDED_TO_SQUAD );
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::RemoveFromPlayerSquad()
+//{
+//	Assert( IsInPlayerSquad() );
+//
+//	ClearFollowTarget();
+//	ClearCommandGoal();
+//	if ( m_iszOriginalSquad != NULL_STRING && strcmp( STRING( m_iszOriginalSquad ), PLAYER_SQUADNAME ) != 0 )
+//		AddToSquad( m_iszOriginalSquad );
+//	else
+//		RemoveFromSquad();
+//	
+//	if ( m_hSavedFollowGoalEnt )
+//		m_FollowBehavior.SetFollowGoal( m_hSavedFollowGoalEnt );
+//
+//	SetCondition( COND_PLAYER_REMOVED_FROM_SQUAD );
+//
+//	// Don't evaluate the player squad for 2 seconds. 
+//	gm_PlayerSquadEvaluateTimer.Set( 2.0 );
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::TogglePlayerSquadState()
+//{
+//	if ( !AI_IsSinglePlayer() )
+//		return;
+//
+//	if ( !IsInPlayerSquad() )
+//	{
+//		AddToPlayerSquad();
+//
+//		if ( HaveCommandGoal() )
+//		{
+//			SpeakCommandResponse( TLK_COMMANDED );
+//		}
+//		else if ( m_FollowBehavior.GetFollowTarget() == UTIL_GetLocalPlayer() )
+//		{
+//			SpeakCommandResponse( TLK_STARTFOLLOW );
+//		}
+//	}
+//	else
+//	{
+//		SpeakCommandResponse( TLK_STOPFOLLOW );
+//		RemoveFromPlayerSquad();
+//	}
+//}
+//
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//struct SquadCandidate_t
+//{
+//	CNPC_Citizen *pCitizen;
+//	bool		  bIsInSquad;
+//	float		  distSq;
+//	int			  iSquadIndex;
+//};
+//
+//void CNPC_Citizen::UpdatePlayerSquad()
+//{
+//	if ( !AI_IsSinglePlayer() )
+//		return;
+//
+//	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+//	if ( ( pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D() ).LengthSqr() < Square(20*12) )
+//		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
+//
+//	if ( !gm_PlayerSquadEvaluateTimer.Expired() )
+//		return;
+//
+//	gm_PlayerSquadEvaluateTimer.Set( 2.0 );
+//
+//	// Remove stragglers
+//	CAI_Squad *pPlayerSquad = g_AI_SquadManager.FindSquad( MAKE_STRING( PLAYER_SQUADNAME ) );
+//	if ( pPlayerSquad )
+//	{
+//		CUtlVectorFixed<CNPC_Citizen *, MAX_PLAYER_SQUAD> squadMembersToRemove;
+//		AISquadIter_t iter;
+//
+//		for ( CAI_BaseNPC *pPlayerSquadMember = pPlayerSquad->GetFirstMember(&iter); pPlayerSquadMember; pPlayerSquadMember = pPlayerSquad->GetNextMember(&iter) )
+//		{
+//			if ( pPlayerSquadMember->GetClassname() != GetClassname() )
+//				continue;
+//
+//			CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(pPlayerSquadMember);
+//
+//			if ( !pCitizen->m_bNeverLeavePlayerSquad &&
+//				 pCitizen->m_FollowBehavior.GetFollowTarget() &&
+//				 !pCitizen->m_FollowBehavior.FollowTargetVisible() && 
+//				 pCitizen->m_FollowBehavior.GetNumFailedFollowAttempts() > 0 && 
+//				 gpGlobals->curtime - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted() > 20 &&
+//				 ( fabsf(( pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().z - pCitizen->GetAbsOrigin().z )) > 196 ||
+//				   ( pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D() ).LengthSqr() > Square(50*12) ) )
+//			{
+//				if ( DebuggingCommanderMode() )
+//				{
+//					DevMsg( "Player follower is lost (%d, %f, %d)\n", 
+//						 pCitizen->m_FollowBehavior.GetNumFailedFollowAttempts(), 
+//						 gpGlobals->curtime - pCitizen->m_FollowBehavior.GetTimeFailFollowStarted(), 
+//						 (int)((pCitizen->m_FollowBehavior.GetFollowTarget()->GetAbsOrigin().AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D() ).Length()) );
+//				}
+//
+//				squadMembersToRemove.AddToTail( pCitizen );
+//			}
+//		}
+//
+//		for ( int i = 0; i < squadMembersToRemove.Count(); i++ )
+//		{
+//			squadMembersToRemove[i]->RemoveFromPlayerSquad();
+//		}
+//	}
+//
+//	// Autosquadding
+//	const float JOIN_PLAYER_XY_TOLERANCE_SQ = Square(36*12);
+//	const float UNCONDITIONAL_JOIN_PLAYER_XY_TOLERANCE_SQ = Square(12*12);
+//	const float UNCONDITIONAL_JOIN_PLAYER_Z_TOLERANCE = 5*12;
+//	const float SECOND_TIER_JOIN_DIST_SQ = Square(48*12);
+//	if ( pPlayer && ShouldAutosquad() && !(pPlayer->GetFlags() & FL_NOTARGET ) && pPlayer->IsAlive() )
+//	{
+//		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+//		CUtlVector<SquadCandidate_t> candidates;
+//		const Vector &vPlayerPos = pPlayer->GetAbsOrigin();
+//		bool bFoundNewGuy = false;
+//		int i;
+//
+//		for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
+//		{
+//			if ( ppAIs[i]->GetState() == NPC_STATE_DEAD )
+//				continue;
+//
+//			if ( ppAIs[i]->GetClassname() != GetClassname() )
+//				continue;
+//
+//			CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(ppAIs[i]);
+//			int iNew;
+//
+//			if ( pCitizen->IsInPlayerSquad() )
+//			{
+//				iNew = candidates.AddToTail();
+//				candidates[iNew].pCitizen = pCitizen;
+//				candidates[iNew].bIsInSquad = true;
+//				candidates[iNew].distSq = 0;
+//				candidates[iNew].iSquadIndex = pCitizen->GetSquad()->GetSquadIndex( pCitizen );
+//			}
+//			else
+//			{
+//				float distSq = (vPlayerPos.AsVector2D() - pCitizen->GetAbsOrigin().AsVector2D()).LengthSqr(); 
+//				if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ && 
+//					( pCitizen->m_flTimeJoinedPlayerSquad == 0 || gpGlobals->curtime - pCitizen->m_flTimeJoinedPlayerSquad > 60.0 ) && 
+//					( pCitizen->m_flTimeLastCloseToPlayer == 0 || gpGlobals->curtime - pCitizen->m_flTimeLastCloseToPlayer > 15.0 ) )
+//					continue;
+//
+//				if ( !pCitizen->CanJoinPlayerSquad() )
+//					continue;
+//
+//				bool bShouldAdd = false;
+//
+//				if ( pCitizen->HasCondition( COND_SEE_PLAYER ) )
+//					bShouldAdd = true;
+//				else
+//				{
+//					bool bPlayerVisible = pCitizen->FVisible( pPlayer );
+//					if ( bPlayerVisible )
+//					{
+//						if ( pCitizen->HasCondition( COND_HEAR_PLAYER ) )
+//							bShouldAdd = true;
+//						else if ( distSq < UNCONDITIONAL_JOIN_PLAYER_XY_TOLERANCE_SQ && fabsf(vPlayerPos.z - pCitizen->GetAbsOrigin().z) < UNCONDITIONAL_JOIN_PLAYER_Z_TOLERANCE )
+//							bShouldAdd = true;
+//					}
+//				}
+//
+//				if ( bShouldAdd )
+//				{
+//					// @TODO (toml 05-25-04): probably everyone in a squad should be a candidate if one of them sees the player
+//					AI_Waypoint_t *pPathToPlayer = pCitizen->GetPathfinder()->BuildRoute( pCitizen->GetAbsOrigin(), vPlayerPos, pPlayer, 5*12, NAV_NONE, true );
+//					GetPathfinder()->UnlockRouteNodes( pPathToPlayer );
+//
+//					if ( !pPathToPlayer )
+//						continue;
+//
+//					CAI_Path tempPath;
+//					tempPath.SetWaypoints( pPathToPlayer ); // path object will delete waypoints
+//
+//					iNew = candidates.AddToTail();
+//					candidates[iNew].pCitizen = pCitizen;
+//					candidates[iNew].bIsInSquad = false;
+//					candidates[iNew].distSq = distSq;
+//					candidates[iNew].iSquadIndex = -1;
+//					
+//					bFoundNewGuy = true;
+//				}
+//			}
+//		}
+//		
+//		if ( bFoundNewGuy )
+//		{
+//			// Look for second order guys
+//			int initialCount = candidates.Count();
+//			for ( i = 0; i < initialCount; i++ )
+//				candidates[i].pCitizen->AddSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE ); // Prevents double-add
+//			for ( i = 0; i < initialCount; i++ )
+//			{
+//				if ( candidates[i].iSquadIndex == -1 )
+//				{
+//					for ( int j = 0; j < g_AI_Manager.NumAIs(); j++ )
+//					{
+//						if ( ppAIs[j]->GetState() == NPC_STATE_DEAD )
+//							continue;
+//
+//						if ( ppAIs[j]->GetClassname() != GetClassname() )
+//							continue;
+//
+//						if ( ppAIs[j]->HasSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE ) )
+//							continue; 
+//
+//						CNPC_Citizen *pCitizen = assert_cast<CNPC_Citizen *>(ppAIs[j]);
+//
+//						float distSq = (vPlayerPos - pCitizen->GetAbsOrigin()).Length2DSqr(); 
+//						if ( distSq > JOIN_PLAYER_XY_TOLERANCE_SQ )
+//							continue;
+//
+//						distSq = (candidates[i].pCitizen->GetAbsOrigin() - pCitizen->GetAbsOrigin()).Length2DSqr(); 
+//						if ( distSq > SECOND_TIER_JOIN_DIST_SQ )
+//							continue;
+//
+//						if ( !pCitizen->CanJoinPlayerSquad() )
+//							continue;
+//
+//						if ( !pCitizen->FVisible( pPlayer ) )
+//							continue;
+//
+//						int iNew = candidates.AddToTail();
+//						candidates[iNew].pCitizen = pCitizen;
+//						candidates[iNew].bIsInSquad = false;
+//						candidates[iNew].distSq = distSq;
+//						candidates[iNew].iSquadIndex = -1;
+//						pCitizen->AddSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE ); // Prevents double-add
+//					}
+//				}
+//			}
+//			for ( i = 0; i < candidates.Count(); i++ )
+//				candidates[i].pCitizen->RemoveSpawnFlags( SF_CITIZEN_NOT_COMMANDABLE );
+//
+//			if ( candidates.Count() > MAX_PLAYER_SQUAD )
+//			{
+//				candidates.Sort( PlayerSquadCandidateSortFunc );
+//
+//				for ( i = MAX_PLAYER_SQUAD; i < candidates.Count(); i++ )
+//				{
+//					if ( candidates[i].pCitizen->IsInPlayerSquad() )
+//					{
+//						candidates[i].pCitizen->RemoveFromPlayerSquad();
+//					}
+//				}
+//			}
+//
+//			if ( candidates.Count() )
+//			{
+//				CNPC_Citizen *pClosest = NULL;
+//				float closestDistSq = FLT_MAX;
+//				int nJoined = 0;
+//
+//				for ( i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++ )
+//				{
+//					if ( !candidates[i].pCitizen->IsInPlayerSquad() )
+//					{
+//						candidates[i].pCitizen->AddToPlayerSquad();
+//						nJoined++;
+//
+//						if ( candidates[i].distSq < closestDistSq )
+//						{
+//							pClosest = candidates[i].pCitizen;
+//							closestDistSq = candidates[i].distSq;
+//						}
+//					}
+//				}
+//
+//				if ( pClosest )
+//				{
+//					if ( !pClosest->SpokeConcept( TLK_JOINPLAYER ) )
+//					{
+//						pClosest->SpeakCommandResponse( TLK_JOINPLAYER, CFmtStr( "numjoining:%d", nJoined ) );
+//					}
+//					else
+//					{
+//						pClosest->SpeakCommandResponse( TLK_STARTFOLLOW );
+//					}
+//
+//					for ( i = 0; i < candidates.Count() && i < MAX_PLAYER_SQUAD; i++ )
+//					{
+//						candidates[i].pCitizen->SetSpokeConcept( TLK_JOINPLAYER, NULL ); 
+//					}
+//				}
+//			}
+//		}
+//	}
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//int CNPC_Citizen::PlayerSquadCandidateSortFunc( const SquadCandidate_t *pLeft, const SquadCandidate_t *pRight )
+//{
+//	// "Bigger" means less approprate 
+//	CNPC_Citizen *pLeftCitizen = pLeft->pCitizen;
+//	CNPC_Citizen *pRightCitizen = pRight->pCitizen;
+//
+//	// Medics are better than anyone
+//	if ( pLeftCitizen->IsMedic() && !pRightCitizen->IsMedic() )
+//		return -1;
+//
+//	if ( !pLeftCitizen->IsMedic() && pRightCitizen->IsMedic() )
+//		return 1;
+//
+//	CBaseCombatWeapon *pLeftWeapon = pLeftCitizen->GetActiveWeapon();
+//	CBaseCombatWeapon *pRightWeapon = pRightCitizen->GetActiveWeapon();
+//	
+//	// People with weapons are better than those without
+//	if ( pLeftWeapon && !pRightWeapon )
+//		return -1;
+//		
+//	if ( !pLeftWeapon && pRightWeapon )
+//		return 1;
+//	
+//	// Existing squad members are better than non-members
+//	if ( pLeft->bIsInSquad && !pRight->bIsInSquad )
+//		return -1;
+//
+//	if ( !pLeft->bIsInSquad && pRight->bIsInSquad )
+//		return 1;
+//
+//	// New squad members are better than older ones
+//	if ( pLeft->bIsInSquad && pRight->bIsInSquad )
+//		return pRight->iSquadIndex - pLeft->iSquadIndex;
+//
+//	// Finally, just take the closer
+//	return (int)(pRight->distSq - pLeft->distSq);
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::FixupPlayerSquad()
+//{
+//	if ( !AI_IsSinglePlayer() )
+//		return;
+//
+//	m_flTimeJoinedPlayerSquad = gpGlobals->curtime;
+//	m_bWasInPlayerSquad = true;
+//	if ( m_pSquad->NumMembers() > MAX_PLAYER_SQUAD )
+//	{
+//		CAI_BaseNPC *pFirstMember = m_pSquad->GetFirstMember(NULL);
+//		m_pSquad->RemoveFromSquad( pFirstMember );
+//		pFirstMember->ClearCommandGoal();
+//
+//		CNPC_Citizen *pFirstMemberCitizen = dynamic_cast< CNPC_Citizen * >( pFirstMember );
+//		if ( pFirstMemberCitizen )
+//		{
+//			pFirstMemberCitizen->ClearFollowTarget();
+//		}
+//		else
+//		{
+//			CAI_FollowBehavior *pOldMemberFollowBehavior;
+//			if ( pFirstMember->GetBehavior( &pOldMemberFollowBehavior ) )
+//			{
+//				pOldMemberFollowBehavior->SetFollowTarget( NULL );
+//			}
+//		}
+//	}
+//
+//	ClearFollowTarget();
+//
+//	CAI_BaseNPC *pLeader = NULL;
+//	AISquadIter_t iter;
+//	for ( CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter) )
+//	{
+//		if ( pAllyNpc->IsCommandable() )
+//		{
+//			pLeader = pAllyNpc;
+//			break;
+//		}
+//	}
+//
+//	if ( pLeader && pLeader != this )
+//	{
+//		const Vector &commandGoal = pLeader->GetCommandGoal();
+//		if ( commandGoal != vec3_invalid )
+//		{
+//			SetCommandGoal( commandGoal );
+//			SetCondition( COND_RECEIVED_ORDERS ); 
+//			OnMoveOrder();
+//		}
+//		else
+//		{
+//			CAI_FollowBehavior *pLeaderFollowBehavior;
+//			if ( pLeader->GetBehavior( &pLeaderFollowBehavior ) )
+//			{
+//				m_FollowBehavior.SetFollowTarget( pLeaderFollowBehavior->GetFollowTarget() );
+//				m_FollowBehavior.SetParameters( m_FollowBehavior.GetFormation() );
+//			}
+//
+//		}
+//	}
+//	else
+//	{
+//		m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
+//		m_FollowBehavior.SetParameters( AIF_SIMPLE );
+//	}
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::ClearFollowTarget()
+//{
+//	m_FollowBehavior.SetFollowTarget( NULL );
+//	m_FollowBehavior.SetParameters( AIF_SIMPLE );
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//void CNPC_Citizen::UpdateFollowCommandPoint()
+//{
+//	if ( !AI_IsSinglePlayer() )
+//		return;
+//
+//	if ( IsInPlayerSquad() )
+//	{
+//		if ( HaveCommandGoal() )
+//		{
+//			CBaseEntity *pFollowTarget = m_FollowBehavior.GetFollowTarget();
+//			CBaseEntity *pCommandPoint = gEntList.FindEntityByClassname( NULL, COMMAND_POINT_CLASSNAME );
+//			
+//			if( !pCommandPoint )
+//			{
+//				DevMsg("**\nVERY BAD THING\nCommand point vanished! Creating a new one\n**\n");
+//				pCommandPoint = CreateEntityByName( COMMAND_POINT_CLASSNAME );
+//			}
+//
+//			if ( pFollowTarget != pCommandPoint )
+//			{
+//				pFollowTarget = pCommandPoint;
+//				m_FollowBehavior.SetFollowTarget( pFollowTarget );
+//				m_FollowBehavior.SetParameters( AIF_COMMANDER );
+//			}
+//			
+//			if ( ( pCommandPoint->GetAbsOrigin() - GetCommandGoal() ).LengthSqr() > 0.01 )
+//			{
+//				UTIL_SetOrigin( pCommandPoint, GetCommandGoal(), false );
+//			}
+//		}
+//		else
+//		{
+//			if ( IsFollowingCommandPoint() )
+//				ClearFollowTarget();
+//			if ( m_FollowBehavior.GetFollowTarget() != UTIL_GetLocalPlayer() )
+//			{
+//				DevMsg( "Expected to be following player, but not\n" );
+//				m_FollowBehavior.SetFollowTarget( UTIL_GetLocalPlayer() );
+//				m_FollowBehavior.SetParameters( AIF_SIMPLE );
+//			}
+//		}
+//	}
+//	else if ( IsFollowingCommandPoint() )
+//		ClearFollowTarget();
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//bool CNPC_Citizen::IsFollowingCommandPoint()
+//{
+//	CBaseEntity *pFollowTarget = m_FollowBehavior.GetFollowTarget();
+//	if ( pFollowTarget )
+//		return FClassnameIs( pFollowTarget, COMMAND_POINT_CLASSNAME );
+//	return false;
+//}
+//
+////-----------------------------------------------------------------------------
+////-----------------------------------------------------------------------------
+//struct SquadMemberInfo_t
+//{
+//	CNPC_Citizen *	pMember;
+//	bool			bSeesPlayer;
+//	float			distSq;
+//};
+//
+//int __cdecl SquadSortFunc( const SquadMemberInfo_t *pLeft, const SquadMemberInfo_t *pRight )
+//{
+//	if ( pLeft->bSeesPlayer && !pRight->bSeesPlayer )
+//	{
+//		return -1;
+//	}
+//
+//	if ( !pLeft->bSeesPlayer && pRight->bSeesPlayer )
+//	{
+//		return 1;
+//	}
+//
+//	return ( pLeft->distSq - pRight->distSq );
+//}
+//
+//CAI_BaseNPC *CNPC_Citizen::GetSquadCommandRepresentative()
+//{
+//	if ( !AI_IsSinglePlayer() )
+//		return NULL;
+//
+//	if ( IsInPlayerSquad() )
+//	{
+//		static float lastTime;
+//		static AIHANDLE hCurrent;
+//
+//		if ( gpGlobals->curtime - lastTime > 2.0 || !hCurrent || !hCurrent->IsInPlayerSquad() ) // hCurrent will be NULL after level change
+//		{
+//			lastTime = gpGlobals->curtime;
+//			hCurrent = NULL;
+//
+//			CUtlVectorFixed<SquadMemberInfo_t, MAX_SQUAD_MEMBERS> candidates;
+//			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+//
+//			if ( pPlayer )
+//			{
+//				AISquadIter_t iter;
+//				for ( CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter) )
+//				{
+//					if ( pAllyNpc->IsCommandable() && dynamic_cast<CNPC_Citizen *>(pAllyNpc) )
+//					{
+//						int i = candidates.AddToTail();
+//						candidates[i].pMember = (CNPC_Citizen *)(pAllyNpc);
+//						candidates[i].bSeesPlayer = pAllyNpc->HasCondition( COND_SEE_PLAYER );
+//						candidates[i].distSq = ( pAllyNpc->GetAbsOrigin() - pPlayer->GetAbsOrigin() ).LengthSqr();
+//					}
+//				}
+//
+//				if ( candidates.Count() > 0 )
+//				{
+//					candidates.Sort( SquadSortFunc );
+//					hCurrent = candidates[0].pMember;
+//				}
+//			}
+//		}
+//
+//		if ( hCurrent != NULL )
+//		{
+//			Assert( dynamic_cast<CNPC_Citizen *>(hCurrent.Get()) && hCurrent->IsInPlayerSquad() );
+//			return hCurrent;
+//		}
+//	}
+//	return NULL;
+//}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -3285,7 +3352,7 @@ void CNPC_Citizen::SetSquad( CAI_Squad *pSquad )
 
 	if( IsInPlayerSquad() && !bWasInPlayerSquad )
 	{
-		m_OnJoinedPlayerSquad.FireOutput(this, this);
+		//m_OnJoinedPlayerSquad.FireOutput(this, this);
 		if ( npc_citizen_insignia.GetBool() )
 			AddInsignia();
 	}
@@ -3293,7 +3360,7 @@ void CNPC_Citizen::SetSquad( CAI_Squad *pSquad )
 	{
 		if ( npc_citizen_insignia.GetBool() )
 			RemoveInsignia();
-		m_OnLeftPlayerSquad.FireOutput(this, this);
+		//m_OnLeftPlayerSquad.FireOutput(this, this);
 	}
 }
 

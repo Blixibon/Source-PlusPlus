@@ -757,7 +757,7 @@ void UpdateClassImageEntity(
 	pPlayerModel->FrameAdvance( gpGlobals->frametime );
 
 	// Now draw it.
-	CViewSetup view;
+	CNewViewSetup view;
 	view.x = x;
 	view.y = y;
 	view.width = width;

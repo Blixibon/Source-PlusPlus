@@ -16,7 +16,7 @@
 #include "basecombatweapon_shared.h"
 #include "weapons_resource.h"
 
-class CViewSetup;
+class CNewViewSetup;
 class C_BaseViewModel;
 
 // Accessors for local weapons

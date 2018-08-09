@@ -1,0 +1,203 @@
+criterion IsCore "classname" "npc_personality_core" required
+criterion IsTargetCore "speechtarget" "npc_personality_core" required
+criterion IsWheatley "coretype" "0" required
+criterion IsTargetWheatley "targetcoretype" "0" required
+criterion IsRick "coretype" "1" required
+criterion IsSpace "coretype" "2" required
+criterion IsFact "coretype" "3" required
+criterion IsTargetRick "targetcoretype" "1" required
+criterion IsTargetSpace "targetcoretype" "2" required
+criterion IsTargetFact "targetcoretype" "3" required
+
+response WheatleyTalk
+{
+	scene "scenes/wheatley/sp_a2_bts5_hack03.vcd"
+	scene "scenes/wheatley/sp_a2_bts5_hack05.vcd"
+	scene "scenes/wheatley/sp_a2_bts5_hack11.vcd"
+	scene "scenes/wheatley/sp_a2_bts5_hack12.vcd"
+	scene "scenes/wheatley/sp_a2_bts5_hack13.vcd"
+	scene "scenes/wheatley/sp_a2_bts6_tuberide01.vcd"
+	scene "scenes/wheatley/sp_a2_tube_ride02.vcd"
+	scene "scenes/wheatley/sphere_flashlight_tour63.vcd"
+}
+
+response WheatleyHello
+{
+	scene "scenes/wheatley/fgb_hello01.vcd"
+}
+
+response WheatleyAnswerQuest
+{
+	//response WheatleyHello
+	scene "scenes/wheatley/sp_a2_core_what.vcd"
+}
+
+response WheatleyPain
+{
+	scene "scenes/wheatley/sp_a2_wheatley_ows01.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows02.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows05.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows06.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows10.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows12.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows15.vcd"
+	scene "scenes/wheatley/sp_a2_wheatley_ows18.vcd"
+}
+
+response RickTalk
+{
+	scene "scenes/rick/babble01.vcd"
+	scene "scenes/rick/babble02.vcd"
+	scene "scenes/rick/babble05.vcd"
+	scene "scenes/rick/babble10.vcd"
+	scene "scenes/rick/babble11.vcd"
+	scene "scenes/rick/babble16.vcd"
+	scene "scenes/rick/babble17.vcd"
+	scene "scenes/rick/babble18.vcd"
+	scene "scenes/rick/babble29.vcd"
+	scene "scenes/rick/babble30.vcd"
+}
+
+response RickFactResponse
+{
+	scene "scenes/rick/factresponse01.vcd"
+	scene "scenes/rick/factresponse02.vcd"
+	scene "scenes/rick/factresponse03.vcd"
+	scene "scenes/rick/factresponse04.vcd"
+	scene "scenes/rick/factresponse05.vcd"
+	scene "scenes/rick/factresponse06.vcd"
+	scene "scenes/rick/factresponse07.vcd"
+}
+
+response RickSpaceResponse
+{
+	scene "scenes/rick/spaceresponse01.vcd"
+	scene "scenes/rick/spaceresponse02.vcd"
+	scene "scenes/rick/spaceresponse03.vcd"
+	scene "scenes/rick/spaceresponse04.vcd"
+	scene "scenes/rick/spaceresponse05.vcd"
+}
+
+response SpaceTalk
+{
+	scene "scenes/sputnik/babble16.vcd"
+	scene "scenes/sputnik/babble19.vcd"
+	scene "scenes/sputnik/babble20.vcd"
+	scene "scenes/sputnik/babble28.vcd"
+	scene "scenes/sputnik/babble49.vcd"
+	scene "scenes/sputnik/babble57.vcd"
+	scene "scenes/sputnik/babble61.vcd"
+	scene "scenes/sputnik/babble62.vcd"
+	scene "scenes/sputnik/babble88.vcd"
+	scene "scenes/sputnik/babbleb01.vcd"
+	scene "scenes/sputnik/babbleb02.vcd"
+	scene "scenes/sputnik/babbleb03.vcd"
+	scene "scenes/sputnik/babbleb11.vcd"
+	scene "scenes/sputnik/babbleb19.vcd"
+	scene "scenes/sputnik/babbleb21.vcd"
+	scene "scenes/sputnik/babbleb25.vcd"
+	scene "scenes/sputnik/babbleb33.vcd"
+	scene "scenes/sputnik/treasure.vcd"
+	scene "scenes/sputnik/youdontlookgood.vcd"
+}
+
+//attachedfact18 - 21: Space Core Response
+//attachedfact17: Adventure Sphere Response
+response FactTalk
+{
+	scene "scenes/fact/fact02.vcd"
+	scene "scenes/fact/fact04.vcd"
+	scene "scenes/fact/fact05.vcd"
+	scene "scenes/fact/fact07.vcd"
+	scene "scenes/fact/fact26.vcd"
+	scene "scenes/fact/fact36.vcd"
+	scene "scenes/fact/fact44.vcd"
+	scene "scenes/fact/fact47.vcd"
+	scene "scenes/fact/fact48.vcd"
+	scene "scenes/fact/fact52.vcd"
+	scene "scenes/fact/fact53.vcd"
+	scene "scenes/fact/fact55.vcd"
+	scene "scenes/fact/fact59.vcd"
+	scene "scenes/fact/fact60.vcd"
+	scene "scenes/fact/fact63.vcd"
+	scene "scenes/fact/fact66.vcd"
+	scene "scenes/fact/fact17.vcd"
+}
+
+rule WheatleyIdle
+{
+	criteria IsCore IsWheatley ConceptTalkIdle
+	response WheatleyTalk
+}
+
+rule WheatleyHurt
+{
+	criteria IsCore IsWheatley ConceptTalkWound
+	response WheatleyPain
+}
+
+rule WheatleyTalkHello
+{
+	criteria IsCore IsWheatley ConceptTalkHello
+	response WheatleyHello
+}
+
+rule WheatleyAnswerHello
+{
+	criteria IsCore IsWheatley ConceptTalkAnswerHello
+	response WheatleyHello
+}
+
+rule WheatleyAnswer
+{
+	criteria IsCore IsWheatley ConceptTalkAnswer
+	response WheatleyAnswerQuest
+}
+
+rule RickIdle
+{
+	criteria IsCore IsRick ConceptTalkIdle
+	response RickTalk
+}
+
+rule RickAnswerSpace
+{
+	criteria IsCore IsRick ConceptTalkAnswer IsTargetSpace
+	response RickSpaceResponse
+}
+
+rule RickAnswerFact
+{
+	criteria IsCore IsRick ConceptTalkAnswer IsTargetFact
+	response RickFactResponse
+}
+
+rule SpaceIdle
+{
+	criteria IsCore IsSpace ConceptTalkIdle
+	response SpaceTalk
+}
+
+rule SpaceQuest
+{
+	criteria IsCore IsSpace ConceptTalkQuestion IsTargetCore
+	response SpaceTalk
+}
+
+rule SpaceAnswer
+{
+	criteria IsCore IsSpace ConceptTalkAnswer
+	response SpaceTalk
+}
+
+rule FactIdle
+{
+	criteria IsCore IsFact ConceptTalkIdle
+	response FactTalk
+}
+
+rule FactQuest
+{
+	criteria IsCore IsFact ConceptTalkQuestion IsTargetCore
+	response FactTalk
+}

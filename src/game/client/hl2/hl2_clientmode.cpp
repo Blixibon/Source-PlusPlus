@@ -29,7 +29,7 @@ public:
 
 	virtual void	Init( void );
 	virtual void	SwitchMode( bool commander, bool force );
-	virtual void	OverrideView( CViewSetup *pSetup );
+	virtual void	OverrideView( CNewViewSetup *pSetup );
 	virtual void	CreateMove( float flInputSampleTime, CUserCmd *cmd );
 	virtual void	LevelInit( const char *newmap );
 	virtual void	LevelShutdown( void );
@@ -53,7 +53,7 @@ void CHLModeManager::SwitchMode( bool commander, bool force )
 {
 }
 
-void CHLModeManager::OverrideView( CViewSetup *pSetup )
+void CHLModeManager::OverrideView( CNewViewSetup *pSetup )
 {
 }
 

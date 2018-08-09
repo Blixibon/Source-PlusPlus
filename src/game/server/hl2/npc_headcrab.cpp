@@ -32,6 +32,7 @@
 #include "physics_npc_solver.h"
 #include "hl2_gamerules.h"
 #include "decals.h"
+#include "npc_poisonzombie.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -122,6 +123,8 @@ enum
 
 	SCHED_HEADCRAB_CEILING_WAIT,
 	SCHED_HEADCRAB_CEILING_DROP,
+
+	SCHED_HEADCRAB_JUMP_AT_TARGET,
 };
 
 
@@ -161,6 +164,7 @@ enum
 	COND_HEADCRAB_ILLEGAL_GROUNDENT,
 	COND_HEADCRAB_BARNACLED,
 	COND_HEADCRAB_UNHIDE,
+	COND_HEADCRAB_FOUND_ZOMBIE,
 };
 
 //=========================================================
@@ -605,7 +609,9 @@ void CBaseHeadcrab::HandleAnimEvent( animevent_t *pEvent )
 		if ( m_bMidJump )
 			return;
 
-		CBaseEntity *pEnemy = GetEnemy();
+		CBaseEntity *pEnemy = GetTarget();
+		if (!pEnemy && GetEnemy())
+			pEnemy = GetEnemy();
 			
 		if ( pEnemy )
 		{
@@ -949,6 +955,12 @@ void CBaseHeadcrab::LeapTouch( CBaseEntity *pOther )
 			ImpactSound();
 		}
 	}
+	else if (IRelationType(pOther) == D_LI && TouchAlly(pOther))
+	{
+		// attack succeeded, so don't delay our next attack if we previously thought we failed
+		m_bAttackFailed = false;
+		ImpactSound();
+	}
 	else if( !(GetFlags() & FL_ONGROUND) )
 	{
 		// Still in the air...
@@ -977,7 +989,9 @@ void CBaseHeadcrab::LeapTouch( CBaseEntity *pOther )
 
 	// Shut off the touch function.
 	SetTouch( NULL );
-	SetThink ( &CBaseHeadcrab::CallNPCThink );
+	// Don't change the think if we are going to be removed.
+	if (m_pfnThink != &CBaseEntity::SUB_Remove)
+		SetThink( &CBaseHeadcrab::CallNPCThink );
 }
 
 
@@ -3019,6 +3033,7 @@ BEGIN_DATADESC( CBlackHeadcrab )
 	DEFINE_FIELD( m_bPanicState, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flPanicStopTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flNextHopTime, FIELD_TIME ),
+	DEFINE_FIELD( m_hTargetZombie, FIELD_EHANDLE),
 
 	DEFINE_ENTITYFUNC( EjectTouch ),
 
@@ -3069,6 +3084,8 @@ void CBlackHeadcrab::Spawn( void )
 
 	NPCInit();
 	HeadcrabInit();
+
+	AddClassRelationship(CLASS_ZOMBIE, D_LI, 0);
 }
 
 
@@ -3194,8 +3211,20 @@ int CBlackHeadcrab::TranslateSchedule( int scheduleType )
 //-----------------------------------------------------------------------------
 void CBlackHeadcrab::BuildScheduleTestBits( void )
 {
+	BaseClass::BuildScheduleTestBits();
+
+	bool bInJumpToTarget = IsCurSchedule(SCHED_HEADCRAB_JUMP_AT_TARGET);
+	bool bInJumpToTPreJump = false;
+	if (bInJumpToTarget)
+	{
+		int iTaskIdx = GetScheduleCurTaskIndex();
+		if (iTaskIdx <= 4)
+			bInJumpToTPreJump = true;
+	}
+	bool bInJumpToTPostJump = (bInJumpToTarget && !bInJumpToTPreJump);
+
 	// Ignore damage if we're attacking or are fleeing and recently flinched.
-	if ( IsCurSchedule( SCHED_HEADCRAB_CRAWL_FROM_CANISTER ) || IsCurSchedule( SCHED_RANGE_ATTACK1 ) || ( IsCurSchedule( SCHED_TAKE_COVER_FROM_ENEMY ) && HasMemory( bits_MEMORY_FLINCHED ) ) )
+	if ( IsCurSchedule( SCHED_HEADCRAB_CRAWL_FROM_CANISTER ) || IsCurSchedule( SCHED_RANGE_ATTACK1 ) || ( IsCurSchedule( SCHED_TAKE_COVER_FROM_ENEMY ) && HasMemory( bits_MEMORY_FLINCHED ) ) || bInJumpToTPostJump )
 	{
 		ClearCustomInterruptCondition( COND_LIGHT_DAMAGE );
 		ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
@@ -3207,12 +3236,57 @@ void CBlackHeadcrab::BuildScheduleTestBits( void )
 	}
 
 	// If we're committed to jump, carry on even if our enemy hides behind a crate. Or a barrel.
-	if ( IsCurSchedule( SCHED_RANGE_ATTACK1 ) && m_bCommittedToJump )
+	if ( ( (IsCurSchedule( SCHED_RANGE_ATTACK1 ) || bInJumpToTarget) && m_bCommittedToJump ) || bInJumpToTPreJump )
 	{
 		ClearCustomInterruptCondition( COND_ENEMY_OCCLUDED );
 	}
+
+	if (ConditionInterruptsCurSchedule(COND_IDLE_INTERRUPT))
+	{
+		SetCustomInterruptCondition(COND_HEADCRAB_FOUND_ZOMBIE);
+	}
 }
 
+void CBlackHeadcrab::GatherConditions()
+{
+	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+	float flNearestDistSqr = Sqr(512.0f);
+	CNPC_PoisonZombie *pNearestNPC = NULL;
+
+	for (int i = 0; i < g_AI_Manager.NumAIs(); i++)
+	{
+		if (ppAIs[i] == NULL || ppAIs[i] == this)
+			continue;
+
+		CNPC_PoisonZombie *pZomb = dynamic_cast<CNPC_PoisonZombie *> (ppAIs[i]);
+
+		if (!pZomb || !pZomb->IsAlive() || pZomb->IsOnFire() || !pZomb->CanAddToNest() || IsUnreachable(pZomb))
+			continue;
+
+		float flDistToPlayer = (WorldSpaceCenter() - pZomb->WorldSpaceCenter()).LengthSqr();
+		if (flDistToPlayer < flNearestDistSqr)
+		{
+			flNearestDistSqr = flDistToPlayer;
+			pNearestNPC = pZomb;
+		}
+	}
+
+	if (pNearestNPC != nullptr)
+	{
+		m_hTargetZombie.Set(pNearestNPC);
+	}
+	else
+	{
+		m_hTargetZombie.Term();
+	}
+
+	BaseClass::GatherConditions();
+
+	if (m_hTargetZombie.IsValid())
+		SetCondition(COND_HEADCRAB_FOUND_ZOMBIE);
+	else
+		ClearCondition(COND_HEADCRAB_FOUND_ZOMBIE);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -3249,6 +3323,13 @@ int CBlackHeadcrab::SelectSchedule( void )
 			}
 
 			return SCHED_TAKE_COVER_FROM_ENEMY;
+		}
+
+		if (HasCondition(COND_HEADCRAB_FOUND_ZOMBIE) && (gpGlobals->curtime - GetLastEnemyTime()) >= 6.0f)
+		{
+			SetOwnerEntity(nullptr);
+			SetTarget(m_hTargetZombie.Get());
+			return SCHED_HEADCRAB_JUMP_AT_TARGET;
 		}
 	}
 
@@ -3343,6 +3424,16 @@ void CBlackHeadcrab::EjectTouch( CBaseEntity *pOther )
 	}
 }
 
+bool CBlackHeadcrab::TouchAlly(CBaseEntity *pOther)
+{
+	CNPC_PoisonZombie *pZomb = dynamic_cast<CNPC_PoisonZombie *> (pOther);
+	if (pZomb != nullptr)
+	{
+		return pZomb->AddCrabToNest(this);
+	}
+
+	return false;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Puts us in a state in which we just want to hide. We'll stop
@@ -3440,7 +3531,9 @@ void CBlackHeadcrab::HandleAnimEvent( animevent_t *pEvent )
 	{
 		EmitSound( "NPC_BlackHeadcrab.Telegraph" );
 
-		CBaseEntity *pEnemy = GetEnemy();
+		CBaseEntity *pEnemy = GetTarget();
+		if (!pEnemy && GetEnemy())
+			pEnemy = GetEnemy();
 
 		if ( pEnemy )
 		{
@@ -3612,6 +3705,7 @@ AI_BEGIN_CUSTOM_NPC( npc_headcrab, CBaseHeadcrab )
 	DECLARE_CONDITION( COND_HEADCRAB_ILLEGAL_GROUNDENT )
 	DECLARE_CONDITION( COND_HEADCRAB_BARNACLED )
 	DECLARE_CONDITION( COND_HEADCRAB_UNHIDE )
+	DECLARE_CONDITION( COND_HEADCRAB_FOUND_ZOMBIE )
 
 	//Adrian: events go here
 	DECLARE_ANIMEVENT( AE_HEADCRAB_JUMPATTACK )
@@ -3631,6 +3725,7 @@ AI_BEGIN_CUSTOM_NPC( npc_headcrab, CBaseHeadcrab )
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
 		"		TASK_FACE_ENEMY				0"
+		"		TASK_TARGET_ENEMY			0"
 		"		TASK_RANGE_ATTACK1			0"
 		"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
 		"		TASK_FACE_IDEAL				0"
@@ -3640,6 +3735,28 @@ AI_BEGIN_CUSTOM_NPC( npc_headcrab, CBaseHeadcrab )
 		"		COND_ENEMY_OCCLUDED"
 		"		COND_NO_PRIMARY_AMMO"
 	)
+
+		//=========================================================
+		// > SCHED_HEADCRAB_RANGE_ATTACK1
+		//=========================================================
+		DEFINE_SCHEDULE
+		(
+			SCHED_HEADCRAB_JUMP_AT_TARGET,
+
+			"	Tasks"
+			"		TASK_GET_PATH_TO_TARGET		0"
+			"		TASK_FACE_PATH				0"
+			"		TASK_MOVE_TO_TARGET_RANGE	200"
+			"		TASK_STOP_MOVING			0"
+			"		TASK_FACE_TARGET			0"
+			"		TASK_RANGE_ATTACK1			0"
+			"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
+			"		TASK_FACE_IDEAL				0"
+			"		TASK_WAIT_RANDOM			0.5"
+			""
+			"	Interrupts"
+			"		COND_TARGET_OCCLUDED"
+		)
 
 	//=========================================================
 	//

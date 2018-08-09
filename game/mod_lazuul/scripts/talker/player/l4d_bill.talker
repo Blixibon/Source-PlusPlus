@@ -1,0 +1,82 @@
+
+// ============================================
+//	AUTOMATIC RESPONSES
+// ============================================
+
+
+
+// TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
+
+response BillResponseReloading
+{
+	speak "Bill/reloading1.wav"
+	speak "Bill/reloading2.wav"
+	speak "Bill/reloading3.wav"
+	//speak "Bill/reloading4.wav"
+}
+
+rule BillReloading
+{
+	criteria	ConceptPlayerCoverReload IsPlayer IsPlayerVoiceBill
+	response	BillResponseReloading
+}
+
+// TLK_PLAYER_PAIN
+
+response BillResponsePain
+{
+	speak "Bill/pain1.wav"
+	speak "Bill/pain2.wav"
+	speak "Bill/pain3.wav"
+	speak "Bill/pain4.wav"
+	speak "Bill/pain5.wav"
+	speak "Bill/pain6.wav"
+	speak "Bill/pain7.wav"
+	speak "Bill/pain8.wav"
+	speak "Bill/pain9.wav"
+	speak "Bill/pain10.wav"
+	speak "Bill/pain11.wav"
+}
+
+rule BillPain
+{
+	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceBill
+	response	BillResponsePain
+}
+
+// TLK_PLAYER_TAUNT
+
+response BillResponseTaunt
+{
+	speak "Bill/killconfirmation01.wav"
+	speak "Bill/killconfirmation02.wav"
+	speak "Bill/killconfirmation03.wav"
+	speak "Bill/killconfirmation05.wav"
+	speak "Bill/killconfirmation06.wav"
+	speak "Bill/killconfirmation07.wav"
+	speak "Bill/killconfirmation08.wav"
+}
+
+
+rule BillTaunt
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceBill
+	response	BillResponseTaunt
+}
+
+response BillResponseThrow
+{
+	speak "Bill/throwgrenade1.wav"
+	speak "Bill/throwgrenade2.wav"
+	speak "Bill/throwgrenade3.wav"
+	speak "Bill/throwgrenade4.wav"
+	speak "Bill/throwgrenade5.wav"
+	speak "Bill/throwgrenade6.wav"
+}
+
+
+rule BillThrow
+{
+	criteria	ConceptPlayerThrow IsPlayer IsPlayerVoiceBill
+	response	BillResponseThrow
+}

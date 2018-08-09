@@ -486,7 +486,7 @@ void CModelPanel::Paint()
 	//////
 
 	// Now draw it.
-	CViewSetup view;
+	CNewViewSetup view;
 	view.x = x + m_pModelInfo->m_vecViewportOffset.x + viewportX; // we actually want to offset by the  
 	view.y = y + m_pModelInfo->m_vecViewportOffset.y + viewportY; // viewport origin here because Push3DView expects global coords below 
 

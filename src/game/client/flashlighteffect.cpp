@@ -459,3 +459,96 @@ void CHeadlightEffect::UpdateLight( const Vector &vecPos, const Vector &vecDir, 
 	UpdateLightProjection( state );
 }
 
+CSpotlightEffect::CSpotlightEffect()
+{
+
+}
+
+CSpotlightEffect::~CSpotlightEffect()
+{
+
+}
+
+void CSpotlightEffect::UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance, float flScale)
+{
+	if (IsOn() == false)
+		return;
+
+	/*if (r_dynamic_shadow_mode.GetInt() < 2)
+		return;*/
+
+	FlashlightState_t state;
+	Vector basisX, basisY, basisZ;
+	basisX = vecDir;
+	basisY = vecRight;
+	basisZ = vecUp;
+	VectorNormalize(basisX);
+	VectorNormalize(basisY);
+	VectorNormalize(basisZ);
+
+	BasisToQuaternion(basisX, basisY, basisZ, state.m_quatOrientation);
+
+	state.m_vecLightOrigin = vecPos;
+
+	//state.m_fHorizontalFOVDegrees = 45.0f;
+	//state.m_fVerticalFOVDegrees = 45.0f;
+	state.m_fQuadraticAtten = r_flashlightquadratic.GetFloat();
+	//state.m_fLinearAtten = r_flashlightlinear.GetFloat();
+	state.m_fConstantAtten = 0.0f;
+	state.m_Color[0] = 1.0f;
+	state.m_Color[1] = 1.0f;
+	state.m_Color[2] = 1.0f;
+	state.m_Color[3] = r_flashlightambient.GetFloat();
+	state.m_NearZ = r_flashlightnear.GetFloat();
+	state.m_FarZ = r_flashlightfar.GetFloat()/* * 1.5f*/;
+	state.m_bEnableShadows = true;
+	state.m_pSpotlightTexture = m_FlashlightTexture;
+	state.m_nSpotlightTextureFrame = 0;
+
+	bool bFlicker = false;
+
+	flScale = Clamp(flScale, 0.0f, 1.0f);
+
+	float flBaseFov = r_flashlightfov.GetFloat() * 1.25f;
+
+	if (flScale < 1.0f)
+	{
+		if (flScale < 0.35f)
+		{
+			float flFlicker = cosf(gpGlobals->curtime * 6.0f) * sinf(gpGlobals->curtime * 15.0f);
+
+			if (flFlicker > 0.25f && flFlicker < 0.75f)
+			{
+				// On
+				state.m_fLinearAtten = r_flashlightlinear.GetFloat() * flScale;
+			}
+			else
+			{
+				// Off
+				state.m_fLinearAtten = 0.0f;
+			}
+		}
+		else
+		{
+			float flNoise = cosf(gpGlobals->curtime * 7.0f) * sinf(gpGlobals->curtime * 25.0f);
+			state.m_fLinearAtten = r_flashlightlinear.GetFloat() * flScale + 1.5f * flNoise;
+		}
+
+		state.m_fHorizontalFOVDegrees = flBaseFov - (16.0f * (1.0f - flScale));
+		state.m_fVerticalFOVDegrees = flBaseFov - (16.0f * (1.0f - flScale));
+
+		bFlicker = true;
+	}
+
+
+
+	if (bFlicker == false)
+	{
+		state.m_fLinearAtten = r_flashlightlinear.GetFloat();
+		//state.m_fQuadraticAtten = r_flashlightquadratic.GetFloat();
+		state.m_fHorizontalFOVDegrees = flBaseFov;
+		state.m_fVerticalFOVDegrees = flBaseFov;
+	}
+
+	UpdateLightProjection(state);
+}

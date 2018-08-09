@@ -57,7 +57,7 @@ struct ShaderStencilState_t
 	}
 };
 
-void CGlowObjectManager::RenderGlowEffects( const CViewSetup *pSetup, int nSplitScreenSlot )
+void CGlowObjectManager::RenderGlowEffects( const CNewViewSetup *pSetup, int nSplitScreenSlot )
 {
 	if ( g_pMaterialSystemHardwareConfig->SupportsPixelShaders_2_0() )
 	{
@@ -81,7 +81,7 @@ static void SetRenderTargetAndViewPort( ITexture *rt, int w, int h )
 	pRenderContext->Viewport(0,0,w,h);
 }
 
-void CGlowObjectManager::RenderGlowModels( const CViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext )
+void CGlowObjectManager::RenderGlowModels( const CNewViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext )
 {
 	//==========================================================================================//
 	// This renders solid pixels with the correct coloring for each object that needs the glow.	//
@@ -152,7 +152,7 @@ void CGlowObjectManager::RenderGlowModels( const CViewSetup *pSetup, int nSplitS
 	pRenderContext->PopRenderTargetAndViewport();
 }
 
-void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext, float flBloomScale, int x, int y, int w, int h )
+void CGlowObjectManager::ApplyEntityGlowEffects( const CNewViewSetup *pSetup, int nSplitScreenSlot, CMatRenderContextPtr &pRenderContext, float flBloomScale, int x, int y, int w, int h )
 {
 	//=======================================================//
 	// Render objects into stencil buffer					 //

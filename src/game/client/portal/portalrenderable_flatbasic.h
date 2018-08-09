@@ -57,14 +57,14 @@ public:
 	virtual void	DrawStencilMask( void ); //Draw to wherever you can see through the portal. The mask will later be filled with the portal view.
 	virtual void	DrawPostStencilFixes( void ); //After done drawing to the portal mask, we need to fix the depth buffer as well as fog. So draw your mesh again, writing to z and with the fog color alpha'd in by distance
 
-	virtual void	RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CViewSetup &cameraView );
-	virtual void	RenderPortalViewToTexture( CViewRender *pViewRender, const CViewSetup &cameraView );
+	virtual void	RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CNewViewSetup &cameraView );
+	virtual void	RenderPortalViewToTexture( CViewRender *pViewRender, const CNewViewSetup &cameraView );
 
 	void			AddToVisAsExitPortal( ViewCustomVisibility_t *pCustomVisibility );
 
-	virtual bool	ShouldUpdatePortalView_BasedOnView( const CViewSetup &currentView, CUtlVector<VPlane> &currentComplexFrustum ); //portal is both visible, and will display at least some portion of a remote view
+	virtual bool	ShouldUpdatePortalView_BasedOnView( const CNewViewSetup &currentView, CUtlVector<VPlane> &currentComplexFrustum ); //portal is both visible, and will display at least some portion of a remote view
 	virtual bool	ShouldUpdatePortalView_BasedOnPixelVisibility( float fScreenFilledByStencilMaskLastFrame_Normalized );
-	virtual bool	ShouldUpdateDepthDoublerTexture( const CViewSetup &viewSetup );
+	virtual bool	ShouldUpdateDepthDoublerTexture( const CNewViewSetup &viewSetup );
 
 	virtual void	GetToolRecordingState( bool bActive, KeyValues *msg );
 	virtual void	HandlePortalPlaybackMessage( KeyValues *pKeyValues );

@@ -53,7 +53,7 @@ enum DrawFlags_t
 //-----------------------------------------------------------------------------
 // Purpose: View setup and rendering
 //-----------------------------------------------------------------------------
-class CViewSetup;
+class CNewViewSetup;
 class C_BaseEntity;
 struct vrect_t;
 class C_BaseViewModel;
@@ -83,7 +83,7 @@ public:
 	virtual	void		Render( vrect_t *rect ) = 0;
 
 	// Called to render just a particular setup ( for timerefresh and envmap creation )
-	virtual void		RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw ) = 0;
+	virtual void		RenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw ) = 0;
 
 	// What are we currently rendering? Returns a combination of DF_ flags.
 	virtual int GetDrawFlags() = 0;
@@ -98,8 +98,8 @@ public:
 
 	virtual bool		ShouldDrawBrushModels( void ) = 0;
 
-	virtual const CViewSetup *GetPlayerViewSetup( void ) const = 0;
-	virtual const CViewSetup *GetViewSetup( void ) const = 0;
+	virtual const CNewViewSetup *GetPlayerViewSetup( void ) const = 0;
+	virtual const CNewViewSetup *GetViewSetup( void ) const = 0;
 
 	virtual void		DisableVis( void ) = 0;
 
@@ -122,7 +122,7 @@ public:
 	virtual void		UpdateReplayScreenshotCache() = 0;
 
 	// Draws another rendering over the top of the screen
-	virtual void		QueueOverlayRenderView( const CViewSetup &view, int nClearFlags, int whatToDraw ) = 0;
+	virtual void		QueueOverlayRenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw ) = 0;
 
 	// Returns znear and zfar
 	virtual float		GetZNear() = 0;
@@ -133,7 +133,7 @@ public:
 	virtual C_BaseEntity *GetCurrentlyDrawingEntity() = 0;
 	virtual void		SetCurrentlyDrawingEntity( C_BaseEntity *pEnt ) = 0;
 
-	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CViewSetup &shadowView ) = 0;
+	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CNewViewSetup &shadowView ) = 0;
 
 	virtual void		FreezeFrame( float flFreezeTime ) = 0;
 

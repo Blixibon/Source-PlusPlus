@@ -26,7 +26,7 @@ public:
 
 	CTFViewRender();
 
-	virtual void Render2DEffectsPostHUD( const CViewSetup &view );
+	virtual void Render2DEffectsPostHUD( const CNewViewSetup &view );
 };
 
 #endif

@@ -57,6 +57,16 @@ public:
 	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance);
 };
 
+class CSpotlightEffect : public CFlashlightEffect
+{
+public:
+
+	CSpotlightEffect();
+	~CSpotlightEffect();
+
+	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance, float flScale = 1.0f);
+};
+
 
 
 #endif // FLASHLIGHTEFFECT_H

@@ -172,7 +172,7 @@ static void CalcDemoViewOverride( Vector &origin, QAngle &angles )
 // Selects the relevant member variable to update. You could do it manually, but...
 // We always set up the MONO eye, even when doing stereo, and it's set up to be mid-way between the left and right,
 // so if you don't really care about L/R (e.g. culling, sound, etc), just use MONO.
-CViewSetup &CViewRender::GetView(StereoEye_t eEye)
+CNewViewSetup &CViewRender::GetView(StereoEye_t eEye)
 {
 	if ( eEye == STEREO_EYE_MONO )
     {
@@ -189,7 +189,7 @@ CViewSetup &CViewRender::GetView(StereoEye_t eEye)
     }
 }
 
-const CViewSetup &CViewRender::GetView(StereoEye_t eEye) const
+const CNewViewSetup &CViewRender::GetView(StereoEye_t eEye) const
 {
     return (const_cast<CViewRender*>(this))->GetView ( eEye );
 }
@@ -569,9 +569,9 @@ void CViewRender::OnRenderStart()
 
 //-----------------------------------------------------------------------------
 // Purpose: 
-// Output : const CViewSetup
+// Output : const CNewViewSetup
 //-----------------------------------------------------------------------------
-const CViewSetup *CViewRender::GetViewSetup( void ) const
+const CNewViewSetup *CViewRender::GetViewSetup( void ) const
 {
 	return &m_CurrentView;
 }
@@ -579,11 +579,11 @@ const CViewSetup *CViewRender::GetViewSetup( void ) const
 
 //-----------------------------------------------------------------------------
 // Purpose: 
-// Output : const CViewSetup
+// Output : const CNewViewSetup
 //-----------------------------------------------------------------------------
-const CViewSetup *CViewRender::GetPlayerViewSetup( void ) const
+const CNewViewSetup *CViewRender::GetPlayerViewSetup( void ) const
 {   
-    const CViewSetup &view = GetView ( STEREO_EYE_MONO );
+    const CNewViewSetup &view = GetView ( STEREO_EYE_MONO );
     return &view;
 }
 
@@ -646,7 +646,7 @@ void CViewRender::SetUpViews()
 	float farZ = GetZFar();
 
     // Set up the mono/middle view.
-    CViewSetup &view = m_View;
+    CNewViewSetup &view = m_View;
 
 	view.zFar				= farZ;
 	view.zFarViewmodel	    = farZ;
@@ -839,7 +839,7 @@ void CViewRender::WriteSaveGameScreenshotOfSize( const char *pFilename, int widt
 	pRenderContext->PushRenderTargetAndViewport( NULL, 0, 0, width, height );
 
 	// render out to the backbuffer
-    CViewSetup viewSetup = GetView ( STEREO_EYE_MONO );
+    CNewViewSetup viewSetup = GetView ( STEREO_EYE_MONO );
 	viewSetup.x = 0;
 	viewSetup.y = 0;
 	viewSetup.width = width;
@@ -1017,7 +1017,7 @@ void CViewRender::SetUpOverView()
 {
 	static int oldCRC = 0;
 
-    CViewSetup &view = GetView ( STEREO_EYE_MONO );
+    CNewViewSetup &view = GetView ( STEREO_EYE_MONO );
 
 	view.m_bOrtho = true;
 
@@ -1084,7 +1084,7 @@ void CViewRender::Render( vrect_t *rect )
 #endif
     for( StereoEye_t eEye = GetFirstEye(); eEye <= GetLastEye(); eEye = (StereoEye_t)(eEye+1) )
 	{
-		CViewSetup &view = GetView( eEye );
+		CNewViewSetup &view = GetView( eEye );
 
 		#if 0 && defined( CSTRIKE_DLL )
 			const bool bPlayingBackReplay = g_pEngineClientReplay && g_pEngineClientReplay->IsPlayingReplayDemo();
@@ -1301,7 +1301,7 @@ void CViewRender::Render( vrect_t *rect )
 	// In stereo mode this is rendered inside of RenderView so it goes into the render target
 	if( !g_ClientVirtualReality.ShouldRenderHUDInWorld() )
 	{
-		CViewSetup view2d;
+		CNewViewSetup view2d;
 		view2d.x				= rect->x;
 		view2d.y				= rect->y;
 		view2d.width			= rect->width;

@@ -624,13 +624,13 @@ void CLightingEditor::RenderRotate()
 
 Vector CLightingEditor::GetViewOrigin()
 {
-	const CViewSetup *setup = view->GetViewSetup();
+	const CNewViewSetup *setup = view->GetViewSetup();
 	return setup->origin;
 }
 
 QAngle CLightingEditor::GetViewAngles()
 {
-	const CViewSetup *setup = view->GetViewSetup();
+	const CNewViewSetup *setup = view->GetViewSetup();
 	return setup->angles;
 }
 
@@ -1259,7 +1259,7 @@ Vector CLightingEditor::GetPickingRay( int x, int y )
 {
 	Vector ray_out;
 
-	const CViewSetup *setup = view->GetViewSetup();
+	const CNewViewSetup *setup = view->GetViewSetup();
 	float ratio = (4.0f/3.0f/(setup->width/(float)setup->height));
 	float flFov = ScaleFOVByWidthRatio( setup->fov, ratio );
 

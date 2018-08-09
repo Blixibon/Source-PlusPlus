@@ -43,5 +43,3 @@ pp_water_ps2x.fxc
 pp_Water_vs20.fxc
 pp_WorldVertexTransition_ps2x.fxc
 pp_WorldVertexTransition_vs20.fxc
-depth_of_field_ps20b.fxc
-depth_of_field_vs20.fxc

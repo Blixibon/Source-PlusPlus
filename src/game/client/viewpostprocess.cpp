@@ -14,6 +14,7 @@
 #include "tier1/callqueue.h"
 #include "colorcorrectionmgr.h"
 #include "view_scene.h"
+#include "viewrender.h"
 #include "c_world.h"
 #include "bitmap/tgawriter.h"
 #include "filesystem.h"
@@ -33,6 +34,15 @@ float g_flCustomAutoExposureMin = 0;
 float g_flCustomAutoExposureMax = 0;
 float g_flCustomBloomScale = 0.0f;
 float g_flCustomBloomScaleMinimum = 0.0f;
+
+// mapmaker controlled depth of field
+bool  g_bDOFEnabled = false;
+float g_flDOFNearBlurDepth = 50.0f;
+float g_flDOFNearFocusDepth = 200.0f;
+float g_flDOFFarFocusDepth = 250.0f;
+float g_flDOFFarBlurDepth = 1000.0f;
+float g_flDOFNearBlurRadius = 0.0f;
+float g_flDOFFarBlurRadius = 5.0f;
 
 bool g_bFlashlightIsOn = false;
 
@@ -1520,6 +1530,48 @@ void DumpTGAofRenderTarget( const int width, const int height, const char *pFile
 
 static bool s_bScreenEffectTextureIsUpdated = false;
 
+// WARNING: This function sets rendertarget and viewport. Save and restore is left to the caller.
+static void DownsampleFBQuarterSize(IMatRenderContext *pRenderContext, int nSrcWidth, int nSrcHeight, ITexture* pDest,
+	bool bFloatHDR = false)
+{
+	Assert(pRenderContext);
+	Assert(pDest);
+
+	IMaterial *downsample_mat = materials->FindMaterial(bFloatHDR ? "dev/downsample" : "dev/downsample_non_hdr", TEXTURE_GROUP_OTHER, true);
+
+	// *Everything* in here relies on the small RTs being exactly 1/4 the full FB res
+	Assert(pDest->GetActualWidth() == nSrcWidth / 4);
+	Assert(pDest->GetActualHeight() == nSrcHeight / 4);
+
+	/*
+	bool bFound;
+	IMaterialVar *pbloomexpvar = downsample_mat->FindVar( "$bloomexp", &bFound, false );
+	if ( bFound )
+	{
+	pbloomexpvar->SetFloatValue( g_flBloomExponent );
+	}
+
+	IMaterialVar *pbloomsaturationvar = downsample_mat->FindVar( "$bloomsaturation", &bFound, false );
+	if ( bFound )
+	{
+	pbloomsaturationvar->SetFloatValue( g_flBloomSaturation );
+	}
+	*/
+
+	// downsample fb to rt0
+	SetRenderTargetAndViewPort(pDest);
+	// note the -2's below. Thats because we are downsampling on each axis and the shader
+	// accesses pixels on both sides of the source coord
+	pRenderContext->DrawScreenSpaceRectangle(downsample_mat, 0, 0, nSrcWidth / 4, nSrcHeight / 4,
+		0, 0, nSrcWidth - 2, nSrcHeight - 2,
+		nSrcWidth, nSrcHeight);
+
+	if (IsX360())
+	{
+		pRenderContext->CopyRenderTargetToTextureEx(pDest, 0, NULL, NULL);
+	}
+}
+
 static void Generate8BitBloomTexture( IMatRenderContext *pRenderContext, float flBloomScale,
 										int x, int y, int w, int h )
 {
@@ -2699,7 +2751,7 @@ ConVar mat_motion_blur_falling_intensity( "mat_motion_blur_falling_intensity", "
 ConVar mat_motion_blur_rotation_intensity( "mat_motion_blur_rotation_intensity", "1.0" );
 ConVar mat_motion_blur_strength( "mat_motion_blur_strength", "1.0" );
 
-void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h )
+void DoImageSpaceMotionBlur( const CNewViewSetup &view, int x, int y, int w, int h )
 {
 #ifdef CSS_PERF_TEST
 	return;
@@ -2996,4 +3048,230 @@ void DoImageSpaceMotionBlur( const CViewSetup &view, int x, int y, int w, int h 
 			}
 		}
 	}
+}
+
+//=====================================================================================================================
+// Depth of field =====================================================================================================
+//=====================================================================================================================
+ConVar mat_dof_enabled("mat_dof_enabled", "1");
+ConVar mat_dof_override("mat_dof_override", "0");
+ConVar mat_dof_near_blur_depth("mat_dof_near_blur_depth", "20.0");
+ConVar mat_dof_near_focus_depth("mat_dof_near_focus_depth", "100.0");
+ConVar mat_dof_far_focus_depth("mat_dof_far_focus_depth", "250.0");
+ConVar mat_dof_far_blur_depth("mat_dof_far_blur_depth", "1000.0");
+ConVar mat_dof_near_blur_radius("mat_dof_near_blur_radius", "10.0");
+ConVar mat_dof_far_blur_radius("mat_dof_far_blur_radius", "5.0");
+ConVar mat_dof_quality("mat_dof_quality", "0");
+
+static float GetNearBlurDepth()
+{
+	return mat_dof_override.GetBool() ? mat_dof_near_blur_depth.GetFloat() : g_flDOFNearBlurDepth;
+}
+
+static float GetNearFocusDepth()
+{
+	return mat_dof_override.GetBool() ? mat_dof_near_focus_depth.GetFloat() : g_flDOFNearFocusDepth;
+}
+
+static float GetFarFocusDepth()
+{
+	return mat_dof_override.GetBool() ? mat_dof_far_focus_depth.GetFloat() : g_flDOFFarFocusDepth;
+}
+
+static float GetFarBlurDepth()
+{
+	return mat_dof_override.GetBool() ? mat_dof_far_blur_depth.GetFloat() : g_flDOFFarBlurDepth;
+}
+
+static float GetNearBlurRadius()
+{
+	return mat_dof_override.GetBool() ? mat_dof_near_blur_radius.GetFloat() : g_flDOFNearBlurRadius;
+}
+
+static float GetFarBlurRadius()
+{
+	return mat_dof_override.GetBool() ? mat_dof_far_blur_radius.GetFloat() : g_flDOFFarBlurRadius;
+}
+
+bool IsDepthOfFieldEnabled(const CNewViewSetup *pView)
+{
+	const CNewViewSetup *pViewSetup = (pView!=nullptr ? pView : view->GetViewSetup());
+	if (!pViewSetup)
+		return false;
+
+	// We need high-precision depth, which we currently only get in float HDR mode
+	if (g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_NONE)
+		return false;
+
+	if (g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 92)
+		return false;
+
+
+	if (!mat_dof_enabled.GetBool())
+		return false;
+
+	if (CurrentViewIsMain())
+	{
+		// Only SFM sets this at the moment...it supersedes mat_dof_ convars if true
+		if (pViewSetup->m_bDoDepthOfField)
+			return true;
+
+		if (mat_dof_override.GetBool() == true)
+		{
+			return mat_dof_enabled.GetBool();
+		}
+		else
+		{
+			return g_bDOFEnabled;
+		}
+	}
+	else
+	{
+		return pViewSetup->m_bDoDepthOfField;
+	}
+}
+
+static inline bool SetMaterialVarFloat(IMaterial* pMat, const char* pVarName, float flValue)
+{
+	Assert(pMat != NULL);
+	Assert(pVarName != NULL);
+	if (pMat == NULL || pVarName == NULL)
+	{
+		return false;
+	}
+
+	bool bFound = false;
+	IMaterialVar* pVar = pMat->FindVar(pVarName, &bFound);
+	if (bFound)
+	{
+		pVar->SetFloatValue(flValue);
+	}
+
+	return bFound;
+}
+
+static inline bool SetMaterialVarInt(IMaterial* pMat, const char* pVarName, int nValue)
+{
+	Assert(pMat != NULL);
+	Assert(pVarName != NULL);
+	if (pMat == NULL || pVarName == NULL)
+	{
+		return false;
+	}
+
+	bool bFound = false;
+	IMaterialVar* pVar = pMat->FindVar(pVarName, &bFound);
+	if (bFound)
+	{
+		pVar->SetIntValue(nValue);
+	}
+
+	return bFound;
+}
+
+void DoDepthOfField(const CNewViewSetup &view)
+{
+	if (!IsDepthOfFieldEnabled(&view))
+	{
+		return;
+	}
+
+	// Copy from backbuffer to _rt_FullFrameFB
+	UpdateScreenEffectTexture(0, view.x, view.y, view.width, view.height, false); // Do we need to check if we already did this?
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	ITexture *pSrc = materials->FindTexture("_rt_FullFrameFB", TEXTURE_GROUP_RENDER_TARGET);
+	int nSrcWidth = pSrc->GetActualWidth();
+	int nSrcHeight = pSrc->GetActualHeight();
+
+	if (mat_dof_quality.GetInt() < 2)
+	{
+		/////////////////////////////////////
+		// Downsample backbuffer to 1/4 size
+		/////////////////////////////////////
+
+		// Update downsampled framebuffer. TODO: Don't do this again for the bloom if we already did it here...
+		pRenderContext->PushRenderTargetAndViewport();
+		ITexture *dest_rt0 = materials->FindTexture("_rt_SmallFB0", TEXTURE_GROUP_RENDER_TARGET);
+
+		// *Everything* in here relies on the small RTs being exactly 1/4 the full FB res
+		Assert(dest_rt0->GetActualWidth() == pSrc->GetActualWidth() / 4);
+		Assert(dest_rt0->GetActualHeight() == pSrc->GetActualHeight() / 4);
+
+		// Downsample fb to rt0
+		DownsampleFBQuarterSize(pRenderContext, nSrcWidth, nSrcHeight, dest_rt0, true);
+
+		//////////////////////////////////////
+		// Additional blur using 3x3 gaussian
+		//////////////////////////////////////
+
+		IMaterial *pMat = materials->FindMaterial("dev/blurgaussian_3x3", TEXTURE_GROUP_OTHER, true);
+
+		if (pMat == NULL)
+			return;
+
+		SetMaterialVarFloat(pMat, "$c0_x", 0.5f / (float)dest_rt0->GetActualWidth());
+		SetMaterialVarFloat(pMat, "$c0_y", 0.5f / (float)dest_rt0->GetActualHeight());
+		SetMaterialVarFloat(pMat, "$c1_x", -0.5f / (float)dest_rt0->GetActualWidth());
+		SetMaterialVarFloat(pMat, "$c1_y", 0.5f / (float)dest_rt0->GetActualHeight());
+
+		ITexture *dest_rt1 = materials->FindTexture("_rt_SmallFB1", TEXTURE_GROUP_RENDER_TARGET);
+		SetRenderTargetAndViewPort(dest_rt1);
+
+		pRenderContext->DrawScreenSpaceRectangle(
+			pMat, 0, 0, nSrcWidth / 4, nSrcHeight / 4,
+			0, 0, dest_rt0->GetActualWidth() - 1, dest_rt0->GetActualHeight() - 1,
+			dest_rt0->GetActualWidth(), dest_rt0->GetActualHeight());
+
+		if (IsX360())
+		{
+			pRenderContext->CopyRenderTargetToTextureEx(dest_rt1, 0, NULL, NULL);
+		}
+
+		pRenderContext->PopRenderTargetAndViewport();
+	}
+
+	// Render depth-of-field quad 
+
+	int nViewportWidth = 0;
+	int nViewportHeight = 0;
+	int nDummy = 0;
+	pRenderContext->GetViewport(nDummy, nDummy, nViewportWidth, nViewportHeight);
+
+	IMaterial *pMatDOF = materials->FindMaterial("dev/depth_of_field", TEXTURE_GROUP_OTHER, true);
+
+	if (pMatDOF == NULL)
+		return;
+
+	SetMaterialVarFloat(pMatDOF, "$nearPlane", view.zNear);
+	SetMaterialVarFloat(pMatDOF, "$farPlane", view.zFar);
+
+	// Only SFM drives this bool at the moment...
+	if (view.m_bDoDepthOfField)
+	{
+		SetMaterialVarFloat(pMatDOF, "$nearBlurDepth", view.m_flNearBlurDepth);
+		SetMaterialVarFloat(pMatDOF, "$nearFocusDepth", view.m_flNearFocusDepth);
+		SetMaterialVarFloat(pMatDOF, "$farFocusDepth", view.m_flFarFocusDepth);
+		SetMaterialVarFloat(pMatDOF, "$farBlurDepth", view.m_flFarBlurDepth);
+		SetMaterialVarFloat(pMatDOF, "$nearBlurRadius", view.m_flNearBlurRadius);
+		SetMaterialVarFloat(pMatDOF, "$farBlurRadius", view.m_flFarBlurRadius);
+		SetMaterialVarInt(pMatDOF, "$quality", view.m_nDoFQuality);
+	}
+	else // pull from convars/globals
+	{
+		SetMaterialVarFloat(pMatDOF, "$nearBlurDepth", GetNearBlurDepth());
+		SetMaterialVarFloat(pMatDOF, "$nearFocusDepth", GetNearFocusDepth());
+		SetMaterialVarFloat(pMatDOF, "$farFocusDepth", GetFarFocusDepth());
+		SetMaterialVarFloat(pMatDOF, "$farBlurDepth", GetFarBlurDepth());
+		SetMaterialVarFloat(pMatDOF, "$nearBlurRadius", GetNearBlurRadius());
+		SetMaterialVarFloat(pMatDOF, "$farBlurRadius", GetFarBlurRadius());
+		SetMaterialVarInt(pMatDOF, "$quality", mat_dof_quality.GetInt());
+	}
+
+	pRenderContext->DrawScreenSpaceRectangle(
+		pMatDOF,
+		0, 0, nViewportWidth, nViewportHeight,
+		0, 0, nSrcWidth - 1, nSrcHeight - 1,
+		nSrcWidth, nSrcHeight, GetClientWorldEntity()->GetClientRenderable());
 }

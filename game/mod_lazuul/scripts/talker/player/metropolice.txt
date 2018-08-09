@@ -1,0 +1,252 @@
+
+// ============================================
+//	AUTOMATIC RESPONSES
+// ============================================
+
+
+
+// TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
+
+response PoliceResponseReloading
+{
+	sentence "METROPOLICE_COVER_NO_AMMO"
+	sentence "METROPOLICE_COVER_LOW_AMMO"
+}
+
+rule PoliceReloading
+{
+	criteria	ConceptPlayerCoverReload IsPlayer IsPlayerVoiceMetroPolice
+	response	PoliceResponseReloading
+}
+
+// TLK_PLAYER_PAIN
+
+response PoliceResponsePain
+{
+	sentence "METROPOLICE_PAIN"
+}
+
+rule PolicePain
+{
+	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceMetroPolice
+	response	PoliceResponsePain
+}
+
+response PoliceResponsePainLight
+{
+	sentence "METROPOLICE_PAIN_LIGHT"
+}
+
+rule PolicePainLt
+{
+	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceMetroPolice IsPlayerNotVeryWounded
+	"PoliceSpokeLHTPain" "!=1" required
+	
+	applycontext	"PoliceSpokeLHTPain:1:20"
+	response	PoliceResponsePainLight
+}
+
+response PoliceResponsePainHeavy
+{
+	sentence "METROPOLICE_PAIN_HEAVY"
+}
+
+rule PolicePainHv
+{
+	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceMetroPolice IsPlayerVeryWounded
+	"PoliceSpokeHVYPain" "!=1" required
+	
+	applycontext	"PoliceSpokeHVYPain:1:10"
+	response	PoliceResponsePainHeavy
+}
+
+// TLK_PLAYER_TAUNT
+
+response PoliceResponseTaunt
+{
+	sentence "METROPOLICE_KILL_MONST"
+}
+
+response PoliceResponseTauntAntlions
+{
+	sentence "METROPOLICE_KILL_BUGS"
+}
+
+response PoliceResponseTauntCitizen
+{
+	sentence "METROPOLICE_KILL_CITIZENS"
+}
+
+response PoliceResponseTauntZombie
+{
+	sentence "METROPOLICE_KILL_ZOMBIES"
+}
+
+response PoliceResponseTauntHeadCrab
+{
+	sentence "METROPOLICE_KILL_PARASITES"
+}
+
+rule PoliceTaunt
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice
+	response	PoliceResponseTaunt
+}
+
+rule PoliceTauntAntlion
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAntlion
+	response	PoliceResponseTauntAntlions
+}
+
+rule PoliceTauntCitizen
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsCitizen
+	response	PoliceResponseTauntCitizen
+}
+
+rule PoliceTauntZombie
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAZombie
+	response	PoliceResponseTauntZombie
+}
+
+rule PoliceTauntParasite
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAHeadcrab
+	response	PoliceResponseTauntHeadCrab
+}
+
+
+
+// TLK_PLAYER_ENEMY
+
+rule PoliceEnemy
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice
+
+//	response	PoliceResponseEnemy
+	response	PoliceResponseIncoming	// TODO: find sounds that are more like "I see an enemy"
+}
+
+// TODO: at some point, move away from using these npc_citizen responses
+
+// using CitizenCombineGroup
+rule PoliceEnemyCombine
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsCombine
+	response	CitizenCombineGroup
+}
+
+// using CitizenHeadcrabGroup
+rule PoliceEnemyHeadcrab
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrab
+	response	CitizenHeadcrabGroup
+}
+
+rule PoliceEnemyHeadcrabBlack
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabBlack
+	response	CitizenHeadcrabGroup
+}
+
+rule PoliceEnemyHeadcrabPoison
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabPoison
+	response	CitizenHeadcrabGroup
+}
+
+rule PoliceEnemyHeadcrabFast
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabFast
+	response	CitizenHeadcrabGroup
+}
+
+rule PoliceEnemyZombie
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombie
+	response	CitizenZombieGroup
+}
+
+rule PoliceEnemyZombieTorso
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieTorso
+	response	CitizenZombieGroup
+}
+
+rule PoliceEnemyZombieBlack
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieBlack
+	response	CitizenZombieGroup
+}
+
+rule PoliceEnemyZombieFast
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieFast
+	response	CitizenZombieGroup
+}
+
+rule PoliceEnemyScanner
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsScanner
+	response	CitizenScannersGroup
+}
+
+response PoliceEnemyStriderGroup
+{
+	scene "scenes/npc/$gender01/strider.vcd"
+}
+
+rule PoliceEnemyStrider
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsStrider
+	response	PoliceEnemyStriderGroup
+}
+
+rule PoliceEnemyManhack
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsManhack
+	response	CitizenManhacksGroup
+}
+
+rule PoliceEnemyMetro
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsMetro
+	response	CitizenMetroGroup
+}
+
+rule PoliceEnemyZombine
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombine
+	response	CitizenZombieGroup
+}
+
+rule PoliceEnemyHunter
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHunter
+	response	CitizenCombineGroup
+}
+
+// TLK_PLAYER_FOLLOW
+
+response PoliceResponseFollow
+{
+	scene		"scenes/npc/$gender01/squad_away03.vcd"		weight 4
+	scene		"scenes/npc/$gender01/squad_follow02.vcd"
+	scene		"scenes/npc/$gender01/squad_follow03.vcd"
+	scene		"scenes/npc/$gender01/squad_away01.vcd"		weight 3
+	scene		"scenes/npc/$gender01/squad_away02.vcd"
+//Trav|Edt - add more Follow scenes
+	scene	"scenes/npc/$gender01/overhere01.vcd"
+}
+
+rule PoliceFollow
+{
+	criteria	ConceptPlayerFollow IsPlayer IsPlayerVoiceMetroPolice
+	response	PoliceResponseFollow
+}
+
+
+
+

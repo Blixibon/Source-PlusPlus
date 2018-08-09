@@ -77,7 +77,7 @@ void CDODViewRender::Shutdown()
 	ShutdownColorCorrection();
 }
 
-void CDODViewRender::PerformStunEffect( const CViewSetup &view )
+void CDODViewRender::PerformStunEffect( const CNewViewSetup &view )
 {
 	C_DODPlayer *pPlayer = C_DODPlayer::GetLocalDODPlayer();
 
@@ -288,7 +288,7 @@ void CDODViewRender::SetupColorCorrection( )
 	}
 }
 
-void CDODViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw )
+void CDODViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw )
 {
 	// Setup the necessary parameters for color correction
 	SetupColorCorrection( );

@@ -27,10 +27,10 @@ public:
 	void Init( );
 	void Shutdown( );
 
-	void RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw );
+	void RenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw );
 	void RenderPlayerSprites();
 
-	void PerformStunEffect( const CViewSetup &view );
+	void PerformStunEffect( const CNewViewSetup &view );
 
 	void InitColorCorrection( );
 	void ShutdownColorCorrection( );

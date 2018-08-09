@@ -1,0 +1,13 @@
+SpriteCard
+{
+$basetexture "particle/spray1/spray1.vtf"
+
+
+
+$additive 1
+$blendframes 0
+$maxsize .85
+$startfadesize .675
+$endfadesize .75
+"$DEPTHBLEND" 0
+}

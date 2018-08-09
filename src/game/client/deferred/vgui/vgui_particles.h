@@ -30,7 +30,7 @@ private:
 
 	CUtlVector< CParticleCollection* >m_hParticles;
 
-	CViewSetup m_ViewSetup;
+	CNewViewSetup m_ViewSetup;
 };
 
 

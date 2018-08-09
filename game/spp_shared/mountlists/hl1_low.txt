@@ -1,0 +1,20 @@
+"Mount"
+{
+	280
+	{
+		"head"	"0"
+		"hl1"
+		{
+			"vpk"	"hl1_pak"
+		}
+	}
+	
+	"|content_path|"
+	{
+		"head"	"1"
+		"hl1_extra"
+		{
+			
+		}
+	}
+}

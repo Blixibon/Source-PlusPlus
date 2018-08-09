@@ -233,7 +233,7 @@ void CNPC_Zombine::Precache( void )
 {
 	BaseClass::Precache();
 
-	PrecacheModel( "models/zombie/zombie_soldier.mdl" );
+	PrecacheModel( "models/zombie_new/zombie_soldier_new.mdl" );
 
 	PrecacheScriptSound( "Zombie.FootstepRight" );
 	PrecacheScriptSound( "Zombie.FootstepLeft" );
@@ -254,7 +254,7 @@ void CNPC_Zombine::Precache( void )
 
 void CNPC_Zombine::SetZombieModel( void )
 {
-	SetModel( "models/zombie/zombie_soldier.mdl" );
+	SetModel( "models/zombie_new/zombie_soldier_new.mdl" );
 	SetHullType( HULL_HUMAN );
 
 	SetBodygroup( ZOMBIE_BODYGROUP_HEADCRAB, !m_fIsHeadless );
@@ -891,14 +891,14 @@ const char *CNPC_Zombine::GetHeadcrabModel( void )
 //-----------------------------------------------------------------------------
 const char *CNPC_Zombine::GetLegsModel( void )
 {
-	return "models/zombie/zombie_soldier_legs.mdl";
+	return "models/zombie_new/zombie_soldier_new_legs.mdl";
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 const char *CNPC_Zombine::GetTorsoModel( void )
 {
-	return "models/zombie/zombie_soldier_torso.mdl";
+	return "models/zombie_new/zombie_soldier_new_torso.mdl";
 }
 
 //---------------------------------------------------------

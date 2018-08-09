@@ -31,7 +31,7 @@ ITexture *CReplayScreenshotTaker::m_pScreenshotTarget;
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CReplayScreenshotTaker::CReplayScreenshotTaker( IViewRender *pViewRender, CViewSetup &view )
+CReplayScreenshotTaker::CReplayScreenshotTaker( IViewRender *pViewRender, CNewViewSetup &view )
 :	m_pViewRender( pViewRender ),
 	m_View( view )
 {
@@ -125,7 +125,7 @@ void CReplayScreenshotTaker::TakeScreenshot( WriteReplayScreenshotParams_t &para
 	pRenderContext->PushRenderTargetAndViewport( m_pScreenshotTarget, 0, 0, width, height );
 
 	// setup the view to render
-	CViewSetup viewSetup = m_View;
+	CNewViewSetup viewSetup = m_View;
 	viewSetup.x = 0;
 	viewSetup.y = 0;
 	viewSetup.width = width;

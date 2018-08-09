@@ -1690,6 +1690,8 @@ void CNPC_BaseZombie::Spawn( void )
 
 	SetZombieModel();
 
+	m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies());
+
 	NPCInit();
 
 	m_bIsSlumped = false;
@@ -1923,12 +1925,15 @@ bool CNPC_BaseZombie::IsSlumped( void )
 {
 	if( hl2_episodic.GetBool() )
 	{
-		if( m_ActBusyBehavior.IsInsideActBusy() && !m_ActBusyBehavior.IsStopBusying() )
+		if (m_ActBusyBehavior.IsInsideActBusy())
 		{
-			return true;
+			if (!m_ActBusyBehavior.IsStopBusying())
+				return true;
+			else
+				return false;
 		}
 	}
-	else
+	//else
 	{
 		int sequence = GetSequence();
 		if ( sequence != -1 )
@@ -1949,6 +1954,13 @@ bool CNPC_BaseZombie::IsGettingUp( void )
 	{
 		return true;
 	}
+
+	int sequence = GetSequence();
+	if (sequence != -1)
+	{
+		return (strncmp(GetSequenceName(sequence), "slumprise", 9) == 0);
+	}
+
 	return false;
 }
 

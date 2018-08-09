@@ -1,0 +1,92 @@
+//============================================================================================================
+// Metropolice criteria
+//============================================================================================================
+criterion "IsMetropolice" "classname" "npc_metropolice" "required"
+criterion "Homies_Responsible" "concept" "Homies_Responsibility" "required"
+
+//============================================================================================================
+// Metropolice Questions & Responses speech
+//============================================================================================================
+response "MetropoliceQuestion"
+{
+	sentence "METROPOLICE_IDLE_QUEST_AL" delay 1
+}
+
+rule MetropoliceQuestion
+{
+	criteria		IsMetropolice ConceptTalkQuestion IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response 		MetropoliceQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "MetropoliceAnswer"
+{
+	sentence "METROPOLICE_IDLE_ANSWER_AL" delay 1
+}
+//---------------------
+rule MetropoliceAnswer
+{
+	criteria		IsMetropolice ConceptTalkAnswer IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response		MetropoliceAnswer
+}
+
+//============================================================================================================
+// Metropolice commander mode speech
+//============================================================================================================
+
+response "MetropoliceAffim"
+{
+	sentence "METROPOLICE_IDLE_ANSWER_CR"
+}
+
+response "MetropoliceDenyMove"
+{
+	sentence "METROPOLICE_CANT_MOVE"
+}
+
+response "MetropoliceJoin"
+{
+	sentence "METROPOLICE_IDLE_CLEAR"
+}
+
+
+rule MetropoliceCommanded
+{
+	criteria		IsMetropolice ConceptTalkCommanded
+	response		MetropoliceAffim
+}
+
+rule MetropoliceFollow
+{
+	criteria		IsMetropolice ConceptTalkStartFollow
+	response		MetropoliceAffim
+}
+
+rule MetropoliceUnFollow
+{
+	criteria		IsMetropolice ConceptTalkStopFollow
+	response		MetropoliceDenyMove
+}
+
+rule MetropoliceJoinGroup
+{
+	criteria		IsMetropolice ConceptJoinPlayer
+	response		MetropoliceJoin
+}
+
+
+//
+// Misc
+//
+
+response "Homies_WhoIsResponsible"
+{
+	scene "scenes/npc/homies/he03_02_responsibility.vcd" delay 180
+}
+
+rule HomiesResponsible
+{
+	criteria		Homies_Responsible
+
+	response		Homies_WhoIsResponsible
+}

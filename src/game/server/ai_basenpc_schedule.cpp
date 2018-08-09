@@ -1724,6 +1724,19 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 			break;
 		}
 
+	case TASK_TARGET_ENEMY:
+	{
+		CBaseEntity *pPlayer = GetEnemy();
+		if (pPlayer)
+		{
+			SetTarget(pPlayer);
+			TaskComplete();
+		}
+		else
+			TaskFail(FAIL_NO_ENEMY);
+		break;
+	}
+
 	case TASK_SCRIPT_RUN_TO_TARGET:
 	case TASK_SCRIPT_WALK_TO_TARGET:
 	case TASK_SCRIPT_CUSTOM_MOVE_TO_TARGET:

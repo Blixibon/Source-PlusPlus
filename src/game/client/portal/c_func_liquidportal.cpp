@@ -143,7 +143,7 @@ void CPortalRenderable_Func_LiquidPortal::DrawPostStencilFixes( void )
 }
 
 
-void CPortalRenderable_Func_LiquidPortal::RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CViewSetup &cameraView )
+void CPortalRenderable_Func_LiquidPortal::RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CNewViewSetup &cameraView )
 {
 	if( m_pLinkedPortal == NULL ) //not linked to any portal
 		return;
@@ -170,7 +170,7 @@ void CPortalRenderable_Func_LiquidPortal::RenderPortalViewToBackBuffer( CViewRen
 	Vector ptPOVOrigin = m_matrixThisToLinked * cameraView.origin;	
 	Vector vPOVForward = m_matrixThisToLinked.ApplyRotation( vCameraForward );
 
-	CViewSetup portalView = cameraView;
+	CNewViewSetup portalView = cameraView;
 
 	QAngle qPOVAngles = TransformAnglesToWorldSpace( cameraView.angles, m_matrixThisToLinked.As3x4() );	
 
@@ -221,7 +221,7 @@ void CPortalRenderable_Func_LiquidPortal::RenderPortalViewToBackBuffer( CViewRen
 	CopyToCurrentView( pViewRender, cameraView );
 }
 
-void CPortalRenderable_Func_LiquidPortal::RenderPortalViewToTexture( CViewRender *pViewRender, const CViewSetup &cameraView )
+void CPortalRenderable_Func_LiquidPortal::RenderPortalViewToTexture( CViewRender *pViewRender, const CNewViewSetup &cameraView )
 {
 
 }
@@ -273,7 +273,7 @@ void CPortalRenderable_Func_LiquidPortal::ShiftFogForExitPortalView() const
 }
 
 
-bool CPortalRenderable_Func_LiquidPortal::ShouldUpdatePortalView_BasedOnView( const CViewSetup &currentView, Frustum currentFrustum )
+bool CPortalRenderable_Func_LiquidPortal::ShouldUpdatePortalView_BasedOnView( const CNewViewSetup &currentView, Frustum currentFrustum )
 {
 	//return false;
 	return IsFillingNow();
@@ -284,7 +284,7 @@ CPortalRenderable* CPortalRenderable_Func_LiquidPortal::GetLinkedPortal() const
 	return m_pLinkedPortal;
 }
 	
-bool CPortalRenderable_Func_LiquidPortal::ShouldUpdateDepthDoublerTexture( const CViewSetup &viewSetup )
+bool CPortalRenderable_Func_LiquidPortal::ShouldUpdateDepthDoublerTexture( const CNewViewSetup &viewSetup )
 {
 	return false;
 }

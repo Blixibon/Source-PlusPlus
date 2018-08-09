@@ -9,6 +9,9 @@
 
 #define COMMAND_POINT_CLASSNAME "info_target_command_point"
 
+#define MAX_PLAYER_SQUAD npc_player_squad_size.GetInt()
+extern ConVar npc_player_squad_size;
+
 struct BMSSquadMemberInfo_t
 {
 	CAI_PlayerAlly *	pMember;
@@ -42,6 +45,7 @@ public:
 
 	void 			FixupPlayerSquad();
 	void 			ClearFollowTarget();
+	bool			WasInPlayerSquad() { return m_bWasInPlayerSquad; }
 	void 			UpdateFollowCommandPoint();
 	bool			IsFollowingCommandPoint();
 	bool 			TargetOrder(CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies);
@@ -60,7 +64,7 @@ public:
 	bool			SpeakCommandResponse(AIConcept_t concept, const char *modifiers = NULL);
 
 	CAI_BaseNPC *	GetSquadCommandRepresentative();
-	bool IsCommandable() { return IsInPlayerSquad(); }
+	virtual bool IsCommandable() { return IsInPlayerSquad(); }
 
 	bool HaveCommandGoal() const
 	{
@@ -91,7 +95,7 @@ protected:
 
 	static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
 
-	bool					m_bNotifyNavFailBlocked;
+	//bool					m_bNotifyNavFailBlocked;
 	bool					m_bNeverLeavePlayerSquad; // Don't leave the player squad unless killed, or removed via Entity I/O. 
 
 	USEPTR			m_pfnBaseUse;
@@ -104,7 +108,7 @@ protected:
 	COutputEvent		m_OnFollowOrder;
 	COutputEvent		m_OnStationOrder;
 	COutputEvent		m_OnPlayerUse;
-	COutputEvent		m_OnNavFailBlocked;
+	//COutputEvent		m_OnNavFailBlocked;
 
 protected:
 	bool			m_bAutoSquadPreventDoubleAdd;

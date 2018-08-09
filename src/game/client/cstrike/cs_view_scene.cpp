@@ -95,7 +95,7 @@ void CCSViewRender::GetScreenFadeDistances( float *min, float *max )
 }
 
 
-void CCSViewRender::PerformNightVisionEffect( const CViewSetup &view )
+void CCSViewRender::PerformNightVisionEffect( const CNewViewSetup &view )
 {
 	C_CSPlayer *pPlayer = C_CSPlayer::GetLocalCSPlayer();
 
@@ -165,7 +165,7 @@ void CCSViewRender::PerformNightVisionEffect( const CViewSetup &view )
 
 //Adrian - Super Nifty Flashbang Effect(tm)
 // this does the burn in for the flashbang effect.
-void CCSViewRender::PerformFlashbangEffect( const CViewSetup &view )
+void CCSViewRender::PerformFlashbangEffect( const CNewViewSetup &view )
 {
 	C_CSPlayer *pPlayer = C_CSPlayer::GetLocalCSPlayer();
 
@@ -295,7 +295,7 @@ void CCSViewRender::PerformFlashbangEffect( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CCSViewRender::Render2DEffectsPreHUD( const CViewSetup &view )
+void CCSViewRender::Render2DEffectsPreHUD( const CNewViewSetup &view )
 {
 	PerformNightVisionEffect( view );	// this needs to come before the HUD is drawn, or it will wash the HUD out
 }
@@ -304,7 +304,7 @@ void CCSViewRender::Render2DEffectsPreHUD( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CCSViewRender::Render2DEffectsPostHUD( const CViewSetup &view )
+void CCSViewRender::Render2DEffectsPostHUD( const CNewViewSetup &view )
 {
 	PerformFlashbangEffect( view );
 }

@@ -86,7 +86,7 @@ void CLightingManager::SetRenderWorldLights( bool bRender )
 }
 
 void CLightingManager::SetRenderConstants( const VMatrix &ScreenToWorld,
-		const CViewSetup &setup )
+		const CNewViewSetup &setup )
 {
 	m_matScreenToWorld = ScreenToWorld;
 
@@ -96,7 +96,7 @@ void CLightingManager::SetRenderConstants( const VMatrix &ScreenToWorld,
 	m_flzNear = setup.zNear;
 }
 
-void CLightingManager::LightSetup( const CViewSetup &setup )
+void CLightingManager::LightSetup( const CNewViewSetup &setup )
 {
 	// Remove lights that have run out of time
 	UpdateTemplights();
@@ -818,7 +818,7 @@ FORCEINLINE bool SortLightsByComboType( CUtlVector<def_light_t*> &hLights,
 	return hLights.Count() > 0;
 }
 
-FORCEINLINE void CLightingManager::DrawVolumePrepass( bool bDoModelTransform, const CViewSetup &view, def_light_t *l )
+FORCEINLINE void CLightingManager::DrawVolumePrepass( bool bDoModelTransform, const CNewViewSetup &view, def_light_t *l )
 {
 	if ( !l->IsSpot() )
 		return;
@@ -849,7 +849,7 @@ FORCEINLINE void CLightingManager::DrawVolumePrepass( bool bDoModelTransform, co
 	pRenderContext->PopRenderTargetAndViewport();
 }
 
-void CLightingManager::RenderLights( const CViewSetup &view, CDeferredViewRender *pCaller )
+void CLightingManager::RenderLights( const CNewViewSetup &view, CDeferredViewRender *pCaller )
 {
 	static CUtlVector<def_light_t*> lightsShadowedCookied;
 	static CUtlVector<def_light_t*> lightsShadowed;
@@ -1497,7 +1497,7 @@ void CLightingManager::RenderLights( const CViewSetup &view, CDeferredViewRender
 	}
 }
 
-void CLightingManager::RenderVolumetrics( const CViewSetup &view )
+void CLightingManager::RenderVolumetrics( const CNewViewSetup &view )
 {
 	if ( !m_bDrawVolumetrics )
 		return;

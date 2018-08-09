@@ -6,7 +6,10 @@
 //=============================================================================//
 #include "cbase.h"
 #include "npc_turret_floor.h"
+#ifdef PORTAL
 #include "portal_player.h"
+#include "prop_portal_shared.h"
+#endif
 #include "weapon_physcannon.h"
 #include "basehlcombatweapon_shared.h"
 #include "ammodef.h"
@@ -14,7 +17,6 @@
 #include "ai_memory.h"
 #include "rope.h"
 #include "rope_shared.h"
-#include "prop_portal_shared.h"
 #include "sprite.h"
 
 #define SF_FLOOR_TURRET_AUTOACTIVATE		0x00000020
@@ -750,7 +752,7 @@ void CNPC_Portal_FloorTurret::ActiveThink( void )
 	//Calculate dir and dist to enemy
 	Vector	vecDirToEnemy = vecMidEnemy - vecMid;	
 	m_flDistToEnemy = VectorNormalize( vecDirToEnemy );
-
+#ifdef PORTAL
 	// If the enemy isn't in the normal fov, check the fov through portals
 	CProp_Portal *pPortal = NULL;
 	if ( pEnemy->IsAlive() )
@@ -786,7 +788,7 @@ void CNPC_Portal_FloorTurret::ActiveThink( void )
 			pPortal = NULL;
 		}
 	}
-
+#endif
 	//Draw debug info
 	if ( g_debug_turret.GetBool() )
 	{
@@ -922,12 +924,13 @@ void CNPC_Portal_FloorTurret::ActiveThink( void )
 	{
 		//We want to look at the enemy's eyes so we don't jitter
 		Vector vEnemyWorldSpaceCenter = pEnemy->WorldSpaceCenter();
+#ifdef PORTAL
 		if ( pPortal && pPortal->IsActivedAndLinked() )
 		{
 			// Translate our target across the portal
 			UTIL_Portal_PointTransform( pPortal->m_hLinkedPortal->MatrixThisToLinked(), vEnemyWorldSpaceCenter, vEnemyWorldSpaceCenter );
 		}
-
+#endif
 		Vector	vecDirToEnemyEyes = vEnemyWorldSpaceCenter - vecMid;
 		VectorNormalize( vecDirToEnemyEyes );
 
@@ -977,15 +980,15 @@ void CNPC_Portal_FloorTurret::SearchThink( void )
 		//Get our shot positions
 		Vector vecMid = EyePosition();
 		Vector vecMidEnemy = pEnemy->BodyTarget( vecMid );
-
+#ifdef PORTAL
 		//Look for our current enemy
 		bool bEnemyInFOV = FInViewCone( pEnemy );
 		bool bEnemyVisible = FVisible( pEnemy );
-
+#endif
 		//Calculate dir and dist to enemy
 		Vector	vecDirToEnemy = vecMidEnemy - vecMid;	
 		m_flDistToEnemy = VectorNormalize( vecDirToEnemy );
-
+#ifdef PORTAL
 		// If the enemy isn't in the normal fov, check the fov through portals
 		CProp_Portal *pPortal = NULL;
 		pPortal = FInViewConeThroughPortal( pEnemy );
@@ -1010,7 +1013,7 @@ void CNPC_Portal_FloorTurret::SearchThink( void )
 				m_flDistToEnemy = flDistToEnemyTransformed;
 			}
 		}
-
+#endif
 		// Give enemies that are farther away a longer grace period
 		float fDistanceRatio = m_flDistToEnemy / PORTAL_FLOOR_TURRET_RANGE;
 		m_flShotTime = gpGlobals->curtime + fDistanceRatio * fDistanceRatio * PORTAL_FLOOR_TURRET_MAX_SHOT_DELAY;
@@ -1235,7 +1238,9 @@ void CNPC_Portal_FloorTurret::InactiveThink( void )
 	{
 		// Never return to life!
 		SetCollisionGroup( COLLISION_GROUP_NONE );
-		//ReturnToLife();
+#ifndef PORTAL
+		ReturnToLife();
+#endif
 	}
 	else
 	{

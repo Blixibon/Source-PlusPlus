@@ -65,7 +65,7 @@ bool C_FuncReflectiveGlass::ShouldDraw()
 //-----------------------------------------------------------------------------
 // Do we have reflective glass in view?
 //-----------------------------------------------------------------------------
-bool IsReflectiveGlassInView( const CViewSetup& view, cplane_t &plane )
+bool IsReflectiveGlassInView( const CNewViewSetup& view, cplane_t &plane )
 {
 	// Early out if no cameras
 	C_FuncReflectiveGlass *pReflectiveGlass = GetReflectiveGlassList();

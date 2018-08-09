@@ -1,0 +1,22 @@
+//-----------------------------------------------------------------------------
+//	CLIENT_EPISODIC.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Include "$SRCDIR\game\client\client_episodic_base.vpc"
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"Portal"
+		{
+			$File	"portal\c_npc_portal_turret_floor.cpp"
+			//$File	"portal\c_npc_rocket_turret.cpp"
+			$File	"portal\c_prop_energy_ball.cpp"
+			$File	"peter\c_npc_personality_core.cpp"
+		}
+	}
+	
+}

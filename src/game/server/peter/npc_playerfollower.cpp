@@ -9,7 +9,7 @@ extern ConVar	ai_citizen_debug_commander;
 #define DebuggingCommanderMode() (ai_citizen_debug_commander.GetBool() && (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT))
 
 ConVar npc_player_squad_size("npc_player_squad_size", "4", FCVAR_CHEAT | FCVAR_REPLICATED);
-#define MAX_PLAYER_SQUAD npc_player_squad_size.GetInt()
+
 
 extern ConVar player_squad_autosummon_time;
 extern ConVar player_squad_autosummon_move_tolerance;
@@ -39,12 +39,12 @@ DEFINE_OUTPUT(m_OnLeftPlayerSquad, "OnLeftPlayerSquad"),
 DEFINE_OUTPUT(m_OnFollowOrder, "OnFollowOrder"),
 DEFINE_OUTPUT(m_OnStationOrder, "OnStationOrder"),
 DEFINE_OUTPUT(m_OnPlayerUse, "OnPlayerUse"),
-DEFINE_OUTPUT(m_OnNavFailBlocked, "OnNavFailBlocked"),
+//DEFINE_OUTPUT(m_OnNavFailBlocked, "OnNavFailBlocked"),
 DEFINE_FIELD(m_iszOriginalSquad, FIELD_STRING),
 DEFINE_FIELD(m_flTimeJoinedPlayerSquad, FIELD_TIME),
 DEFINE_FIELD(m_bWasInPlayerSquad, FIELD_BOOLEAN),
 DEFINE_FIELD(m_hSavedFollowGoalEnt, FIELD_EHANDLE),
-DEFINE_KEYFIELD(m_bNotifyNavFailBlocked, FIELD_BOOLEAN, "notifynavfailblocked"),
+//DEFINE_KEYFIELD(m_bNotifyNavFailBlocked, FIELD_BOOLEAN, "notifynavfailblocked"),
 DEFINE_KEYFIELD(m_bNeverLeavePlayerSquad, FIELD_BOOLEAN, "neverleaveplayersquad"),
 DEFINE_KEYFIELD(m_iszDenyCommandConcept, FIELD_STRING, "denycommandconcept"),
 DEFINE_FIELD(m_flTimeLastCloseToPlayer, FIELD_TIME),

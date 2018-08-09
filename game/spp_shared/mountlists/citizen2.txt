@@ -1,0 +1,14 @@
+"Mount"
+{
+	"sourcemods"
+	{
+		head 1
+		"The Citizen Returns"
+		{
+			path_id
+			{
+				scenes 1
+			}
+		}
+	}
+}

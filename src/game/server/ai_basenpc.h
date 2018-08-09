@@ -721,6 +721,7 @@ protected:
 
 	bool				IsInChoreo() const;
 
+	int 				GetScheduleCurTaskIndex() const { return m_ScheduleState.iCurTask; }
 private:
 	// This function maps the type through TranslateSchedule() and then retrieves the pointer
 	// to the actual CAI_Schedule from the database of schedules available to this class.
@@ -730,7 +731,6 @@ private:
 	bool				FScheduleDone ( void );
 	CAI_Schedule *		ScheduleInList( const char *pName, CAI_Schedule **pList, int listCount );
 
-	int 				GetScheduleCurTaskIndex() const			{ return m_ScheduleState.iCurTask;		}
 	inline int			IncScheduleCurTaskIndex();
 	inline void			ResetScheduleCurTaskIndex();
 	void				NextScheduledTask ( void );

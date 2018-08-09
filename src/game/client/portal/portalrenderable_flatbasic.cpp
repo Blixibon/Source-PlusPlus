@@ -416,7 +416,7 @@ bool CPortalRenderable_FlatBasic::CalcFrustumThroughPortal( const Vector &ptCurr
 
 
 
-void CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CViewSetup &cameraView )
+void CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CNewViewSetup &cameraView )
 {
 	VPROF( "CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer" );
 
@@ -444,7 +444,7 @@ void CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer( CViewRender *pVi
 	Vector ptRemotePortalPosition = m_pLinkedPortal->m_ptOrigin;
 	Vector vRemotePortalForward = m_pLinkedPortal->m_vForward;
 
-	CViewSetup portalView = cameraView;
+	CNewViewSetup portalView = cameraView;
 
 	if( portalView.zNear < 1.0f )
 		portalView.zNear = 1.0f;
@@ -520,7 +520,7 @@ void CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer( CViewRender *pVi
 }
 
 
-void CPortalRenderable_FlatBasic::RenderPortalViewToTexture( CViewRender *pViewRender, const CViewSetup &cameraView )
+void CPortalRenderable_FlatBasic::RenderPortalViewToTexture( CViewRender *pViewRender, const CNewViewSetup &cameraView )
 {
 	if( m_fStaticAmount == 1.0f )
 		return; //not going to see anything anyways
@@ -559,7 +559,7 @@ void CPortalRenderable_FlatBasic::RenderPortalViewToTexture( CViewRender *pViewR
 
 	Vector vCameraToPortal = m_ptOrigin - cameraView.origin;
 
-	CViewSetup portalView = cameraView;
+	CNewViewSetup portalView = cameraView;
 	Frustum frustumBackup;
 	memcpy( frustumBackup, pViewRender->GetFrustum(), sizeof( Frustum ) );
 
@@ -686,7 +686,7 @@ void CPortalRenderable_FlatBasic::DrawPostStencilFixes( void )
 	DrawRenderFixMesh( g_pPortalRender->m_MaterialsAccess.m_WriteZ_Model, 0.0f );
 }
 
-bool CPortalRenderable_FlatBasic::ShouldUpdateDepthDoublerTexture( const CViewSetup &viewSetup )
+bool CPortalRenderable_FlatBasic::ShouldUpdateDepthDoublerTexture( const CNewViewSetup &viewSetup )
 {
 	return	( (m_InternallyMaintainedData.m_bUsableDepthDoublerConfiguration) &&
 		(m_pLinkedPortal != NULL) &&
@@ -1240,7 +1240,7 @@ bool CPortalRenderable_FlatBasic::DoesExitViewIntersectWaterPlane( float waterZ,
 	return (bAboveWater && bBelowWater);
 }
 
-bool CPortalRenderable_FlatBasic::ShouldUpdatePortalView_BasedOnView( const CViewSetup &currentView, CUtlVector<VPlane> &currentComplexFrustum  )
+bool CPortalRenderable_FlatBasic::ShouldUpdatePortalView_BasedOnView( const CNewViewSetup &currentView, CUtlVector<VPlane> &currentComplexFrustum  )
 {
 	if( m_pLinkedPortal == NULL )
 		return false;

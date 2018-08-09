@@ -27,7 +27,7 @@ CTFViewRender::CTFViewRender()
 //-----------------------------------------------------------------------------
 // Purpose: Renders extra 2D effects in derived classes while the 2D view is on the stack
 //-----------------------------------------------------------------------------
-void CTFViewRender::Render2DEffectsPostHUD( const CViewSetup &view )
+void CTFViewRender::Render2DEffectsPostHUD( const CNewViewSetup &view )
 {
 	BaseClass::Render2DEffectsPostHUD( view );
 

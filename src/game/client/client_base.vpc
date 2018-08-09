@@ -200,6 +200,8 @@ $Project
 
 		$File	"materialproxy_lightedmouth.cpp"
 		
+		$File	"c_env_dof_controller.cpp"
+		
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
 		
 		$File	"hl2\C_Func_Monitor.cpp"

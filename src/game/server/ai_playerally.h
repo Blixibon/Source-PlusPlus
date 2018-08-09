@@ -310,6 +310,8 @@ public:
 
 	CBaseEntity *FindSpeechTarget( int flags );
 	virtual bool IsValidSpeechTarget( int flags, CBaseEntity *pEntity );
+
+	CBaseEntity *GetPotentialSpeechTarget() { return m_hPotentialSpeechTarget; }
 	
 	CBaseEntity *GetSpeechTarget()								{ return m_hTalkTarget.Get(); }
 	void		SetSpeechTarget( CBaseEntity *pSpeechTarget ) 	{ m_hTalkTarget = pSpeechTarget; }
@@ -328,7 +330,7 @@ public:
 	//---------------------------------
 
 	virtual bool SelectQuestionAndAnswerSpeech( AISpeechSelection_t *pSelection );
-	virtual void PostSpeakDispatchResponse( AIConcept_t concept, AI_Response *response );
+	virtual void PostSpeakDispatchResponse( AIConcept_t concept, AI_Response &response );
 	bool		 SelectQuestionFriend( CBaseEntity *pFriend, AISpeechSelection_t *pSelection );
 	bool		 SelectAnswerFriend( CBaseEntity *pFriend, AISpeechSelection_t *pSelection, bool bRespondingToHello );
 

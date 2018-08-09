@@ -242,7 +242,7 @@ void C_EnvProjectedTexture::UpdateLight( bool bForceUpdate )
 
 	if ( m_bEnableVolumetrics && m_bEnableShadows )
 	{
-		CViewSetup setup;
+		CNewViewSetup setup;
 		GetShadowViewSetup( setup );
 
 		VMatrix world2View, view2Proj, world2Proj, world2Pixels;
@@ -335,7 +335,7 @@ int C_EnvProjectedTexture::DrawModel( int flags )
 
 	UpdateScreenEffectTexture();
 
-	CViewSetup setup;
+	CNewViewSetup setup;
 	GetShadowViewSetup( setup );
 
 	VMatrix world2View, view2Proj, world2Proj, world2Pixels;
@@ -387,7 +387,7 @@ void C_EnvProjectedTexture::RebuildVolumetricMesh()
 
 	ClearVolumetricsMesh();
 
-	CViewSetup setup;
+	CNewViewSetup setup;
 	GetShadowViewSetup( setup );
 	setup.origin = vec3_origin;
 	setup.angles = vec3_angle;
@@ -523,7 +523,7 @@ void C_EnvProjectedTexture::RebuildVolumetricMesh()
 	meshBuilder.End();
 }
 
-void C_EnvProjectedTexture::GetShadowViewSetup( CViewSetup &setup )
+void C_EnvProjectedTexture::GetShadowViewSetup( CNewViewSetup &setup )
 {
 	setup.origin = m_FlashlightState.m_vecLightOrigin;
 	QuaternionAngles( m_FlashlightState.m_quatOrientation, setup.angles );

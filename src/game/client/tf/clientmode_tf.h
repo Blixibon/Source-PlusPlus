@@ -39,11 +39,11 @@ public:
 	virtual void	InitViewport();
 	virtual void	Shutdown();
 
-	virtual void	OverrideView( CViewSetup *pSetup );
+	virtual void	OverrideView( CNewViewSetup *pSetup );
 
 //	virtual int		KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
 
-	virtual bool	DoPostScreenSpaceEffects( const CViewSetup *pSetup );
+	virtual bool	DoPostScreenSpaceEffects( const CNewViewSetup *pSetup );
 
 	virtual float	GetViewModelFOV( void );
 	virtual bool	ShouldDrawViewModel();

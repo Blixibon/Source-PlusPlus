@@ -84,6 +84,7 @@ enum view_id_t
 	VIEW_ID_COUNT
 };
 view_id_t CurrentViewID();
+bool CurrentViewIsMain();
 
 //-----------------------------------------------------------------------------
 // Purpose: Stored pitch drifting variables
@@ -194,7 +195,7 @@ private:
 // 
 //-----------------------------------------------------------------------------
 class CBase3dView : public CRefCounted<>,
-					protected CViewSetup
+					protected CNewViewSetup
 {
 	DECLARE_CLASS_NOBASE( CBase3dView );
 public:
@@ -223,7 +224,7 @@ public:
 	CRendering3dView( CViewRender *pMainView );
 	virtual ~CRendering3dView() { ReleaseLists(); }
 
-	virtual void	Setup( const CViewSetup &setup );
+	virtual void	Setup( const CNewViewSetup &setup );
 
 	// What are we currently rendering? Returns a combination of DF_ flags.
 	virtual int		GetDrawFlags();
@@ -330,7 +331,7 @@ public:
 	virtual void	Init( void );
 	virtual void	Shutdown( void );
 
-	const CViewSetup *GetPlayerViewSetup( ) const;
+	const CNewViewSetup *GetPlayerViewSetup( ) const;
 
 	virtual void	StartPitchDrift( void );
 	virtual void	StopPitchDrift( void );
@@ -365,15 +366,15 @@ protected:
 
     StereoEye_t		GetFirstEye() const;
     StereoEye_t		GetLastEye() const;
-    CViewSetup &    GetView(StereoEye_t eEye);
-    const CViewSetup &    GetView(StereoEye_t eEye) const ;
+    CNewViewSetup &    GetView(StereoEye_t eEye);
+    const CNewViewSetup &    GetView(StereoEye_t eEye) const ;
 
 
 	// This stores all of the view setup parameters that the engine needs to know about.
     // Best way to pick the right one is with ::GetView(), rather than directly.
-	CViewSetup		m_View;         // mono <- in stereo mode, this will be between the two eyes and is the "main" view.
-	CViewSetup		m_ViewLeft;     // left (unused for mono)
-	CViewSetup		m_ViewRight;    // right (unused for mono)
+	CNewViewSetup		m_View;         // mono <- in stereo mode, this will be between the two eyes and is the "main" view.
+	CNewViewSetup		m_ViewLeft;     // left (unused for mono)
+	CNewViewSetup		m_ViewRight;    // right (unused for mono)
 
 	// Pitch drifting data
 	CPitchDrift		m_PitchDrift;
@@ -385,15 +386,15 @@ public:
 // Implementation of IViewRender interface
 public:
 
-	void			SetupVis( const CViewSetup& view, unsigned int &visFlags, ViewCustomVisibility_t *pCustomVisibility = NULL );
+	void			SetupVis( const CNewViewSetup& view, unsigned int &visFlags, ViewCustomVisibility_t *pCustomVisibility = NULL );
 
 
 	// Render functions
 	virtual	void	Render( vrect_t *rect );
-	virtual void	RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw );
+	virtual void	RenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw );
 	virtual void	RenderPlayerSprites();
-	virtual void	Render2DEffectsPreHUD( const CViewSetup &view );
-	virtual void	Render2DEffectsPostHUD( const CViewSetup &view );
+	virtual void	Render2DEffectsPreHUD( const CNewViewSetup &view );
+	virtual void	Render2DEffectsPostHUD( const CNewViewSetup &view );
 
 
 	void			DisableFog( void );
@@ -407,7 +408,7 @@ public:
 	bool			ShouldDrawEntities( void );
 	bool			ShouldDrawBrushModels( void );
 
-	const CViewSetup *GetViewSetup( ) const;
+	const CNewViewSetup *GetViewSetup( ) const;
 	
 	void			DisableVis( void );
 
@@ -422,14 +423,14 @@ public:
 
 	void			GetWaterLODParams( float &flCheapWaterStartDistance, float &flCheapWaterEndDistance );
 
-	virtual void	QueueOverlayRenderView( const CViewSetup &view, int nClearFlags, int whatToDraw );
+	virtual void	QueueOverlayRenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw );
 
 	virtual void	GetScreenFadeDistances( float *min, float *max );
 
 	virtual C_BaseEntity *GetCurrentlyDrawingEntity();
 	virtual void		  SetCurrentlyDrawingEntity( C_BaseEntity *pEnt );
 
-	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CViewSetup &shadowView );
+	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CNewViewSetup &shadowView );
 
 	int GetBaseDrawFlags() { return m_BaseDrawFlags; }
 	virtual bool ShouldForceNoVis()  { return m_bForceNoVis; }
@@ -458,21 +459,21 @@ protected:
 
 // General draw methods
 	// baseDrawFlags is a combination of DF_ defines. DF_MONITOR is passed into here while drawing a monitor.
-	void			ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxVisible, const CViewSetup &view, int nClearFlags, view_id_t viewID, bool bDrawViewModel = false, int baseDrawFlags = 0, ViewCustomVisibility_t *pCustomVisibility = NULL );
-	void			ViewDrawScene_Intro(const CViewSetup &view, int nClearFlags, const IntroData_t &introData);
+	void			ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxVisible, const CNewViewSetup &view, int nClearFlags, view_id_t viewID, bool bDrawViewModel = false, int baseDrawFlags = 0, ViewCustomVisibility_t *pCustomVisibility = NULL );
+	void			ViewDrawScene_Intro(const CNewViewSetup &view, int nClearFlags, const IntroData_t &introData);
 
-	void			DrawMonitors( const CViewSetup &cameraView );
+	void			DrawMonitors( const CNewViewSetup &cameraView );
 
-	void			SSAO_DepthPass( const CViewSetup &viewSet );
+	void			SSAO_DepthPass( const CNewViewSetup &viewSet );
 	void			SSAO_DrawResults();
 
-	bool			DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt, const CViewSetup &cameraView, C_BasePlayer *localPlayer, 
+	bool			DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_PointCamera *pCameraEnt, const CNewViewSetup &cameraView, C_BasePlayer *localPlayer, 
 						int x, int y, int width, int height );
 
 	// Drawing primitives
 	bool			ShouldDrawViewModel( bool drawViewmodel );
 public:
-	void			DrawViewModels( const CViewSetup &view, bool drawViewmodel );
+	void			DrawViewModels( const CNewViewSetup &view, bool drawViewmodel );
 protected:
 	void			PerformScreenSpaceEffects( int x, int y, int w, int h );
 
@@ -484,12 +485,12 @@ protected:
 	void DrawUnderwaterOverlay( void );
 
 	// Water-related methods
-	void			DrawWorldAndEntities( bool drawSkybox, const CViewSetup &view, int nClearFlags, ViewCustomVisibility_t *pCustomVisibility = NULL );
+	void			DrawWorldAndEntities( bool drawSkybox, const CNewViewSetup &view, int nClearFlags, ViewCustomVisibility_t *pCustomVisibility = NULL );
 
 #ifdef PORTAL 
 	// Intended for use in the middle of another ViewDrawScene call, this allows stencils to be drawn after opaques but before translucents are drawn in the main view.
-	void			ViewDrawScene_PortalStencil( const CViewSetup &view, ViewCustomVisibility_t *pCustomVisibility );
-	void			Draw3dSkyboxworld_Portal( const CViewSetup &view, int &nClearFlags, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible, ITexture *pRenderTarget = NULL );
+	void			ViewDrawScene_PortalStencil( const CNewViewSetup &view, ViewCustomVisibility_t *pCustomVisibility );
+	void			Draw3dSkyboxworld_Portal( const CNewViewSetup &view, int &nClearFlags, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible, ITexture *pRenderTarget = NULL );
 #endif // PORTAL
 
 	// Determines what kind of water we're going to use
@@ -499,13 +500,13 @@ protected:
 	void			DrawRenderablesInList( CUtlVector< IClientRenderable * > &list, int flags = 0 );
 	
 	// Sets up, cleans up the main 3D view
-	void			SetupMain3DView( const CViewSetup &view, int &nClearFlags );
-	void			CleanupMain3DView( const CViewSetup &view );
+	void			SetupMain3DView( const CNewViewSetup &view, int &nClearFlags );
+	void			CleanupMain3DView( const CNewViewSetup &view );
 
-	void			UpdateCascadedShadow( const CViewSetup &view );
+	void			UpdateCascadedShadow( const CNewViewSetup &view );
 
 	// This stores the current view
- 	CViewSetup		m_CurrentView;
+ 	CNewViewSetup		m_CurrentView;
 
 	// VIS Overrides
 	// Set to true to turn off client side vis ( !!!! rendering will be slow since everything will draw )
@@ -525,7 +526,7 @@ protected:
 	float			m_flCheapWaterStartDistance;
 	float			m_flCheapWaterEndDistance;
 
-	CViewSetup			m_OverlayViewSetup;
+	CNewViewSetup			m_OverlayViewSetup;
 	int					m_OverlayClearFlags;
 	int					m_OverlayDrawFlags;
 	bool				m_bDrawOverlay;

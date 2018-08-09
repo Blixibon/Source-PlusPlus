@@ -1,0 +1,31 @@
+//-----------------------------------------------------------------------------
+//	CLIENT_EPISODIC.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro GAMENAME 	"mod_lazuul"
+
+$Include "$SRCDIR\game\client\client_portal_base_lite.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\bms;.\bms"
+		$PreprocessorDefinitions		"$BASE;HL2_LAZUL"
+	}
+}
+
+$Project "Client (Lazuul)"
+{
+	$Folder "Source Files"
+	{
+		$Folder "Lazuul"
+		{
+			$File	"peter\newgamedialog.cpp"
+			$File	"peter\vsingleplayer.cpp"
+		}
+	}
+}

@@ -1,5 +1,14 @@
 "Mount"
 {
+	290930
+	{
+		head 0
+		hl2
+		{
+			vpk	hl2_pak
+		}
+	}
+
 	220
 	{
 		"head"	"0"

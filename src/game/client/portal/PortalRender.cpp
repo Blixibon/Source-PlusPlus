@@ -517,11 +517,11 @@ bool CPortalRender::DrawPortalsUsingStencils( CViewRender *pViewRender )
 	//queued mode makes us pass the barrier of just noticeable difference when using a previous frame's occlusion as a draw skip check
 	bool bIsQueuedMode = (materials->GetThreadMode() == MATERIAL_QUEUED_THREADED);
 
-	const CViewSetup *pViewSetup = pViewRender->GetViewSetup();
+	const CNewViewSetup *pViewSetup = pViewRender->GetViewSetup();
 	m_RecursiveViewSetups[m_iViewRecursionLevel] = *pViewSetup;
 
-	CViewSetup ViewBackup;// = *pViewSetup; //backup the view, we'll need to restore it
-	memcpy( &ViewBackup, pViewSetup, sizeof( CViewSetup ) );
+	CNewViewSetup ViewBackup;// = *pViewSetup; //backup the view, we'll need to restore it
+	memcpy( &ViewBackup, pViewSetup, sizeof( CNewViewSetup ) );
 
 	Vector ptCameraOrigin = pViewSetup->origin;
 	Vector vCameraForward;
@@ -650,7 +650,7 @@ bool CPortalRender::DrawPortalsUsingStencils( CViewRender *pViewRender )
 				m_PortalViewIDNodeChain[m_iViewRecursionLevel + 1] = NULL;
 
 				CGlowOverlay::RestoreSkyOverlayData( m_iViewRecursionLevel );
-				memcpy( (void *)pViewSetup, &ViewBackup, sizeof( CViewSetup ) );
+				memcpy( (void *)pViewSetup, &ViewBackup, sizeof( CNewViewSetup ) );
 				pViewRender->m_pActiveRenderer->EnableWorldFog();
 
 				pRenderContext->FogMode( fogModeBackup );
@@ -716,7 +716,7 @@ bool CPortalRender::DrawPortalsUsingStencils( CViewRender *pViewRender )
 
 	if( bRebuildDrawListsWhenDone )
 	{
-		memcpy( (void *)pViewSetup, &ViewBackup, sizeof( CViewSetup ) ); //if we don't restore this, the view is permanently altered (in mid render of an existing scene)
+		memcpy( (void *)pViewSetup, &ViewBackup, sizeof( CNewViewSetup ) ); //if we don't restore this, the view is permanently altered (in mid render of an existing scene)
 	}
 
 	pRenderContext->Flush( true ); //just in case
@@ -741,7 +741,7 @@ bool CPortalRender::DrawPortalsUsingStencils( CViewRender *pViewRender )
 extern bool g_bRenderingCameraView;
 #endif
 
-void CPortalRender::DrawPortalsToTextures( CViewRender *pViewRender, const CViewSetup &cameraView )
+void CPortalRender::DrawPortalsToTextures( CViewRender *pViewRender, const CNewViewSetup &cameraView )
 {
 	if( ShouldUseStencilsToRenderPortals() )
 		return;
@@ -963,7 +963,7 @@ void CPortalRender::OverlayPortalRenderTargets( float w, float h )
 	OverlayCameraRenderTarget( "engine/debug_water_refract_2", (w+10) * 2, (h+10) * 2, w,h );
 }
 
-void CPortalRender::UpdateDepthDoublerTexture( const CViewSetup &viewSetup )
+void CPortalRender::UpdateDepthDoublerTexture( const CNewViewSetup &viewSetup )
 {
 	bool bShouldUpdate = false;
 

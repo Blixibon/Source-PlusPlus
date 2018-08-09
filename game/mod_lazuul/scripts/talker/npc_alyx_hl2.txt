@@ -1,0 +1,86 @@
+//============================================================================================================
+// Alyx criteria 
+// Criterions npc_alyx_episodic für Pre-EP etwas angepasst und allgemein die Responses von EP teilweise entfernt
+
+criterion "NotUsedAlyxPornResponse" "UsedAlyxPornResponse" "!=1" "required" //weight 10
+criterion "NotUsedAlyxResponse" "UsedAlyxResponse" "!=1" "required" //weight 10
+criterion "NotUsedAlyxPornResponseLONG" "UsedAlyxPornResponseLONG" "!=1" "required" //weight 10
+criterion "IsUsedAlyxPornResponse" "UsedAlyxPornResponse" "1" "required" //weight 10
+criterion "PlayerVeryNear" "distancetoplayer" "<120" required
+criterion "PlayerMEGANear" "distancetoplayer" "<60" required weight 10
+criterion "SehrLangeFriedlich" "timesincecombat" ">90" required
+criterion "KeineNPCS" "num_companions" "<1" required
+criterion "SquadNPCS" "num_companions" ">0" required
+criterion "IstEntspannt" "NPCState" "[NPCState::Idle]" required
+criterion "IstAngespannt" "NPCState" ">=[NPCState::Idle]" required
+criterion "AlyxKeinAuto" "vehicle_inside" "!=1" required
+criterion "AlyxKeineShotgun" "weapon" "!=weapon_shotgun" required weight 10
+
+
+// TLK_FAKEFACTORY WIRD NACH 6 SEKUNDEN ALYX ANSTARREN GEFEUERT (reingecoded in Server.dll für Episodic und EP2)
+criterion "ConceptTalkFakefactory" "Concept" "TLK_FAKEFACTORY" required
+
+criterion "IsAlyx" "classname" "npc_alyx" "required"
+criterion "ConceptAlyxStartCombat" "Concept" "TLK_STARTCOMBAT" required
+criterion "AlyxGunNotHolstered" "weapon" "weapon_alyxgun" required
+
+
+// *****************************************************************************************************************************************
+// 	AlyxAnstarrenNoSquad
+// 	Alyx sehr entspannt, NPCs / SQUAD NICHT vorhanden
+// *****************************************************************************************************************************************
+
+response AlyxAnstarrenNoSquad
+{
+	scene "scenes/PORN/al_fun_affirm01.vcd" delay 1 stop_on_nonidle // Schräge Grimasse
+	scene "scenes/PORN/al_fun_affirm02.vcd" delay 1 stop_on_nonidle // Schräge Grimasse
+	scene "scenes/PORN/al_fun_affirm04.vcd" delay 1 stop_on_nonidle // Blinzeln und Schrägmund
+	scene "scenes/PORN/al_fun_affirm05.vcd" delay 1 stop_on_nonidle // Winkt
+	scene "scenes/PORN/al_fun_affirm06.vcd" delay 1 stop_on_nonidle // Winkt mit schräg Kopf und Lächeln
+	scene "scenes/PORN/al_fun_affirm07.vcd" delay 1 stop_on_nonidle // Kinn zur Seite, Brauen hoch
+	scene "scenes/PORN/al_fun_affirm08.vcd" delay 1 stop_on_nonidle // Disgust, dann Lächeln
+	scene "scenes/PORN/al_fun_affirm09.vcd" delay 1 stop_on_nonidle // Augen und Mund auf, dann Lächeln	
+	scene "scenes/PORN/al_fun_affirm10.vcd" delay 1 stop_on_nonidle // Ryhtmisches Kopfnicken, dann Lächeln	
+	scene "scenes/PORN/al_fun_affirm11.vcd" delay 1 stop_on_nonidle // Goldiges Offen-Geschlossen-Lächeln	
+	scene "scenes/PORN/al_fun_affirm12.vcd" delay 1 stop_on_nonidle // Nicken schräg nach hinten - dann goldiges Offen-Geschlossen-Lächeln		
+	scene "scenes/PORN/al_fun_affirm13.vcd" delay 1 stop_on_nonidle // Leichter Schrägkopf - dann sachtes goldiges Offen-Geschlossen-Lächeln	
+	scene "scenes/PORN/al_fun_affirm14.vcd" delay 1 stop_on_nonidle // Sachter Schrägkopf - leichtes Poorgirl	
+	scene "scenes/PORN/al_fun_affirm15.vcd" delay 1 stop_on_nonidle // Rythmisches Backenblasen, schräge Brauen, dann Lächeln
+	scene "scenes/PORN/al_gesture_affirm01.vcd" delay 1 stop_on_nonidle // Körpergeste leichtes aufforderndes nicken
+	scene "scenes/PORN/al_gesture_affirm02.vcd" delay 1 stop_on_nonidle // Körpergeste goldiges Gesicht schräg senken
+	scene "scenes/PORN/hl2_staringatme_0001.vcd" delay 1 stop_on_nonidle // Hand ins Haar, Kopf zur Seite, lächeln
+	scene "scenes/PORN/hl2_staringatme_0002.vcd" delay 1 stop_on_nonidle // "Kommst du?"
+	scene "scenes/PORN/hl2_staringatme_0003.vcd" delay 1 stop_on_nonidle // Augengebklicke mit Blick nach unten
+	scene "scenes/PORN/hl2_staringatme_0004.vcd" delay 1 stop_on_nonidle // Augengebklicke mit Blick nach unten	#2 (etwas kürzer mit leichtem Nicken)
+	scene "scenes/PORN/hl2_staringatme_0005.vcd" delay 1 stop_on_nonidle // Augengebklicke mit Blick nach unten	#3 (mit Hairbrush)
+
+}
+
+rule AlyxAnstarrenNoSquad
+{
+	criteria IsAlyx KeineNPCS ConceptTalkFakefactory PlayerVeryNear ContextActivityIdle NotUsedAlyxPornResponse ConceptNoEnemies SehrLangeFriedlich SeePlayer IstEntspannt
+	applycontext "UsedAlyxPornResponse:1:20" // perv
+	applycontext "UsedAlyxResponse:1:30"
+	response AlyxAnstarrenNoSquad
+}
+
+
+// *****************************************************************************************************************************************
+// 	AlyxAnstarrenAngespannt
+// 	Alyx ist angespannt. NPC/SQUAD sind erlaubt, da Alyx keine lustigen Dinge macht
+// *****************************************************************************************************************************************
+response AlyxAnstarrenAngespannt
+{
+	scene "scenes/PORN/al_fun_affirm07.vcd" respeakdelay 15 stop_on_nonidle // Kinn zur Seite, Brauen hoch
+	scene "scenes/PORN/al_fun_affirm08.vcd" respeakdelay 15 stop_on_nonidle // Disgust, dann Lächeln
+	scene "scenes/PORN/al_gesture_affirm01.vcd" respeakdelay 15 stop_on_nonidle // Körpergeste leichtes aufforderndes nicken
+	scene "scenes/PORN/al_gesture_affirm02.vcd" respeakdelay 15 stop_on_nonidle // Körpergeste goldiges Gesicht schräg senken
+}
+
+rule AlyxAnstarrenAngespannt
+{
+	criteria IsAlyx ConceptTalkFakefactory PlayerVeryNear ContextActivityIdle NotUsedAlyxPornResponse ConceptNoEnemies SehrLangeFriedlich SeePlayer IstAngespannt
+	applycontext "UsedAlyxPornResponse:1:20" // norm
+	applycontext "UsedAlyxResponse:1:30"
+	response AlyxAnstarrenAngespannt
+}

@@ -1,0 +1,61 @@
+// Created by Crowbar 0.56
+====== File Size ======
+	22,711
+====== File Seek Log ======
+--- Summary ---
+	0 - 1,055
+	1,084 - 2,171
+	2,200 - 3,143
+	3,172 - 4,115
+	4,144 - 5,039
+	5,068 - 5,483
+	5,512 - 7,559
+	7,588 - 9,107
+	9,136 - 10,367
+	10,396 - 11,675
+	11,704 - 12,599
+	12,628 - 13,475
+	13,504 - 14,735
+	14,764 - 15,611
+	15,640 - 16,055
+	16,084 - 22,709
+	22,711 - 22,711
+------------------------
+--- Each Section or Loop ---
+	0 - 15 Header
+	16 - 1,055 Solid(0)
+	1,056 - 1,083 [ERROR] Unread bytes [ 00 00 00 00 40 FC FF FF 50 AE 67 3C 9C 32 E7 3C 1A FB 01 BD DE ... ]
+	1,084 - 2,171 Solid(1)
+	2,172 - 2,199 [ERROR] Unread bytes [ 00 00 00 00 10 FC FF FF 3D B0 89 3E 30 33 92 3C B4 41 9C BC E5 ... ]
+	2,200 - 3,143 Solid(2)
+	3,144 - 3,171 [ERROR] Unread bytes [ 00 00 00 00 A0 FC FF FF 1A 10 56 3E 00 99 7B 3C A0 0C B7 3B 4D ... ]
+	3,172 - 4,115 Solid(3)
+	4,116 - 4,143 [ERROR] Unread bytes [ 00 00 00 00 A0 FC FF FF 5D 5E 87 3E 10 DB AF BB B0 B1 8C 3C 5A ... ]
+	4,144 - 5,039 Solid(4)
+	5,040 - 5,067 [ERROR] Unread bytes [ 00 00 00 00 D0 FC FF FF 49 E2 57 3E 58 40 84 3B 4C F6 2E BC 4B ... ]
+	5,068 - 5,483 Solid(5)
+	5,484 - 5,511 [ERROR] Unread bytes [ 00 00 00 00 B0 FE FF FF EC CE D2 3D 60 3E FF BA 18 33 EB 3C C2 ... ]
+	5,512 - 7,559 Solid(6)
+	7,560 - 7,587 [ERROR] Unread bytes [ 00 00 00 00 50 F8 FF FF 57 00 8D 3D E0 B4 DC BD C0 AA 10 3B C9 ... ]
+	7,588 - 9,107 Solid(7)
+	9,108 - 9,135 [ERROR] Unread bytes [ 00 00 00 00 60 FA FF FF D0 28 9A 3E AE 0F 2F BD B0 5A FE BB 28 ... ]
+	9,136 - 10,367 Solid(8)
+	10,368 - 10,395 [ERROR] Unread bytes [ 00 00 00 00 80 FB FF FF 8C FB 15 3E 10 54 CA 3B 8C 68 1F BC DE ... ]
+	10,396 - 11,675 Solid(9)
+	11,676 - 11,703 [ERROR] Unread bytes [ 00 00 00 00 50 FB FF FF 33 04 18 3E 68 32 83 3B 38 3F 3A 3C 03 ... ]
+	11,704 - 12,599 Solid(10)
+	12,600 - 12,627 [ERROR] Unread bytes [ 00 00 00 00 D0 FC FF FF FA C1 E4 3D 4C BD 98 BB B0 56 B8 3B 11 ... ]
+	12,628 - 13,475 Solid(11)
+	13,476 - 13,503 [ERROR] Unread bytes [ 00 00 00 00 00 FD FF FF D2 11 75 3D CE CD 55 3C 74 81 B0 3D 27 ... ]
+	13,504 - 14,735 Solid(12)
+	14,736 - 14,763 [ERROR] Unread bytes [ 00 00 00 00 80 FB FF FF 04 46 FA 3D E0 83 EB BB 20 DC 85 BA 29 ... ]
+	14,764 - 15,611 Solid(13)
+	15,612 - 15,639 [ERROR] Unread bytes [ 00 00 00 00 00 FD FF FF 31 5A B4 3D D5 6F B7 BC 85 DA B0 3D C2 ... ]
+	15,640 - 16,055 Solid(14)
+	16,056 - 16,083 [ERROR] Unread bytes [ 00 00 00 00 B0 FE FF FF FF E6 D0 3D 94 40 17 BC 4E FB D1 BC 08 ... ]
+	16,084 - 19,388 Properties
+	19,389 - 22,632 Ragdoll constraints
+	22,633 - 22,709 Edit params
+	22,710 - 22,710 [ERROR] Unread bytes (all zeroes) [ 00 ]
+	22,711 - 22,711 END OF FILE + 1 (File size)
+========================

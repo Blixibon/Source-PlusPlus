@@ -1,0 +1,78 @@
+
+// ============================================
+//	AUTOMATIC RESPONSES
+// ============================================
+
+
+
+// TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
+
+response ZoeyResponseReloading
+{
+	speak "zoey/reloading1.wav"
+	speak "zoey/reloading2.wav"
+	speak "zoey/reloading3.wav"
+	speak "zoey/reloading4.wav"
+}
+
+rule ZoeyReloading
+{
+	criteria	ConceptPlayerCoverReload IsPlayer IsPlayerVoiceZoey
+	response	ZoeyResponseReloading
+}
+
+// TLK_PLAYER_PAIN
+
+response ZoeyResponsePain
+{
+	speak "zoey/pain1.wav"
+	speak "zoey/pain2.wav"
+	speak "zoey/pain3.wav"
+	speak "zoey/pain4.wav"
+	speak "zoey/pain5.wav"
+	speak "zoey/pain6.wav"
+	speak "zoey/pain7.wav"
+	speak "zoey/pain8.wav"
+}
+
+rule ZoeyPain
+{
+	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceZoey
+	response	ZoeyResponsePain
+}
+
+// TLK_PLAYER_TAUNT
+
+response ZoeyResponseTaunt
+{
+	speak "zoey/killconfirmation01.wav"
+	speak "zoey/killconfirmation03.wav"
+	speak "zoey/killconfirmation04.wav"
+	speak "zoey/killconfirmation05.wav"
+	speak "zoey/killconfirmation06.wav"
+	speak "zoey/killconfirmation08.wav"
+}
+
+
+rule ZoeyTaunt
+{
+	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceZoey
+	response	ZoeyResponseTaunt
+}
+
+response ZoeyResponseThrow
+{
+	speak "zoey/throwgrenade1.wav"
+	speak "zoey/throwgrenade2.wav"
+	speak "zoey/throwgrenade3.wav"
+	speak "zoey/throwgrenade4.wav"
+	speak "zoey/throwgrenade5.wav"
+	speak "zoey/throwgrenade6.wav"
+}
+
+
+rule ZoeyThrow
+{
+	criteria	ConceptPlayerThrow IsPlayer IsPlayerVoiceZoey
+	response	ZoeyResponseThrow
+}

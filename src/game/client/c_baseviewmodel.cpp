@@ -48,7 +48,7 @@ void PostToolMessage( HTOOLHANDLE hEntity, KeyValues *msg );
 void FormatViewModelAttachment( Vector &vOrigin, bool bInverse )
 {
 	// Presumably, SetUpView has been called so we know our FOV and render origin.
-	const CViewSetup *pViewSetup = view->GetPlayerViewSetup();
+	const CNewViewSetup *pViewSetup = view->GetPlayerViewSetup();
 	
 	float worldx = tan( pViewSetup->fov * M_PI/360.0 );
 	float viewx = tan( pViewSetup->fovViewmodel * M_PI/360.0 );
@@ -226,8 +226,8 @@ void C_BaseViewModel::ApplyBoneMatrixTransform( matrix3x4_t& transform )
 		matrix3x4_t viewMatrix, viewMatrixInverse;
 
 		// We could get MATERIAL_VIEW here, but this is called sometimes before the renderer
-		// has set that matrix. Luckily, this is called AFTER the CViewSetup has been initialized.
-		const CViewSetup *pSetup = view->GetPlayerViewSetup();
+		// has set that matrix. Luckily, this is called AFTER the CNewViewSetup has been initialized.
+		const CNewViewSetup *pSetup = view->GetPlayerViewSetup();
 		AngleMatrix( pSetup->angles, pSetup->origin, viewMatrixInverse );
 		MatrixInvert( viewMatrixInverse, viewMatrix );
 

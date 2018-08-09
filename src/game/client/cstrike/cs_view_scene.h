@@ -25,14 +25,14 @@ public:
 
 	virtual void GetScreenFadeDistances( float *min, float *max );
 
-	virtual void Render2DEffectsPreHUD( const CViewSetup &view );
-	virtual void Render2DEffectsPostHUD( const CViewSetup &view );
+	virtual void Render2DEffectsPreHUD( const CNewViewSetup &view );
+	virtual void Render2DEffectsPostHUD( const CNewViewSetup &view );
 	virtual void RenderPlayerSprites( void );
 
 private:
 
-	void PerformFlashbangEffect( const CViewSetup &view );
-	void PerformNightVisionEffect( const CViewSetup &view );
+	void PerformFlashbangEffect( const CNewViewSetup &view );
+	void PerformNightVisionEffect( const CNewViewSetup &view );
 	
 	ITexture *m_pFlashTexture;
 };

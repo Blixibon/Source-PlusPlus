@@ -27,7 +27,7 @@ class IViewRender;
 class CReplayScreenshotTaker
 {
 public:
-	CReplayScreenshotTaker( IViewRender *pViewRender, CViewSetup &view );
+	CReplayScreenshotTaker( IViewRender *pViewRender, CNewViewSetup &view );
 	~CReplayScreenshotTaker();
 
 	void		TakeScreenshot( WriteReplayScreenshotParams_t &params );
@@ -36,7 +36,7 @@ public:
 
 private:
 	IViewRender	*m_pViewRender;
-	CViewSetup	&m_View;
+	CNewViewSetup	&m_View;
 	uint8		*m_pUnpaddedPixels;
 	uint8		*m_pPaddedPixels;
 	IVTFTexture *m_pVTFTexture;

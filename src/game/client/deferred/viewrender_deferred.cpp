@@ -141,7 +141,7 @@ class CSimpleWorldViewDeferred : public CBaseWorldViewDeferred
 public:
 	CSimpleWorldViewDeferred(CViewRender *pMainView) : CBaseWorldViewDeferred( pMainView ) {}
 
-	void			Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info, ViewCustomVisibility_t *pCustomVisibility = NULL );
+	void			Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info, ViewCustomVisibility_t *pCustomVisibility = NULL );
 	void			Draw();
 
 	virtual bool	ShouldCacheLists() { return true; }
@@ -158,7 +158,7 @@ public:
 	{
 	}
 
-	void			Setup( const CViewSetup &view, bool bDrewSkybox );
+	void			Setup( const CNewViewSetup &view, bool bDrewSkybox );
 	void			Draw();
 
 	virtual void	PushView( float waterHeight );
@@ -182,7 +182,7 @@ public:
 	  {
 	  }
 
-	bool			Setup( const CViewSetup &view, bool bGBuffer, SkyboxVisibility_t *pSkyboxVisible );
+	bool			Setup( const CNewViewSetup &view, bool bGBuffer, SkyboxVisibility_t *pSkyboxVisible );
 	void			Draw();
 
 protected:
@@ -207,7 +207,7 @@ public:
 	{
 	}
 
-	void			Setup( const CViewSetup &view );
+	void			Setup( const CNewViewSetup &view );
 	void			Draw();
 
 	virtual void	PushView( float waterHeight );
@@ -232,7 +232,7 @@ public:
 		m_bOutputRadiosity = false;
 	};
 
-	void			Setup( const CViewSetup &view,
+	void			Setup( const CNewViewSetup &view,
 						ITexture *pDepthTexture,
 						ITexture *pDummyTexture );
 	void			SetupRadiosityTargets(
@@ -343,7 +343,7 @@ public:
 		m_SoftwareIntersectionView( pMainView )
 	{}
 
-	//	void Setup( const CViewSetup &, const WaterRenderInfo_t& info );
+	//	void Setup( const CNewViewSetup &, const WaterRenderInfo_t& info );
 
 protected:
 	void			CalcWaterEyeAdjustments( const VisibleFogVolumeInfo_t &fogInfo, float &newWaterHeight, float &waterZAdjust, bool bSoftwareUserClipPlane );
@@ -387,7 +387,7 @@ public:
 		m_IntersectionView( pMainView )
 	{}
 
-	void Setup(  const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo );
+	void Setup(  const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo );
 	void			Draw();
 
 	class CReflectionView : public CBaseWorldViewDeferred
@@ -454,7 +454,7 @@ public:
 		m_RefractionView( pMainView )
 	{}
 
-	void			Setup( const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info );
+	void			Setup( const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info );
 	void			Draw();
 
 	class CRefractionView : public CBaseWorldViewDeferred
@@ -732,7 +732,7 @@ void CBaseWorldViewDeferred::PopComposite()
 //-----------------------------------------------------------------------------
 // Draws the scene when there's no water or only cheap water
 //-----------------------------------------------------------------------------
-void CSimpleWorldViewDeferred::Setup( const CViewSetup &view, int nClearFlags, bool bDrawSkybox,
+void CSimpleWorldViewDeferred::Setup( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox,
 	const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t &waterInfo, ViewCustomVisibility_t *pCustomVisibility )
 {
 	BaseClass::Setup( view );
@@ -815,7 +815,7 @@ void CSimpleWorldViewDeferred::Draw()
 	pRenderContext->ClearColor4ub( 0, 0, 0, 255 );
 }
 
-void CGBufferView::Setup( const CViewSetup &view, bool bDrewSkybox )
+void CGBufferView::Setup( const CNewViewSetup &view, bool bDrewSkybox )
 {
 	m_fogInfo.m_bEyeInFogVolume = false;
 	m_bDrewSkybox = bDrewSkybox;
@@ -1129,7 +1129,7 @@ void CSkyboxViewDeferred::DrawInternal( view_id_t iSkyBoxViewID, bool bInvokePre
 #endif
 }
 
-bool CSkyboxViewDeferred::Setup( const CViewSetup &view, bool bGBuffer, SkyboxVisibility_t *pSkyboxVisible )
+bool CSkyboxViewDeferred::Setup( const CNewViewSetup &view, bool bGBuffer, SkyboxVisibility_t *pSkyboxVisible )
 {
 	BaseClass::Setup( view );
 
@@ -1173,7 +1173,7 @@ void CSkyboxViewDeferred::Draw()
 	DrawInternal(VIEW_3DSKY, true, pRTColor, pRTDepth);
 }
 
-void CPostLightingView::Setup( const CViewSetup &view )
+void CPostLightingView::Setup( const CNewViewSetup &view )
 {
 	m_fogInfo.m_bEyeInFogVolume = false;
 
@@ -1261,7 +1261,7 @@ void CPostLightingView::PopDeferredShadingFrameBuffer()
 	pRenderContext->PopRenderTargetAndViewport();
 }
 
-void CBaseShadowView::Setup( const CViewSetup &view, ITexture *pDepthTexture, ITexture *pDummyTexture )
+void CBaseShadowView::Setup( const CNewViewSetup &view, ITexture *pDepthTexture, ITexture *pDummyTexture )
 {
 	m_pDepthTexture = pDepthTexture;
 	m_pDummyTexture = pDummyTexture;
@@ -1614,7 +1614,7 @@ void CBaseWaterDeferredView::CSoftwareIntersectionView::Draw()
 	PopComposite();
 }
 
-void CAboveWaterDeferredView::Setup( const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
+void CAboveWaterDeferredView::Setup( const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
 {
 	BaseClass::Setup( view );
 
@@ -1822,7 +1822,7 @@ void CAboveWaterDeferredView::CIntersectionView::Draw()
 	PopComposite();
 }
 
-void CUnderWaterDeferredView::Setup( const CViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
+void CUnderWaterDeferredView::Setup( const CNewViewSetup &view, bool bDrawSkybox, const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& waterInfo )
 {
 	BaseClass::Setup( view );
 
@@ -2001,7 +2001,7 @@ void CDeferredViewRender::ResetCascadeDelay()
 		m_flRenderDelay[i] = 0;
 }
 
-void CDeferredViewRender::ViewDrawSceneDeferred( const CViewSetup &view, int nClearFlags, view_id_t viewID, bool bDrawViewModel )
+void CDeferredViewRender::ViewDrawSceneDeferred( const CNewViewSetup &view, int nClearFlags, view_id_t viewID, bool bDrawViewModel )
 {
 	VPROF( "CViewRender::ViewDrawScene" );
 
@@ -2075,7 +2075,7 @@ void CDeferredViewRender::ViewDrawSceneDeferred( const CViewSetup &view, int nCl
 	pRenderContext->SetIntRenderingParameter( INT_RENDERPARM_ENABLE_FIXED_LIGHTING, 0 );
 }
 
-void CDeferredViewRender::ViewDrawGBuffer( const CViewSetup &view, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible,
+void CDeferredViewRender::ViewDrawGBuffer( const CNewViewSetup &view, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible,
 	bool bDrawViewModel )
 {
 	MDLCACHE_CRITICAL_SECTION();
@@ -2102,7 +2102,7 @@ void CDeferredViewRender::ViewDrawGBuffer( const CViewSetup &view, bool &bDrew3d
 	g_CurrentViewID = oldViewID;
 }
 
-void CDeferredViewRender::ViewDrawComposite( const CViewSetup &view, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible,
+void CDeferredViewRender::ViewDrawComposite( const CNewViewSetup &view, bool &bDrew3dSkybox, SkyboxVisibility_t &nSkyboxVisible,
 		int nClearFlags, view_id_t viewID, bool bDrawViewModel )
 {
 	DrawSkyboxComposite( view, bDrew3dSkybox );
@@ -2144,7 +2144,7 @@ void CDeferredViewRender::ViewDrawComposite( const CViewSetup &view, bool &bDrew
 	DrawViewModels( view, bDrawViewModel, false );
 }
 
-void CDeferredViewRender::ViewCombineDeferredShading( const CViewSetup &view, view_id_t viewID )
+void CDeferredViewRender::ViewCombineDeferredShading( const CNewViewSetup &view, view_id_t viewID )
 {
 #if DEFCFG_DEFERRED_SHADING == 1
 
@@ -2175,7 +2175,7 @@ void CDeferredViewRender::ViewCombineDeferredShading( const CViewSetup &view, vi
 #endif
 }
 
-void CDeferredViewRender::ViewOutputDeferredShading( const CViewSetup &view )
+void CDeferredViewRender::ViewOutputDeferredShading( const CNewViewSetup &view )
 {
 #if DEFCFG_DEFERRED_SHADING
 	DrawLightPassFullscreen( GetDeferredManager()->GetDeferredMaterial( DEF_MAT_SCREENSPACE_COMBINE ),
@@ -2183,7 +2183,7 @@ void CDeferredViewRender::ViewOutputDeferredShading( const CViewSetup &view )
 #endif
 }
 
-void CDeferredViewRender::DrawSkyboxComposite( const CViewSetup &view, const bool &bDrew3dSkybox )
+void CDeferredViewRender::DrawSkyboxComposite( const CNewViewSetup &view, const bool &bDrew3dSkybox )
 {
 	if ( !bDrew3dSkybox )
 		return;
@@ -2200,7 +2200,7 @@ void CDeferredViewRender::DrawSkyboxComposite( const CViewSetup &view, const boo
 	Assert( nSkyboxVisible == SKYBOX_3DSKYBOX_VISIBLE );
 }
 
-void CDeferredViewRender::DrawWorldComposite( const CViewSetup &view, int nClearFlags, bool bDrawSkybox )
+void CDeferredViewRender::DrawWorldComposite( const CNewViewSetup &view, int nClearFlags, bool bDrawSkybox )
 {
 #if 0
 	MDLCACHE_CRITICAL_SECTION();
@@ -2266,7 +2266,7 @@ void CDeferredViewRender::DrawWorldComposite( const CViewSetup &view, int nClear
 	AddViewToScene( pNoWaterView );
 }
 
-void CDeferredViewRender::PerformLighting( const CViewSetup &view )
+void CDeferredViewRender::PerformLighting( const CNewViewSetup &view )
 {
 	bool bResetLightAccum = false;
 	const bool bRadiosityEnabled = DEFCFG_ENABLE_RADIOSITY != 0 && deferred_radiosity_enable.GetBool();
@@ -2323,7 +2323,7 @@ void CDeferredViewRender::PerformLighting( const CViewSetup &view )
 	else
 		bResetLightAccum = true;
 
-	CViewSetup lightingView = view;
+	CNewViewSetup lightingView = view;
 
 	if ( building_cubemaps.GetBool() )
 		engine->GetScreenSize( lightingView.width, lightingView.height );
@@ -2360,7 +2360,7 @@ static int GetSourceRadBufferIndex( const int index )
 	return ( iNumSteps % 2 == 0 ) ? 0 : 1;
 }
 
-void CDeferredViewRender::BeginRadiosity( const CViewSetup &view )
+void CDeferredViewRender::BeginRadiosity( const CNewViewSetup &view )
 {
 	Vector fwd;
 	AngleVectors( view.angles, &fwd );
@@ -2451,7 +2451,7 @@ void CDeferredViewRender::UpdateRadiosityPosition()
 	QUEUE_FIRE( defData_setupRadiosity, Fire, radSetup );
 }
 
-void CDeferredViewRender::PerformRadiosityGlobal( const int iRadiosityCascade, const CViewSetup &view )
+void CDeferredViewRender::PerformRadiosityGlobal( const int iRadiosityCascade, const CNewViewSetup &view )
 {
 	const int iSourceBuffer = GetSourceRadBufferIndex( iRadiosityCascade );
 	const int iOffsetY = (iRadiosityCascade == 1) ? RADIOSITY_BUFFER_RES_Y/2 : 0;
@@ -2469,7 +2469,7 @@ void CDeferredViewRender::PerformRadiosityGlobal( const int iRadiosityCascade, c
 	pRenderContext->PopRenderTargetAndViewport();
 }
 
-void CDeferredViewRender::EndRadiosity( const CViewSetup &view )
+void CDeferredViewRender::EndRadiosity( const CNewViewSetup &view )
 {
 	const int iNumPropagateSteps[2] = { deferred_radiosity_propagate_count.GetInt(),
 		deferred_radiosity_propagate_count_far.GetInt() };
@@ -2530,7 +2530,7 @@ void CDeferredViewRender::EndRadiosity( const CViewSetup &view )
 #endif
 }
 
-void CDeferredViewRender::DebugRadiosity( const CViewSetup &view )
+void CDeferredViewRender::DebugRadiosity( const CNewViewSetup &view )
 {
 #if 1
 	Vector tmp[3] = { m_vecRadiosityOrigin[1],
@@ -2675,7 +2675,7 @@ void CDeferredViewRender::DebugRadiosity( const CViewSetup &view )
 	}
 }
 
-void CDeferredViewRender::RenderCascadedShadows( const CViewSetup &view, const bool bEnableRadiosity )
+void CDeferredViewRender::RenderCascadedShadows( const CNewViewSetup &view, const bool bEnableRadiosity )
 {
 	for ( int i = 0; i < SHADOW_NUM_CASCADES; i++ )
 	{
@@ -2715,9 +2715,9 @@ void CDeferredViewRender::RenderCascadedShadows( const CViewSetup &view, const b
 	}
 }
 
-void CDeferredViewRender::DrawLightShadowView( const CViewSetup &view, int iDesiredShadowmap, def_light_t *l )
+void CDeferredViewRender::DrawLightShadowView( const CNewViewSetup &view, int iDesiredShadowmap, def_light_t *l )
 {
-	CViewSetup setup;
+	CNewViewSetup setup;
 	setup.origin = l->pos;
 	setup.angles = l->ang;
 	setup.m_bOrtho = false;
@@ -2754,7 +2754,7 @@ void CDeferredViewRender::DrawLightShadowView( const CViewSetup &view, int iDesi
 	}
 }
 
-void CDeferredViewRender::DrawViewModels( const CViewSetup &view, bool drawViewmodel, bool bGBuffer )
+void CDeferredViewRender::DrawViewModels( const CNewViewSetup &view, bool drawViewmodel, bool bGBuffer )
 {
 	VPROF( "CViewRender::DrawViewModel" );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
@@ -2774,7 +2774,7 @@ void CDeferredViewRender::DrawViewModels( const CViewSetup &view, bool drawViewm
 	pRenderContext->MatrixMode( MATERIAL_PROJECTION );
 	pRenderContext->PushMatrix();
 
-	CViewSetup viewModelSetup( view );
+	CNewViewSetup viewModelSetup( view );
 	viewModelSetup.zNear = view.zNearViewmodel;
 	viewModelSetup.zFar = view.zFarViewmodel;
 	viewModelSetup.fov = view.fovViewmodel;
@@ -2882,11 +2882,11 @@ void CDeferredViewRender::DrawViewModels( const CViewSetup &view, bool drawViewm
 	pRenderContext->PopMatrix();
 }
 
-void CDeferredViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw )
+void CDeferredViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int whatToDraw )
 {
 	m_UnderWaterOverlayMaterial.Shutdown();					// underwater view will set
 
-	CViewSetup worldView = view;
+	CNewViewSetup worldView = view;
 
 	CLightingEditor *pLightEditor = GetLightingEditor();
 
@@ -3039,8 +3039,8 @@ void CDeferredViewRender::RenderView( const CViewSetup &view, int nClearFlags, i
 		tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "DrawOverlay" );
 
 		// This allows us to be ok if there are nested overlay views
-		const CViewSetup currentView = m_CurrentView;
-		CViewSetup tempView = m_OverlayViewSetup;
+		const CNewViewSetup currentView = m_CurrentView;
+		CNewViewSetup tempView = m_OverlayViewSetup;
 		tempView.fov = ScaleFOVByWidthRatio( tempView.fov, tempView.m_flAspectRatio / ( 4.0f / 3.0f ) );
 		tempView.m_bDoBloomAndToneMapping = false;	// FIXME: Hack to get Mark up and running
 		m_bDrawOverlay = false;
@@ -3270,7 +3270,7 @@ public:
 	};
 };
 
-void CDeferredViewRender::ProcessDeferredGlobals( const CViewSetup &view )
+void CDeferredViewRender::ProcessDeferredGlobals( const CNewViewSetup &view )
 {
 	VMatrix matPerspective, matView, matViewProj, screen2world;
 	matView.Identity();

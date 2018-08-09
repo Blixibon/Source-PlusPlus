@@ -680,6 +680,7 @@ class CLocatorPanel : public vgui::EditablePanel
 	DECLARE_CLASS_SIMPLE(CLocatorPanel, vgui::EditablePanel);
 public:
 	CLocatorPanel(vgui::Panel *parent, const char *name);
+	CLocatorPanel(vgui::Panel *parent, const char *panelName, vgui::HScheme hScheme);
 	~CLocatorPanel(void);
 
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
@@ -773,8 +774,10 @@ int Locator_AddTarget()
 {
 	if (s_pLocatorPanel == NULL)
 	{
+		vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFile("resource/InstructorScheme.res", "InstructorScheme");
+
 		// Locator has not been used yet. Construct it.
-		CLocatorPanel *pLocator = new CLocatorPanel(g_pClientMode->GetViewport(), "LocatorPanel");
+		CLocatorPanel *pLocator = new CLocatorPanel(g_pClientMode->GetViewport(), "LocatorPanel", hScheme);
 		vgui::SETUP_PANEL(pLocator);
 		pLocator->SetBounds(0, 0, ScreenWidth(), ScreenHeight());
 		pLocator->SetPos(0, 0);
@@ -824,6 +827,22 @@ void Locator_ComputeTargetIconPositionFromHandle(int hTarget)
 // Purpose: 
 //-----------------------------------------------------------------------------
 CLocatorPanel::CLocatorPanel(Panel *parent, const char *name) : EditablePanel(parent, name)
+{
+	Assert(s_pLocatorPanel == NULL);
+	DeactivateAllTargets();
+
+	s_pLocatorPanel = this;
+	m_textureID_ArrowRight = -1;
+	m_textureID_ArrowLeft = -1;
+	m_textureID_ArrowUp = -1;
+	m_textureID_ArrowDown = -1;
+	m_textureID_SimpleArrow = -1;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CLocatorPanel::CLocatorPanel(Panel *parent, const char *name, vgui::HScheme hScheme) : EditablePanel(parent, name, hScheme)
 {
 	Assert(s_pLocatorPanel == NULL);
 	DeactivateAllTargets();

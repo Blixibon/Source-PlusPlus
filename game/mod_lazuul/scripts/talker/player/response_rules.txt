@@ -1,0 +1,75 @@
+// CONCEPTS
+criterion	"ConceptPlayerHello"		"Concept" "TLK_PLAYER_HELLO" required
+criterion	"ConceptPlayerPain"		"Concept" "TLK_PLAYER_PAIN" required
+criterion	"ConceptPlayerBehind"		"Concept" "TLK_PLAYER_BEHIND" required
+criterion	"ConceptPlayerCoverReload"	"Concept" "TLK_PLAYER_RELOAD" required
+criterion	"ConceptPlayerGiveAmmo"		"Concept" "TLK_PLAYER_GIVEAMMO" required
+criterion	"ConceptPlayerGiveHealth"	"Concept" "TLK_PLAYER_GIVEHEALTH" required
+criterion	"ConceptPlayerTaunt"		"Concept" "TLK_PLAYER_TAUNT" required
+criterion	"ConceptPlayerDeadPlayer"	"Concept" "TLK_PLAYER_DEAD" required
+criterion	"ConceptPlayerDeadPlayerAnswer"	"Concept" "TLK_PLAYER_DEAD_ANSWER" required
+
+criterion	"ConceptPlayerHelp"		"Concept" "TLK_PLAYER_HELP" required
+criterion	"ConceptPlayerThanks"		"Concept" "TLK_PLAYER_THANKS" required
+criterion	"ConceptPlayerIncoming"		"Concept" "TLK_PLAYER_INCOMING" required
+criterion	"ConceptPlayerEnemy"		"Concept" "TLK_PLAYER_ENEMY" required
+criterion	"ConceptPlayerFollow"		"Concept" "TLK_PLAYER_FOLLOW" required
+criterion	"ConceptPlayerLead"		"Concept" "TLK_PLAYER_LEAD" required
+criterion	"ConceptPlayerGo"		"Concept" "TLK_PLAYER_GO" required
+
+criterion	"ConceptPlayerThrow"		"Concept" "TLK_PLAYER_THROW" required
+
+// VARIABLES
+criterion	"IsPlayer"			"classname" "player" required
+criterion	"IsPlayerCitizen"		"gordon_precriminal" "1" required
+criterion	"IsPlayerVoiceCombineSoldier"	"voice" "combine_soldier" required
+criterion	"IsPlayerVoiceCombineElite"	"voice" "combine_elite" required
+criterion	"IsPlayerVoiceMetroPolice"	"voice" "metropolice" required
+criterion	"IsPlayerVoiceCitizen"	"voice" "citizen" required
+criterion	"IsPlayerVoiceZoey"	"voice" "zoey" required
+criterion	"IsPlayerVoiceBill"	"voice" "bill" required
+
+// ENEMIES
+criterion	"PlayerEnemyIsCombine"		"playerenemy" "npc_combine_s" required
+criterion	"PlayerEnemyIsHeadcrab"		"playerenemy" "npc_headcrab" required
+criterion	"PlayerEnemyIsHeadcrabBlack"	"playerenemy" "npc_headcrab_black" required
+criterion	"PlayerEnemyIsHeadcrabPoison"	"playerenemy" "npc_headcrab_poison" required
+criterion	"PlayerEnemyIsHeadcrabFast"	"playerenemy" "npc_headcrab_fast" required
+criterion	"PlayerEnemyIsZombie"		"playerenemy" "npc_zombie" required
+criterion	"PlayerEnemyIsZombieTorso"	"playerenemy" "npc_zombie_torso" required
+criterion	"PlayerEnemyIsZombieBlack"	"playerenemy" "npc_poisonzombie" required
+criterion	"PlayerEnemyIsZombieFast"	"playerenemy" "npc_fastzombie" required
+criterion	"PlayerEnemyIsScanner"		"playerenemy" "npc_cscanner" required
+criterion	"PlayerEnemyIsStrider"		"playerenemy" "npc_strider" required
+criterion	"PlayerEnemyIsManhack"		"playerenemy" "npc_manhack" required
+criterion	"PlayerEnemyIsMetro"		"playerenemy" "npc_metropolice" required
+criterion	"PlayerEnemyIsZombine"		"playerenemy" "npc_zombine" required
+criterion	"PlayerEnemyIsHunter"		"playerenemy" "npc_hunter" required
+criterion	"PlayerEnemyIsCitizen"		"playerenemy" "npc_citizen" required
+criterion	"PlayerEnemyIsAntlion"		"playerenemy" "npc_antlion" required
+
+criterion "PlayerEnemyIsAHeadcrab" required
+{
+	PlayerEnemyIsHeadcrab
+	PlayerEnemyIsHeadcrabBlack
+	PlayerEnemyIsHeadcrabFast
+	PlayerEnemyIsHeadcrabPoison
+}
+criterion "PlayerEnemyIsAZombie" required
+{
+	PlayerEnemyIsZombie
+	PlayerEnemyIsZombieBlack
+	PlayerEnemyIsZombieFast
+	PlayerEnemyIsZombieTorso
+	PlayerEnemyIsZombine
+}
+
+// INCLUDES
+#include "talker/player/humans.txt"
+
+#include "talker/player/combine_soldier.txt"
+#include "talker/player/metropolice.txt"
+
+#include "talker/player/l4d_zoey.talker"
+#include "talker/player/l4d_bill.talker"
+
