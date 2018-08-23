@@ -266,6 +266,7 @@ void Soundscape_Update( audioparams_t &audio )
 }
 
 #define SOUNDSCAPE_MANIFEST_FILE				"scripts/soundscapes_manifest.txt"
+#define SOUNDSCAPE_SHARED_MANIFEST_FILE			"scripts/soundscapes_shared_manifest.txt"
 
 void C_SoundscapeSystem::AddSoundScapeFile( const char *filename )
 {
@@ -329,6 +330,28 @@ bool C_SoundscapeSystem::Init()
 			Warning( "C_SoundscapeSystem::Init:  Manifest '%s' with bogus file type '%s', expecting 'file'\n", 
 				SOUNDSCAPE_MANIFEST_FILE, sub->GetName() );
 		}
+
+		KeyValues *shared = new KeyValues(SOUNDSCAPE_MANIFEST_FILE);
+		if (filesystem->LoadKeyValues(*shared, IFileSystem::TYPE_SOUNDSCAPE, SOUNDSCAPE_SHARED_MANIFEST_FILE, "SHARED"))
+		{
+			for (KeyValues *sub = shared->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey())
+			{
+				if (!Q_stricmp(sub->GetName(), "file"))
+				{
+					// Add
+					AddSoundScapeFile(sub->GetString());
+					if (mapSoundscapeFilename && FStrEq(sub->GetString(), mapSoundscapeFilename))
+					{
+						mapSoundscapeFilename = NULL; // we've already loaded the map's soundscape
+					}
+					continue;
+				}
+
+				Warning("C_SoundscapeSystem::Init:  Manifest '%s' with bogus file type '%s', expecting 'file'\n",
+					SOUNDSCAPE_SHARED_MANIFEST_FILE, sub->GetName());
+			}
+		}
+		shared->deleteThis();
 
 		if ( mapSoundscapeFilename && filesystem->FileExists( mapSoundscapeFilename ) )
 		{

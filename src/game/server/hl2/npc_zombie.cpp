@@ -17,6 +17,7 @@
 #include "soundenvelope.h"
 #include "engine/IEngineSound.h"
 #include "ammodef.h"
+#include "peter\population_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -154,7 +155,9 @@ public:
 
 protected:
 	static const char *pMoanSounds[];
-
+public:
+	static const char *pPopTypes[];
+	static CPopulationDefinition gm_PopDef;
 
 private:
 	CHandle< CBaseDoor > m_hBlockingDoor;
@@ -178,6 +181,19 @@ const char *CZombie::pMoanSounds[] =
 	 "NPC_BaseZombie.Moan3",
 	 "NPC_BaseZombie.Moan4",
 };
+
+const char *CZombie::pPopTypes[] =
+{
+	"refugee",
+	"citizen",
+	"rebel",
+	"rebel2",
+	"medic",
+	"medic2",
+	"metropolice"
+};
+
+CPopulationDefinition CZombie::gm_PopDef("zclassic", pPopTypes, ARRAYSIZE(pPopTypes));
 
 //=========================================================
 // Conditions
@@ -289,6 +305,8 @@ void CZombie::Spawn( void )
 	//GetNavigator()->SetRememberStaleNodes( false );
 
 	BaseClass::Spawn();
+
+	m_nSkin = gm_PopDef.GetRandom();
 
 	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
 }

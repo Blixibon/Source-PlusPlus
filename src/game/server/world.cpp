@@ -376,6 +376,7 @@ BEGIN_DATADESC( CWorld )
 
 	// keyvalues are parsed from map, but not saved/loaded
 	DEFINE_KEYFIELD( m_iszChapterTitle, FIELD_STRING, "chaptertitle" ),
+	DEFINE_KEYFIELD( m_iszPopulationTag, FIELD_STRING, "population"),
 	DEFINE_KEYFIELD( m_bStartDark,		FIELD_BOOLEAN, "startdark" ),
 	DEFINE_KEYFIELD( m_bDisplayTitle,	FIELD_BOOLEAN, "gametitle" ),
 	DEFINE_FIELD( m_WorldMins, FIELD_VECTOR ),

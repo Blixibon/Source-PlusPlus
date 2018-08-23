@@ -1,0 +1,28 @@
+soundscapes_manifest
+{
+	// Portal 1 & 2
+	//"file"		"scripts/soundscapes_portal.txt"
+	"file"		"scripts/soundscapes_tempcontent.txt"
+	"file"		"scripts/soundscapes_pressdemo.txt"
+	"file"		"scripts/soundscapes_escape_portal.txt"	
+	"file"		"scripts/soundscapes_test_chambers.txt"
+	"file"		"scripts/soundscapes_vegetation.txt"
+	"file"		"scripts/soundscapes_industrial.txt"
+	"file"		"scripts/soundscapes_destruction.txt"
+	"file"		"scripts/soundscapes_partial_destruction.txt"
+	"file"		"scripts/soundscapes_reconstruction.txt"
+	"file"		"scripts/soundscapes_sabotage.txt"
+	"file"		"scripts/soundscapes_chapter_4.txt"
+	"file"		"scripts/soundscapes_underground.txt"
+	"file"		"scripts/soundscapes_paint.txt"
+	"file"		"scripts/soundscapes_bts.txt"
+	"file"		"scripts/soundscapes_mp_coop.txt"
+	"file"		"scripts/soundscapes_testchmb_portal.txt"
+	
+	// L4D Util
+	"file"		"scripts/soundscapes_rural2.txt"
+	"file"		"scripts/soundscapes_urban2.txt"
+	"file"		"scripts/soundscapes_rural.txt"
+	"file"		"scripts/soundscapes_urban.txt"
+	"file"		"scripts/soundscapes_swamps.txt"
+}

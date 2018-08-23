@@ -3461,10 +3461,10 @@ float CBaseCombatCharacter::GetFogObscuredRatio( float range ) const
 		return 0.0f;
 
 	if ( range >= fog.end )
-		return 1.0f;
+		return fog.maxdensity.Get();
 
 	float ratio = (range - fog.start) / (fog.end - fog.start);
-	ratio = MIN( ratio, fog.maxdensity.Get() );
+	ratio *= fog.maxdensity.Get();
 	return ratio;
 }
 

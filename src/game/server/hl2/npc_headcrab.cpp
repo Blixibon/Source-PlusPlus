@@ -3327,7 +3327,6 @@ int CBlackHeadcrab::SelectSchedule( void )
 
 		if (HasCondition(COND_HEADCRAB_FOUND_ZOMBIE) && (gpGlobals->curtime - GetLastEnemyTime()) >= 6.0f)
 		{
-			SetOwnerEntity(nullptr);
 			SetTarget(m_hTargetZombie.Get());
 			return SCHED_HEADCRAB_JUMP_AT_TARGET;
 		}
@@ -3541,6 +3540,7 @@ void CBlackHeadcrab::HandleAnimEvent( animevent_t *pEvent )
 			// we jump at. Jump at our enemy's eyes.
 			m_vecCommittedJumpPos = pEnemy->EyePosition();
 			m_bCommittedToJump = true;
+			SetOwnerEntity(nullptr);
 		}
  
 		return;

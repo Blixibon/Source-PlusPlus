@@ -1,0 +1,11 @@
+refugee
+refugee
+rebel
+medic
+rebel
+soldier
+soldier
+refugee
+soldier_sg
+refugee
+soldier_elite

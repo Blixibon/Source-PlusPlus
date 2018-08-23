@@ -1,0 +1,117 @@
+// Created by Crowbar 0.51.0.0
+version 1
+nodes
+  0 "ValveBiped.Bip01_Pelvis" -1
+  1 "ValveBiped.Bip01_Spine" 0
+  2 "ValveBiped.Bip01_Spine1" 1
+  3 "ValveBiped.Bip01_Spine2" 2
+  4 "ValveBiped.Bip01_Spine4" 3
+  5 "ValveBiped.Bip01_Neck1" 4
+  6 "ValveBiped.Bip01_Head1" 5
+  7 "ValveBiped.Bip01_R_Clavicle" 4
+  8 "ValveBiped.Bip01_R_UpperArm" 7
+  9 "ValveBiped.Bip01_R_Forearm" 8
+  10 "ValveBiped.Bip01_R_Ulna" 9
+  11 "ValveBiped.Bip01_L_Clavicle" 4
+  12 "ValveBiped.Bip01_L_UpperArm" 11
+  13 "ValveBiped.Bip01_L_Forearm" 12
+  14 "ValveBiped.Bip01_L_Ulna" 13
+  15 "ValveBiped.Bip01_R_Thigh" 0
+  16 "ValveBiped.Bip01_R_Calf" 15
+  17 "ValveBiped.Bip01_R_Foot" 16
+  18 "ValveBiped.Bip01_R_Toe0" 17
+  19 "ValveBiped.Bip01_L_Thigh" 0
+  20 "ValveBiped.Bip01_L_Calf" 19
+  21 "ValveBiped.Bip01_L_Foot" 20
+  22 "ValveBiped.Bip01_L_Toe0" 21
+  23 "ValveBiped.Bip01_R_Hand" 9
+  24 "ValveBiped.Bip01_R_Finger4" 23
+  25 "ValveBiped.Bip01_R_Finger41" 24
+  26 "ValveBiped.Bip01_R_Finger42" 25
+  27 "ValveBiped.Bip01_R_Finger3" 23
+  28 "ValveBiped.Bip01_R_Finger31" 27
+  29 "ValveBiped.Bip01_R_Finger32" 28
+  30 "ValveBiped.Bip01_R_Finger2" 23
+  31 "ValveBiped.Bip01_R_Finger21" 30
+  32 "ValveBiped.Bip01_R_Finger22" 31
+  33 "ValveBiped.Bip01_R_Finger1" 23
+  34 "ValveBiped.Bip01_R_Finger11" 33
+  35 "ValveBiped.Bip01_R_Finger12" 34
+  36 "ValveBiped.Bip01_R_Finger0" 23
+  37 "ValveBiped.Bip01_R_Finger01" 36
+  38 "ValveBiped.Bip01_R_Finger02" 37
+  39 "ValveBiped.Bip01_L_Hand" 13
+  40 "ValveBiped.Bip01_L_Finger4" 39
+  41 "ValveBiped.Bip01_L_Finger41" 40
+  42 "ValveBiped.Bip01_L_Finger42" 41
+  43 "ValveBiped.Bip01_L_Finger3" 39
+  44 "ValveBiped.Bip01_L_Finger31" 43
+  45 "ValveBiped.Bip01_L_Finger32" 44
+  46 "ValveBiped.Bip01_L_Finger2" 39
+  47 "ValveBiped.Bip01_L_Finger21" 46
+  48 "ValveBiped.Bip01_L_Finger22" 47
+  49 "ValveBiped.Bip01_L_Finger1" 39
+  50 "ValveBiped.Bip01_L_Finger11" 49
+  51 "ValveBiped.Bip01_L_Finger12" 50
+  52 "ValveBiped.Bip01_L_Finger0" 39
+  53 "ValveBiped.Bip01_L_Finger01" 52
+  54 "ValveBiped.Bip01_L_Finger02" 53
+end
+skeleton
+  time 0
+    0 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    1 0.000000 0.000000 0.999512 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    2 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    3 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    4 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    5 0.000000 0.000000 0.000000 0.000673 0.000135 0.000006   # pos: delta   rot: raw64 (0.000336646873165668, 6.77108441777972E-05, 2.86102158497735E-06, 0.999999941037968)
+    6 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    7 -0.599121 0.108337 -0.000001 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    8 0.309326 -1.055664 -0.081604 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    9 -1.308594 0.079163 -0.000008 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    10 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    11 -0.599121 0.108337 0.000000 0.000000 0.000010 0.000011   # pos: raw   rot: raw64 (0, 4.76836930829558E-06, 5.7220431699547E-06, 0.99999999997226)
+    12 0.309326 -1.059570 0.005642 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    13 -1.308594 0.079163 -0.000011 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    14 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    15 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    16 1.997070 -0.103638 0.010445 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    17 -1.992188 0.171875 -0.010445 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    18 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    19 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    20 1.997070 -0.103638 -0.010445 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    21 -1.992188 0.171875 0.010445 0.000000 0.000000 0.000000   # pos: raw   rot: delta
+    22 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    23 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    24 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    25 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    26 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    27 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    28 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    29 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    30 0.000000 0.000000 0.000000 0.000000 0.000013 -0.000008   # pos: delta   rot: raw64 (0, 6.67571703161381E-06, -3.81469544663646E-06, 0.999999999970441)
+    31 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    32 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    33 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    34 0.000000 0.000000 0.000000 0.000002 -0.000011 0.000010   # pos: delta   rot: raw64 (9.53673861659116E-07, -5.7220431699547E-06, 4.76836930829558E-06, 0.999999999971806)
+    35 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    36 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    37 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    38 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    39 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    40 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    41 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    42 0.000000 0.000000 0.000000 0.000000 -0.000015 -0.000013   # pos: delta   rot: raw64 (0, -7.62939089327293E-06, -6.67571703161381E-06, 0.999999999948614)
+    43 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    44 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    45 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    46 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    47 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    48 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    49 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    50 0.000000 0.000000 0.000000 -0.000004 -0.000015 -0.000006   # pos: delta   rot: raw64 (-1.90734772331823E-06, -7.62939089327293E-06, -2.86102158497735E-06, 0.999999999964984)
+    51 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    52 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    53 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+    54 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_delta   rot: desc_delta
+end

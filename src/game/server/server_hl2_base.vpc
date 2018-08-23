@@ -46,11 +46,6 @@ $Project
 		$File	"$SRCDIR\game\shared\vehicle_choreo_generic_shared.h"
 		$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 		
-		$Folder	"Peter"
-		{
-			$File	"peter\gametypes.cpp"
-			$File	"peter\gametypes.h"
-		}
 
 		$Folder	"HL2 DLL"
 		{

@@ -1,0 +1,18 @@
+
+$CollisionModel "puffywheatley_physics.smd"
+{
+	$mass 45
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+	$rootbone " "
+	$concave
+
+}
+
+$CollisionText
+{
+	collisionText 
+	{
+	}
+}

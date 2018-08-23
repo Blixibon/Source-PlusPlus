@@ -1,6 +1,16 @@
 "scripts/shared_sounds_manifest.txt"
 {
 	"precache_file"		"scripts/game_sounds_world_portal2.txt"
+	"precache_file"		"scripts/game_sounds_auto_generated.txt"
+	"precache_file"		"scripts/game_sounds_turret_auto_generated.txt"
+	"precache_file"		"scripts/game_sounds_cave_auto_generated.txt"
+	"precache_file"		"scripts/game_sounds_sphere03_auto_generated.txt"
+	"precache_file"		"scripts/game_sounds_announcer_auto_generated.txt"
+	"precache_file"		"scripts/game_sounds_cores_auto_generated.txt"
+	"precache_file"		"scripts/game_sounds_npc.txt"
 	"precache_file"		"scripts/game_sounds_vfx.txt"
 	"precache_file"		"scripts/game_sounds_hl1_extra.soundscript"
+	
+	// Lambda Wars
+	"precache_file"		"scripts/unit_sounds.txt"
 }

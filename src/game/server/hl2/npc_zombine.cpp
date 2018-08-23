@@ -28,6 +28,7 @@
 #include "physics_npc_solver.h"
 #include "hl2_player.h"
 #include "hl2_gamerules.h"
+#include "peter\population_manager.h"
 
 #include "basecombatweapon.h"
 #include "basegrenade_shared.h"
@@ -173,6 +174,8 @@ private:
 
 protected:
 	static const char *pMoanSounds[];
+	static const char *pPopTypes[];
+	static CPopulationDefinition gm_PopDef;
 
 };
 
@@ -196,6 +199,16 @@ const char *CNPC_Zombine::pMoanSounds[] =
 	"ATV_engine_null",
 };
 
+const char *CNPC_Zombine::pPopTypes[] =
+{
+	"soldier",
+	"soldier_sg",
+	"soldier_prison",
+	"soldier_elite"
+};
+
+CPopulationDefinition CNPC_Zombine::gm_PopDef("zsoldier", pPopTypes, ARRAYSIZE(pPopTypes));
+
 void CNPC_Zombine::Spawn( void )
 {
 	Precache();
@@ -217,6 +230,8 @@ void CNPC_Zombine::Spawn( void )
 	CapabilitiesClear();
 
 	BaseClass::Spawn();
+
+	m_nSkin = gm_PopDef.GetRandom();
 
 	m_flSprintTime = 0.0f;
 	m_flSprintRestTime = 0.0f;

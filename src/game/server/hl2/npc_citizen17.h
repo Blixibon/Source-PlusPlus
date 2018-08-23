@@ -13,6 +13,7 @@
 #include "ai_behavior_functank.h"
 
 struct SquadCandidate_t;
+class CPopulationDefinition;
 
 //-----------------------------------------------------------------------------
 //
@@ -345,6 +346,10 @@ private:
 protected:
 #endif
 	DEFINE_CUSTOM_AI;
+
+protected:
+	static CPopulationDefinition gm_PopDef;
+	static const char *pPopTypes[];
 };
 
 //---------------------------------------------------------

@@ -1,0 +1,7 @@
+refugee
+citizen
+rebel
+rebel2
+medic
+refugee
+refugee

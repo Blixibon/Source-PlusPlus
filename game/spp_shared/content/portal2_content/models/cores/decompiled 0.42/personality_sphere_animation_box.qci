@@ -1,0 +1,12 @@
+
+// Clipping box or view bounding box.
+$CBox 0 0 0 0 0 0
+
+// Bounding box or hull. Used for collision with a world object.
+$BBox -8.933 -11.446 -10.326 8.769 10.862 10.403
+
+// Hitbox info. Used for damage-based collision.
+// The hitbox info below was automatically generated when compiled because no hitbox info was provided.
+$HBoxSet "default"
+$HBox 0 "sphere_root" -1.565542 -10.32566 -8.9326 10.356625 10.403067 8.769213 ""
+$HBox 0 "axel_center_x" -11.446176 0 0 0 6.129379 4.361963 ""

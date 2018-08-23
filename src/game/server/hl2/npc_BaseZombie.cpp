@@ -1245,6 +1245,8 @@ void CNPC_BaseZombie::CopyRenderColorTo( CBaseEntity *pOther )
 {
 	color32 color = GetRenderColor();
 	pOther->SetRenderColor( color.r, color.g, color.b, color.a );
+	if (pOther->GetBaseAnimating() && !pOther->IsNPC())
+		pOther->GetBaseAnimating()->m_nSkin = m_nSkin;
 }
 
 //-----------------------------------------------------------------------------
@@ -1690,7 +1692,7 @@ void CNPC_BaseZombie::Spawn( void )
 
 	SetZombieModel();
 
-	m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies());
+	//m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies());
 
 	NPCInit();
 
@@ -2264,6 +2266,7 @@ void CNPC_BaseZombie::BecomeTorso( const Vector &vecTorsoForce, const Vector &ve
 		// don't collide with this thing ever
 		if ( pGib )
 		{
+			CopyRenderColorTo(pGib);
 			pGib->SetOwnerEntity( this );
 		}
 	}

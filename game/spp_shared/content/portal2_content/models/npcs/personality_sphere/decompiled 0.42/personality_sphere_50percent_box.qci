@@ -1,0 +1,31 @@
+
+// Clipping box or view bounding box.
+$CBox 0 0 0 0 0 0
+
+// Bounding box or hull. Used for collision with a world object.
+$BBox -7.977 -7.698 -9.306 8.241 7.454 9.344
+
+// Hitbox info. Used for damage-based collision.
+// The hitbox info below was automatically generated when compiled because no hitbox info was provided.
+$HBoxSet "default"
+$HBox 0 "sphere_root" -6.300808 -7.279275 -7.97679 6.300808 7.279275 8.241118 ""
+$HBox 0 "eyeball_pistons_backjoint_05" -0.239393 -0.506853 -0.585264 2.590039 0.506853 0.585264 ""
+$HBox 0 "eyeball_pistons_backjoint_04" -0.239393 -0.506854 -0.585264 2.590039 0.506853 0.585264 ""
+$HBox 0 "axel_center_y" -5.014611 -5.011069 -7.622772 1.591379 5.011069 7.622772 ""
+$HBox 0 "eyeball_pistons_backjoint_02" -0.239393 -0.506853 -0.585264 2.596137 0.506853 0.585264 ""
+$HBox 0 "handle_lower" -0.73548 -4.142693 -6.471634 2.615698 0.73548 6.471634 ""
+$HBox 0 "eyeball_pistons_backjoint_06" -0.239393 -0.506853 -0.585264 2.59004 0.506853 0.585263 ""
+$HBox 0 "axel_center_z" -7.697618 -7.907539 -5.373337 6.501985 7.907539 5.373337 ""
+$HBox 0 "handle_upper" -0.73548 -0.73548 -6.471634 2.615698 4.142694 6.471634 ""
+$HBox 0 "eyeball_pistons_backjoint_03" -0.239393 -0.506853 -0.585264 2.590039 0.506853 0.585263 ""
+$HBox 0 "axel_center_x" -7.124662 -4.978981 -4.97898 0 4.97898 4.978982 ""
+$HBox 0 "eyeball_pistons_backjoint_01" -0.239393 -0.506853 -0.585264 2.59004 0.506853 0.585263 ""
+$HBox 0 "bandY_joint" -7.493987 -0.879447 -7.494043 5.851083 0.908156 7.493987 ""
+$HBox 0 "bandZ_joint" -7.493987 -7.494043 -0.908155 5.851083 7.493987 0.879447 ""
+$HBox 0 "cog_rotation" 0 -1.028384 -1.028384 1.596812 1.028384 1.028384 ""
+$HBox 0 "eyeball_eye" 0 -4.968186 -4.968188 7.19439 4.968186 4.968187 ""
+$HBox 0 "eyelid_upper_compress01" 0 0 -3.101247 7.203962 2.926025 3.101249 ""
+$HBox 0 "eyelid_upper_compress02" 0 0 -2.97293 6.458896 4.732273 2.972931 ""
+$HBox 0 "eyelid_lower_compress_01" 0 0 -3.101247 7.203962 2.854087 3.101249 ""
+$HBox 0 "eyelid_lower_compress_02" 0 0 -2.97293 6.458896 4.732273 2.972931 ""
+$HBox 0 "eyelight_aimjoint" 0 -2.904599 -2.904598 5.517972 2.904599 2.904599 ""

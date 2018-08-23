@@ -1,0 +1,115 @@
+
+$DefineBone "sphere_root" "" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_backjoint_06" "sphere_root" -1.565542 -1.306056 8.769213 13.540243 -26.085104 -6.538867 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_backjoint_05" "sphere_root" -1.565542 -8.247389 -3.253529 -29.161739 -0.720515 0.351104 0 0 0 0 0 0
+$DefineBone "handle_upper" "sphere_root" 6.799765 10.403067 0 0 0 0 0 0 0 0 0 0
+$DefineBone "axel_center_y" "sphere_root" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "axel_center_x" "sphere_root" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "axel_center_z" "sphere_root" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_frontjoint_05" "sphere_root" 10.158175 -8.394827 3.28888 29.161732 179.27949 179.648894 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_backjoint_01" "sphere_root" -1.565542 1.306056 8.769213 13.540243 26.085104 6.538867 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_backjoint_03" "sphere_root" -1.565542 6.941333 -5.515684 14.68706 -25.946183 -7.032749 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_backjoint_02" "sphere_root" -1.565542 8.247389 -3.253529 -29.161739 0.720515 -0.351104 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_backjoint_04" "sphere_root" -1.565542 -6.941333 -5.515684 14.663884 25.500986 6.885179 0 0 0 0 0 0
+$DefineBone "handle_lower" "sphere_root" 6.799765 -10.32566 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_frontjoint_01" "sphere_root" 10.158175 7.045667 5.625693 -13.540245 -153.914899 173.461139 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_frontjoint_02" "sphere_root" 10.356625 8.397323 3.399625 29.161732 -179.27949 -179.648894 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_frontjoint_03" "sphere_root" 10.156952 1.237515 -8.9326 -14.687058 154.053839 -172.967261 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_frontjoint_04" "sphere_root" 10.158175 -1.349159 -8.914573 -14.663878 -154.499017 173.114821 0 0 0 0 0 0
+$DefineBone "eyeball_pistons_frontjoint_06" "sphere_root" 10.158175 -7.045667 5.625693 -13.540245 153.914899 -173.461139 0 0 0 0 0 0
+$DefineBone "bandY_joint" "axel_center_y" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "cog_rotation" "axel_center_x" -11.446176 6.129379 4.361963 0 0 0 0 0 0 0 0 0
+$DefineBone "eyeball_retract" "axel_center_x" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyeball_eye" "eyeball_retract" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyelight_aimjoint" "eyeball_eye" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyelid_rotate" "eyeball_eye" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "inner_aperture" "eyelight_aimjoint" 10.862099 0 -0.06434 0 0 0 0 0 0 0 0 0
+$DefineBone "inner01" "inner_aperture" 0 4.580714 0.06434 0 0 0 0 0 0 0 0 0
+$DefineBone "inner03" "inner_aperture" 0 3.999185 -2.234637 0 0 -30.000001 0 0 0 0 0 0
+$DefineBone "inner04" "inner_aperture" 0 3.284549 -3.193559 0 0 -45.000002 0 0 0 0 0 0
+$DefineBone "inner06" "inner_aperture" 0 1.247724 -4.407978 0 0 -74.999999 0 0 0 0 0 0
+$DefineBone "inner07" "inner_aperture" 0 0.06434 -4.580714 0 0 -90.00001 0 0 0 0 0 0
+$DefineBone "inner014" "inner_aperture" 0 -4.441282 1.123428 0 0 165.000009 0 0 0 0 0 0
+$DefineBone "inner05" "inner_aperture" 0 2.346077 -3.934845 0 0 -60.000002 0 0 0 0 0 0
+$DefineBone "inner09" "inner_aperture" 0 -2.234637 -3.999185 0 0 -120.000004 0 0 0 0 0 0
+$DefineBone "inner010" "inner_aperture" 0 -3.193559 -3.284549 0 0 -135.000015 0 0 0 0 0 0
+$DefineBone "inner016" "inner_aperture" 0 -3.284549 3.193559 0 0 135.000015 0 0 0 0 0 0
+$DefineBone "inner017" "inner_aperture" 0 -2.346077 3.934845 0 0 120.000004 0 0 0 0 0 0
+$DefineBone "inner013" "inner_aperture" 0 -4.580714 -0.06434 0 0 180.000007 0 0 0 0 0 0
+$DefineBone "inner015" "inner_aperture" 0 -3.999185 2.234637 0 0 149.999999 0 0 0 0 0 0
+$DefineBone "inner022" "inner_aperture" 0 3.193559 3.284549 0 0 45.000002 0 0 0 0 0 0
+$DefineBone "inner02" "inner_aperture" 0 4.441282 -1.123428 0 0 -15.000001 0 0 0 0 0 0
+$DefineBone "inner012" "inner_aperture" 0 -4.407978 -1.247724 0 0 -165.000009 0 0 0 0 0 0
+$DefineBone "inner011" "inner_aperture" 0 -3.934845 -2.346077 0 0 -149.999999 0 0 0 0 0 0
+$DefineBone "inner024" "inner_aperture" 0 4.407978 1.247724 0 0 15.000001 0 0 0 0 0 0
+$DefineBone "inner023" "inner_aperture" 0 3.934845 2.346077 0 0 30.000001 0 0 0 0 0 0
+$DefineBone "inner020" "inner_aperture" 0 1.123428 4.441283 0 0 74.999999 0 0 0 0 0 0
+$DefineBone "inner08" "inner_aperture" 0 -1.123428 -4.441282 0 0 -105 0 0 0 0 0 0
+$DefineBone "inner021" "inner_aperture" 0 2.234637 3.999185 0 0 60.000002 0 0 0 0 0 0
+$DefineBone "inner019" "inner_aperture" 0 -0.06434 4.580714 0 0 90.00001 0 0 0 0 0 0
+$DefineBone "inner018" "inner_aperture" 0 -1.247724 4.407978 0 0 105 0 0 0 0 0 0
+$DefineBone "eyelid_lower_compress_01" "eyelid_rotate" 0 0 0 0 0 180.000007 0 0 0 0 0 0
+$DefineBone "eyelid_upper_compress01" "eyelid_rotate" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyelid_upper_main" "eyelid_rotate" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyelid_upper_compress02" "eyelid_rotate" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "eyelid_lower_main" "eyelid_rotate" 0 0 0 0 0 180.000007 0 0 0 0 0 0
+$DefineBone "eyelid_lower_compress_02" "eyelid_rotate" 0 0 0 0 0 180.000007 0 0 0 0 0 0
+$DefineBone "bandZ_joint" "axel_center_z" 0 0 0 0 0 0 0 0 0 0 0 0
+
+$BoneMerge "sphere_root"
+$BoneMerge "eyeball_pistons_backjoint_06"
+$BoneMerge "eyeball_pistons_backjoint_05"
+$BoneMerge "handle_upper"
+$BoneMerge "axel_center_y"
+$BoneMerge "axel_center_x"
+$BoneMerge "axel_center_z"
+$BoneMerge "eyeball_pistons_frontjoint_05"
+$BoneMerge "eyeball_pistons_backjoint_01"
+$BoneMerge "eyeball_pistons_backjoint_03"
+$BoneMerge "eyeball_pistons_backjoint_02"
+$BoneMerge "eyeball_pistons_backjoint_04"
+$BoneMerge "handle_lower"
+$BoneMerge "eyeball_pistons_frontjoint_01"
+$BoneMerge "eyeball_pistons_frontjoint_02"
+$BoneMerge "eyeball_pistons_frontjoint_03"
+$BoneMerge "eyeball_pistons_frontjoint_04"
+$BoneMerge "eyeball_pistons_frontjoint_06"
+$BoneMerge "bandY_joint"
+$BoneMerge "cog_rotation"
+$BoneMerge "eyeball_retract"
+$BoneMerge "eyeball_eye"
+$BoneMerge "eyelight_aimjoint"
+$BoneMerge "eyelid_rotate"
+$BoneMerge "inner_aperture"
+$BoneMerge "inner01"
+$BoneMerge "inner03"
+$BoneMerge "inner04"
+$BoneMerge "inner06"
+$BoneMerge "inner07"
+$BoneMerge "inner014"
+$BoneMerge "inner05"
+$BoneMerge "inner09"
+$BoneMerge "inner010"
+$BoneMerge "inner016"
+$BoneMerge "inner017"
+$BoneMerge "inner013"
+$BoneMerge "inner015"
+$BoneMerge "inner022"
+$BoneMerge "inner02"
+$BoneMerge "inner012"
+$BoneMerge "inner011"
+$BoneMerge "inner024"
+$BoneMerge "inner023"
+$BoneMerge "inner020"
+$BoneMerge "inner08"
+$BoneMerge "inner021"
+$BoneMerge "inner019"
+$BoneMerge "inner018"
+$BoneMerge "eyelid_lower_compress_01"
+$BoneMerge "eyelid_upper_compress01"
+$BoneMerge "eyelid_upper_main"
+$BoneMerge "eyelid_upper_compress02"
+$BoneMerge "eyelid_lower_main"
+$BoneMerge "eyelid_lower_compress_02"
+$BoneMerge "bandZ_joint"
+

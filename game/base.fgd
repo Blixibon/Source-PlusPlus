@@ -848,6 +848,8 @@
 		0 : "No"
 		1 : "Yes"
 	]
+	
+	population(string) : "NPC Population Tag" : "default" : "Tag to use for npc appearance randomization. Check 'scripts/population' for tags."
 ]
 
 

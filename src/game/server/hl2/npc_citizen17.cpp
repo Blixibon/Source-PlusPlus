@@ -33,6 +33,7 @@
 #include "ai_looktarget.h"
 #include "sceneentity.h"
 #include "tier0/icommandline.h"
+#include "peter\population_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -271,6 +272,8 @@ static const char *g_ppszRandomHeads[] =
 	"female_07.mdl",
 	"male_08.mdl",
 	"male_09.mdl",
+	"male_10.mdl",
+	"male_11.mdl",
 };
 
 static const char *g_ppszModelLocs[] =
@@ -366,6 +369,18 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 
 //CSimpleSimTimer CNPC_Citizen::gm_PlayerSquadEvaluateTimer;
+
+const char *CNPC_Citizen::pPopTypes[] =
+{
+	"downtrodden",	// 1
+	"refugee",		// 2
+	"rebel",		// 3
+	//"unique",
+	"hostage",		// 5
+	"loyalist"		// 6
+};
+
+CPopulationDefinition CNPC_Citizen::gm_PopDef("citizen", pPopTypes, ARRAYSIZE(pPopTypes));
 
 bool CNPC_Citizen::ShouldAutosquad()
 {
@@ -651,6 +666,7 @@ void CNPC_Citizen::SelectModel()
 
 	if ( m_Type == CT_DEFAULT )
 	{
+#if 0
 		struct CitizenTypeMapping
 		{
 			const char *pszMapTag;
@@ -681,8 +697,15 @@ void CNPC_Citizen::SelectModel()
 			}
 		}
 
-		if ( m_Type == CT_DEFAULT )
+		if (m_Type == CT_DEFAULT)
 			m_Type = CT_DOWNTRODDEN;
+#else
+		int iPopType = gm_PopDef.GetRandom() + 1;
+		if (iPopType > 3)
+			iPopType += 1;
+
+		m_Type = (CitizenType_t)iPopType;
+#endif
 	}
 
 	if( HasSpawnFlags( SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE ) || GetModelName() == NULL_STRING )
@@ -694,7 +717,7 @@ void CNPC_Citizen::SelectModel()
 		RemoveSpawnFlags( SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE );
 		if( HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
 		{
-			SetModelName( AllocPooledString("models/humans/male_cheaple.mdl" ) );
+			SetModelName( AllocPooledString("models/minic23/citizens/male_11.mdl" ) );
 			return;
 		}
 		else
@@ -871,7 +894,8 @@ string_t CNPC_Citizen::GetModelName() const
 	if (!Q_strnicmp(STRING(iszModelName), "models/c17_", 11) ||
 		!Q_strnicmp(STRING(iszModelName), "models/male", 11) ||
 		!Q_strnicmp(STRING(iszModelName), "models/female", 13) ||
-		!Q_strnicmp(STRING(iszModelName), "models/citizen", 14))
+		!Q_strnicmp(STRING(iszModelName), "models/citizen", 14) ||
+		Q_stristr(STRING(iszModelName), "male_cheaple.mdl"))
 	{
 		return NULL_STRING;
 	}

@@ -1,0 +1,33 @@
+
+// Clipping box or view bounding box.
+$CBox 0 0 0 0 0 0
+
+// Bounding box or hull. Used for collision with a world object.
+$BBox -17.288 -17.288 -19.328 17.288 17.288 19.328
+
+// Hitbox info. Used for damage-based collision.
+// The hitbox info below was automatically generated when compiled because no hitbox info was provided.
+$HBoxSet "default"
+$HBox 0 "sphere_root" -12.601616 -14.55855 -15.95358 12.601617 14.558551 16.482237 ""
+$HBox 0 "axel_center_z" -15.395237 -15.815078 -10.746675 13.003969 15.815078 10.746675 ""
+$HBox 0 "eyeball_pistons_backjoint_01" -0.478787 -1.013706 -1.170527 5.180079 1.013706 1.170526 ""
+$HBox 0 "eyeball_pistons_backjoint_06" -0.478787 -1.013706 -1.170527 5.180079 1.013706 1.170526 ""
+$HBox 0 "eyeball_pistons_backjoint_02" -0.478787 -1.013706 -1.170527 5.192274 1.013706 1.170527 ""
+$HBox 0 "eyeball_pistons_backjoint_03" -0.478787 -1.013706 -1.170528 5.180079 1.013707 1.170527 ""
+$HBox 0 "eyeball_pistons_backjoint_04" -0.478787 -1.013707 -1.170527 5.180079 1.013706 1.170527 ""
+$HBox 0 "handle_upper" -1.470959 -1.52608 -12.94327 5.231398 8.285387 12.943269 ""
+$HBox 0 "axel_center_y" -10.029222 -10.022138 -15.245544 3.182757 10.022138 15.245544 ""
+$HBox 0 "axel_center_x" -14.249325 -9.957961 -9.95796 0 9.95796 9.957964 ""
+$HBox 0 "handle_lower" -1.470959 -8.285386 -12.943269 5.231398 1.470961 12.943269 ""
+$HBox 0 "eyeball_pistons_backjoint_05" -0.478787 -1.013706 -1.170527 5.180079 1.013706 1.170527 ""
+$HBox 0 "bandZ_joint" -14.987974 -14.988087 -1.816311 11.702167 14.987974 1.758893 ""
+$HBox 0 "bandY_joint" -14.987974 -1.758895 -14.988087 11.702167 1.816312 14.988087 ""
+$HBox 0 "cog_rotation" 0 -2.056767 -2.056767 3.193624 2.056767 2.056767 ""
+$HBox 0 "eyeball_eye" 0 -9.953049 -9.953049 14.38878 9.952936 9.952936 ""
+$HBox 0 "eyelight_aimjoint" 0 -5.809197 -5.809196 11.035944 5.809197 5.809197 ""
+$HBox 0 "eyelid_upper_main" 0 -0.020874 -6.202494 14.908861 1.946951 6.202497 ""
+$HBox 0 "eyelid_upper_compress01" 0 0 -6.202494 14.407925 5.85205 6.202497 ""
+$HBox 0 "eyelid_upper_compress02" 0 0 -5.94586 12.917792 9.464545 5.945862 ""
+$HBox 0 "eyelid_lower_main" 0 -0.020874 -6.202494 14.908861 1.946952 6.202497 ""
+$HBox 0 "eyelid_lower_compress_01" 0 0 -6.202493 14.407925 5.708175 6.202498 ""
+$HBox 0 "eyelid_lower_compress_02" 0 0 -5.945859 12.917792 9.464545 5.945862 ""

@@ -1,0 +1,250 @@
+
+$WeightList "weights_g_Explode_All" {
+	 "sphere_root" 0
+	 "eyeball_pistons_frontjoint_04" 0
+	 "eyeball_pistons_frontjoint_05" 0
+	 "eyeball_pistons_frontjoint_06" 0
+	 "axel_center_z" 0
+	 "bandZ_joint" 0
+	 "wing_lower" 1
+	 "wing_upper" 1
+	 "eyeball_pistons_backjoint_01" 0
+	 "eyeball_pistons_backjoint_06" 0
+	 "eyeball_pistons_backjoint_02" 0
+	 "eyeball_pistons_backjoint_03" 0
+	 "eyeball_pistons_backjoint_04" 0
+	 "handle_upper" 0
+	 "upper_handleL" 1
+	 "upper_handleR" 1
+	 "axel_center_y" 0
+	 "bandY_joint" 0
+	 "axel_center_x" 0
+	 "eyeball_retract" 0
+	 "eyeball_eye" 0
+	 "eyelid_rotate" 0
+	 "eyelid_upper_main" 0
+	 "eyelid_upper_compress01" 0
+	 "eyelid_upper_compress02" 0
+	 "eyelid_lower_main" 0
+	 "eyelid_lower_compress_01" 0
+	 "eyelid_lower_compress_02" 0
+	 "eyelight_aimjoint" 0
+	 "inner_aperture" 0
+	 "inner01" 0
+	 "inner02" 0
+	 "inner03" 0
+	 "inner04" 0
+	 "inner05" 0
+	 "inner06" 0
+	 "inner07" 0
+	 "inner08" 0
+	 "inner09" 0
+	 "inner010" 0
+	 "inner011" 0
+	 "inner012" 0
+	 "inner013" 0
+	 "inner014" 0
+	 "inner015" 0
+	 "inner016" 0
+	 "inner017" 0
+	 "inner018" 0
+	 "inner019" 0
+	 "inner020" 0
+	 "inner021" 0
+	 "inner022" 0
+	 "inner023" 0
+	 "inner024" 0
+	 "cog_rotation" 0
+	 "handle_lower" 0
+	 "lower_handleL" 1
+	 "lower_handleR" 1
+	 "eyeball_pistons_frontjoint_01" 0
+	 "eyeball_pistons_backjoint_05" 0
+	 "eyeball_pistons_frontjoint_02" 0
+	 "eyeball_pistons_frontjoint_03" 0
+	 "wing_side_left" 1
+	 "wing_side_right" 1
+}
+
+$WeightList "weights_g_Explode_Sides" {
+	 "sphere_root" 0
+	 "eyeball_pistons_frontjoint_04" 0
+	 "eyeball_pistons_frontjoint_05" 0
+	 "eyeball_pistons_frontjoint_06" 0
+	 "axel_center_z" 0
+	 "bandZ_joint" 0
+	 "wing_lower" 0
+	 "wing_upper" 0
+	 "eyeball_pistons_backjoint_01" 0
+	 "eyeball_pistons_backjoint_06" 0
+	 "eyeball_pistons_backjoint_02" 0
+	 "eyeball_pistons_backjoint_03" 0
+	 "eyeball_pistons_backjoint_04" 0
+	 "handle_upper" 0
+	 "upper_handleL" 1
+	 "upper_handleR" 1
+	 "axel_center_y" 0
+	 "bandY_joint" 0
+	 "axel_center_x" 0
+	 "eyeball_retract" 0
+	 "eyeball_eye" 0
+	 "eyelid_rotate" 0
+	 "eyelid_upper_main" 0
+	 "eyelid_upper_compress01" 0
+	 "eyelid_upper_compress02" 0
+	 "eyelid_lower_main" 0
+	 "eyelid_lower_compress_01" 0
+	 "eyelid_lower_compress_02" 0
+	 "eyelight_aimjoint" 0
+	 "inner_aperture" 0
+	 "inner01" 0
+	 "inner02" 0
+	 "inner03" 0
+	 "inner04" 0
+	 "inner05" 0
+	 "inner06" 0
+	 "inner07" 0
+	 "inner08" 0
+	 "inner09" 0
+	 "inner010" 0
+	 "inner011" 0
+	 "inner012" 0
+	 "inner013" 0
+	 "inner014" 0
+	 "inner015" 0
+	 "inner016" 0
+	 "inner017" 0
+	 "inner018" 0
+	 "inner019" 0
+	 "inner020" 0
+	 "inner021" 0
+	 "inner022" 0
+	 "inner023" 0
+	 "inner024" 0
+	 "cog_rotation" 0
+	 "handle_lower" 0
+	 "lower_handleL" 1
+	 "lower_handleR" 1
+	 "eyeball_pistons_frontjoint_01" 0
+	 "eyeball_pistons_backjoint_05" 0
+	 "eyeball_pistons_frontjoint_02" 0
+	 "eyeball_pistons_frontjoint_03" 0
+	 "wing_side_left" 1
+	 "wing_side_right" 1
+}
+
+$WeightList "weights_g_Explode_Center" {
+	 "sphere_root" 0
+	 "eyeball_pistons_frontjoint_04" 0
+	 "eyeball_pistons_frontjoint_05" 0
+	 "eyeball_pistons_frontjoint_06" 0
+	 "axel_center_z" 0
+	 "bandZ_joint" 0
+	 "wing_lower" 1
+	 "wing_upper" 1
+	 "eyeball_pistons_backjoint_01" 0
+	 "eyeball_pistons_backjoint_06" 0
+	 "eyeball_pistons_backjoint_02" 0
+	 "eyeball_pistons_backjoint_03" 0
+	 "eyeball_pistons_backjoint_04" 0
+	 "handle_upper" 0
+	 "upper_handleL" 0
+	 "upper_handleR" 0
+	 "axel_center_y" 0
+	 "bandY_joint" 0
+	 "axel_center_x" 0
+	 "eyeball_retract" 0
+	 "eyeball_eye" 0
+	 "eyelid_rotate" 0
+	 "eyelid_upper_main" 0
+	 "eyelid_upper_compress01" 0
+	 "eyelid_upper_compress02" 0
+	 "eyelid_lower_main" 0
+	 "eyelid_lower_compress_01" 0
+	 "eyelid_lower_compress_02" 0
+	 "eyelight_aimjoint" 0
+	 "inner_aperture" 0
+	 "inner01" 0
+	 "inner02" 0
+	 "inner03" 0
+	 "inner04" 0
+	 "inner05" 0
+	 "inner06" 0
+	 "inner07" 0
+	 "inner08" 0
+	 "inner09" 0
+	 "inner010" 0
+	 "inner011" 0
+	 "inner012" 0
+	 "inner013" 0
+	 "inner014" 0
+	 "inner015" 0
+	 "inner016" 0
+	 "inner017" 0
+	 "inner018" 0
+	 "inner019" 0
+	 "inner020" 0
+	 "inner021" 0
+	 "inner022" 0
+	 "inner023" 0
+	 "inner024" 0
+	 "cog_rotation" 0
+	 "handle_lower" 0
+	 "lower_handleL" 0
+	 "lower_handleR" 0
+	 "eyeball_pistons_frontjoint_01" 0
+	 "eyeball_pistons_backjoint_05" 0
+	 "eyeball_pistons_frontjoint_02" 0
+	 "eyeball_pistons_frontjoint_03" 0
+	 "wing_side_left" 0
+	 "wing_side_right" 0
+}
+
+$Sequence "BindPose" {
+	"puffywheatley_anims\BindPose.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "g_Explode_All" {
+	"puffywheatley_anims\g_Explode_All.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	weightlist "weights_g_Explode_All"
+}
+
+$Sequence "g_Expand_All" {
+	"puffywheatley_anims\g_Expand_All.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	weightlist "weights_g_Explode_All"
+}
+
+$Sequence "g_Explode_Sides" {
+	"puffywheatley_anims\g_Explode_Sides.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	weightlist "weights_g_Explode_Sides"
+}
+
+$Sequence "g_Expand_sides" {
+	"puffywheatley_anims\g_Expand_sides.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	weightlist "weights_g_Explode_Sides"
+}
+
+$Sequence "g_Explode_Center" {
+	"puffywheatley_anims\g_Explode_Center.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	weightlist "weights_g_Explode_Center"
+}
+
+$IncludeModel "cores/personality_sphere_animation.mdl"

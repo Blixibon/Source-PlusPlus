@@ -596,7 +596,8 @@ void CHL2_Player::PreThink(void)
 		CheckSuitUpdate();
 		CheckSuitZoom();
 
-		WaterMove();	
+		WaterMove();
+		UpdateLastKnownArea();
 		return;
 	}
 
@@ -727,6 +728,8 @@ void CHL2_Player::PreThink(void)
 	if (m_lifeState >= LIFE_DYING)
 	{
 		PlayerDeathThink();
+		// track where we are in the nav mesh even when dead
+		UpdateLastKnownArea();
 		return;
 	}
 
@@ -866,6 +869,8 @@ void CHL2_Player::PreThink(void)
 
 	// Update weapon's ready status
 	UpdateWeaponPosture();
+
+	UpdateLastKnownArea();
 
 	// Disallow shooting while zooming
 	if ( IsX360() )

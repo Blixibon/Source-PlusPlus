@@ -91,6 +91,14 @@ $Project
 		
 		$File	"env_dof_controller.cpp"
 		$File	"env_dof_controller.h"
+
+		$Folder	"Peter"
+		{
+			$File	"peter\gametypes.cpp"
+			$File	"peter\gametypes.h"
+			$File	"peter\population_manager.h"
+			$File	"peter\population_manager.cpp"
+		}
 		
 		$File	"$SRCDIR\game\shared\achievement_saverestore.cpp"
 		$File	"$SRCDIR\game\shared\achievement_saverestore.h"

@@ -1,0 +1,54 @@
+
+$ikchain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$ikchain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$ikchain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$ikchain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$ikautoplaylock "rhand" 0 0
+$ikautoplaylock "lhand" 0 0
+$ikautoplaylock "rfoot" 0.5 0.1
+$ikautoplaylock "lfoot" 0.5 0.1
+
+$animation "a_proportions" "cavejohnson_npc_anims\a_proportions.smd" {
+	fps 30
+	// This subtract line guesses the animation name and frame index. There is no way to determine which $animation and which frame was used. Change as needed.
+	subtract "a_proportions" 0
+}
+
+$sequence "reference" {
+	"cavejohnson_npc_anims\reference.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+}
+
+$sequence "ragdoll" {
+	"cavejohnson_npc_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$sequence "proportions" {
+	"a_proportions"
+	autoplay
+	predelta
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	// This subtract line guesses the animation name and frame index. There is no way to determine which $animation and which frame was used. Change as needed.
+	subtract "a_proportions" 0
+}
+
+$includemodel "barney_animations.mdl"
+$includemodel "barney_gestures.mdl"
+$includemodel "barney_postures.mdl"
+$includemodel "humans/male_gestures.mdl"
+$includemodel "humans/male_postures.mdl"
+$includemodel "humans/male_shared.mdl"
+$includemodel "humans/male_ss.mdl"
+$includemodel "breen_postures.mdl"
+$includemodel "breen_gestures.mdl"
+$includemodel "eli_postures.mdl"
+$includemodel "eli_gestures.mdl"

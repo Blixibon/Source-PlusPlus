@@ -6,7 +6,7 @@ actor "@sphere"
     event speak "sphere03.bw_sp_a2_core_history_response01"
     {
       time 0.000000 1.959184
-      param "sphere03.bw_sp_a2_core_history_response01"
+      param "vo/wheatley/bw_sp_a2_core_history_response01.wav"
       param2 "VOL_NORM"
       fixedlength
       cctype "cc_master"

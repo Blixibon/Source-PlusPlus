@@ -1,0 +1,51 @@
+
+$SectionFrames 30 436
+
+$Sequence "BindPose" {
+	"personality_sphere_50percent_anims\BindPose.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "Ending_Wheatley_Part01" {
+	"personality_sphere_50percent_anims\Ending_Wheatley_Part01.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "Ending_Wheatley_Part02" {
+	"personality_sphere_50percent_anims\Ending_Wheatley_Part02.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "wheatly_moonshot_hangling_loop" {
+	"personality_sphere_50percent_anims\wheatly_moonshot_hangling_loop.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "wheatly_moonshot_2" {
+	"personality_sphere_50percent_anims\wheatly_moonshot_2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "Ending_Psphere03_Part02" {
+	"personality_sphere_50percent_anims\Ending_Psphere03_Part02.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "testanim" {
+	"personality_sphere_50percent_anims\testanim.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+}

@@ -818,6 +818,8 @@
 		1 : "Downtrodden"
 		2 : "Refugee"
 		3 : "Rebel"
+		5 : "Hostage"
+		6 : "Loyalist"
 		4 : "Unique"
 	]
 

@@ -1,0 +1,23 @@
+"VertexLitGeneric"
+{
+	"$basetexture"		"models/Lenoax/CaveJohnson/Johnson_Hair_Diff"
+	"$bumpmap"		"models/Lenoax/CaveJohnson/Johnson_Hair_Normal"
+	"$lightwarptexture" 	"models/Lenoax/CaveJohnson/Johnson_Skin_WRP"			
+
+	"$ambientocclusion" 0
+
+	"$phong" "1"
+	"$phongalbedotint" "1"
+	"$phongexponenttexture" 	"models/Lenoax/CaveJohnson/Johnson_Head_Exp"
+//	"$phongexponent" "3"
+	"$phongboost"	"0.6"
+	"$phongfresnelranges"	"[1 2 10]"
+	"$halflambert" "1"
+
+
+	//$rimlight 1
+
+	"$translucent" "1"
+	"$nocull" "1"
+//	"$decal" 1
+} 

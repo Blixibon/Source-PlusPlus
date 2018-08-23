@@ -6,6 +6,8 @@
 
 #include "npc_BaseZombie.h"
 
+class CPopulationDefinition;
+
 //-----------------------------------------------------------------------------
 // The maximum number of headcrabs we can have riding on our back.
 // NOTE: If you change this value you must also change the lookup table in Spawn!
@@ -90,6 +92,9 @@ protected:
 	virtual const char *GetTorsoModel(void);
 	virtual const char *GetHeadcrabClassname(void);
 	virtual const char *GetHeadcrabModel(void);
+
+	static CPopulationDefinition gm_PopDef;
+	static const char *pPopTypes[];
 
 private:
 

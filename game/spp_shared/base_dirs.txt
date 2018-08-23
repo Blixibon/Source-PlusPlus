@@ -24,6 +24,7 @@
 				"scenes"	"1"
 			}
 			
+			vpk		l4d2_ambient
 			"vpk"	"sdk_pak"
 			vpk		p2_dissolve
 		}

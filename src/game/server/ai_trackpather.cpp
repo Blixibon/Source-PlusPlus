@@ -1332,6 +1332,9 @@ void CAI_TrackPather::UpdateTrackNavigation( void )
 	}
 	else
 	{
+		if (!m_pCurrentPathTarget)
+			return;
+
 		// Updates our destination position if we're leading something
 		UpdateTargetPositionLeading();
 

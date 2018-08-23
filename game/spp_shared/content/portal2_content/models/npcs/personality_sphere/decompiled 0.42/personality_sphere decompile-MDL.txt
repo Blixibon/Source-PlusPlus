@@ -1,0 +1,119 @@
+// Created by Crowbar 0.42.0.0
+====== File Size ======
+	25,568
+====== File Seek Log ======
+--- Summary ---
+	0 - 24,156
+	24,204 - 25,567
+------------------------
+--- Each Section or Loop ---
+	0 - 79 MDL File Header 00; MDL File Header 00
+	80 - 407 MDL File Header 01; MDL File Header 01
+	408 - 663 MDL File Header 02; MDL File Header 02
+	664 - 12,759 theMdlFileData.theBones
+	12,760 - 13,403 theMdlFileData.theAttachments
+	13,404 - 13,415 theMdlFileData.theHitboxSets
+	13,416 - 14,979 aHitboxSet.theHitboxes
+	14,980 - 15,035 theMdlFileData.theBoneTableByName
+	15,036 - 15,135 theMdlFileData.theAnimationDescs
+	15,136 - 15,147 anAnimationDesc.anAnimation (frameCount = 1; sectionFrameCount = 1)
+	15,148 - 15,151 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	15,152 - 15,363 theMdlFileData.theSequenceDescs
+	15,364 - 15,587 aSeqDesc.theBoneWeights
+	15,588 - 15,589 aSeqDesc.theAnimDescIndexes
+	15,590 - 15,591 aSeqDesc.theAnimDescIndexes alignment
+	15,592 - 15,607 theMdlFileData.theBodyParts
+	15,608 - 15,755 aBodyPart.theModels
+	15,756 - 16,103 aModel.theMeshes
+	16,104 - 16,111 theMdlFileData.theModelGroups
+	16,112 - 16,431 theMdlFileData.theTextures
+	16,432 - 16,435 theMdlFileData.theTexturePaths
+	16,436 - 16,455 theMdlFileData.theSkinFamilies
+	16,456 - 16,473 theMdlFileData.theKeyValuesText
+	16,474 - 16,475 theMdlFileData.theKeyValuesText alignment
+	16,476 - 16,539 theMdlFileData.theLinearBoneTable header
+	16,540 - 16,763 theMdlFileData.theLinearBoneTable.theFlags
+	16,764 - 16,987 theMdlFileData.theLinearBoneTable.theParents
+	16,988 - 17,659 theMdlFileData.theLinearBoneTable.thePositions
+	17,660 - 18,555 theMdlFileData.theLinearBoneTable.theQuaternions
+	18,556 - 19,227 theMdlFileData.theLinearBoneTable.theRotations
+	19,228 - 21,915 theMdlFileData.theLinearBoneTable.thePoseToBoneDataColumns
+	21,916 - 22,587 theMdlFileData.theLinearBoneTable.thePositionScales
+	22,588 - 23,259 theMdlFileData.theLinearBoneTable.theRotationScales
+	23,260 - 24,155 theMdlFileData.theLinearBoneTable.theQAlignments
+	24,156 - 24,156 aHitbox.theName
+
+	24,204 - 24,211 theSurfacePropName
+	24,212 - 24,223 aBone.theName
+	24,224 - 24,253 aBone.theName
+	24,254 - 24,283 aBone.theName
+	24,284 - 24,313 aBone.theName
+	24,314 - 24,327 aBone.theName
+	24,328 - 24,356 aBone.theName
+	24,357 - 24,385 aBone.theName
+	24,386 - 24,414 aBone.theName
+	24,415 - 24,443 aBone.theName
+	24,444 - 24,472 aBone.theName
+	24,473 - 24,485 aBone.theName
+	24,486 - 24,499 aBone.theName
+	24,500 - 24,513 aBone.theName
+	24,514 - 24,526 aBone.theName
+	24,527 - 24,556 aBone.theName
+	24,557 - 24,585 aBone.theName
+	24,586 - 24,615 aBone.theName
+	24,616 - 24,645 aBone.theName
+	24,646 - 24,657 aBone.theName
+	24,658 - 24,669 aBone.theName
+	24,670 - 24,685 aBone.theName
+	24,686 - 24,698 aBone.theName
+	24,699 - 24,710 aBone.theName
+	24,711 - 24,724 aBone.theName
+	24,725 - 24,742 aBone.theName
+	24,743 - 24,760 aBone.theName
+	24,761 - 24,784 aBone.theName
+	24,785 - 24,808 aBone.theName
+	24,809 - 24,826 aBone.theName
+	24,827 - 24,851 aBone.theName
+	24,852 - 24,876 aBone.theName
+	24,877 - 24,891 aBone.theName
+	24,892 - 24,899 aBone.theName
+	24,900 - 24,907 aBone.theName
+	24,908 - 24,915 aBone.theName
+	24,916 - 24,923 aBone.theName
+	24,924 - 24,931 aBone.theName
+	24,932 - 24,939 aBone.theName
+	24,940 - 24,947 aBone.theName
+	24,948 - 24,955 aBone.theName
+	24,956 - 24,963 aBone.theName
+	24,964 - 24,972 aBone.theName
+	24,973 - 24,981 aBone.theName
+	24,982 - 24,990 aBone.theName
+	24,991 - 24,999 aBone.theName
+	25,000 - 25,008 aBone.theName
+	25,009 - 25,017 aBone.theName
+	25,018 - 25,026 aBone.theName
+	25,027 - 25,035 aBone.theName
+	25,036 - 25,044 aBone.theName
+	25,045 - 25,053 aBone.theName
+	25,054 - 25,062 aBone.theName
+	25,063 - 25,071 aBone.theName
+	25,072 - 25,080 aBone.theName
+	25,081 - 25,089 aBone.theName
+	25,090 - 25,098 aBone.theName
+	25,099 - 25,103 anAttachment.theName
+	25,104 - 25,125 anAttachment.theName
+	25,126 - 25,138 anAttachment.theName
+	25,139 - 25,160 anAttachment.theName
+	25,161 - 25,168 anAttachment.theName
+	25,169 - 25,184 anAttachment.theName
+	25,185 - 25,200 anAttachment.theName
+	25,201 - 25,210 anAnimationDesc.theName
+	25,211 - 25,219 aSeqDesc.theLabel
+	25,220 - 25,283 aModelGroup.theFileName
+	25,284 - 25,333 aTexture.theName
+	25,334 - 25,389 aTexture.theName
+	25,390 - 25,453 aTexture.theName
+	25,454 - 25,509 aTexture.theName
+	25,510 - 25,566 aTexture.theName
+	25,567 - 25,567 Final bytes alignment
+========================

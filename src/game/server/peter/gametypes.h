@@ -36,10 +36,6 @@ enum
 	AREA_BMRF,
 	AREA_XEN,
 
-	DAY_ONE,
-	DAY_TWO,
-	DAY_THREE,
-
 	MAX_CODE_AREAS
 };
 
@@ -89,6 +85,11 @@ public:
 		return m_bitAreas.IsBitSet(iArea);
 	}
 
+	const char *GetFirstArea()
+	{
+		return m_vecAreaNames.Element(m_iFirstArea);
+	}
+
 	void Reload();
 
 protected:
@@ -96,6 +97,9 @@ protected:
 
 	void AddAreaToMap(int iArea)
 	{
+		if (m_iFirstArea == AREA_NONE)
+			m_iFirstArea = iArea;
+
 		m_bitAreas.Set(iArea);
 	}
 
@@ -109,6 +113,7 @@ private:
 	GameType m_iGameType;
 
 	CBitVec<MAX_CODE_AREAS> m_bitAreas;
+	int						m_iFirstArea;
 
 	friend static void gametype_print(const CCommand &args);
 

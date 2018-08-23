@@ -1,0 +1,186 @@
+// Created by Crowbar 0.42.0.0
+====== File Size ======
+	31,908
+====== File Seek Log ======
+--- Summary ---
+	0 - 31,907
+------------------------
+--- Each Section or Loop ---
+	0 - 79 MDL File Header 00; MDL File Header 00
+	80 - 407 MDL File Header 01; MDL File Header 01
+	408 - 663 MDL File Header 02; MDL File Header 02
+	664 - 14,487 theMdlFileData.theBones
+	14,488 - 15,499 theMdlFileData.theAttachments
+	15,500 - 15,511 theMdlFileData.theHitboxSets
+	15,512 - 17,143 aHitboxSet.theHitboxes
+	17,144 - 17,207 theMdlFileData.theBoneTableByName
+	17,208 - 17,807 theMdlFileData.theAnimationDescs
+	17,808 - 17,819 anAnimationDesc.anAnimation
+	17,820 - 17,823 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	17,824 - 17,835 anAnimationDesc.anAnimation
+	17,836 - 17,847 anAnimationDesc.anAnimation
+	17,848 - 17,865 anAnimationDesc.anAnimation
+	17,866 - 17,883 anAnimationDesc.anAnimation
+	17,884 - 17,901 anAnimationDesc.anAnimation
+	17,902 - 17,919 anAnimationDesc.anAnimation
+	17,920 - 17,931 anAnimationDesc.anAnimation
+	17,932 - 17,943 anAnimationDesc.anAnimation
+	17,944 - 17,947 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	17,948 - 17,951 anAnimationDesc.theAnimations pre-alignment (NOTE: Should end at: 17951)
+	17,952 - 17,963 anAnimationDesc.anAnimation
+	17,964 - 17,975 anAnimationDesc.anAnimation
+	17,976 - 17,985 anAnimationDesc.anAnimation
+	17,986 - 17,995 anAnimationDesc.anAnimation
+	17,996 - 18,005 anAnimationDesc.anAnimation
+	18,006 - 18,015 anAnimationDesc.anAnimation
+	18,016 - 18,025 anAnimationDesc.anAnimation
+	18,026 - 18,035 anAnimationDesc.anAnimation
+	18,036 - 18,039 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	18,040 - 18,047 anAnimationDesc.theAnimations pre-alignment (NOTE: Should end at: 18047)
+	18,048 - 18,065 anAnimationDesc.anAnimation
+	18,066 - 18,083 anAnimationDesc.anAnimation
+	18,084 - 18,101 anAnimationDesc.anAnimation
+	18,102 - 18,119 anAnimationDesc.anAnimation
+	18,120 - 18,131 anAnimationDesc.anAnimation
+	18,132 - 18,143 anAnimationDesc.anAnimation
+	18,144 - 18,147 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	18,148 - 18,159 anAnimationDesc.theAnimations pre-alignment (NOTE: Should end at: 18159)
+	18,160 - 18,169 anAnimationDesc.anAnimation
+	18,170 - 18,179 anAnimationDesc.anAnimation
+	18,180 - 18,189 anAnimationDesc.anAnimation
+	18,190 - 18,199 anAnimationDesc.anAnimation
+	18,200 - 18,209 anAnimationDesc.anAnimation
+	18,210 - 18,219 anAnimationDesc.anAnimation
+	18,220 - 18,223 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	18,224 - 18,235 anAnimationDesc.anAnimation
+	18,236 - 18,247 anAnimationDesc.anAnimation
+	18,248 - 18,251 anAnimationDesc.anAnimation (unused empty data structure at the end of the list)
+	18,252 - 19,523 theMdlFileData.theSequenceDescs
+	19,524 - 19,779 aSeqDesc.theBoneWeights
+	19,780 - 19,781 aSeqDesc.theAnimDescIndexes
+	19,782 - 19,783 aSeqDesc.theAnimDescIndexes alignment
+	19,784 - 20,039 aSeqDesc.theBoneWeights
+	20,040 - 20,041 aSeqDesc.theAnimDescIndexes
+	20,042 - 20,043 aSeqDesc.theAnimDescIndexes alignment
+	20,044 - 20,045 aSeqDesc.theAnimDescIndexes
+	20,046 - 20,047 aSeqDesc.theAnimDescIndexes alignment
+	20,048 - 20,303 aSeqDesc.theBoneWeights
+	20,304 - 20,305 aSeqDesc.theAnimDescIndexes
+	20,306 - 20,307 aSeqDesc.theAnimDescIndexes alignment
+	20,308 - 20,309 aSeqDesc.theAnimDescIndexes
+	20,310 - 20,311 aSeqDesc.theAnimDescIndexes alignment
+	20,312 - 20,567 aSeqDesc.theBoneWeights
+	20,568 - 20,569 aSeqDesc.theAnimDescIndexes
+	20,570 - 20,571 aSeqDesc.theAnimDescIndexes alignment
+	20,572 - 20,587 theMdlFileData.theBodyParts
+	20,588 - 20,735 aBodyPart.theModels
+	20,736 - 21,199 aModel.theMeshes
+	21,200 - 21,207 theMdlFileData.theModelGroups
+	21,208 - 21,527 theMdlFileData.theTextures
+	21,528 - 21,531 theMdlFileData.theTexturePaths
+	21,532 - 21,551 theMdlFileData.theSkinFamilies
+	21,552 - 21,568 theMdlFileData.theKeyValuesText
+	21,569 - 21,571 theMdlFileData.theKeyValuesText alignment
+	21,572 - 21,635 theMdlFileData.theLinearBoneTable header
+	21,636 - 21,891 theMdlFileData.theLinearBoneTable.theFlags
+	21,892 - 22,147 theMdlFileData.theLinearBoneTable.theParents
+	22,148 - 22,915 theMdlFileData.theLinearBoneTable.thePositions
+	22,916 - 23,939 theMdlFileData.theLinearBoneTable.theQuaternions
+	23,940 - 24,707 theMdlFileData.theLinearBoneTable.theRotations
+	24,708 - 27,779 theMdlFileData.theLinearBoneTable.thePoseToBoneDataColumns
+	27,780 - 28,547 theMdlFileData.theLinearBoneTable.thePositionScales
+	28,548 - 29,315 theMdlFileData.theLinearBoneTable.theRotationScales
+	29,316 - 30,339 theMdlFileData.theLinearBoneTable.theQAlignments
+	30,340 - 30,340 aHitbox.theName
+	30,341 - 30,348 theSurfacePropName
+	30,349 - 30,360 aBone.theName
+	30,361 - 30,390 aBone.theName
+	30,391 - 30,420 aBone.theName
+	30,421 - 30,450 aBone.theName
+	30,451 - 30,464 aBone.theName
+	30,465 - 30,476 aBone.theName
+	30,477 - 30,487 aBone.theName
+	30,488 - 30,498 aBone.theName
+	30,499 - 30,527 aBone.theName
+	30,528 - 30,556 aBone.theName
+	30,557 - 30,585 aBone.theName
+	30,586 - 30,614 aBone.theName
+	30,615 - 30,643 aBone.theName
+	30,644 - 30,656 aBone.theName
+	30,657 - 30,670 aBone.theName
+	30,671 - 30,684 aBone.theName
+	30,685 - 30,698 aBone.theName
+	30,699 - 30,710 aBone.theName
+	30,711 - 30,724 aBone.theName
+	30,725 - 30,740 aBone.theName
+	30,741 - 30,752 aBone.theName
+	30,753 - 30,766 aBone.theName
+	30,767 - 30,784 aBone.theName
+	30,785 - 30,808 aBone.theName
+	30,809 - 30,832 aBone.theName
+	30,833 - 30,850 aBone.theName
+	30,851 - 30,875 aBone.theName
+	30,876 - 30,900 aBone.theName
+	30,901 - 30,918 aBone.theName
+	30,919 - 30,933 aBone.theName
+	30,934 - 30,941 aBone.theName
+	30,942 - 30,949 aBone.theName
+	30,950 - 30,957 aBone.theName
+	30,958 - 30,965 aBone.theName
+	30,966 - 30,973 aBone.theName
+	30,974 - 30,981 aBone.theName
+	30,982 - 30,989 aBone.theName
+	30,990 - 30,997 aBone.theName
+	30,998 - 31,005 aBone.theName
+	31,006 - 31,014 aBone.theName
+	31,015 - 31,023 aBone.theName
+	31,024 - 31,032 aBone.theName
+	31,033 - 31,041 aBone.theName
+	31,042 - 31,050 aBone.theName
+	31,051 - 31,059 aBone.theName
+	31,060 - 31,068 aBone.theName
+	31,069 - 31,077 aBone.theName
+	31,078 - 31,086 aBone.theName
+	31,087 - 31,095 aBone.theName
+	31,096 - 31,104 aBone.theName
+	31,105 - 31,113 aBone.theName
+	31,114 - 31,122 aBone.theName
+	31,123 - 31,131 aBone.theName
+	31,132 - 31,140 aBone.theName
+	31,141 - 31,153 aBone.theName
+	31,154 - 31,166 aBone.theName
+	31,167 - 31,180 aBone.theName
+	31,181 - 31,194 aBone.theName
+	31,195 - 31,224 aBone.theName
+	31,225 - 31,253 aBone.theName
+	31,254 - 31,283 aBone.theName
+	31,284 - 31,313 aBone.theName
+	31,314 - 31,328 aBone.theName
+	31,329 - 31,344 aBone.theName
+	31,345 - 31,349 anAttachment.theName
+	31,350 - 31,371 anAttachment.theName
+	31,372 - 31,384 anAttachment.theName
+	31,385 - 31,406 anAttachment.theName
+	31,407 - 31,414 anAttachment.theName
+	31,415 - 31,430 anAttachment.theName
+	31,431 - 31,446 anAttachment.theName
+	31,447 - 31,456 anAnimationDesc.theName
+	31,457 - 31,471 anAnimationDesc.theName
+	31,472 - 31,485 anAnimationDesc.theName
+	31,486 - 31,502 anAnimationDesc.theName
+	31,503 - 31,518 anAnimationDesc.theName
+	31,519 - 31,536 anAnimationDesc.theName
+	31,537 - 31,545 aSeqDesc.theLabel
+	31,546 - 31,559 aSeqDesc.theLabel
+	31,560 - 31,572 aSeqDesc.theLabel
+	31,573 - 31,588 aSeqDesc.theLabel
+	31,589 - 31,603 aSeqDesc.theLabel
+	31,604 - 31,620 aSeqDesc.theLabel
+	31,621 - 31,666 aModelGroup.theFileName
+	31,667 - 31,707 aTexture.theName
+	31,708 - 31,754 aTexture.theName
+	31,755 - 31,801 aTexture.theName
+	31,802 - 31,856 aTexture.theName
+	31,857 - 31,906 aTexture.theName
+	31,907 - 31,907 Final bytes alignment
+========================

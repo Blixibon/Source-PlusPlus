@@ -26,6 +26,9 @@
 #include "tier0/memdbgon.h"
 
 
+#define NAV_ANALYZE_LIGHT_INTENSITY
+
+
 enum { MAX_BLOCKED_AREAS = 256 };
 static unsigned int blockedID[ MAX_BLOCKED_AREAS ];
 static int blockedIDCount = 0;

@@ -24,6 +24,7 @@
 #include "engine/IEngineSound.h"
 #include "npc_poisonzombie.h"
 #include "ai_memory.h"
+#include "peter\population_manager.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -161,6 +162,20 @@ BEGIN_DATADESC( CNPC_PoisonZombie )
 END_DATADESC()
 
 
+const char *CNPC_PoisonZombie::pPopTypes[] =
+{
+	"refugee",
+	"rebel",
+	"medic",
+	"metropolice",
+	"soldier",
+	"soldier_sg",
+	"soldier_prison",
+	"soldier_elite"
+};
+
+CPopulationDefinition CNPC_PoisonZombie::gm_PopDef("zpoison", pPopTypes, ARRAYSIZE(pPopTypes));
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -210,6 +225,8 @@ void CNPC_PoisonZombie::Spawn( void )
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK2 );
 
 	BaseClass::Spawn();
+
+	m_nSkin = gm_PopDef.GetRandom();
 
 	CPASAttenuationFilter filter( this, ATTN_IDLE );
 	m_pFastBreathSound = ENVELOPE_CONTROLLER.SoundCreate( filter, entindex(), CHAN_ITEM, "NPC_PoisonZombie.FastBreath", ATTN_IDLE );

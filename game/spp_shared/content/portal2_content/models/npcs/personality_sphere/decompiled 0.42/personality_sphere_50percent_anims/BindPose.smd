@@ -1,0 +1,115 @@
+// Created by Crowbar 0.42.0.0
+version 1
+nodes
+  0 "sphere_root" -1
+  1 "eyeball_pistons_backjoint_05" 0
+  2 "eyeball_pistons_backjoint_04" 0
+  3 "eyeball_pistons_frontjoint_05" 0
+  4 "eyeball_pistons_frontjoint_02" 0
+  5 "eyeball_pistons_frontjoint_04" 0
+  6 "axel_center_y" 0
+  7 "eyeball_pistons_frontjoint_06" 0
+  8 "eyeball_pistons_backjoint_02" 0
+  9 "handle_lower" 0
+  10 "eyeball_pistons_backjoint_06" 0
+  11 "eyeball_pistons_frontjoint_03" 0
+  12 "axel_center_z" 0
+  13 "handle_upper" 0
+  14 "eyeball_pistons_backjoint_03" 0
+  15 "axel_center_x" 0
+  16 "eyeball_pistons_frontjoint_01" 0
+  17 "eyeball_pistons_backjoint_01" 0
+  18 "bandY_joint" 6
+  19 "bandZ_joint" 12
+  20 "cog_rotation" 15
+  21 "eyeball_eye" 15
+  22 "eyelid_upper_compress01" 21
+  23 "eyelid_upper_compress02" 21
+  24 "eyelid_upper_main" 21
+  25 "eyelid_lower_main" 21
+  26 "eyelid_lower_compress_01" 21
+  27 "eyelid_lower_compress_02" 21
+  28 "eyelight_aimjoint" 21
+  29 "inner_aperture" 28
+  30 "inner020" 29
+  31 "inner01" 29
+  32 "inner02" 29
+  33 "inner03" 29
+  34 "inner04" 29
+  35 "inner05" 29
+  36 "inner06" 29
+  37 "inner07" 29
+  38 "inner08" 29
+  39 "inner09" 29
+  40 "inner010" 29
+  41 "inner021" 29
+  42 "inner012" 29
+  43 "inner013" 29
+  44 "inner014" 29
+  45 "inner015" 29
+  46 "inner011" 29
+  47 "inner016" 29
+  48 "inner017" 29
+  49 "inner018" 29
+  50 "inner022" 29
+  51 "inner023" 29
+  52 "inner024" 29
+  53 "inner019" 29
+end
+skeleton
+  time 0
+    0 0.000000 0.000000 0.000000 1.570792 0.000005 -0.000005   # pos: bone   rot: raw64 (0.499998807907673, 0.499998807907673, 0.499998807907673, 0.500003576259928)
+    1 -0.782771 -4.123694 -1.626764 0.006128 -0.508968 -0.012575   # pos: desc_bone   rot: desc_bone
+    2 -0.782771 -3.470666 -2.757842 0.120169 0.255933 0.445076   # pos: desc_bone   rot: desc_bone
+    3 5.079087 -4.197413 1.644440 3.135465 0.508968 3.129017   # pos: desc_bone   rot: desc_bone
+    4 5.178312 4.198661 1.699812 -3.135465 0.508968 -3.129017   # pos: desc_bone   rot: desc_bone
+    5 5.079087 -0.674580 -4.457286 3.021424 -0.255933 -2.696517   # pos: desc_bone   rot: desc_bone
+    6 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    7 5.079087 -3.522834 2.812846 -3.027468 -0.236322 2.686322   # pos: desc_bone   rot: desc_bone
+    8 -0.782771 4.123694 -1.626764 -0.006128 -0.508968 0.012575   # pos: desc_bone   rot: desc_bone
+    9 3.399882 -5.162830 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    10 -0.782771 -0.653028 4.384606 -0.114125 0.236322 -0.455271   # pos: desc_bone   rot: desc_bone
+    11 5.078476 0.618757 -4.466300 -3.018848 -0.256337 2.688747   # pos: desc_bone   rot: desc_bone
+    12 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    13 3.399882 5.201533 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    14 -0.782771 3.470666 -2.757842 -0.122745 0.256338 -0.452846   # pos: desc_bone   rot: desc_bone
+    15 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    16 5.079087 3.522834 2.812846 3.027468 -0.236322 -2.686322   # pos: desc_bone   rot: desc_bone
+    17 -0.782771 0.653028 4.384606 0.114125 0.236322 0.455271   # pos: desc_bone   rot: desc_bone
+    18 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    19 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    20 -5.723088 3.064690 2.180981 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    21 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    22 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    23 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    24 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    25 0.000000 0.000000 0.000000 3.141593 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    26 0.000000 0.000000 0.000000 3.141593 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    27 0.000000 0.000000 0.000000 3.141593 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    28 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    29 5.431049 0.000000 -0.032170 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    30 0.000000 0.561714 2.220641 1.308997 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    31 0.000000 2.290357 0.032170 0.000000 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    32 0.000000 2.220641 -0.561714 -0.261799 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    33 0.000000 1.999592 -1.117319 -0.523599 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    34 0.000000 1.642275 -1.596779 -0.785398 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    35 0.000000 1.173038 -1.967422 -1.047198 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    36 0.000000 0.623862 -2.203989 -1.308997 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    37 0.000000 0.032170 -2.290357 -1.570796 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    38 0.000000 -0.561714 -2.220641 -1.832596 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    39 0.000000 -1.117319 -1.999592 -2.094395 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    40 0.000000 -1.596779 -1.642274 -2.356195 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    41 0.000000 1.117319 1.999592 1.047198 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    42 0.000000 -2.203989 -0.623862 -2.879793 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    43 0.000000 -2.290357 -0.032170 3.141593 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    44 0.000000 -2.220641 0.561714 2.879793 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    45 0.000000 -1.999592 1.117319 2.617994 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    46 0.000000 -1.967422 -1.173038 -2.617994 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    47 0.000000 -1.642275 1.596779 2.356195 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    48 0.000000 -1.173038 1.967422 2.094395 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    49 0.000000 -0.623862 2.203989 1.832596 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    50 0.000000 1.596779 1.642275 0.785398 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    51 0.000000 1.967422 1.173039 0.523599 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    52 0.000000 2.203989 0.623862 0.261799 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+    53 0.000000 -0.032170 2.290357 1.570796 0.000000 0.000000   # pos: desc_bone   rot: desc_bone
+end

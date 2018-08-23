@@ -1,0 +1,19 @@
+"shl2.d1town.Start.rain"
+{
+	"dsp"	"1"
+	"dsp_volume"	"1.0"
+
+	"playsoundscape"
+	{
+		"name"		"d1_town.Start"
+		"volume"	"1.0"
+	}
+
+	"playlooping"
+	{
+		"volume"	"0.33"
+		"wave"		"ambient\rain.wav"
+		"pitch"		"100"
+		"attenuation"	"0"
+	}
+}

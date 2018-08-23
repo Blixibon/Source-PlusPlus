@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$basetexture"		"models/Lenoax/CaveJohnson/Johnson_Mustache_Diff"
+	"$lightwarptexture" 	"models/Lenoax/CaveJohnson/Johnson_Skin_WRP"			
+
+
+	//$rimlight 1
+
+	"$translucent" "1"
+	"$nocull" "1"
+//	"$decal" 1
+} 

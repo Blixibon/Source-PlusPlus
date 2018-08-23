@@ -165,6 +165,8 @@ void CHL1_Player::PreThink(void)
 	if (m_lifeState >= LIFE_DYING)
 	{
 		PlayerDeathThink();
+		// track where we are in the nav mesh even when dead
+		UpdateLastKnownArea();
 		return;
 	}
 
@@ -298,6 +300,8 @@ void CHL1_Player::PreThink(void)
 
 	//Find targets for NPC to shoot if they decide to miss us
 	FindMissTargets();
+
+	UpdateLastKnownArea();
 }
 
 

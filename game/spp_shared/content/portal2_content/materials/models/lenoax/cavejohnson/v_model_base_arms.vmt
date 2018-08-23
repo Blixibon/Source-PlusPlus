@@ -1,0 +1,22 @@
+"VertexLitGeneric"
+{
+	"$basetexture"			"models\Lenoax\CaveJohnson/v_model_base_arms_color"
+	"$bumpmap"			"models\Lenoax\CaveJohnson/v_model_base_arms_Normal"
+	"$detail" 			"models\Lenoax\CaveJohnson/Detail_Skin"
+	"$lightwarptexture" 		"models\Lenoax\CaveJohnson/Johnson_Skin_WRP"			
+
+	"$phong" "1"						
+	"$phongboost" "0.02"
+//	"$phongwarptexture"		"models/Protagonists/anisotropic_2"
+	"$phongexponent" "2"
+//	"$phongexponenttexture" 	"models/Protagonists/Goodman/Goodman_Head_Specular"						
+	"$phongfresnelranges"	"[5 6 8]"	
+	"$phongtint" 			"[0.6 0.8 1]"
+	"$PhongAlbedoTint" "1"	
+	
+	"$nocull" "1"
+
+	"$detailscale" 4
+	"$detailblendfactor" 0.5
+	"$detailblendmode" 0
+}

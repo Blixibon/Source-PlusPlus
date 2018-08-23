@@ -8,6 +8,7 @@
 	{
 		"hl1_low"		"1"
 		"portal"		"1"
+		"episodic"		"1"
 	}
 	"mount"
 	{
@@ -32,11 +33,9 @@
 			"GAME+mod"		"C:\GitHub\Source-PlusPlus\game\mod_lazuul"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\p2_dissolve.vpk"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\sdk_pak.vpk"
+			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\l4d_ambient.vpk"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal2_content"
-			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal_extra"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal\portal_pak.vpk"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\episodic_extra"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\ep2_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2"
@@ -47,6 +46,9 @@
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\lostcoast"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\enhanced_citizens.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra"
+			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal_extra"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal\portal_pak.vpk"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\hl1_extra"
 			"game+mod+mod_write+default_write_path"		"|gameinfo_path|."
 			"gamebin"		"|gameinfo_path|bin"

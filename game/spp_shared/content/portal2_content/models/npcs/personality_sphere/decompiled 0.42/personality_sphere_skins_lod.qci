@@ -1,0 +1,9 @@
+
+$LOD 15
+{
+	replacemodel "personality_sphere_skins_reference.smd" "personality_sphere_skins_body0_model0_lod1.smd"
+}
+$LOD 25
+{
+	replacemodel "personality_sphere_skins_reference.smd" "personality_sphere_skins_body0_model0_lod2.smd"
+}

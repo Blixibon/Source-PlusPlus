@@ -1,0 +1,9 @@
+
+$LOD 25
+{
+	replacemodel "puffywheatley_reference.smd" "personality_sphere_body0_model0_lod1.smd"
+}
+$LOD 50
+{
+	replacemodel "puffywheatley_reference.smd" "personality_sphere_body0_model0_lod2.smd"
+}

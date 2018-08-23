@@ -52,10 +52,16 @@ public:
 
 	bool IsColdWorld( void );
 
+	const char *GetPopulationTag() const
+	{
+		return !m_iszPopulationTag ? nullptr : STRING(m_iszPopulationTag);
+	}
+
 private:
 	DECLARE_DATADESC();
 
 	string_t m_iszChapterTitle;
+	string_t m_iszPopulationTag;
 
 	CNetworkVar( float, m_flWaveHeight );
 	CNetworkVector( m_WorldMins );

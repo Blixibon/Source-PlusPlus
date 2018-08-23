@@ -26,9 +26,6 @@ bool CGameTypeManager::Init()
 		"outlands",
 		"blackmesa",
 		"xen",
-		"day1",
-		"day2",
-		"day3"
 	};
 
 	m_vecAreaNames.CopyArray(pchAreaNames, MAX_CODE_AREAS);
@@ -290,6 +287,7 @@ void CGameTypeManager::RegisterPrefix(KeyValues *pkvNode)
 void CGameTypeManager::LevelInitPreEntity()
 {
 	m_bitAreas.ClearAll();
+	m_iFirstArea = AREA_NONE;
 	char szMapName[256];
 	Q_strncpy(szMapName, STRING(gpGlobals->mapname), sizeof(szMapName));
 	Q_strlower(szMapName);
