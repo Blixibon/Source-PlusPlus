@@ -33,7 +33,7 @@
 			"GAME+mod"		"C:\GitHub\Source-PlusPlus\game\mod_lazuul"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\p2_dissolve.vpk"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\sdk_pak.vpk"
-			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\l4d_ambient.vpk"
+			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\l4d2_ambient.vpk"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal2_content"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\episodic_extra"
