@@ -32,6 +32,9 @@ filestocopy.txt
 
 GameState.txt
 ep1_gamestats.dat
+ep2_gamestats.dat
+tf2_playerstats.dmx
+media/viewed.res
 
 *.scr
 downloadlists
