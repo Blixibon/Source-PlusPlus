@@ -1,0 +1,21 @@
+sdk_SpriteCard
+{
+$basetexture "particle/fire_burning_character/fire_burning_characterc_c17_new"
+$ADDSELF 1.0
+$BLENDFRAMES 1
+$OVERBRIGHTFACTOR 3.00
+$chromatic 1
+$chromaticscale 0.4
+
+
+$STARTFADESIZE .45
+$ENDFADESIZE .575
+$DEPTHBLEND 0
+$DEPTHBLENDSCALE 7
+360?$STARTFADESIZE .35
+360?$ENDFADESIZE .45
+360?$BLENDFRAMES 0
+//"GPU<2?$STARTFADESIZE" ".35"
+//"GPU<2?$ENDFADESIZE" ".45"
+//"GPU<2?$BLENDFRAMES" 0
+}

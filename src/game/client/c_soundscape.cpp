@@ -1285,9 +1285,18 @@ void C_SoundscapeSystem::PlayRandomSound( randomsound_t &sound )
 	if ( !pWaveName )
 		return;
 
+	char WaveName[MAX_PATH];
+	V_strcpy_safe(WaveName, pWaveName);
+
+	for (int i = 0; i < 2; i++)
+	{
+		if (WaveName[i] == CHAR_NEWENGINESPATIAL)
+			WaveName[i] = CHAR_SPATIALSTEREO;
+	}
+
 	if ( sound.isAmbient )
 	{
-		enginesound->EmitAmbientSound( pWaveName, sound.masterVolume * RandomInterval( sound.volume ), (int)RandomInterval( sound.pitch ) );
+		enginesound->EmitAmbientSound(WaveName, sound.masterVolume * RandomInterval( sound.volume ), (int)RandomInterval( sound.pitch ) );
 	}
 	else
 	{
@@ -1295,7 +1304,7 @@ void C_SoundscapeSystem::PlayRandomSound( randomsound_t &sound )
 
 		EmitSound_t ep;
 		ep.m_nChannel = CHAN_STATIC;
-		ep.m_pSoundName =  pWaveName;
+		ep.m_pSoundName = WaveName;
 		ep.m_flVolume = sound.masterVolume * RandomInterval( sound.volume );
 		ep.m_SoundLevel = (soundlevel_t)(int)RandomInterval( sound.soundlevel );
 		ep.m_nPitch = (int)RandomInterval( sound.pitch );

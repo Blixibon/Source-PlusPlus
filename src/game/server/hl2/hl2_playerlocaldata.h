@@ -14,6 +14,9 @@
 #include "networkvar.h"
 
 #include "hl_movedata.h"
+//#include "hl2_player.h"
+
+class CHL2_Player;
 
 //-----------------------------------------------------------------------------
 // Purpose: Player specific data for HL2 ( sent only to local player, too )
@@ -33,6 +36,7 @@ public:
 	CNetworkVar( int,	m_bitsActiveDevices );
 	CNetworkVar( int,	m_iSquadMemberCount );
 	CNetworkVar( int,	m_iSquadMedicCount );
+	//CNetworkVar(int, m_nSquadUpdateParity);
 	CNetworkVar( bool,	m_fSquadInFollowMode );
 	CNetworkVar( bool,	m_bWeaponLowered );
 	CNetworkVar( EHANDLE, m_hAutoAimTarget );
@@ -48,6 +52,14 @@ public:
 	// Ladder related data
 	CNetworkVar( EHANDLE, m_hLadder );
 	LadderMove_t			m_LadderMove;
+
+	CHL2_Player* GetOuter() const;
+
+	void NetworkChangeSquadData()
+	{
+		m_iSquadMemberCount.GetForModify();
+		m_iSquadMedicCount.GetForModify();
+	}
 };
 
 EXTERN_SEND_TABLE(DT_HL2Local);

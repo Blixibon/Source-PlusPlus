@@ -21,7 +21,7 @@ protected:
 		SetFlags( ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME );
 		SetInflictorFilter( "prop_physics" );
 		SetVictimFilter( "npc_antlion" );
-		SetGameDirFilter( "episodic" );
+		//SetGameDirFilter( "episodic" );
 		SetGoal( 15 );
 	}
 	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
@@ -45,7 +45,7 @@ protected:
 	{
 		SetFlags( ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME );
 		SetInflictorEntityNameFilter( "sniper_alyx" );
-		SetGameDirFilter( "episodic" );
+		//SetGameDirFilter( "episodic" );
 		SetGoal( 30 );
 	}
 };
@@ -58,7 +58,7 @@ protected:
 	void Init() 
 	{
 		SetFlags( ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_KILL_EVENTS | ACH_SAVE_WITH_GAME );
-		SetGameDirFilter( "episodic" );
+		//SetGameDirFilter( "episodic" );
 		SetGoal( 1 );
 		SetVictimFilter( "npc_citizen" );
 	}
@@ -86,7 +86,7 @@ protected:
 	void Init() 
 	{
 		SetFlags( ACH_LISTEN_MAP_EVENTS | ACH_SAVE_WITH_GAME );
-		SetGameDirFilter( "episodic" );
+		//SetGameDirFilter( "episodic" );
 		SetGoal( 1 );
 	}
 
@@ -120,7 +120,7 @@ DECLARE_ACHIEVEMENT( CAchievementEp1BeatGameOneBullet, ACHIEVEMENT_EP1_BEAT_GAME
 
 // Ep1-specific macro that sets game dir filter.  We need this because Ep1/Ep2/... share a binary so we need runtime check against running game.
 #define DECLARE_EP1_MAP_EVENT_ACHIEVEMENT( achievementID, achievementName, iPointValue )					\
-	DECLARE_MAP_EVENT_ACHIEVEMENT_( achievementID, achievementName, "episodic", iPointValue, false )
+	DECLARE_MAP_EVENT_ACHIEVEMENT_( achievementID, achievementName, NULL, iPointValue, false )
 
 // achievements which are won by a map event firing once
 DECLARE_EP1_MAP_EVENT_ACHIEVEMENT( ACHIEVEMENT_EP1_BEAT_MAINELEVATOR, "EP1_BEAT_MAINELEVATOR", 5 );

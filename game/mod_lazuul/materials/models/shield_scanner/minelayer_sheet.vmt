@@ -1,0 +1,20 @@
+"VertexLitGeneric"
+{
+                "$baseTexture" "Models/shield_scanner/Minelayer_Sheet"
+                "$bumpmap" "Models/shield_scanner/Minelayer_Sheet_Normal"
+                "$surfaceprop" "metal"
+                "$selfillum" 1
+                "$selfillummask" "Models/shield_scanner/Minelayer_Sheet_Selfillum"
+	">=dx90"
+	{
+	"$normalmapalphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .1 .1 .1]"
+
+	"$phong"     "1"
+	"$phongexponent"  "10"
+	"$phongboost"   "4"
+	"$phongfresnelranges"   "[1 .7 .3]"
+	"$phongwarptexture"  "models/shield_scanner/mini_iridescence"
+                }
+}

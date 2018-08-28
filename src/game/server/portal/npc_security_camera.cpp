@@ -1103,13 +1103,15 @@ void CNPC_SecurityCamera::DeathThink( void )
 bool CNPC_SecurityCamera::CanBeAnEnemyOf( CBaseEntity *pEnemy )
 {
 	// If we're out of ammo, make friendly companions ignore us
-	if ( m_spawnflags & SF_SECURITY_CAMERA_OUT_OF_AMMO )
+	/*if ( m_spawnflags & SF_SECURITY_CAMERA_OUT_OF_AMMO )
 	{
 		if ( pEnemy->Classify() == CLASS_PLAYER_ALLY_VITAL )
 			return false;
 	} 
 
-	return BaseClass::CanBeAnEnemyOf( pEnemy );
+	return BaseClass::CanBeAnEnemyOf( pEnemy );*/
+
+	return false;
 }
 
 
@@ -1126,6 +1128,9 @@ void PlayDismountSounds()
 		DevMsg( 2, "Could not play CNPC_SecurityCamera dismount scene, make sure actor named 'Aperture_AI' is present in map.\n" );
 		return;
 	}
+#else
+	if (!pGlaDOS)
+		return;
 #endif
 	IGameEvent *event = gameeventmanager->CreateEvent( "security_camera_detached" );
 	if ( event )

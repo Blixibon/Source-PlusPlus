@@ -1439,12 +1439,14 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 //-----------------------------------------------------------------------------
 void CBasePlayer::OnDamagedByExplosion( const CTakeDamageInfo &info )
 {
+	int effect = 0;
+
 	float lastDamage = info.GetDamage();
 
 	float distanceFromPlayer = 9999.0f;
 
 	CBaseEntity *inflictor = info.GetInflictor();
-	if ( inflictor )
+	if (inflictor)
 	{
 		Vector delta = GetAbsOrigin() - inflictor->GetAbsOrigin();
 		distanceFromPlayer = delta.Length();
@@ -1453,12 +1455,19 @@ void CBasePlayer::OnDamagedByExplosion( const CTakeDamageInfo &info )
 	bool ear_ringing = distanceFromPlayer < MIN_EAR_RINGING_DISTANCE ? true : false;
 	bool shock = lastDamage >= MIN_SHOCK_AND_CONFUSION_DAMAGE;
 
-	if ( !shock && !ear_ringing )
+	if (!shock && !ear_ringing)
 		return;
 
-	int effect = shock ?
-		random->RandomInt( 35, 37 ) :
-		random->RandomInt( 32, 34 );
+	if (info.GetDamageType() & DMG_DISSOLVE)
+	{
+		effect = 39;
+	}
+	else
+	{
+		effect = shock ?
+			random->RandomInt(35, 37) :
+			random->RandomInt(32, 34);
+	}
 
 	CSingleUserRecipientFilter user( this );
 	enginesound->SetPlayerDSP( user, effect, false );

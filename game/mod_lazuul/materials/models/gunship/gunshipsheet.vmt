@@ -1,0 +1,21 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/gunShip/GunshipSheet"
+                "$bumpmap" "Models/gunShip/GunshipSheet_normal"
+                "$nodecal" 1
+                "$selfillum" 1
+                "$selfillummask" "Models/gunShip/GunshipSheet_selfillum"
+	">=dx90"
+	{
+	"$normalmapalphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .1 .1 .1]"
+
+	"$phong"     "1"
+	"$phongexponent"  "10"
+	"$phongboost"   "4"
+	"$phongfresnelranges"   "[1 .7 .3]"
+	"$phongwarptexture"  "models/gunShip/mini_iridescence"
+	//$InvertPhongMask 1
+    }
+}

@@ -109,10 +109,10 @@ public:
 	inline float GetSequenceGroundSpeed( int iSequence ) { return GetSequenceGroundSpeed(GetModelPtr(), iSequence); }
 	void	ResetActivityIndexes ( void );
 	void    ResetEventIndexes ( void );
-	int		SelectWeightedSequence ( Activity activity );
-	int		SelectWeightedSequence ( Activity activity, int curSequence );
-	int		SelectWeightedSequenceFromModifiers( Activity activity, CUtlSymbol *pActivityModifiers, int iModifierCount );
-	int		SelectHeaviestSequence ( Activity activity );
+	virtual int		SelectWeightedSequence ( Activity activity );
+	virtual int		SelectWeightedSequence ( Activity activity, int curSequence );
+	virtual int		SelectWeightedSequenceFromModifiers( Activity activity, CUtlSymbol *pActivityModifiers, int iModifierCount );
+	virtual int		SelectHeaviestSequence ( Activity activity );
 	int		LookupActivity( const char *label );
 	int		LookupSequence ( const char *label );
 	KeyValues *GetSequenceKeyValues( int iSequence );

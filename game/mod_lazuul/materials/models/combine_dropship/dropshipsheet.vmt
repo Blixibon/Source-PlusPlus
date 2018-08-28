@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+                "$baseTexture" "Models/combine_Dropship/DropshipSheet"
+                "$bumpmap" "Models/combine_Dropship/DropshipSheet_normal"
+                "$nodecal" 1
+	">=dx90"
+	{
+	"$normalmapalphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .1 .1 .1]"
+
+	"$phong"     "1"
+	"$phongexponent"  "10"
+	"$phongboost"   "4"
+	"$phongfresnelranges"   "[1 .7 .3]"
+	"$phongwarptexture"  "models/combine_Dropship/mini_iridescence"
+                }
+}

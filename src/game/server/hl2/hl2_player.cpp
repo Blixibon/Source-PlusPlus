@@ -1563,6 +1563,8 @@ void CHL2_Player::CommanderUpdate()
 		m_HL2Local.m_fSquadInFollowMode = true;
 	}
 
+	m_HL2Local.NetworkChangeSquadData();
+
 	if ( m_QueuedCommand != CC_NONE && ( m_QueuedCommand == CC_FOLLOW || gpGlobals->realtime - m_RealTimeLastSquadCommand >= player_squad_double_tap_time.GetFloat() ) )
 	{
 		CommanderExecute( m_QueuedCommand );

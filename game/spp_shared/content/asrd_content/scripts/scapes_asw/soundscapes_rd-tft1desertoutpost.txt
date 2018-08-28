@@ -1,0 +1,139 @@
+"util_alien.noises"
+{
+
+	
+	"playrandom"
+	{
+		"time"		"18,24"
+		"volume"	"0.25,0.45"
+		"pitch"		"90,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"aliens\voc\drone\glide01.wav"
+			"wave"	"aliens\voc\drone\glide02.wav"
+			"wave"	"aliens\voc\drone\glide03.wav"
+		}
+
+	}
+
+}
+
+"util_ext.windgusts"
+{
+
+	
+	"playrandom"
+	{
+		"time"		"12,25"
+		"volume"	"0.55,0.95"
+		"pitch"		"90,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"scapes/2d/random_amb/Gust_01.wav"
+			"wave"	"scapes/2d/random_amb/Gust_02.wav"
+			"wave"	"scapes/2d/random_amb/Gust_03.wav"
+			"wave"	"scapes/2d/random_amb/Gust_04.wav"
+		}
+
+	}
+
+}
+
+"util_abstract.ambient"
+{
+
+	
+	"playrandom"
+	{
+		"time"		"10,28"
+		"volume"	".85,.99"
+		"pitch"		"90,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"scapes/2d/random_amb/RandomAbAmb_01.wav"
+			"wave"	"scapes/2d/random_amb/RandomAbAmb_02.wav"
+			"wave"	"scapes/2d/random_amb/RandomAbAmb_03.wav"
+			"wave"	"scapes/2d/random_amb/RandomAbAmb_09.wav"
+			"wave"	"scapes/2d/random_amb/RandomAbAmb_10.wav"
+			"wave"	"scapes/2d/random_amb/RandomAbAmb_11.wav"
+		}
+
+	}
+
+}
+
+/////////////////////
+/////////////////////
+
+"outside.spawn"
+{
+
+	
+	"dsp"	"1"
+	//"fadetime" ".5"
+
+	"playsoundscape"
+	{
+		"name"	"util_ext.windgusts"
+		"volume" "0.4"
+	}
+
+	"playsoundscape" 
+	{
+		"name"	"util_abstract.ambient"
+		"volume" "1"
+	}
+
+}
+
+"inside.caves"
+{
+
+	
+	"dsp"	"24"
+	//"fadetime" ".5"
+
+
+	"playsoundscape" 
+	{
+		"name"	"util_abstract.ambient"
+		"volume" "1"
+	}
+
+	"playsoundscape" 
+	{
+		"name"	"util_alien.noises"
+		"volume" "1"
+	}
+
+
+	"playrandom"
+	{
+		"time"		"10,20"
+		"volume"	".55,.85"
+		"pitch"		"60,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"ambient\atmosphere\cave_hit1.wav"
+			"wave"	"ambient\atmosphere\cave_hit3.wav"
+			"wave"	"ambient\atmosphere\cave_hit5.wav"
+		}
+
+	}
+
+	"playlooping"
+	{
+		"volume"	"1"
+		"pitch"		"100"
+		"wave"		"scapes\2d\interior1\caveambience1.wav"
+	}
+
+}

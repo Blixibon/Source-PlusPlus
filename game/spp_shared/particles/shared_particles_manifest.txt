@@ -4,4 +4,7 @@ particles_manifest
 	"file"		"particles/rain_fx.pcf"
 	"file"		"particles/rain_storm_fx.pcf"
 	"file"		"particles/tfa_lightningfx.pcf"
+	"file"		"!particles/weapon_fx_l4d.pcf"
+	"file"		"!particles/ar2_muzzle.pcf"
+	"file"		"particles/pg_wars.pcf"
 }

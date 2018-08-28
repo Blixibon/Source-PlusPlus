@@ -11,12 +11,29 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+void RecvProxy_SquadVectorLength(void *pStruct, int objectID, int currentArrayLength)
+{
+	C_HL2PlayerLocalData *pData = static_cast<C_HL2PlayerLocalData *> (pStruct);
+
+	pData->m_iSquadMemberCount = currentArrayLength;
+}
+
+void RecvProxy_MedicBits(const CRecvProxyData *pData, void *pStruct, void *pOut)
+{
+	SquadMedicBits *pBitVec = static_cast<SquadMedicBits *> (pOut);
+
+	pBitVec->SetDWord(0, pData->m_Value.m_Int);
+}
+
 BEGIN_RECV_TABLE_NOBASE( C_HL2PlayerLocalData, DT_HL2Local )
 	RecvPropFloat( RECVINFO(m_flSuitPower) ),
 	RecvPropInt( RECVINFO(m_bZooming) ),
 	RecvPropInt( RECVINFO(m_bitsActiveDevices) ),
-	RecvPropInt( RECVINFO(m_iSquadMemberCount) ),
-	RecvPropInt( RECVINFO(m_iSquadMedicCount) ),
+	//RecvPropInt( RECVINFO(m_iSquadMemberCount) ),
+	//RecvPropInt( RECVINFO(m_iSquadMedicCount) ),
+	//RecvPropUtlVector(RECVINFO_UTLVECTOR(m_hPlayerSquad), 16, RecvPropEHandle(RECVINFO_NOSIZE(m_hPlayerSquad))),
+	RecvPropVariableLengthArray(RecvProxy_SquadVectorLength, RecvPropEHandle(RECVINFO(m_hPlayerSquad[0])), m_hPlayerSquad),
+	RecvPropInt(RECVINFO_NOSIZE(m_SquadMedicBits), 2, 0, RecvProxy_MedicBits),
 	RecvPropBool( RECVINFO(m_fSquadInFollowMode) ),
 	RecvPropBool( RECVINFO(m_bWeaponLowered) ),
 	RecvPropEHandle( RECVINFO(m_hAutoAimTarget) ),
@@ -40,7 +57,7 @@ C_HL2PlayerLocalData::C_HL2PlayerLocalData()
 	m_flSuitPower = 0.0;
 	m_bZooming = false;
 	m_iSquadMemberCount = 0;
-	m_iSquadMedicCount = 0;
+	//m_iSquadMedicCount = 0;
 	m_fSquadInFollowMode = false;
 	m_bWeaponLowered = false;
 	m_hLadder = NULL;

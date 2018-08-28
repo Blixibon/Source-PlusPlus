@@ -455,7 +455,45 @@ void CC_NPC_Create( const CCommand &args )
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand npc_create("npc_create", CC_NPC_Create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT);
+
+static int NPCCreateCompletionBody(const char *cmdname, const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	int current = 0;
+
+	//const char *cmdname = "npc_create";
+	char *substring = NULL;
+	int substringLen = 0;
+	if (Q_strstr(partial, cmdname) && strlen(partial) > strlen(cmdname) + 1)
+	{
+		substring = (char *)partial + strlen(cmdname) + 1;
+		substringLen = strlen(substring);
+	}
+
+	for (int i = EntityFactoryDictionary()->CountFactories() - 1; i >= 0 && current < COMMAND_COMPLETION_MAXITEMS; i--)
+	{
+		const char *pSoundName = EntityFactoryDictionary()->GetFactoryName(i);
+		if (pSoundName)
+		{
+			if (!Q_strncasecmp("npc_", pSoundName, 4) || !Q_strncasecmp("monster_", pSoundName, 8))
+			{
+				if (!substring || !Q_strncasecmp(pSoundName, substring, substringLen))
+				{
+					Q_snprintf(commands[current], sizeof(commands[current]), "%s %s", cmdname, pSoundName);
+					current++;
+				}
+			}
+		}
+	}
+
+	return current;
+}
+
+static int NPCCreateCompletion(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	return NPCCreateCompletionBody("npc_create", partial, commands);
+}
+
+static ConCommand npc_create("npc_create", CC_NPC_Create, "Creates an NPC of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, NPCCreateCompletion);
 
 
 //------------------------------------------------------------------------------
@@ -526,7 +564,13 @@ void CC_NPC_Create_Aimed( const CCommand &args )
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand npc_create_aimed("npc_create_aimed", CC_NPC_Create_Aimed, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT);
+
+static int NPCCreateAimedCompletion(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	return NPCCreateCompletionBody("npc_create_aimed", partial, commands);
+}
+
+static ConCommand npc_create_aimed("npc_create_aimed", CC_NPC_Create_Aimed, "Creates an NPC aimed away from the player of the given type where the player is looking (if the given NPC can actually stand at that location).  Note that this only works for npc classes that are already in the world.  You can not create an entity that doesn't have an instance in the level.\n\tArguments:	{npc_class_name}", FCVAR_CHEAT, NPCCreateAimedCompletion);
 
 //------------------------------------------------------------------------------
 // Purpose: Destroy unselected NPCs

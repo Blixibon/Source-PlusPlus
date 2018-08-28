@@ -27,7 +27,7 @@ protected:
 		if ( IsPC() )
 		{
 			// only in Ep2 for PC. (Shared across EPX for X360.)
-			SetGameDirFilter( "ep2" );
+			//SetGameDirFilter( "ep2" );
 		}
 	}
 
@@ -72,7 +72,7 @@ protected:
 		if ( IsPC() )
 		{
 			// only in Ep1 for PC. (Shared across EPX for X360.)
-			SetGameDirFilter( "episodic" );
+			//SetGameDirFilter( "episodic" );
 		}
 	}
 

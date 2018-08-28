@@ -44,6 +44,7 @@ $Project
 				$File	"episodic\npc_hunter.cpp"
 				$File	"episodic\npc_hunter.h"
 				$File	"episodic\npc_magnusson.cpp"
+				$File	"hl2\npc_antliongrub.cpp"
 				$File	"hl2\npc_zombine.cpp"
 				$File	"episodic\prop_scalable.cpp"
 				$File	"episodic\vehicle_jeep_episodic.cpp"

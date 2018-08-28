@@ -94,6 +94,7 @@ public:
 	CAI_BaseNPC *			GetFirstMember( AISquadIter_t *pIter = NULL, bool bIgnoreSilentMembers = true );
 	CAI_BaseNPC *			GetNextMember( AISquadIter_t *pIter, bool bIgnoreSilentMembers = true );
 	CAI_BaseNPC *			GetAnyMember();
+	CAI_BaseNPC *			GetMember(int iIndex, bool bIgnoreSilentMembers = true);
 	int						NumMembers( bool bIgnoreSilentMembers = true );
 	int						GetSquadIndex( CAI_BaseNPC * );
 

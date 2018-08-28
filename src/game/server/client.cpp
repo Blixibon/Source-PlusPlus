@@ -855,10 +855,41 @@ CON_COMMAND( say_team, "Display player message to team" )
 	}
 }
 
+static int GiveEntCompletion(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	int current = 0;
+
+	const char *cmdname = "give";
+	char *substring = NULL;
+	int substringLen = 0;
+	if (Q_strstr(partial, cmdname) && strlen(partial) > strlen(cmdname) + 1)
+	{
+		substring = (char *)partial + strlen(cmdname) + 1;
+		substringLen = strlen(substring);
+	}
+
+	for (int i = EntityFactoryDictionary()->CountFactories() - 1; i >= 0 && current < COMMAND_COMPLETION_MAXITEMS; i--)
+	{
+		const char *pSoundName = EntityFactoryDictionary()->GetFactoryName(i);
+		if (pSoundName)
+		{
+			if (!Q_strncasecmp("item_", pSoundName, 5) || !Q_strncasecmp("weapon_", pSoundName, 7))
+			{
+				if (!substring || !Q_strncasecmp(pSoundName, substring, substringLen))
+				{
+					Q_snprintf(commands[current], sizeof(commands[current]), "%s %s", cmdname, pSoundName);
+					current++;
+				}
+			}
+		}
+	}
+
+	return current;
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-CON_COMMAND( give, "Give item to player.\n\tArguments: <item_name>" )
+CON_COMMAND_F_COMPLETION( give, "Give item to player.\n\tArguments: <item_name>", FCVAR_NONE, GiveEntCompletion )
 {
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( pPlayer 

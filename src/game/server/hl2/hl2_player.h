@@ -113,6 +113,8 @@ public:
 	virtual Vector		EyeDirection3D( void );
 
 	virtual void		CommanderMode();
+	CAI_Squad			*GetPlayerSquad() { return m_pPlayerAISquad; }
+	CAI_Squad			*GetPlayerSquad() const { return m_pPlayerAISquad; }
 
 	virtual bool		ClientCommand( const CCommand &args );
 
@@ -303,6 +305,7 @@ private:
 	// This player's HL2 specific data that should only be replicated to 
 	//  the player and not to other players.
 	CNetworkVarEmbedded( CHL2PlayerLocalData, m_HL2Local );
+	friend class CHL2PlayerLocalData;
 
 	float				m_flTimeAllSuitDevicesOff;
 

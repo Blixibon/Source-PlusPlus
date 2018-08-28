@@ -10,7 +10,7 @@
 		"hl1_low"	1
 		//citizen		1
 		//citizen2	1
-		"portal"	1
+		"portal_low"	1
 		episodic	1
 	}
 	

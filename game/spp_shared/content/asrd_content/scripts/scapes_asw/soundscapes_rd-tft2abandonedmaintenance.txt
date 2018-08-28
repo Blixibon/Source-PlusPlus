@@ -1,0 +1,239 @@
+"bursts_noises"
+{
+
+	
+	"playrandom"
+	{
+		"time"		"10,25"
+		"volume"	".55,.95"
+		"pitch"		"50,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"scapes/2d/random_amb/Interior_Random_01.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_02.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_03.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_04.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_05.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_06.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_07.wav"
+		}
+
+	}
+
+}
+
+"machinery_ambience1"
+{
+
+	
+	"playrandom"
+	{
+		"time"		"8,15"
+		"volume"	".76,1"
+		"pitch"		"68,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"scapes/2d/random_amb/random_machinery_01.wav"
+			"wave"	"scapes/2d/random_amb/random_machinery_06.wav"
+			"wave"	"scapes/2d/random_amb/random_machinery_07.wav"
+			"wave"	"scapes/2d/random_amb/random_machinery_08.wav"
+
+		}
+
+	}
+
+}
+
+
+
+"undergroundatmosphere_ambience1"
+{
+	"playlooping"
+	{
+		"volume"	".65"
+		"pitch"		"100"
+		"wave"		"ambient\atmosphere\underground_hall_loop1.wav"
+		"soundlevel" 	"SNDLVL_85dB"
+	}
+}
+
+/////////////////////////////////////////////////////////////
+
+"generator.room"
+{
+	"dsp" "1"
+	//"fadetime" "1"
+
+
+	"playlooping"
+	{
+		"volume"	".53"
+		"pitch"		"100"
+		"wave"		"scapes/2d/interior1/reactor_room_loop.wav"
+	}
+
+	"playlooping"
+	{
+		"volume"	".4"
+		"pitch"		"89"
+		"wave"		"ambient\atmosphere\tunnel1.wav"
+	}
+
+	"playsoundscape"
+	{
+		"name" "undergroundatmosphere_ambience1"
+		"volume" "1"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "bursts_noises"
+		"volume" ".4"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "machinery_ambience1"
+		"volume" ".7"
+	}
+	
+}
+
+
+"general.maintenance"
+{
+	"dsp" "1"
+	//"fadetime" "1"
+
+
+	"playlooping"
+	{
+		"volume"	".45"
+		"pitch"		"90"
+		"wave"		"scapes/3D/pipes_active_loop.wav"
+		"soundlevel" 	"SNDLVL_85dB"
+	}
+
+
+	"playrandom"
+	{
+		"time"		"10,18"
+		"volume"	".5,.7"
+		"pitch"		"85,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"ambient\water\distant_drip1.wav"
+			"wave"	"ambient\water\distant_drip2.wav"
+			"wave"	"ambient\water\distant_drip3.wav"
+			"wave"	"ambient\water\distant_drip4.wav"
+
+		}
+
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "undergroundatmosphere_ambience1"
+		"volume" "1"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "machinery_ambience1"
+		"volume" ".7"
+	}
+	
+}
+
+
+"loadingbay.room"
+{
+	"dsp" "18"
+	//"fadetime" "1"
+
+
+
+	"playlooping"
+	{
+		"volume"	".45"
+		"pitch"		"100"
+		"wave"		"ambient/atmosphere/cargo_hold2.wav"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "undergroundatmosphere_ambience1"
+		"volume" "1"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "machinery_ambience1"
+		"volume" ".7"
+	}
+	
+}
+
+
+"craneroom.maintenance"
+{
+	"dsp" "19"
+	//"fadetime" "1"
+
+
+	"playsoundscape"
+	{
+		"name" "undergroundatmosphere_ambience1"
+		"volume" "1"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "machinery_ambience1"
+		"volume" ".7"
+	}
+	
+}
+
+
+"entrance.corridor"
+{
+	"dsp" "1"
+	//"fadetime" "1"
+
+
+	"playlooping"
+	{
+		"volume"	".63"
+		"pitch"		"100"
+		"wave"		"ambient/atmosphere/cargo_hold2.wav"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "undergroundatmosphere_ambience1"
+		"volume" "1"
+	}
+
+
+	"playsoundscape"
+	{
+		"name" "machinery_ambience1"
+		"volume" ".5"
+	}
+	
+}

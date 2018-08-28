@@ -2840,7 +2840,7 @@ CBaseEntity *CBaseCombatCharacter::Weapon_FindUsable( const Vector &range )
 {
 	bool bConservative = false;
 
-#ifdef HL2_DLL
+#if defined(HL2_DLL) && !defined(HL2_LAZUL)
 	if( hl2_episodic.GetBool() && !GetActiveWeapon() )
 	{
 		// Unarmed citizens are conservative in their weapon finding

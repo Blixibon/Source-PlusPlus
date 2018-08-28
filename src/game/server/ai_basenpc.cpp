@@ -10845,6 +10845,8 @@ END_DATADESC()
 
 
 IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC )
+	SendPropInt(SENDINFO(m_iHealth), -1, SPROP_VARINT | SPROP_CHANGES_OFTEN),
+	SendPropInt(SENDINFO(m_iMaxHealth), -1),
 	SendPropInt( SENDINFO( m_lifeState ), 3, SPROP_UNSIGNED ),
 	SendPropBool( SENDINFO( m_bPerformAvoidance ) ),
 	SendPropBool( SENDINFO( m_bIsMoving ) ),

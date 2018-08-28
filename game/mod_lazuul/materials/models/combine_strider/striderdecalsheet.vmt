@@ -1,0 +1,18 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/Combine_Strider/striderdecalsheet"
+	"$selfillum" 1
+	"VertexLitGeneric_DX9"
+	{
+	"$bumpmap" "Models/Combine_Strider/striderdecalsheet_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmap" "env_cubemap"
+	//"$envmaptint" "[0.4 0.4 0.4]"
+	"$envmapcontrast" 1
+	"$phong"     "1"
+	"$phongexponent"  "10"
+	"$phongboost"   "4"
+	"$phongfresnelranges"   "[1 .7 .3]"
+	"$phongwarptexture"  "models/Combine_strider/mini_iridescence"
+	}
+}

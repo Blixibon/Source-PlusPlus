@@ -1,0 +1,23 @@
+"Mount"
+{
+	400
+	{
+		"head"	"0"
+		"portal"
+		{
+			vpk	portal_pak
+		}
+	}
+	
+	"|content_path|"
+	{
+		"head"	"1"
+		"portal_extra"
+		{
+			"path_id"
+			{
+				"scenes"	"1"
+			}
+		}
+	}
+}

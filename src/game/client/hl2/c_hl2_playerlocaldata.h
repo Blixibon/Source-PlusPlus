@@ -12,13 +12,17 @@
 #pragma once
 #endif
 
+#define	MAX_SQUAD_MEMBERS	16
 
 #include "dt_recv.h"
 
 #include "hl2/hl_movedata.h"
+#include "bitvec.h"
+#include "c_ai_basenpc.h"
 
 EXTERN_RECV_TABLE( DT_HL2Local );
 
+typedef CBitVec<MAX_SQUAD_MEMBERS> SquadMedicBits;
 
 class C_HL2PlayerLocalData
 {
@@ -33,7 +37,9 @@ public:
 	bool	m_bZooming;
 	int		m_bitsActiveDevices;
 	int		m_iSquadMemberCount;
-	int		m_iSquadMedicCount;
+	//int		m_iSquadMedicCount;
+	CHandle<C_AI_BaseNPC> m_hPlayerSquad[MAX_SQUAD_MEMBERS];
+	SquadMedicBits m_SquadMedicBits;
 	bool	m_fSquadInFollowMode;
 	bool	m_bWeaponLowered;
 	EHANDLE m_hAutoAimTarget;
@@ -45,6 +51,17 @@ public:
 	float	m_flFlashBattery;
 	Vector	m_vecLocatorOrigin;
 #endif
+
+	int		GetSquadMedicCount()
+	{
+		int iCount = 0;
+		for (int i = 0; i < m_SquadMedicBits.GetNumBits(); i++)
+		{
+			if (m_SquadMedicBits.IsBitSet(i))
+				iCount++;
+		}
+		return iCount;
+	}
 
 	// Ladder related data
 	EHANDLE			m_hLadder;

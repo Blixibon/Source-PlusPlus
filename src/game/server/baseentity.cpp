@@ -7435,7 +7435,40 @@ void CC_Ent_Create( const CCommand& args )
 	}
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
-static ConCommand ent_create("ent_create", CC_Ent_Create, "Creates an entity of the given type where the player is looking.  Additional parameters can be passed in in the form: ent_create <entity name> <param 1 name> <param 1> <param 2 name> <param 2>...<param N name> <param N>", FCVAR_GAMEDLL | FCVAR_CHEAT);
+
+static int EntCreateCompletion(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+{
+	int current = 0;
+
+	const char *cmdname = "ent_create";
+	char *substring = NULL;
+	int substringLen = 0;
+	if (Q_strstr(partial, cmdname) && strlen(partial) > strlen(cmdname) + 1)
+	{
+		substring = (char *)partial + strlen(cmdname) + 1;
+		substringLen = strlen(substring);
+	}
+
+	for (int i = EntityFactoryDictionary()->CountFactories() - 1; i >= 0 && current < COMMAND_COMPLETION_MAXITEMS; i--)
+	{
+		const char *pSoundName = EntityFactoryDictionary()->GetFactoryName(i);
+		if (pSoundName)
+		{
+			if (!Q_strncasecmp("npc_", pSoundName, 4) || !Q_strncasecmp("monster_", pSoundName, 8) || !Q_strncasecmp("item_", pSoundName, 5) || !Q_strncasecmp("weapon_", pSoundName, 7))
+			{
+				if (!substring || !Q_strncasecmp(pSoundName, substring, substringLen))
+				{
+					Q_snprintf(commands[current], sizeof(commands[current]), "%s %s", cmdname, pSoundName);
+					current++;
+				}
+			}
+		}
+	}
+
+	return current;
+}
+
+static ConCommand ent_create("ent_create", CC_Ent_Create, "Creates an entity of the given type where the player is looking.  Additional parameters can be passed in in the form: ent_create <entity name> <param 1 name> <param 1> <param 2 name> <param 2>...<param N name> <param N>", FCVAR_GAMEDLL | FCVAR_CHEAT, EntCreateCompletion);
 
 //------------------------------------------------------------------------------
 // Purpose: Teleport a specified entity to where the player is looking

@@ -1,0 +1,140 @@
+"generic_spaceport"
+{
+	"dsp" "1"
+	"playlooping"
+	{
+		"wave" "scapes\2d\interior1\base_alt.wav"
+		"volume" "0.8"
+	}
+
+	"playlooping"
+	{
+		"wave" "ambient\atmosphere\station_ambience_stereo_loop1.wav"
+		"volume" "0.6"
+	}
+}
+
+/////////////////////////////////////////////////////////////
+
+"hangar"
+{
+
+	"dsp" "18"
+
+
+	"playsoundscape"
+	{
+		"name" "generic_spaceport"
+		"volume" "0.8"
+	}
+
+	"playsoundscape"
+	{
+		"name" "interior2.DistantCritters"
+		"volume" "0.6"
+	}
+
+	
+	"playrandom"
+	{
+		"time"		"10,25"
+		"volume"	".55,.95"
+		"pitch"		"50,105"
+		"position"	"random"
+
+		"rndwave"
+		{
+			"wave"	"scapes/2d/random_amb/Interior_Random_01.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_02.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_03.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_04.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_05.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_06.wav"
+			"wave"	"scapes/2d/random_amb/Interior_Random_07.wav"
+		}
+
+	}
+
+
+
+}
+
+"airlock"
+{
+	"dsp" "1"
+
+	"playsoundscape"
+	{
+		"name" "outside.spawn"
+		"volume" "0.3"
+	}
+
+	"playsoundscape"
+	{
+		"name" "generic_spaceport"
+		"volume" "0.6"
+	}
+
+}
+
+
+"control_room"
+{
+	"dsp" "1"
+
+	"playsoundscape"
+	{
+		"name" "generic_spaceport"
+		"volume" "0.8"
+	}
+
+	"playsoundscape"
+	{
+		"name" "interior2.DistantCritters"
+		"volume" "0.6"
+	}
+
+	"playsoundscape"
+	{
+		"name" "Indoors.Ambience5"
+		"volume" "1.0"
+	}
+
+
+	"playlooping"
+	{
+		"volume"	".4"
+		"pitch"		"100"
+		"wave"		"scapes/3D/vendingmachinehum_loop.wav"
+		"origin"	"276.250000, -5360.406250, -33.937500;"
+		"soundlevel" 	"SNDLVL_80dB"
+	}
+}
+
+
+"general.spaceport"
+{
+	"dsp" "1"
+
+	"playsoundscape"
+	{
+		"name" "generic_spaceport"
+		"volume" "0.8"
+	}
+	
+	"playsoundscape"
+	{
+		"name" "interior2.DistantCritters"
+		"volume" "0.6"
+	}
+
+	"playlooping"
+	{
+		"volume"	".81"
+		"pitch"		"55"
+		"wave"		"scapes/3D/lights_flicker.wav"
+		"origin"	"338.000000, -9997.656250, 21.093750;"
+		"soundlevel" 	"SNDLVL_75dB"
+	}
+
+}

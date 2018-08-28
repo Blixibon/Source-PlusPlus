@@ -30,7 +30,7 @@ class CAchievementHLXKillWithPhysicsObjects : public CBaseAchievement
 		if ( IsPC() )
 		{
 			// only in Ep2 for PC. (Shared across HLX for X360.)
-			SetGameDirFilter( "ep2" );
+			//SetGameDirFilter( "ep2" );
 		}
 	}
 
@@ -58,7 +58,7 @@ class CAchievementHLXKillWithHopper : public CBaseAchievement
 		if ( IsPC() )
 		{
 			// only in Ep2 for PC. (Shared across HLX for X360.)
-			SetGameDirFilter( "ep2" );
+			//SetGameDirFilter( "ep2" );
 		}
 	}
 
@@ -85,7 +85,7 @@ class CAchievementHLXKillWithManhack : public CBaseAchievement
 		if ( IsPC() )
 		{
 			// only in HL2 for PC. (Shared across HLX for X360.)
-			SetGameDirFilter( "hl2" );
+			//SetGameDirFilter( "hl2" );
 		}
 	}
 
@@ -115,7 +115,7 @@ protected:
 		if ( IsPC() )
 		{
 			// only in Ep2 for PC. (Shared across HLX for X360.)
-			SetGameDirFilter( "ep2" );
+			//SetGameDirFilter( "ep2" );
 		}
 	}
 
@@ -151,7 +151,7 @@ protected:
 		if ( IsPC() )
 		{
 			// only in Ep1 for PC. (Shared across HLX for X360.)
-			SetGameDirFilter( "episodic" );
+			//SetGameDirFilter( "episodic" );
 		}
 	}
 
@@ -193,7 +193,7 @@ protected:
 		if ( IsPC() )
 		{
 			// only in Ep2 for PC. (Shared across HLX for X360.)
-			SetGameDirFilter( "episodic" );
+			//SetGameDirFilter( "episodic" );
 		}
 	}
 

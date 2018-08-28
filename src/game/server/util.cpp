@@ -67,7 +67,7 @@ void DBG_AssertFunction( bool fExpr, const char *szExpr, const char *szFile, int
 //-----------------------------------------------------------------------------
 // Entity creation factory
 //-----------------------------------------------------------------------------
-class CEntityFactoryDictionary : public IEntityFactoryDictionary
+class CEntityFactoryDictionary : public IEntityFactoryDictionaryV2
 {
 public:
 	CEntityFactoryDictionary();
@@ -78,6 +78,11 @@ public:
 	virtual const char *GetCannonicalName( const char *pClassName );
 	void ReportEntitySizes();
 
+	// New methods
+	virtual	int	CountFactories();
+	virtual IEntityFactory *GetFactory(int iIndex);
+	virtual const char *GetFactoryName(int iIndex);
+
 private:
 	IEntityFactory *FindFactory( const char *pClassName );
 public:
@@ -87,7 +92,7 @@ public:
 //-----------------------------------------------------------------------------
 // Singleton accessor
 //-----------------------------------------------------------------------------
-IEntityFactoryDictionary *EntityFactoryDictionary()
+IEntityFactoryDictionaryV2 *EntityFactoryDictionary()
 {
 	static CEntityFactoryDictionary s_EntityFactory;
 	return &s_EntityFactory;
@@ -196,6 +201,27 @@ void CEntityFactoryDictionary::Destroy( const char *pClassName, IServerNetworkab
 	}
 
 	pFactory->Destroy( pNetworkable );
+}
+
+int CEntityFactoryDictionary::CountFactories()
+{
+	return m_Factories.Count();
+}
+
+IEntityFactory *CEntityFactoryDictionary::GetFactory(int iIndex)
+{
+	if (iIndex < 0 || iIndex >= CountFactories())
+		return nullptr;
+
+	return m_Factories.Element(iIndex);
+}
+
+const char *CEntityFactoryDictionary::GetFactoryName(int iIndex)
+{
+	if (iIndex < 0 || iIndex >= CountFactories())
+		return nullptr;
+
+	return m_Factories.GetElementName(iIndex);
 }
 
 //-----------------------------------------------------------------------------

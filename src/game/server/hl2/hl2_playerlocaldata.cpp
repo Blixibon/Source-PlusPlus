@@ -8,18 +8,75 @@
 #include "cbase.h"
 #include "hl2_playerlocaldata.h"
 #include "hl2_player.h"
+#include "ai_squad.h"
+#include "ai_basenpc.h"
 #include "mathlib/mathlib.h"
 #include "entitylist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+int PlayerSquadCountProxy(const void *pStruct, int objectID)
+{
+	const CHL2PlayerLocalData *pData = static_cast<const CHL2PlayerLocalData *> (pStruct);
+	CHL2_Player *pPlayer = pData->GetOuter();
+	CAI_Squad *pSquad = pPlayer->GetPlayerSquad();
+	if (!pSquad)
+		return 0;
+
+	return pSquad->NumMembers();
+}
+
+void SendProxy_PlayerSquad(const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
+{
+	const CHL2PlayerLocalData *pData = static_cast<const CHL2PlayerLocalData *> (pStruct);
+	CHL2_Player *pPlayer = pData->GetOuter();
+	CAI_Squad *pSquad = pPlayer->GetPlayerSquad();
+
+	CAI_BaseNPC *pAI = pSquad->GetMember(iElement);
+	const CBaseHandle *pHandle = nullptr;
+	if (pAI)
+		pHandle = &pAI->GetRefEHandle();
+
+	SendProxy_EHandleToInt(pProp, pStruct, pHandle, pOut, iElement, objectID);
+}
+
+void SendProxy_PlayerSquadMedicBits(const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
+{
+	const CHL2PlayerLocalData *pData = static_cast<const CHL2PlayerLocalData *> (pStruct);
+	CHL2_Player *pPlayer = pData->GetOuter();
+	CAI_Squad *pSquad = pPlayer->GetPlayerSquad();
+
+	int iCount = 0;
+
+	if (pSquad)
+		iCount = pSquad->NumMembers();
+
+	CBitVec<MAX_SQUAD_MEMBERS> medicBits;
+
+	int i = 0;
+	for (; i < iCount; i++)
+	{
+		CAI_BaseNPC *pAI = pSquad->GetMember(i);
+		bool bBit = pAI ? pAI->IsMedic() : false;
+		medicBits.Set(i, bBit);
+	}
+
+	for (; i < MAX_SQUAD_MEMBERS; i++)
+	{
+		medicBits.Set(i, false);
+	}
+
+	pOut->m_Int = medicBits.GetDWord(0);
+}
+
 BEGIN_SEND_TABLE_NOBASE( CHL2PlayerLocalData, DT_HL2Local )
 	SendPropFloat( SENDINFO(m_flSuitPower), 10, SPROP_UNSIGNED | SPROP_ROUNDUP, 0.0, 100.0 ),
 	SendPropInt( SENDINFO(m_bZooming), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO(m_bitsActiveDevices), MAX_SUIT_DEVICES, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_iSquadMemberCount) ),
-	SendPropInt( SENDINFO(m_iSquadMedicCount) ),
+	//SendPropInt( SENDINFO(m_iSquadMemberCount) ),
+	SendPropVirtualArray(PlayerSquadCountProxy, MAX_SQUAD_MEMBERS, SendPropEHandle("m_hPlayerSquad[0]", offsetof(currentSendDTClass, m_iSquadMemberCount), -1, 0, SendProxy_PlayerSquad), m_hPlayerSquad),
+	SendPropInt( "m_SquadMedicBits", offsetof(currentSendDTClass, m_iSquadMedicCount), -1, MAX_SQUAD_MEMBERS, SPROP_UNSIGNED, SendProxy_PlayerSquadMedicBits),
 	SendPropBool( SENDINFO(m_fSquadInFollowMode) ),
 	SendPropBool( SENDINFO(m_bWeaponLowered) ),
 	SendPropEHandle( SENDINFO(m_hAutoAimTarget) ),
@@ -67,3 +124,7 @@ CHL2PlayerLocalData::CHL2PlayerLocalData()
 #endif
 }
 
+CHL2_Player *CHL2PlayerLocalData::GetOuter() const
+{
+	return GET_OUTER(CHL2_Player, m_HL2Local);
+}

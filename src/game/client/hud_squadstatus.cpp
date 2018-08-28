@@ -30,6 +30,7 @@ class CHudSquadStatus : public CHudElement, public vgui::Panel
 public:
 	CHudSquadStatus( const char *pElementName );
 	virtual void Init( void );
+	virtual	void VidInit(void);
 	virtual void Reset( void );
 	virtual void OnThink( void );
 	bool ShouldDraw();
@@ -38,6 +39,8 @@ public:
 
 protected:
 	virtual void Paint();
+
+	void DrawIconProgressBar(int x, int y, CHudTexture *icon, float percentage, Color& clr, Color& clr2);
 
 private:
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
@@ -52,6 +55,10 @@ private:
 	CPanelAnimationVar( Color, m_SquadIconColor, "SquadIconColor", "255 220 0 160" );
 	CPanelAnimationVar( Color, m_LastMemberColor, "LastMemberColor", "255 220 0 0" );
 	CPanelAnimationVar( Color, m_SquadTextColor, "SquadTextColor", "255 220 0 160" );
+	CPanelAnimationVar(Color, m_SquadHurtColor, "SquadHurtColor", "255 0 0 160");
+
+	CHudTexture *m_pMemberIcon;
+	CHudTexture *m_pMedicIcon;
 	
 	int m_iSquadMembers;
 	int m_iSquadMedics;
@@ -89,6 +96,30 @@ void CHudSquadStatus::Init( void )
 	m_bSquadMembersFollowing = true;
 	m_bSquadMemberJustDied = false;
 	SetAlpha( 0 );
+}
+
+void CHudSquadStatus::VidInit()
+{
+	CHudTexture *tex = new CHudTexture();
+
+	// Key Name is the sprite name
+	Q_strncpy(tex->szShortName, "squad_member", sizeof(tex->szShortName));
+	
+	// it's a font-based icon
+	tex->bRenderUsingFont = true;
+	tex->cCharacterInFont = 'C';
+	Q_strncpy(tex->szTextureFile, scheme()->GetIScheme(GetScheme())->GetFontName(m_hIconFont), sizeof(tex->szTextureFile));
+
+	m_pMemberIcon = gHUD.AddUnsearchableHudIconToList(*tex);
+
+	// Key Name is the sprite name
+	Q_strncpy(tex->szShortName, "squad_medic", sizeof(tex->szShortName));
+
+	tex->cCharacterInFont = 'M';
+
+	m_pMedicIcon = gHUD.AddUnsearchableHudIconToList(*tex);
+
+	delete tex;
 }
 
 //-----------------------------------------------------------------------------
@@ -132,7 +163,7 @@ void CHudSquadStatus::OnThink( void )
 
 	int squadMembers = pPlayer->m_HL2Local.m_iSquadMemberCount;
 	bool following = pPlayer->m_HL2Local.m_fSquadInFollowMode;
-	m_iSquadMedics = pPlayer->m_HL2Local.m_iSquadMedicCount;
+	m_iSquadMedics = pPlayer->m_HL2Local.GetSquadMedicCount();
 
 	// Only update if we've changed vars
 	if ( squadMembers == m_iSquadMembers && following == m_bSquadMembersFollowing )
@@ -202,6 +233,35 @@ void CHudSquadStatus::MsgFunc_SquadMemberDied(bf_read &msg)
 	m_bSquadMemberJustDied = true;
 }
 
+void CHudSquadStatus::DrawIconProgressBar(int x, int y, CHudTexture *icon, float percentage, Color& clr, Color& clr2)
+{
+	if (icon == NULL)
+		return;
+
+	//Clamp our percentage
+	percentage = MIN(1.0f, percentage);
+	percentage = MAX(0.0f, percentage);
+
+	int	height = icon->Height();
+	int	width = icon->Width();
+
+	//Draw a vertical progress bar
+	{
+		int	barOfs = height * percentage;
+
+		icon->DrawSelfCropped(
+			x, y,  // Pos
+			0, 0, width, barOfs, // Cropped subrect
+			clr2);
+
+		icon->DrawSelfCropped(
+			x, y + barOfs,
+			0, barOfs, width, height - barOfs, // Cropped subrect
+			clr);
+	}
+	
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: draws the power bar
 //-----------------------------------------------------------------------------
@@ -211,34 +271,45 @@ void CHudSquadStatus::Paint()
 	if ( !pPlayer )
 		return;
 
+	CHandle<C_AI_BaseNPC> *hPlayerSquad = pPlayer->m_HL2Local.m_hPlayerSquad;
+	SquadMedicBits *SquadMedicBits = &pPlayer->m_HL2Local.m_SquadMedicBits;
+
 	// draw the suit power bar
-	surface()->DrawSetTextColor( m_SquadIconColor );
-	surface()->DrawSetTextFont( m_hIconFont );
 	int xpos = m_flIconInsetX, ypos = m_flIconInsetY;
 	for (int i = 0; i < m_iSquadMembers; i++)
 	{
+		Color clrMain = m_SquadIconColor;
 		if (m_bSquadMemberAdded && i == m_iSquadMembers - 1)
 		{
 			// draw the last added squad member specially
-			surface()->DrawSetTextColor( m_LastMemberColor );
+			clrMain = m_LastMemberColor;
 		}
 
-		surface()->DrawSetTextPos(xpos, ypos);
-
-		if (i < m_iSquadMedics)
+		CHudTexture *pIcon = nullptr;
+		if (SquadMedicBits->IsBitSet(i))
 		{
-			surface()->DrawUnicodeChar('M');
+			pIcon = m_pMedicIcon;
 		}
 		else
 		{
-			surface()->DrawUnicodeChar('C');
+			pIcon = m_pMemberIcon;
 		}
+
+		float flHealthFrac = 1.0f;
+		if (hPlayerSquad[i].Get() != nullptr)
+			flHealthFrac = hPlayerSquad[i]->HealthFraction();
+
+		flHealthFrac = RemapVal(flHealthFrac, 0.0f, 1.0f, 0.0f, 24.0f / 40.0f);
+
+		DrawIconProgressBar(xpos, ypos, pIcon, 1.0f - flHealthFrac, clrMain, m_SquadHurtColor);
+
 		xpos += m_flIconGap;
 	}
 	if (!m_bSquadMemberAdded && m_LastMemberColor[3])
 	{
 		// draw the last one in the special color
 		surface()->DrawSetTextColor( m_LastMemberColor );
+		surface()->DrawSetTextFont(m_hIconFont);
 		surface()->DrawSetTextPos(xpos, ypos);
 		surface()->DrawUnicodeChar('C');
 	}

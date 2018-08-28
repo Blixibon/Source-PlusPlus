@@ -1,0 +1,65 @@
+"dm_desert.outdoors"
+{
+	"dsp"	"1"
+
+	
+	"playlooping"
+	{
+		"volume"		".2"
+		"pitch"		"100"
+		"wave"		"ambient/outdoors.wav"
+	}
+
+//	"playlooping"
+//	{
+//		"volume"		".4"
+//		"pitch"		"100"
+//		"wave"		"ambient\atmosphere\csgo_dust_indoors_lp_01.wav"
+//	}
+//  "playlooping"
+//	{
+//		"volume"		"0.1"
+//		"pitch"		"100"
+//		"soundlevel"	"SNDLVL_70dB"
+//		"origin"     "-1005.253784, -509.180115, 163.830017;"
+//		"wave"			"ambient/fire/fire_med_loop1.wav"
+//	}
+
+	"playrandom"
+	{
+
+		"time"		"13,20"
+		"volume"		".7,.9"
+		"pitch"		"80,100"
+    "position" "1"
+    "soundlevel" 	"SNDLVL_85dB"
+
+		"rndwave"
+		{
+			"wave"	"ambient/misc/metal_str5.wav"
+			"wave"	"ambient/misc/metal_str4.wav"
+			"wave"	"ambient/misc/metal_str1.wav"
+      "wave"	"ambient/misc/metal_str2.wav"
+		}
+	}
+
+	"playrandom"
+	{
+		"time"		"10,25"
+		"volume"		".06,.18"
+		"pitch"		"70,110"
+		"position"	"random"
+    "soundlevel" 	"SNDLVL_95dB"
+
+		"rndwave"
+		{
+			"wave"	"ambient/wind/wind_gust_10.wav"
+			"wave"	"ambient/wind/wind_gust_2.wav"
+			"wave"	"ambient/wind/wind_gust_8.wav"
+			"wave"	"ambient/wind/wind_med1.wav"
+			"wave"	"ambient/wind/wind_med2.wav"
+			"wave"	"ambient/wind/smallgust2.wav"
+		}
+	}
+}
+

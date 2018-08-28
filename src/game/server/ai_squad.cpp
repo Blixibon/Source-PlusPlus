@@ -477,6 +477,28 @@ int	CAI_Squad::NumMembers( bool bIgnoreSilentMembers )
 	return ( m_SquadMembers.Count() - nSilentMembers );
 }
 
+CAI_BaseNPC *CAI_Squad::GetMember(int iIndex, bool bIgnoreSilentMembers)
+{
+	if (iIndex < 0 || iIndex >= m_SquadMembers.Count())
+		return nullptr;
+	if (!bIgnoreSilentMembers)
+	{
+		return m_SquadMembers.Element(iIndex);
+	}
+	else
+	{
+		int iCount = 0;
+		int i = 0;
+		for (; iCount < iIndex && i < m_SquadMembers.Count(); i++)
+		{
+			if (!IsSilentMember(m_SquadMembers.Element(i)))
+				iCount++;
+		}
+
+		return iCount == iIndex ? m_SquadMembers.Element(i) : nullptr;
+	}
+}
+
 //-------------------------------------
 // Purpose: Alert everyone in the squad to the presence of a new enmey
 //-------------------------------------

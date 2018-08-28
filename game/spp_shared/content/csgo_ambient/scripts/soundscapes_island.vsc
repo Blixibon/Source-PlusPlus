@@ -1,0 +1,167 @@
+// Island soundscapes
+
+//"island.outside.generic" - used inland
+//"island.outside.coast" - used near coastline
+//"island.outside.forest" - used in forest
+//"island.outside.industrial" - used in industrial areas
+//"island.inside.house" - used inside regular buildings
+//"island.inside.industrial" - used inside warehouses and other industrial buildings
+
+//------------------------------------------------------------------------------------------
+//
+// Generic outdoors ambience
+//
+"island.outside.generic"
+{
+	"dsp" "1"
+	"fadetime" "1.5"
+	
+	"playlooping"
+	{
+		"volume"		"0.3"
+		"pitch"		"100"
+		"wave"		"ambient\inferno\exterior_01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.5"
+		"pitch"		"100"
+		"wave"		"ambient\inferno\exterior_02.wav"
+	}
+	
+	"playsoundscape"
+	{
+		"name"				"inferno_new.Birds"
+	}
+
+	// seagulls
+	"playrandom"
+	{
+		"time"		"30,60"
+		"volume"	"0.05,0.1"
+		"pitch"		"95,100"
+
+		"rndwave"
+		{
+			"wave"	"ambient/creatures/seagull_idle1.wav"
+			"wave"	"ambient/creatures/seagull_idle2.wav"
+			"wave"	"ambient/creatures/seagull_idle3.wav"
+		}
+	}
+}
+
+
+
+
+//------------------------------------------------------------------------------------------
+//
+// Generic outdoors ambience
+//
+"island.outside.coast"
+{
+	"dsp" "1"
+	"fadetime" "1.5"
+	
+	"playlooping"
+	{
+		"volume"		"0.3"
+		"pitch"		"100"
+		"wave"		"ambient\inferno\exterior_01.wav"
+	}
+	
+	"playlooping"
+	{
+		"volume"		"0.5"
+		"pitch"		"100"
+		"wave"		"ambient\inferno\exterior_02.wav"
+	}
+	
+	
+	"playrandom"
+	{
+
+		"time"		"13, 35"
+		"volume"		"0.3, 0.5"
+		"pitch"		"95, 105"
+		"position"	        "random"
+		"soundlevel"  	"SNDLVL_75dB"
+
+		"rndwave"
+		{
+			"wave"	"ambient\dust2\sand_gust_01.wav"
+			"wave"	"ambient\dust2\sand_gust_02.wav"
+			"wave"	"ambient\dust2\sand_gust_03.wav"
+			"wave"	"ambient\dust2\sand_gust_04.wav"
+			"wave"	"ambient\dust2\sand_gust_05.wav"
+			"wave"	"ambient\dust2\sand_gust_06.wav"
+			"wave"	"ambient\dust2\sand_gust_07.wav"
+			"wave"	"ambient\dust2\sand_gust_08.wav"
+			"wave"	"ambient\dust2\sand_gust_09.wav"
+			"wave"	"ambient\dust2\sand_gust_10.wav"
+			"wave"	"ambient\dust2\sand_gust_11.wav"
+			"wave"	"ambient\dust2\sand_gust_12.wav"
+			
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------
+//
+// Crawlspace in house on the hill
+//
+"island.inside.crawlspace"
+{
+	"dsp" "1"
+	// underlying area "tone"
+	"playlooping"
+	{
+		"volume"	"0.45"
+		"pitch"		"100"
+		"wave"		"ambient/atmosphere/css15_amb_baggage_spooky.wav"
+	}
+
+
+	// random noises
+	"playrandom"
+	{
+		"time"		"10,20"
+		"volume"	"0.3"
+		"pitch"		"90,110"
+
+		"rndwave"
+		{
+			"wave"	"ambient/animal/rodent_scratch_short_3.wav"
+			"wave"	"ambient/creatures/rats4.wav"
+			"wave"	"ambient/inferno/house_creak_04.wav"
+			"wave"	"ambient/inferno/house_creak_05.wav"
+			"wave"	"ambient/inferno/house_creak_06.wav"
+		}
+	}
+
+	// breathing
+	"playrandom"
+	{
+		"time"		"20,60"
+		"volume"	"0.05,0.1"
+		"pitch"		"95,100"
+
+		"rndwave"
+		{
+			"wave"	"hostage/huse/hostage_breath.wav"
+		}
+	}
+}
+
+
+"island.inside.generic"
+{
+	"dsp" "1"
+	// underlying area "tone"
+	"playlooping"
+	{
+		"volume"	"0.5"
+		"pitch"		"100"
+		"wave"		"ambient\tones\office_room_tone_01.wav"
+	}
+}

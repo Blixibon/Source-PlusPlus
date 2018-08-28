@@ -102,7 +102,15 @@ public:
 	virtual const char *GetCannonicalName( const char *pClassName ) = 0;
 };
 
-IEntityFactoryDictionary *EntityFactoryDictionary();
+abstract_class IEntityFactoryDictionaryV2 : public IEntityFactoryDictionary
+{
+public:
+	virtual	int	CountFactories() = 0;
+	virtual IEntityFactory *GetFactory(int iIndex) = 0;
+	virtual const char *GetFactoryName(int iIndex) = 0;
+};
+
+IEntityFactoryDictionaryV2 *EntityFactoryDictionary();
 
 inline bool CanCreateEntityClass( const char *pszClassname )
 {

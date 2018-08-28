@@ -20,6 +20,8 @@
 #define PING_MAX_TIME	2.0
 
 IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
+	RecvPropInt(RECVINFO(m_iHealth)),
+	RecvPropInt(RECVINFO(m_iMaxHealth)),
 	RecvPropInt( RECVINFO( m_lifeState ) ),
 	RecvPropBool( RECVINFO( m_bPerformAvoidance ) ),
 	RecvPropBool( RECVINFO( m_bIsMoving ) ),

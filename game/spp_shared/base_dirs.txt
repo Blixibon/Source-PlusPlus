@@ -24,7 +24,10 @@
 				"scenes"	"1"
 			}
 			
+			vpk		csgo_ambient
 			vpk		l4d2_ambient
+			vpk		asrd_content
+			vpk		hl2wars_content
 			"vpk"	"sdk_pak"
 			vpk		p2_dissolve
 		}

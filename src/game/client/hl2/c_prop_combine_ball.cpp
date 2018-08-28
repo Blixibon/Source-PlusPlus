@@ -57,6 +57,7 @@ void C_PropCombineBall::OnDataChanged( DataUpdateType_t updateType )
 	{
 		m_vecLastOrigin = GetAbsOrigin();
 		InitMaterials();
+		DispatchParticleEffect("new_combineball", PATTACH_ABSORIGIN_FOLLOW, this);
 	}
 }
 
