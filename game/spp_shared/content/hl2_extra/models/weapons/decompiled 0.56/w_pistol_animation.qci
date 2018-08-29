@@ -1,0 +1,31 @@
+
+$Sequence "idle" {
+	"w_pistol_anims\idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 1
+	loop
+}
+
+$Sequence "attack_viewmodel" {
+	"w_pistol_anims\attack_viewmodel.smd"
+	activity "ACT_VM_PRIMARYATTACK" -1
+	{ event 5003 0 "0" }
+	{ event 6001 0 "0" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "attack_npc" {
+	"w_pistol_anims\attack_viewmodel.smd"
+	activity "ACT_RANGE_ATTACK_PISTOL" 1
+	{ event 3014 1 "" }
+	{ event AE_NPC_MUZZLEFLASH 0 "PISTOL MUZZLE" }
+	{ event 6001 0 "0" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}

@@ -1,0 +1,16 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "models/Props/Combine/citadelchunk1"
+	"$bumpmap" "models/Props/Combine/citadelchunk1_NRM"
+	"$halflambert" 1
+	"$nodecal" "1"
+	"$model" "1"
+	"$nofog" 1
+
+	"$phong" "1"
+	"$ambientocclusiontexture" "models/Props/Combine/citadelchunk1_OCC"
+	"$phongexponent" "33"
+//	"$phongexponenttexture" "models/Props/Combine/citadelchunk1_EXP"
+	"$phongboost"	"0.3"
+	"$phongfresnelranges"	"[0 0.5 1]"
+	}

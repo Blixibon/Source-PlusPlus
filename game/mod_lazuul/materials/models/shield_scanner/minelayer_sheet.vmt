@@ -1,4 +1,4 @@
-"VertexLitGeneric"
+"PP_VertexLitGeneric"
 {
                 "$baseTexture" "Models/shield_scanner/Minelayer_Sheet"
                 "$bumpmap" "Models/shield_scanner/Minelayer_Sheet_Normal"

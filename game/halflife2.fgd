@@ -958,13 +958,27 @@
 [
 	input Assault(string) : "Start an assault. Parameter passed in should be the name of the rally point."
 
-	model(choices) : "Model" : "models/combine_soldier.mdl" : "Regular Soldier" = 
-	[
-		"models/combine_soldier.mdl" : "Regular Soldier"
-		"models/combine_soldier_prisonguard.mdl" : "Nova Prospekt Soldier"
-		"models/combine_super_soldier.mdl" : "Elite Soldier"
-	]
+	model(studio) : "Model" : "models/combine_soldier.mdl" : "Used for custom models only. Otherwise use 'Is Elite' and 'Soldier Variant' to control the model."
 
+	IsElite(choices) "Is Elite" : "0" =
+	[
+		"0"	: "No"
+		"1"	: "Yes"
+	]
+	
+	soldier_variant(choices) : "Soldier Variant" : "-1" =
+	[
+		"-1"	:	"Default"
+		"0"		:	"Normal Soldier"
+		"1"		:	"Prison Guard"
+		"2"		:	"Super Soldier"
+		"3"		:	"Hunter Soldier"
+		"4"		:	"Outland Soldier"
+		"5"		:	"Outland Guard"
+		"6"		:	"Advisor Guard"
+		"7"		:	"Synth Soldier"
+	]
+	
 	tacticalvariant(choices) : "Tactical Variant" : "0" =
 	[
 		"0" : "Normal Tactics"

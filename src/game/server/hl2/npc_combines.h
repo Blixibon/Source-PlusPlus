@@ -18,11 +18,16 @@
 class CNPC_CombineS : public CNPC_Combine
 {
 	DECLARE_CLASS( CNPC_CombineS, CNPC_Combine );
-#if HL2_EPISODIC
+//#if HL2_EPISODIC
 	DECLARE_DATADESC();
-#endif
+//#endif
 
 public: 
+	CNPC_CombineS()
+	{
+		m_iSoldierVariant = -1;
+	}
+
 	void		Spawn( void );
 	void		Precache( void );
 	void		DeathSound( const CTakeDamageInfo &info );
@@ -44,6 +49,12 @@ public:
 
 	virtual	bool		AllowedToIgnite( void ) { return true; }
 
+	//string_t 		GetModelName() const;
+
+	virtual void	SelectModel();
+
+	virtual int		GetVoiceType();
+
 private:
 	bool		ShouldHitPlayer( const Vector &targetDir, float targetDist );
 
@@ -55,6 +66,8 @@ protected:
 	/// whether to use the more casual march anim in ep2_outland_05
 	int			m_iUseMarch;
 #endif
+
+	int			m_iSoldierVariant;
 
 };
 

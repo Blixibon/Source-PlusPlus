@@ -58,6 +58,7 @@
 		"prison"	"prison"
 		"c17"	"c17"
 		"citadel"	"citadel"
+		"breen"		"citadel"
 		"outland"	"outlands"
 		"bm_"	"blackmesa"
 		"hc_"	"blackmesa"

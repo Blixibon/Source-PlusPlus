@@ -35,6 +35,73 @@
 
 int g_fCombineQuestion;				// true if an idle grunt asked a question. Cleared when someone answers. YUCK old global from grunt code
 
+//-----------------------------------------------------------------------------
+// Speech
+//-----------------------------------------------------------------------------
+
+const char *GetVoicePrefixForSoldier(CNPC_Combine *pSoldier)
+{
+	int iVoice = pSoldier->GetVoiceType();
+
+	switch (iVoice)
+	{
+	case COMBINE_VOICE_ELITE:
+		return "PKT_";
+		break;
+	case COMBINE_VOICE_SYNTH:
+		return "SYN_";
+		break;
+	case COMBINE_VOICE_NORMAL:
+	default:
+		return nullptr;
+	}
+}
+
+int CAI_CombineSentence::Speak(const char *pSentence, SentencePriority_t nSoundPriority, SentenceCriteria_t nCriteria)
+{
+	if (!MatchesCriteria(nCriteria))
+		return -1;
+
+	// Speaking clears the queue
+	ClearQueue();
+
+	CUtlString szSentence;
+	//bool bDelete = false;
+
+	
+	{
+		const char *pchPrefix = GetVoicePrefixForSoldier(GetSoldier());
+
+		szSentence.Set(pchPrefix);
+		szSentence.Append(pSentence);
+	}
+	
+
+	if (nSoundPriority == SENTENCE_PRIORITY_INVALID)
+	{
+		return PlaySentence(szSentence);
+	}
+
+	int nSentenceIndex = -1;
+	if (GetOuter()->FOkToMakeSound(nSoundPriority))
+	{
+		nSentenceIndex = PlaySentence(szSentence);
+
+		// Make sure sentence length utility works
+		float flSentenceTime = engine->SentenceLength(nSentenceIndex);
+		GetOuter()->JustMadeSound(nSoundPriority, /*2.0f*/ flSentenceTime);
+	}
+	else
+	{
+		SentenceMsg("CULL", szSentence);
+	}
+
+	/*if (bDelete)
+	delete [] pchSentence;*/
+
+	return nSentenceIndex;
+}
+
 #define COMBINE_SKIN_DEFAULT		0
 #define COMBINE_SKIN_SHOTGUNNER		1
 
@@ -148,6 +215,7 @@ DEFINE_FIELD( m_nShots, FIELD_INTEGER ),
 DEFINE_FIELD( m_flShotDelay, FIELD_FLOAT ),
 DEFINE_FIELD( m_flStopMoveShootTime, FIELD_TIME ),
 DEFINE_KEYFIELD( m_iNumGrenades, FIELD_INTEGER, "NumGrenades" ),
+DEFINE_KEYFIELD(m_fIsElite, FIELD_BOOLEAN, "IsElite"),
 DEFINE_EMBEDDED( m_Sentences ),
 
 //							m_AssaultBehavior (auto saved by AI)
@@ -3149,10 +3217,10 @@ WeaponProficiency_t CNPC_Combine::CalcWeaponProficiency( CBaseCombatWeapon *pWea
 	}
 	else if( FClassnameIs( pWeapon, "weapon_shotgun" )	)
 	{
-		if( m_nSkin != COMBINE_SKIN_SHOTGUNNER )
+		/*if( m_nSkin != COMBINE_SKIN_SHOTGUNNER )
 		{
 			m_nSkin = COMBINE_SKIN_SHOTGUNNER;
-		}
+		}*/
 
 		return WEAPON_PROFICIENCY_PERFECT;
 	}

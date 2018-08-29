@@ -1,0 +1,69 @@
+// Created by Crowbar 0.56
+
+
+$BodyGroup "Soldier"
+{
+	studio "combine_outland_Soldier_reference.smd"
+}
+
+$Include "combine_outland_lod.qci"
+
+$SurfaceProp "flesh"
+
+$Contents "solid"
+
+$IllumPosition -2.255 0.067 35.51
+
+$EyePosition 0 0 73
+
+$CDMaterials "models\Combine_outland\"
+
+// $TextureGroup "skinfamilies"
+// {
+	// { "combinesoldiersheet"         }
+	// { "combinesoldiersheet_shotgun" }
+// }
+
+$Attachment "lefthand" "ValveBiped.Bip01_L_Hand" 0 0 0 rotate 0 0 0
+$Attachment "zipline" "ValveBiped.Bip01_Spine4" 3 -4 0 rotate 0 0 0
+$Attachment "eyes" "ValveBiped.Bip01_Head1" 4.5 -5 0 rotate 0 -90 -90
+$Attachment "beam_damage" "ValveBiped.Bip01_Spine2" 0 0 0 rotate 0 0 0
+$Attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
+$Attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
+
+$Include "combine_outland_box.qci"
+
+$Include "combine_outland_bone.qci"
+
+$Include "combine_outland_animation.qci"
+
+$Include "combine_outland_collision.qci"
+
+$KeyValues
+{
+	physgun_interactions 
+	{
+		"onpickup"		"boogie"
+		"onlaunch"		"spin_zaxis"
+		"onfirstimpact"		"bloodsplat"
+	}
+	dynamic_interactions 
+	{
+		"soldier_antlion_di_01"		 
+		{
+			"trigger"			"auto_in_combat"
+			"origin_relative"			"229 0 0"
+			"angles_relative"			"0 180 0"
+			"sequence"			"antlion_soldier_DI_01"
+			"delay"			"10.0"
+		}
+		"soldier_antlion_di_02"		 
+		{
+			"trigger"			"auto_in_combat"
+			"origin_relative"			"80 0 0"
+			"angles_relative"			"0 180 0"
+			"sequence"			"antlion_soldier_DI_02"
+			"delay"			"10.0"
+		}
+	}
+}

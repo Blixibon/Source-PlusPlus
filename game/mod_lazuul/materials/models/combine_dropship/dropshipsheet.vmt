@@ -1,4 +1,4 @@
-"VertexLitGeneric"
+"PP_VertexLitGeneric"
 {
                 "$baseTexture" "Models/combine_Dropship/DropshipSheet"
                 "$bumpmap" "Models/combine_Dropship/DropshipSheet_normal"

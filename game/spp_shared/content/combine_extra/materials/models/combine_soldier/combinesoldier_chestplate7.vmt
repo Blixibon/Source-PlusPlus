@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/combine_soldier/combinesoldier_chestplate7"
+	"$bumpmap" "models/combine_soldier/combinesoldier_chestplate_nm"
+	
+	"$phong"     "1"
+	"$phongexponent"  "5"
+	"$phongboost"   "0.5"
+	"$phongfresnelranges"	"[0.5 0.5 5]"
+}

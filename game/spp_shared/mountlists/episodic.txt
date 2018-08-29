@@ -29,5 +29,9 @@
 				"scenes"	"1"
 			}
 		}
+		
+		"combine_extra"
+		{
+		}
 	}
 }

@@ -24,6 +24,7 @@
 #include "hl2_gamerules.h"
 #include "gameweaponmanager.h"
 #include "vehicle_base.h"
+#include "peter\population_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -43,6 +44,80 @@ extern ConVar sk_plr_num_shotgun_pellets;
 //Whether or not the combine should spawn health on death
 ConVar	combine_spawn_health( "combine_spawn_health", "1" );
 
+typedef struct
+{
+	const char *soldierModel;
+	const char *eliteModel;
+	const char *soldierShotgunModel;
+	const char *eliteShotgunModel;
+} combineModel_t;
+
+const char *GetSoldierModel(combineModel_t variant, bool bElite, bool bHasShotgun)
+{
+	if (bElite)
+	{
+		if (bHasShotgun && variant.eliteShotgunModel)
+		{
+			return variant.eliteShotgunModel;
+		}
+		else
+		{
+			return variant.eliteModel;
+		}
+	}
+	else
+	{
+		if (bHasShotgun && variant.soldierShotgunModel)
+		{
+			return variant.soldierShotgunModel;
+		}
+		else
+		{
+			return variant.soldierModel;
+		}
+	}
+}
+
+enum
+{
+	COMBINE_MODEL_NONE = -1,
+
+	COMBINE_MODEL_NORMAL = 0,
+	COMBINE_MODEL_PRISONGUARD,
+	COMBINE_MODEL_SUPERSOLDIER,
+	COMBINE_MODEL_HUNTER,
+	COMBINE_MODEL_OUTLAND,
+	COMBINE_MODEL_OUTLANDGUARD,
+	COMBINE_MODEL_ADVISORGUARD,
+	COMBINE_MODEL_SYNTH,
+
+	MAX_COMBINE_MODELS
+};
+
+combineModel_t g_CombineModels[MAX_COMBINE_MODELS] = {
+	{"models/combine_soldier.mdl", "models/combine_elite_soldier.mdl", "models/combine_soldier_shotgun.mdl", "models/combine_super_shotgunner.mdl"},
+	{"models/combine_soldier_prisonguard.mdl", "models/combine_elite_guard.mdl", "models/combine_soldier_prisonguard_shotgun.mdl", nullptr},
+	{"models/combine_super_elite_soldier.mdl", "models/combine_super_soldier.mdl", nullptr, nullptr},
+	{ "models/combine_hunter_soldier.mdl", "models/combine_hunter.mdl", nullptr, nullptr },
+	{ "models/combine_outland.mdl", "models/combine_super_outland.mdl", "models/combine_outland_shotgun.mdl", nullptr },
+	{ "models/combine_outland_prisonguard.mdl", "models/combine_super_outland.mdl", "models/combine_outland_prisonguard_shotgun.mdl", nullptr },
+	{ "models/combine_advisor_guard_soldier.mdl", "models/combine_advisor_guard.mdl", nullptr, nullptr },
+	{ "models/cmb_synth_soldier.mdl", "models/cmb_synth_elite.mdl", nullptr, nullptr },
+};
+
+const char *g_pszCombinePopStrings[MAX_COMBINE_MODELS] = {
+	"soldier",
+	"prisonguard",
+	"supersoldier",
+	"hunter",
+	"outland",
+	"outlandguard",
+	"advisorguard",
+	"synth",
+};
+
+CPopulationDefinition g_CombineSoldierPopulation("combine_soldier", g_pszCombinePopStrings, ARRAYSIZE(g_pszCombinePopStrings));
+
 LINK_ENTITY_TO_CLASS( npc_combine_s, CNPC_CombineS );
 
 
@@ -56,6 +131,8 @@ extern Activity ACT_WALK_MARCH;
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Spawn( void )
 {
+	SelectModel();
+
 	Precache();
 	SetModel( STRING( GetModelName() ) );
 
@@ -88,28 +165,67 @@ void CNPC_CombineS::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+/*string_t CNPC_CombineS::GetModelName() const
+{
+	string_t iszModelName = BaseClass::GetModelName();
+
+	//
+	// If the model refers to an obsolete model, pretend it was blank
+	// so that we pick the new default model.
+	//
+	if (!Q_strnicmp(STRING(iszModelName), "models/c17_", 11) ||
+		!Q_strnicmp(STRING(iszModelName), "models/male", 11) ||
+		!Q_strnicmp(STRING(iszModelName), "models/female", 13) ||
+		!Q_strnicmp(STRING(iszModelName), "models/citizen", 14) ||
+		Q_stristr(STRING(iszModelName), "male_cheaple.mdl"))
+	{
+		return NULL_STRING;
+	}
+
+	return iszModelName;
+}*/
+
+void CNPC_CombineS::SelectModel()
+{
+	string_t iszModelName = GetModelName();
+
+	if (!Q_stricmp(STRING(iszModelName), "models/combine_super_soldier.mdl"))
+	{
+		m_fIsElite = true;
+	}
+
+	if (!Q_stricmp(STRING(iszModelName), "models/combine_soldier.mdl") ||
+		!Q_stricmp(STRING(iszModelName), "models/combine_super_soldier.mdl") ||
+		!Q_stricmp(STRING(iszModelName), "models/combine_soldier_prisonguard.mdl"))
+	{
+		iszModelName = NULL_STRING;
+	}
+
+	if (!iszModelName)
+	{
+		if (m_iSoldierVariant <= COMBINE_MODEL_NONE || m_iSoldierVariant >= MAX_COMBINE_MODELS)
+		{
+			m_iSoldierVariant = g_CombineSoldierPopulation.GetRandom();
+		}
+
+		const char *pszModelName = GetSoldierModel(g_CombineModels[m_iSoldierVariant], m_fIsElite, m_spawnEquipment == FindPooledString("weapon_shotgun"));
+
+		SetModelName(MAKE_STRING(pszModelName));
+	}
+	else
+	{
+		m_iSoldierVariant = COMBINE_MODEL_NORMAL;
+	}
+}
+
+//-----------------------------------------------------------------------------
 // Purpose:
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Precache()
 {
-	const char *pModelName = STRING( GetModelName() );
-
-	if( !Q_stricmp( pModelName, "models/combine_super_soldier.mdl" ) )
-	{
-		m_fIsElite = true;
-	}
-	else
-	{
-		m_fIsElite = false;
-	}
-
-	if( !GetModelName() )
-	{
-		SetModelName( MAKE_STRING( "models/combine_soldier.mdl" ) );
-	}
-
 	PrecacheModel( STRING( GetModelName() ) );
 
 	UTIL_PrecacheOther( "item_healthvial" );
@@ -119,6 +235,13 @@ void CNPC_CombineS::Precache()
 	BaseClass::Precache();
 }
 
+int CNPC_CombineS::GetVoiceType()
+{
+	if (m_iSoldierVariant == COMBINE_MODEL_SYNTH)
+		return COMBINE_VOICE_SYNTH;
+
+	return BaseClass::GetVoiceType();
+}
 
 void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 {
@@ -418,14 +541,14 @@ Activity CNPC_CombineS::NPC_TranslateActivity( Activity eNewActivity )
 
 	return BaseClass::NPC_TranslateActivity( eNewActivity );
 }
-
+#endif
 
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CNPC_CombineS )
-
-	DEFINE_KEYFIELD( m_iUseMarch, FIELD_INTEGER, "usemarch" ),
-
-END_DATADESC()
+BEGIN_DATADESC(CNPC_CombineS)
+#ifdef HL2_EPISODIC
+DEFINE_KEYFIELD(m_iUseMarch, FIELD_INTEGER, "usemarch"),
 #endif
+DEFINE_KEYFIELD(m_iSoldierVariant, FIELD_INTEGER, "soldier_variant"),
+END_DATADESC()

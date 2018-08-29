@@ -1,4 +1,4 @@
-"VertexLitGeneric"
+"PP_VertexLitGeneric"
 {
 	"$baseTexture" "Models/Combine_Strider/striderdecalsheet"
 	"$selfillum" 1

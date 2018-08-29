@@ -106,16 +106,41 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 			CFmtStrN<MAX_PATH> filename;
 			filename.AppendFormat(FILENAME_FORMAT, STRING(m_iszPopulationTag), pDef->chName);
 
+
 			if (!filesystem->FileExists(filename.Access(), "GAME"))
 			{
-				// Try the default tag
-				filename.Clear();
-				filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, pDef->chName);
+				bool bFound = false;
+				char chPopTag[MAX_PATH];
+				Q_strncpy(chPopTag, STRING(m_iszPopulationTag), MAX_PATH);
+				
+				while (!bFound && V_StripLastDir(chPopTag, MAX_PATH))
+				{
+					V_StripTrailingSlash(chPopTag);
 
-				// Check again.
-				if (!filesystem->FileExists(filename.Access(), "GAME"))
+					filename.Clear();
+					filename.AppendFormat(FILENAME_FORMAT, chPopTag, pDef->chName);
+
+					// Check again.
+					if (filesystem->FileExists(filename.Access(), "GAME"))
+						bFound = true;
+				}
+				
+				if (!bFound)
+				{
+					// Try the default tag
+					filename.Clear();
+					filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, pDef->chName);
+
+					// Check again.
+					if (filesystem->FileExists(filename.Access(), "GAME"))
+						bFound = true;
+				}
+
+				if (!bFound)
 					continue;
 			}
+
+			
 
 			CUtlStringList typeList;
 

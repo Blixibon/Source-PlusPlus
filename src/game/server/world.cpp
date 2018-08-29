@@ -31,6 +31,7 @@
 #include "engine/IStaticPropMgr.h"
 #include "particle_parse.h"
 #include "globalstate.h"
+#include "filesystem.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -531,6 +532,17 @@ void CWorld::Spawn( void )
 	Precache( );
 	GlobalEntity_Add( "is_console", STRING(gpGlobals->mapname), ( IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
 	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
+
+	char szMapadd[128];
+	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", gpGlobals->mapname);
+	KeyValues *pMapAdd = new KeyValues("MapData");
+	if (pMapAdd->LoadFromFile(filesystem, szMapadd, "GAME"))
+	{
+		if (pMapAdd->FindKey("population"))
+			m_iszPopulationTag = AllocPooledString(pMapAdd->GetString("population"));
+	}
+
+	pMapAdd->deleteThis();
 }
 
 static const char *g_DefaultLightstyles[] =

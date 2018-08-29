@@ -27,6 +27,23 @@
 #define SF_COMBINE_NO_GRENADEDROP ( 1 << 17 )
 #define SF_COMBINE_NO_AR2DROP ( 1 << 18 )
 
+enum {
+	COMBINE_VOICE_NORMAL = 0,
+	COMBINE_VOICE_ELITE,
+	COMBINE_VOICE_SYNTH
+};
+
+class CNPC_Combine;
+
+class CAI_CombineSentence : public CAI_Sentence<CNPC_Combine>
+{
+public:
+	int Speak(const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD);
+
+protected:
+	CNPC_Combine * GetSoldier() { return reinterpret_cast<CNPC_Combine *>(GetOuter()); }
+};
+
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
@@ -51,6 +68,7 @@ public:
 	int				MeleeAttack1Conditions( float flDot, float flDist ); // For kick/punch
 	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 	virtual bool	IsCurTaskContinuousMove();
+	virtual int		GetVoiceType() { return IsElite() ? COMBINE_VOICE_ELITE : COMBINE_VOICE_NORMAL; }
 
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
 
@@ -274,7 +292,7 @@ private:
 	float			m_flShotDelay;
 	float			m_flStopMoveShootTime;
 
-	CAI_Sentence< CNPC_Combine > m_Sentences;
+	CAI_CombineSentence m_Sentences;
 
 	int			m_iNumGrenades;
 	CAI_AssaultBehavior			m_AssaultBehavior;

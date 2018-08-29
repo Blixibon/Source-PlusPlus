@@ -1,0 +1,10 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/combine_soldier/metrocopelite_sheet"
+	"$bumpmap" "models/combine_soldier/metrocopelite_sheet_nm"
+	
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost" "5"
+	"$phongfresnelranges" "[0.05 0.2 0.6]"
+}

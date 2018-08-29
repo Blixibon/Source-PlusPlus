@@ -72,7 +72,6 @@ protected:
 	virtual float GetVolume() = 0;
 	virtual soundlevel_t GetSoundLevel() = 0;
 
-private:
 	// Speech criteria
 	bool MatchesCriteria( SentenceCriteria_t nCriteria );
 

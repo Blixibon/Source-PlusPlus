@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/sirgibs/weapons/hl2/w_smg1_leak/texture1"
+	"$selfillum" "1"
+}

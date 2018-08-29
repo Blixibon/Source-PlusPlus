@@ -7,7 +7,7 @@
 	"content"
 	{
 		"hl1_low"		"1"
-		"portal"		"1"
+		"portal_low"		"1"
 		"episodic"		"1"
 	}
 	"mount"
@@ -39,6 +39,7 @@
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared\csgo_ambient.vpk"
 			"GAME+mod+scenes"		"C:\GitHub\Source-PlusPlus\game\spp_shared"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal2_content"
+			"game"		"c:\github\source-plusplus\game\spp_shared\content\combine_extra"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\episodic_extra"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\ep2_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2"
@@ -47,11 +48,10 @@
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\lostcoast_extra"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\lostcoast\lostcoast_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\lostcoast"
+			"game"		"c:\github\source-plusplus\game\spp_shared\content\combine_extra"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\enhanced_citizens.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal_extra"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal\portal_pak.vpk"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\hl1_extra"
 			"game+mod+mod_write+default_write_path"		"|gameinfo_path|."
 			"gamebin"		"|gameinfo_path|bin"
@@ -69,8 +69,8 @@
 			"platform"		"|all_source_engine_paths|platform"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl1"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl1\hl1_pak.vpk"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Update\hl2"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Update\hl2\hl2_pak.vpk"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal\portal_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2"
 		}
 	}

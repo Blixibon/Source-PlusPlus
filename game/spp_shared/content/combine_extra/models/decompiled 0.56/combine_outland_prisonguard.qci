@@ -1,0 +1,38 @@
+// Created by Crowbar 0.56
+
+$BodyGroup "Soldier"
+{
+	studio "combine_outland_prisonguard_Soldier_reference_prisonguard.smd"
+}
+
+$Include "combine_outland_prisonguard_lod.qci"
+
+$SurfaceProp "flesh"
+
+$Contents "solid"
+
+$IllumPosition -2.255 0 36.711
+
+$EyePosition 0 0 73
+
+$CDMaterials "models\Combine_outland\"
+
+// $TextureGroup "skinfamilies"
+// {
+	// { "combinesoldiersheet_prisonguard"         }
+	// { "combinesoldiersheet_prisonguard_shotgun" }
+// }
+
+$Attachment "lefthand" "ValveBiped.Bip01_L_Hand" 0 0 0 rotate 0 0 0
+$Attachment "zipline" "ValveBiped.Bip01_Spine4" 3 -4 0 rotate 0 0 0
+$Attachment "eyes" "ValveBiped.Bip01_Head1" 4.5 -5 0 rotate 0 -90 -90
+$Attachment "anim_attachment_RH" "ValveBiped.Anim_Attachment_RH" 0 0 0 rotate -90 -90 0
+$Attachment "anim_attachment_LH" "ValveBiped.Anim_Attachment_LH" 0 0 0 rotate -90 -90 0
+
+$Include "combine_outland_prisonguard_box.qci"
+
+$Include "combine_outland_prisonguard_bone.qci"
+
+$Include "combine_outland_prisonguard_animation.qci"
+
+$Include "combine_outland_prisonguard_collision.qci"
