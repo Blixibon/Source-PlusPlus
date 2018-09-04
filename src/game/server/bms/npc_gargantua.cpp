@@ -455,7 +455,7 @@ int CNPC_Garg::SelectSchedule()
 
 	if (m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT)
 	{
-		return SCHED_PATROL_WALK_LOOP;
+		return SCHED_PATROL_WALK;
 	}
 	
 	return BaseClass::SelectSchedule();

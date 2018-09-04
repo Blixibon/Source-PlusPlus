@@ -97,6 +97,7 @@ protected:
 	virtual void	CreateCore( void );
 	virtual void	CreateDebris( void );
 	virtual void	CreateMisc( void );
+	virtual void	CreateDynamicLight(void) { return; }
 	virtual void	PlaySound( void );
 
 private:
@@ -123,6 +124,7 @@ public:
 protected:
 	virtual void	CreateCore( void );
 
+	virtual void	CreateDynamicLight(void) { return; }
 	virtual void	CreateDebris( void ) { };
 	virtual void	CreateMisc( void ) { };
 	virtual void	PlaySound( void ) { };

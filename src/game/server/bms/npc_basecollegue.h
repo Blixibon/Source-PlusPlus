@@ -2,7 +2,7 @@
 #define BASECOLLEGUE_H
 
 #include "ai_behavior_functank.h"
-#include "npc_playerfollower.h"
+#include "peter/npc_playerfollower.h"
 #include "bms_utils.h"
 
 #define SF_COLLEGUE_DONT_FOLLOW			( 1 << 16 )	//65536

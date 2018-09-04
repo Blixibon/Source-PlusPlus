@@ -27,5 +27,11 @@ $Project "Client (Lazuul)"
 			$File	"peter\newgamedialog.cpp"
 			$File	"peter\vsingleplayer.cpp"
 		}
+		
+		$Folder "Black Mesa"
+		{
+			$File	"bms\c_npc_gargantua.cpp"
+			$File	"$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
+		}
 	}
 }

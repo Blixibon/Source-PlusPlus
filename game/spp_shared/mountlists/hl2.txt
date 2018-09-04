@@ -1,5 +1,10 @@
 "Mount"
 {
+	sentence_files
+	{
+		file "scripts/sentences_hl2.txt"
+	}
+
 	// 290930
 	// {
 		// head 0

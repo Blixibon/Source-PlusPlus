@@ -9,8 +9,69 @@
 	"precache_file"		"scripts/game_sounds_cores_auto_generated.txt"
 	"precache_file"		"scripts/game_sounds_npc.txt"
 	"precache_file"		"scripts/game_sounds_vfx.txt"
+	"precache_file"		"scripts/hl1_game_sounds.txt"
 	"precache_file"		"scripts/game_sounds_hl1_extra.soundscript"
 	
 	// Lambda Wars
 	"precache_file"		"scripts/unit_sounds.txt"
+	
+	// BM:S npcs
+	"precache_file"		"scripts/npc_sounds_abrams.txt"
+	"precache_file"		"scripts/npc_sounds_alien_controller.txt"
+	"precache_file"		"scripts/npc_sounds_alien_controller_extra.txt"
+	"precache_file"		"scripts/npc_sounds_alien_grunt.txt"
+	"precache_file"		"scripts/npc_sounds_alien_slave.txt"
+	"precache_file"		"scripts/npc_sounds_apache.txt"
+	"precache_file"		"scripts/npc_sounds_assassin.txt"
+
+	"precache_file"		"scripts/npc_sounds_bullsquid.txt"
+	"precache_file"		"scripts/npc_sounds_gargantua.txt"
+	"precache_file"		"scripts/npc_sounds_gonarch.txt"
+	"precache_file"		"scripts/npc_sounds_hecu.txt"
+	"precache_file"		"scripts/npc_sounds_houndeye.txt"
+	"precache_file"		"scripts/npc_sounds_human_shared.txt"
+
+	"precache_file"		"scripts/npc_sounds_ichthyosaur.txt"
+	"precache_file"		"scripts/npc_sounds_lav.txt"
+	"precache_file"		"scripts/npc_sounds_nihilanth.txt"
+	"precache_file"		"scripts/npc_sounds_osprey.txt"
+	"precache_file"		"scripts/npc_sounds_securitygaurd.txt"
+	"precache_file"		"scripts/npc_sounds_sentry.txt"
+	"precache_file"		"scripts/npc_sounds_snark.txt"
+	"precache_file"		"scripts/npc_sounds_sniper.txt"
+	"precache_file"		"scripts/npc_sounds_SurgeryBot.txt"
+
+	"precache_file"		"scripts/npc_sounds_tentacle.txt"
+	"precache_file"		"scripts/npc_sounds_walker.txt"
+	"precache_file"		"scripts/npc_sounds_zombie.txt"
+
+	"precache_file"		"scripts/npc_sounds_scifemale.txt"
+	"precache_file"		"scripts/npc_sounds_scimale.txt"
+    
+//	Misc Sounds for Black Mesa
+	"precache_file"		"scripts/misc_sounds_dead_hev.txt"
+
+//  NPC Sounds for Black Mesa - Xen Chapters
+
+	"precache_file"		"scripts/game_sounds_xen2.txt"
+	"precache_file"		"scripts/game_sounds_xen_music.txt"
+	"precache_file"		"scripts/npc_sounds_xen_boid.txt"
+	"precache_file"		"scripts/npc_sounds_zombiehev.txt"
+	
+	"precache_file"		"scripts/game_sounds_scenes.txt"
+	"precache_file"		"scripts/game_sounds_scenes_IB.txt"
+	"precache_file"		"scripts/game_sounds_scenes_AM.txt"
+	"precache_file"		"scripts/game_sounds_scenes_UC.txt"
+	"precache_file"		"scripts/game_sounds_scenes_OC.txt"
+	"precache_file"		"scripts/game_sounds_scenes_WGH.txt"
+	"precache_file"		"scripts/game_sounds_scenes_BP.txt"
+	"precache_file"		"scripts/game_sounds_scenes_PU.txt"
+	"precache_file"		"scripts/game_sounds_scenes_OAR.txt"
+	"precache_file"		"scripts/game_sounds_scenes_APP.txt"
+	"precache_file"		"scripts/game_sounds_scenes_QE.txt"
+	"precache_file"		"scripts/game_sounds_scenes_ST.txt"
+	"precache_file"		"scripts/game_sounds_scenes_FAF.txt"
+	"precache_file"		"scripts/game_sounds_scenes_LC.txt"
+
+	"precache_file"		"scripts/game_sounds_scenes_ENDGAME.txt"
 }

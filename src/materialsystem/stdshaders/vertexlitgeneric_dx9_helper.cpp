@@ -230,6 +230,11 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 	{
 		params[info.m_nSelfIllumFresnel]->SetIntValue( 0 );
 	}
+
+	if (info.m_nTreeSwayWindVector != -1 && !params[info.m_nTreeSwayWindVector]->IsDefined())
+	{
+		params[info.m_nTreeSwayWindVector]->SetVecValue(vec3_invalid.Base(), 3);
+	}
 }
 
 
@@ -1570,7 +1575,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 		{
 			float fTempConst[4];
 			fTempConst[1] = pShaderAPI->CurrentTime();
-			const Vector& windDir = pShaderAPI->GetVectorRenderingParameter( VECTOR_RENDERPARM_WIND_DIRECTION );
+			Vector windDir;
+			params[info.m_nTreeSwayWindVector]->GetVecValue(windDir.Base(), 3);
+			if (windDir == vec3_invalid)
+				windDir = pShaderAPI->GetVectorRenderingParameter(VECTOR_RENDERPARM_WIND_DIRECTION);
 			fTempConst[2] = windDir.x;
 			fTempConst[3] = windDir.y;
 			DynamicCmdsOut.SetVertexShaderConstant(218, fTempConst );

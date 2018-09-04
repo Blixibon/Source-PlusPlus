@@ -37,6 +37,7 @@
 #include	"AI_Behavior_Follow.h"
 #include	"AI_Criteria.h"
 #include	"soundemittersystem/isoundemittersystembase.h"
+#include	"hl1_shareddefs.h"
 
 #define OT_ATTACK	"OT_ATTACK"
 #define OT_MAD		"OT_MAD"
@@ -137,7 +138,7 @@ void CNPC_Otis::Spawn()
 
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_OPEN_DOORS | bits_CAP_AUTO_DOORS | bits_CAP_USE | bits_CAP_DOORS_GROUP);
-	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_TURN_HEAD | bits_CAP_ANIMATEDFACE );
+	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_AIM_GUN | bits_CAP_TURN_HEAD | bits_CAP_ANIMATEDFACE );
 
 	NPCInit();
 
@@ -149,7 +150,7 @@ void CNPC_Otis::Spawn()
 //=========================================================
 void CNPC_Otis::Precache()
 {
-	m_iAmmoType = GetAmmoDef()->Index("357Round");
+	m_iAmmoType = GetAmmoDef()->Index(HL1_357_AMMO);
 
 	PrecacheModel("models/opfor/otis.mdl");
 

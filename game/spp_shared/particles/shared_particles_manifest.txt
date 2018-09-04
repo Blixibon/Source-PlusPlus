@@ -7,4 +7,7 @@ particles_manifest
 	"file"		"!particles/weapon_fx_l4d.pcf"
 	"file"		"!particles/ar2_muzzle.pcf"
 	"file"		"particles/pg_wars.pcf"
+	"file"		"!particles/c17_water_explosion.pcf"
+	"file"		"!particles/impact_fx_p2.pcf"
+	"file"		"particles/c17_c_cannon_explosions.pcf"
 }

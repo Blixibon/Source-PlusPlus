@@ -2598,7 +2598,7 @@ bool CAI_BaseNPC::FInAimCone( const Vector &vecSpot )
 
 	float flDot = DotProduct( los, facingDir );
 
-	if (CapabilitiesGet() & bits_CAP_AIM_GUN)
+	if (CapabilitiesGet() & bits_CAP_AIM_GUN && m_poseAim_Yaw != -1)
 	{
 		// FIXME: query current animation for ranges
 		return ( flDot > DOT_30DEGREE );

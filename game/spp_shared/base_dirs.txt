@@ -12,7 +12,7 @@
 		}
 	}
 
-	"|gameinfo_parent|"
+	"|shared_parent|"
 	{
 		"head"	"1"
 		

@@ -19,6 +19,10 @@
 #include "particle_parse.h"
 #include "particle_system.h"
 #include "ai_senses.h"
+#include "bms_utils.h"
+#include "ai_squad.h"
+#include "ai_interactions.h"
+#include "basegrenade_shared.h"
 
 #include "npc_vortigaunt_episodic.h"
 
@@ -40,6 +44,9 @@ class CVortigauntChargeToken;
 #define	VORTIGAUNT_HEAL_GLOWGROW_TIME		1.4			// How long does glow last
 #define	VORTIGAUNT_GLOWFADE_TIME			0.5			// How long does it fade
 #define VORTIGAUNT_CURE_LIFESPAN			8.0			// cure tokens only live this long (so they don't get stuck on geometry)
+#define	VORTIGAUNT_STOMP_DIST				40
+#define	VORTIGAUNT_STOMP_TURN_OFFSET		20
+
 
 #define	VORTIGAUNT_BLUE_FADE_TIME			2.25f		// takes this long to fade from green to blue or back
 
@@ -80,11 +87,24 @@ ConVar sk_vortigaunt_dmg_zap( "sk_vortigaunt_dmg_zap","0");
 ConVar sk_vortigaunt_zap_range( "sk_vortigaunt_zap_range", "100", FCVAR_NONE, "Range of vortigaunt's ranged attack (feet)" );
 ConVar sk_vortigaunt_vital_antlion_worker_dmg("sk_vortigaunt_vital_antlion_worker_dmg", "0.2", FCVAR_NONE, "Vital-ally vortigaunts scale damage taken from antlion workers by this amount." );
 
+ConVar sk_alien_slave_health("sk_alien_slave_health", "0");
+ConVar sk_alien_slave_charge_time("sk_alien_slave_charge_time", "0");
+ConVar sk_alien_slave_claw_range("sk_alien_slave_claw_range", "70");
+ConVar sk_alien_slave_dispel_dmg("sk_alien_slave_dispel_dmg", "0");
+ConVar sk_alien_slave_dispel_force("sk_alien_slave_dispel_force", "0");
+ConVar sk_alien_slave_dispel_forcez("sk_alien_slave_dispel_forcez", "0");
+ConVar sk_alien_slave_dispel_range("sk_alien_slave_dispel_range", "0");
+ConVar sk_alien_slave_dispel_time("sk_alien_slave_dispel_time", "0");
+ConVar sk_alien_slave_dmg_zap("sk_alien_slave_dmg_zap", "0");
+
 ConVar g_debug_vortigaunt_aim( "g_debug_vortigaunt_aim", "0" );
+
+#define	VORTIGAUNT_MELEE1_RANGE		sk_alien_slave_claw_range.GetFloat()
 
 // FIXME: Move to shared code!
 #define VORTFX_ZAPBEAM		0	// Beam that damages the target
 #define VORTFX_ARMBEAM		1	// Smaller beams from the hands as we charge up
+#define VORTFX_LIGHTOFF	2
 
 //-----------------------------------------------------------------------------
 // Interactions
@@ -104,6 +124,10 @@ int ACT_VORTIGAUNT_HEAL_LOOP;
 int ACT_VORTIGAUNT_END_HEAL;
 int ACT_VORTIGAUNT_TO_ACTION;
 int ACT_VORTIGAUNT_TO_IDLE;
+int ACT_VORTIGAUNT_STOMP;
+int ACT_VORTIGAUNT_DEFEND;
+int ACT_VORTIGAUNT_TO_DEFEND;
+int ACT_VORTIGAUNT_FROM_DEFEND;
 int ACT_VORTIGAUNT_HEAL; // Heal gesture
 int ACT_VORTIGAUNT_DISPEL;
 int ACT_VORTIGAUNT_ANTLION_THROW;
@@ -113,6 +137,7 @@ int ACT_VORTIGAUNT_ANTLION_THROW;
 //=========================================================
 int AE_VORTIGAUNT_CLAW_LEFT;
 int AE_VORTIGAUNT_CLAW_RIGHT;
+int AE_VORTIGAUNT_KICK;
 int AE_VORTIGAUNT_ZAP_POWERUP;
 int AE_VORTIGAUNT_ZAP_SHOOT;
 int AE_VORTIGAUNT_ZAP_DONE;
@@ -132,6 +157,9 @@ int AE_VORTIGAUNT_STOP_HURT_GLOW;	// Turn off the hurt handglow: 0=left, 1=right
 
 int	AE_VORTIGAUNT_START_HEAL_GLOW;	// 0 - Left, 1 - Right
 int AE_VORTIGAUNT_STOP_HEAL_GLOW;	// '
+
+int AE_VORTIGAUNT_STOMP;
+int AE_VORTIGAUNT_DEFEND_BEAMS;
 
 //-----------------------------------------------------------------------------
 // Squad slots
@@ -153,6 +181,8 @@ BEGIN_DATADESC( CNPC_Vortigaunt )
 	DEFINE_FIELD( m_bPlayerRequestedHeal,	FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flDispelTestTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_flHealHinderedTime,		FIELD_FLOAT ),
+	DEFINE_ARRAY(m_pBeam, FIELD_EHANDLE, VORTIGAUNT_MAX_BEAMS),
+	DEFINE_FIELD(m_iBeams, FIELD_INTEGER),
 	DEFINE_FIELD( m_nLightningSprite,		FIELD_INTEGER),
 	DEFINE_FIELD( m_fGlowAge,				FIELD_FLOAT),
 	DEFINE_FIELD( m_fGlowChangeTime,		FIELD_TIME),
@@ -163,6 +193,7 @@ BEGIN_DATADESC( CNPC_Vortigaunt )
 	DEFINE_FIELD( m_nextLineFireTime,		FIELD_TIME),
 	DEFINE_KEYFIELD( m_bArmorRechargeEnabled,FIELD_BOOLEAN, "ArmorRechargeEnabled" ),
 	DEFINE_FIELD( m_bForceArmorRecharge,	FIELD_BOOLEAN),
+	DEFINE_FIELD(m_hVictim, FIELD_EHANDLE),
 	DEFINE_FIELD( m_bExtractingBugbait,		FIELD_BOOLEAN),
 	DEFINE_FIELD( m_iLeftHandAttachment,	FIELD_INTEGER ),
 	DEFINE_FIELD( m_iRightHandAttachment,	FIELD_INTEGER ),
@@ -190,6 +221,7 @@ BEGIN_DATADESC( CNPC_Vortigaunt )
 	DEFINE_INPUTFUNC( FIELD_VOID,	"Dispel",				InputDispel ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"BeginCarryNPC",		InputBeginCarryNPC ),
 	DEFINE_INPUTFUNC( FIELD_VOID,	"EndCarryNPC",			InputEndCarryNPC ),
+	DEFINE_INPUTFUNC(FIELD_STRING, "Assault", InputAssault),
 
 	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "TurnBlue", InputTurnBlue ),
 	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "TurnBlack", InputTurnBlack ),
@@ -202,6 +234,7 @@ BEGIN_DATADESC( CNPC_Vortigaunt )
 END_DATADESC()
 
 LINK_ENTITY_TO_CLASS( npc_vortigaunt, CNPC_Vortigaunt );
+LINK_ENTITY_TO_CLASS(npc_alien_slave, CNPC_Vortigaunt);
 
 IMPLEMENT_SERVERCLASS_ST( CNPC_Vortigaunt, DT_NPC_Vortigaunt )
 	SendPropTime( SENDINFO (m_flBlueEndFadeTime ) ),
@@ -226,6 +259,24 @@ m_flAimDelay( 0.0f ),
 m_eHealState( HEAL_STATE_NONE )
 {
 }
+
+float CNPC_Vortigaunt::AttackSpeedScale()
+{
+	int iSeq = SelectWeightedSequence(ACT_RANGE_ATTACK1);
+	float flDuration = SequenceDuration(iSeq);
+	float flDesired = sk_alien_slave_charge_time.GetFloat();
+
+	if (flDesired <= 0)
+		return 1.0f;
+	if (flDuration <= 0)
+		return 1.0f;
+
+	float flScale = (flDuration / flDesired);
+
+	return flScale;
+}
+
+#define VORTIGAUNT_SLAVE_ATTACK_RATE AttackSpeedScale()
 
 //-----------------------------------------------------------------------------
 // Purpose: Determines whether or not the player is below a certain percentage
@@ -264,6 +315,97 @@ void CNPC_Vortigaunt::SpeakSentence( int sentenceType )
 	else if (sentenceType == VORT_FINISH_EXTRACT_SENTENCE)
 	{
 		Speak( VORT_EXTRACT_FINISH );
+	}
+}
+
+void CNPC_Vortigaunt::StartTaskRangeAttack1(const Task_t *pTask)
+{
+	if ((CapabilitiesGet() & bits_CAP_USE_SHOT_REGULATOR) == 0)
+	{
+		CAI_BaseHumanoidBase::StartTask(pTask);
+		if (IsPlayerEnemy())
+			SetPlaybackRate(VORTIGAUNT_SLAVE_ATTACK_RATE);
+		return;
+	}
+
+	// Can't shoot if we're in the rest interval; fail the schedule
+	if (GetShotRegulator()->IsInRestInterval())
+	{
+		TaskFail("Shot regulator in rest interval");
+		return;
+	}
+
+	if (GetShotRegulator()->ShouldShoot())
+	{
+		OnRangeAttack1();
+		ResetIdealActivity(ACT_RANGE_ATTACK1);
+		if (IsPlayerEnemy())
+			SetPlaybackRate(VORTIGAUNT_SLAVE_ATTACK_RATE);
+	}
+	else
+	{
+		// This can happen if we start while in the middle of a burst
+		// which shouldn't happen, but given the chaotic nature of our AI system,
+		// does occasionally happen.
+		ResetIdealActivity(ACT_IDLE_ANGRY);
+	}
+}
+
+void CNPC_Vortigaunt::RunTaskRangeAttack1(const Task_t *pTask)
+{
+	if ((CapabilitiesGet() & bits_CAP_USE_SHOT_REGULATOR) == 0)
+	{
+		CAI_BaseHumanoidBase::RunTask(pTask);
+		if (!TaskIsComplete())
+		{
+			if (IsPlayerEnemy())
+				SetPlaybackRate(VORTIGAUNT_SLAVE_ATTACK_RATE);
+		}
+		return;
+	}
+
+	AutoMovement();
+
+	Vector vecEnemyLKP = GetEnemyLKP();
+
+	// If our enemy was killed, but I'm not done animating, the last known position comes
+	// back as the origin and makes the me face the world origin if my attack schedule
+	// doesn't break when my enemy dies. (sjb)
+	if (vecEnemyLKP != vec3_origin)
+	{
+		if ((pTask->iTask == TASK_RANGE_ATTACK1 || pTask->iTask == TASK_RELOAD) &&
+			(CapabilitiesGet() & bits_CAP_AIM_GUN) &&
+			FInAimCone(vecEnemyLKP))
+		{
+			// Arms will aim, so leave body yaw as is
+			GetMotor()->SetIdealYawAndUpdate(GetMotor()->GetIdealYaw(), AI_KEEP_YAW_SPEED);
+		}
+		else
+		{
+			GetMotor()->SetIdealYawToTargetAndUpdate(vecEnemyLKP, AI_KEEP_YAW_SPEED);
+		}
+	}
+
+	if (IsActivityFinished())
+	{
+		if (!GetEnemy() || !GetEnemy()->IsAlive())
+		{
+			TaskComplete();
+			return;
+		}
+
+		if (!GetShotRegulator()->IsInRestInterval())
+		{
+			if (GetShotRegulator()->ShouldShoot())
+			{
+				OnRangeAttack1();
+				ResetIdealActivity(ACT_RANGE_ATTACK1);
+				if (IsPlayerEnemy())
+					SetPlaybackRate(VORTIGAUNT_SLAVE_ATTACK_RATE);
+			}
+			return;
+		}
+		TaskComplete();
 	}
 }
 
@@ -343,19 +485,63 @@ void CNPC_Vortigaunt::StartTask( const Task_t *pTask )
 		CBasePlayer *pPlayer = ToBasePlayer( m_hHealTarget );
 		if ( pPlayer == NULL )
 		{
-			TaskFail( "NULL Player in heal schedule!\n" );
-			return;
+			// Figure out how many tokens to spawn
+			float flArmorDelta = ((float)sk_vortigaunt_armor_charge.GetInt() * 2.0f) - m_hHealTarget->GetHealth();
+			m_nNumTokensToSpawn = ceil(flArmorDelta / sk_vortigaunt_armor_charge_per_token.GetInt());
 		}
-
-		// Figure out how many tokens to spawn
-		float flArmorDelta = (float) sk_vortigaunt_armor_charge.GetInt() - pPlayer->ArmorValue();
-		m_nNumTokensToSpawn = ceil( flArmorDelta / sk_vortigaunt_armor_charge_per_token.GetInt() );
-		
+		else
+		{
+			// Figure out how many tokens to spawn
+			float flArmorDelta = (float)sk_vortigaunt_armor_charge.GetInt() - pPlayer->ArmorValue();
+			m_nNumTokensToSpawn = ceil(flArmorDelta / sk_vortigaunt_armor_charge_per_token.GetInt());
+		}
 		// If we're forced to recharge, then at least send one
 		if ( m_bForceArmorRecharge && m_nNumTokensToSpawn <= 0 )
 			m_nNumTokensToSpawn = 1;
 		
 		TaskComplete();
+		break;
+	}
+
+	case TASK_VORTIGAUNT_FACE_STOMP:
+	{
+		if (GetEnemy() != NULL)
+		{
+			GetMotor()->SetIdealYaw(CalcIdealYaw(GetEnemy()->GetLocalOrigin()) + VORTIGAUNT_STOMP_TURN_OFFSET);
+			SetTurnActivity();
+		}
+		else
+		{
+			TaskFail(FAIL_NO_ENEMY);
+		}
+		break;
+	}
+	case TASK_VORTIGAUNT_STOMP_ATTACK:
+	{
+		m_flLastAttackTime = gpGlobals->curtime;
+		ResetIdealActivity((Activity)ACT_VORTIGAUNT_STOMP);
+		break;
+	}
+	case TASK_VORTIGAUNT_GRENADE_KILL:
+	{
+		if (GetTarget() == NULL)
+		{
+			TaskComplete();
+		}
+		// Used to set delay between beam shot and damage
+		ClearWait();
+
+		break;
+	}
+	case TASK_VORTIGAUNT_ZAP_GRENADE_OWNER:
+	{
+		if (GetEnemy() == NULL)
+		{
+			TaskComplete();
+		}
+		// Used to set delay between beam shot and damage
+		ClearWait();
+
 		break;
 	}
 
@@ -410,6 +596,61 @@ void CNPC_Vortigaunt::RunTask( const Task_t *pTask )
 			BaseClass::RunTask( pTask );
 			break;
 		}
+
+	case TASK_MELEE_ATTACK1:
+	{
+		if (GetEnemy() == NULL)
+		{
+			if (IsActivityFinished())
+			{
+				TaskComplete();
+			}
+		}
+		else
+		{
+			BaseClass::RunTask(pTask);
+		}
+		break;
+	}
+	case TASK_MELEE_ATTACK2:
+	{
+		if (IsActivityFinished())
+		{
+			TaskComplete();
+		}
+		break;
+	}
+	case TASK_VORTIGAUNT_STOMP_ATTACK:
+	{
+		// Face enemy slightly off center 
+		if (GetEnemy() != NULL)
+		{
+			GetMotor()->SetIdealYawAndUpdate(CalcIdealYaw(GetEnemy()->GetLocalOrigin()) + VORTIGAUNT_STOMP_TURN_OFFSET, AI_KEEP_YAW_SPEED);
+		}
+
+		if (IsActivityFinished())
+		{
+			TaskComplete();
+		}
+		break;
+	}
+	case TASK_VORTIGAUNT_FACE_STOMP:
+	{
+		if (GetEnemy() != NULL)
+		{
+			GetMotor()->SetIdealYawAndUpdate(CalcIdealYaw(GetEnemy()->GetLocalOrigin()) + VORTIGAUNT_STOMP_TURN_OFFSET);
+
+			if (FacingIdeal())
+			{
+				TaskComplete();
+			}
+		}
+		else
+		{
+			TaskFail(FAIL_NO_ENEMY);
+		}
+		break;
+	}
 	
 	case TASK_VORTIGAUNT_EXTRACT_WARMUP:
 	{
@@ -434,6 +675,85 @@ void CNPC_Vortigaunt::RunTask( const Task_t *pTask )
 		if ( IsActivityFinished() )
 		{
 			m_bExtractingBugbait = false;
+			TaskComplete();
+		}
+		break;
+	}
+
+	case TASK_VORTIGAUNT_GRENADE_KILL:
+	{
+		if (GetTarget() == NULL)
+		{
+			TaskComplete();
+			break;
+		}
+
+		// Face the grenade
+		GetMotor()->SetIdealYawToTargetAndUpdate(GetTarget()->GetLocalOrigin());
+
+		// Shoot beam when grenade is close
+		float flDist = (GetTarget()->GetLocalOrigin() - GetLocalOrigin()).Length();
+
+		if (flDist < 225)
+		{
+			ClawBeam(GetTarget(), 16, m_iLeftHandAttachment);
+			ClawBeam(GetTarget(), 16, m_iRightHandAttachment);
+		}
+		if (flDist < 150)
+		{
+			CBaseGrenade* pGrenade = dynamic_cast<CBaseGrenade*>((CBaseEntity*)GetTarget());
+			if (!pGrenade)
+			{
+				TaskComplete();
+			}
+			pGrenade->Detonate();
+			TaskComplete();
+		}
+		break;
+	}
+	case TASK_VORTIGAUNT_ZAP_GRENADE_OWNER:
+	{
+		if (GetEnemy() == NULL)
+		{
+			TaskComplete();
+			break;
+		}
+
+		// Face the grenade owner
+		GetMotor()->SetIdealYawToTargetAndUpdate(GetEnemy()->GetLocalOrigin());
+
+		// Shoot beam only if enemy is close enough
+		float flDist = (GetEnemy()->GetLocalOrigin() - GetLocalOrigin()).Length();
+		if (flDist < 350)
+		{
+			if (!IsWaitSet() ||
+				IsWaitFinished())
+			{
+				ClawBeam(GetEnemy(), 5, m_iLeftHandAttachment);
+				ClawBeam(GetEnemy(), 5, m_iRightHandAttachment);
+
+				// Set a delay and then we do damage.  Store in
+				// m_hVictim in case we are interrupted
+				if (!IsWaitSet())
+				{
+					SetWait(0.2);
+					m_hVictim = GetEnemy();
+				}
+			}
+			else
+			{
+				if (m_hVictim != NULL)
+				{
+					CTakeDamageInfo info(this, this, 15, DMG_SHOCK);
+					CalculateMeleeDamageForce(&info, (GetEnemy()->GetAbsOrigin() - GetAbsOrigin()), GetEnemy()->GetAbsOrigin());
+					m_hVictim->MyNPCPointer()->TakeDamage(info);
+				}
+				TaskComplete();
+			}
+		}
+		else
+		{
+			// To far away to shoot
 			TaskComplete();
 		}
 		break;
@@ -606,13 +926,20 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 	if ( gpGlobals->curtime < m_flNextAttack )
 		return COND_NONE;
 
+	// Range attack is ineffective on manhack so never use it
+	// Melee attack looks a lot better anyway
+	if (GetEnemy()->Classify() == CLASS_MANHACK)
+	{
+		return(COND_NONE);
+	}
+
 	// Don't do shooting while playing a scene
 	if ( IsCurSchedule( SCHED_SCENE_GENERIC ) )
 		return COND_NONE;
 
 	// dvs: Allow up-close range attacks for episodic as the vort's melee
 	// attack is rather ineffective.
-#ifndef HL2_EPISODIC
+#ifdef HL2_EPISODIC
 	if ( flDist <= 70 )
 	{
 		return( COND_TOO_CLOSE_TO_ATTACK );
@@ -655,6 +982,80 @@ int CNPC_Vortigaunt::RangeAttack1Conditions( float flDot, float flDist )
 	return COND_CAN_RANGE_ATTACK1;
 }
 
+int CNPC_Vortigaunt::MeleeAttack2Conditions(float flDot, float flDist)
+{
+#if 1 //NOTENOTE: Use predicted position melee attacks
+
+	//Get our likely position in one half second
+	Vector vecPrPos;
+	UTIL_PredictedPosition(GetEnemy(), 0.5f, &vecPrPos);
+
+	//Get the predicted distance and direction
+	float flPrDist = (vecPrPos - GetAbsOrigin()).LengthSqr();
+	if (flPrDist > Square(VORTIGAUNT_MELEE1_RANGE))
+		return COND_TOO_FAR_TO_ATTACK;
+
+	// Compare our target direction to our body facing
+	Vector2D vec2DPrDir = (vecPrPos - GetAbsOrigin()).AsVector2D();
+	Vector2D vec2DBodyDir = BodyDirection2D().AsVector2D();
+
+	float flPrDot = DotProduct2D(vec2DPrDir, vec2DBodyDir);
+	if (flPrDot < 0.5f)
+	{
+		ClearCondition(COND_TOO_FAR_TO_ATTACK);
+		return COND_NOT_FACING_ATTACK;
+	}
+	trace_t	tr;
+	AI_TraceHull(WorldSpaceCenter(), GetEnemy()->WorldSpaceCenter(), -Vector(8, 8, 8), Vector(8, 8, 8), MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr);
+
+	// If the hit entity isn't our target and we don't hate it, don't hit it
+	if (tr.m_pEnt != GetEnemy() && tr.fraction < 1.0f && IRelationType(tr.m_pEnt) != D_HT)
+		return 0;
+
+	// no melee attacks against rollermins
+	if (IsRoller(GetEnemy()))
+		return COND_NONE;
+
+	/*if (GetEnemy()->IsNPC())
+	{
+		CAI_BaseNPC *pNpc = static_cast<CAI_BaseNPC *>(GetEnemy());
+		Vector vecEnemyTop = GetEnemy()->GetAbsOrigin();
+		vecEnemyTop.z += pNpc->GetHullHeight();
+		if (vecEnemyTop.z < WorldSpaceCenter().z)
+			return COND_CAN_MELEE_ATTACK2;
+	}*/
+#else
+
+	if (flDot < 0.5f)
+		return COND_NOT_FACING_ATTACK;
+
+	float flAdjustedDist = VORTIGAUNT_MELEE1_RANGE;
+
+	if (GetEnemy())
+	{
+		// Give us extra space if our enemy is in a vehicle
+		CBaseCombatCharacter *pCCEnemy = GetEnemy()->MyCombatCharacterPointer();
+		if (pCCEnemy != NULL && pCCEnemy->IsInAVehicle())
+		{
+			flAdjustedDist *= 2.0f;
+		}
+	}
+
+	if (flDist > flAdjustedDist)
+		return COND_TOO_FAR_TO_ATTACK;
+
+	trace_t	tr;
+	AI_TraceHull(WorldSpaceCenter(), GetEnemy()->WorldSpaceCenter(), -Vector(8, 8, 8), Vector(8, 8, 8), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+
+	if (tr.fraction < 1.0f)
+		return 0;
+
+#endif
+	
+	return COND_CAN_MELEE_ATTACK1;
+}
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Test for close-up dispel
 //-----------------------------------------------------------------------------
@@ -665,11 +1066,11 @@ int CNPC_Vortigaunt::MeleeAttack1Conditions( float flDot, float flDist )
 
 	m_flDispelTestTime = gpGlobals->curtime + 1.0f;
 
-	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_ANTLION )
+	if ( GetEnemy() /*&& GetEnemy()->Classify() == CLASS_ANTLION*/ )
 	{
-		if ( NumAntlionsInRadius(128) > 3 )
+		if ( NumAntlionsInRadius(sk_alien_slave_dispel_range.GetFloat()) > 3 )
 		{
-			m_flDispelTestTime = gpGlobals->curtime + 15.0f;
+			m_flDispelTestTime = gpGlobals->curtime + sk_alien_slave_dispel_time.GetFloat() /*15.0f*/;
 			return COND_VORTIGAUNT_DISPEL_ANTLIONS;
 		}
 	}
@@ -686,11 +1087,11 @@ int CNPC_Vortigaunt::NumAntlionsInRadius( float flRadius )
 {
 	CBaseEntity *sEnemySearch[16];
 	int nNumAntlions = 0;
-	int nNumEnemies = UTIL_EntitiesInBox( sEnemySearch, ARRAYSIZE(sEnemySearch), GetAbsOrigin()-Vector(flRadius,flRadius,flRadius), GetAbsOrigin()+Vector(flRadius,flRadius,flRadius), FL_NPC );
+	int nNumEnemies = UTIL_EntitiesInBox( sEnemySearch, ARRAYSIZE(sEnemySearch), GetAbsOrigin()-Vector(flRadius,flRadius,flRadius), GetAbsOrigin()+Vector(flRadius,flRadius,flRadius), FL_NPC|FL_CLIENT );
 	for ( int i = 0; i < nNumEnemies; i++ )
 	{
 		// We only care about antlions
-		if ( sEnemySearch[i] == NULL || sEnemySearch[i]->Classify() != CLASS_ANTLION )
+		if ( sEnemySearch[i] == NULL || IRelationType(sEnemySearch[i]) != D_HT )
 			continue;
 
 		nNumAntlions++;
@@ -705,6 +1106,47 @@ int CNPC_Vortigaunt::NumAntlionsInRadius( float flRadius )
 int CNPC_Vortigaunt::RangeAttack2Conditions( float flDot, float flDist )
 {
 	return COND_NONE;
+}
+
+//------------------------------------------------------------------------------
+// Purpose : Returns who I hit on a kick (or NULL)
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+CBaseEntity*	CNPC_Vortigaunt::Kick(void)
+{
+	trace_t tr;
+
+	Vector forward;
+	AngleVectors(GetAbsAngles(), &forward);
+	Vector vecStart = WorldSpaceCenter();
+	Vector vecEnd = vecStart + (forward * VORTIGAUNT_MELEE1_RANGE);
+
+	AI_TraceHull(vecStart, vecEnd, Vector(-16, -16, -18), Vector(16, 16, 18),
+		MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &tr);
+
+	return tr.m_pEnt;
+}
+
+//------------------------------------------------------------------------------
+// Purpose : Vortigaunt claws at his enemy
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+void CNPC_Vortigaunt::Claw(int iAttachment)
+{
+	CBaseEntity *pHurt = CheckTraceHullAttack(VORTIGAUNT_MELEE1_RANGE, Vector(-10, -10, -10), Vector(10, 10, 10), sk_vortigaunt_dmg_claw.GetFloat(), DMG_SLASH);
+	if (pHurt)
+	{
+		pHurt->ViewPunch(QAngle(5, 0, -18));
+		// If hit manhack make temp glow
+		if (pHurt->Classify() == CLASS_MANHACK)
+		{
+			ClawBeam(pHurt, 16, iAttachment);
+		}
+		// Play a random attack hit sound
+		EmitSound("NPC_Vortigaunt.Claw");
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -768,7 +1210,7 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 	// Kaboom!
 	if ( pEvent->event == AE_VORTIGAUNT_DISPEL )
 	{
-		DispelAntlions( GetAbsOrigin(), 400.0f );
+		Dispel( GetAbsOrigin(), 400.0f );
 		return;
 	}
 
@@ -993,10 +1435,191 @@ void CNPC_Vortigaunt::HandleAnimEvent( animevent_t *pEvent )
 		EmitSound( "NPC_Vortigaunt.FootstepRight", pEvent->eventtime );
 		return;
 	}
+
+	/*if (pEvent->event == AE_VORTIGAUNT_CLAW_LEFT)
+	{
+		QAngle qa(20.0f, 0.0f, -12.0f);
+		Vector vec(-250.0f, 1.0f, 1.0f);
+		MeleeAttack(VORTIGAUNT_MELEE1_RANGE, sk_vortigaunt_dmg_rake.GetFloat(), qa, vec);
+		return;
+	}
+
+	if (pEvent->event == AE_VORTIGAUNT_CLAW_RIGHT)
+	{
+		QAngle qa(20.0f, 0.0f, -12.0f);
+		Vector vec(-250.0f, 1.0f, 1.0f);
+		MeleeAttack(VORTIGAUNT_MELEE1_RANGE, sk_vortigaunt_dmg_claw.GetFloat(), qa, vec);
+		return;
+	}
+
+	if (pEvent->event == AE_VORTIGAUNT_KICK)
+	{
+		QAngle qa(20.0f, 0.0f, -12.0f);
+		Vector vec(-250.0f, 1.0f, 1.0f);
+		MeleeAttack(VORTIGAUNT_MELEE1_RANGE, sk_vortigaunt_dmg_rake.GetFloat(), qa, vec, true);
+		return;
+	}*/
+
+	if (pEvent->event == AE_VORTIGAUNT_CLAW_RIGHT)
+	{
+		Claw(m_iLeftHandAttachment);
+		return;
+	}
+
+	if (pEvent->event == AE_VORTIGAUNT_CLAW_LEFT)
+	{
+		Claw(m_iRightHandAttachment);
+		return;
+	}
+
+	if (pEvent->event == AE_VORTIGAUNT_KICK)
+	{
+		CBaseEntity *pHurt = Kick();
+		CBaseCombatCharacter* pBCC = ToBaseCombatCharacter(pHurt);
+
+		if (pBCC)
+		{
+			Vector forward, up;
+			AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+
+			if (pBCC->DispatchInteraction(g_interactionVortigauntKick, NULL, this))
+			{
+				pBCC->ApplyAbsVelocityImpulse(forward * 300 + up * 250);
+
+				CTakeDamageInfo info(this, this, pBCC->m_iHealth + 1, DMG_CLUB);
+				CalculateMeleeDamageForce(&info, forward, pHurt->GetAbsOrigin());
+				pBCC->TakeDamage(info);
+			}
+			else
+			{
+				pBCC->ViewPunch(QAngle(15, 0, 0));
+
+				CTakeDamageInfo info(this, this, sk_vortigaunt_dmg_claw.GetFloat(), DMG_CLUB);
+				CalculateMeleeDamageForce(&info, forward, pHurt->GetAbsOrigin());
+				pBCC->TakeDamage(info);
+			}
+			EmitSound("NPC_Vortigaunt.Kick");
+		}
+
+		return;
+	}
+
+	if (pEvent->event == AE_VORTIGAUNT_STOMP)
+	{
+		CBaseCombatCharacter* pBCC = GetEnemyCombatCharacterPointer();
+
+		if (pBCC)
+		{
+			float fDist = (pBCC->GetLocalOrigin() - GetLocalOrigin()).Length();
+			if (fDist > VORTIGAUNT_STOMP_DIST)
+			{
+				pBCC->DispatchInteraction(g_interactionVortigauntStompFail, NULL, this);
+				return;
+			}
+			else
+			{
+				pBCC->DispatchInteraction(g_interactionVortigauntStompHit, NULL, this);
+			}
+			EmitSound("NPC_Vortigaunt.Kick");
+		}
+
+		return;
+	}
+
+	if (pEvent->event == AE_VORTIGAUNT_DEFEND_BEAMS)
+	{
+		DefendBeams();
+		return;
+	}
 	
 	BaseClass::HandleAnimEvent( pEvent );
 }
 
+#define VORT_CLAW_DMGTYPE (DMG_CLUB | DMG_SLASH)
+
+void CNPC_Vortigaunt::MeleeAttack(float distance, float damage, QAngle &viewPunch, Vector &shove, bool kick)
+{
+	Vector vecForceDir;
+
+	// Always hurt bullseyes for now
+	if ((GetEnemy() != NULL) && (GetEnemy()->Classify() == CLASS_BULLSEYE))
+	{
+		vecForceDir = (GetEnemy()->GetAbsOrigin() - GetAbsOrigin());
+		CTakeDamageInfo info(this, this, damage, DMG_SLASH);
+		CalculateMeleeDamageForce(&info, vecForceDir, GetEnemy()->GetAbsOrigin());
+		GetEnemy()->TakeDamage(info);
+		return;
+	}
+	CBaseEntity *pHurt;
+
+	if (!kick)
+	{
+		pHurt = CheckTraceHullAttack(distance, -Vector(16, 16, 32), Vector(16, 16, 32), damage, VORT_CLAW_DMGTYPE, 1);
+
+		if (pHurt)
+		{
+			vecForceDir = (pHurt->WorldSpaceCenter() - WorldSpaceCenter());
+
+			//FIXME: Until the interaction is setup, kill combine soldiers in one hit -- jdw
+			if (FClassnameIs(pHurt, "npc_combine_s"))
+			{
+				CTakeDamageInfo	dmgInfo(this, this, pHurt->m_iHealth + 25, VORT_CLAW_DMGTYPE);
+				CalculateMeleeDamageForce(&dmgInfo, vecForceDir, pHurt->GetAbsOrigin());
+				pHurt->TakeDamage(dmgInfo);
+				return;
+			}
+
+			CBasePlayer *pPlayer = ToBasePlayer(pHurt);
+
+			if (pPlayer != NULL)
+			{
+				//Kick the player angles
+				if (!(pPlayer->GetFlags() & FL_GODMODE) && pPlayer->GetMoveType() != MOVETYPE_NOCLIP)
+				{
+					pPlayer->ViewPunch(viewPunch);
+
+					Vector	dir = pHurt->GetAbsOrigin() - GetAbsOrigin();
+					VectorNormalize(dir);
+
+					QAngle angles;
+					VectorAngles(dir, angles);
+					Vector forward, right;
+					AngleVectors(angles, &forward, &right, NULL);
+
+					//Push the target back
+					pHurt->ApplyAbsVelocityImpulse(-right * shove[1] - forward * shove[0]);
+				}
+			}
+
+
+
+
+			// Play a random attack hit sound
+
+		}
+	}
+	else
+	{
+		int idamage = GetEnemy()->GetMaxHealth() - GetEnemy()->GetHealth();
+		idamage += damage;
+		pHurt = CheckTraceHullAttack(distance, -Vector(16, 16, 32), Vector(16, 16, 32), idamage, (DMG_CLUB), 5.0f);
+	}
+	// did I hit someone?
+	if (pHurt)
+	{
+		// play sound
+		EmitSound("Weapon_Crowbar.Melee_Hit");
+
+		// Fake a trace impact, so the effects work out like a player's crowbaw
+		trace_t traceHit;
+		UTIL_TraceLine(Weapon_ShootPosition(), pHurt->GetAbsOrigin(), MASK_SHOT_HULL, this, COLLISION_GROUP_NONE, &traceHit);
+		UTIL_ImpactTrace(&traceHit, DMG_CLUB);
+	}
+	/*else
+	{
+		GetActiveWeapon()->WeaponSound(MELEE_MISS);
+	}*/
+}
 
 //------------------------------------------------------------------------------
 // Purpose : Turn blue or green
@@ -1023,6 +1646,36 @@ void CNPC_Vortigaunt::InputTurnBlack( inputdata_t &data )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_Vortigaunt::InputAssault(inputdata_t &inputdata)
+{
+	m_AssaultBehavior.SetParameters(AllocPooledString(inputdata.value.String()), CUE_DONT_WAIT, RALLY_POINT_SELECT_DEFAULT);
+}
+
+//------------------------------------------------------------------------------
+// Purpose : Returnst true if entity is stompable
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+bool CNPC_Vortigaunt::IsStompable(CBaseEntity *pEntity)
+{
+	if (!pEntity)
+		return false;
+
+	float fDist = (pEntity->GetLocalOrigin() - GetLocalOrigin()).Length();
+	if (fDist > VORTIGAUNT_STOMP_DIST)
+		return false;
+
+	CBaseCombatCharacter* pBCC = (CBaseCombatCharacter *)pEntity;
+
+	if (pBCC && pBCC->DispatchInteraction(g_interactionVortigauntStomp, NULL, this))
+		return true;
+
+	return false;
+}
+
 //------------------------------------------------------------------------------
 // Purpose : Translate some activites for the Vortigaunt
 //------------------------------------------------------------------------------
@@ -1044,6 +1697,14 @@ Activity CNPC_Vortigaunt::NPC_TranslateActivity( Activity eNewActivity )
 		// More than relaxed means we're stimulated
 		if ( GetReadinessLevel() >= AIRL_STIMULATED )
 			return ACT_IDLE_STIMULATED;
+	}
+	else if (eNewActivity == ACT_MELEE_ATTACK1)
+	{
+		// If enemy is low pick ATTACK2 (kick)
+		if (GetEnemy() != NULL && (GetEnemy()->EyePosition().z - GetLocalOrigin().z) < 20)
+		{
+			return ACT_MELEE_ATTACK2;
+		}
 	}
 
 	if ( eNewActivity == ACT_RANGE_ATTACK2 )
@@ -1085,12 +1746,32 @@ void CNPC_Vortigaunt::Spawn( void )
 	AddSpawnFlags( SF_NPC_NO_PLAYER_PUSHAWAY );
 #endif // HL2_EPISODIC
 
+	if (IsBMSMap())
+		SetClassname("npc_alien_slave");
+
 	// Allow multiple models (for slaves), but default to vortigaunt.mdl
-	const char *szModel = STRING( GetModelName() );
+	char *szModel = (char *)STRING( GetModelName() );
 	if (!szModel || !*szModel)
 	{
-		szModel = "models/vortigaunt.mdl";
-		SetModelName( AllocPooledString(szModel) );
+		if (FClassnameIs(this, "npc_alien_slave"))
+		{
+			szModel = "models/vortigaunt_slave.mdl";
+		}
+		else
+		{
+			szModel = "models/vortigaunt.mdl";
+		}
+		SetModelName(AllocPooledString(szModel));
+	}
+
+	if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep1_citadel_00", 14) /*&& !Q_strnicmp(STRING(GetModelName()), "models/vortigaunt.mdl", 21)*/)
+	{
+		SetModelName(AllocPooledString("models/vortigaunt_blue.mdl"));
+
+		variant_t var;
+		var.SetBool(true);
+
+		AcceptInput("TurnBlue", this, this, var, 0);
 	}
 
 	BaseClass::Spawn();
@@ -1103,11 +1784,18 @@ void CNPC_Vortigaunt::Spawn( void )
 	SetHullSizeNormal();
 
 	m_bloodColor		= BLOOD_COLOR_GREEN;
-	m_iHealth			= sk_vortigaunt_health.GetFloat();
+	if (FClassnameIs(this, "npc_alien_slave"))
+		m_iHealth = sk_alien_slave_health.GetFloat();
+	else
+		m_iHealth			= sk_vortigaunt_health.GetFloat();
+
 	SetViewOffset( Vector ( 0, 0, 64 ) );// position of the eyes relative to monster's origin.
 
-	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 );
+	CapabilitiesAdd(bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_MELEE_ATTACK2);
+	CapabilitiesAdd(bits_CAP_MOVE_JUMP);
 	CapabilitiesRemove( bits_CAP_USE_SHOT_REGULATOR );
+	if (Classify() == CLASS_VORTIGAUNT)
+		AddEFlags(EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL);
 
 	m_flEyeIntegRate		= 0.6f;		// Got a big eyeball so turn it slower
 	m_bForceArmorRecharge	= false;
@@ -1128,6 +1816,8 @@ void CNPC_Vortigaunt::Spawn( void )
 	GetShotRegulator()->SetBurstInterval( 2.0f, 2.0f );
 	GetShotRegulator()->SetBurstShotCountRange( 1, 1 );
 	GetShotRegulator()->SetRestInterval( 2.0f, 2.0f );
+
+	m_FollowBehavior.SetParameters(AIF_VORTIGAUNT);
 }
 
 //-----------------------------------------------------------------------------
@@ -1145,10 +1835,10 @@ void CNPC_Vortigaunt::Precache()
 	// HACK: Only precache this for EP2 because reslists cannot be rebuilt - 08/22/07 - jdw
 	if ( hl2_episodic.GetBool() )
 	{
-		char modDir[MAX_PATH];
-		if ( UTIL_GetModDir( modDir, sizeof(modDir) ) )
+		//char modDir[MAX_PATH];
+		//if ( UTIL_GetModDir( modDir, sizeof(modDir) ) )
 		{
-			if ( !Q_stricmp( modDir, "ep2" ) )
+			//if ( !Q_stricmp( modDir, "ep2" ) )
 			{
 				PrecacheMaterial( "effects/rollerglow" );
 			}
@@ -1161,6 +1851,9 @@ void CNPC_Vortigaunt::Precache()
 	PrecacheScriptSound( "NPC_Vortigaunt.ClawBeam" );
 	PrecacheScriptSound( "NPC_Vortigaunt.StartHealLoop" );
 	PrecacheScriptSound( "NPC_Vortigaunt.Swing" );
+	PrecacheScriptSound("Weapon_Crowbar.Melee_Hit");
+	PrecacheScriptSound("NPC_Vortigaunt.Claw");
+	PrecacheScriptSound("NPC_Vortigaunt.Kick");
 	PrecacheScriptSound( "NPC_Vortigaunt.StartShootLoop" );
 	PrecacheScriptSound( "NPC_Vortigaunt.FootstepLeft" );
 	PrecacheScriptSound( "NPC_Vortigaunt.FootstepRight" );
@@ -1317,6 +2010,25 @@ int CNPC_Vortigaunt::TranslateSchedule( int scheduleType )
 		return SCHED_VORTIGAUNT_RANGE_ATTACK;
 		break;
 
+	case SCHED_MELEE_ATTACK1:
+		if (IsStompable(GetEnemy()))
+		{
+			return SCHED_VORTIGAUNT_STOMP_ATTACK;
+		}
+		else
+		{
+			// Tell my enemy I'm about to punch them so they can do something
+			// special if they want to
+			if ((GetEnemy() != NULL) && (GetEnemy()->MyNPCPointer() != NULL))
+			{
+				Vector vFacingDir = BodyDirection2D();
+				Vector vClawPos = EyePosition() + vFacingDir * 30;
+				GetEnemy()->MyNPCPointer()->DispatchInteraction(g_interactionVortigauntClaw, &vClawPos, this);
+			}
+			return SCHED_VORTIGAUNT_MELEE_ATTACK;
+		}
+		break;
+
 	/*
 	case SCHED_CHASE_ENEMY:
 	case SCHED_ESTABLISH_LINE_OF_FIRE:
@@ -1361,8 +2073,34 @@ CBaseEntity *CNPC_Vortigaunt::FindHealTarget( void )
 	CBaseEntity *pEntity = PlayerInRange( GetAbsOrigin(), HEAL_SEARCH_RANGE );
 
 	// Make sure we can heal that target
-	if ( ShouldHealTarget( pEntity ) == false )
-		return NULL;
+	if (ShouldHealTarget(pEntity) == false)
+	{
+		if (m_pSquad)
+		{
+			pEntity = NULL;
+			float distClosestSq = HEAL_SEARCH_RANGE*HEAL_SEARCH_RANGE;
+			float distCurSq;
+
+			AISquadIter_t iter;
+			CAI_BaseNPC *pSquadmate = m_pSquad->GetFirstMember(&iter);
+			while (pSquadmate)
+			{
+				if (pSquadmate != this)
+				{
+					distCurSq = (GetAbsOrigin() - pSquadmate->GetAbsOrigin()).LengthSqr();
+					if (distCurSq < distClosestSq && ShouldHealTarget(pSquadmate))
+					{
+						distClosestSq = distCurSq;
+						pEntity = pSquadmate;
+					}
+				}
+
+				pSquadmate = m_pSquad->GetNextMember(&iter);
+			}		
+		}
+		if (ShouldHealTarget(pEntity) == false)
+			return NULL;
+	}
 
 	return pEntity;
 }
@@ -1421,38 +2159,57 @@ bool CNPC_Vortigaunt::ShouldHealTarget( CBaseEntity *pTarget )
 
 	// We only heal players
 	CBasePlayer *pPlayer = ToBasePlayer( pTarget );
-	if ( pPlayer == NULL )
-		return false;
-
-	// Make sure the player's got a suit
-	if ( pPlayer->IsSuitEquipped() == false )
-		return false;
-
-	// Don't heal a target we can't see..?
-	if ( pPlayer->GetFlags() & FL_NOTARGET )
-		return false;
-
-	// See if the player needs armor
-	if ( pPlayer->ArmorValue() >= (sk_vortigaunt_armor_charge.GetFloat()*0.66f) )
-		return false;
-
-	// Must be alive!
-	if ( pPlayer->IsAlive() == false )
-		return false;
-
-	// Only consider things in here if the player is NOT at critical health or the heal is a passive one (not requested)
-	if ( PlayerBelowHealthPercentage( pPlayer, PLAYER_CRITICAL_HEALTH_PERC ) == false || m_bPlayerRequestedHeal )
+	if (pPlayer != NULL)
 	{
-		// Don't heal when fighting
-		if ( m_NPCState == NPC_STATE_COMBAT )
+
+		// Make sure the player's got a suit
+		if (pPlayer->IsSuitEquipped() == false)
 			return false;
 
-		// No enemies
-		if ( GetEnemy() )
+		// Don't heal a target we can't see..?
+		if (pPlayer->GetFlags() & FL_NOTARGET)
+			return false;
+
+		// See if the player needs armor
+		if (pPlayer->ArmorValue() >= (sk_vortigaunt_armor_charge.GetFloat()*0.66f))
+			return false;
+
+		// Must be alive!
+		if (pPlayer->IsAlive() == false)
+			return false;
+
+		// Only consider things in here if the player is NOT at critical health or the heal is a passive one (not requested)
+		if (PlayerBelowHealthPercentage(pPlayer, PLAYER_CRITICAL_HEALTH_PERC) == false || m_bPlayerRequestedHeal)
+		{
+			// Don't heal when fighting
+			if (m_NPCState == NPC_STATE_COMBAT)
+				return false;
+
+			// No enemies
+			if (GetEnemy())
+				return false;
+
+			// No recent damage
+			if (HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE))
+				return false;
+		}
+	}
+	else
+	{
+		// Must be alive!
+		if (pTarget->IsAlive() == false)
+			return false;
+
+		// Don't heal a target we can't see..?
+		if (pTarget->GetFlags() & FL_NOTARGET)
+			return false;
+
+		// See if the player needs armor
+		if (pTarget->GetHealth() >= (sk_vortigaunt_armor_charge.GetFloat()*0.66f) || pTarget->GetMaxHealth() < sk_vortigaunt_armor_charge.GetInt())
 			return false;
 
 		// No recent damage
-		if ( HasCondition( COND_LIGHT_DAMAGE ) || HasCondition( COND_HEAVY_DAMAGE ) )
+		if (HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE))
 			return false;
 	}
 
@@ -1542,6 +2299,18 @@ void CNPC_Vortigaunt::OnScheduleChange( void )
 //------------------------------------------------------------------------------
 int CNPC_Vortigaunt::SelectSchedule( void )
 {
+	if (GetState() == NPC_STATE_PRONE)
+	{
+//		if (m_bInBarnacleMouth)
+		{
+			return SCHED_VORTIGAUNT_BARNACLE_CHOMP;
+		}
+		//else
+		{
+			return SCHED_VORTIGAUNT_BARNACLE_HIT;
+		}
+	}
+
 	// Always recharge in this case
 	if ( m_bForceArmorRecharge )
 	{
@@ -1588,11 +2357,55 @@ int CNPC_Vortigaunt::SelectFailSchedule( int failedSchedule, int failedTask, AI_
 	{
 		if ( GetEnemy() && GetSenses()->CanSeeEntity( GetEnemy() ) )
 		{
-			return SCHED_RANGE_ATTACK1;
+			if (RandomInt(0, 5) >= 3)
+				return SCHED_MELEE_ATTACK1;
+			else
+				return SCHED_RANGE_ATTACK1;
 		}
 	}
 
 	return BaseClass::SelectFailSchedule( failedSchedule, failedTask, taskFailCode );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:  This is a generic function (to be implemented by sub-classes) to
+//			 handle specific interactions between different types of characters
+//			 (For example the barnacle grabbing an NPC)
+// Input  :  Constant for the type of interaction
+// Output :	 true  - if sub-class has a response for the interaction
+//			 false - if sub-class has no response
+//-----------------------------------------------------------------------------
+bool CNPC_Vortigaunt::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
+{
+	if (interactionType == g_interactionBarnacleVictimDangle)
+	{
+		// Force choosing of a new schedule
+		ClearSchedule("Bitten by barnacle.");
+		//m_bInBarnacleMouth = true;
+		return true;
+	}
+	else if (interactionType == g_interactionBarnacleVictimReleased)
+	{
+		SetIdealState(NPC_STATE_IDLE);
+
+//		m_bInBarnacleMouth = false;
+		SetAbsVelocity(vec3_origin);
+		SetMoveType(MOVETYPE_STEP);
+		return true;
+	}
+	else if (interactionType == g_interactionBarnacleVictimGrab)
+	{
+		if (GetFlags() & FL_ONGROUND)
+		{
+			SetGroundEntity(NULL);
+		}
+		SetIdealState(NPC_STATE_PRONE);
+
+		CTakeDamageInfo info;
+		PainSound(info);
+		return true;
+	}
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1628,6 +2441,19 @@ bool CNPC_Vortigaunt::FInViewCone( CBaseEntity *pEntity )
 		return true;
 
 	return BaseClass::FInViewCone( pEntity );
+}
+
+bool CNPC_Vortigaunt::ShouldIgnoreSound(CSound *pSound)
+{
+	/*if (!BaseClass::ShouldIgnoreSound(pSound))
+	{
+		if (pSound->IsSoundType(SOUND_DANGER) && pSound->m_hOwner.IsValid() && pSound->m_hOwner->Classify() == CLASS_MANHACK)
+			return true;
+	}
+
+	return false;*/
+
+	return BaseClass::ShouldIgnoreSound(pSound);
 }
 
 //-----------------------------------------------------------------------------
@@ -1781,6 +2607,15 @@ inline bool CNPC_Vortigaunt::InAttackSequence( void )
 	if ( GetActivity() == ACT_VORTIGAUNT_DISPEL )
 		return true;
 
+	if (GetActivity() == ACT_VORTIGAUNT_STOMP)
+		return true;
+
+	if (GetActivity() == ACT_MELEE_ATTACK1)
+		return true;
+
+	if (GetActivity() == ACT_MELEE_ATTACK2)
+		return true;
+
 	if ( IsPlayingGesture( ACT_GESTURE_RANGE_ATTACK1 ) )
 		return true;
 
@@ -1815,6 +2650,12 @@ void CNPC_Vortigaunt::OnRestore( void )
 //-----------------------------------------------------------------------------
 void CNPC_Vortigaunt::PrescheduleThink( void )
 {
+	if (IsInPlayerSquad())
+	{
+		m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
+		
+	}
+
 	// Update our healing (if active)
 	MaintainHealSchedule();
 
@@ -1933,6 +2774,77 @@ void CNPC_Vortigaunt::ArmBeam( int beamType, int nHand )
 }
 
 //------------------------------------------------------------------------------
+// Purpose : Short beam on had in grenade defend mode
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+void CNPC_Vortigaunt::DefendBeams(void)
+{
+	Vector vBeamStart;
+
+	// -----------
+	// Left hand
+	// -----------
+	int i;
+	GetAttachment(1, vBeamStart);
+	for (i = 0;i<4;i++)
+	{
+		Vector vBeamPos = vBeamStart;
+		vBeamPos.x += random->RandomFloat(-8, 8);
+		vBeamPos.y += random->RandomFloat(-8, 8);
+		vBeamPos.z += random->RandomFloat(-8, 8);
+
+		CBeam  *pBeam = CBeam::BeamCreate("sprites/lgtning.vmt", 3.0);
+		pBeam->PointEntInit(vBeamPos, this);
+		pBeam->SetEndAttachment(1);
+		pBeam->SetBrightness(255);
+		pBeam->SetNoise(2);
+		pBeam->SetColor(96, 128, 16);
+		pBeam->LiveForTime(0.1);
+	}
+
+	// -----------
+	// Right hand
+	// -----------
+	GetAttachment(2, vBeamStart);
+	for (i = 4;i<VORTIGAUNT_MAX_BEAMS;i++)
+	{
+		Vector vBeamPos = vBeamStart;
+		vBeamPos.x += random->RandomFloat(-8, 8);
+		vBeamPos.y += random->RandomFloat(-8, 8);
+		vBeamPos.z += random->RandomFloat(-8, 8);
+
+		CBeam  *pBeam = CBeam::BeamCreate("sprites/lgtning.vmt", 3.0);
+		pBeam->PointEntInit(vBeamPos, this);
+		pBeam->SetEndAttachment(2);
+		pBeam->SetBrightness(255);
+		pBeam->SetNoise(2);
+		pBeam->SetColor(96, 128, 16);
+		pBeam->LiveForTime(0.1);
+	}
+}
+
+//------------------------------------------------------------------------------
+// Purpose : Glow for when vortigaunt punches manhack
+// Input   :
+// Output  :
+//------------------------------------------------------------------------------
+void CNPC_Vortigaunt::ClawBeam(CBaseEntity *pHurt, int nNoise, int iAttachment)
+{
+	for (int i = 0;i<2;i++)
+	{
+		CBeam* pBeam = CBeam::BeamCreate("sprites/lgtning.vmt", 3.0);
+		pBeam->EntsInit(this, pHurt);
+		pBeam->SetStartAttachment(iAttachment);
+		pBeam->SetBrightness(255);
+		pBeam->SetNoise(nNoise);
+		pBeam->SetColor(96, 128, 16);
+		pBeam->LiveForTime(0.2);
+	}
+	EmitSound("NPC_Vortigaunt.ClawBeam");
+}
+
+//------------------------------------------------------------------------------
 // Purpose : Put glowing sprites on hands
 //------------------------------------------------------------------------------
 void CNPC_Vortigaunt::StartHandGlow( int beamType, int nHand )
@@ -1997,6 +2909,10 @@ void CNPC_Vortigaunt::EndHandGlow( int beamType /*= VORTIGAUNT_BEAM_ALL*/ )
 		m_fGlowAge = 0;
 
 		// Stop our smaller beams as well
+		EntityMessageBegin(this, true);
+		WRITE_BYTE(VORTFX_LIGHTOFF);
+		MessageEnd();
+
 		ClearBeams();
 	}
 }
@@ -2119,6 +3035,16 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 		WRITE_VEC3COORD( tr.endpos );
 	MessageEnd();
 
+	//if (tr.DidHitNonWorldEntity())
+	//{
+	//	// Ground effects
+	//	CEffectData	data;
+	//	data.m_vOrigin = tr.endpos;
+	//	data.m_nEntIndex = tr.GetEntityIndex();
+
+	//	DispatchEffect("VortElectrify", data);
+	//}
+
 	CBaseEntity *pEntity = tr.m_pEnt;
 	if ( pEntity != NULL && m_takedamage )
 	{
@@ -2127,9 +3053,11 @@ void CNPC_Vortigaunt::ZapBeam( int nHand )
 			NDebugOverlay::Box( tr.endpos, -Vector(2,2,2), Vector(2,2,2), 255, 0, 0, 8, 10.0f );
 		}
 
-		CTakeDamageInfo dmgInfo( this, this, sk_vortigaunt_dmg_zap.GetFloat(), DMG_SHOCK );
+		CTakeDamageInfo dmgInfo( this, this, IsPlayerEnemy() ? sk_alien_slave_dmg_zap.GetFloat() : sk_vortigaunt_dmg_zap.GetFloat(), DMG_SHOCK );
 		dmgInfo.SetDamagePosition( tr.endpos );
 		VectorNormalize( vecAim );// not a unit vec yet
+		if (IsPlayerEnemy())
+			dmgInfo.ScaleDamage(0.5f);
 		// hit like a 5kg object flying 100 ft/s
 		dmgInfo.SetDamageForce( 5 * 100 * 12 * vecAim );
 		
@@ -2185,6 +3113,17 @@ void CNPC_Vortigaunt::ClearHandGlow( void )
 //------------------------------------------------------------------------------
 void CNPC_Vortigaunt::ClearBeams( void )
 {
+	for (int i = 0; i < VORTIGAUNT_MAX_BEAMS; i++)
+	{
+		if (m_pBeam[i])
+		{
+			UTIL_Remove(m_pBeam[i]);
+			m_pBeam[i] = NULL;
+		}
+	}
+
+	m_iBeams = 0;
+
 	// Stop looping suit charge sound.
 	if ( m_bStopLoopingSounds )
 	{
@@ -2324,14 +3263,14 @@ Disposition_t CNPC_Vortigaunt::IRelationType( CBaseEntity *pTarget )
 
 	Disposition_t disposition = BaseClass::IRelationType( pTarget );
 
-	if ( pTarget->Classify() == CLASS_ZOMBIE && disposition == D_HT )
-	{
-		if( GetAbsOrigin().DistToSqr(pTarget->GetAbsOrigin()) < VORTIGAUNT_FEAR_ZOMBIE_DIST_SQR )
-		{
-			// Be afraid of a zombie that's near if I'm not allowed to dodge. This will make Alyx back away.
-			return D_FR;
-		}
-	}
+	//if ( pTarget->Classify() == CLASS_ZOMBIE && disposition == D_HT )
+	//{
+	//	if( GetAbsOrigin().DistToSqr(pTarget->GetAbsOrigin()) < VORTIGAUNT_FEAR_ZOMBIE_DIST_SQR )
+	//	{
+	//		// Be afraid of a zombie that's near if I'm not allowed to dodge. This will make Alyx back away.
+	//		return D_FR;
+	//	}
+	//}
 
 	return disposition;
 }
@@ -2343,7 +3282,7 @@ Disposition_t CNPC_Vortigaunt::IRelationType( CBaseEntity *pTarget )
 bool CNPC_Vortigaunt::HealGestureHasLOS( void )
 {
 	//For now the player is always our target
-	CBaseEntity *pTargetEnt = AI_GetSinglePlayer();
+	CBaseEntity *pTargetEnt = m_hHealTarget.Get();
 	if ( pTargetEnt == NULL )
 		return false;
 
@@ -2391,7 +3330,7 @@ void CNPC_Vortigaunt::GatherHealConditions( void )
 		return;
 
 	// For now we only act on the player
-	CBasePlayer *pPlayer = ToBasePlayer( m_hHealTarget );
+	CBaseCombatCharacter *pPlayer = (m_hHealTarget.Get() != NULL) ? m_hHealTarget.Get()->MyCombatCharacterPointer() : NULL;
 	if ( pPlayer != NULL )
 	{
 		Vector vecToPlayer = ( pPlayer->WorldSpaceCenter() - WorldSpaceCenter() );
@@ -2454,6 +3393,55 @@ void CNPC_Vortigaunt::GatherConditions( void )
 	GatherHealConditions();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_Vortigaunt::Dispel(const Vector &vecOrigin, float flRadius)
+{
+	DispelAntlions(vecOrigin, flRadius, true);
+
+	trace_t tr;
+	CBaseEntity *pEnemySearch[32];
+	int nNumEnemies = UTIL_EntitiesInBox(pEnemySearch, ARRAYSIZE(pEnemySearch), vecOrigin - Vector(flRadius, flRadius, flRadius), vecOrigin + Vector(flRadius, flRadius, flRadius), FL_NPC|FL_CLIENT);
+	for (int i = 0; i < nNumEnemies; i++)
+	{
+		// We only care about antlions
+		if (IsAntlion(pEnemySearch[i]) == true || IRelationType(pEnemySearch[i]) != D_HT)
+			continue;
+
+		CBaseCombatCharacter *pBCC = pEnemySearch[i]->MyCombatCharacterPointer();
+
+		if (!pBCC)
+			continue;
+
+		// Attempt to trace a line to hit the target
+		UTIL_TraceLine(vecOrigin, pBCC->BodyTarget(vecOrigin), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction < 1.0f && tr.m_pEnt != pBCC)
+			continue;
+
+		Vector vecDir = (pBCC->GetAbsOrigin() - vecOrigin);
+		vecDir[2] = 0.0f;
+		float flDist = VectorNormalize(vecDir);
+
+		float flFalloff = RemapValClamped(flDist, 0, flRadius*0.75f, 1.0f, 0.1f);
+
+		vecDir *= (sk_alien_slave_dispel_force.GetFloat() * flFalloff);
+		vecDir[2] += (sk_alien_slave_dispel_forcez.GetFloat() * flFalloff);
+
+		pBCC->SetAbsOrigin(pBCC->GetAbsOrigin() + Vector(0, 0, 1));
+		pBCC->SetGroundEntity(NULL);
+		pBCC->ApplyAbsVelocityImpulse(vecDir);
+
+		// gib nearby antlions, knock over distant ones. 
+		if (flDist < sk_alien_slave_dispel_range.GetFloat())
+		{
+			// splat!
+			vecDir[2] += 400.0f * flFalloff;
+			CTakeDamageInfo dmgInfo(this, this, vecDir, pBCC->GetAbsOrigin(), sk_alien_slave_dispel_dmg.GetFloat(), DMG_SHOCK);
+			pBCC->TakeDamage(dmgInfo);
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2635,7 +3623,7 @@ void CNPC_Vortigaunt::SetScriptedScheduleIgnoreConditions( Interruptability_t in
 //-----------------------------------------------------------------------------
 int CNPC_Vortigaunt::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
-	if( info.GetDamageType() & (DMG_CRUSH | DMG_BURN) )
+	if( IsPlayerAlly() && info.GetDamageType() & (DMG_CRUSH | DMG_BURN) )
 		return 0;
 
 	// vital vortigaunts (eg the vortigoth in ep2) take less damage from explosions
@@ -2670,6 +3658,9 @@ int CNPC_Vortigaunt::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 bool CNPC_Vortigaunt::ShouldMoveAndShoot( void )
 {
+	if (IsPlayerEnemy())
+		return false;
+
 	if ( m_FollowBehavior.IsActive() )
 		return true;
 
@@ -2773,7 +3764,7 @@ bool CNPC_Vortigaunt::CanFlinch( void )
 	if ( IsPlayingGesture( ACT_GESTURE_RANGE_ATTACK1 ) )
 		return false;
 
-	if ( IsCurSchedule( SCHED_VORTIGAUNT_DISPEL_ANTLIONS ) || IsCurSchedule( SCHED_RANGE_ATTACK1 ) )
+	if (IsCurSchedule(SCHED_VORTIGAUNT_DISPEL_ANTLIONS) || IsCurSchedule(SCHED_RANGE_ATTACK1) || IsCurSchedule(SCHED_MELEE_ATTACK1) || IsCurSchedule(SCHED_MELEE_ATTACK2))
 		return false;
 
 	return BaseClass::CanFlinch();
@@ -2809,6 +3800,10 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 	DECLARE_USES_SCHEDULE_PROVIDER( CAI_LeadBehavior )
 
 	DECLARE_TASK(TASK_VORTIGAUNT_HEAL)
+	DECLARE_TASK(TASK_VORTIGAUNT_FACE_STOMP)
+	DECLARE_TASK(TASK_VORTIGAUNT_STOMP_ATTACK)
+	DECLARE_TASK(TASK_VORTIGAUNT_GRENADE_KILL)
+	DECLARE_TASK(TASK_VORTIGAUNT_ZAP_GRENADE_OWNER)
 	DECLARE_TASK(TASK_VORTIGAUNT_EXTRACT)
 	DECLARE_TASK(TASK_VORTIGAUNT_FIRE_EXTRACT_OUTPUT)
 	DECLARE_TASK(TASK_VORTIGAUNT_WAIT_FOR_PLAYER)
@@ -2824,6 +3819,10 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 	DECLARE_ACTIVITY( ACT_VORTIGAUNT_END_HEAL )
 	DECLARE_ACTIVITY( ACT_VORTIGAUNT_TO_ACTION )
 	DECLARE_ACTIVITY( ACT_VORTIGAUNT_TO_IDLE )
+	DECLARE_ACTIVITY(ACT_VORTIGAUNT_STOMP)
+	DECLARE_ACTIVITY(ACT_VORTIGAUNT_DEFEND)
+	DECLARE_ACTIVITY(ACT_VORTIGAUNT_TO_DEFEND)
+	DECLARE_ACTIVITY(ACT_VORTIGAUNT_FROM_DEFEND)
 	DECLARE_ACTIVITY( ACT_VORTIGAUNT_HEAL )
 	DECLARE_ACTIVITY( ACT_VORTIGAUNT_DISPEL )
 	DECLARE_ACTIVITY( ACT_VORTIGAUNT_ANTLION_THROW )
@@ -2835,18 +3834,28 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 	DECLARE_CONDITION( COND_VORTIGAUNT_HEAL_VALID )
 	DECLARE_CONDITION( COND_VORTIGAUNT_DISPEL_ANTLIONS )
 
+	DECLARE_INTERACTION(g_interactionVortigauntStomp)
+	DECLARE_INTERACTION(g_interactionVortigauntStompFail)
+	DECLARE_INTERACTION(g_interactionVortigauntStompHit)
+	DECLARE_INTERACTION(g_interactionVortigauntKick)
+	DECLARE_INTERACTION(g_interactionVortigauntClaw)
+
 	DECLARE_SQUADSLOT( SQUAD_SLOT_HEAL_PLAYER )
 
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_CLAW_LEFT )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_CLAW_RIGHT )
+	DECLARE_ANIMEVENT( AE_VORTIGAUNT_KICK )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_ZAP_POWERUP )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_ZAP_SHOOT )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_ZAP_DONE )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_HEAL_STARTGLOW )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_HEAL_STARTBEAMS )
+	DECLARE_ANIMEVENT(AE_VORTIGAUNT_KICK)
+	DECLARE_ANIMEVENT(AE_VORTIGAUNT_STOMP)
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_HEAL_STARTSOUND )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_SWING_SOUND )
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_SHOOT_SOUNDSTART )
+	DECLARE_ANIMEVENT(AE_VORTIGAUNT_DEFEND_BEAMS)
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_HEAL_PAUSE )
 
 	DECLARE_ANIMEVENT( AE_VORTIGAUNT_START_DISPEL )
@@ -2877,6 +3886,62 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 		"		COND_NO_CUSTOM_INTERRUPTS"
 	);
 
+	//=========================================================
+	// > SCHED_VORTIGAUNT_MELEE_ATTACK
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_MELEE_ATTACK,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING					0"
+			"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE"
+			"		TASK_FACE_ENEMY						0"
+			"		TASK_MELEE_ATTACK1					0"
+			""
+			"	Interrupts"
+			"		COND_ENEMY_DEAD"
+			"		COND_HEAVY_DAMAGE"
+			"		COND_ENEMY_OCCLUDED"
+			);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_STOMP_ATTACK
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_STOMP_ATTACK,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING					0"
+			"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE"
+			"		TASK_VORTIGAUNT_FACE_STOMP			0"
+			"		TASK_VORTIGAUNT_STOMP_ATTACK		0"
+			""
+			"	Interrupts"
+			// New_Enemy	Don't interrupt, finish current attack first
+			"		COND_ENEMY_DEAD"
+			"		COND_HEAVY_DAMAGE"
+			"		COND_ENEMY_OCCLUDED"
+			);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_GRENADE_KILL
+	//
+	// Zap an incoming grenade (GetTarget())
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_GRENADE_KILL,
+
+			"	Tasks"
+			"		TASK_VORTIGAUNT_GRENADE_KILL		0"
+			"		TASK_WAIT							0.3"
+			"		TASK_VORTIGAUNT_ZAP_GRENADE_OWNER	0"
+			""
+			"	Interrupts"
+			"		COND_LIGHT_DAMAGE"
+			);
 
 	//=========================================================
 	// > SCHED_VORTIGAUNT_HEAL
@@ -2892,7 +3957,7 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 		"		TASK_GET_PATH_TO_TARGET			0"
 		"		TASK_MOVE_TO_TARGET_RANGE		350"
 		"		TASK_STOP_MOVING				0"
-		"		TASK_FACE_PLAYER				0"
+		"		TASK_FACE_TARGET				0"
 		"		TASK_VORTIGAUNT_HEAL			0"
 		""
 		"	Interrupts"
@@ -2922,6 +3987,59 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 		"		COND_VORTIGAUNT_DISPEL_ANTLIONS"
 		"		COND_VORTIGAUNT_CAN_HEAL"
 	);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_BARNACLE_HIT
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_BARNACLE_HIT,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING			0"
+			"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_BARNACLE_HIT"
+			"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_VORTIGAUNT_BARNACLE_PULL"
+			""
+			"	Interrupts"
+			);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_BARNACLE_PULL
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_BARNACLE_PULL,
+
+			"	Tasks"
+			"		 TASK_PLAY_SEQUENCE			ACTIVITY:ACT_BARNACLE_PULL"
+			""
+			"	Interrupts"
+			);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_BARNACLE_CHOMP
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_BARNACLE_CHOMP,
+
+			"	Tasks"
+			"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_BARNACLE_CHOMP"
+			"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_VORTIGAUNT_BARNACLE_CHEW"
+			""
+			"	Interrupts"
+			);
+
+	//=========================================================
+	// > SCHED_VORTIGAUNT_BARNACLE_CHEW
+	//=========================================================
+	DEFINE_SCHEDULE
+		(
+			SCHED_VORTIGAUNT_BARNACLE_CHEW,
+
+			"	Tasks"
+			"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_BARNACLE_CHEW"
+			)
 
 	//=========================================================
 	// > SCHED_VORTIGAUNT_EXTRACT_BUGBAIT
@@ -2961,8 +4079,8 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 
 		"	Tasks"
 		"		TASK_STOP_MOVING		0"
-		"		TASK_TARGET_PLAYER		0"
-		"		TASK_FACE_PLAYER		0"
+		"		TASK_VORTIGAUNT_GET_HEAL_TARGET		0"
+		"		TASK_FACE_TARGET		0"
 		"		TASK_WAIT				3"
 		""
 		"	Interrupts"
@@ -2983,7 +4101,7 @@ AI_BEGIN_CUSTOM_NPC( npc_vortigaunt, CNPC_Vortigaunt )
 		SCHED_VORTIGAUNT_RUN_TO_PLAYER,
 
 		"	Tasks"
-		"		TASK_TARGET_PLAYER					0"
+		"		TASK_VORTIGAUNT_GET_HEAL_TARGET					0"
 		"		TASK_GET_PATH_TO_TARGET				0"
 		"		TASK_MOVE_TO_TARGET_RANGE			350"
 		""
@@ -3238,22 +4356,31 @@ void CVortigauntChargeToken::SeekThink( void )
 //-----------------------------------------------------------------------------
 void CVortigauntChargeToken::SeekTouch( CBaseEntity	*pOther )
 {
-	// Make sure this is a player
-	CBasePlayer *pPlayer = ToBasePlayer( pOther );
-	if ( pPlayer == NULL )
+	CBaseCombatCharacter *pBCC = pOther->MyCombatCharacterPointer();
+	if (!pBCC)
 		return;
 
 	// FIXME: This probably isn't that interesting for single player missions
-	if ( pPlayer != m_hTarget )
+	if ( pBCC != m_hTarget )
 		return;
 
 	// TODO: Play a special noise for this event!
 	EmitSound( "NPC_Vortigaunt.SuitOn" );
 
-	// Charge the suit's armor
-	if ( pPlayer->ArmorValue() < sk_vortigaunt_armor_charge.GetInt() )
+	// Make sure this is a player
+	CBasePlayer *pPlayer = ToBasePlayer(pOther);
+	if (pPlayer != NULL)
 	{
-		pPlayer->IncrementArmorValue( sk_vortigaunt_armor_charge_per_token.GetInt()+random->RandomInt( -1, 1 ), sk_vortigaunt_armor_charge.GetInt() );
+		// Charge the suit's armor
+		if (pPlayer->ArmorValue() < sk_vortigaunt_armor_charge.GetInt())
+		{
+			pPlayer->IncrementArmorValue(sk_vortigaunt_armor_charge_per_token.GetInt() + random->RandomInt(-1, 1), sk_vortigaunt_armor_charge.GetInt());
+		}
+	}
+	int iHealthCharge = sk_vortigaunt_armor_charge.GetInt() * 2;
+	if (pBCC->GetHealth() < iHealthCharge)
+	{
+		pBCC->TakeHealth(sk_vortigaunt_armor_charge_per_token.GetInt() + random->RandomInt(-1, 1), DMG_GENERIC);
 	}
 
 	// Stay attached to the thing we hit as we fade away
@@ -3335,6 +4462,7 @@ void CVortigauntEffectDispel::Spawn( void )
 
 	// No model but we still need to force this!
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
+	AddEffects(EF_PARENT_ANIMATES);
 
 	BaseClass::Spawn();
 }

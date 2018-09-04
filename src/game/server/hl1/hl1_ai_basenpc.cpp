@@ -213,3 +213,11 @@ int CHL1BaseNPC::SelectDeadSchedule()
 	CleanupOnDeath();
 	return SCHED_DIE;
 }
+
+void CHL1BaseNPC::PopulatePoseParameters()
+{
+	BaseClass::PopulatePoseParameters();
+
+	if (m_poseAim_Pitch == -1)
+		m_poseAim_Pitch = LookupPoseParameter("XR");
+}

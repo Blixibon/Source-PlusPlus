@@ -25,6 +25,11 @@
 #include "hl1_ai_basenpc.h"
 #include "soundemittersystem/isoundemittersystembase.h"
 
+extern ISaveRestoreOps *responseSystemSaveRestoreOps;
+#include "saverestore.h"
+
+#define RESPONSE_SCRIPT_FILE "scripts/talker/hl1_talkers.txt"
+
 ConVar hl1_debug_sentence_volume( "hl1_debug_sentence_volume", "0" );
 ConVar hl1_fixup_sentence_sndlevel( "hl1_fixup_sentence_sndlevel", "1" );
 
@@ -35,8 +40,72 @@ BEGIN_DATADESC( CHL1NPCTalker )
 	DEFINE_ENTITYFUNC( Touch ),
 	DEFINE_USEFUNC( FollowerUse ),
 	DEFINE_FIELD( m_bInBarnacleMouth,	FIELD_BOOLEAN ),
+	DEFINE_KEYFIELD(m_bStartSuspicious, FIELD_BOOLEAN, "suspicious"),
 
 END_DATADESC()
+
+//-----------------------------------------------------------------------------
+// Purpose: Need a custom save restore so we can restore the instanced response system by name
+//  after we've loaded the filename from disk...
+// Input  : &save - 
+//-----------------------------------------------------------------------------
+int	CHL1NPCTalker::Save(ISave &save)
+{
+	int iret = BaseClass::Save(save);
+	if (iret)
+	{
+		bool doSave = (m_pInstancedResponseSystem) ? true : false;
+		save.WriteBool(&doSave);
+		if (doSave)
+		{
+			save.StartBlock("InstancedResponseSystem");
+			{
+				SaveRestoreFieldInfo_t fieldInfo = { &m_pInstancedResponseSystem, 0, NULL };
+				responseSystemSaveRestoreOps->Save(fieldInfo, &save);
+			}
+			save.EndBlock();
+		}
+	}
+	return iret;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &restore - 
+//-----------------------------------------------------------------------------
+int	CHL1NPCTalker::Restore(IRestore &restore)
+{
+	int iret = BaseClass::Restore(restore);
+	if (iret)
+	{
+		bool doRead = false;
+		restore.ReadBool(&doRead);
+		if (doRead)
+		{
+			char szResponseSystemBlockName[SIZE_BLOCK_NAME_BUF];
+			restore.StartBlock(szResponseSystemBlockName);
+			if (!Q_stricmp(szResponseSystemBlockName, "InstancedResponseSystem"))
+			{
+				if (!m_pInstancedResponseSystem)
+				{
+					m_pInstancedResponseSystem = PrecacheCustomResponseSystem(RESPONSE_SCRIPT_FILE);
+					if (m_pInstancedResponseSystem)
+					{
+						SaveRestoreFieldInfo_t fieldInfo =
+						{
+							&m_pInstancedResponseSystem,
+							0,
+							NULL
+						};
+						responseSystemSaveRestoreOps->Restore(fieldInfo, &restore);
+					}
+				}
+			}
+			restore.EndBlock();
+		}
+	}
+	return iret;
+}
 
 void CHL1NPCTalker::RunTask( const Task_t *pTask )
 {
@@ -235,6 +304,8 @@ void CHL1NPCTalker::Precache()
 	BaseClass::Precache();
 
 	PrecacheScriptSound( "Barney.Close" );
+
+	m_pInstancedResponseSystem = PrecacheCustomResponseSystem(RESPONSE_SCRIPT_FILE);
 }
 
 void CHL1NPCTalker::PostNPCInit()

@@ -1786,6 +1786,10 @@ void CTempEnts::MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachm
 		{
 			MuzzleFlash_357_Player( hEntity, attachmentIndex );
 		}
+		else
+		{
+			MuzzleFlash_357_NPC(hEntity, attachmentIndex);
+		}
 		break;
 	case MUZZLEFLASH_RPG:
 		if ( firstPerson )
@@ -2700,6 +2704,20 @@ void CTempEnts::MuzzleFlash_357_Player( ClientEntityHandle_t hEntity, int attach
 		return;
 
 	DispatchParticleEffect("weapon_muzzle_flash_huntingrifle_fp", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
+}
+
+//==================================================
+// Purpose: 
+//==================================================
+void CTempEnts::MuzzleFlash_357_NPC(ClientEntityHandle_t hEntity, int attachmentIndex)
+{
+	VPROF_BUDGET("MuzzleFlash_357_NPC", VPROF_BUDGETGROUP_PARTICLE_RENDERING);
+	C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle(hEntity);
+
+	if (!pEnt)
+		return;
+
+	DispatchParticleEffect("weapon_muzzle_flash_huntingrifle", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
 }
 
 //==================================================

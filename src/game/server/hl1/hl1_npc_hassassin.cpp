@@ -29,6 +29,7 @@
 #include	"hl1_basegrenade.h"
 #include	"movevars_shared.h"
 #include	"ai_basenpc.h"
+#include	"hl1/hl1_shareddefs.h"
 
 
 ConVar sk_hassassin_health( "sk_hassassin_health", "50" );
@@ -187,7 +188,7 @@ void CNPC_HAssassin::Spawn()
 //=========================================================
 void CNPC_HAssassin::Precache()
 {
-	m_iAmmoType = GetAmmoDef()->Index("9mmRound");
+	m_iAmmoType = GetAmmoDef()->Index(HL1_PISTOL_AMMO);
 
 	PrecacheModel("models/hassassin.mdl");
 

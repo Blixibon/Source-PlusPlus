@@ -52,11 +52,7 @@ ConVar	sk_security_health("sk_security_health", "0");
 
 
 
-BEGIN_SIMPLE_DATADESC(RndFlexData)
-DEFINE_FIELD(index,FIELD_INTEGER),
-DEFINE_FIELD(flvalue,FIELD_FLOAT),
-DEFINE_FIELD(bValid,FIELD_BOOLEAN),
-END_DATADESC()
+
 
 //=========================================================
 // Barney activities
@@ -82,7 +78,7 @@ public:
 	Class_T Classify(void);
 	void	Weapon_Equip(CBaseCombatWeapon *pWeapon);
 
-	
+	virtual void EnableHelmet() { SetBodygroup(2, 1); }
 
 	//bool CreateBehaviors(void);
 #ifdef HGUARD_AE
@@ -92,7 +88,7 @@ public:
 
 	//void OnChangeRunningBehavior(CAI_BehaviorBase *pOldBehavior, CAI_BehaviorBase *pNewBehavior);
 
-	int SelectCombatSchedule();
+	int SelectSchedule();
 	virtual int		TranslateSchedule(int scheduleType);
 
 	//void 			PrescheduleThink();
@@ -290,7 +286,7 @@ void CNPC_HumanGuard::Spawn(void)
 		if (!m_fWeaponDrawn)
 		{
 			GetActiveWeapon()->AddEffects(EF_NODRAW);
-			SetBodygroup(4, 1);
+			SetBodygroup(FindBodygroupByName("holster"), 1);
 		}
 	}
 	
@@ -298,10 +294,13 @@ void CNPC_HumanGuard::Spawn(void)
 	SetUse(&CNPC_HumanGuard::CommanderUse); 
 
 	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
-	if (RandomFloat()>= 0.75f)
-		SetBodygroup(2, 1);
+	if (RandomFloat() >= 0.75f)
+		EnableHelmet();
 
-	SetBodygroup(3, RandomInt(0, GetBodygroupCount(3) - 1));
+	int iChest = FindBodygroupByName("chest");
+
+	if (iChest >= 0)
+		SetBodygroup(iChest, RandomInt(0, GetBodygroupCount(iChest) - 1));
 
 	
 
@@ -324,14 +323,15 @@ void CNPC_HumanGuard::Spawn(void)
 
 
 
-int CNPC_HumanGuard::SelectCombatSchedule()
+int CNPC_HumanGuard::SelectSchedule()
 {
-	if (!m_fWeaponDrawn)
+	
+	if (m_NPCState == NPC_STATE_COMBAT && !m_fWeaponDrawn)
 	{
 		return SCHED_HGUARD_DRAW_PISTOL;
 	}
 
-	return BaseClass::SelectCombatSchedule();
+	return BaseClass::SelectSchedule();
 }
 
 int CNPC_HumanGuard::TranslateSchedule(int scheduleType)
@@ -385,7 +385,7 @@ void CNPC_HumanGuard::HandleAnimEvent(animevent_t *pEvent)
 		if (GetActiveWeapon())
 		{
 			GetActiveWeapon()->RemoveEffects(EF_NODRAW);
-			SetBodygroup(4, 2);
+			SetBodygroup(FindBodygroupByName("holster"), 2);
 		}
 		return;
 	}
@@ -449,3 +449,67 @@ SCHED_HGUARD_DRAW_PISTOL,
 );
 
 AI_END_CUSTOM_NPC()
+
+class CNPC_FemSecurity : public CNPC_HumanGuard
+{
+public:
+	DECLARE_CLASS(CNPC_FemSecurity, CNPC_HumanGuard);
+
+	void	SelectModel();
+	void	Spawn();
+	virtual void EnableHelmet()
+	{
+		int iHair = FindBodygroupByName("head");
+		SetBodygroup(iHair, 5);
+	}
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_FemSecurity::SelectModel()
+{
+	SetModelName(AllocPooledString("models/kake/heartbit_female_guards3.mdl"));
+}
+
+void CNPC_FemSecurity::Spawn()
+{
+	BaseClass::Spawn();
+
+	int iHair = FindBodygroupByName("head");
+
+	if (GetBodygroup(iHair) < 5)
+	{
+		switch (m_nSkin)
+		{
+		case 1:
+			SetBodygroup(iHair, 2);
+			break;
+		case 2:
+			SetBodygroup(iHair, 4);
+			break;
+		case 3:
+			SetBodygroup(iHair, 3);
+			break;
+		case 4:
+			SetBodygroup(iHair, 4);
+			break;
+		case 5:
+			SetBodygroup(iHair, 4);
+			break;
+		case 6:
+			SetBodygroup(iHair, 4);
+			break;
+		case 0:
+		default:
+			SetBodygroup(iHair, 0);
+			break;
+		}
+	}
+
+	int iGlasses = FindBodygroupByName("glasses");
+	SetBodygroup(iGlasses, RandomInt(0, 6));
+
+}
+
+LINK_ENTITY_TO_CLASS(npc_human_security_female, CNPC_FemSecurity);

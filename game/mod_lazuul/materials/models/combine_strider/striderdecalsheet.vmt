@@ -2,7 +2,7 @@
 {
 	"$baseTexture" "Models/Combine_Strider/striderdecalsheet"
 	"$selfillum" 1
-	"VertexLitGeneric_DX9"
+	">=dx90"
 	{
 	"$bumpmap" "Models/Combine_Strider/striderdecalsheet_normal"
 	"$normalmapalphaenvmapmask" 1

@@ -1,0 +1,236 @@
+//============================================================================================================
+// Vortigaunt criteria
+//============================================================================================================
+criterion "IsAlienSlave" "classname" "npc_alien_slave" required
+
+response "AlienSlaveIdle"
+{
+	speak "NPC_Vortigaunt_BMS.idle" respeakdelay 1
+}
+
+response "AlienSlaveAlert"
+{
+	speak "NPC_Vortigaunt_BMS.alert" respeakdelay 5
+}
+
+response "AlienSlavePain"
+{
+	speak "NPC_Vortigaunt_BMS.Pain" respeakdelay 1
+}
+
+response "AlienSlaveDeath"
+{
+	speak "NPC_Vortigaunt_BMS.Death" respeakdelay 30 noscene
+}
+
+rule VortAntlionCombatStart2
+{
+	criteria		IsAlienSlave  ConceptStartCombat 
+	response		AlienSlaveAlert
+}
+
+response "SlaveAntlionAttack"
+{
+	speak "NPC_Vortigaunt_BMS.alert" respeakdelay 15
+}
+
+rule VortAntlionAttack
+{
+	criteria		IsAlienSlave  ConceptTalkAttacking
+	applycontext		"VortKill:1:10"
+	response		SlaveAntlionAttack
+}
+
+
+rule AlienSlavePain
+{
+	criteria		IsAlienSlave  VortigauntPain
+	response		AlienSlavePain
+}
+
+
+
+//============================================================================================================
+// Vortigaunt Hello speech
+//============================================================================================================
+
+rule AlienSlaveTlkHello
+{
+	criteria		IsAlienSlave ConceptTalkHello  PlayerNear SeePlayer
+	response		AlienSlaveIdle
+}
+
+//------------------------------------------------------------------------------------------------------------
+rule AlienSlavePlayerHello
+{
+	criteria		IsAlienSlave ConceptTalkPHello
+	response		NullResponse
+}
+
+//============================================================================================================
+// Vortigaunt Questions & Responses speech
+//============================================================================================================
+
+rule AlienSlaveTlkQuestion
+{
+	criteria		IsAlienSlave ConceptTalkQuestion
+	response		AlienSlaveIdle
+}
+
+
+
+rule AlienSlaveTlkAnswer
+{
+	criteria		IsAlienSlave ConceptTalkAnswer
+	response		AlienSlaveIdle
+}
+
+
+
+rule AlienSlaveTalkUse
+{
+	criteria		IsAlienSlave ConceptTalkUse
+	response		AlienSlaveIdle
+}
+
+
+
+rule AlienSlaveCure
+{
+	criteria		IsAlienSlave  VortigauntCure
+	response		AlienSlaveIdle
+}
+
+
+
+rule AlienSlaveCureStop
+{
+	criteria		IsAlienSlave VortigauntCureStop
+	response		AlienSlaveIdle
+}
+
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+
+rule AlienSlaveAttack
+{
+	criteria		IsAlienSlave VortigauntAttack
+	response		AlienSlaveAlert
+}
+
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+rule AlienSlavePain
+{
+	criteria		IsAlienSlave VortigauntPain
+	response		AlienSlavePain
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+
+rule AlienSlaveDie
+{
+	criteria		IsAlienSlave VortigauntDie
+	response		AlienSlaveDeath
+}
+
+
+
+
+rule AlienSlaveKill
+{
+	criteria		IsAlienSlave VortigauntKill
+	response		AlienSlaveAlert
+}
+
+
+
+
+//============================================================================================================
+// Vortigaunt Misc speech
+//============================================================================================================
+
+
+rule AlienSlaveTlkIdle
+{
+	criteria		IsAlienSlave ConceptTalkIdle
+	response		AlienSlaveIdle
+}
+
+//------------------------------------------------------------------------------------------------------------
+rule AlienSlavePlayerIdle
+{
+	criteria		IsAlienSlave ConceptTalkPIdle
+	response		NullResponse
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+
+
+rule AlienSlaveTlkStare
+{
+	criteria		IsAlienSlave ConceptTalkStare
+	response		AlienSlaveIdle
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+
+
+rule AlienSlaveTlkStartFollow
+{
+	criteria		IsAlienSlave ConceptTalkStartFollow
+	response		AlienSlaveIdle
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+
+
+rule AlienSlaveTlkStopFollow
+{
+	criteria		IsAlienSlave ConceptTalkStopFollow
+	response		AlienSlaveIdle
+}
+
+
+
+//============================================================================================================
+// Vortigaunt Leader speech (a Vortigaunt that's leading the player somewhere)
+//============================================================================================================
+
+response "AlienSlaveLeadStart"
+{
+	scene "scenes/npc/vortigaunt/fmmustfollow.vcd"
+}
+
+rule AlienSlaveLeadStart
+{
+	criteria		IsAlienSlave ConceptLeadStart
+	response		AlienSlaveIdle
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+response "AlienSlaveLeadCatchup"
+{
+	scene "scenes/npc/vortigaunt/yesforward.vcd"
+	scene "scenes/npc/vortigaunt/followfm.vcd"
+}
+
+rule AlienSlaveLeadCatchup
+{
+	criteria		IsAlienSlave ConceptLeadCatchup
+	response		AlienSlaveIdle
+}
+
+
+

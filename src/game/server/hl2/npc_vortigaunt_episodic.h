@@ -19,6 +19,7 @@
 
 #define		VORTIGAUNT_MAX_BEAMS				8
 
+
 #define VORTIGAUNT_BEAM_ALL		-1
 #define	VORTIGAUNT_BEAM_ZAP		0
 #define	VORTIGAUNT_BEAM_HEAL	1
@@ -64,6 +65,9 @@ public:
 	virtual int		RangeAttack2Conditions( float flDot, float flDist );	// Concussive zap (larger)
 	virtual bool	InnateWeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
 	virtual int		MeleeAttack1Conditions( float flDot, float flDist );	// Dispel
+	virtual int		MeleeAttack2Conditions(float flDot, float flDist);
+	CBaseEntity*	Kick(void);
+	void			Claw(int iAttachment);
 	virtual float	InnateRange1MinRange( void ) { return 0.0f; }
 	virtual float	InnateRange1MaxRange( void ) { return sk_vortigaunt_zap_range.GetFloat()*12; }
 	virtual int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
@@ -75,8 +79,15 @@ public:
 
 	virtual void		Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	virtual void		AlertSound( void );
-	virtual Class_T		Classify ( void ) { return IsGameEndAlly() ? CLASS_PLAYER_ALLY_VITAL : CLASS_VORTIGAUNT; }
+	virtual Class_T		Classify ( void )
+	{
+		if (FClassnameIs(this, "npc_alien_slave"))
+			return CLASS_ANTLION;
+
+		return IsGameEndAlly() ? CLASS_PLAYER_ALLY_VITAL : CLASS_VORTIGAUNT;
+	}
 	virtual void		HandleAnimEvent( animevent_t *pEvent );
+	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
 	virtual Activity	NPC_TranslateActivity( Activity eNewActivity );
 
 	virtual void	UpdateOnRemove( void );
@@ -86,9 +97,21 @@ public:
 	virtual void	StartTask( const Task_t *pTask );
 	virtual void	ClearSchedule( const char *szReason );
 
+	bool		IsPlayerEnemy()
+	{
+		//return GetDefaultRelationshipDisposition(CLASS_PLAYER) == D_HT;
+		return !IsPlayerAlly();
+	}
+
+	// Various start tasks
+	virtual	void StartTaskRangeAttack1(const Task_t *pTask);
+
+	// Various run tasks
+	virtual void RunTaskRangeAttack1(const Task_t *pTask);
+
 	virtual void	DeclineFollowing( void );
 	virtual bool	CanBeUsedAsAFriend( void );
-	virtual bool	IsPlayerAlly( void ) { return true; }
+	//virtual bool	IsPlayerAlly( void ) { return true; }
 
 	// Override these to set behavior
 	virtual int		TranslateSchedule( int scheduleType );
@@ -128,6 +151,11 @@ public:
 	void	InputTurnBlue( inputdata_t &data );
 	void	InputTurnBlack( inputdata_t &data );
 
+	void InputAssault(inputdata_t &inputdata);
+
+	float AttackSpeedScale();
+	
+
 	virtual void	SetScriptedScheduleIgnoreConditions( Interruptability_t interrupt );
 	virtual void    OnRestore( void );
 	virtual bool	OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
@@ -138,10 +166,13 @@ public:
 	// used so a grub can notify me that I stepped on it. Says a line.
 	void	OnSquishedGrub( const CBaseEntity *pGrub );
 
+	virtual bool		ShouldIgnoreSound(CSound *);
+
 private:
 
 	int		NumAntlionsInRadius( float flRadius );
 	void	DispelAntlions( const Vector &vecOrigin, float flRadius, bool bDispel = true );
+	void	Dispel(const Vector &vecOrigin, float flRadius);
 	bool	HealGestureHasLOS( void );
 	bool	PlayerBelowHealthPercentage( CBasePlayer *pPlayer, float flPerc );
 	void	StartHealing( void );
@@ -149,6 +180,7 @@ private:
 	void	MaintainHealSchedule( void );
 	bool	ShouldHealTarget( CBaseEntity *pTarget );
 	int		SelectHealSchedule( void );
+	void	MeleeAttack(float distance, float damage, QAngle& viewPunch, Vector& shove, bool kick = false);
 
 	void	CreateBeamBlast( const Vector &vecOrigin );
 
@@ -160,7 +192,14 @@ private:
 	{
 		SCHED_VORTIGAUNT_STAND = BaseClass::NEXT_SCHEDULE,
 		SCHED_VORTIGAUNT_RANGE_ATTACK,
+		SCHED_VORTIGAUNT_MELEE_ATTACK,
+		SCHED_VORTIGAUNT_STOMP_ATTACK,
 		SCHED_VORTIGAUNT_HEAL,
+		SCHED_VORTIGAUNT_BARNACLE_HIT,
+		SCHED_VORTIGAUNT_BARNACLE_PULL,
+		SCHED_VORTIGAUNT_BARNACLE_CHOMP,
+		SCHED_VORTIGAUNT_BARNACLE_CHEW,
+		SCHED_VORTIGAUNT_GRENADE_KILL,
 		SCHED_VORTIGAUNT_EXTRACT_BUGBAIT,
 		SCHED_VORTIGAUNT_FACE_PLAYER,
 		SCHED_VORTIGAUNT_RUN_TO_PLAYER,
@@ -176,6 +215,10 @@ private:
 	{
 		TASK_VORTIGAUNT_HEAL_WARMUP = BaseClass::NEXT_TASK,
 		TASK_VORTIGAUNT_HEAL,
+		TASK_VORTIGAUNT_FACE_STOMP,
+		TASK_VORTIGAUNT_STOMP_ATTACK,
+		TASK_VORTIGAUNT_GRENADE_KILL,
+		TASK_VORTIGAUNT_ZAP_GRENADE_OWNER,
 		TASK_VORTIGAUNT_EXTRACT_WARMUP,
 		TASK_VORTIGAUNT_EXTRACT,
 		TASK_VORTIGAUNT_EXTRACT_COOLDOWN,
@@ -205,6 +248,10 @@ private:
 	void			ClearBeams( void );
 	void			ArmBeam( int beamType, int nHand );
 	void			ZapBeam( int nHand );
+	void			ClawBeam(CBaseEntity* pHurt, int nNoise, int iAttachment);
+	void			DefendBeams(void);
+	CHandle<CBeam>	m_pBeam[VORTIGAUNT_MAX_BEAMS];
+	int				m_iBeams;
 	int				m_nLightningSprite;
 
 	// ---------------
@@ -238,6 +285,11 @@ private:
 	void			SetHealTarget( CBaseEntity *pTarget, bool bPlayerRequested );
 	void			GatherHealConditions( void );
 
+	// -----------------
+	//  Stomping
+	// -----------------
+	bool			IsStompable(CBaseEntity *pEntity);
+
 	int				m_nNumTokensToSpawn;
 	float			m_flHealHinderedTime;
 	float			m_flPainTime;
@@ -246,6 +298,8 @@ private:
 	bool			m_bArmorRechargeEnabled;
 	bool			m_bForceArmorRecharge;
 	float			m_flDispelTestTime;
+
+	EHANDLE			m_hVictim;		// Who I'm actively attacking (as opposed to enemy that I'm not necessarily attacking)
 	
 	bool			m_bExtractingBugbait;
 	

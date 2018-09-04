@@ -737,11 +737,11 @@ void CFuncTank::Spawn( void )
 
 #ifdef HL2_EPISODIC
 	m_iAmmoType = GetAmmoDef()->Index( STRING( m_iszAmmoType ) );
-#else
+#endif // HL2_EPISODIC
 	m_iSmallAmmoType	= GetAmmoDef()->Index("Pistol");
 	m_iMediumAmmoType	= GetAmmoDef()->Index("SMG1");
 	m_iLargeAmmoType	= GetAmmoDef()->Index("AR2");
-#endif // HL2_EPISODIC
+
 
 	SetMoveType( MOVETYPE_PUSH );  // so it doesn't get pushed by anything
 	SetSolid( SOLID_VPHYSICS );
@@ -2467,32 +2467,34 @@ void CFuncTankGun::Fire( int bulletCount, const Vector &barrelEnd, const Vector 
 			FireBullets( info );
 		}
 	}
-#else
-	for ( i = 0; i < bulletCount; i++ )
+	else
+#endif
 	{
-		switch( m_bulletType )
+		for (i = 0; i < bulletCount; i++)
 		{
-		case TANK_BULLET_SMALL:
-			info.m_iAmmoType = m_iSmallAmmoType;
-			FireBullets( info );
-			break;
+			switch (m_bulletType)
+			{
+			case TANK_BULLET_SMALL:
+				info.m_iAmmoType = m_iSmallAmmoType;
+				FireBullets(info);
+				break;
 
-		case TANK_BULLET_MEDIUM:
-			info.m_iAmmoType = m_iMediumAmmoType;
-			FireBullets( info );
-			break;
+			case TANK_BULLET_MEDIUM:
+				info.m_iAmmoType = m_iMediumAmmoType;
+				FireBullets(info);
+				break;
 
-		case TANK_BULLET_LARGE:
-			info.m_iAmmoType = m_iLargeAmmoType;
-			FireBullets( info );
-			break;
+			case TANK_BULLET_LARGE:
+				info.m_iAmmoType = m_iLargeAmmoType;
+				FireBullets(info);
+				break;
 
-		default:
-		case TANK_BULLET_NONE:
-			break;
+			default:
+			case TANK_BULLET_NONE:
+				break;
+			}
 		}
 	}
-#endif // HL2_EPISODIC
 
 	CFuncTank::Fire( bulletCount, barrelEnd, forward, pAttacker, bIgnoreSpread );
 }
@@ -4355,9 +4357,11 @@ void CFuncTankCombineCannon::Fire( int bulletCount, const Vector &barrelEnd, con
 void CFuncTankCombineCannon::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
 {
 	// If the shot passed near the player, shake the screen.
-	if( AI_IsSinglePlayer() )
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		Vector vecPlayer = AI_GetSinglePlayer()->EyePosition();
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+
+		Vector vecPlayer = pPlayer->EyePosition();
 
 		Vector vecNearestPoint = PointOnLineNearestPoint( vecTracerSrc, tr.endpos, vecPlayer );
 
@@ -4366,7 +4370,7 @@ void CFuncTankCombineCannon::MakeTracer( const Vector &vecTracerSrc, const trace
 		if( flDist >= 10.0f && flDist <= 120.0f )
 		{
 			// Don't shake the screen if we're hit (within 10 inches), but do shake if a shot otherwise comes within 10 feet.
-			UTIL_ScreenShake( vecNearestPoint, 10, 60, 0.3, 120.0f, SHAKE_START, false );
+			UTIL_ScreenShake(pPlayer, vecNearestPoint, 10, 60, 0.3, 120.0f, SHAKE_START, false );
 		}
 	}
 

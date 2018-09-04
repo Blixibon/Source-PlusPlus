@@ -657,6 +657,8 @@ void C_Strider::ReceiveMessage( int classID, bf_read &msg )
 			m_cannonFX.SetRenderOrigin( pos );
 			m_cannonFX.EffectInit( entindex(), LookupAttachment( "BigGun" ) );
 			m_cannonFX.LimitTime( STRIDERFX_BIG_SHOT_TIME );
+
+			DispatchParticleEffect("crabby_cannon_chargeup", PATTACH_POINT_FOLLOW, this, "BigGun");
 		}
 		break;
 
@@ -666,12 +668,15 @@ void C_Strider::ReceiveMessage( int classID, bf_read &msg )
 			msg.ReadBitVec3Coord( tmp );
 			m_cannonFX.SetTime( STRIDERFX_BIG_SHOT_TIME );
 			m_cannonFX.LimitTime( STRIDERFX_END_ALL_TIME );
+			
+			DispatchParticleEffect("crabby_cannon_burst", PATTACH_POINT_FOLLOW, this, "BigGun");
 		}
 		break;
 
 	case STRIDER_MSG_DEAD:
 		{
 			m_cannonFX.EffectShutdown();
+			StopParticleEffects(this);
 		}
 		break;
 	}

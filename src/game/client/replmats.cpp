@@ -34,7 +34,7 @@ static const char * const pszShaderReplaceDict[][2] = {
 	"VertexLitGeneric",			"PP_VertexLitGeneric",
 	"LightmappedGeneric",		"PP_LightmappedGeneric",
 	"WorldVertexTransition",	"PP_WorldVertexTransition",
-#ifdef HL1_CLIENT_DLL
+#if defined(HL1_CLIENT_DLL) || defined(HL2_LAZUL)
 	"VertexLitGeneric_DX6",		"PP_VertexLitGeneric",
 #endif
 #endif // !DEFERRED
@@ -58,6 +58,7 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 {
 	const char *pszOldShadername = pMat->GetShaderName();
 	const char *pszMatname = pMat->GetName();
+	bool bPhong = false;
 
 	KeyValues *msg = new KeyValues( szNewShadername );
 
@@ -76,6 +77,12 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 			!V_stricmp("$flags2", pVarName) || 
 			!V_stricmp("$flags_defined2", pVarName) )
 			continue;
+
+		if (!Q_strncmp("$phong", pVarName, 6))
+		{
+			bPhong = true;
+			continue;
+		}
 
 		switch ( pVar->GetType() )
 		{
@@ -190,7 +197,7 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 	if (pMat->GetMaterialVarFlag(MATERIAL_VAR_ENVMAPSPHERE))
 		msg->SetInt("$envmapsphere", 1);
 
-	if (pMat->HasProxy())
+	if (pMat->HasProxy() || bPhong)
 	{
 		KeyValues *pkvMat = new KeyValues(pszOldShadername);
 		const char *pchMatName = pMat->GetName();
@@ -242,11 +249,26 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 
 		if (bFound)
 		{
-			KeyValues *pkvProxies = pkvMat->FindKey("Proxies");
-			if (pkvProxies)
+			if (pMat->HasProxy())
 			{
-				KeyValues *pkvCopy = pkvProxies->MakeCopy();
-				msg->AddSubKey(pkvCopy);
+				KeyValues *pkvProxies = pkvMat->FindKey("Proxies");
+				if (pkvProxies)
+				{
+					KeyValues *pkvCopy = pkvProxies->MakeCopy();
+					msg->AddSubKey(pkvCopy);
+				}
+			}
+
+			if (bPhong)
+			{
+				for (KeyValues *pKVVar = pkvMat->GetFirstValue(); pKVVar != NULL; pKVVar = pKVVar->GetNextValue())
+				{
+					const char *pVarName = pKVVar->GetName();
+					if (!Q_strncmp("$phong", pVarName, 6))
+					{
+						msg->AddSubKey(pKVVar->MakeCopy());
+					}
+				}
 			}
 		}
 
@@ -297,7 +319,7 @@ public:
 			}
 		}
 
-		return BaseClass::FindProceduralMaterial( pMaterialName, pTextureGroupName, pVMTKeyValues );
+		return ReplaceMaterialInternal(BaseClass::FindProceduralMaterial( pMaterialName, pTextureGroupName, pVMTKeyValues ));
 	}
 
 	IMaterial* CreateMaterial( const char *pMaterialName, KeyValues *pVMTKeyValues ) OVERRIDE

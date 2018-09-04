@@ -88,6 +88,7 @@ $Project
 		$File	"common_vertexlitgeneric_dx9.h"
 		$File	"common_vs_fxc.h"
 		$File	"shader_constant_register_map.h"
+		$File	"tree_sway.h"
 
 		$File	"example_model_dx9_helper.h"
 	}

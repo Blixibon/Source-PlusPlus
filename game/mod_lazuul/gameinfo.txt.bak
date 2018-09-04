@@ -8,6 +8,7 @@
 	content
 	{
 		"hl1_low"	1
+		"bms_low"	1
 		//citizen		1
 		//citizen2	1
 		"portal_low"	1

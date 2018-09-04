@@ -28,6 +28,7 @@
 #include "AI_Behavior.h"
 #include "AI_Behavior_Follow.h"
 #include "npc_talker.h"
+#include "AI_ResponseSystem.h"
 
 
 #define SF_NPC_PREDISASTER			( 1 << 16 )	// This is a predisaster scientist or barney. Influences how they speak.
@@ -68,12 +69,16 @@ public:
 
 	Disposition_t IRelationType( CBaseEntity *pTarget );
 
+	virtual IResponseSystem *GetResponseSystem() { return m_pInstancedResponseSystem; }
+
 	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 
 	void			StartFollowing( CBaseEntity *pLeader );
 	void			StopFollowing( void );
 	int				PlayScriptedSentence( const char *pszSentence, float delay, float volume, soundlevel_t soundlevel, bool bConcurrent, CBaseEntity *pListener );
 
+	virtual int	Save(ISave &save);
+	virtual int	Restore(IRestore &restore);
 
 	void			Touch( CBaseEntity *pOther );
 
@@ -89,6 +94,7 @@ public:
 protected:
 	virtual void 	FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
+	IResponseSystem *m_pInstancedResponseSystem;
 private:
 	virtual void	DeclineFollowing( void ) {}
 

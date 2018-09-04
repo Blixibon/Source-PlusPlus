@@ -34,6 +34,7 @@
 #include "functorutils.h"
 #include "team.h"
 #include "nav_entities.h"
+#include "worldlight.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -4231,14 +4232,14 @@ float CNavArea::GetLightIntensity( void ) const
  */
 bool CNavArea::ComputeLighting( void )
 {
-	if ( engine->IsDedicatedServer() )
+	//if ( engine->IsDedicatedServer() )
 	{
 		for ( int i=0; i<NUM_CORNERS; ++i )
 		{
 			m_lightIntensity[i] = 1.0f;
 		}
 
-		return true;
+		//return true;
 	}
 
 	// Calculate light at the corners
@@ -4253,20 +4254,10 @@ bool CNavArea::ComputeLighting( void )
 		}
 
 		Vector light( 0, 0, 0 );
-		// FIXMEL4DTOMAINMERGE
-		//if ( !engine->GetLightForPointListenServerOnly( pos, false, &light ) )
-		//{
-			//NDebugOverlay::Line( pos, pos + Vector( 0, 0, -100 ), 255, 0, 0, false, 100.0f );
-		//	return false;
-		//}
+		g_pWorldLights->GetTotalLightAtPoint(pos, light);
 
-		Vector ambientColor;
-		// FIXMEL4DTOMAINMERGE
-		//if ( !GetTerrainAmbientLightAtPoint( pos, &ambientColor ) )
-		{
-			//NDebugOverlay::Line( pos, pos + Vector( 0, 0, -100 ), 255, 127, 0, false, 100.0f );
-			return false;
-		}
+		Vector ambientColor(0,0,0);
+		g_pWorldLights->GetAmbientLightAtPoint(pos, ambientColor);
 
 		//NDebugOverlay::Line( pos, pos + Vector( 0, 0, -100 ), 0, 255, 127, false, 100.0f );
 

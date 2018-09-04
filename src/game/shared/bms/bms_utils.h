@@ -2,7 +2,7 @@
 #define BMS_UTIL_H
 #include "gamerules.h"
 #ifdef GAME_DLL
-#include "gametypes.h"
+#include "peter/gametypes.h"
 #include "globalstate.h"
 
 class CAI_PlayerAlly;

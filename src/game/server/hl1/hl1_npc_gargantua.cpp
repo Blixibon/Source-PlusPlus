@@ -36,7 +36,7 @@
 #include	"particle_smokegrenade.h"
 #include	"gib.h"
 #include	"func_break.h"
-#include "hl1_shareddefs.h"
+#include	"hl1_shareddefs.h"
 
 
 extern short	g_sModelIndexFireball;

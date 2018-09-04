@@ -657,7 +657,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	factories.physicsFactory = physicsFactory;
 	FactoryList_Store( factories );
 
-	MountExtraContent();
+	Mounter::MountExtraContent();
 
 	// load used game events  
 	gameeventmanager->LoadEventsFromFile("resource/gameevents.res");

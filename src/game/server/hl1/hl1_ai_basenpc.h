@@ -50,6 +50,9 @@ public:
 	void	EjectShell( const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int iType );
 
 	virtual int		SelectDeadSchedule();
+
+protected:
+	virtual void		PopulatePoseParameters(void);
 };
 
 #endif //HL1_AI_BASENPC_H

@@ -1,0 +1,7 @@
+SpriteCard
+{
+$basetexture "particle/water_splash/water_splash"
+$outline 1
+$outlinecolor "[1 1 1]"
+$blendframes 1
+}

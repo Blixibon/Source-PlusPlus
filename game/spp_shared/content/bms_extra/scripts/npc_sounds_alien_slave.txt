@@ -1,0 +1,188 @@
+"NPC_Vortigaunt_BMS.ZapPowerup"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/vort/attack_charge.wav"
+}
+
+"NPC_Vortigaunt_BMS.ClawBeam"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"VOL_NORM"
+	"pitch"			"130, 160"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"npc/vort/attack_shoot.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.Swing"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"100, 130"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"npc/vort/claw_swing1.wav"
+		"wave"	"npc/vort/claw_swing2.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.StartShootLoop"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_90dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/alien_slave/vort_attack_shoot1.wav"
+		"wave"	"npc/alien_slave/vort_attack_shoot2.wav"
+		"wave"	"npc/alien_slave/vort_attack_shoot3.wav"
+		"wave"	"npc/alien_slave/vort_attack_shoot4.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.FootstepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.100"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_65dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/alien_slave/vort_foot1.wav"
+		"wave"	"npc/alien_slave/vort_foot3.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.FootstepRight"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.100"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_65dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/alien_slave/vort_foot2.wav"
+		"wave"	"npc/alien_slave/vort_foot4.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.Explode"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.900"
+	"pitch"			"100, 110"
+	"soundlevel"	"SNDLVL_120dB"
+
+	"rndwave"
+	{
+		"wave"	"npc/alien_slave/vort_explode1.wav"
+		"wave"	"npc/alien_slave/vort_explode2.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"			"npc/alien_slave/vort_bm_pain01.wav"
+		"wave"			"npc/alien_slave/vort_bm_pain02.wav"
+		"wave"			"npc/alien_slave/vort_bm_pain03.wav"
+		"wave"			"npc/alien_slave/vort_bm_pain04.wav"
+		"wave"			"npc/alien_slave/vort_bm_alert04.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.Death"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"			"npc/alien_slave/vort_bm_death01.wav"
+		"wave"			"npc/alien_slave/vort_bm_death02.wav"
+		"wave"			"npc/alien_slave/vort_bm_death03.wav"
+		"wave"			"npc/alien_slave/vort_bm_death04.wav"
+		"wave"			"npc/alien_slave/vort_bm_death05.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.idle"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"npc/alien_slave/vort_bm_idle01.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle02.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle03.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle04.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle05.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle06.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle07.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle08.wav"
+		"wave"	"npc/alien_slave/vort_bm_idle09.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.alert"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+	"wave"			"npc/alien_slave/vort_bm_alert01.wav"
+	"wave"			"npc/alien_slave/vort_bm_alert02.wav"
+	"wave"			"npc/alien_slave/vort_bm_alert03.wav"
+	"wave"			"npc/alien_slave/vort_bm_alert05.wav"
+	"wave"			"npc/alien_slave/vort_bm_alert06.wav"
+	}
+}
+
+"NPC_Vortigaunt_BMS.DispelImpact"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/vort/vort_dispell.wav"
+}
+
+"NPC_Vortigaunt_BMS.DispelStart"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_GUNFIRE"
+
+	"wave"			"npc/vort/vort_dispell.wav"
+}

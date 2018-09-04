@@ -39,6 +39,7 @@ BEGIN_VS_SHADER_FLAGS( PP_DepthWrite, "Help for Depth Write", SHADER_NOT_EDITABL
 		SHADER_PARAM( TREESWAYSCRUMBLEFALLOFFEXP, SHADER_PARAM_TYPE_FLOAT, "1.0", "" )
 		SHADER_PARAM( TREESWAYSPEEDLERPSTART, SHADER_PARAM_TYPE_FLOAT, "3", "" )
 		SHADER_PARAM( TREESWAYSPEEDLERPEND, SHADER_PARAM_TYPE_FLOAT, "6", "" )
+		SHADER_PARAM(TREESWAYWINDVECTOR, SHADER_PARAM_TYPE_VEC3, "[0 0 0]", "")
 	END_SHADER_PARAMS
 
 	SHADER_INIT_PARAMS()
@@ -217,7 +218,10 @@ BEGIN_VS_SHADER_FLAGS( PP_DepthWrite, "Help for Depth Write", SHADER_NOT_EDITABL
 				float flParams[4];
 
 				flParams[0] = pShaderAPI->CurrentTime();
-				const Vector& windDir = pShaderAPI->GetVectorRenderingParameter( VECTOR_RENDERPARM_WIND_DIRECTION );
+				Vector windDir;
+				params[TREESWAYWINDVECTOR]->GetVecValue(windDir.Base(), 3);
+				if (windDir == vec3_invalid)
+					windDir = pShaderAPI->GetVectorRenderingParameter(VECTOR_RENDERPARM_WIND_DIRECTION);
 				flParams[1] = windDir.x;
 				flParams[2] = windDir.y;
 				flParams[3] = 0.0f;

@@ -1,21 +1,21 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose:
+// Purpose: 
 //
 // $NoKeywords: $
 //
 //=============================================================================//
-#ifndef NPC_VORTIGAUNT_H
-#define NPC_VORTIGAUNT_H
+#ifndef NPC_VortigauntHL1_H
+#define NPC_VortigauntHL1_H
 
 #define	VORTIGAUNT_MAX_BEAMS	8
 
 #include "hl1_ai_basenpc.h"
 //=========================================================
 //=========================================================
-class CNPC_Vortigaunt : public CHL1BaseNPC
+class CNPC_HL1Vortigaunt : public CHL1BaseNPC
 {
-	DECLARE_CLASS( CNPC_Vortigaunt, CHL1BaseNPC );
+	DECLARE_CLASS( CNPC_HL1Vortigaunt, CHL1BaseNPC );
 public:
 
 	void Spawn( void );
@@ -26,9 +26,9 @@ public:
 	void IdleSound( void );
 	void PainSound( const CTakeDamageInfo &info );
 	void DeathSound( const CTakeDamageInfo &info );
-
+	
 	int	 GetSoundInterests ( void );
-
+	
 	float MaxYawSpeed ( void );
 
 	void Event_Killed( const CTakeDamageInfo &info );
@@ -37,8 +37,8 @@ public:
 	int  RangeAttack1Conditions( float flDot, float flDist );
 
 	int  OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
-	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-
+	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
+	
 	void StartTask( const Task_t *pTask );
 
 	int  SelectSchedule( void );
@@ -71,4 +71,4 @@ private:
 };
 
 
-#endif //NPC_VORTIGAUNT_
+#endif //NPC_VortigauntHL1_

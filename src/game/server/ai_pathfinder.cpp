@@ -1829,6 +1829,12 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 				else
 				{
 					newway = BuildLocalRoute(fromclosestpoint, closestpoint, nullptr, endFlags, NO_NODE, buildFlags, goalTolerance);
+					if (!newway)
+						return nullptr;
+
+					AI_Waypoint_t *pToCenter = BuildLocalRoute(closestpoint, center, nullptr, endFlags, NO_NODE, buildFlags, goalTolerance);
+					if (pToCenter != nullptr)
+						AddWaypointLists(newway, pToCenter);
 				}
 			}
 			else if (tohow == GO_LADDER_UP)		// to get to next area, must go up a ladder

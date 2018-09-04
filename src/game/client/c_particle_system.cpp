@@ -266,16 +266,16 @@ DECLARE_CLIENT_EFFECT( "ParticleEffect", ParticleEffectCallback );
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void ParticleEffectStopCallback( const CEffectData &data )
+void ParticleEffectStopCallback(const CEffectData &data)
 {
-	if ( data.m_hEntity.Get() )
+	if (data.m_hEntity.Get())
 	{
-		C_BaseEntity *pEnt = C_BaseEntity::Instance( data.m_hEntity );
-		if ( pEnt )
+		C_BaseEntity *pEnt = C_BaseEntity::Instance(data.m_hEntity);
+		if (pEnt)
 		{
-				pEnt->ParticleProp()->StopEmission();
-			}
+			pEnt->ParticleProp()->StopEmission();
 		}
 	}
+}
 
 DECLARE_CLIENT_EFFECT( "ParticleEffectStop", ParticleEffectStopCallback );

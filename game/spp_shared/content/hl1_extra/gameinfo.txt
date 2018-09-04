@@ -1,0 +1,82 @@
+"GameInfo"
+{
+	game	"Half-Life"
+	title	"HALF-LIFE"
+	title2	""
+	
+	hl1content 1
+	hl1mpcontent 1
+	hashdcontent	1
+	supportsvr	0
+	
+	nocrosshair 0
+    nohimodel 1
+    nomodels 0
+    hidden_maps
+    {
+        "background02" 1
+        "background03" 1
+        "background07" 1
+        "background12" 1
+        "background15" 1
+        "test"         1
+    }
+	
+	content
+	{
+		hl1 1
+		hl1mp 1
+	}
+	
+	mount
+	{
+		"|content_path|"
+		{
+			"head"	"1"
+			// "hl1_weapons"
+			// {
+			
+			// }
+		}
+	
+		|gameinfo_parent|
+		{
+			head 1
+			|gameinfo_path|
+			{
+				path_id
+				{
+					mod 1
+				}
+			}
+		}
+	}
+
+	FileSystem
+	{
+		SteamAppId				243750
+		
+		SearchPaths
+		{
+			// Our Crap
+			game+mod+mod_write+default_write_path		|gameinfo_path|.
+			gamebin				|gameinfo_path|bin
+			//shared				|gameinfo_path|../spp_shared
+
+			// Needed Crap
+			game				|all_source_engine_paths|hl2/hl2_english.vpk
+			game				|all_source_engine_paths|hl2/hl2_pak.vpk
+			game				|all_source_engine_paths|hl2/hl2_textures.vpk
+			game				|all_source_engine_paths|hl2/hl2_sound_vo_english.vpk
+			game				|all_source_engine_paths|hl2/hl2_sound_misc.vpk
+			game				|all_source_engine_paths|hl2/hl2_misc.vpk
+			game+game_write		hl2
+			game				|all_source_engine_paths|hl2
+			platform			|all_source_engine_paths|platform
+			
+			// Engine Crap
+			platform			|all_source_engine_paths|platform/platform_misc.vpk
+			platform			|all_source_engine_paths|platform
+		}
+	}
+}

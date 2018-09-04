@@ -103,6 +103,7 @@ public:
 	void Precache( void )
 	{
 		m_spriteTexture = PrecacheModel( "sprites/lgtning.vmt" );
+		PrecacheParticleSystem("crabby_cannon_impact_main");
 
 		BaseClass::Precache();
 	}

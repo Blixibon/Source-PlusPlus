@@ -25,7 +25,7 @@
 extern void ClearMultiDamage(void);
 extern void ApplyMultiDamage( void );
 
-ConVar	sk_headcrab_health( "sk_headcrab_health","20");
+ConVar	sk_headcrabhl1_health( "sk_headcrabhl1_health","10");
 ConVar	sk_headcrab_dmg_bite( "sk_headcrab_dmg_bite","10");
 
 #define CRAB_ATTN_IDLE				(float)1.5
@@ -60,8 +60,8 @@ LINK_ENTITY_TO_CLASS( monster_headcrab, CNPC_Headcrab );
 
 enum
 {
-	SCHED_HEADCRAB_RANGE_ATTACK1 = LAST_SHARED_SCHEDULE,
-	SCHED_FAST_HEADCRAB_RANGE_ATTACK1,
+	SCHED_HL1_HEADCRAB_RANGE_ATTACK1 = LAST_SHARED_SCHEDULE,
+	SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1,
 };
 
 
@@ -76,8 +76,8 @@ void CNPC_Headcrab::Spawn( void )
 
 	SetRenderColor( 255, 255, 255, 255 );
 
-	SetModel( "models/headcrab.mdl" );
-	m_iHealth = sk_headcrab_health.GetFloat();
+	SetModel( "models/hl1hcrab.mdl" );
+	m_iHealth = sk_headcrabhl1_health.GetFloat();
 
 	SetHullType(HULL_TINY);
 	SetHullSizeNormal();
@@ -105,7 +105,7 @@ void CNPC_Headcrab::Spawn( void )
 //-----------------------------------------------------------------------------
 void CNPC_Headcrab::Precache( void )
 {
-	PrecacheModel( "models/headcrab.mdl" );
+	PrecacheModel( "models/hl1hcrab.mdl" );
 //	PrecacheModel( "models/hc_squashed01.mdl" );
 //	PrecacheModel( "models/gibs/hc_gibs.mdl" );
 
@@ -177,7 +177,7 @@ int CNPC_Headcrab::SelectSchedule( void )
 		{
 			if (HasCondition( COND_LIGHT_DAMAGE ) || HasCondition( COND_HEAVY_DAMAGE ))
 			{
-				if ( fabsf( GetMotor()->DeltaIdealYaw() ) < ( 1.0 - m_flFieldOfView) * 60 ) // roughly in the correct direction
+				if ( fabs( GetMotor()->DeltaIdealYaw() ) < ( 1.0 - m_flFieldOfView) * 60 ) // roughly in the correct direction
 				{
 					return SCHED_TAKE_COVER_FROM_ORIGIN;
 				}
@@ -274,7 +274,7 @@ int CNPC_Headcrab::TranslateSchedule( int scheduleType )
 	switch( scheduleType )
 	{
 		case SCHED_RANGE_ATTACK1:
-			return SCHED_HEADCRAB_RANGE_ATTACK1;
+			return SCHED_HL1_HEADCRAB_RANGE_ATTACK1;
 
 		case SCHED_FAIL_TAKE_COVER:
 			return SCHED_ALERT_FACE;
@@ -558,11 +558,11 @@ void CNPC_Headcrab::AttackSound( void )
 AI_BEGIN_CUSTOM_NPC( monster_headcrab, CNPC_Headcrab )
 
 	//=========================================================
-	// > SCHED_HEADCRAB_RANGE_ATTACK1
+	// > SCHED_HL1_HEADCRAB_RANGE_ATTACK1
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HEADCRAB_RANGE_ATTACK1,
+		SCHED_HL1_HEADCRAB_RANGE_ATTACK1,
 	
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
@@ -578,11 +578,11 @@ AI_BEGIN_CUSTOM_NPC( monster_headcrab, CNPC_Headcrab )
 	)
 	
 	//=========================================================
-	// > SCHED_FAST_HEADCRAB_RANGE_ATTACK1
+	// > SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_FAST_HEADCRAB_RANGE_ATTACK1,
+		SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1,
 	
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
@@ -635,7 +635,7 @@ void CNPC_BabyCrab::Spawn( void )
 
 	UTIL_SetSize(this, Vector(-12, -12, 0), Vector(12, 12, 24));
 	
-	m_iHealth	  = sk_headcrab_health.GetFloat() * 0.25;	// less health than full grown
+	m_iHealth	  = sk_headcrabhl1_health.GetFloat() * 0.25;	// less health than full grown
 }
 
 void CNPC_BabyCrab::Precache( void )

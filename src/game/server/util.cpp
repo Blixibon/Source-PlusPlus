@@ -884,6 +884,38 @@ inline void TransmitShakeEvent( CBasePlayer *pPlayer, float localAmplitude, floa
 //			bAirShake - if this is false, then it will only shake players standing on the ground.
 //-----------------------------------------------------------------------------
 const float MAX_SHAKE_AMPLITUDE = 16.0f;
+void UTIL_ScreenShake(CBasePlayer *pPlayer, const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake)
+{
+	//int			i;
+	float		localAmplitude;
+
+	if (amplitude > MAX_SHAKE_AMPLITUDE)
+	{
+		amplitude = MAX_SHAKE_AMPLITUDE;
+	}
+	//for (i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		//CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
+
+		//
+		// Only start shakes for players that are on the ground unless doing an air shake.
+		//
+		if (!pPlayer || (!bAirShake && (eCommand == SHAKE_START) && !(pPlayer->GetFlags() & FL_ONGROUND)))
+		{
+			return;
+		}
+
+		localAmplitude = ComputeShakeAmplitude(center, pPlayer->WorldSpaceCenter(), amplitude, radius);
+
+		// This happens if the player is outside the radius, in which case we should ignore 
+		// all commands
+		if (localAmplitude < 0)
+			return;
+
+		TransmitShakeEvent((CBasePlayer *)pPlayer, localAmplitude, frequency, duration, eCommand);
+	}
+}
+
 void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, ShakeCommand_t eCommand, bool bAirShake )
 {
 	int			i;

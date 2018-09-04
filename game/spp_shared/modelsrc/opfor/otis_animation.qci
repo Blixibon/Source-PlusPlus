@@ -121,7 +121,7 @@ $Sequence "shootgun" {
 	blend "aim_pitch" -50 50
 	blendwidth 2
 	{ event 3 1 "" }
-	{ event AE_NPC_MUZZLEFLASH 1 "PISTOL gun" }
+	{ event AE_NPC_MUZZLEFLASH 1 "357 gun" }
 	fadein 0.2
 	fadeout 0.2
 	fps 25
@@ -136,7 +136,7 @@ $Sequence "shootgun2" {
 	blend "aim_pitch" -50 50
 	blendwidth 2
 	{ event 3 1 "" }
-	{ event AE_NPC_MUZZLEFLASH 1 "PISTOL gun" }
+	{ event AE_NPC_MUZZLEFLASH 1 "357 gun" }
 	fadein 0.2
 	fadeout 0.2
 	fps 25

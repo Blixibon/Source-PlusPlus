@@ -32,9 +32,9 @@
 // Monster's Anim Events Go Here
 //=========================================================
 
-class CNPC_GMan : public CAI_BaseActor
+class CNPC_HL1GMan : public CAI_BaseActor
 {
-	DECLARE_CLASS( CNPC_GMan, CAI_BaseActor );
+	DECLARE_CLASS( CNPC_HL1GMan, CAI_BaseActor );
 public:
 
 	void Spawn( void );
@@ -58,12 +58,12 @@ public:
 	float   m_flTalkTime;
 };
 
-LINK_ENTITY_TO_CLASS( monster_gman, CNPC_GMan );
+LINK_ENTITY_TO_CLASS( monster_gman, CNPC_HL1GMan );
 
 //=========================================================
 // Hack that tells us whether the GMan is in the final map
 //=========================================================
-bool CNPC_GMan::IsInC5A1()
+bool CNPC_HL1GMan::IsInC5A1()
 {
 	const char *pMapName = STRING(gpGlobals->mapname);
 
@@ -79,7 +79,7 @@ bool CNPC_GMan::IsInC5A1()
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-Class_T	CNPC_GMan::Classify ( void )
+Class_T	CNPC_HL1GMan::Classify ( void )
 {
 	return	CLASS_NONE;
 }
@@ -89,7 +89,7 @@ Class_T	CNPC_GMan::Classify ( void )
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CNPC_GMan::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_HL1GMan::HandleAnimEvent( animevent_t *pEvent )
 {
 	switch( pEvent->event )
 	{
@@ -103,7 +103,7 @@ void CNPC_GMan::HandleAnimEvent( animevent_t *pEvent )
 //=========================================================
 // GetSoundInterests - generic monster can't hear.
 //=========================================================
-int CNPC_GMan::GetSoundInterests ( void )
+int CNPC_HL1GMan::GetSoundInterests ( void )
 {
 	return	NULL;
 }
@@ -111,13 +111,13 @@ int CNPC_GMan::GetSoundInterests ( void )
 //=========================================================
 // Spawn
 //=========================================================
-void CNPC_GMan::Spawn()
+void CNPC_HL1GMan::Spawn()
 {
 	Precache();
 
 	BaseClass::Spawn();
 
-	SetModel( "models/gman.mdl" );
+	SetModel( "models/hl1gman.mdl" );
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -138,9 +138,9 @@ void CNPC_GMan::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CNPC_GMan::Precache()
+void CNPC_HL1GMan::Precache()
 {
-	PrecacheModel( "models/gman.mdl" );
+	PrecacheModel( "models/hl1gman.mdl" );
 }	
 
 
@@ -149,7 +149,7 @@ void CNPC_GMan::Precache()
 //=========================================================
 
 
-void CNPC_GMan::StartTask( const Task_t *pTask )
+void CNPC_HL1GMan::StartTask( const Task_t *pTask )
 {
 	switch( pTask->iTask )
 	{
@@ -164,7 +164,7 @@ void CNPC_GMan::StartTask( const Task_t *pTask )
 	BaseClass::StartTask( pTask );
 }
 
-void CNPC_GMan::RunTask( const Task_t *pTask )
+void CNPC_HL1GMan::RunTask( const Task_t *pTask )
 {
 	switch( pTask->iTask )
 	{
@@ -200,7 +200,7 @@ void CNPC_GMan::RunTask( const Task_t *pTask )
 //=========================================================
 // Override all damage
 //=========================================================
-int CNPC_GMan::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
+int CNPC_HL1GMan::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 {
 	m_iHealth = m_iMaxHealth / 2; // always trigger the 50% damage aitrigger
 
@@ -214,18 +214,18 @@ int CNPC_GMan::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 }
 
 
-void CNPC_GMan::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType)
+void CNPC_HL1GMan::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType)
 {
 	g_pEffects->Ricochet( ptr->endpos, ptr->plane.normal );
 //	AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
 }
 
-int CNPC_GMan::PlayScriptedSentence( const char *pszSentence, float delay, float volume, soundlevel_t soundlevel, bool bConcurrent, CBaseEntity *pListener )
+int CNPC_HL1GMan::PlayScriptedSentence( const char *pszSentence, float delay, float volume, soundlevel_t soundlevel, bool bConcurrent, CBaseEntity *pListener )
 {
-	BaseClass::PlayScriptedSentence( pszSentence, delay, volume, soundlevel, bConcurrent, pListener );
+	int sentenceIndex = BaseClass::PlayScriptedSentence( pszSentence, delay, volume, soundlevel, bConcurrent, pListener );
 
-	m_flTalkTime = gpGlobals->curtime + delay;
+	m_flTalkTime = gpGlobals->curtime + delay + engine->SentenceLength(sentenceIndex);
 	m_hTalkTarget = pListener;
 
-	return 1;
+	return sentenceIndex;
 }

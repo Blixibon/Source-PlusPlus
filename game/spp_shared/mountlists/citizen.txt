@@ -2,7 +2,7 @@
 {	
 	"sourcemods"
 	{
-		head 1
+		head 0
 		"The Citizen"
 		{
 			path_id

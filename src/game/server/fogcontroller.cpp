@@ -359,6 +359,24 @@ void CFogSystem::LevelInitPreEntity( void )
 	ListenForGameEvent( "round_start" );
 }
 
+void CFogSystem::LevelInitPostEntity()
+{
+	InitMasterController();
+
+	// HACK: Singleplayer games don't get a call to CBasePlayer::Spawn on level transitions.
+	// CBasePlayer::Activate is called before this is called so that's too soon to set up the fog controller.
+	// We don't have a hook similar to Activate that happens after LevelInitPostEntity
+	// is called, or we could just do this in the player itself.
+	if (gpGlobals->maxClients == 1)
+	{
+		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+		if (pPlayer && (pPlayer->m_Local.m_PlayerFog.m_hCtrl.Get() == NULL))
+		{
+			pPlayer->InitFogController();
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Find the master controller.  If no controller is 
 //			set as Master, use the first controller found.
@@ -386,24 +404,7 @@ void CFogSystem::InitMasterController( void )
 	} while ( pFogController );
 }
 
-class CFogTrigger : public CBaseTrigger
-{
-public:
-	DECLARE_CLASS( CFogTrigger, CBaseTrigger );
-	DECLARE_DATADESC();
 
-	virtual void Spawn( void );
-	virtual void StartTouch( CBaseEntity *other );
-	virtual void EndTouch( CBaseEntity *other );
-
-	fogparams_t *GetFog( void )
-	{
-		return &m_fog;
-	}
-
-private:
-	fogparams_t	m_fog;
-};
 
 LINK_ENTITY_TO_CLASS( trigger_fog, CFogTrigger );
 

@@ -578,7 +578,7 @@ bool CBaseCombatCharacter::ComputeTargetIsInDarkness( const Vector &vecEyePositi
 	// Check light info
 	const float flMinLightIntensity = 0.1f;
 
-	if ( !pTargetNavArea || ( pTargetNavArea->GetLightIntensity() >= flMinLightIntensity ) )
+	if ( !pTargetNavArea || ( pTargetNavArea->GetLightIntensity(vecTargetPos) >= flMinLightIntensity ) )
 		return false;
 
 	CTraceFilterNoNPCsOrPlayer lightingFilter( this, COLLISION_GROUP_NONE );
@@ -595,7 +595,7 @@ bool CBaseCombatCharacter::ComputeTargetIsInDarkness( const Vector &vecEyePositi
 		CNavArea *pFarArea = TheNavMesh->GetNearestNavArea( result.endpos, false, flMaxDistance );
 
 		// Target is in darkness, the wall behind him is too, and we are too far away
-		if ( pFarArea && pFarArea->GetLightIntensity() < flMinLightIntensity )
+		if ( pFarArea && pFarArea->GetLightIntensity(result.endpos) < flMinLightIntensity )
 			return true;
 	}
 

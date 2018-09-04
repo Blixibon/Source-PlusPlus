@@ -58,12 +58,12 @@ public:
 
 	// Returns the sentence index played, which can be used to determine
 	// the sentence length of time using engine->SentenceLength
-	int Speak( const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD );
+	virtual int Speak( const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD );
 
 	// Returns the sentence index played, which can be used to determine
 	// the sentence length of time using engine->SentenceLength. If the sentence
 	// was queued, then -1 is returned, which is the same result as if the sound wasn't played
-	int SpeakQueued( const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD );
+	virtual int SpeakQueued( const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD );
 
 	// Clears the sentence queue
 	void ClearQueue();

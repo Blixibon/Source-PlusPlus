@@ -946,7 +946,7 @@ public:
 
 	void				SetActivityAndSequence(Activity NewActivity, int iSequence, Activity translatedActivity, Activity weaponActivity);
 
-private:
+protected:
 
 	void				AdvanceToIdealActivity(void);
 	void				ResolveActivityToSequence(Activity NewActivity, int &iSequence, Activity &translatedActivity, Activity &weaponActivity);

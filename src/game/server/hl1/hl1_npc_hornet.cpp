@@ -34,8 +34,13 @@ int iHornetPuff;
 
 LINK_ENTITY_TO_CLASS( hornet, CNPC_Hornet );
 
+#ifdef HL1_DLL
 extern ConVar sk_npc_dmg_hornet;
 extern ConVar sk_plr_dmg_hornet;
+#else
+ConVar sk_plr_dmg_hornet("sk_plr_dmg_hornet", "0", FCVAR_REPLICATED);
+ConVar sk_npc_dmg_hornet("sk_npc_dmg_hornet", "0", FCVAR_REPLICATED);
+#endif
 
 BEGIN_DATADESC( CNPC_Hornet )
 	DEFINE_FIELD( m_flStopAttack, FIELD_TIME ),

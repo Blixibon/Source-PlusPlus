@@ -992,7 +992,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 
 	g_pcv_ThreadMode = g_pCVar->FindVar( "host_thread_mode" );
 
-	MountExtraContent();
+	Mounter::MountExtraContent();
 
 	if (!Initializer::InitializeAllObjects())
 		return false;

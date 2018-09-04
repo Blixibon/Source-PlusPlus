@@ -194,11 +194,12 @@ $Project
 		$File	"$SRCDIR\game\shared\content_mounter.cpp"
 		
 		$File	"c_lights.cpp"
-		$File	"worldlight.cpp"
-		$File	"vis_tester.cpp"
+		$File	"$SRCDIR\game\shared\worldlight.cpp"
+		$File	"$SRCDIR\game\shared\vis_tester.cpp"
 		$File	"replmats.cpp"
 
 		$File	"materialproxy_lightedmouth.cpp"
+		$File	"materialproxy_modelwind.cpp"
 		
 		$File	"c_env_dof_controller.cpp"
 		
@@ -590,7 +591,8 @@ $Project
 				"mumble.cpp"						\
 				"$SRCDIR\public\renamed_recvtable_compat.cpp"		\
 				"rendertexture.cpp"									\
-				"$SRCDIR\public\phonemeconverter.cpp"
+				"$SRCDIR\public\phonemeconverter.cpp"				\
+				"$SRCDIR\public\lumpfiles.cpp"
 				{
 					$Configuration
 					{

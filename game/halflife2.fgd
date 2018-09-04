@@ -25,7 +25,7 @@
 	input SpeakResponseConcept(string) : "Speak the specified response concept."
 ]
 
-@BaseClass base(BaseNPC) = PlayerCompanion
+@BaseClass base(TalkNPC) = PlayerCompanion
 [
 	input OutsideTransition(void) : "Use this input to teleport the NPC to a hintnode with the Player Squad Transition Point hint type."
 	input EnableAlwaysTransition(void) : "Enable the 'always transition' behavior"
@@ -33,6 +33,12 @@
 	
 	input EnableSpeakWhileScripting(void) : "Allow this NPC to speak responses while in a scripted sequence or while StartScripting is active."
 	input DisableSpeakWhileScripting(void) : "Cancels this NPC's ability to speak responses while in a scripted sequence or while StartScripting is active if it was previously enabled by EnableSpeakWhileScripting."
+	
+	CanSpeakWhileScripting(choices) : "Speak while scripting?" : "No" : "" =
+	[
+		0 : "No"
+		1 : "Yes"	
+	]
 	
 	AlwaysTransition(choices) : "Always transition" : "No" : "If yes, this NPC will always teleport to a Player Squad Transition Point if they're not within the trigger_transition volume." =
 	[
@@ -69,6 +75,31 @@
 	input ClearAllOutputs(void) : "Obliterate every output that this NPC has."
 
 	output OnWeaponPickup(void) : "Fires when this NPC picks a weapon off the ground or a gun rack."
+]
+
+@BaseClass base(PlayerCompanion) = PlayerFollower
+[
+	notifynavfailblocked(choices) : "Fire output when Nav is blocked?" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	neverleaveplayersquad(choices) : "Permanent squad member?" : 0 : "A permanent squad member cannot leave the player's squad unless killed or explicity removed by entity I/O. Only use this if you're sure you want to override the default AI." =
+	[
+		0 : "No. This is default behavior."
+		1 : "Yes, stay in squad until death."
+	]
+
+	denycommandconcept(string) : "Deny command speech concept" : "" : "If you want your citizens to squad with the player but not obey commands the player gives to move the squad, put a concept here and this citizen will speak the concept instead of obeying the order."
+
+	// Outputs
+	output OnJoinedPlayerSquad(void) : "Fires when joins player squad"
+	output OnLeftPlayerSquad(void) : "Fires when leaves player squad"
+	output OnFollowOrder(void) : "Fires when ordered to follow player"
+	output OnStationOrder(void) : "Fires when ordered to a location by player"
+	output OnPlayerUse(void) : "Fires when a player +USEs the citizen"
+	output OnNavFailBlocked(void) : "Fires when this Citizen's movement fails because he/she is blocked."
 ]
 
 @BaseClass base(BaseNPC ) = RappelNPC
@@ -770,7 +801,7 @@
 
 
 
-@NPCClass base(BaseNPC,Parentname, TalkNPC, PlayerCompanion ) studio() = npc_citizen : "Citizen"
+@NPCClass base(BaseNPC,Parentname, TalkNPC, PlayerFollower ) studio() = npc_citizen : "Citizen"
 [
 
 	spawnflags(Flags) =

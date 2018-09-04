@@ -1,0 +1,13 @@
+"npc_sounds_alien_controller.Attack"
+{
+	"channel"	"CHAN_VOICE"
+	"pitch"		"PITCH_NORM"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"npc/alien_controller/con_attack1.wav"
+		"wave"		"npc/alien_controller/con_attack2.wav"
+	}
+}

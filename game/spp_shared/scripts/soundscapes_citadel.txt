@@ -71,6 +71,12 @@
 			"wave"		"ambient/levels/streetwar/strider_distant3.wav"
 		}
 	}
+	
+	"playsoundscape"
+	{
+		"name"	"util_lo.end_mach"
+		"volume"	".6"
+	}
 }
 
 "d3_citadel.util_pods"

@@ -729,6 +729,8 @@
 		1003: "HL1 World: Alien Blood"
 	
 //		1100: "CS Hostage: Escape Point"
+
+		1200: "BMS MiniBoss Node"
 	]
 
 	hintactivity(string) : "Hint Activity" : "" : "Activity associated with this hint node. Various parts of the NPC AI play this activity at times. i.e. Actbusy nodes will play this activity when an NPC acts busy on the node."

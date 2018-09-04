@@ -7,7 +7,7 @@
 
 #include "cbase.h"
 #include "hl1_grenade_mp5.h"
-#include "hl1mp_weapon_mp5.h"
+//#include "hl1mp_weapon_mp5.h"
 #include "soundent.h"
 #include "decals.h"
 #include "shake.h"
@@ -18,10 +18,15 @@
 
 extern short	g_sModelIndexFireball;
 extern short	g_sModelIndexWExplosion;
-
+#ifdef HL1_DLL
 extern ConVar sk_plr_dmg_mp5_grenade;
 extern ConVar sk_max_mp5_grenade;
 extern ConVar sk_mp5_grenade_radius;
+#else
+ConVar sk_plr_dmg_mp5_grenade("sk_plr_dmg_mp5_grenade", "0", FCVAR_REPLICATED);
+ConVar sk_max_mp5_grenade("sk_max_mp5_grenade", "0", FCVAR_REPLICATED);
+ConVar sk_mp5_grenade_radius("sk_mp5_grenade_radius", "0", FCVAR_REPLICATED);
+#endif
 
 BEGIN_DATADESC( CGrenadeMP5 )
 	// SR-BUGBUG: These are borked!!!!

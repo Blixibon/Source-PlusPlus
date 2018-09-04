@@ -1560,6 +1560,16 @@ void CNPC_PlayerCompanion::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 			break;
 		}
 	}
+
+	if (m_FollowBehavior.GetFollowTarget() && m_FollowBehavior.GetFollowTarget()->IsPlayer())
+		set.AppendCriteria("followingplayer", "1");
+	else
+		set.AppendCriteria("followingplayer", "0");
+
+	Vector vecVelocity = GetAbsVelocity();
+	float flSpeed = vecVelocity.Length2D();
+
+	set.AppendCriteria("speed", UTIL_VarArgs("%.2f", flSpeed));
 }
 
 //-----------------------------------------------------------------------------

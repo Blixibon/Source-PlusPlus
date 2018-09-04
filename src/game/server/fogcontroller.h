@@ -13,6 +13,7 @@
 #include "playernet_vars.h"
 #include "igamesystem.h"
 #include "GameEventListener.h"
+#include "triggers.h"
 
 // Spawn Flags
 #define SF_FOG_MASTER		0x0001
@@ -69,6 +70,25 @@ public:
 	int						m_iChangedVariables;
 };
 
+class CFogTrigger : public CBaseTrigger
+{
+public:
+	DECLARE_CLASS(CFogTrigger, CBaseTrigger);
+	DECLARE_DATADESC();
+
+	virtual void Spawn(void);
+	virtual void StartTouch(CBaseEntity *other);
+	virtual void EndTouch(CBaseEntity *other);
+
+	fogparams_t *GetFog(void)
+	{
+		return &m_fog;
+	}
+
+protected:
+	fogparams_t	m_fog;
+};
+
 //=============================================================================
 //
 // Fog Controller System.
@@ -89,7 +109,7 @@ public:
 	}
 
 	virtual void LevelInitPreEntity();
-	virtual void LevelInitPostEntity() { InitMasterController(); }
+	virtual void LevelInitPostEntity();
 	virtual void FireGameEvent( IGameEvent *pEvent ) { InitMasterController(); }
 	CFogController *GetMasterFogController( void )			{ return m_hMasterController; }
 

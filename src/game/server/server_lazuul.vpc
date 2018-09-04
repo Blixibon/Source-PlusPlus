@@ -8,6 +8,7 @@ $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"mod_lazuul"
 
 $Include "$SRCDIR\game\server\server_portal_base_lite.vpc"
+$Include "$SRCDIR\game\server\server_hl1_npc.vpc"
 
 $Configuration
 {
@@ -20,5 +21,19 @@ $Configuration
 
 $Project "Server (Lazuul)"
 {
-	
+	$Folder "Source Files"
+	{
+		$Folder "Black Mesa"
+		{
+			$File "bms\npc_alien_controller.cpp"
+			$File "bms\npc_basecollegue.cpp"
+			$File "bms\npc_human_guard.cpp"
+			$File "bms\npc_human_marine.cpp"
+			$File "bms\npc_human_scientist.cpp"
+			$File "bms\npc_gargantua.cpp"
+			$File "bms\npc_hgrunt.cpp"
+			$File "$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
+			$File "peter\npc_human_workers.cpp"
+		}
+	}
 }

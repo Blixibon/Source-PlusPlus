@@ -16,5 +16,5 @@
 	"$phongboost"   "4"
 	"$phongfresnelranges"   "[1 .7 .3]"
 	"$phongwarptexture"  "models/shield_scanner/mini_iridescence"
-                }
+     }
 }

@@ -469,9 +469,13 @@ void CNPC_Strider::Precache()
 	PrecacheMaterial( "effects/strider_bulge_dudv" );
 	PrecacheMaterial( "effects/strider_muzzle" );
 
+	PrecacheParticleSystem("crabby_cannon_chargeup");
+	PrecacheParticleSystem("crabby_cannon_burst");
+
 	PrecacheModel( "models/chefhat.mdl" );
 
 	UTIL_PrecacheOther( "sparktrail" );
+	UTIL_PrecacheOther("concussiveblast");
 
 	BaseClass::Precache();
 }

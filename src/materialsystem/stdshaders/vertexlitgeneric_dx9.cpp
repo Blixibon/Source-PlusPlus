@@ -144,6 +144,7 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( TREESWAYSCRUMBLEFALLOFFEXP, SHADER_PARAM_TYPE_FLOAT, "1.0", "" )
 		SHADER_PARAM( TREESWAYSPEEDLERPSTART, SHADER_PARAM_TYPE_FLOAT, "3", "" )
 		SHADER_PARAM( TREESWAYSPEEDLERPEND, SHADER_PARAM_TYPE_FLOAT, "6", "" )
+		SHADER_PARAM( TREESWAYWINDVECTOR, SHADER_PARAM_TYPE_VEC3, "[0 0 0]", "")
 	END_SHADER_PARAMS
 
 	void SetupVars( VertexLitGeneric_DX9_Vars_t& info )
@@ -243,6 +244,7 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		info.m_nTreeSwayScrumbleFalloffExp = TREESWAYSCRUMBLEFALLOFFEXP;
 		info.m_nTreeSwaySpeedLerpStart = TREESWAYSPEEDLERPSTART;
 		info.m_nTreeSwaySpeedLerpEnd = TREESWAYSPEEDLERPEND;
+		info.m_nTreeSwayWindVector = TREESWAYWINDVECTOR;
 	}
 
 	// Cloak Pass

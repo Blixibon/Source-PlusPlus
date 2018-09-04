@@ -1050,6 +1050,8 @@ void FX_Explosion( Vector& origin, Vector& normal, char materialType )
 	if ( !pSparkEmitter )
 		return;
 
+	
+
 	Vector		diffuseColor, baseColor;
 	engine->TraceLineMaterialAndLighting( origin, normal * -16.0f, diffuseColor, baseColor );
 	// Get final light value
@@ -1241,6 +1243,8 @@ void FX_ConcussiveExplosion( const Vector &origin, const Vector &normal )
 	Vector	offset = origin + ( normal * 2.0f );
 	Vector	dir;
 	int		i;
+
+	DispatchParticleEffect("crabby_cannon_impact_main", offset, vec3_angle);
 
 	// 
 	// Smoke

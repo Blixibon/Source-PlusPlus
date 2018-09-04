@@ -16,19 +16,19 @@
 //-----------------------------------------------------------------------------
 // Spawnflags
 //-----------------------------------------------------------------------------
-#define	SF_NPCMAKER_START_ON	1	// start active ( if has targetname )
-#define SF_NPCMAKER_NPCCLIP		8	// Children are blocked by NPCclip
-#define SF_NPCMAKER_FADE		16	// Children's corpses fade
-#define SF_NPCMAKER_INF_CHILD	32	// Infinite number of children
-#define	SF_NPCMAKER_NO_DROP		64	// Do not adjust for the ground's position when checking for spawn
+#define	SF_NPCMakerHL1_START_ON	1	// start active ( if has targetname )
+#define SF_NPCMakerHL1_NPCCLIP		8	// Children are blocked by NPCclip
+#define SF_NPCMakerHL1_FADE		16	// Children's corpses fade
+#define SF_NPCMakerHL1_INF_CHILD	32	// Infinite number of children
+#define	SF_NPCMakerHL1_NO_DROP		64	// Do not adjust for the ground's position when checking for spawn
 
 
-class CNPCMaker : public CBaseEntity
+class CHL1NPCMaker : public CBaseEntity
 {
 public:
-	DECLARE_CLASS( CNPCMaker, CBaseEntity );
+	DECLARE_CLASS( CHL1NPCMaker, CBaseEntity );
 
-	CNPCMaker(void) {}
+	CHL1NPCMaker(void) {}
 
 	void Spawn( void );
 	void Precache( void );

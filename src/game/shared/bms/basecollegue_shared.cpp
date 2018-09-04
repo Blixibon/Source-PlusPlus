@@ -29,6 +29,12 @@ static int SeedFileLineHash(int seedvalue, const char *sharedname, int additiona
 	return (int)(retval);
 }
 
+BEGIN_SIMPLE_DATADESC(RndFlexData)
+DEFINE_FIELD(index, FIELD_INTEGER),
+DEFINE_FIELD(flvalue, FIELD_FLOAT),
+DEFINE_FIELD(bValid, FIELD_BOOLEAN),
+END_DATADESC()
+
 CUniformRandomStream faceRandom;
 
 IMPLEMENT_NETWORKCLASS_ALIASED(NPC_BaseColleague, DT_BaseColleague);

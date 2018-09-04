@@ -1,0 +1,45 @@
+"Mount"
+{
+	362890
+	{
+		head	0
+		bms
+		{
+			"noroot"	"1"
+			"path_id"
+			{
+				"scenes"	"1"
+			}
+			
+			vpk		bms_materials
+			vpk		bms_misc
+			vpk		bms_models
+			vpk		bms_sound_vo_english
+			vpk		bms_sounds_misc
+			vpk		bms_textures
+		}
+	}
+
+	sourcemods
+	{
+		"head"	"0"
+		"BMS"
+		{
+			"path_id"
+			{
+				"scenes"	"1"
+			}
+		}
+	}
+	
+	"|content_path|"
+	{
+		"head"	"1"
+		"bms_extra"
+		{
+			vpk		bms_cameo
+			vpk		bms_eli_fix
+			vpk		gus_redux
+		}
+	}
+}

@@ -18,11 +18,13 @@
 #include "fx_quad.h"
 #include "fx_line.h"
 #include "fx_water.h"
+#include "particle_property.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 #define	__EXPLOSION_DEBUG	0
+#define WATER_PARTICLES 1
 
 CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectExplosion )
 CLIENTEFFECT_MATERIAL( "effects/fire_cloud1" )
@@ -706,7 +708,7 @@ void C_BaseExplosionEffect::CreateDynamicLight( void )
 	VectorCopy(m_vecOrigin, dl->origin);
 	
 	dl->decay	= 200;
-	dl->radius	= 255 * m_flScale;
+	dl->radius	= Min(255 * m_flScale, 512.0f);
 	dl->color.r = 255;
 	dl->color.g = 220;
 	dl->color.b = 128;
@@ -957,101 +959,112 @@ void C_WaterExplosionEffect::CreateCore( void )
 	if ( m_fFlags & TE_EXPLFLAG_NOFIREBALL )
 		return;
 
-	// Get our lighting information for the water surface
-	Vector	color;
-	float	luminosity;
-	FX_GetSplashLighting( m_vecWaterSurface + Vector( 0, 0, 8 ), &color, &luminosity );
-
-	float lifetime = random->RandomFloat( 0.8f, 1.0f );
-
-	// Ground splash
-	FX_AddQuad( m_vecWaterSurface + Vector(0,0,2), 
-				Vector(0,0,1), 
-				64, 
-				64 * 4.0f,
-				0.85f, 
-				luminosity,
-				0.0f,
-				0.25f,
-				random->RandomInt( 0, 360 ), 
-				random->RandomFloat( -4, 4 ), 
-				color,
-				2.0f,
-				"effects/splashwake1",
-				(FXQUAD_BIAS_SCALE|FXQUAD_BIAS_ALPHA) );
-
-	Vector	vRight, vUp;
-	VectorVectors( Vector(0,0,1) , vRight, vUp );
-
-	Vector	start, end;
-	
-	float radius = 50.0f;
-
-	unsigned int flags = 0;
-
-	// Base vertical shaft
-	FXLineData_t lineData;
-
-	start = m_vecWaterSurface;
-	end = start + ( Vector( 0, 0, 1 ) * random->RandomFloat( radius, radius*1.5f ) );
-
-	if ( random->RandomInt( 0, 1 ) )
+	if (WATER_PARTICLES)
 	{
-		flags |= FXSTATICLINE_FLIP_HORIZONTAL;
+		// Must be in deep enough water
+		if (m_flDepth <= 128)
+			return;
+
+		DispatchParticleEffect("Explosion_Water_Core", m_vecOrigin, m_vecOrigin + Vector(0, 0, m_flDepth), vec3_angle);
 	}
 	else
 	{
-		flags = 0;
+		// Get our lighting information for the water surface
+		Vector	color;
+		float	luminosity;
+		FX_GetSplashLighting(m_vecWaterSurface + Vector(0, 0, 8), &color, &luminosity);
+
+		float lifetime = random->RandomFloat(0.8f, 1.0f);
+
+		// Ground splash
+		FX_AddQuad(m_vecWaterSurface + Vector(0, 0, 2),
+			Vector(0, 0, 1),
+			64,
+			64 * 4.0f,
+			0.85f,
+			luminosity,
+			0.0f,
+			0.25f,
+			random->RandomInt(0, 360),
+			random->RandomFloat(-4, 4),
+			color,
+			2.0f,
+			"effects/splashwake1",
+			(FXQUAD_BIAS_SCALE | FXQUAD_BIAS_ALPHA));
+
+		Vector	vRight, vUp;
+		VectorVectors(Vector(0, 0, 1), vRight, vUp);
+
+		Vector	start, end;
+
+		float radius = 50.0f;
+
+		unsigned int flags = 0;
+
+		// Base vertical shaft
+		FXLineData_t lineData;
+
+		start = m_vecWaterSurface;
+		end = start + (Vector(0, 0, 1) * random->RandomFloat(radius, radius*1.5f));
+
+		if (random->RandomInt(0, 1))
+		{
+			flags |= FXSTATICLINE_FLIP_HORIZONTAL;
+		}
+		else
+		{
+			flags = 0;
+		}
+
+		lineData.m_flDieTime = lifetime * 0.5f;
+
+		lineData.m_flStartAlpha = luminosity;
+		lineData.m_flEndAlpha = 0.0f;
+
+		lineData.m_flStartScale = radius * 0.5f;
+		lineData.m_flEndScale = radius * 2;
+
+		lineData.m_pMaterial = materials->FindMaterial("effects/splash3", 0, 0);
+
+		lineData.m_vecStart = start;
+		lineData.m_vecStartVelocity = vec3_origin;
+
+		lineData.m_vecEnd = end;
+		lineData.m_vecEndVelocity = Vector(0, 0, random->RandomFloat(650, 750));
+
+		FX_AddLine(lineData);
+
+		// Inner filler shaft
+		start = m_vecWaterSurface;
+		end = start + (Vector(0, 0, 1) * random->RandomFloat(32, 64));
+
+		if (random->RandomInt(0, 1))
+		{
+			flags |= FXSTATICLINE_FLIP_HORIZONTAL;
+		}
+		else
+		{
+			flags = 0;
+		}
+
+		lineData.m_flDieTime = lifetime * 0.5f;
+
+		lineData.m_flStartAlpha = luminosity;
+		lineData.m_flEndAlpha = 0.0f;
+
+		lineData.m_flStartScale = radius;
+		lineData.m_flEndScale = radius * 2;
+
+		lineData.m_pMaterial = materials->FindMaterial("effects/splash3", 0, 0);
+
+		lineData.m_vecStart = start;
+		lineData.m_vecStartVelocity = vec3_origin;
+
+		lineData.m_vecEnd = end;
+		lineData.m_vecEndVelocity = Vector(0, 0, 1) * random->RandomFloat(64, 128);
+
+		FX_AddLine(lineData);
 	}
-
-	lineData.m_flDieTime = lifetime * 0.5f;
-	
-	lineData.m_flStartAlpha= luminosity;
-	lineData.m_flEndAlpha = 0.0f;
-	
-	lineData.m_flStartScale = radius*0.5f;
-	lineData.m_flEndScale = radius*2; 
-
-	lineData.m_pMaterial = materials->FindMaterial( "effects/splash3", 0, 0 );
-
-	lineData.m_vecStart = start;
-	lineData.m_vecStartVelocity = vec3_origin;
-
-	lineData.m_vecEnd = end;
-	lineData.m_vecEndVelocity = Vector(0,0,random->RandomFloat( 650, 750 ));
-
-	FX_AddLine( lineData );
-
-	// Inner filler shaft
-	start = m_vecWaterSurface;
-	end = start + ( Vector(0,0,1) * random->RandomFloat( 32, 64 ) );
-
-	if ( random->RandomInt( 0, 1 ) )
-	{
-		flags |= FXSTATICLINE_FLIP_HORIZONTAL;
-	}
-	else
-	{
-		flags = 0;
-	}
-
-	lineData.m_flDieTime = lifetime * 0.5f;
-	
-	lineData.m_flStartAlpha= luminosity;
-	lineData.m_flEndAlpha = 0.0f;
-	
-	lineData.m_flStartScale = radius;
-	lineData.m_flEndScale = radius*2; 
-
-	lineData.m_pMaterial = materials->FindMaterial( "effects/splash3", 0, 0 );
-
-	lineData.m_vecStart = start;
-	lineData.m_vecStartVelocity = vec3_origin;
-
-	lineData.m_vecEnd = end;
-	lineData.m_vecEndVelocity = Vector(0,0,1) * random->RandomFloat( 64, 128 );
-
-	FX_AddLine( lineData );
 }
 
 //-----------------------------------------------------------------------------
@@ -1062,92 +1075,99 @@ void C_WaterExplosionEffect::CreateDebris( void )
 	if ( m_fFlags & TE_EXPLFLAG_NOPARTICLES )
 		return;
 
-	// Must be in deep enough water
-	if ( m_flDepth <= 128 )
-		return;
-
-	Vector	offset;
-	int		i;
-
-	//Spread constricts as force rises
-	float force = m_flForce;
-
-	//Cap our force
-	if ( force < EXPLOSION_FORCE_MIN )
-		force = EXPLOSION_FORCE_MIN;
-	
-	if ( force > EXPLOSION_FORCE_MAX )
-		force = EXPLOSION_FORCE_MAX;
-
-	float spread = 1.0f - (0.15f*force);
-
-	SimpleParticle	*pParticle;
-
-	CSmartPtr<CWaterExplosionParticle> pSimple = CWaterExplosionParticle::Create( "waterexp_bubbles" );
-	pSimple->SetSortOrigin( m_vecOrigin );
-	pSimple->SetNearClip( 64, 128 );
-
-	//FIXME: Better sampling area
-	offset = m_vecOrigin + ( m_vecDirection * 64.0f );
-
-	//Find area ambient light color and use it to tint bubbles
-	Vector	worldLight;
-	FX_GetSplashLighting( offset, &worldLight, NULL );
-
-	//
-	// Smoke
-	//
-
-	CParticleSubTexture *pMaterial[2];
-
-	pMaterial[0] = pSimple->GetPMaterial( "effects/splash1" );
-	pMaterial[1] = pSimple->GetPMaterial( "effects/splash2" );
-
-	for ( i = 0; i < 16; i++ )
+	if (WATER_PARTICLES)
 	{
-		offset.Random( -32.0f, 32.0f );
-		offset += m_vecOrigin;
+		DispatchParticleEffect("weapon_pipebomb_water_splash", m_vecWaterSurface, vec3_angle);
+	}
+	else
+	{
+		// Must be in deep enough water
+		if (m_flDepth <= 128)
+			return;
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pMaterial[random->RandomInt(0,1)], offset );
+		Vector	offset;
+		int		i;
 
-		if ( pParticle != NULL )
+		//Spread constricts as force rises
+		float force = m_flForce;
+
+		//Cap our force
+		if (force < EXPLOSION_FORCE_MIN)
+			force = EXPLOSION_FORCE_MIN;
+
+		if (force > EXPLOSION_FORCE_MAX)
+			force = EXPLOSION_FORCE_MAX;
+
+		float spread = 1.0f - (0.15f*force);
+
+		SimpleParticle	*pParticle;
+
+		CSmartPtr<CWaterExplosionParticle> pSimple = CWaterExplosionParticle::Create("waterexp_bubbles");
+		pSimple->SetSortOrigin(m_vecOrigin);
+		pSimple->SetNearClip(64, 128);
+
+		//FIXME: Better sampling area
+		offset = m_vecOrigin + (m_vecDirection * 64.0f);
+
+		//Find area ambient light color and use it to tint bubbles
+		Vector	worldLight;
+		FX_GetSplashLighting(offset, &worldLight, NULL);
+
+		//
+		// Smoke
+		//
+
+		CParticleSubTexture *pMaterial[2];
+
+		pMaterial[0] = pSimple->GetPMaterial("effects/splash1");
+		pMaterial[1] = pSimple->GetPMaterial("effects/splash2");
+
+		for (i = 0; i < 16; i++)
 		{
-			pParticle->m_flLifetime = 0.0f;
+			offset.Random(-32.0f, 32.0f);
+			offset += m_vecOrigin;
+
+			pParticle = (SimpleParticle *)pSimple->AddParticle(sizeof(SimpleParticle), pMaterial[random->RandomInt(0, 1)], offset);
+
+			if (pParticle != NULL)
+			{
+				pParticle->m_flLifetime = 0.0f;
 
 #ifdef INVASION_CLIENT_DLL
-			pParticle->m_flDieTime	= random->RandomFloat( 0.5f, 1.0f );
+				pParticle->m_flDieTime = random->RandomFloat(0.5f, 1.0f);
 #else
-			pParticle->m_flDieTime	= random->RandomFloat( 2.0f, 3.0f );
+				pParticle->m_flDieTime = random->RandomFloat(2.0f, 3.0f);
 #endif
 
-			pParticle->m_vecVelocity.Random( -spread, spread );
-			pParticle->m_vecVelocity += ( m_vecDirection * random->RandomFloat( 1.0f, 6.0f ) );
-			
-			VectorNormalize( pParticle->m_vecVelocity );
+				pParticle->m_vecVelocity.Random(-spread, spread);
+				pParticle->m_vecVelocity += (m_vecDirection * random->RandomFloat(1.0f, 6.0f));
 
-			float	fForce = 1500 * force;
+				VectorNormalize(pParticle->m_vecVelocity);
 
-			//Scale the force down as we fall away from our main direction
-			ScaleForceByDeviation( pParticle->m_vecVelocity, m_vecDirection, spread, &fForce );
+				float	fForce = 1500 * force;
 
-			pParticle->m_vecVelocity *= fForce;
-			
-			#if __EXPLOSION_DEBUG
-			debugoverlay->AddLineOverlay( m_vecOrigin, m_vecOrigin + pParticle->m_vecVelocity, 255, 0, 0, false, 3 );
-			#endif
+				//Scale the force down as we fall away from our main direction
+				ScaleForceByDeviation(pParticle->m_vecVelocity, m_vecDirection, spread, &fForce);
 
-			pParticle->m_uchColor[0] = m_vecColor.x * 255;
-			pParticle->m_uchColor[1] = m_vecColor.y * 255;
-			pParticle->m_uchColor[2] = m_vecColor.z * 255;
-			
-			pParticle->m_uchStartSize	= random->RandomInt( 32, 64 );
-			pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 2;
-			
-			pParticle->m_uchStartAlpha	= m_flLuminosity;
-			pParticle->m_uchEndAlpha	= 0;
-			
-			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
-			pParticle->m_flRollDelta	= random->RandomFloat( -8.0f, 8.0f );
+				pParticle->m_vecVelocity *= fForce;
+
+#if __EXPLOSION_DEBUG
+				debugoverlay->AddLineOverlay(m_vecOrigin, m_vecOrigin + pParticle->m_vecVelocity, 255, 0, 0, false, 3);
+#endif
+
+				pParticle->m_uchColor[0] = m_vecColor.x * 255;
+				pParticle->m_uchColor[1] = m_vecColor.y * 255;
+				pParticle->m_uchColor[2] = m_vecColor.z * 255;
+
+				pParticle->m_uchStartSize = random->RandomInt(32, 64);
+				pParticle->m_uchEndSize = pParticle->m_uchStartSize * 2;
+
+				pParticle->m_uchStartAlpha = m_flLuminosity;
+				pParticle->m_uchEndAlpha = 0;
+
+				pParticle->m_flRoll = random->RandomInt(0, 360);
+				pParticle->m_flRollDelta = random->RandomFloat(-8.0f, 8.0f);
+			}
 		}
 	}
 }

@@ -266,15 +266,10 @@ void CNPC_BaseColleague::UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 
 	if (IsAllowedToSpeak(TLK_VITALIDLE, true))
 	{
-		AI_Response *pResp = SpeakFindResponse(TLK_VITALIDLE);
-
-		if (pResp && pResp->GetType() != RESPONSE_NONE)
+		AI_Response pResp;
+		if (SpeakFindResponse(pResp, TLK_VITALIDLE) && pResp.GetType() != RESPONSE_NONE)
 		{
 			bSpoke = SpeakDispatchResponse(TLK_VITALIDLE, pResp);
-		}
-		else if (pResp)
-		{
-			delete pResp;
 		}
 	}
 
@@ -353,6 +348,10 @@ void CNPC_BaseColleague::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 {
 	BaseClass::ModifyOrAppendCriteria(set);
 
+	if (GlobalEntity_GetIndex("predisaster") == -1)
+	{
+		set.AppendCriteria("predisaster", "0");
+	}
 
 	if (!HasSpawnFlags(SF_COLLEAGUE_NO_IDLE_SPEAK))
 		set.AppendCriteria("allowgeneralidles", "1");

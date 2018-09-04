@@ -27,6 +27,7 @@
 #include "igamesystem.h"
 #include "KeyValues.h"
 #include "filesystem.h"
+#include "content_mounter.h"
 
 #ifdef PORTAL
 #include "portal_gamerules.h"
@@ -1297,7 +1298,7 @@ int SENTENCEG_PlaySequentialSz(edict_t *entity, const char *szgroupname,
 		int sentenceIndex = SENTENCEG_Lookup( name );
 		CPASAttenuationFilter filter( GetContainingEntity( entity ), soundlevel );
 		CBaseEntity::EmitSentenceByIndex( filter, ENTINDEX(entity), CHAN_VOICE, sentenceIndex, volume, soundlevel, flags, pitch );
-		return sentenceIndex;
+		return ipicknext;
 	}
 	
 	return -1;
@@ -1332,6 +1333,10 @@ void SENTENCEG_Init()
 {
 	if (fSentencesInit)
 		return;
+
+	CUtlVector< char *, CUtlMemory< char *, int> > *pList = Mounter::GetSentenceFiles();
+	for (int i = 0; i < pList->Count(); i++)
+		engine->PrecacheSentenceFile(pList->Element(i));
 
 	engine->PrecacheSentenceFile( "scripts/sentences.txt" );
 	fSentencesInit = true;

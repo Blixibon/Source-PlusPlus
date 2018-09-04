@@ -115,10 +115,13 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 				
 				while (!bFound && V_StripLastDir(chPopTag, MAX_PATH))
 				{
-					V_StripTrailingSlash(chPopTag);
+					char chPopTagNoSlash[MAX_PATH];
+					Q_strncpy(chPopTagNoSlash, chPopTagNoSlash, MAX_PATH);
+
+					V_StripTrailingSlash(chPopTagNoSlash);
 
 					filename.Clear();
-					filename.AppendFormat(FILENAME_FORMAT, chPopTag, pDef->chName);
+					filename.AppendFormat(FILENAME_FORMAT, chPopTagNoSlash, pDef->chName);
 
 					// Check again.
 					if (filesystem->FileExists(filename.Access(), "GAME"))

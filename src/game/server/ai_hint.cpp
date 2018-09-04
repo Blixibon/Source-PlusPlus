@@ -1621,6 +1621,8 @@ hinttypedescs_t g_pszHintDescriptions[] =
 	{	HINT_HL1_WORLD_ALIEN_BLOOD, "HL1: World: Alien Blood"	},
 
 	{	HINT_CSTRIKE_HOSTAGE_ESCAPE, "CS Port: Hostage Escape"	},
+
+	{	HINT_BMS_MINIBOSS, "BMS: Miniboss Action Point"	},
 };
 
 //-----------------------------------------------------------------------------

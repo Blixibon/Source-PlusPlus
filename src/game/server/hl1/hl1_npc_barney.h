@@ -1,22 +1,22 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose:
+// Purpose: 
 //
 // $NoKeywords: $
 //
 //=============================================================================//
-#ifndef NPC_BARNEY_H
-#define NPC_BARNEY_H
+#ifndef NPC_BarneyHL1_H
+#define NPC_BarneyHL1_H
 
 #include "hl1_npc_talker.h"
 
 //=========================================================
 //=========================================================
-class CNPC_Barney : public CHL1NPCTalker
+class CNPC_HL1Barney : public CHL1NPCTalker
 {
-	DECLARE_CLASS( CNPC_Barney, CHL1NPCTalker );
+	DECLARE_CLASS( CNPC_HL1Barney, CHL1NPCTalker );
 public:
-
+	
 	DECLARE_DATADESC();
 
 	virtual void ModifyOrAppendCriteria( AI_CriteriaSet& set );
@@ -35,9 +35,9 @@ public:
 
 	bool    CheckRangeAttack1 ( float flDot, float flDist );
 	void    BarneyFirePistol ( void );
-
+	
 	int		OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 	void	Event_Killed( const CTakeDamageInfo &info );
 
 	void    PainSound( const CTakeDamageInfo &info );
@@ -57,13 +57,13 @@ public:
 	void	SUB_StartLVFadeOut( float delay = 10.0f, bool bNotSolid = true );
 	void	SUB_LVFadeOut( void  );
 
-	NPC_STATE CNPC_Barney::SelectIdealState ( void );
+	NPC_STATE CNPC_HL1Barney::SelectIdealState ( void );
 
 	bool	m_fGunDrawn;
 	float	m_flPainTime;
 	float	m_flCheckAttackTime;
 	bool	m_fLastAttackCheck;
-
+	
 	int		m_iAmmoType;
 
 	enum
@@ -78,4 +78,4 @@ public:
 	DEFINE_CUSTOM_AI;
 };
 
-#endif	//NPC_BARNEY_H
+#endif	//NPC_BarneyHL1_H

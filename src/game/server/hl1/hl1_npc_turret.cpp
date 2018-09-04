@@ -26,6 +26,7 @@
 #include	"engine/IEngineSound.h"
 #include	"ammodef.h"
 #include	"Sprite.h"
+#include	"hl1_shareddefs.h"
 
 #define TURRET_SHOTS	2
 #define TURRET_RANGE	(100 * 12)
@@ -225,6 +226,8 @@ void CNPC_BaseTurret::Spawn()
 		m_iAutoStart = true;
 	}
 
+	SetBoneCacheFlags(BCF_NO_ANIMATION_SKIP);
+
 	ResetSequenceInfo( );
 
 	SetBoneController(0, 0);
@@ -246,7 +249,7 @@ void CNPC_BaseTurret::Spawn()
 
 void CNPC_BaseTurret::Precache()
 {
-	m_iAmmoType = GetAmmoDef()->Index("12mmRound");	
+	m_iAmmoType = GetAmmoDef()->Index(HL1_12MM_AMMO);	
 
 	PrecacheScriptSound( "Turret.Alert" );
 	PrecacheScriptSound( "Turret.Die" );
@@ -1343,7 +1346,7 @@ void CNPC_MiniTurret::Precache()
 {
 	CNPC_BaseTurret::Precache( );
 
-	m_iAmmoType = GetAmmoDef()->Index("9mmRound");
+	m_iAmmoType = GetAmmoDef()->Index(HL1_PISTOL_AMMO);
 
 	PrecacheScriptSound( "Turret.Shoot" );
 
@@ -1395,7 +1398,7 @@ void CNPC_Sentry::Precache()
 {
 	BaseClass::Precache( );
 
-	m_iAmmoType = GetAmmoDef()->Index("9mmRound");
+	m_iAmmoType = GetAmmoDef()->Index(HL1_PISTOL_AMMO);
 
 	PrecacheScriptSound( "Sentry.Shoot" );
 	PrecacheScriptSound( "Sentry.Die" );

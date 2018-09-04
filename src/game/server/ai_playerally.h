@@ -31,6 +31,7 @@
 #define TLK_ANSWER_HELLO	"TLK_ANSWER_HELLO"
 #define TLK_QUESTION 		"TLK_QUESTION"
 #define TLK_IDLE 			"TLK_IDLE"
+#define TLK_VITALIDLE 		"TLK_VITALIDLE"
 #define TLK_STARE 			"TLK_STARE"
 #define TLK_LOOK 			"TLK_LOOK"	// player looking at player for a second
 #define TLK_USE				"TLK_USE"

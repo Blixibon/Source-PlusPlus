@@ -91,6 +91,9 @@ $Project
 		
 		$File	"env_dof_controller.cpp"
 		$File	"env_dof_controller.h"
+		
+		$File	"$SRCDIR\game\shared\worldlight.cpp"
+		$File	"$SRCDIR\game\shared\vis_tester.cpp"
 
 		$Folder	"Peter"
 		{
@@ -720,7 +723,8 @@ $Project
 				"$SRCDIR\public\simple_physics.cpp"					\
 				"$SRCDIR\public\stringregistry.cpp"					\
 				"$SRCDIR\public\studio.cpp"							\
-				"GameStats_BasicStatsFunctions.cpp"
+				"GameStats_BasicStatsFunctions.cpp"					\
+				"$SRCDIR\public\lumpfiles.cpp"
 		{
 			$Configuration
 			{
