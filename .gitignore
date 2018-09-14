@@ -103,5 +103,8 @@ game/*/save/*
 *.tmp
 
 # Game bin directories
-game/bin/*
 game/*/bin/*
+
+# Windows
+AlbumArtSmall.jpg
+Folder.jpg
