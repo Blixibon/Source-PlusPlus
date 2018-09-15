@@ -120,7 +120,7 @@ void CBaseHL1MPCombatWeapon::WeaponSound( WeaponSound_t sound_type, float soundt
 {
 #ifdef CLIENT_DLL
 	// If we have some sounds from the weapon classname.txt file, play a random one of them
-	const char *shootsound = GetWpnData().aShootSounds[ sound_type ];
+	const char *shootsound = GetShootSound(sound_type);
 	if ( !shootsound || !shootsound[0] )
 		return;
 

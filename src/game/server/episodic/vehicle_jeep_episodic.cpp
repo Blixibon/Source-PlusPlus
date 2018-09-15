@@ -954,8 +954,8 @@ void CPropJeepEpisodic::UpdateRadar( bool forceUpdate )
 
 	//Msg("Server detected %d objects\n", m_iNumRadarContacts );
 
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	CSingleUserRecipientFilter filter(pPlayer);
+	//CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBroadcastRecipientFilter filter;
 	UserMessageBegin( filter, "UpdateJalopyRadar" );
 	WRITE_BYTE( 0 ); // end marker
 	MessageEnd();	// send message
@@ -1129,7 +1129,7 @@ CBaseEntity *CPropJeepEpisodic::OnFailedPhysGunPickup( Vector vPhysgunPos )
 	{
 		// Player's forward direction
 		Vector vecPlayerForward;
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(vPhysgunPos);
 		if ( pPlayer == NULL )
 			return NULL;
 

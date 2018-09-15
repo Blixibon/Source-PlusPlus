@@ -232,10 +232,94 @@ float		UTIL_GetSimulationInterval();
 CBasePlayer	*UTIL_PlayerByIndex( int playerIndex );
 CBasePlayer *UTIL_PlayerBySteamID( const CSteamID &steamID );
 
+enum GetPlayerFlags {
+	GETPLAYER_RADIUS =			( 1 << 0 ),
+	GETPLAYER_IN_FOV =			( 1 << 1 ),
+	GETPLAYER_NOTVISIBLE =		( 1 << 2 ),
+	GETPLAYER_CUSTOMCHECK =		( 1 << 3 ),
+	GETPLAYER_DISTFROMCENTER =	( 1 << 4 ),
+};
+
+enum GetPlayerLife {
+	GETPLAYER_LIFE_EITHER = 0,
+	GETPLAYER_LIFE_ALIVE,
+	GETPLAYER_LIFE_NOTALIVE
+};
+
+enum GetPlayerSelector {
+	GETPLAYER_RANDOM = 0,
+	GETPLAYER_FIRST,
+	GETPLAYER_FARTHEST,
+	GETPLAYER_NEAREST,
+};
+
+enum GetPlayerVisiblity {
+	GETPLAYER_VIS_NONE = 0,
+	GETPLAYER_VIS_SIMPLE,
+	GETPLAYER_VIS_ADVANCED
+};
+
+enum GetPlayerTeamControl {
+	GETPLAYER_TEAM_IGNORED = 0,
+	GETPLAYER_TEAM_SAME,
+	GETPLAYER_TEAM_NOTSAME
+};
+
+enum GetPlayerRelationControl {
+	GETPLAYER_RELATIONSHIP_IGNORE = 0,
+	GETPLAYER_RELATIONSHIP_EQUAL,
+	GETPLAYER_RELATIONSHIP_NOTEQUAL,
+};
+
+typedef bool (*GetPlayerCustomFunc)(CBasePlayer *pPlayer);
+
+extern enum Class_T;
+
+typedef struct findPlayerParams_s {
+	GetPlayerFlags flags;
+	GetPlayerLife life;
+	GetPlayerSelector selector;
+	GetPlayerVisiblity visibilty;
+	GetPlayerTeamControl useTeams;
+	GetPlayerRelationControl entityRelations;
+
+	int		iTeam;
+	Disposition_t nRelation;
+	Class_T nClass;
+	const Vector *pOrigin;
+	float flInnerRadius;
+	float flOuterRadius;
+
+	// Return false to exclude this player.
+	GetPlayerCustomFunc pfnCustomCheck;
+
+	CBaseEntity *pLooker;
+	CBasePlayer *pIgnoredPlayer;
+
+	findPlayerParams_s()
+	{
+		flOuterRadius = MAX_TRACE_LENGTH;
+	}
+} findPlayerParams_t;
+
 // NOTENOTE: Use this instead of UTIL_PlayerByIndex IF you're in single player
 // and you want the player.
 // not useable in multiplayer - see UTIL_GetListenServerHost()
 CBasePlayer* UTIL_GetLocalPlayer( void );
+
+//#ifdef SecobMod__Enable_Fixed_Multiplayer_AI
+// helper functions added for replacing the above 
+CBasePlayer *UTIL_GetNearestPlayer(const Vector &origin);
+CBasePlayer *UTIL_GetNearestVisiblePlayer(CBaseEntity *pLooker, int mask = MASK_SOLID_BRUSHONLY);
+//#endif //SecobMod__Enable_Fixed_Multiplayer_AI
+
+//SecobMod__Information: Helper function for player usage.
+CBasePlayer *UTIL_GetOtherNearestPlayer(const Vector &origin);
+
+CBasePlayer* UTIL_GetMainPlayer();
+// Get the best player for the specified parameters.
+CBasePlayer* UTIL_GetIdealPlayer(findPlayerParams_t &params);
+CBasePlayer* UTIL_GetRandomPlayer();
 
 // get the local player on a listen server
 CBasePlayer *UTIL_GetListenServerHost( void );

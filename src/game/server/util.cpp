@@ -683,6 +683,213 @@ CBasePlayer *UTIL_GetLocalPlayer( void )
 	}
 
 	return UTIL_PlayerByIndex( 1 );
+    
+}
+
+CBasePlayer *UTIL_GetMainPlayer()
+{
+	findPlayerParams_t params;
+	params.selector = GETPLAYER_FIRST;
+
+	return UTIL_GetIdealPlayer(params);
+}
+
+
+CBasePlayer *UTIL_GetIdealPlayer(findPlayerParams_t &params)
+{
+	struct player_s {
+		CBasePlayer *pPlayer;
+		float	flDist;
+	};
+
+	CUtlVector<player_s> m_nPlayers;
+	Vector vecTestOrigin = vec3_invalid;
+	if (params.pOrigin != nullptr)
+	{
+		vecTestOrigin = *params.pOrigin;
+	}
+	else if (params.pLooker != nullptr)
+	{
+		vecTestOrigin = (params.flags & GETPLAYER_DISTFROMCENTER) ? params.pLooker->WorldSpaceCenter() : params.pLooker->GetAbsOrigin();
+	}
+
+	// Also include all players
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer	*pPlayer = UTIL_PlayerByIndex(i);
+
+		if (pPlayer == NULL || pPlayer == params.pIgnoredPlayer)
+			continue;
+
+		if (params.life != GETPLAYER_LIFE_EITHER)
+		{
+			if ((params.life == GETPLAYER_LIFE_ALIVE) != pPlayer->IsAlive())
+				continue;
+		}
+
+		if (params.useTeams != GETPLAYER_TEAM_IGNORED)
+		{
+			if ((params.useTeams == GETPLAYER_TEAM_NOTSAME) == (pPlayer->GetTeamNumber() == params.iTeam))
+				continue;
+		}
+
+		if (params.nClass != CLASS_NONE)
+		{
+			if (params.nClass != pPlayer->Classify())
+				continue;
+		}
+
+		CBaseCombatCharacter *pBCC = params.pLooker ? params.pLooker->MyCombatCharacterPointer() : nullptr;
+
+		if (params.entityRelations != GETPLAYER_RELATIONSHIP_IGNORE && pBCC != nullptr)
+		{
+			if ((params.entityRelations == GETPLAYER_RELATIONSHIP_NOTEQUAL) == (pBCC->IRelationType(pPlayer) == params.nRelation))
+				continue;
+		}
+
+		if ((params.flags & GETPLAYER_IN_FOV) && pBCC != nullptr)
+		{
+			if (!pBCC->FInViewCone(pPlayer))
+				continue;
+		}
+
+		float flDist = 0.0f;
+		bool bTestRadius = (params.flags & GETPLAYER_RADIUS);
+
+		if (bTestRadius || params.selector >= GETPLAYER_FARTHEST)
+		{
+			Vector vecPlayer = (params.flags & GETPLAYER_DISTFROMCENTER) ? pPlayer->WorldSpaceCenter() : pPlayer->GetAbsOrigin();
+			flDist = vecTestOrigin.DistTo(vecPlayer);
+		}
+
+		if (bTestRadius)
+		{
+			if (params.flOuterRadius < MAX_TRACE_LENGTH && flDist > params.flOuterRadius)
+				continue;
+
+			if (params.flInnerRadius > 0.0f && flDist < params.flInnerRadius)
+				continue;
+		}
+
+		if (params.visibilty != GETPLAYER_VIS_NONE && params.pLooker != nullptr)
+		{
+			bool bVisible = false;
+
+			if (params.visibilty == GETPLAYER_VIS_ADVANCED && pBCC != nullptr)
+			{
+				bVisible = pBCC->IsAbleToSee(pPlayer, CBaseCombatCharacter::DISREGARD_FOV);
+			}
+			else
+			{
+				bVisible = params.pLooker->FVisible(pPlayer);
+			}
+
+			if ((params.flags & GETPLAYER_NOTVISIBLE) == bVisible)
+				continue;
+		}
+
+		if (params.flags & GETPLAYER_CUSTOMCHECK && params.pfnCustomCheck != nullptr)
+		{
+			if (!params.pfnCustomCheck(pPlayer))
+				continue;
+		}
+
+		if (params.selector == GETPLAYER_FIRST)
+			return pPlayer;
+
+		player_s data;
+		data.pPlayer = pPlayer;
+		data.flDist = flDist;
+		m_nPlayers.AddToTail(data);
+	}
+
+	if (m_nPlayers.Count() == 0)
+		return nullptr;
+
+	if (m_nPlayers.Count() == 1)
+		return m_nPlayers.Element(0).pPlayer;
+
+	switch (params.selector)
+	{
+	case GETPLAYER_NEAREST:
+	{
+		float distToNearest = MAX_TRACE_LENGTH;
+		CBasePlayer *pNearest = NULL;
+
+		for (int i = 0; i < m_nPlayers.Count(); i++)
+		{
+			player_s &data = m_nPlayers.Element(i);
+
+			float flDist = data.flDist;
+			if (flDist < distToNearest)
+			{
+				pNearest = data.pPlayer;
+				distToNearest = flDist;
+			}
+		}
+
+		return pNearest;
+	}
+	case GETPLAYER_FARTHEST:
+	{
+		float distToNearest = 0.0f;
+		CBasePlayer *pNearest = NULL;
+
+		for (int i = 0; i < m_nPlayers.Count(); i++)
+		{
+			player_s &data = m_nPlayers.Element(i);
+
+			float flDist = data.flDist;
+			if (flDist >= distToNearest)
+			{
+				pNearest = data.pPlayer;
+				distToNearest = flDist;
+			}
+		}
+
+		return pNearest;
+	}
+	case GETPLAYER_RANDOM:
+	default:
+		return m_nPlayers.Element(RandomInt(0, (m_nPlayers.Count() - 1))).pPlayer;
+	}
+}
+
+CBasePlayer *UTIL_GetRandomPlayer()
+{
+	findPlayerParams_t params;
+	params.life = GETPLAYER_LIFE_ALIVE;
+
+	return UTIL_GetIdealPlayer(params);
+}
+
+//SecobMod__Information: This is a new function designed to get the nearest player to a player that called the command, this is used for our respawn where killed code to try and respawn at a near-by player.
+CBasePlayer *UTIL_GetOtherNearestPlayer(const Vector &origin)
+{
+	findPlayerParams_t params;
+	params.pOrigin = &origin;
+	params.selector = GETPLAYER_NEAREST;
+	params.flInnerRadius = 128.0f;
+	params.flags = GETPLAYER_RADIUS;
+	return UTIL_GetIdealPlayer(params);
+}
+
+CBasePlayer *UTIL_GetNearestPlayer(const Vector &origin)
+{
+	findPlayerParams_t params;
+	params.pOrigin = &origin;
+	params.selector = GETPLAYER_NEAREST;
+
+	return UTIL_GetIdealPlayer(params);
+}
+
+CBasePlayer *UTIL_GetNearestVisiblePlayer(CBaseEntity *pLooker, int mask)
+{
+	findPlayerParams_t params;
+	params.pLooker = pLooker;
+	params.selector = GETPLAYER_NEAREST;
+	params.visibilty = GETPLAYER_VIS_SIMPLE;
+	return UTIL_GetIdealPlayer(params);
 }
 
 //

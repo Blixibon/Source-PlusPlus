@@ -86,6 +86,7 @@
 #include "death_pose.h"
 #include "datacache/imdlcache.h"
 #include "vstdlib/jobthread.h"
+#include "players_system.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -3363,7 +3364,7 @@ void CAI_BaseNPC::UpdateSleepState( bool bInPVS )
 {
 	if ( GetSleepState() > AISS_AWAKE )
 	{
-		CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pLocalPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		if ( !pLocalPlayer )
 		{
 			if ( gpGlobals->maxClients > 1 )
@@ -9959,7 +9960,7 @@ CBaseEntity *CAI_BaseNPC::FindNamedEntity( const char *name, IEntityFindFilter *
 {
 	if ( !stricmp( name, "!player" ))
 	{
-		return ( CBaseEntity * )AI_GetSinglePlayer();
+		return ( CBaseEntity * )UTIL_GetNearestPlayer(GetAbsOrigin());
 	}
 	else if ( !stricmp( name, "!enemy" ) )
 	{
@@ -12046,7 +12047,7 @@ void CAI_BaseNPC::Teleport( const Vector *newPosition, const QAngle *newAngles, 
 
 bool CAI_BaseNPC::FindSpotForNPCInRadius( Vector *pResult, const Vector &vStartPos, CAI_BaseNPC *pNPC, float radius, bool bOutOfPlayerViewcone )
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	//CBasePlayer *pPlayer = AI_GetSinglePlayer();
 	QAngle fan;
 
 	fan.x = 0;
@@ -12061,7 +12062,7 @@ bool CAI_BaseNPC::FindSpotForNPCInRadius( Vector *pResult, const Vector &vStartP
 
 		vecTest = vStartPos + vecDir * radius;
 
-		if ( bOutOfPlayerViewcone && pPlayer && !pPlayer->FInViewCone( vecTest ) )
+		if ( bOutOfPlayerViewcone && ThePlayersSystem->IsInViewcone(vecTest) )
 			continue;
 
 		trace_t tr;

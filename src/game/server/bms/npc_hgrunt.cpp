@@ -44,7 +44,7 @@
 #include "gameweaponmanager.h"
 #include "vehicle_base.h"
 #include "ammodef.h"
-
+#include "players_system.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1086,9 +1086,9 @@ void CNPC_Hgrunt::StartTask(const Task_t *pTask)
 	case TASK_HGRUNT_SIGNAL_BEST_SOUND:
 		if (IsInSquad() && GetSquad()->NumMembers() > 1)
 		{
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
+			CBasePlayer *pPlayer = UTIL_GetMainPlayer();
 
-			if (pPlayer && OccupyStrategySlot(SQUAD_SLOT_EXCLUSIVE_HANDSIGN) && pPlayer->FInViewCone(this))
+			if (pPlayer && OccupyStrategySlot(SQUAD_SLOT_EXCLUSIVE_HANDSIGN) && ThePlayersSystem->IsInViewcone(this))
 			{
 				CSound *pSound;
 				pSound = GetBestSound();

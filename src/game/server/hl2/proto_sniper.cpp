@@ -837,7 +837,9 @@ void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
 //-----------------------------------------------------------------------------
 bool CProtoSniper::IsPlayerAllySniper()
 {
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
+	findPlayerParams_t params;
+	params.nClass = CLASS_PLAYER;
+	CBaseEntity *pPlayer = UTIL_GetIdealPlayer(params);
 
 	return IRelationType( pPlayer ) == D_LI;
 }
@@ -1395,13 +1397,13 @@ int CProtoSniper::SelectSchedule ( void )
 		return SCHED_RELOAD;
 	}
 
-	if( !AI_GetSinglePlayer()->IsAlive() && m_bKilledPlayer )
+	/*if( !AI_GetSinglePlayer()->IsAlive() && m_bKilledPlayer )
 	{
 		if( HasCondition(COND_IN_PVS) )
 		{
 			return SCHED_PSNIPER_PLAYER_DEAD;
 		}
-	}
+	}*/
 	
 	if( HasCondition( COND_HEAR_DANGER ) )
 	{
@@ -2605,28 +2607,34 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 CBaseEntity *CProtoSniper::PickDeadPlayerTarget()
 {
 	const int iSearchSize = 32;
-	CBaseEntity *pTarget = AI_GetSinglePlayer();
+	findPlayerParams_t params;
+	params.pLooker = this;
+	params.selector = GETPLAYER_NEAREST;
+	params.visibilty = GETPLAYER_VIS_SIMPLE;
+	params.life = GETPLAYER_LIFE_NOTALIVE;
+	CBaseEntity *pTarget = UTIL_GetIdealPlayer(params);
 	CBaseEntity *pEntities[ iSearchSize ];
-
-	int iNumEntities = UTIL_EntitiesInSphere( pEntities, iSearchSize, AI_GetSinglePlayer()->GetAbsOrigin(), 180.0f, 0 );
-
-	// Not very robust, but doesn't need to be. Randomly select a nearby object in the list that isn't an NPC.
-	if( iNumEntities > 0 )
+	if (pTarget)
 	{
-		int i;
+		int iNumEntities = UTIL_EntitiesInSphere(pEntities, iSearchSize, pTarget->GetAbsOrigin(), 180.0f, 0);
 
-		// Try a few times to randomly select a target. 
-		for( i = 0 ; i < 10 ; i++ )
+		// Not very robust, but doesn't need to be. Randomly select a nearby object in the list that isn't an NPC.
+		if (iNumEntities > 0)
 		{
-			CBaseEntity *pCandidate = pEntities[ random->RandomInt(0, iNumEntities - 1) ];
+			int i;
 
-			if( !pCandidate->IsNPC() && FInViewCone(pCandidate) )
+			// Try a few times to randomly select a target. 
+			for (i = 0; i < 10; i++)
 			{
-				return pCandidate;
+				CBaseEntity *pCandidate = pEntities[random->RandomInt(0, iNumEntities - 1)];
+
+				if (!pCandidate->IsNPC() && FInViewCone(pCandidate))
+				{
+					return pCandidate;
+				}
 			}
 		}
 	}
-
 	// Fall through to accept the player as a target.
 	return pTarget;
 }

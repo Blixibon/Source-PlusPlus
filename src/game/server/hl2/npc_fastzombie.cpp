@@ -918,27 +918,30 @@ void CFastZombie::DeathSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CFastZombie::AlertSound( void )
 {
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
-
-	if( pPlayer )
+	//CBaseEntity *pPlayer = AI_GetSinglePlayer();
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		// Measure how far the player is, and play the appropriate type of alert sound. 
-		// Doesn't matter if I'm getting mad at a different character, the player is the
-		// one that hears the sound.
-		float flDist;
-
-		flDist = ( GetAbsOrigin() - pPlayer->GetAbsOrigin() ).Length();
-
-		if( flDist > 512 )
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
 		{
-			EmitSound( "NPC_FastZombie.AlertFar" );
-		}
-		else
-		{
-			EmitSound( "NPC_FastZombie.AlertNear" );
+			// Measure how far the player is, and play the appropriate type of alert sound. 
+			// Doesn't matter if I'm getting mad at a different character, the player is the
+			// one that hears the sound.
+			float flDist;
+
+			flDist = (GetAbsOrigin() - pPlayer->GetAbsOrigin()).Length();
+
+			CSingleUserRecipientFilter filter(pPlayer);
+			if (flDist > 512)
+			{
+				EmitSound(filter, entindex(), "NPC_FastZombie.AlertFar");
+			}
+			else
+			{
+				EmitSound(filter, entindex(), "NPC_FastZombie.AlertNear");
+			}
 		}
 	}
-
 }
 
 

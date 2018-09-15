@@ -2406,7 +2406,7 @@ void CNPC_Hunter::ManageSiegeTargets()
 	}
 
 	m_flTimeNextSiegeTargetAttack = gpGlobals->curtime + (hunter_siege_frequency.GetFloat() * RandomFloat( 0.8f, 1.2f) );
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 
 	// Start by assuming we are not going to create a siege target
 	bool bCreateSiegeTarget = false;

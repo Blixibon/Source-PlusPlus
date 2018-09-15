@@ -528,6 +528,11 @@ public:
 
 	virtual int			UpdateTransmitState();
 
+	virtual CBasePlayer *GetBestPlayer()
+	{
+		return AI_GetAlliedPlayer(this);
+	}
+
 	//---------------------------------
 	// Component creation factories
 	// 
@@ -2872,6 +2877,11 @@ inline CBaseEntity *CAI_Component::GetTarget()
 inline void CAI_Component::SetTarget( CBaseEntity *pTarget )
 {
 	GetOuter()->SetTarget( pTarget );
+}
+
+inline CBasePlayer *CAI_Component::GetBestPlayer()
+{
+	return GetOuter()->GetBestPlayer();
 }
 
 //-----------------------------------------------------------------------------

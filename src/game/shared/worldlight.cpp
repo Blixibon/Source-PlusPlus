@@ -440,6 +440,7 @@ bool CWorldLights::GetTotalLightAtPoint(const Vector& vecPosition, Vector& vecLi
 
 bool CWorldLights::GetAmbientLightAtPoint(const Vector& vecPosition, Vector& vecLightAmbient) const
 {
+#ifndef CLIENT_DLL
 	vecLightAmbient.Init();
 
 	int iLeaf = GetLeafForOrigin(vecPosition);
@@ -466,6 +467,8 @@ bool CWorldLights::GetAmbientLightAtPoint(const Vector& vecPosition, Vector& vec
 	}
 
 	vecLightAmbient /= lightCubes.Count();
-
+#else
+	vecLightAmbient = engine->GetLightForPointFast(vecPosition, true);
+#endif
 	return true;
 }

@@ -407,7 +407,7 @@ void CAI_PlayerAlly::GatherConditions( void )
 		SetCondition( COND_TALKER_CLIENTUNSEEN );
 	}
 
-	CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pLocalPlayer = GetBestPlayer();
 
 	if ( !pLocalPlayer )
 	{
@@ -1460,7 +1460,7 @@ bool CAI_PlayerAlly::IsOkToSpeak( ConceptCategory_t category, bool fRespondingTo
 		}
 
 		// Don't talk if we're too far from the player
-		CBaseEntity *pPlayer = AI_GetSinglePlayer();
+		CBaseEntity *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		if ( pPlayer )
 		{
 			float flDist = sv_npc_talker_maxdist.GetFloat();

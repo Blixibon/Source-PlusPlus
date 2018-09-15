@@ -318,7 +318,7 @@ void CAI_FearBehavior::GatherConditions()
 	//  -I haven't seen the player in 2 seconds
 	//
 	// Here's the distance check:
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = GetBestPlayer();
 	if( pPlayer != NULL && GetAbsOrigin().DistToSqr(pPlayer->GetAbsOrigin()) >= Square( ai_fear_player_dist.GetFloat() * 1.5f )  )
 	{
 		SetCondition(COND_FEAR_SEPARATED_FROM_PLAYER);

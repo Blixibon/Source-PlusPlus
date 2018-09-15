@@ -32,6 +32,8 @@
 #include <KeyValues.h>
 #include "physics_npc_solver.h"
 
+#include "players_system.h"
+
 #include "tier0/memdbgon.h"
 
 ConVar ai_debug_readiness("ai_debug_readiness", "0" );
@@ -516,7 +518,7 @@ void CNPC_PlayerCompanion::GatherConditions()
 //-----------------------------------------------------------------------------
 void CNPC_PlayerCompanion::DoCustomSpeechAI( void )
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	//CBasePlayer *pPlayer = AI_GetSinglePlayer();
 
 	// Don't allow this when we're getting in the car
 #ifdef HL2_EPISODIC
@@ -526,7 +528,7 @@ void CNPC_PlayerCompanion::DoCustomSpeechAI( void )
 #endif
 
 	Vector vecEyePosition = EyePosition();
-	if ( bPassengerInTransition == false && pPlayer && pPlayer->FInViewCone( vecEyePosition ) && pPlayer->FVisible( vecEyePosition ) )
+	if ( bPassengerInTransition == false && /*pPlayer &&*/ ThePlayersSystem->IsInViewcone( vecEyePosition ) && ThePlayersSystem->IsVisible( vecEyePosition ) )
 	{
 		if ( m_SpeechWatch_PlayerLooking.Expired() )
 		{
@@ -1515,7 +1517,7 @@ void CNPC_PlayerCompanion::Touch( CBaseEntity *pOther )
 		if ( m_afMemory & bits_MEMORY_PROVOKED )
 			return;
 
-		TestPlayerPushing( ( pOther->IsPlayer() ) ? pOther : AI_GetSinglePlayer() );
+		TestPlayerPushing( ( pOther->IsPlayer() ) ? pOther : UTIL_GetMainPlayer() );
 	}
 }
 
@@ -1906,7 +1908,11 @@ bool CNPC_PlayerCompanion::PickTacticalLookTarget( AILookTargetArgs_t *pArgs )
 		// 1/3rd chance to authoritatively look at player
 		if( random->RandomInt( 0, 2 ) == 0 )
 		{
-			pArgs->hTarget = AI_GetSinglePlayer();
+			findPlayerParams_t params;
+			params.life = GETPLAYER_LIFE_ALIVE;
+			params.visibilty = GETPLAYER_VIS_ADVANCED;
+			params.pLooker = this;
+			pArgs->hTarget = UTIL_GetIdealPlayer(params);
 			return true;
 		}
 	}
@@ -3693,8 +3699,9 @@ bool CNPC_PlayerCompanion::IsNavigationUrgent( void )
 		// could not see the player but the player could in fact see them.  Now the NPC's facing is
 		// irrelevant and the player's viewcone is more authorative. -- jdw
 
-		CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
-		if ( pLocalPlayer->FInViewCone( EyePosition() ) )
+		//CBasePlayer *pLocalPlayer = AI_GetSinglePlayer();
+		CBroadcastRecipientFilter filter;
+		if ( ThePlayersSystem->IsAbleToSee(this, filter))
 			return false;
 
 		return true;

@@ -1259,7 +1259,7 @@ void CAntlionTemplateMaker::BlockedCheckFunc( void )
 			if ( pNode )
 			{
 				Vector vHintPos;
-				pNode->GetPosition( AI_GetSinglePlayer(), &vHintPos );
+				pNode->GetPosition( UTIL_GetMainPlayer(), &vHintPos );
 
 				CBaseEntity*	pList[20];
 				int count = UTIL_EntitiesInBox( pList, 20, vHintPos + NAI_Hull::Mins( HULL_MEDIUM ), vHintPos + NAI_Hull::Maxs( HULL_MEDIUM ), 0 );

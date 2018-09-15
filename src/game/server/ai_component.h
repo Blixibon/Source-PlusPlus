@@ -85,6 +85,8 @@ protected:
 	
 	CBaseEntity*		GetTarget();
 	void				SetTarget( CBaseEntity *pTarget );
+
+	CBasePlayer*		GetBestPlayer();
 	
 	const Task_t*		GetCurTask( void );
 	virtual void		TaskFail( AI_TaskFailureCode_t );

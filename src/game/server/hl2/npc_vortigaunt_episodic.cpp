@@ -762,7 +762,7 @@ void CNPC_Vortigaunt::RunTask( const Task_t *pTask )
 	case TASK_VORTIGAUNT_WAIT_FOR_PLAYER:
 	{
 		// Wait for the player to get near (before starting the bugbait sequence)
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
 		if ( pPlayer != NULL )
 		{
 			GetMotor()->SetIdealYawToTargetAndUpdate( pPlayer->GetAbsOrigin(), AI_KEEP_YAW_SPEED );
