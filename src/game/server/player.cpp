@@ -69,11 +69,11 @@
 #include "dt_utlvector_send.h"
 #include "vote_controller.h"
 #include "ai_speech.h"
-#include "bot.h"
+#include "bots\bot.h"
 #include "ai_senses.h"
 
 #ifdef INSOURCE_BOTS
-#include "interfaces\ibot.h"
+#include "bots\interfaces\ibot.h"
 #endif
 
 #if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC )
@@ -262,7 +262,7 @@ END_DATADESC()
 BEGIN_DATADESC( CBasePlayer )
 
 	DEFINE_EMBEDDED( m_Local ),
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 	DEFINE_EMBEDDED( m_AttributeList ),
 #endif
 	DEFINE_UTLVECTOR( m_hTriggerSoundscapeList, FIELD_EHANDLE ),
@@ -8073,13 +8073,13 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 // DT_BasePlayer sendtable.
 // -------------------------------------------------------------------------------- //
 
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 	EXTERN_SEND_TABLE(DT_AttributeList);
 #endif
 
 	IMPLEMENT_SERVERCLASS_ST( CBasePlayer, DT_BasePlayer )
 
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 		SendPropDataTable(SENDINFO_DT(m_AttributeList), &REFERENCE_SEND_TABLE(DT_AttributeList)),
 #endif
 

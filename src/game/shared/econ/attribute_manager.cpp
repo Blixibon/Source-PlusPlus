@@ -1,7 +1,6 @@
 #include "cbase.h"
 #include "attribute_manager.h"
 #include "econ_item_schema.h"
-#include "econ_entity.h"
 
 #ifdef CLIENT_DLL
 #include "prediction.h"
@@ -11,6 +10,11 @@
 #include "tier0/memdbgon.h"
 
 #define ATTRIB_REAPPLY_PARITY_BITS 3
+
+
+//=============================================================================
+// CAttributeManager
+//=============================================================================
 
 BEGIN_NETWORK_TABLE_NOBASE( CAttributeManager, DT_AttributeManager )
 #ifdef CLIENT_DLL
@@ -22,6 +26,24 @@ BEGIN_NETWORK_TABLE_NOBASE( CAttributeManager, DT_AttributeManager )
 #endif
 END_NETWORK_TABLE()
 
+
+template <>
+string_t CAttributeManager::AttribHookValue<string_t>( string_t strValue, const char *pszClass, const CBaseEntity *pEntity )
+{
+	if ( !pEntity )
+		return strValue;
+
+	IHasAttributes *pAttribInteface = pEntity->GetHasAttributesInterfacePtr();
+
+	if ( pAttribInteface )
+	{
+		string_t strAttributeClass = AllocPooledString_StaticConstantStringPointer( pszClass );
+		strValue = pAttribInteface->GetAttributeManager()->ApplyAttributeString( strValue, pEntity, strAttributeClass );
+	}
+
+	return strValue;
+}
+
 CAttributeManager::CAttributeManager()
 {
 	m_bParsingMyself = false;
@@ -29,11 +51,17 @@ CAttributeManager::CAttributeManager()
 }
 
 #ifdef CLIENT_DLL
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CAttributeManager::OnPreDataChanged( DataUpdateType_t updateType )
 {
 	m_iOldReapplyProvisionParity = m_iReapplyProvisionParity;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CAttributeManager::OnDataChanged( DataUpdateType_t updateType )
 {
 	// If parity ever falls out of sync we can catch up here.
@@ -50,16 +78,25 @@ void CAttributeManager::OnDataChanged( DataUpdateType_t updateType )
 
 #endif
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CAttributeManager::AddProvider( CBaseEntity *pEntity )
 {
 	m_AttributeProviders.AddToTail( pEntity );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CAttributeManager::RemoveProvider( CBaseEntity *pEntity )
 {
 	m_AttributeProviders.FindAndRemove( pEntity );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Add this entity to target's providers list.
+//-----------------------------------------------------------------------------
 void CAttributeManager::ProviteTo( CBaseEntity *pEntity )
 {
 	if ( !pEntity || !m_hOuter.Get() )
@@ -78,6 +115,9 @@ void CAttributeManager::ProviteTo( CBaseEntity *pEntity )
 	m_iReapplyProvisionParity = ( m_iReapplyProvisionParity + 1 ) & ( ( 1 << ATTRIB_REAPPLY_PARITY_BITS ) - 1 );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Remove this entity from target's providers list.
+//-----------------------------------------------------------------------------
 void CAttributeManager::StopProvidingTo( CBaseEntity *pEntity )
 {
 	if ( !pEntity || !m_hOuter.Get() )
@@ -96,6 +136,9 @@ void CAttributeManager::StopProvidingTo( CBaseEntity *pEntity )
 	m_iReapplyProvisionParity = ( m_iReapplyProvisionParity + 1 ) & ( ( 1 << ATTRIB_REAPPLY_PARITY_BITS ) - 1 );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CAttributeManager::InitializeAttributes( CBaseEntity *pEntity )
 {
 	Assert( pEntity->GetHasAttributesInterfacePtr() != NULL );
@@ -104,6 +147,9 @@ void CAttributeManager::InitializeAttributes( CBaseEntity *pEntity )
 	m_bParsingMyself = false;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Search for an attribute on our providers.
+//-----------------------------------------------------------------------------
 float CAttributeManager::ApplyAttributeFloat( float flValue, const CBaseEntity *pEntity, string_t strAttributeClass )
 {
 	if ( m_bParsingMyself || m_hOuter.Get() == NULL )
@@ -146,6 +192,55 @@ float CAttributeManager::ApplyAttributeFloat( float flValue, const CBaseEntity *
 	return flValue;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Search for an attribute on our providers.
+//-----------------------------------------------------------------------------
+string_t CAttributeManager::ApplyAttributeString( string_t strValue, const CBaseEntity *pEntity, string_t strAttributeClass )
+{
+	if ( m_bParsingMyself || m_hOuter.Get() == NULL )
+	{
+		return strValue;
+	}
+
+	// Safeguard to prevent potential infinite loops.
+	m_bParsingMyself = true;
+
+	for ( int i = 0; i < m_AttributeProviders.Count(); i++ )
+	{
+		CBaseEntity *pProvider = m_AttributeProviders[i].Get();
+
+		if ( !pProvider || pProvider == pEntity )
+			continue;
+
+		IHasAttributes *pAttributes = pProvider->GetHasAttributesInterfacePtr();
+
+		if ( pAttributes )
+		{
+			strValue = pAttributes->GetAttributeManager()->ApplyAttributeString( strValue, pEntity, strAttributeClass );
+		}
+	}
+
+	IHasAttributes *pAttributes = m_hOuter->GetHasAttributesInterfacePtr();
+	CBaseEntity *pOwner = pAttributes->GetAttributeOwner();
+
+	if ( pOwner )
+	{
+		IHasAttributes *pOwnerAttrib = pOwner->GetHasAttributesInterfacePtr();
+		if ( pOwnerAttrib )
+		{
+			strValue = pOwnerAttrib->GetAttributeManager()->ApplyAttributeString( strValue, pEntity, strAttributeClass );
+		}
+	}
+
+	m_bParsingMyself = false;
+
+	return strValue;
+}
+
+
+//=============================================================================
+// CAttributeContainer
+//=============================================================================
 
 BEGIN_NETWORK_TABLE_NOBASE( CAttributeContainer, DT_AttributeContainer )
 #ifdef CLIENT_DLL
@@ -168,6 +263,9 @@ CAttributeContainer::CAttributeContainer()
 
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Search for an attribute and apply its value.
+//-----------------------------------------------------------------------------
 float CAttributeContainer::ApplyAttributeFloat( float flValue, const CBaseEntity *pEntity, string_t strAttributeClass )
 {
 	if ( m_bParsingMyself || m_hOuter.Get() == NULL )
@@ -209,7 +307,31 @@ float CAttributeContainer::ApplyAttributeFloat( float flValue, const CBaseEntity
 
 	m_bParsingMyself = false;
 
-	flValue = BaseClass::ApplyAttributeFloat( flValue, pEntity, strAttributeClass );
+	return BaseClass::ApplyAttributeFloat( flValue, pEntity, strAttributeClass );
+}
 
-	return flValue;
+//-----------------------------------------------------------------------------
+// Purpose: Search for an attribute and apply its value.
+//-----------------------------------------------------------------------------
+string_t CAttributeContainer::ApplyAttributeString( string_t strValue, const CBaseEntity *pEntity, string_t strAttributeClass )
+{
+	if ( m_bParsingMyself || m_hOuter.Get() == NULL )
+		return strValue;
+
+	m_bParsingMyself = true;;
+
+	// This should only ever be used by econ entities.
+	CEconEntity *pEconEnt = assert_cast<CEconEntity *>( m_hOuter.Get() );
+	CEconItemView *pItem = pEconEnt->GetItem();
+
+	CEconItemAttribute *pAttribute = pItem->IterateAttributes( strAttributeClass );
+
+	if ( pAttribute )
+	{
+		strValue = AllocPooledString( pAttribute->value_string.Get() );
+	}
+
+	m_bParsingMyself = false;
+
+	return BaseClass::ApplyAttributeString( strValue, pEntity, strAttributeClass );
 }

@@ -8,14 +8,14 @@
 #include "econ_entity.h"
 #include "eventlist.h"
 
+//#ifdef GAME_DLL
+//#include "tf_player.h"
+//#else
+//#include "c_tf_player.h"
+//#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-
-#ifdef CLIENT_DLL
-EXTERN_RECV_TABLE( DT_ScriptCreatedItem )
-#else
-EXTERN_SEND_TABLE( DT_ScriptCreatedItem )
-#endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( EconEntity, DT_EconEntity )
 
@@ -40,8 +40,15 @@ CEconEntity::CEconEntity()
 	m_pAttributes = this;
 }
 
+CEconEntity::~CEconEntity()
+{
+}
+
 #ifdef CLIENT_DLL
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CEconEntity::OnPreDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnPreDataChanged( updateType );
@@ -49,6 +56,9 @@ void CEconEntity::OnPreDataChanged( DataUpdateType_t updateType )
 	m_AttributeManager.OnPreDataChanged( updateType );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CEconEntity::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
@@ -56,37 +66,69 @@ void CEconEntity::OnDataChanged( DataUpdateType_t updateType )
 	m_AttributeManager.OnDataChanged( updateType );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CEconEntity::FireEvent( const Vector& origin, const QAngle& angles, int event, const char *options )
 {
 	if ( event == AE_CL_BODYGROUP_SET_VALUE_CMODEL_WPN )
 	{
-		
+		/*C_ViewmodelAttachmentModel *pAttach = GetViewmodelAddon();
+		if ( pAttach)
+		{
+			pAttach->FireEvent( origin, angles, AE_CL_BODYGROUP_SET_VALUE, options );
+		}*/
 	}
-	else
-		BaseClass::FireEvent( origin, angles, event, options );
+
+	BaseClass::FireEvent( origin, angles, event, options );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 bool CEconEntity::OnFireEvent( C_BaseViewModel *pViewModel, const Vector& origin, const QAngle& angles, int event, const char *options )
 {
 	if ( event == AE_CL_BODYGROUP_SET_VALUE_CMODEL_WPN )
 	{
-		return true;
+		//C_ViewmodelAttachmentModel *pAttach = GetViewmodelAddon();
+		//if ( pAttach)
+		{
+			//pAttach->FireEvent( origin, angles, AE_CL_BODYGROUP_SET_VALUE, options );
+			return true;
+		}
 	}
 	return false;
 }
 
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+void CEconEntity::ViewModelAttachmentBlending( CStudioHdr *hdr, Vector pos[], Quaternion q[], float currentTime, int boneMask )
+{
+	// NUB
+}
+
 #endif
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CEconEntity::SetItem( CEconItemView &newItem )
 {
 	m_Item = newItem;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 CEconItemView *CEconEntity::GetItem( void )
 {
 	return &m_Item;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 bool CEconEntity::HasItemDefinition( void ) const
 {
 	return ( m_Item.GetItemDefIndex() >= 0 );
@@ -135,6 +177,45 @@ void CEconEntity::ReapplyProvision( void )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: Update visible bodygroups
+//-----------------------------------------------------------------------------
+void CEconEntity::UpdatePlayerBodygroups( void )
+{
+	CBaseAnimating *pPlayer = dynamic_cast < CBaseAnimating * >( GetOwnerEntity() );
+
+	if ( !pPlayer )
+	{
+		return;
+	}
+
+	// bodygroup enabling/disabling
+	CEconItemDefinition *pStatic = m_Item.GetStaticData();
+	if ( pStatic )
+	{
+		EconItemVisuals *pVisuals =	pStatic->GetVisuals();
+		if ( pVisuals )
+		{
+			for ( int i = 0; i < pPlayer->GetNumBodyGroups(); i++ )
+			{
+				unsigned int index = pVisuals->player_bodygroups.Find( pPlayer->GetBodygroupName( i ) );
+				if ( pVisuals->player_bodygroups.IsValidIndex( index ) )
+				{
+					bool bTrue = pVisuals->player_bodygroups.Element( index );
+					if ( bTrue )
+					{
+						pPlayer->SetBodygroup( i , 1 );
+					}
+					else
+					{
+						pPlayer->SetBodygroup( i , 0 );
+					}
+				}
+			}
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
 void CEconEntity::UpdateOnRemove( void )
@@ -142,9 +223,4 @@ void CEconEntity::UpdateOnRemove( void )
 	SetOwnerEntity( NULL );
 	ReapplyProvision();
 	BaseClass::UpdateOnRemove();
-}
-
-CEconEntity::~CEconEntity()
-{
-
 }

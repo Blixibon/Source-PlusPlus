@@ -916,7 +916,7 @@ public:
 	//  the player and not to other players.
 	CNetworkVarEmbedded( CPlayerLocalData, m_Local );
 
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && defined TF_DLL
 	CNetworkVarEmbedded( CAttributeList,	m_AttributeList );
 #endif
 

@@ -20,6 +20,7 @@ $Include "$SRCDIR\game\protobuf_include.vpc"
 $Include "$SRCDIR\game\server\nav_mesh.vpc"
 $Include "$SRCDIR\game\server\server_nextbot.vpc"
 $Include "$SRCDIR\game\server\in\bots\server_inbots.vpc" [!$CSTRIKE]
+$Include "$SRCDIR\game\shared\econ\econ_ents.vpc" [!$TF2CLASSIC]
 $Include "$SRCDIR\game\server\server_deferred_base.vpc" [$DEFERRED]
 
 $Configuration	"Debug"

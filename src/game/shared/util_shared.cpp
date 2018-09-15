@@ -20,7 +20,7 @@
 #include "KeyValues.h"
 #include "time.h"
 
-#ifdef USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 	#include "econ_item_constants.h"
 	#include "econ_holidays.h"
 	#include "rtime.h"
@@ -1155,7 +1155,7 @@ int find_day_of_week( struct tm& found_day, int day_of_week, int step )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-#ifdef USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 static bool					  s_HolidaysCalculated = false;
 static CBitVec<kHolidayCount> s_HolidaysActive;
 
@@ -1181,7 +1181,7 @@ void UTIL_CalculateHolidays()
 
 bool UTIL_IsHolidayActive( /*EHoliday*/ int eHoliday )
 {
-#ifdef USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 	if ( IsX360() )
 		return false;
 
@@ -1201,7 +1201,7 @@ bool UTIL_IsHolidayActive( /*EHoliday*/ int eHoliday )
 //-----------------------------------------------------------------------------
 int	UTIL_GetHolidayForString( const char* pszHolidayName )
 {
-#ifdef USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 	if ( !pszHolidayName )
 		return kHoliday_None;
 
@@ -1216,7 +1216,7 @@ int	UTIL_GetHolidayForString( const char* pszHolidayName )
 //-----------------------------------------------------------------------------
 const char* UTIL_GetActiveHolidayString()
 {
-#ifdef USES_ECON_ITEMS
+#if defined USES_ECON_ITEMS && 0
 	return EconHolidays_GetActiveHolidayString();
 #else
 	return NULL;

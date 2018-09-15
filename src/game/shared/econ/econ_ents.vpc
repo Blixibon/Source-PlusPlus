@@ -1,0 +1,38 @@
+//-----------------------------------------------------------------------------
+//	NAV_MESH.VPC
+//
+//	Project script for navigation mesh files (no NextBot files)
+//-----------------------------------------------------------------------------
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\tf,.\tf,$SRCDIR\game\shared\Multiplayer,$SRCDIR\game\shared\econ"
+		$PreprocessorDefinitions		"$BASE;USES_ECON_ITEMS"
+	}
+}
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"Econ"
+		{
+			$File	"$SRCDIR\game\shared\econ\attribute_manager.cpp"
+			$File	"$SRCDIR\game\shared\econ\attribute_manager.h"
+			$File	"$SRCDIR\game\shared\econ\econ_entity.cpp"
+			$File	"$SRCDIR\game\shared\econ\econ_entity.h"
+			$File	"$SRCDIR\game\shared\econ\econ_item_schema.cpp"
+			$File	"$SRCDIR\game\shared\econ\econ_item_schema.h"
+			$File	"$SRCDIR\game\shared\econ\econ_item_system.cpp"
+			$File	"$SRCDIR\game\shared\econ\econ_item_system.h"
+			$File	"$SRCDIR\game\shared\econ\econ_wearable.cpp"
+			$File	"$SRCDIR\game\shared\econ\econ_wearable.h"
+			$File	"$SRCDIR\game\shared\econ\econ_item_view.cpp"
+			$File	"$SRCDIR\game\shared\econ\econ_item_view.h"
+			$File	"$SRCDIR\game\shared\econ\game_item_schema.h"
+			$File	"$SRCDIR\game\shared\econ\ihasattributes.h"
+		}
+	}
+}
