@@ -784,7 +784,7 @@ CBasePlayer *UTIL_GetIdealPlayer(findPlayerParams_t &params)
 				bVisible = params.pLooker->FVisible(pPlayer);
 			}
 
-			if ((params.flags & GETPLAYER_NOTVISIBLE) == bVisible)
+			if (((params.flags & GETPLAYER_NOTVISIBLE) != 0) == bVisible)
 				continue;
 		}
 

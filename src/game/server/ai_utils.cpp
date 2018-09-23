@@ -15,6 +15,28 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+CBasePlayer *AI_GetAlliedPlayer(CBaseEntity *pAI)
+{
+	findPlayerParams_t params;
+	params.pLooker = pAI;
+	params.life = GETPLAYER_LIFE_ALIVE;
+	params.selector = GETPLAYER_NEAREST;
+	params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
+	params.nRelation = D_LI;
+	return UTIL_GetIdealPlayer(params);
+}
+
+CBasePlayer *AI_GetEnemyPlayer(CBaseEntity *pAI)
+{
+	findPlayerParams_t params;
+	params.pLooker = pAI;
+	params.life = GETPLAYER_LIFE_ALIVE;
+	params.selector = GETPLAYER_NEAREST;
+	params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
+	params.nRelation = D_HT;
+	return UTIL_GetIdealPlayer(params);
+}
+
 //-----------------------------------------------------------------------------
 
 BEGIN_SIMPLE_DATADESC( CAI_MoveMonitor )

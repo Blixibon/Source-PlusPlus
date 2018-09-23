@@ -10,6 +10,7 @@
 
 #ifdef GAME_DLL
 #define VarArgs UTIL_VarArgs
+#define MapName() gpGlobals->mapname
 #endif
 
 #pragma region CORE

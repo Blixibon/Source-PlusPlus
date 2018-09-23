@@ -270,7 +270,7 @@ END_RECV_TABLE()
 // DT_BasePlayer datatable.
 // -------------------------------------------------------------------------------- //
 
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMSTF
 	EXTERN_RECV_TABLE(DT_AttributeList);
 #endif
 
@@ -279,7 +279,7 @@ END_RECV_TABLE()
 		// only send one.
 		RecvPropDataTable( "localdata", 0, 0, &REFERENCE_RECV_TABLE(DT_LocalPlayerExclusive) ),
 
-#if defined USES_ECON_ITEMS
+#if defined USES_ECON_ITEMSTF
 		RecvPropDataTable(RECVINFO_DT(m_AttributeList),0, &REFERENCE_RECV_TABLE(DT_AttributeList) ),
 #endif
 

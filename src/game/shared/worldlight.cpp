@@ -30,6 +30,7 @@
 
 #ifdef GAME_DLL
 #define VarArgs UTIL_VarArgs
+#define MapName() gpGlobals->mapname
 #endif
 
 #ifdef CLIENT_DLL
@@ -178,7 +179,7 @@ void CWorldLights::LevelInitPreEntity()
 	{
 	case 0:
 	{
-		Assert(leafLump.LumpSize() % sizeof(dleaf_version_0_t));
+		Assert(leafLump.LumpSize() % sizeof(dleaf_version_0_t) == 0);
 		int nLeaves = leafLump.LumpSize() / sizeof(dleaf_version_0_t);
 		dleaf_version_0_t *pLeaf = reinterpret_cast<dleaf_version_0_t*>(leafLump.LumpBase());
 		m_LeafCubes.SetCount(nLeaves);
@@ -200,7 +201,7 @@ void CWorldLights::LevelInitPreEntity()
 	break;
 	case 1:
 	{
-		Assert(leafLump.LumpSize() % sizeof(dleaf_t));
+		Assert(leafLump.LumpSize() % sizeof(dleaf_t) == 0);
 		int nLeaves = leafLump.LumpSize() / sizeof(dleaf_t);
 		dleaf_t *pLeaf = reinterpret_cast<dleaf_t*>(leafLump.LumpBase());
 		m_LeafCubes.SetCount(nLeaves);

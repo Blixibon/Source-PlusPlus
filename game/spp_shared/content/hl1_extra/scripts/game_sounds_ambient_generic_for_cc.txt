@@ -1,0 +1,276 @@
+// **************************************************************
+// HL:S game sounds to let closed captions be shown
+//
+
+"NPC_Train.C0A0_TR_GMORN"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_gmorn.wav"
+}
+"NPC_Train.C0A0_TR_TIME"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_time.wav"
+}
+"NPC_Train.C0A0_TR_DEST"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_dest.wav"
+}
+"NPC_Train.C0A0_TR_NOEAT"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_noeat.wav"
+}
+"NPC_Train.C0A0_TR_EMERG"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_emerg.wav"
+}
+"NPC_Train.C0A0_TR_TOURN"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_tourn.wav"
+}
+"NPC_Train.C0A0_TR_JOBS"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_jobs.wav"
+}
+"NPC_Train.C0A0_TR_HAZ"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_haz.wav"
+}
+"NPC_Train.C0A0_TR_ARRIVE"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_arrive.wav"
+}
+"NPC_Train.C0A0_TR_EXIT"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"tride/c0a0_tr_exit.wav"
+}
+"NPC_Scientist.SC_BIGDAY"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c1a0_sci_bigday.wav"
+}
+"NPC_Scientist.SC_CRIT3A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c1a0_sci_crit3a.wav"
+}
+"NPC_Scientist.SC_DIS14A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c1a0_sci_dis14a.wav"
+}
+"NPC_Scientist.SC_CONSOLE2A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c1a1_sci_2scan.wav"
+}
+"NPC_Scientist.SC_THANKGOD"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c1a3_sci_thankgod.wav"
+}
+"NPC_Barney.BA_STERIL"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"barney/c2a4_ba_steril.wav"
+}
+"NPC_Barney.BA_TAU1A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"barney/c2a4_ba_1tau.wav"
+}
+"NPC_Scientist.SC_TAU2A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c2a4_sci_2tau.wav"
+}
+"NPC_Barney.BA_TAU3A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"barney/c2a4_ba_3tau.wav"
+}
+"NPC_Scientist.SC_TAU4A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/c2a4_sci_4tau.wav"
+}
+"NPC_Barney.BA_TAU5A"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"barney/c2a4_ba_5tau.wav"
+}
+"NPC_HGrunt.C2A5_HG_ABANDON"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"hgrunt/c2a5_hg_abandon.wav"
+}
+"NPC_HGrunt.C2A5_HG_LEBUZ"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"hgrunt/c2a5_hg_lebuz.wav"
+}
+"NPC_Scientist.SC_SCRM6"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"scientist/sci_fear7.wav"
+}
+"NPC_Nihilanth.NIL_ALONE"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_alone.wav"
+}
+"NPC_Nihilanth.NIL_COMES"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_comes.wav"
+}
+"NPC_Nihilanth.NIL_DECEIVE"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_deceive.wav"
+}
+"NPC_Nihilanth.NIL_DIE"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_die.wav"
+}
+"NPC_Nihilanth.NIL_DONE"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_done.wav"
+}
+"NPC_Nihilanth.NIL_FREEMAN"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_freeman.wav"
+}
+"NPC_Nihilanth.NIL_NOW_DIE"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_now_die.wav"
+}
+"NPC_Nihilanth.NIL_THELAST"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_thelast.wav"
+}
+"NPC_Nihilanth.NIL_THETRUTH"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_thetruth.wav"
+}
+"NPC_Nihilanth.NIL_WIN"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+	"wave"		"nihilanth/nil_win.wav"
+}

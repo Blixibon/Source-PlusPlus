@@ -1,0 +1,12 @@
+VertexLitGeneric
+{
+   	"$basetexture" 	 "jessev92\player\hl2\CombinePilot\Flighthelmet_cmb"
+    	"$bumpmap"            "jessev92\player\hl2\CombinePilot\Flighthelmet_n"
+	"$phong" 	 "1"
+	"$phongexponent" 	 "5"
+	"$halflambert"	 "1"
+	"$rimlight"	 "1"										
+	"$rimlightexponent" "20"							
+	"$rimlightboost" 	"0.1"
+
+}

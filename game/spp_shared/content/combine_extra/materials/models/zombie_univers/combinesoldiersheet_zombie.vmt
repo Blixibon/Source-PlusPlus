@@ -1,0 +1,21 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"Models/zombie_univers/combinesoldiersheet_zombie"
+                "$bumpmap"           "Models/zombie_univers/zombine_normal"
+                	//phong parameters
+
+	"$phong" "1"
+	"$phongboost" "1"
+	"$phongexponent" "20" 		
+	"$phongfresnelranges"	"[.1 .1 1]"
+	
+	//rimlight parameters	
+
+	"$rimlight" "1"
+	"$rimlightexponent" "20"
+	"$surfaceprop" "flesh"
+	"$model" 1
+}
+
+
+

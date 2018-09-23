@@ -964,7 +964,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 {
 	VPROF("CServerGameDLL::LevelInit");
 
-#ifdef USES_ECON_ITEMS
+#ifdef USES_ECON_ITEMSTF
 	GameItemSchema_t *pItemSchema = ItemSystem()->GetItemSchema();
 	if ( pItemSchema )
 	{

@@ -1,0 +1,15 @@
+VertexLitGeneric
+{
+   	"$basetexture"	 "jessev92\player\hl2\CombinePilot\Flighthelmet_lens_cmb"
+	"$halflambert" 	"1"	
+
+	"$color2" "[1 1 1]"
+	"$ambientocclusion" "1"
+	"$detail" "jessev92\player\hl2\CombinePilot\Flighthelmet_lens_cmb"
+	"$detailscale" "1"
+	"$detailblendfactor" "0.5"
+	"$detailblendmode" "5"
+
+
+}
+

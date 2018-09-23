@@ -542,6 +542,12 @@ CHudTexture const *CBaseCombatWeapon::GetSpriteZoomedAutoaim( void ) const
 //-----------------------------------------------------------------------------
 const char *CBaseCombatWeapon::GetShootSound( int iIndex ) const
 {
+#ifdef USES_ECON_ITEMS
+	const char *pchOverride = m_Item.GetSoundOverride(iIndex, GetTeamNumber());
+	if (pchOverride && pchOverride[0])
+		return pchOverride;
+#endif
+
 	return GetWpnData().aShootSounds[ iIndex ];
 }
 

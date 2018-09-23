@@ -24,6 +24,7 @@
 #include "server_class.h"
 #include "shake.h"
 
+
 #include "vstdlib/random.h"
 #include <string.h>
 
@@ -273,7 +274,6 @@ enum GetPlayerRelationControl {
 
 typedef bool (*GetPlayerCustomFunc)(CBasePlayer *pPlayer);
 
-extern enum Class_T;
 
 typedef struct findPlayerParams_s {
 	GetPlayerFlags flags;
@@ -284,11 +284,11 @@ typedef struct findPlayerParams_s {
 	GetPlayerRelationControl entityRelations;
 
 	int		iTeam;
-	Disposition_t nRelation;
-	Class_T nClass;
+	int		nRelation;
+	int		nClass;
 	const Vector *pOrigin;
-	float flInnerRadius;
-	float flOuterRadius;
+	float	flInnerRadius;
+	float	flOuterRadius;
 
 	// Return false to exclude this player.
 	GetPlayerCustomFunc pfnCustomCheck;
@@ -298,6 +298,7 @@ typedef struct findPlayerParams_s {
 
 	findPlayerParams_s()
 	{
+		V_memset(this, 0, sizeof(findPlayerParams_s));
 		flOuterRadius = MAX_TRACE_LENGTH;
 	}
 } findPlayerParams_t;

@@ -103,5 +103,21 @@
 				"font"		"Crosshairs"
 				"character"	"Q"
 		}
+		"title_half"
+		{
+				"file"		"sprites/640hud4"
+				"x"			"0"
+				"y"			"226"
+				"width"		"256"
+				"height"	"30"
+		}
+		"title_life"
+		{
+				"file"		"sprites/640hud5"
+				"x"			"0"
+				"y"			"226"
+				"width"		"220"
+				"height"	"30"
+		}
 	}	
 }

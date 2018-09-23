@@ -670,10 +670,10 @@ const char *TranslateWeaponEntForClass( const char *pszName, int iClass )
 int GetWeaponFromDamage( const CTakeDamageInfo &info )
 {
 	int iWeapon = TF_WEAPON_NONE;
-
+#ifdef TF_CLASSIC
 	// Work out what killed the player, and send a message to all clients about it
 	TFGameRules()->GetKillingWeaponName( info, NULL, iWeapon );
-
+#endif
 	return iWeapon;
 }
 

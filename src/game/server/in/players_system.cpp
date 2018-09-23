@@ -314,7 +314,7 @@ int CPlayersSystem::GetHealthTotal( int team )
 float CPlayersSystem::GetStressTotal( int team )
 {
     float stress = 0;
-    int players = 0;
+    //int players = 0;
 
     //FOR_EACH_PLAYER_TEAM(
     //{

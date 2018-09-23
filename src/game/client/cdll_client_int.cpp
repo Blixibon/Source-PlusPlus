@@ -1607,7 +1607,7 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 
 	IGameSystem::LevelInitPreEntityAllSystems(pMapName);
 
-#ifdef USES_ECON_ITEMS
+#ifdef USES_ECON_ITEMSTF
 	GameItemSchema_t *pItemSchema = ItemSystem()->GetItemSchema();
 	if ( pItemSchema )
 	{

@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" 	"jessev92\player\hl2\CombinePilot\combinesoldiersheet_pilot"
+	"$bumpmap"           "jessev92\player\hl2\CombinePilot\combinesoldier_n"
+	"$surfaceprop" 	"flesh"
+	"$model" 		"1"
+	"$phong" 	"1"
+	"$halflambert"	"1"
+}

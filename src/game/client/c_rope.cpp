@@ -652,7 +652,7 @@ bool CRopeManager::IsHolidayLightMode(void)
 
 	bool bDrawHolidayLights = false;
 
-#ifdef USES_ECON_ITEMS
+#ifdef USES_ECON_ITEMSTF
 	if (!m_bHolidayInitialized && GameRules())
 	{
 		m_bHolidayInitialized = true;

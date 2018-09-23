@@ -11,6 +11,7 @@
 	"precache_file"		"scripts/game_sounds_vfx.txt"
 	"precache_file"		"scripts/hl1_game_sounds.txt"
 	"precache_file"		"scripts/game_sounds_hl1_extra.soundscript"
+	"precache_file"		"scripts/game_sounds_ambient_generic_for_cc.txt"
 	
 	// Lambda Wars
 	"precache_file"		"scripts/unit_sounds.txt"
