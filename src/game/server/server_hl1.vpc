@@ -62,7 +62,7 @@ $Project "Server (HL1)"
 			$File	"hl2\prop_combine_ball.h"
 			$File	"hl2\script_intro.h"
 			$File	"hl2\vehicle_crane.h"
-			$File	"hl2\weapon_crowbar.h"
+			//$File	"hl2\weapon_crowbar.h"
 			$File	"hl2\weapon_physcannon.h"
 			$File	"hl2\weapon_stunstick.h"
 

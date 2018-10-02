@@ -11,10 +11,10 @@
 #ifdef CLIENT_DLL
     #include "vgui/ISurface.h"
 	#include "vgui_controls/Controls.h"
-	#include "c_coop_player.h"
+	//#include "c_coop_player.h"
 	#include "hud_crosshair.h"
 #else
-    #include "coop_player.h"
+   //#include "coop_player.h"
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
 #endif

@@ -354,7 +354,7 @@ void CNPC_PlayerCompanion::GatherConditions()
 
 	if ( AI_IsSinglePlayer() )
 	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+		CBasePlayer *pPlayer = GetBestPlayer();
 
 		if ( Classify() == CLASS_PLAYER_ALLY_VITAL )
 		{

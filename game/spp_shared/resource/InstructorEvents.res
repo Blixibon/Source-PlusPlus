@@ -112,10 +112,26 @@
 	"instructor_altfire"
 	{
 		"userid" 	"short"
+		"hinttext"	"string"
 	}
 	
 	"use_altfire"
 	{
 		"userid" 	"short"
+	}
+	
+	"instructor_reload"
+	{
+		"userid" 	"short"
+	}
+	
+	"use_reload"
+	{
+		"userid" 	"short"
+	}
+	
+	"close_weapon_hint"
+	{
+		"userid"	"short"
 	}
 }

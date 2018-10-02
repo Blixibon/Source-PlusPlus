@@ -3,7 +3,8 @@
 #include "ai_pathfinder.h"
 #include "ai_route.h"
 #include "npc_playerfollower.h"
-#include "hl2_player.h"
+#include "hl2_player_shared.h"
+#include "items.h"
 
 extern ConVar	ai_citizen_debug_commander;
 #define DebuggingCommanderMode() (ai_citizen_debug_commander.GetBool() && (m_debugOverlays & OVERLAY_NPC_SELECTED_BIT))
@@ -662,7 +663,7 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 				{
 					if (!candidates[i].pCitizen->IsInPlayerSquad())
 					{
-						candidates[i].pCitizen->AddToPlayerSquad();
+						candidates[i].pCitizen->AddToPlayerSquad(pPlayer);
 						nJoined++;
 
 						if (candidates[i].distSq < closestDistSq)
@@ -743,8 +744,8 @@ int CNPC_PlayerFollower::PlayerSquadCandidateSortFunc(const FollowerSquadCandida
 
 void CNPC_PlayerFollower::FixupPlayerSquad()
 {
-	if (!AI_IsSinglePlayer())
-		return;
+	/*if (!AI_IsSinglePlayer())
+		return;*/
 
 	m_flTimeJoinedPlayerSquad = gpGlobals->curtime;
 	m_bWasInPlayerSquad = true;
@@ -804,7 +805,7 @@ void CNPC_PlayerFollower::FixupPlayerSquad()
 	}
 	else
 	{
-		m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
+		m_FollowBehavior.SetFollowTarget(m_pSquad->GetPlayerCommander());
 		m_FollowBehavior.SetParameters(AIF_SIMPLE);
 	}
 }
@@ -878,10 +879,15 @@ CAI_BaseNPC *CNPC_PlayerFollower::GetSquadCommandRepresentative()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_PlayerFollower::CanJoinPlayerSquad()
+bool CNPC_PlayerFollower::CanJoinPlayerSquad(CBasePlayer *pPlayer)
 {
-	if (!AI_IsSinglePlayer())
-		return false;
+	if (pPlayer == nullptr)
+	{
+		if (AI_IsSinglePlayer())
+			pPlayer = UTIL_GetLocalPlayer();
+		else
+			return false;
+	}
 
 	if (m_NPCState == NPC_STATE_SCRIPT || m_NPCState == NPC_STATE_PRONE)
 		return false;
@@ -893,7 +899,7 @@ bool CNPC_PlayerFollower::CanJoinPlayerSquad()
 	if (!CanBeUsedAsAFriend())
 		return false;
 
-	if (IRelationType(UTIL_GetLocalPlayer()) != D_LI)
+	if (IRelationType(pPlayer) != D_LI)
 		return false;
 
 	if (IsInPlayerSquad() && m_bNeverLeavePlayerSquad)
@@ -911,16 +917,26 @@ bool CNPC_PlayerFollower::ShouldAlwaysThink()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_PlayerFollower::AddToPlayerSquad()
+void CNPC_PlayerFollower::AddToPlayerSquad(CBasePlayer *pPlayer)
 {
 	Assert(!IsInPlayerSquad());
 
+	if (pPlayer == nullptr)
+	{
+		if (AI_IsSinglePlayer())
+			pPlayer = UTIL_GetLocalPlayer();
+		else
+			return;
+	}
+
+	CAI_Squad *pPlayerSquad = pPlayer->GetPlayerSquad();
+
 	m_iszOriginalSquad = m_SquadName;
 
-	AddToSquad(AllocPooledString(PLAYER_SQUADNAME));
+	pPlayerSquad->AddToSquad(this);
 	m_hSavedFollowGoalEnt = m_FollowBehavior.GetFollowGoal();
 	m_FollowBehavior.SetFollowGoalDirect(NULL);
-	m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
+	m_FollowBehavior.SetFollowTarget(pPlayer);
 
 	FixupPlayerSquad();
 
@@ -955,14 +971,19 @@ void CNPC_PlayerFollower::RemoveFromPlayerSquad()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_PlayerFollower::TogglePlayerSquadState()
+void CNPC_PlayerFollower::TogglePlayerSquadState(CBasePlayer *pPlayer)
 {
-	if (!AI_IsSinglePlayer())
-		return;
+	if (pPlayer == nullptr)
+	{
+		if (AI_IsSinglePlayer())
+			pPlayer = UTIL_GetLocalPlayer();
+		else
+			return;
+	}
 
 	if (!IsInPlayerSquad())
 	{
-		AddToPlayerSquad();
+		AddToPlayerSquad(pPlayer);
 
 		if (HaveCommandGoal())
 		{
@@ -985,6 +1006,9 @@ void CNPC_PlayerFollower::TogglePlayerSquadState()
 	}
 	else
 	{
+		if (pPlayer != m_pSquad->GetPlayerCommander())
+			return;
+
 		if (ShouldAutosquad())
 		{
 			SpeakCommandResponse(TLK_STOPFOLLOW);
@@ -1001,15 +1025,31 @@ void CNPC_PlayerFollower::TogglePlayerSquadState()
 	}
 }
 
+CBasePlayer *CNPC_PlayerFollower::GetBestPlayer()
+{
+	if (m_pSquad && m_pSquad->GetPlayerCommander() != nullptr)
+	{
+		return m_pSquad->GetPlayerCommander();
+	}
+	else if (GetFollowBehavior().IsActive() && GetFollowBehavior().GetFollowTarget()->IsPlayer())
+	{
+		return ToBasePlayer(GetFollowBehavior().GetFollowTarget());
+	}
+	else
+		return BaseClass::GetBestPlayer();
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CNPC_PlayerFollower::CommanderUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
 	m_OnPlayerUse.FireOutput(pActivator, pCaller);
 
+	CBasePlayer *pPlayer = ToBasePlayer(pActivator);
+
 	// Under these conditions, citizens will refuse to go with the player.
 	// Robin: NPCs should always respond to +USE even if someone else has the semaphore.
-	if (!AI_IsSinglePlayer() || !CanJoinPlayerSquad())
+	if (/*!AI_IsSinglePlayer() ||*/ !CanJoinPlayerSquad(pPlayer))
 	{
 		if (m_pfnBaseUse != nullptr)
 			(this->*m_pfnBaseUse)(pActivator, pCaller, useType, value);
@@ -1017,15 +1057,26 @@ void CNPC_PlayerFollower::CommanderUse(CBaseEntity *pActivator, CBaseEntity *pCa
 		return;
 	}
 
-	if (pActivator == UTIL_GetLocalPlayer() && !ShouldAutosquad())
+	if (pPlayer && !ShouldAutosquad())
 	{
 		// Don't say hi after you've been addressed by the player
 		SetSpokeConcept(TLK_HELLO, NULL);
 
-		TogglePlayerSquadState();
+		TogglePlayerSquadState(pPlayer);
 
 	}
 
+}
+
+string_t CNPC_PlayerFollower::GetPlayerSquadName() const
+{
+	CBasePlayer *pPlayer = GetBestPlayer();
+	if (pPlayer && pPlayer->GetPlayerSquad())
+	{
+		return MAKE_STRING(pPlayer->GetPlayerSquad()->GetName());
+	}
+
+	return BaseClass::GetPlayerSquadName();
 }
 
 //-----------------------------------------------------------------------------
@@ -1063,6 +1114,60 @@ void CNPC_PlayerFollower::BuildScheduleTestBits()
 	{
 		SetCustomInterruptCondition(COND_BETTER_WEAPON_AVAILABLE);
 	}
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CNPC_PlayerFollower::SelectSchedulePriorityAction()
+{
+	int schedule = BaseClass::SelectSchedulePriorityAction();
+	if (schedule != SCHED_NONE)
+		return schedule;
+
+	schedule = SelectScheduleRetrieveItem();
+	if (schedule != SCHED_NONE)
+		return schedule;
+
+	return SCHED_NONE;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CNPC_PlayerFollower::SelectScheduleRetrieveItem()
+{
+	if (HasCondition(COND_BETTER_WEAPON_AVAILABLE))
+	{
+		CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon *>(Weapon_FindUsable(WEAPON_SEARCH_DELTA));
+		if (pWeapon)
+		{
+			m_flNextWeaponSearchTime = gpGlobals->curtime + 10.0;
+			// Now lock the weapon for several seconds while we go to pick it up.
+			pWeapon->Lock(10.0, this);
+			SetTarget(pWeapon);
+			return SCHED_NEW_WEAPON;
+		}
+	}
+
+	if (HasCondition(COND_HEALTH_ITEM_AVAILABLE))
+	{
+		if (!IsInPlayerSquad())
+		{
+			// Been kicked out of the player squad since the time I located the health.
+			ClearCondition(COND_HEALTH_ITEM_AVAILABLE);
+		}
+		else
+		{
+			CBaseEntity *pBase = FindHealthItem(m_FollowBehavior.GetFollowTarget()->GetAbsOrigin(), Vector(120, 120, 120));
+			CItem *pItem = dynamic_cast<CItem *>(pBase);
+
+			if (pItem)
+			{
+				SetTarget(pItem);
+				return SCHED_GET_HEALTHKIT;
+			}
+		}
+	}
+	return SCHED_NONE;
 }
 
 //-----------------------------------------------------------------------------

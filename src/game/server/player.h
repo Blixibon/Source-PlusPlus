@@ -31,6 +31,8 @@
 #include "econ_entity.h"
 #endif
 
+class CAI_Squad;
+
 // For queuing and processing usercmds
 class CCommandContext
 {
@@ -322,6 +324,9 @@ virtual CAI_Senses *GetSenses() {
 	virtual void OnMemberReportEnemy(CBasePlayer *pMember, CBaseEntity *pEnemy) { }
 
 	virtual void Kick();
+
+	virtual CAI_Squad	*GetPlayerSquad() { return nullptr; }
+	virtual CAI_Squad	*GetPlayerSquad() const { return nullptr; }
 
 	virtual void			SetModel( const char *szModelName );
 	void					SetBodyPitch( float flPitch );

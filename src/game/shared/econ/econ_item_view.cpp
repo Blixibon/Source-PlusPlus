@@ -210,6 +210,21 @@ int CEconItemView::GetAnimationSlot( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+int CEconItemView::GetAnimationVariant(void)
+{
+	CEconItemDefinition *pStatic = GetStaticData();
+
+	if (pStatic)
+	{
+		return pStatic->anim_variant;
+	}
+
+	return -1;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 Activity CEconItemView::GetActivityOverride( int iTeamNumber, Activity actOriginalActivity )
 {
 	CEconItemDefinition *pStatic = GetStaticData();

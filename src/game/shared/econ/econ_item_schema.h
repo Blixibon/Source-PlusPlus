@@ -221,6 +221,7 @@ public:
 		CLEAR_STR(item_description);
 		item_slot = -1;
 		anim_slot = -1;
+		anim_variant = -1;
 		item_quality = QUALITY_NORMAL;
 		baseitem = false;
 		propername = false;
@@ -261,6 +262,7 @@ public:
 	char item_description[128];
 	int  item_slot;
 	int  anim_slot;
+	int  anim_variant;
 	EEconItemQuality  item_quality;
 	bool baseitem;
 	bool propername;

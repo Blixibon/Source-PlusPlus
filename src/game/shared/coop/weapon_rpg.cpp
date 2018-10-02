@@ -45,6 +45,8 @@
 const char *g_pLaserDotThink = "LaserThinkContext";
 
 static ConVar sk_apc_missile_damage("sk_apc_missile_damage", "15");
+ConVar rpg_missle_use_custom_detonators("rpg_missle_use_custom_detonators", "1");
+
 #define APC_MISSILE_DAMAGE	sk_apc_missile_damage.GetFloat()
 
 #endif
@@ -585,6 +587,50 @@ void CMissile::SeekThink( void )
 		}
 	}
 
+	if (hl2_episodic.GetBool())
+	{
+		if (flBestDist <= (GetAbsVelocity().Length() * 2.5f) && FVisible(pBestDot->GetAbsOrigin()))
+		{
+			// Scare targets
+			CSoundEnt::InsertSound(SOUND_DANGER, pBestDot->GetAbsOrigin(), CMissile::EXPLOSION_RADIUS, 0.2f, pBestDot, SOUNDENT_CHANNEL_REPEATED_DANGER, NULL);
+		}
+	}
+
+	if (rpg_missle_use_custom_detonators.GetBool())
+	{
+		for (int i = gm_CustomDetonators.Count() - 1; i >= 0; --i)
+		{
+			CustomDetonator_t &detonator = gm_CustomDetonators[i];
+			if (!detonator.hEntity)
+			{
+				gm_CustomDetonators.FastRemove(i);
+			}
+			else
+			{
+				const Vector &vPos = detonator.hEntity->CollisionProp()->WorldSpaceCenter();
+				if (detonator.halfHeight > 0)
+				{
+					if (fabsf(vPos.z - GetAbsOrigin().z) < detonator.halfHeight)
+					{
+						if ((GetAbsOrigin().AsVector2D() - vPos.AsVector2D()).LengthSqr() < detonator.radiusSq)
+						{
+							Explode();
+							return;
+						}
+					}
+				}
+				else
+				{
+					if ((GetAbsOrigin() - vPos).LengthSqr() < detonator.radiusSq)
+					{
+						Explode();
+						return;
+					}
+				}
+			}
+		}
+	}
+
 	//If we have a dot target
 	if ( pBestDot == NULL )
 	{
@@ -597,7 +643,7 @@ void CMissile::SeekThink( void )
 	Vector	targetPos;
 
 	float flHomingSpeed; 
-	Vector vecLaserDotPosition;
+	//Vector vecLaserDotPosition;
 	ComputeActualDotPosition( pLaserDot, &targetPos, &flHomingSpeed );
 
 	if ( IsSimulatingOnAlternateTicks() )
@@ -606,6 +652,16 @@ void CMissile::SeekThink( void )
 	Vector	vTargetDir;
 	VectorSubtract( targetPos, GetAbsOrigin(), vTargetDir );
 	float flDist = VectorNormalize( vTargetDir );
+
+	if (pLaserDot->GetTargetEntity() != NULL && flDist <= 240.0f && hl2_episodic.GetBool())
+	{
+		// Prevent the missile circling the Strider like a Halo in ep1_c17_06. If the missile gets within 20
+		// feet of a Strider, tighten up the turn speed of the missile so it can break the halo and strike. (sjb 4/27/2006)
+		if (pLaserDot->GetTargetEntity()->ClassMatches("npc_strider"))
+		{
+			flHomingSpeed *= 1.75f;
+		}
+	}
 
 	Vector	vDir	= GetAbsVelocity();
 	float	flSpeed	= VectorNormalize( vDir );
@@ -672,6 +728,32 @@ CMissile *CMissile::Create( const Vector &vecOrigin, const QAngle &vecAngles, ed
 	return pMissile;
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+CUtlVector<CMissile::CustomDetonator_t> CMissile::gm_CustomDetonators;
+
+void CMissile::AddCustomDetonator(CBaseEntity *pEntity, float radius, float height)
+{
+	int i = gm_CustomDetonators.AddToTail();
+	gm_CustomDetonators[i].hEntity = pEntity;
+	gm_CustomDetonators[i].radiusSq = Square(radius);
+	gm_CustomDetonators[i].halfHeight = height * 0.5f;
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CMissile::RemoveCustomDetonator(CBaseEntity *pEntity)
+{
+	for (int i = 0; i < gm_CustomDetonators.Count(); i++)
+	{
+		if (gm_CustomDetonators[i].hEntity == pEntity)
+		{
+			gm_CustomDetonators.FastRemove(i);
+			break;
+		}
+	}
+}
 
 
 //-----------------------------------------------------------------------------
@@ -1306,31 +1388,31 @@ END_PREDICTION_DATA()
 
 #endif
 
-acttable_t	CWeaponRPG::m_acttable[] = 
-{
-    { ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_RPG, true },
-	{ ACT_IDLE_RELAXED,				ACT_IDLE_RPG_RELAXED,			true },
-	{ ACT_IDLE_STIMULATED,			ACT_IDLE_ANGRY_RPG,				true },
-	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_RPG,				true },
-	{ ACT_IDLE,						ACT_IDLE_RPG,					true },
-	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_RPG,				true },
-	{ ACT_WALK,						ACT_WALK_RPG,					true },
-	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RPG,			true },
-	{ ACT_RUN,						ACT_RUN_RPG,					true },
-	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RPG,				true },
-	{ ACT_COVER_LOW,				ACT_COVER_LOW_RPG,				true },
+//acttable_t	CWeaponRPG::m_acttable[] = 
+//{
+//    { ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_RPG, true },
+//	{ ACT_IDLE_RELAXED,				ACT_IDLE_RPG_RELAXED,			true },
+//	{ ACT_IDLE_STIMULATED,			ACT_IDLE_ANGRY_RPG,				true },
+//	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_RPG,				true },
+//	{ ACT_IDLE,						ACT_IDLE_RPG,					true },
+//	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_RPG,				true },
+//	{ ACT_WALK,						ACT_WALK_RPG,					true },
+//	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RPG,			true },
+//	{ ACT_RUN,						ACT_RUN_RPG,					true },
+//	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RPG,				true },
+//	{ ACT_COVER_LOW,				ACT_COVER_LOW_RPG,				true },
+//
+//	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_RPG,					false },
+//	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_RPG,					false },
+//	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_RPG,			false },
+//	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_RPG,			false },
+//	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
+//	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
+//	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
+//	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_RPG,				false },
+//};
 
-	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_RPG,					false },
-	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_RPG,					false },
-	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_RPG,			false },
-	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_RPG,			false },
-	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
-	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
-	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
-	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_RPG,				false },
-};
-
-IMPLEMENT_ACTTABLE(CWeaponRPG);
+//IMPLEMENT_ACTTABLE(CWeaponRPG);
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1448,8 +1530,8 @@ void CWeaponRPG::PrimaryAttack( void )
 	if ( GetActivity() == ACT_VM_RELOAD )
 		return;
 
-	Vector vecOrigin;
-	Vector vecForward;
+	
+	
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
 
@@ -1597,33 +1679,55 @@ Vector CWeaponRPG::GetLaserPosition( void )
 		return m_hLaserDot->GetAbsOrigin();
 
 	//FIXME: The laser dot sprite is not active, this code should not be allowed!
-	assert(0);
+	Assert(0);
 #endif
 	return vec3_origin;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: NPC RPG users cheat and directly set the laser pointer's origin
-// Input  : &vecTarget - 
+// Input  : &vecTarget -
 //-----------------------------------------------------------------------------
-void CWeaponRPG::UpdateNPCLaserPosition( const Vector &vecTarget )
+void CWeaponRPG::UpdateNPCLaserPosition(const Vector &vecTarget)
 {
+#ifndef CLIENT_DLL
+	CreateLaserPointer();
+	// Turn the laserdot on
+	m_bGuiding = true;
+	m_hLaserDot->TurnOn();
 
+	Vector muzzlePoint = GetOwner()->Weapon_ShootPosition();
+	Vector vecDir = (vecTarget - muzzlePoint);
+	VectorNormalize(vecDir);
+	vecDir = muzzlePoint + (vecDir * MAX_TRACE_LENGTH);
+	UpdateLaserPosition(muzzlePoint, vecDir);
+
+	SetNPCLaserPosition(vecTarget);
+#endif // !CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponRPG::SetNPCLaserPosition( const Vector &vecTarget ) 
-{ 
+void CWeaponRPG::SetNPCLaserPosition(const Vector &vecTarget)
+{
+#ifndef CLIENT_DLL
+	m_vecNPCLaserDot = vecTarget;
+#endif // !CLIENT_DLL
+
+	//NDebugOverlay::Box( m_vecNPCLaserDot, -Vector(10,10,10), Vector(10,10,10), 255,0,0, 8, 3 );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const Vector &CWeaponRPG::GetNPCLaserPosition( void )
+const Vector &CWeaponRPG::GetNPCLaserPosition(void)
 {
+#ifndef CLIENT_DLL
+	return m_vecNPCLaserDot;
+#else
 	return vec3_origin;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2000,7 +2104,7 @@ void CWeaponRPG::DrawEffects( void )
 
 	color32 color={255,255,255,255};
 	Vector	vecAttachment, vecDir;
-	QAngle	angles;
+	//QAngle	angles;
 
 	float scale = 8.0f + random->RandomFloat( -2.0f, 2.0f );
 
@@ -2231,7 +2335,7 @@ int CLaserDot::DrawModel( int flags )
 {
 	color32 color={255,255,255,255};
 	Vector	vecAttachment, vecDir;
-	QAngle	angles;
+	//QAngle	angles;
 
 	float	scale;
 	Vector	endPos;

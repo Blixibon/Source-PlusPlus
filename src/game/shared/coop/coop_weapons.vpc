@@ -1,0 +1,50 @@
+//-----------------------------------------------------------------------------
+//	NAV_MESH.VPC
+//
+//	Project script for navigation mesh files (no NextBot files)
+//-----------------------------------------------------------------------------
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\coop"
+	}
+}
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"HL2 DLL"
+		{
+			$Folder "Weapons"
+			{
+				$File	"$SRCDIR\game\shared\coop\weapon_357.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_ar2.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_ar2.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_bugbait.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_crossbow.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_crowbar.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_frag.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_base.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_base.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_basemachinegun.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_basemachinegun.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_basebludgeon.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_basehlcombatweapon.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_coop_basehlcombatweapon.h"
+				//$File	"$SRCDIR\game\shared\coop\weapon_physcannon.cpp"
+				//$File	"$SRCDIR\game\shared\coop\weapon_physcannon.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_pistol.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_rpg.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_rpg.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_shotgun.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_slam.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_slam.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_smg1.cpp"
+				//$File	"$SRCDIR\game\shared\coop\weapon_stunstick.cpp"
+			}
+		}
+	}
+}

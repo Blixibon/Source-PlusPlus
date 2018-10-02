@@ -36,12 +36,24 @@ public:
 	void 			PrescheduleThink();
 	void			PostNPCInit();
 
-	virtual bool	CanJoinPlayerSquad();
-	void			AddToPlayerSquad();
+	//virtual bool	CanJoinPlayerSquad() { return CanJoinPlayerSquad(nullptr); }
+	virtual bool	CanJoinPlayerSquad(CBasePlayer *pPlayer = nullptr);
+	void			AddToPlayerSquad(CBasePlayer *);
 	void			RemoveFromPlayerSquad();
-	void 			TogglePlayerSquadState();
+	void 			TogglePlayerSquadState(CBasePlayer *);
+	virtual string_t GetPlayerSquadName() const;
+
+	virtual CBasePlayer *GetBestPlayer();	
+
+	virtual CBasePlayer *GetBestPlayer() const
+	{
+		return const_cast<CNPC_PlayerFollower *>(this)->GetBestPlayer();
+	}
 
 	void			BuildScheduleTestBits();
+
+	int 			SelectSchedulePriorityAction();
+	int 			SelectScheduleRetrieveItem();
 
 	void 			FixupPlayerSquad();
 	void 			ClearFollowTarget();

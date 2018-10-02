@@ -7,6 +7,7 @@
 #include "takedamageinfo.h"
 #include "ammodef.h"
 #include "hl2_gamerules.h"
+#include "hlss_weapon_id.h"
 
 #ifdef CLIENT_DLL
 extern IVModelInfoClient* modelinfo;
@@ -17,10 +18,10 @@ extern IVModelInfo* modelinfo;
 #ifdef CLIENT_DLL
     #include "vgui/ISurface.h"
 	#include "vgui_controls/Controls.h"
-	#include "c_coop_player.h"
+	//#include "c_coop_player.h"
 	#include "hud_crosshair.h"
 #else
-    #include "coop_player.h"
+    //#include "coop_player.h"
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
 #endif
@@ -106,6 +107,15 @@ void CWeaponCoopBase::WeaponSound( WeaponSound_t sound_type, float soundtime )
 #endif
 }
 
+// -----------------------------------------------------------------------------
+// Purpose:
+// -----------------------------------------------------------------------------
+int CWeaponCoopBase::GetWeaponID(void) const
+{
+	Assert(false);
+	return HLSS_WEAPON_ID_NONE;
+}
+
 //================================================================================
 //================================================================================
 void CWeaponCoopBase::PrimaryAttack() 
@@ -154,7 +164,7 @@ void CWeaponCoopBase::PrimaryAttack()
 	// Make sure we don't fire more than the amount in the clip
 	if ( UsesClipsForAmmo1() )
 	{
-		info.m_iShots = MIN( info.m_iShots, m_iClip1 );
+		info.m_iShots = MIN( info.m_iShots, m_iClip1.Get() );
 		m_iClip1 -= info.m_iShots;
 	}
 	else
@@ -175,15 +185,11 @@ void CWeaponCoopBase::PrimaryAttack()
 	info.m_vecSpread = GetActiveWeapon()->GetBulletSpread();
 #endif // CLIENT_DLL
 
-#ifndef CLIENT_DLL
-    lagcompensation->StartLagCompensation( pPlayer, LAG_COMPENSATE_HITBOXES );
-#endif
+
 
 	pPlayer->FireBullets( info );
 
-#ifndef CLIENT_DLL
-    lagcompensation->FinishLagCompensation( pPlayer );
-#endif
+
 
 	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{
@@ -219,3 +225,566 @@ void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &c
 	}
 }
 #endif
+
+ConVar mp_forceactivityset("mp_forceactivityset", "-1", FCVAR_CHEAT | FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY);
+
+// -----------------------------------------------------------------------------
+// Purpose:
+// -----------------------------------------------------------------------------
+int CWeaponCoopBase::GetActivityWeaponRole(void)
+{
+	int iWeaponRole = TF_WPN_TYPE_PRIMARY;
+
+	switch (GetWeaponID())
+	{
+	case HLSS_WEAPON_ID_SMG1:
+	case HLSS_WEAPON_ID_SMG2:
+	case HLSS_WEAPON_ID_AR2:
+	case HLSS_WEAPON_ID_SHOTGUN:
+	default:
+		iWeaponRole = TF_WPN_TYPE_PRIMARY;
+		break;
+	case HLSS_WEAPON_ID_PISTOL:
+	case HLSS_WEAPON_ID_357:
+	case HLSS_WEAPON_ID_ALYXGUN:
+		iWeaponRole = TF_WPN_TYPE_SECONDARY;
+		break;
+	case HLSS_WEAPON_ID_CROSSBOW:
+	case HLSS_WEAPON_ID_RPG:
+	case HLSS_WEAPON_ID_SNIPER:
+		iWeaponRole = TF_WPN_TYPE_PRIMARY2;
+		break;
+	case HLSS_WEAPON_ID_TURRET:
+		iWeaponRole = TF_WPN_TYPE_BUILDING;
+		break;
+	case HLSS_WEAPON_ID_PHYSGUN:
+		iWeaponRole = TF_WPN_TYPE_ITEM1;
+		break;
+	case HLSS_WEAPON_ID_SLAM:
+		iWeaponRole = TF_WPN_TYPE_ITEM2;
+		break;
+	case HLSS_WEAPON_ID_BUGBAIT:
+	case HLSS_WEAPON_ID_FRAG:
+		iWeaponRole = TF_WPN_TYPE_GRENADE;
+		break;
+	case HLSS_WEAPON_ID_MEDKIT:
+		iWeaponRole = TF_WPN_TYPE_PDA;
+		break;
+	case HLSS_WEAPON_ID_CROWBAR:
+	case HLSS_WEAPON_ID_STUNSTICK:
+		iWeaponRole = TF_WPN_TYPE_MELEE;
+		break;
+	}
+
+	if (HasItemDefinition())
+	{
+		int iSchemaRole = m_Item.GetAnimationSlot();
+		if (iSchemaRole >= 0)
+			iWeaponRole = iSchemaRole;
+	}
+
+	if (mp_forceactivityset.GetInt() >= 0)
+	{
+		iWeaponRole = mp_forceactivityset.GetInt();
+	}
+
+	return iWeaponRole;
+}
+
+// -----------------------------------------------------------------------------
+// Purpose:
+// -----------------------------------------------------------------------------
+int CWeaponCoopBase::GetActivityWeaponVariant(void)
+{
+	int iWeaponVariant = 0;
+
+	switch (GetWeaponID())
+	{
+	case HLSS_WEAPON_ID_PISTOL:
+	case HLSS_WEAPON_ID_ALYXGUN:
+	case HLSS_WEAPON_ID_STUNSTICK:
+	case HLSS_WEAPON_ID_CROWBAR:
+	case HLSS_WEAPON_ID_MEDKIT:
+	case HLSS_WEAPON_ID_SLAM:
+	case HLSS_WEAPON_ID_PHYSGUN:
+	case HLSS_WEAPON_ID_TURRET:
+	case HLSS_WEAPON_ID_BUGBAIT:
+	case HLSS_WEAPON_ID_FRAG:
+	case HLSS_WEAPON_ID_RPG:
+	case HLSS_WEAPON_ID_SMG1:
+	case HLSS_WEAPON_ID_SMG2:
+	default:
+		iWeaponVariant = 0;
+		break;
+	case HLSS_WEAPON_ID_SHOTGUN:
+	case HLSS_WEAPON_ID_SNIPER:
+	case HLSS_WEAPON_ID_357:
+		iWeaponVariant = 1;
+		break;
+	case HLSS_WEAPON_ID_AR2:
+	case HLSS_WEAPON_ID_CROSSBOW:
+		iWeaponVariant = 2;
+		break;
+	}
+
+	if (HasItemDefinition())
+	{
+		int iSchemaRole = m_Item.GetAnimationVariant();
+		if (iSchemaRole >= 0)
+			iWeaponVariant = iSchemaRole;
+	}
+
+	return iWeaponVariant;
+}
+
+acttable_t CWeaponCoopBase::s_acttableSMG1[] =
+{
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SMG1,			true },
+	{ ACT_RELOAD,					ACT_RELOAD_SMG1,				true },
+	{ ACT_IDLE,						ACT_IDLE_SMG1,					true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_SMG1,			true },
+
+	{ ACT_WALK,						ACT_WALK_RIFLE,					true },
+	{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true  },
+
+	// Readiness activities (not aiming)
+		{ ACT_IDLE_RELAXED,				ACT_IDLE_SMG1_RELAXED,			false },//never aims
+		{ ACT_IDLE_STIMULATED,			ACT_IDLE_SMG1_STIMULATED,		false },
+		{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_RELAXED,				ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_STIMULATED,			ACT_WALK_RIFLE_STIMULATED,		false },
+		{ ACT_WALK_AGITATED,			ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_RELAXED,				ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_STIMULATED,			ACT_RUN_RIFLE_STIMULATED,		false },
+		{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
+
+	// Readiness activities (aiming)
+		{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+		{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_AIM_RELAXED,			ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_RIFLE,				false },//always aims
+	//End readiness activities
+
+		{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true },
+		{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,			true },
+		{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,		true },
+		{ ACT_RUN,						ACT_RUN_RIFLE,					true },
+		{ ACT_RUN_AIM,					ACT_RUN_AIM_RIFLE,				true },
+		{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,			true },
+		{ ACT_RUN_CROUCH_AIM,			ACT_RUN_CROUCH_AIM_RIFLE,		true },
+		{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_SMG1,	true },
+		{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_SMG1_LOW,		true },
+		{ ACT_COVER_LOW,				ACT_COVER_SMG1_LOW,				false },
+		{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_SMG1_LOW,			false },
+		{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
+		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
+
+		{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_SMG1,					false },
+		{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_SMG1,						false },
+		{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_SMG1,				false },
+		{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_SMG1,				false },
+		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1,	false },
+		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SMG1,			false },
+		{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SMG1,					false },
+		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SMG1,					false },
+};
+acttable_t CWeaponCoopBase::s_acttablePistol[] =
+{
+	{ ACT_IDLE,						ACT_IDLE_PISTOL,				true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_PISTOL,			true },
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_PISTOL,		true },
+	{ ACT_RELOAD,					ACT_RELOAD_PISTOL,				true },
+	{ ACT_WALK_AIM,					ACT_WALK_AIM_PISTOL,			true },
+	{ ACT_RUN_AIM,					ACT_RUN_AIM_PISTOL,				true },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL,true },
+	{ ACT_RELOAD_LOW,				ACT_RELOAD_PISTOL_LOW,			false },
+	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_PISTOL_LOW,	false },
+	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			false },
+	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_PISTOL_LOW,		false },
+	{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_PISTOL,		false },
+	{ ACT_WALK,						ACT_WALK_PISTOL,				false },
+	{ ACT_RUN,						ACT_RUN_PISTOL,					false },
+
+	// Readiness activities (not aiming)
+	{ ACT_IDLE_RELAXED,				ACT_IDLE_PISTOL,				false },//never aims
+	{ ACT_IDLE_STIMULATED,			ACT_IDLE_STIMULATED,			false },
+	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_PISTOL,			false },//always aims
+	{ ACT_IDLE_STEALTH,				ACT_IDLE_STEALTH_PISTOL,		false },
+
+	{ ACT_WALK_RELAXED,				ACT_WALK,						false },//never aims
+	{ ACT_WALK_STIMULATED,			ACT_WALK_STIMULATED,			false },
+	{ ACT_WALK_AGITATED,			ACT_WALK_AIM_PISTOL,			false },//always aims
+	{ ACT_WALK_STEALTH,				ACT_WALK_STEALTH_PISTOL,		false },
+
+	{ ACT_RUN_RELAXED,				ACT_RUN,						false },//never aims
+	{ ACT_RUN_STIMULATED,			ACT_RUN_STIMULATED,				false },
+	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_PISTOL,				false },//always aims
+	{ ACT_RUN_STEALTH,				ACT_RUN_STEALTH_PISTOL,			false },
+
+	// Readiness activities (aiming)
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims	
+	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_ANGRY_PISTOL,			false },
+	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_PISTOL,			false },//always aims
+	{ ACT_IDLE_AIM_STEALTH,			ACT_IDLE_STEALTH_PISTOL,		false },
+
+	{ ACT_WALK_AIM_RELAXED,			ACT_WALK,						false },//never aims
+	{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_PISTOL,			false },
+	{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_PISTOL,			false },//always aims
+	{ ACT_WALK_AIM_STEALTH,			ACT_WALK_AIM_STEALTH_PISTOL,	false },//always aims
+
+	{ ACT_RUN_AIM_RELAXED,			ACT_RUN,						false },//never aims
+	{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_PISTOL,				false },
+	{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_PISTOL,				false },//always aims
+	{ ACT_RUN_AIM_STEALTH,			ACT_RUN_AIM_STEALTH_PISTOL,		false },//always aims
+	//End readiness activities
+
+	// Crouch activities
+	{ ACT_CROUCHIDLE_STIMULATED,	ACT_CROUCHIDLE_STIMULATED,		false },
+	{ ACT_CROUCHIDLE_AIM_STIMULATED,ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+	{ ACT_CROUCHIDLE_AGITATED,		ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+
+	// Readiness translations
+	{ ACT_READINESS_RELAXED_TO_STIMULATED, ACT_READINESS_PISTOL_RELAXED_TO_STIMULATED, false },
+	{ ACT_READINESS_RELAXED_TO_STIMULATED_WALK, ACT_READINESS_PISTOL_RELAXED_TO_STIMULATED_WALK, false },
+	{ ACT_READINESS_AGITATED_TO_STIMULATED, ACT_READINESS_PISTOL_AGITATED_TO_STIMULATED, false },
+	{ ACT_READINESS_STIMULATED_TO_RELAXED, ACT_READINESS_PISTOL_STIMULATED_TO_RELAXED, false },
+
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_PISTOL,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_PISTOL,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_PISTOL,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_PISTOL,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PISTOL,					false },
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
+};
+acttable_t CWeaponCoopBase::s_acttableMelee[] =
+{
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
+
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SLAM, true },
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_MELEE,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_MELEE,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_MELEE,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_MELEE,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE,					false },
+};
+acttable_t CWeaponCoopBase::s_acttableCrossbow[] =
+{
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_CROSSBOW,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_CROSSBOW,						false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,				false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_CROSSBOW,				false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_CROSSBOW,			false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
+};
+acttable_t CWeaponCoopBase::s_acttableShotgun[] =
+{
+	{ ACT_IDLE,						ACT_IDLE_SMG1,					true },	// FIXME: hook to shotgun unique
+
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SHOTGUN,			true },
+	{ ACT_RELOAD,					ACT_RELOAD_SHOTGUN,					false },
+	{ ACT_WALK,						ACT_WALK_RIFLE,						true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_SHOTGUN,				true },
+
+	// Readiness activities (not aiming)
+		{ ACT_IDLE_RELAXED,				ACT_IDLE_SHOTGUN_RELAXED,		false },//never aims
+		{ ACT_IDLE_STIMULATED,			ACT_IDLE_SHOTGUN_STIMULATED,	false },
+		{ ACT_IDLE_AGITATED,			ACT_IDLE_SHOTGUN_AGITATED,		false },//always aims
+
+		{ ACT_WALK_RELAXED,				ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_STIMULATED,			ACT_WALK_RIFLE_STIMULATED,		false },
+		{ ACT_WALK_AGITATED,			ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_RELAXED,				ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_STIMULATED,			ACT_RUN_RIFLE_STIMULATED,		false },
+		{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
+
+	// Readiness activities (aiming)
+		{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+		{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_AIM_RELAXED,			ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_RIFLE,				false },//always aims
+	//End readiness activities
+
+		{ ACT_WALK_AIM,					ACT_WALK_AIM_SHOTGUN,				true },
+		{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,				true },
+		{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,			true },
+		{ ACT_RUN,						ACT_RUN_RIFLE,						true },
+		{ ACT_RUN_AIM,					ACT_RUN_AIM_SHOTGUN,				true },
+		{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,				true },
+		{ ACT_RUN_CROUCH_AIM,			ACT_RUN_CROUCH_AIM_RIFLE,			true },
+		{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_SHOTGUN,	true },
+		{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_SHOTGUN_LOW,		true },
+		{ ACT_RELOAD_LOW,				ACT_RELOAD_SHOTGUN_LOW,				false },
+		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SHOTGUN,			false },
+
+		{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_SHOTGUN,					false },
+		{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_SHOTGUN,					false },
+		{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_SHOTGUN,			false },
+		{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_SHOTGUN,			false },
+		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SHOTGUN,	false },
+		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SHOTGUN,		false },
+		{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SHOTGUN,					false },
+		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SHOTGUN,				false },
+};
+acttable_t CWeaponCoopBase::s_acttableGrenade[] =
+{
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_THROW,					true },
+
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_GRENADE,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_GRENADE,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_GRENADE,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_GRENADE,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_GRENADE,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_GRENADE,		false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_GRENADE,					false },
+};
+acttable_t CWeaponCoopBase::s_acttableRPG[] =
+{
+	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_RPG, true },
+	{ ACT_IDLE_RELAXED,				ACT_IDLE_RPG_RELAXED,			true },
+	{ ACT_IDLE_STIMULATED,			ACT_IDLE_ANGRY_RPG,				true },
+	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_RPG,				true },
+	{ ACT_IDLE,						ACT_IDLE_RPG,					true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_RPG,				true },
+	{ ACT_WALK,						ACT_WALK_RPG,					true },
+	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RPG,			true },
+	{ ACT_RUN,						ACT_RUN_RPG,					true },
+	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RPG,				true },
+	{ ACT_COVER_LOW,				ACT_COVER_LOW_RPG,				true },
+
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_RPG,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_RPG,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_RPG,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_RPG,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_RPG,				false },
+};
+acttable_t CWeaponCoopBase::s_acttablePhysgun[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_HL2MP_IDLE_PHYSGUN, false },
+	{ ACT_HL2MP_RUN, ACT_HL2MP_RUN_PHYSGUN, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_HL2MP_IDLE_CROUCH_PHYSGUN, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_HL2MP_WALK_CROUCH_PHYSGUN, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_HL2MP_GESTURE_RANGE_ATTACK_PHYSGUN, false },
+	{ ACT_HL2MP_GESTURE_RELOAD, ACT_HL2MP_GESTURE_RELOAD_PHYSGUN, false },
+	{ ACT_HL2MP_JUMP, ACT_HL2MP_JUMP_PHYSGUN, false },
+	{ ACT_HL2MP_SWIM, ACT_HL2MP_SWIM_PHYSGUN, false },
+	{ ACT_HL2MP_WALK, ACT_HL2MP_WALK_PHYSGUN, false },
+};
+acttable_t CWeaponCoopBase::s_acttableSlam[] =
+{
+	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SLAM, true },
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_SLAM,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_SLAM,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_SLAM,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_SLAM,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SLAM,		false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SLAM,					false },
+};
+acttable_t CWeaponCoopBase::s_acttableMelee2[] =
+{
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
+
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SLAM, true },
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_MELEE2,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_MELEE2,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_MELEE2,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_MELEE2,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE2,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE2,			false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE2,					false },
+};
+acttable_t CWeaponCoopBase::s_acttablePython[] =
+{
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_PISTOL,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_PISTOL,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_PISTOL,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_PISTOL,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PISTOL,					false },
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
+};
+acttable_t CWeaponCoopBase::s_acttableAR2[] =
+{
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_AR2,			true },
+	{ ACT_RELOAD,					ACT_RELOAD_SMG1,				true },		// FIXME: hook to AR2 unique
+	{ ACT_IDLE,						ACT_IDLE_SMG1,					true },		// FIXME: hook to AR2 unique
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_SMG1,			true },		// FIXME: hook to AR2 unique
+
+	{ ACT_WALK,						ACT_WALK_RIFLE,					true },
+
+	// Readiness activities (not aiming)
+		{ ACT_IDLE_RELAXED,				ACT_IDLE_SMG1_RELAXED,			false },//never aims
+		{ ACT_IDLE_STIMULATED,			ACT_IDLE_SMG1_STIMULATED,		false },
+		{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_RELAXED,				ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_STIMULATED,			ACT_WALK_RIFLE_STIMULATED,		false },
+		{ ACT_WALK_AGITATED,			ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_RELAXED,				ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_STIMULATED,			ACT_RUN_RIFLE_STIMULATED,		false },
+		{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
+
+	// Readiness activities (aiming)
+		{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+		{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_AIM_RELAXED,			ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_RIFLE,				false },//always aims
+	//End readiness activities
+
+		{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true },
+		{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,			true },
+		{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,		true },
+		{ ACT_RUN,						ACT_RUN_RIFLE,					true },
+		{ ACT_RUN_AIM,					ACT_RUN_AIM_RIFLE,				true },
+		{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,			true },
+		{ ACT_RUN_CROUCH_AIM,			ACT_RUN_CROUCH_AIM_RIFLE,		true },
+		{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_AR2,	false },
+		{ ACT_COVER_LOW,				ACT_COVER_SMG1_LOW,				false },		// FIXME: hook to AR2 unique
+		{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_AR2_LOW,			false },
+		{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_SMG1_LOW,		true },		// FIXME: hook to AR2 unique
+		{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
+		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
+		//	{ ACT_RANGE_ATTACK2, ACT_RANGE_ATTACK_AR2_GRENADE, true },
+
+			{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_AR2,					false },
+			{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_AR2,					false },
+			{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_AR2,			false },
+			{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_AR2,			false },
+			{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2,	false },
+			{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_AR2,		false },
+			{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_AR2,					false },
+			{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_AR2,				false },
+};
+
+acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
+{
+	int iWeaponRole = GetActivityWeaponRole();
+	int iWeaponVariant = GetActivityWeaponVariant();
+
+	acttable_t *pTable;
+
+	switch (iWeaponRole)
+	{
+	case TF_WPN_TYPE_PRIMARY:
+	default:
+	{
+		switch (iWeaponVariant)
+		{
+		case 0:
+		default:
+			pTable = s_acttableSMG1;
+			iActivityCount = ARRAYSIZE(s_acttableSMG1);
+			break;
+		case 1:
+			pTable = s_acttableShotgun;
+			iActivityCount = ARRAYSIZE(s_acttableShotgun);
+			break;
+		case 2:
+			pTable = s_acttableAR2;
+			iActivityCount = ARRAYSIZE(s_acttableAR2);
+			break;
+		}
+	}
+		break;
+	case TF_WPN_TYPE_SECONDARY:
+		switch (iWeaponVariant)
+		{
+		case 0:
+		default:
+			pTable = s_acttablePistol;
+			iActivityCount = ARRAYSIZE(s_acttablePistol);
+			break;
+		case 1:
+			pTable = s_acttablePython;
+			iActivityCount = ARRAYSIZE(s_acttablePython);
+			break;
+		}
+		break;
+	case TF_WPN_TYPE_MELEE:
+		pTable = s_acttableMelee;
+		iActivityCount = ARRAYSIZE(s_acttableMelee);
+		break;
+	/*case TF_WPN_TYPE_BUILDING:
+		pTable = s_acttableBuilding;
+		iActivityCount = ARRAYSIZE(s_acttableBuilding);
+		break;*/
+	case TF_WPN_TYPE_PDA:
+		pTable = s_acttableSlam;
+		iActivityCount = ARRAYSIZE(s_acttableSlam);
+		break;
+	case TF_WPN_TYPE_ITEM1:
+		pTable = s_acttablePhysgun;
+		iActivityCount = ARRAYSIZE(s_acttablePhysgun);
+		break;
+	case TF_WPN_TYPE_ITEM2:
+		pTable = s_acttableSlam;
+		iActivityCount = ARRAYSIZE(s_acttableSlam);
+		break;
+	case TF_WPN_TYPE_MELEE_ALLCLASS:
+		pTable = s_acttableMelee2;
+		iActivityCount = ARRAYSIZE(s_acttableMelee2);
+		break;
+	/*case TF_WPN_TYPE_SECONDARY2:
+		pTable = s_acttableSecondary2;
+		iActivityCount = ARRAYSIZE(s_acttableSecondary2);
+		break;*/
+	case TF_WPN_TYPE_PRIMARY2:
+		switch (iWeaponVariant)
+		{
+		case 0:
+		default:
+			pTable = s_acttableRPG;
+			iActivityCount = ARRAYSIZE(s_acttableRPG);
+			break;
+		/*case 1:
+			pTable = s_acttableShotgun;
+			iActivityCount = ARRAYSIZE(s_acttableShotgun);
+			break;*/
+		case 2:
+			pTable = s_acttableCrossbow;
+			iActivityCount = ARRAYSIZE(s_acttableCrossbow);
+			break;
+		}
+		break;
+	}
+
+	return pTable;
+}

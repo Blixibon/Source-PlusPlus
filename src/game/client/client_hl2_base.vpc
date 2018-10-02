@@ -5,6 +5,7 @@
 //-----------------------------------------------------------------------------
 
 $Include "$SRCDIR\game\client\client_base.vpc"
+$Include "$SRCDIR\game\shared\coop\coop_weapons.vpc"
 
 $Configuration
 {
@@ -108,6 +109,8 @@ $Project
 			$File	"hl2\vgui_rootpanel_hl2.cpp"
 			$File 	"episodic\c_vort_charge_token.cpp"
 			$File	"$SRCDIR\game\shared\hl2\survival_gamerules.cpp"
+
+			
 		}
 	}
 }

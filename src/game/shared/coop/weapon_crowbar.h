@@ -30,7 +30,7 @@ public:
 	DECLARE_CLASS( CWeaponCrowbar, CWeaponCoopBaseBludgeon );
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
-	DECLARE_ACTTABLE();
+	//DECLARE_ACTTABLE();
 
 	CWeaponCrowbar();
 
@@ -40,6 +40,8 @@ public:
 	void		AddViewKick( void );
 	float		GetDamageForActivity( Activity hitActivity );
 	void		SecondaryAttack( void )	{	return;	}
+
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_CROWBAR; }
 
 	// Animation event
     #ifndef CLIENT_DLL

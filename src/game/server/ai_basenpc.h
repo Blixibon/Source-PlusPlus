@@ -533,6 +533,11 @@ public:
 		return AI_GetAlliedPlayer(this);
 	}
 
+	virtual CBasePlayer *GetBestPlayer() const
+	{
+		return const_cast<CAI_BaseNPC *>(this)->GetBestPlayer();
+	}
+
 	//---------------------------------
 	// Component creation factories
 	// 
@@ -1109,7 +1114,7 @@ public:
 	virtual bool IsValidCommandTarget( CBaseEntity *pTarget )			{ return false; }
 	const Vector &GetCommandGoal() const								{ return m_vecCommandGoal; }
 	virtual void OnMoveToCommandGoalFailed()							{}
-	string_t GetPlayerSquadName() const									{ Assert( gm_iszPlayerSquad != NULL_STRING ); return gm_iszPlayerSquad; }
+	virtual string_t GetPlayerSquadName() const									{ Assert( gm_iszPlayerSquad != NULL_STRING ); return gm_iszPlayerSquad; }
 	bool IsInPlayerSquad() const;
 	virtual CAI_BaseNPC *GetSquadCommandRepresentative()				{ return NULL; }
 

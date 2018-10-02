@@ -11,10 +11,10 @@
 #ifdef CLIENT_DLL
     #include "vgui/ISurface.h"
 	#include "vgui_controls/Controls.h"
-	#include "c_coop_player.h"
+	//#include "c_coop_player.h"
 	#include "hud_crosshair.h"
 #else
-    #include "coop_player.h"
+    //#include "coop_player.h"
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
     #include "ndebugoverlay.h"
@@ -77,11 +77,12 @@ void CWeaponCoopBaseBludgeon::Precache( void )
 //================================================================================
 void CWeaponCoopBaseBludgeon::PrimaryAttack( void ) 
 {
+#ifndef CLIENT_DLL
     // Only the player fires this way so we can cast
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 
-#ifndef CLIENT_DLL
-    lagcompensation->StartLagCompensation( pPlayer, LAG_COMPENSATE_HITBOXES );
+
+    lagcompensation->StartLagCompensation( pPlayer, pPlayer->GetCurrentCommand() );
 #endif
 
     Swing( false );
@@ -95,11 +96,12 @@ void CWeaponCoopBaseBludgeon::PrimaryAttack( void )
 //================================================================================
 void CWeaponCoopBaseBludgeon::SecondaryAttack( void ) 
 {
+#ifndef CLIENT_DLL
         // Only the player fires this way so we can cast
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 
-#ifndef CLIENT_DLL
-    lagcompensation->StartLagCompensation( pPlayer, LAG_COMPENSATE_HITBOXES );
+
+    lagcompensation->StartLagCompensation( pPlayer, pPlayer->GetCurrentCommand());
 #endif
 
     Swing( true );

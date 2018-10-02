@@ -49,10 +49,12 @@ public:
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_357; }
+
 	DECLARE_NETWORKCLASS();
     DECLARE_PREDICTABLE();
 	DECLARE_DATADESC();
-    DECLARE_ACTTABLE();
+   // DECLARE_ACTTABLE();
 };
 
 LINK_ENTITY_TO_CLASS( weapon_357, CWeapon357 );
@@ -69,19 +71,19 @@ END_PREDICTION_DATA()
 BEGIN_DATADESC( CWeapon357 )
 END_DATADESC()
 
-acttable_t CWeapon357::m_acttable[] = 
-{
-	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_PISTOL,					false },
-	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_PISTOL,					false },
-	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_PISTOL,			false },
-	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_PISTOL,			false },
-	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,	false },
-	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
-	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PISTOL,					false },
-	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
-};
+//acttable_t CWeapon357::m_acttable[] = 
+//{
+//	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_PISTOL,					false },
+//	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_PISTOL,					false },
+//	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_PISTOL,			false },
+//	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_PISTOL,			false },
+//	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,	false },
+//	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
+//	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PISTOL,					false },
+//	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
+//};
 
-IMPLEMENT_ACTTABLE( CWeapon357 );
+//IMPLEMENT_ACTTABLE( CWeapon357 );
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -172,16 +174,14 @@ void CWeapon357::PrimaryAttack( void )
 	Vector vecSrc		= pPlayer->Weapon_ShootPosition();
 	Vector vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
 
-#ifndef CLIENT_DLL
-    lagcompensation->StartLagCompensation( pPlayer, LAG_COMPENSATE_HITBOXES );
-#endif
+	FireBulletsInfo_t info(1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
+	info.m_pAttacker = pPlayer;
+
+	// Fire the bullets, and force the first shot to be perfectly accuracy
+	pPlayer->FireBullets(info);
+
 
 #ifndef CLIENT_DLL
-	pPlayer->FireBullets( 1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0 );
-#endif
-
-#ifndef CLIENT_DLL
-    lagcompensation->FinishLagCompensation( pPlayer );
     pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
 
     //Disorient the player

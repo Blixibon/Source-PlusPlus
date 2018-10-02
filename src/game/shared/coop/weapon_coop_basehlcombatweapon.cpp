@@ -17,13 +17,13 @@ extern IVModelInfo* modelinfo;
 #ifdef CLIENT_DLL
     #include "vgui/ISurface.h"
 	#include "vgui_controls/Controls.h"
-	#include "c_coop_player.h"
 	#include "hud_crosshair.h"
 #else
-    #include "coop_player.h"
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
 #endif
+
+#include "hl2_player_shared.h"
 
 //================================================================================
 // Comandos
@@ -60,9 +60,23 @@ static ConVar	v_ipitch_level( "v_ipitch_level", "0.3", FCVAR_REPLICATED | FCVAR_
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat );
 
 BEGIN_NETWORK_TABLE( CWeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat )
+#ifndef CLIENT_DLL
+SendPropTime(SENDINFO(m_flRaiseTime)),
+SendPropTime(SENDINFO(m_flHolsterTime)),
+SendPropBool(SENDINFO(m_bLowered)),
+#else
+RecvPropTime(RECVINFO(m_flRaiseTime)),
+RecvPropTime(RECVINFO(m_flHolsterTime)),
+RecvPropBool(RECVINFO(m_bLowered)),
+#endif
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponCoopBaseHLCombat ) 
+BEGIN_PREDICTION_DATA( CWeaponCoopBaseHLCombat )
+#ifdef CLIENT_DLL
+DEFINE_PRED_FIELD(m_bLowered, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE),
+DEFINE_PRED_FIELD(m_flRaiseTime, FIELD_TIME, FTYPEDESC_INSENDTABLE),
+DEFINE_PRED_FIELD(m_flHolsterTime, FIELD_TIME, FTYPEDESC_INSENDTABLE),
+#endif
 END_PREDICTION_DATA()
 
 #ifndef CLIENT_DLL
@@ -93,6 +107,13 @@ bool CWeaponCoopBaseHLCombat::WeaponShouldBeLowered( void )
 #endif
 
 	return false;
+}
+
+bool CWeaponCoopBaseHLCombat::CanLower()
+{
+	if (SelectWeightedSequence(ACT_VM_IDLE_LOWERED) == ACTIVITY_NOT_AVAILABLE)
+		return false;
+	return true;
 }
 
 //================================================================================
@@ -128,9 +149,9 @@ bool CWeaponCoopBaseHLCombat::Deploy( void )
 	// We have to ask the player if the last time it checked, the weapon was lowered
 	if ( GetOwner() && GetOwner()->IsPlayer() )
 	{
-		CCoopPlayer *pPlayer = assert_cast<CCoopPlayer *>( GetOwner() );
+		CHL2_Player *pPlayer = ToHL2Player( GetOwner() );
 
-		if ( pPlayer->IsWeaponLowered() )
+		if ( pPlayer && pPlayer->IsWeaponLowered() )
 		{
 			if ( SelectWeightedSequence(ACT_VM_IDLE_LOWERED) != ACTIVITY_NOT_AVAILABLE )
 			{
@@ -395,3 +416,44 @@ const WeaponProficiencyInfo_t *CWeaponCoopBaseHLCombat::GetDefaultProficiencyVal
 	return g_BaseWeaponProficiencyTable;
 }
 #endif
+
+acttable_t CWeaponCoopBaseHLCombat::s_acttableLowered[] =
+{
+	//{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_AR2,			true },
+	//{ ACT_RELOAD,					ACT_RELOAD_SMG1,				true },		// FIXME: hook to AR2 unique
+	{ ACT_IDLE,						ACT_IDLE_SHOTGUN_RELAXED,		true },		// FIXME: hook to AR2 unique
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_RPG,					true },		// FIXME: hook to AR2 unique
+
+	{ ACT_WALK,						ACT_WALK_RPG_RELAXED,			true },
+	{ ACT_RUN,						ACT_RUN_RPG_RELAXED,			true },
+
+	
+	{ ACT_HL2MP_IDLE, ACT_HL2MP_IDLE_PASSIVE, false },
+	{ ACT_HL2MP_RUN, ACT_HL2MP_RUN_PASSIVE, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_HL2MP_IDLE_CROUCH_PASSIVE, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_HL2MP_WALK_CROUCH_PASSIVE, false },
+	{ ACT_HL2MP_JUMP, ACT_HL2MP_JUMP_PASSIVE, false },
+	{ ACT_HL2MP_SWIM, ACT_HL2MP_SWIM_PASSIVE, false },
+	{ ACT_HL2MP_WALK, ACT_HL2MP_WALK_PASSIVE, false },
+};
+
+Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequired)
+{
+	if (WeaponShouldBeLowered())
+	{
+		for (int i = 0; i < ARRAYSIZE(s_acttableLowered); i++)
+		{
+			const acttable_t& act = s_acttableLowered[i];
+			if (baseAct == act.baseAct)
+			{
+				if (pRequired)
+				{
+					*pRequired = act.required;
+				}
+				return (Activity)act.weaponAct;
+			}
+		}
+	}
+
+	return BaseClass::ActivityOverride(baseAct, pRequired);
+}

@@ -29,7 +29,6 @@
 // Game DLL Headers
 #include "soundent.h"
 #include "eventqueue.h"
-#include "fmtstr.h"
 #include "gameweaponmanager.h"
 
 #ifdef HL2MP
@@ -37,6 +36,8 @@
 #endif
 
 #endif
+
+#include "fmtstr.h"
 
 #include "vprof.h"
 
@@ -870,9 +871,10 @@ void CBaseCombatWeapon::DefaultTouch( CBaseEntity *pOther )
 //---------------------------------------------------------
 bool CBaseCombatWeapon::ShouldDisplayAltFireHUDHint()
 {
+#ifndef CLIENT_DLL
 	if( m_iAltFireHudHintCount >= WEAPON_RELOAD_HUD_HINT_COUNT )
 		return false;
-
+#endif
 	if( UsesSecondaryAmmo() && HasSecondaryAmmo() )
 	{
 		return true;
@@ -890,35 +892,51 @@ bool CBaseCombatWeapon::ShouldDisplayAltFireHUDHint()
 //-----------------------------------------------------------------------------
 void CBaseCombatWeapon::DisplayAltFireHudHint()
 {
-#if !defined( CLIENT_DLL )
 	CFmtStr hint;
-	hint.sprintf( "#valve_hint_alt_%s", GetClassname() );
+	hint.sprintf("#valve_hint_alt_%s", GetClassname());
+#if !defined( CLIENT_DLL )
 	UTIL_HudHintText( GetOwner(), hint.Access() );
+#else
+	IGameEvent *pEvent = gameeventmanager->CreateEvent("instructor_altfire");
+	if (pEvent)
+	{
+		pEvent->SetInt("userid", ToBasePlayer(GetOwner())->GetUserID());
+		pEvent->SetString("hinttext", hint.Access());
+		gameeventmanager->FireEventClientSide(pEvent);
+	}
+#endif//CLIENT_DLL
 	m_iAltFireHudHintCount++;
 	m_bAltFireHudHintDisplayed = true;
 	m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
-#endif//CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CBaseCombatWeapon::RescindAltFireHudHint()
 {
-#if !defined( CLIENT_DLL )
 	Assert(m_bAltFireHudHintDisplayed);
-	
+#if !defined( CLIENT_DLL )
 	UTIL_HudHintText( GetOwner(), "" );
+#else
+	IGameEvent *pEvent = gameeventmanager->CreateEvent("close_weapon_hint");
+	if (pEvent)
+	{
+		pEvent->SetInt("userid", ToBasePlayer(GetOwner())->GetUserID());
+		gameeventmanager->FireEventClientSide(pEvent);
+	}
+#endif//CLIENT_DLL
 	--m_iAltFireHudHintCount;
 	m_bAltFireHudHintDisplayed = false;
-#endif//CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 bool CBaseCombatWeapon::ShouldDisplayReloadHUDHint()
 {
+#ifndef CLIENT_DLL
 	if( m_iReloadHudHintCount >= WEAPON_RELOAD_HUD_HINT_COUNT )
 		return false;
+#endif
 
 	CBaseCombatCharacter *pOwner = GetOwner();
 
@@ -940,22 +958,36 @@ void CBaseCombatWeapon::DisplayReloadHudHint()
 {
 #if !defined( CLIENT_DLL )
 	UTIL_HudHintText( GetOwner(), "valve_hint_reload" );
+#else
+	IGameEvent *pEvent = gameeventmanager->CreateEvent("instructor_reload");
+	if (pEvent)
+	{
+		pEvent->SetInt("userid", ToBasePlayer(GetOwner())->GetUserID());
+		gameeventmanager->FireEventClientSide(pEvent);
+	}
+#endif//CLIENT_DLL
+
 	m_iReloadHudHintCount++;
 	m_bReloadHudHintDisplayed = true;
 	m_flHudHintMinDisplayTime = gpGlobals->curtime + MIN_HUDHINT_DISPLAY_TIME;
-#endif//CLIENT_DLL
 }
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CBaseCombatWeapon::RescindReloadHudHint()
 {
-#if !defined( CLIENT_DLL )
 	Assert(m_bReloadHudHintDisplayed);
-
+#if !defined( CLIENT_DLL )
 	UTIL_HudHintText( GetOwner(), "" );
+#else
+	IGameEvent *pEvent = gameeventmanager->CreateEvent("close_weapon_hint");
+	if (pEvent)
+	{
+		pEvent->SetInt("userid", ToBasePlayer(GetOwner())->GetUserID());
+		gameeventmanager->FireEventClientSide(pEvent);
+	}
+#endif//CLIENT_DLL
 	--m_iReloadHudHintCount;
 	m_bReloadHudHintDisplayed = false;
-#endif//CLIENT_DLL
 }
 
 
@@ -1640,10 +1672,7 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 {
 	MaintainIdealActivity();
 
-#ifndef CLIENT_DLL
-#ifndef HL2_EPISODIC
-	if ( IsX360() )
-#endif
+//#ifndef CLIENT_DLL
 	{
 		// If we haven't displayed the hint enough times yet, it's time to try to 
 		// display the hint, and the player is not standing still, try to show a hud hint.
@@ -1651,9 +1680,16 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 		// any second.
 		if( (!m_bAltFireHudHintDisplayed || !m_bReloadHudHintDisplayed) && gpGlobals->curtime > m_flHudHintMinDisplayTime && gpGlobals->curtime > m_flHudHintPollTime && GetOwner() && GetOwner()->IsPlayer() )
 		{
+			bool bIsMultiplayer = gpGlobals->maxClients > 1;
+			bool bCanDisplay = bIsMultiplayer != IsServer();
+
 			CBasePlayer *pPlayer = (CBasePlayer*)(GetOwner());
 
-			if( pPlayer && pPlayer->GetStickDist() > 0.0f )
+			if (bCanDisplay && pPlayer
+#ifdef GAME_DLL
+				&& pPlayer->GetStickDist() > 0.0f
+#endif
+				)
 			{
 				// If the player is moving, they're unlikely to switch away from the current weapon
 				// the moment this weapon displays its HUD hint.
@@ -1672,7 +1708,7 @@ void CBaseCombatWeapon::ItemPreFrame( void )
 			}
 		}
 	}
-#endif
+//#endif
 }
 
 bool CBaseCombatWeapon::CanPerformSecondaryAttack() const

@@ -171,7 +171,7 @@
 	 
 	    "success_limit"    	"2"
 	    "timeout"          	"8"
-	    "can_open_when_dead" "1"
+	    "can_open_when_dead" "0"
 	 
 	    "open"
 	    {
@@ -181,10 +181,59 @@
 	            "icon_target set"   "player local_player"
 	        }
 	    }
+		
+		"close"
+		{
+			"close_weapon_hint"
+			{
+				"local_player is"   "player userid"
+			}
+		}
 	 
 	    "success"
 	    {
 	        "use_altfire"
+	        {
+	            "local_player is"   "player userid"
+	            "void close"        "void"
+	        }
+	    }
+	}
+	
+	"Reload"
+	{
+		"priority" 			"2"
+	    "instance_type"    	"2"
+	    "caption"          	"Reload"
+	 
+	    "onscreen_icon"    	"use_binding"
+	    "offscreen_icon"   	"icon_info"
+	    "binding"          	"+reload"
+	 
+	    "success_limit"    	"2"
+	    "timeout"          	"8"
+	    "can_open_when_dead" "0"
+	 
+	    "open"
+	    {
+	    	"instructor_reload"
+	        {
+	            "local_player is"   "player userid"
+	            "icon_target set"   "player local_player"
+	        }
+	    }
+		
+		"close"
+		{
+			"close_weapon_hint"
+			{
+				"local_player is"   "player userid"
+			}
+		}
+	 
+	    "success"
+	    {
+	        "use_reload"
 	        {
 	            "local_player is"   "player userid"
 	            "void close"        "void"

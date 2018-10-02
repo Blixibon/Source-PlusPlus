@@ -18,4 +18,26 @@
 #include "hl2_player.h"
 #endif
 
+//-----------------------------------------------------------------------------
+// Converts an entity to a player
+//-----------------------------------------------------------------------------
+inline CHL2_Player *ToHL2Player(CBaseEntity *pEntity)
+{
+	if (!pEntity || !pEntity->IsPlayer())
+		return NULL;
+
+	return dynamic_cast<CHL2_Player *>(pEntity);
+}
+
+//-----------------------------------------------------------------------------
+// Converts an entity to a player
+//-----------------------------------------------------------------------------
+inline const CHL2_Player *ToHL2Player(const CBaseEntity *pEntity)
+{
+	if (!pEntity || !pEntity->IsPlayer())
+		return NULL;
+
+	return dynamic_cast<const CHL2_Player *>(pEntity);
+}
+
 #endif // HL2_PLAYER_SHARED_H

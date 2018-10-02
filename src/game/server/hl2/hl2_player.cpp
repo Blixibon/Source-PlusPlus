@@ -435,6 +435,8 @@ void CHL2_Player::Precache( void )
 	PrecacheScriptSound( "HL2Player.TrainUse" );
 	PrecacheScriptSound( "HL2Player.Use" );
 	PrecacheScriptSound( "HL2Player.BurnPain" );
+
+	PrecacheModel("models/weapons/c_arms_hev.mdl");
 }
 
 //-----------------------------------------------------------------------------
@@ -953,6 +955,31 @@ void CHL2_Player::HandleAdmireGlovesAnimation( void )
 		m_flAdmireGlovesAnimTime = 0.0f;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2_Player::CreateViewModel(int index /*=0*/)
+{
+	Assert(index >= 0 && index < MAX_VIEWMODELS);
+
+	if (GetViewModel(index))
+		return;
+
+	CBaseViewModel *vm = (CBaseViewModel *)CreateEntityByName((gpGlobals->maxClients > 1) ? "predicted_viewmodel" : "viewmodel");
+	if (vm)
+	{
+		vm->SetAbsOrigin(GetAbsOrigin());
+		vm->SetOwner(this);
+		vm->SetIndex(index);
+		DispatchSpawn(vm);
+
+		vm->SetHandsModel("models/weapons/c_arms_hev.mdl");
+
+		vm->FollowEntity(this);
+		m_hViewModel.Set(index, vm);
+	}
+}
+
 #define HL2PLAYER_RELOADGAME_ATTACK_DELAY 1.0f
 
 void CHL2_Player::Activate( void )
@@ -1135,7 +1162,11 @@ void CHL2_Player::Spawn(void)
 
 	m_Local.m_iHideHUD |= HIDEHUD_CHAT;
 
-	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(PLAYER_SQUADNAME));
+	const char *pchSquadName = (gpGlobals->maxClients > 1) ? UTIL_VarArgs("%s_%i", PLAYER_SQUADNAME, GetClientIndex()) : PLAYER_SQUADNAME;
+
+	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(pchSquadName));
+
+	m_pPlayerAISquad->SetPlayerCommander(this);
 
 	InitSprinting();
 

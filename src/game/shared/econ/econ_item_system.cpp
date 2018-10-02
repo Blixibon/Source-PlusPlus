@@ -457,6 +457,8 @@ public:
 			}
 		}
 
+		GET_INT(pItem, pData, anim_variant);
+
 		GET_BOOL( pItem, pData, baseitem );
 		GET_INT( pItem, pData, min_ilevel );
 		GET_INT( pItem, pData, max_ilevel );

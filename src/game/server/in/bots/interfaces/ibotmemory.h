@@ -23,7 +23,7 @@ class CDataMemory;
 #define GetDataMemoryEntity(name) GetMemory()->GetDataMemory(name, true)->GetEntity()
 
 // Maximum number of entities that we can store
-#define MAX_ENTITY_MEMORY 512
+#define MAX_ENTITY_MEMORY MAX_EDICTS
 
 //================================================================================
 // Memory component

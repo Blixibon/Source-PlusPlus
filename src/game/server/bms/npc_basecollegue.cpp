@@ -423,7 +423,7 @@ void CNPC_BaseColleague::InputStartFollow(inputdata_t &inputdata)
 
 	if (!IsInPlayerSquad())
 	{
-		AddToPlayerSquad();
+		AddToPlayerSquad(GetBestPlayer());
 		SpeakIfAllowed(TLK_STARTFOLLOW);
 	}
 }

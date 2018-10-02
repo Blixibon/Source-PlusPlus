@@ -8,6 +8,7 @@
 #endif
 
 #include "basecombatweapon_shared.h"
+#include "hlss_weapon_id.h"
 
 #ifdef CLIENT_DLL
     #define CWeaponCoopBase C_WeaponCoopBase
@@ -35,11 +36,30 @@ public:
     virtual bool ShouldPredict();
     #endif
 
+	virtual int GetWeaponID(void) const;
+
     //
     virtual void Spawn();
     virtual void WeaponSound( WeaponSound_t sound_type, float soundtime = 0.0f );
 
     virtual void PrimaryAttack();
+
+	virtual int GetActivityWeaponRole(void);
+	virtual int GetActivityWeaponVariant(void);
+
+	virtual acttable_t *ActivityList(int &iActivityCount);
+	static acttable_t s_acttableSMG1[];
+	static acttable_t s_acttablePistol[];
+	static acttable_t s_acttableMelee[];
+	static acttable_t s_acttableCrossbow[];
+	static acttable_t s_acttableShotgun[];
+	static acttable_t s_acttableGrenade[];
+	static acttable_t s_acttableRPG[];
+	static acttable_t s_acttablePhysgun[];
+	static acttable_t s_acttableSlam[];
+	static acttable_t s_acttableMelee2[];
+	static acttable_t s_acttablePython[];
+	static acttable_t s_acttableAR2[];
 };
 
 #endif // WEAPON_COOP_BASE_H

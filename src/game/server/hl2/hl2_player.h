@@ -14,6 +14,7 @@
 #include "hl2_playerlocaldata.h"
 #include "simtimer.h"
 #include "soundenvelope.h"
+#include "basemultiplayerplayer.h"
 
 class CAI_Squad;
 class CPropCombineBall;
@@ -75,10 +76,10 @@ public:
 //=============================================================================
 // >> HL2_PLAYER
 //=============================================================================
-class CHL2_Player : public CBasePlayer
+class CHL2_Player : public CBaseMultiplayerPlayer
 {
 public:
-	DECLARE_CLASS( CHL2_Player, CBasePlayer );
+	DECLARE_CLASS( CHL2_Player, CBaseMultiplayerPlayer);
 
 	CHL2_Player();
 	~CHL2_Player( void );
@@ -107,14 +108,16 @@ public:
 	virtual void		Splash( void );
 	virtual void 		ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set );
 
+	virtual void		CreateViewModel(int viewmodelindex = 0);
+
 	void				DrawDebugGeometryOverlays(void);
 
 	virtual Vector		EyeDirection2D( void );
 	virtual Vector		EyeDirection3D( void );
 
 	virtual void		CommanderMode();
-	CAI_Squad			*GetPlayerSquad() { return m_pPlayerAISquad; }
-	CAI_Squad			*GetPlayerSquad() const { return m_pPlayerAISquad; }
+	virtual CAI_Squad	*GetPlayerSquad() { return m_pPlayerAISquad; }
+	virtual CAI_Squad	*GetPlayerSquad() const { return m_pPlayerAISquad; }
 
 	virtual bool		ClientCommand( const CCommand &args );
 
@@ -382,6 +385,7 @@ void CHL2_Player::DisableCappedPhysicsDamage()
 {
 	m_bUseCappedPhysicsDamageTable = false;
 }
+
 
 
 #endif	//HL2_PLAYER_H

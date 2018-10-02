@@ -60,6 +60,12 @@ CBaseViewModel::CBaseViewModel()
 //-----------------------------------------------------------------------------
 CBaseViewModel::~CBaseViewModel()
 {
+#ifndef CLIENT_DLL
+	// delete exiting studio model container
+	UnlockHandHdr();
+	delete m_pHandsStudioHdr;
+	m_pHandsStudioHdr = NULL;
+#endif
 }
 
 void CBaseViewModel::UpdateOnRemove( void )
@@ -573,6 +579,10 @@ BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
 #if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
 	SendPropArray	(SendPropFloat(SENDINFO_ARRAY(m_flPoseParameter),	8, 0, 0.0f, 1.0f), m_flPoseParameter),
 #endif
+
+	SendPropModelIndex(SENDINFO(m_iHandsModelIndex)),
+	SendPropInt(SENDINFO(m_iHandsSkin), ANIMATION_SKIN_BITS),
+	SendPropInt(SENDINFO(m_iHandsBody), ANIMATION_BODY_BITS),
 #else
 	RecvPropInt		(RECVINFO(m_nModelIndex)),
 	RecvPropInt		(RECVINFO(m_nSkin)),
@@ -592,6 +602,10 @@ BEGIN_NETWORK_TABLE_NOBASE(CBaseViewModel, DT_BaseViewModel)
 #if !defined( INVASION_DLL ) && !defined( INVASION_CLIENT_DLL )
 	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0]) ), m_flPoseParameter ),
 #endif
+
+	RecvPropInt(RECVINFO(m_iHandsModelIndex)),
+	RecvPropInt(RECVINFO(m_iHandsSkin)),
+	RecvPropInt(RECVINFO(m_iHandsBody)),
 #endif
 END_NETWORK_TABLE()
 

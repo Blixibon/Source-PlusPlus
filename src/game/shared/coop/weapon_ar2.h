@@ -31,6 +31,8 @@ public:
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_AR2; }
+
 	void	ItemPostFrame( void );
 	void	Precache( void );
 	
@@ -77,7 +79,7 @@ protected:
 	bool					m_bShotDelayed;
 	int						m_nVentPose;
 
-    DECLARE_ACTTABLE();
+    //DECLARE_ACTTABLE();
 	
     #ifndef CLIENT_DLL
 	DECLARE_DATADESC();

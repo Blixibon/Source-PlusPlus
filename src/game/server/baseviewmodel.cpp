@@ -53,6 +53,11 @@ BEGIN_DATADESC( CBaseViewModel )
 // Don't save these, init to 0 and regenerate
 //	DEFINE_FIELD( m_Activity, FIELD_INTEGER ),
 
+
+DEFINE_FIELD(m_iHandsModelIndex, FIELD_MODELINDEX),
+DEFINE_FIELD(m_iHandsSkin, FIELD_INTEGER),
+DEFINE_FIELD(m_iHandsBody, FIELD_INTEGER),
+
 END_DATADESC()
 
 int CBaseViewModel::UpdateTransmitState()
@@ -112,5 +117,97 @@ void CBaseViewModel::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 		CVGuiScreen *pScreen = m_hScreens[i].Get();
 		if ( pScreen )
 			pScreen->SetTransmit( pInfo, bAlways );
+	}
+}
+
+void CBaseViewModel::SetHandsModel(const char *pchModelName, int iSkin)
+{
+	MDLCACHE_CRITICAL_SECTION();
+
+	// delete exiting studio model container
+	UnlockHandHdr();
+	delete m_pHandsStudioHdr;
+	m_pHandsStudioHdr = NULL;
+
+	int iModel = modelinfo->GetModelIndex(pchModelName);
+	if (iModel > 0 && iModel != m_iHandsModelIndex)
+		m_iHandsModelIndex = iModel;
+
+	if (iSkin != m_iHandsSkin)
+		m_iHandsSkin = iSkin;
+
+	m_iHandsBody = 0;
+
+	LockHandHdr();
+}
+
+void CBaseViewModel::SetHandsBodygroupByName(const char *pchGroup, int iValue)
+{
+	int iGroup = ::FindBodygroupByName(m_pHandsStudioHdr, pchGroup);
+
+	if (iGroup <= -1)
+		return;
+
+	::SetBodygroup(m_pHandsStudioHdr, m_iHandsBody.GetForModify(), iGroup, iValue);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CBaseViewModel::Restore(IRestore &restore)
+{
+	int result = BaseClass::Restore(restore);
+	LockHandHdr();
+	return result;
+}
+
+void CBaseViewModel::LockHandHdr()
+{
+	const model_t *mdl = modelinfo->GetModel(m_iHandsModelIndex);
+	if (mdl)
+	{
+		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle(mdl);
+		if (hStudioHdr != MDLHANDLE_INVALID)
+		{
+			const studiohdr_t *pStudioHdr = mdlcache->LockStudioHdr(hStudioHdr);
+			CStudioHdr *pStudioHdrContainer = NULL;
+			if (!m_pHandsStudioHdr)
+			{
+				if (pStudioHdr)
+				{
+					pStudioHdrContainer = new CStudioHdr;
+					pStudioHdrContainer->Init(pStudioHdr, mdlcache);
+				}
+			}
+			else
+			{
+				pStudioHdrContainer = m_pHandsStudioHdr;
+			}
+
+			Assert((pStudioHdr == NULL && pStudioHdrContainer == NULL) || pStudioHdrContainer->GetRenderHdr() == pStudioHdr);
+
+			if (pStudioHdrContainer && pStudioHdrContainer->GetVirtualModel())
+			{
+				MDLHandle_t hVirtualModel = (MDLHandle_t)(int)(pStudioHdrContainer->GetRenderHdr()->virtualModel) & 0xffff;
+				mdlcache->LockStudioHdr(hVirtualModel);
+			}
+			m_pHandsStudioHdr = pStudioHdrContainer; // must be last to ensure virtual model correctly set up
+		}
+	}
+}
+
+void CBaseViewModel::UnlockHandHdr()
+{
+	if (m_pHandsStudioHdr)
+	{
+		const model_t *mdl = GetModel();
+		if (mdl)
+		{
+			mdlcache->UnlockStudioHdr(modelinfo->GetCacheHandle(mdl));
+			if (m_pHandsStudioHdr->GetVirtualModel())
+			{
+				MDLHandle_t hVirtualModel = (MDLHandle_t)(int)(m_pHandsStudioHdr->GetRenderHdr()->virtualModel) & 0xffff;
+				mdlcache->UnlockStudioHdr(hVirtualModel);
+			}
+		}
 	}
 }

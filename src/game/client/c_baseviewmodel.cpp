@@ -91,6 +91,179 @@ void FormatViewModelAttachment( Vector &vOrigin, bool bInverse )
 	vOrigin = pViewSetup->origin + vOut;
 }
 
+class C_ViewHands : public C_BaseAnimating
+{
+public:
+	DECLARE_CLASS(C_ViewHands, C_BaseAnimating);
+	//DECLARE_NETWORKCLASS();
+
+	virtual RenderGroup_t	GetRenderGroup();
+
+	// Should this object cast shadows?
+	virtual ShadowType_t	ShadowCastType()
+	{
+		if (m_pViewModel)
+			m_pViewModel->ShadowCastType();
+		return SHADOWS_NONE;
+	}
+
+	virtual bool ShouldDraw();
+
+	// Determine the color modulation amount
+	virtual void	GetColorModulation(float* color)
+	{
+		Assert(color);
+		if (m_pViewModel)
+		{
+			m_pViewModel->GetColorModulation(color);
+			return;
+		}
+		BaseClass::GetColorModulation(color);
+	}
+
+	// Accessors for color.
+	const color32 GetRenderColor() const
+	{
+		if (m_pViewModel)
+			return m_pViewModel->GetRenderColor();
+
+		return BaseClass::GetRenderColor();
+	}
+
+	void DrawHands(C_BaseViewModel *pModel, int iFlags)
+	{
+		if (!pModel || (iFlags & STUDIO_RENDER) == 0)
+			return;
+
+		int iSkin, iBody;
+		int iIndex = pModel->GetHandModelData(iSkin, iBody);
+
+		if (iIndex <= -1)
+			return;
+
+		m_pViewModel = pModel;
+			
+		SetModelByIndex(iIndex);
+		m_nSkin = iSkin;
+		m_nBody = iBody;
+
+		FollowEntity(pModel, true);
+		InvalidateBoneCache();
+
+		DrawModel(iFlags);
+
+		StopFollowingEntity();
+		SetModelByIndex(-1);
+
+		m_pViewModel = nullptr;
+	}
+
+	virtual bool			ShouldReceiveProjectedTextures(int flags)
+	{
+		if (m_pViewModel)
+			return m_pViewModel->ShouldReceiveProjectedTextures(flags);
+
+		return BaseClass::ShouldReceiveProjectedTextures(flags);
+	}
+
+	virtual int				InternalDrawModel(int flags);
+	virtual void ApplyBoneMatrixTransform(matrix3x4_t& transform);
+
+	CBaseViewModel *m_pViewModel;
+};
+
+
+bool C_ViewHands::ShouldDraw()
+{
+	if (m_pViewModel && !m_pViewModel->ShouldDraw())
+		return false;
+
+	return BaseClass::ShouldDraw();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Output : RenderGroup_t
+//-----------------------------------------------------------------------------
+RenderGroup_t C_ViewHands::GetRenderGroup()
+{
+	return RENDER_GROUP_OTHER;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+int C_ViewHands::InternalDrawModel(int flags)
+{
+	CMatRenderContextPtr pRenderContext(materials);
+	if (m_pViewModel && m_pViewModel->ShouldFlipViewModel())
+		pRenderContext->CullMode(MATERIAL_CULLMODE_CW);
+
+	int ret = BaseClass::InternalDrawModel(flags);
+
+	pRenderContext->CullMode(MATERIAL_CULLMODE_CCW);
+
+	return ret;
+}
+
+void C_ViewHands::ApplyBoneMatrixTransform(matrix3x4_t& transform)
+{
+	if (m_pViewModel && m_pViewModel->ShouldFlipViewModel())
+	{
+		matrix3x4_t viewMatrix, viewMatrixInverse;
+
+		// We could get MATERIAL_VIEW here, but this is called sometimes before the renderer
+		// has set that matrix. Luckily, this is called AFTER the CViewSetup has been initialized.
+		const CViewSetup *pSetup = view->GetPlayerViewSetup();
+		AngleMatrix(pSetup->angles, pSetup->origin, viewMatrixInverse);
+		MatrixInvert(viewMatrixInverse, viewMatrix);
+
+		// Transform into view space.
+		matrix3x4_t temp, temp2;
+		ConcatTransforms(viewMatrix, transform, temp);
+
+		// Flip it along X.
+
+		// (This is the slower way to do it, and it equates to negating the top row).
+		//matrix3x4_t mScale;
+		//SetIdentityMatrix( mScale );
+		//mScale[0][0] = 1;
+		//mScale[1][1] = -1;
+		//mScale[2][2] = 1;
+		//ConcatTransforms( mScale, temp, temp2 );
+		temp[1][0] = -temp[1][0];
+		temp[1][1] = -temp[1][1];
+		temp[1][2] = -temp[1][2];
+		temp[1][3] = -temp[1][3];
+
+		// Transform back out of view space.
+		ConcatTransforms(viewMatrixInverse, temp, transform);
+	}
+}
+
+LINK_ENTITY_TO_CLASS(viewhands, C_ViewHands);
+
+static C_ViewHands *s_pViewHands = nullptr;
+
+class CViewHandsHandler : public CAutoGameSystem
+{
+public:
+	CViewHandsHandler() : CAutoGameSystem("ViewHandsHandler")
+	{}
+
+	void LevelShutdownPostEntity()
+	{
+		s_pViewHands = nullptr;
+	}
+
+	void LevelInitPostEntity()
+	{
+		s_pViewHands = (C_ViewHands *)CreateEntityByName("viewhands");
+		s_pViewHands->InitializeAsClientEntity(NULL, RENDER_GROUP_OTHER);
+	}
+};
+
+CViewHandsHandler g_ViewHandsCreator;
 
 void C_BaseViewModel::FormatViewModelAttachment( int nAttachment, matrix3x4_t &attachmentToWorld )
 {
@@ -319,6 +492,10 @@ int C_BaseViewModel::DrawModel( int flags )
 	{
 		ret = BaseClass::DrawModel( flags );
 	}
+
+	// Now draw the arms model
+	if (s_pViewHands != nullptr)
+		s_pViewHands->DrawHands(this, flags);
 
 	// Now that we've rendered, reset the animation restart flag
 	if ( flags & STUDIO_RENDER )

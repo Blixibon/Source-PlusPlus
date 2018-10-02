@@ -28,6 +28,7 @@ public:
 
     virtual bool WeaponShouldBeLowered( void );
 
+	virtual bool CanLower(void);
 	virtual bool Ready( void );
 	virtual bool Lower( void );
 	virtual bool Deploy( void );
@@ -45,10 +46,13 @@ public:
 	virtual const WeaponProficiencyInfo_t *GetProficiencyValues();
 	static const WeaponProficiencyInfo_t *GetDefaultProficiencyValues();
 
+	virtual Activity		ActivityOverride(Activity baseAct, bool *pRequired);
+	static acttable_t s_acttableLowered[];
+
 protected:
-    bool			m_bLowered;			// Whether the viewmodel is raised or lowered
-	float			m_flRaiseTime;		// If lowered, the time we should raise the viewmodel
-	float			m_flHolsterTime;	// When the weapon was holstered
+    CNetworkVar(bool, m_bLowered);			// Whether the viewmodel is raised or lowered
+	CNetworkVar(float, m_flRaiseTime);		// If lowered, the time we should raise the viewmodel
+	CNetworkVar(float, m_flHolsterTime);	// When the weapon was holstered
 
 private:
     CWeaponCoopBaseHLCombat( const CWeaponCoopBaseHLCombat & );

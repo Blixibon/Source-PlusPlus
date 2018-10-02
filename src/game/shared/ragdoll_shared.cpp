@@ -951,7 +951,7 @@ void CRagdollLRURetirement::Update( float frametime ) // EPISODIC VERSION
 #ifdef CLIENT_DLL
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 #else
-	CBasePlayer  *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer  *pPlayer = AI_GetSinglePlayer();
 #endif
 
 	if (pPlayer && m_LRU.Count() > iMaxRagdollCount) // find the furthest one algorithm

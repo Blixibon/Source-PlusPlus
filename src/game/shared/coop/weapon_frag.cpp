@@ -9,7 +9,7 @@
 #include "in_buttons.h"
 
 #ifdef CLIENT_DLL
-	#include "c_coop_player.h"
+	//#include "c_coop_player.h"
 	#include "c_te_effect_dispatch.h"
 #else
 	#include "hl2_player.h"
@@ -48,9 +48,11 @@ public:
 
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
-    DECLARE_ACTTABLE();
+    //DECLARE_ACTTABLE();
 
 	CWeaponFrag();
+
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_FRAG; }
 
 	void	Precache( void );
 	void	PrimaryAttack( void );
@@ -85,18 +87,18 @@ private:
 	CWeaponFrag( const CWeaponFrag & );
 };
 
-acttable_t	CWeaponFrag::m_acttable[] = 
-{
-	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_GRENADE,					false },
-	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_GRENADE,					false },
-	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_GRENADE,			false },
-	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_GRENADE,			false },
-	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_GRENADE,	false },
-	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_GRENADE,		false },
-	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_GRENADE,					false },
-};
+//acttable_t	CWeaponFrag::m_acttable[] = 
+//{
+//	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_GRENADE,					false },
+//	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_GRENADE,					false },
+//	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_GRENADE,			false },
+//	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_GRENADE,			false },
+//	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_GRENADE,	false },
+//	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_GRENADE,		false },
+//	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_GRENADE,					false },
+//};
 
-IMPLEMENT_ACTTABLE(CWeaponFrag);
+//IMPLEMENT_ACTTABLE(CWeaponFrag);
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFrag, DT_WeaponFrag )
 

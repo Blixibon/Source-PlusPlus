@@ -101,9 +101,25 @@ public:
 	virtual int				UpdateTransmitState( void );
 	virtual int				ShouldTransmit( const CCheckTransmitInfo *pInfo );
 	virtual void			SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
+
+	virtual int	 Restore(IRestore &restore);
+
+	void					SetHandsModel(const char *pchModel, int iSkin = 0);
+	void					SetHandsBodygroupByName(const char *pchGroup, int iValue);
+	void					LockHandHdr();
+	void					UnlockHandHdr();
 #else
 
 	virtual RenderGroup_t	GetRenderGroup();
+
+	// Returns model index
+	virtual int				GetHandModelData(int &iSkin, int &iBody)
+	{
+		iSkin = m_iHandsSkin.Get();
+		iBody = m_iHandsBody.Get();
+
+		return m_iHandsModelIndex.Get();
+	}
 
 // Only supported in TF2 right now
 #if defined( INVASION_CLIENT_DLL )
@@ -194,8 +210,14 @@ private:
 	string_t				m_sVMName;			// View model of this weapon
 	string_t				m_sAnimationPrefix;		// Prefix of the animations that should be used by the player carrying this weapon
 
+	CNetworkVar(int, m_iHandsModelIndex);
+	CNetworkVar(int, m_iHandsSkin);
+	CNetworkVar(int, m_iHandsBody);
+
 #if defined( CLIENT_DLL )
 	int						m_nOldAnimationParity;
+#else
+	CStudioHdr			*m_pHandsStudioHdr;
 #endif
 
 

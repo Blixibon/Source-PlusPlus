@@ -70,6 +70,9 @@ public:
 
 	CHandle<CWeaponRPG>		m_hOwner;
 
+	static void AddCustomDetonator(CBaseEntity *pEntity, float radius, float height = -1);
+	static void RemoveCustomDetonator(CBaseEntity *pEntity);
+
 	static CMissile *Create( const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner );
 
 protected:
@@ -87,6 +90,15 @@ protected:
 	float					m_flAugerTime;		// Amount of time to auger before blowing up anyway
 	float					m_flMarkDeadTime;
 	float					m_flDamage;
+
+	struct CustomDetonator_t
+	{
+		EHANDLE hEntity;
+		float radiusSq;
+		float halfHeight;
+	};
+
+	static CUtlVector<CustomDetonator_t> gm_CustomDetonators;
 
 private:
 	float					m_flGracePeriodEndsAt;
@@ -177,6 +189,8 @@ public:
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_RPG; }
+
 	void	Precache( void );
 
 	void	PrimaryAttack( void );
@@ -244,7 +258,7 @@ public:
 
 	CBaseEntity *GetMissile( void ) { return m_hMissile; }
 
-	DECLARE_ACTTABLE();
+	//DECLARE_ACTTABLE();
 	
 protected:
 
@@ -256,6 +270,7 @@ protected:
 	CNetworkVar(	Vector,			m_vecLaserDot );
 
 #ifndef CLIENT_DLL
+	Vector				m_vecNPCLaserDot;
 	CHandle<CLaserDot>	m_hLaserDot;
 #endif
 

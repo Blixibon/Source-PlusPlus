@@ -41,6 +41,7 @@ public:
 	const char* GetEntityName( void );
 	bool IsCosmetic( void );
 	int GetAnimationSlot( void );
+	int GetAnimationVariant(void);
 	Activity GetActivityOverride( int iTeamNumber, Activity actOriginalActivity );
 	const char* GetActivityOverride( int iTeamNumber, const char *name );
 	const char* GetSoundOverride( int iIndex, int iTeamNum = TEAM_UNASSIGNED ) const;

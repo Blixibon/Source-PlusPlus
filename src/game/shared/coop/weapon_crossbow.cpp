@@ -467,6 +467,8 @@ class CWeaponCrossbow : public CWeaponCoopBaseHLCombat
 public:
 
 	CWeaponCrossbow( void );
+
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_CROSSBOW; }
 	
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );
@@ -489,7 +491,7 @@ public:
 	DECLARE_NETWORKCLASS(); 
 	DECLARE_PREDICTABLE();
 	DECLARE_DATADESC();
-    DECLARE_ACTTABLE();
+    //DECLARE_ACTTABLE();
 
 private:
 	
@@ -554,18 +556,18 @@ BEGIN_DATADESC( CWeaponCrossbow )
 	DEFINE_FIELD( m_hChargerSprite,	FIELD_EHANDLE ),
 END_DATADESC()
 
-acttable_t	CWeaponCrossbow::m_acttable[] = 
-{
-	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_CROSSBOW,					false },
-	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_CROSSBOW,						false },
-	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,				false },
-	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_CROSSBOW,				false },
-	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW,	false },
-	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_CROSSBOW,			false },
-	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
-};
+//acttable_t	CWeaponCrossbow::m_acttable[] = 
+//{
+//	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_CROSSBOW,					false },
+//	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_CROSSBOW,						false },
+//	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,				false },
+//	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_CROSSBOW,				false },
+//	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW,	false },
+//	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_CROSSBOW,			false },
+//	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
+//};
 
-IMPLEMENT_ACTTABLE(CWeaponCrossbow);
+//IMPLEMENT_ACTTABLE(CWeaponCrossbow);
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -719,7 +721,7 @@ void CWeaponCrossbow::FireBolt( void )
 
 #ifndef CLIENT_DLL
 	pOwner->RumbleEffect( RUMBLE_357, 0, RUMBLE_FLAG_RESTART );
-#endif
+//#endif
 
 	Vector vecAiming	= pOwner->GetAutoaimVector( 0 );
 	Vector vecSrc		= pOwner->Weapon_ShootPosition();
@@ -744,7 +746,7 @@ void CWeaponCrossbow::FireBolt( void )
 	}
 #endif
 
-#ifndef CLIENT_DLL
+//#ifndef CLIENT_DLL
 	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, pOwner );
 
 	if ( pOwner->GetWaterLevel() == 3 )
