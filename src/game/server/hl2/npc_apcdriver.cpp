@@ -77,7 +77,7 @@ void CNPC_APCDriver::Spawn( void )
 
 	m_flTimeLastSeenEnemy = -NPC_APCDRIVER_REMEMBER_TIME;
 	CapabilitiesClear();
-	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK2 );
+	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_INNATE_RANGE_ATTACK2 | bits_CAP_SIMPLE_VISIBILITY );
 	m_bFiringDisabled = false;
 }
 

@@ -30,8 +30,9 @@
 			}
 		}
 		
-		"combine_extra"
+		"hl2epX_extra"
 		{
+			folder	reloaded/reloaded
 		}
 	}
 }

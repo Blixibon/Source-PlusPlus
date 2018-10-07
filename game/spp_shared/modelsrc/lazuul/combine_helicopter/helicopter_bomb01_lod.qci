@@ -1,0 +1,21 @@
+
+$LOD 15
+{
+	replacemodel "helicopter_bomb01_Reference.smd" "helicopter_bomb01_Reference_lod1.smd"
+	NoFacial
+}
+$LOD 35
+{
+	replacemodel "helicopter_bomb01_Reference.smd" "helicopter_bomb01_Reference_lod2.smd"
+	NoFacial
+}
+$LOD 70
+{
+	replacemodel "helicopter_bomb01_Reference.smd" "helicopter_bomb01_Reference_lod3.smd"
+	NoFacial
+}
+$ShadowLOD
+{
+	replacemodel "helicopter_bomb01_Reference.smd" "helicopter_bomb01_Reference_lod4.smd"
+	NoFacial
+}

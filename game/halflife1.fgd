@@ -402,7 +402,7 @@ size(choices) : "Hull Size" : 0 =
 	model(studio) : "model"
 ]
 @NPCClass base(BaseNPC) studio("models/roach.mdl") = monster_cockroach : "Cockroach" []
-@PointClass base(Targetname, RenderFields, Angles, Target) studio("models/light.mdl") = xen_plantlight : "Xen Plant Light" []
+@PointClass base(Targetname, RenderFields, Angles) studio("models/light.mdl") = xen_plantlight : "Xen Plant Light" []
 @PointClass base(Targetname, RenderFields, Angles) studio("models/hair.mdl") = xen_hair : "Xen Hair" 
 [
 	spawnflags(Flags) = 

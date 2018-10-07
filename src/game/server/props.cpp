@@ -2457,6 +2457,7 @@ BEGIN_DATADESC( CPhysicsProp )
 	DEFINE_FIELD( m_bFirstCollisionAfterLaunch, FIELD_BOOLEAN ),
 
 	DEFINE_THINKFUNC( ClearFlagsThink ),
+	DEFINE_THINKFUNC(NavThink),
 
 END_DATADESC()
 

@@ -97,7 +97,7 @@ void CNPC_VehicleDriver::Spawn( void )
 
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND );
-	CapabilitiesAdd( bits_CAP_MOVE_SHOOT );
+	CapabilitiesAdd( bits_CAP_MOVE_SHOOT | bits_CAP_SIMPLE_VISIBILITY);
 
 	SetModel( "models/roller_vehicledriver.mdl" );
 	SetHullType(HULL_LARGE);

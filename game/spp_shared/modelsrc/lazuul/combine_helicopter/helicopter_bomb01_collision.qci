@@ -1,0 +1,94 @@
+
+$CollisionModel "helicopter_bomb01_physics.smd"
+{
+	$mass 35
+	$inertia 10
+	$damping 0.01
+	$rotdamping 2
+	$rootbone " "
+
+}
+
+$CollisionText
+{
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_1"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"5 0 0"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_1"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"-5 0 0"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_2"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 2 0"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_2"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 -2 0"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_2"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 0 2"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_2"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 0 -2"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_3"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 0 3"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_3"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 0 -3"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_3"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 3 0"
+	}
+	break 
+	{
+		"model"		"Combine_Helicopter/bomb_debris_3"
+		"health"		"10"
+		"fadetime"		"10"
+		"burst"		"100"
+		"offset"		"0 -3 0"
+	}
+}

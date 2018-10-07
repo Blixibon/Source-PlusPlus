@@ -991,10 +991,10 @@
 
 	model(studio) : "Model" : "models/combine_soldier.mdl" : "Used for custom models only. Otherwise use 'Is Elite' and 'Soldier Variant' to control the model."
 
-	IsElite(choices) "Is Elite" : "0" =
+	IsElite(choices) : "Is Elite" : "0" : "'Elite' refers to the helmet style and ability to launch combine balls. The white armor of the classic elites is the 'Super Soldier' variant." =
 	[
-		"0"	: "No"
-		"1"	: "Yes"
+		0	: "No"
+		1	: "Yes"
 	]
 	
 	soldier_variant(choices) : "Soldier Variant" : "-1" =

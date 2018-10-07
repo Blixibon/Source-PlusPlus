@@ -50,7 +50,7 @@ enum Capability_t
 	bits_CAP_MOVE_SHOOT				= 0x00000040, // tries to shoot weapon while moving
 	bits_CAP_SKIP_NAV_GROUND_CHECK	= 0x00000080, // optimization - skips ground tests while computing navigation
 	bits_CAP_USE					= 0x00000100, // open doors/push buttons/pull levers
-	//bits_CAP_HEAR					= 0x00000200, // can hear forced sounds
+	bits_CAP_SIMPLE_VISIBILITY		= 0x00000200, // use the old method of sighting entities
 	bits_CAP_AUTO_DOORS				= 0x00000400, // can trigger auto doors
 	bits_CAP_OPEN_DOORS				= 0x00000800, // can open manual doors
 	bits_CAP_TURN_HEAD				= 0x00001000, // can turn head, always bone controller 0

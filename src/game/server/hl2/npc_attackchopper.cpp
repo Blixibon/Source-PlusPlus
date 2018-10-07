@@ -52,6 +52,7 @@
 #define CHOPPER_MODEL_NAME	"models/combine_helicopter.mdl"
 #define CHOPPER_MODEL_CORPSE_NAME	"models/combine_helicopter_broken.mdl"
 #define CHOPPER_RED_LIGHT_SPRITE	"sprites/redglow1.vmt"
+#define CHOPPER_PILOT_MODEL	"models/combinepilot/combinepilot.mdl"
 
 #define CHOPPER_MAX_SMALL_CHUNKS	1
 #define CHOPPER_MAX_CHUNKS	3
@@ -183,6 +184,7 @@ enum
 };
 
 #define GRENADE_HELICOPTER_MODEL "models/combine_helicopter/helicopter_bomb01.mdl"
+#define GRENADE_HELICOPTER_EP2_MODEL "models/combine_helicopter/helicopter_bomb02.mdl"
 
 LINK_ENTITY_TO_CLASS( info_target_helicopter_crash, CPointEntity );
 
@@ -829,6 +831,7 @@ BEGIN_DATADESC( CNPC_AttackHelicopter )
 	DEFINE_FIELD( m_bShortBlink,		FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bIndestructible,	FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bBombsExplodeOnContact, FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_flLastCorpseFall, FIELD_TIME),
 
 	DEFINE_KEYFIELD( m_bAlwaysTransition, FIELD_BOOLEAN, "AlwaysTransition" ),
 	DEFINE_KEYFIELD( m_iszTransitionTarget, FIELD_STRING, "TransitionTarget" ),
@@ -955,7 +958,7 @@ void CNPC_AttackHelicopter::Precache( void )
 		UTIL_PrecacheOther( "grenade_helicopter" );
 		UTIL_PrecacheOther( "env_fire_trail" );
 		Chopper_PrecacheChunks( this );
-		PrecacheModel("models/combine_soldier.mdl");
+		PrecacheModel(CHOPPER_PILOT_MODEL);
 	}
 
 	PrecacheScriptSound("NPC_AttackHelicopter.ChargeGun");
@@ -3208,27 +3211,36 @@ bool CNPC_AttackHelicopter::FireGun( void )
 		}
 	}
 
+	bool bGunnerFellOut = (m_flLastCorpseFall > gpGlobals->curtime);
+
+	if (bGunnerFellOut && m_nGunState == GUN_STATE_IDLE)
+		return false;
+
 	// Get gun attachment points
 	Vector vBasePos;
 	GetAttachment( m_nGunBaseAttachment, vBasePos );
 
 	// Aim perfectly while idle, but after charging, the gun don't move so fast.
 	Vector vecFireAtPosition;
-	if ( !GetEnemyVehicle() || (m_nGunState == GUN_STATE_IDLE) )
+	Vector vTargetDir;
+	if (!bGunnerFellOut)
 	{
-		ComputeFireAtPosition( &vecFireAtPosition );
-	}
-	else
-	{
-		ComputeVehicleFireAtPosition( &vecFireAtPosition );
-	}
-	
-	Vector vTargetDir = vecFireAtPosition - vBasePos;
-	VectorNormalize( vTargetDir );
+		if (!GetEnemyVehicle() || (m_nGunState == GUN_STATE_IDLE))
+		{
+			ComputeFireAtPosition(&vecFireAtPosition);
+		}
+		else
+		{
+			ComputeVehicleFireAtPosition(&vecFireAtPosition);
+		}
 
-	// Makes the model of the gun point to where we're aiming.
-	if ( !PoseGunTowardTargetDirection( vTargetDir ) )
-		return false;
+		vTargetDir = vecFireAtPosition - vBasePos;
+		VectorNormalize(vTargetDir);
+
+		// Makes the model of the gun point to where we're aiming.
+		if (!PoseGunTowardTargetDirection(vTargetDir))
+			return false;
+	}
 
 	// Are we charging?
 	if ( m_nGunState == GUN_STATE_CHARGING )
@@ -3242,6 +3254,12 @@ bool CNPC_AttackHelicopter::FireGun( void )
 
 	Vector vGunDir = vTipPos - vBasePos;
 	VectorNormalize( vGunDir );
+
+	if (bGunnerFellOut)
+	{
+		vTargetDir = vGunDir;
+		vecFireAtPosition = vBasePos + (vGunDir * 512.f);
+	}
 
 	// Are we firing?
 	if ( m_nGunState == GUN_STATE_FIRING )
@@ -3459,7 +3477,7 @@ void CNPC_AttackHelicopter::DropCorpse( int nDamage )
 	vecForceVector.z = 0.5;
 	vecForceVector *= forceScale;
 
-	CBaseEntity *pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
+	CBaseEntity *pGib = CreateRagGib(CHOPPER_PILOT_MODEL, GetAbsOrigin(), GetAbsAngles(), vecForceVector );
 	if ( pGib )
 	{
 		pGib->SetOwnerEntity( this );
@@ -4971,6 +4989,7 @@ void CGrenadeHelicopter::Precache( void )
 {
 	BaseClass::Precache( );
 	PrecacheModel( GRENADE_HELICOPTER_MODEL );
+	PrecacheModel(GRENADE_HELICOPTER_EP2_MODEL);
 
 	PrecacheScriptSound( "ReallyLoudSpark" );
 	PrecacheScriptSound( "NPC_AttackHelicopterGrenade.Ping" );
@@ -4988,7 +5007,16 @@ void CGrenadeHelicopter::Spawn( void )
 
 	// point sized, solid, bouncing
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
-	SetModel( GRENADE_HELICOPTER_MODEL );
+
+	if (hl2_episodic.GetBool())
+	{
+		SetModel(GRENADE_HELICOPTER_EP2_MODEL);
+	}
+	else
+	{
+		SetModel(GRENADE_HELICOPTER_MODEL);
+	}
+	
 
 	if ( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) )
 	{
