@@ -1,3 +1,6 @@
 [submodule "src/thirdparty/subhook"]
 	path = src/thirdparty/subhook
 	url = https://github.com/Petercov/subhook
+[submodule "game/spp_shared/content/hl2epX_extra/reloaded"]
+	path = game/spp_shared/content/hl2epX_extra/reloaded
+	url = https://github.com/Northern3D/hl2-reloaded
