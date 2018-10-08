@@ -210,30 +210,56 @@ void CWorldLights::LevelInitPreEntity()
 		int nIndices = indexLump.LumpSize() / sizeof(dleafambientindex_t);
 		dleafambientindex_t *pIndices = reinterpret_cast<dleafambientindex_t*>(indexLump.LumpBase());
 
-		Assert(nIndices == nLeaves);
-
 		CMapLoadHelper ambientLump(bHDR ? LUMP_LEAF_AMBIENT_LIGHTING_HDR : LUMP_LEAF_AMBIENT_LIGHTING);
-		//int nCubes = ambientLump.LumpSize() / sizeof(dleafambientlighting_t);
+		int nCubes = ambientLump.LumpSize() / sizeof(dleafambientlighting_t);
 		dleafambientlighting_t *pLighting = reinterpret_cast<dleafambientlighting_t*>(ambientLump.LumpBase());
 
-		for (int i = 0; i < nLeaves; i++, pLeaf++)
+		if (nIndices <= 0)
 		{
-			CubeVec &lightCubes = m_LeafCubes.Element(i);
-
-			Vector mins, maxs;
-			mins.Init(pLeaf->mins[0], pLeaf->mins[1], pLeaf->mins[2]);
-			maxs.Init(pLeaf->maxs[0], pLeaf->maxs[1], pLeaf->maxs[2]);
-
-			dleafambientindex_t &ambientIndex = pIndices[i];
-			lightCubes.SetCount(ambientIndex.ambientSampleCount);
-			for (int j = 0; j < ambientIndex.ambientSampleCount; j++)
+			for (int i = 0; i < nLeaves && i < nCubes; i++, pLeaf++)
 			{
-				dleafambientlighting_t &ambientLight = pLighting[ambientIndex.firstAmbientSample + j];
-				lightCube_t &lightCube = lightCubes.Element(j);
-				lightCube.cube = ambientLight.cube;
-				lightCube.pos.x = RemapVal(ambientLight.x, 0, 255, mins.x, maxs.x);
-				lightCube.pos.y = RemapVal(ambientLight.y, 0, 255, mins.y, maxs.y);
-				lightCube.pos.z = RemapVal(ambientLight.z, 0, 255, mins.z, maxs.z);
+				CubeVec &lightCubes = m_LeafCubes.Element(i);
+
+				Vector mins, maxs;
+				mins.Init(pLeaf->mins[0], pLeaf->mins[1], pLeaf->mins[2]);
+				maxs.Init(pLeaf->maxs[0], pLeaf->maxs[1], pLeaf->maxs[2]);
+
+				//dleafambientindex_t &ambientIndex = pIndices[i];
+				lightCubes.SetCount(1);
+				//for (int j = 0; j < ambientIndex.ambientSampleCount; j++)
+				{
+					dleafambientlighting_t &ambientLight = pLighting[i];
+					lightCube_t &lightCube = lightCubes.Element(0);
+					lightCube.cube = ambientLight.cube;
+					lightCube.pos.x = RemapVal(ambientLight.x, 0, 255, mins.x, maxs.x);
+					lightCube.pos.y = RemapVal(ambientLight.y, 0, 255, mins.y, maxs.y);
+					lightCube.pos.z = RemapVal(ambientLight.z, 0, 255, mins.z, maxs.z);
+				}
+			}
+		}
+		else
+		{
+			Assert(nIndices == nLeaves);
+
+			for (int i = 0; i < nLeaves; i++, pLeaf++)
+			{
+				CubeVec &lightCubes = m_LeafCubes.Element(i);
+
+				Vector mins, maxs;
+				mins.Init(pLeaf->mins[0], pLeaf->mins[1], pLeaf->mins[2]);
+				maxs.Init(pLeaf->maxs[0], pLeaf->maxs[1], pLeaf->maxs[2]);
+
+				dleafambientindex_t &ambientIndex = pIndices[i];
+				lightCubes.SetCount(ambientIndex.ambientSampleCount);
+				for (int j = 0; j < ambientIndex.ambientSampleCount; j++)
+				{
+					dleafambientlighting_t &ambientLight = pLighting[ambientIndex.firstAmbientSample + j];
+					lightCube_t &lightCube = lightCubes.Element(j);
+					lightCube.cube = ambientLight.cube;
+					lightCube.pos.x = RemapVal(ambientLight.x, 0, 255, mins.x, maxs.x);
+					lightCube.pos.y = RemapVal(ambientLight.y, 0, 255, mins.y, maxs.y);
+					lightCube.pos.z = RemapVal(ambientLight.z, 0, 255, mins.z, maxs.z);
+				}
 			}
 		}
 	}

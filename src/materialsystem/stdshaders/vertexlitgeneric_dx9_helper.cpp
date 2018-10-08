@@ -1574,7 +1574,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 		if ( bTreeSway )
 		{
 			float fTempConst[4];
-			fTempConst[1] = pShaderAPI->CurrentTime();
+			fTempConst[1] = IS_PARAM_DEFINED(info.m_nTime) && params[info.m_nTime]->GetFloatValue() > 0.0f ? params[info.m_nTime]->GetFloatValue() : pShaderAPI->CurrentTime();
 			Vector windDir;
 			params[info.m_nTreeSwayWindVector]->GetVecValue(windDir.Base(), 3);
 			if (windDir == vec3_invalid)

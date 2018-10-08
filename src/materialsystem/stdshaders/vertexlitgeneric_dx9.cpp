@@ -245,6 +245,7 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		info.m_nTreeSwaySpeedLerpStart = TREESWAYSPEEDLERPSTART;
 		info.m_nTreeSwaySpeedLerpEnd = TREESWAYSPEEDLERPEND;
 		info.m_nTreeSwayWindVector = TREESWAYWINDVECTOR;
+		info.m_nTime = TIME;
 	}
 
 	// Cloak Pass

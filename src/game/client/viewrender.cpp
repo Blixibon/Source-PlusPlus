@@ -53,6 +53,7 @@
 #include "clientmode_shared.h"
 #include "sourcevr/isourcevirtualreality.h"
 #include "client_virtualreality.h"
+#include "ShaderEditor/Grass/CGrassCluster.h"
 
 #ifdef PORTAL
 //#include "C_Portal_Player.h"
@@ -4431,6 +4432,7 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 	//
 	RopeManager()->DrawRenderCache( DepthMode != DEPTH_MODE_NORMAL );
 	g_pParticleSystemMgr->DrawRenderCache( DepthMode != DEPTH_MODE_NORMAL );
+	CGrassClusterManager::GetInstance()->RenderClusters(DepthMode != DEPTH_MODE_NORMAL);
 }
 
 

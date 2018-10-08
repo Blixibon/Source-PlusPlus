@@ -1,0 +1,4 @@
+"detail_grass"
+{
+	"$basetexture" "detail/grass_sprites"
+}

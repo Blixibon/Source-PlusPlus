@@ -156,6 +156,7 @@ struct VertexLitGeneric_DX9_Vars_t
 	int m_nTreeSwaySpeedLerpStart;
 	int m_nTreeSwaySpeedLerpEnd;
 	int m_nTreeSwayWindVector;
+	int m_nTime;
 };
 
 void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info );

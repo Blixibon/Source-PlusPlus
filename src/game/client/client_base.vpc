@@ -205,6 +205,12 @@ $Project
 		$File	"c_env_dof_controller.cpp"
 		
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
+
+		$Folder "Grass Clusters"
+		{
+			$File	"ShaderEditor\Grass\CGrassCluster.cpp"
+			$File	"ShaderEditor\Grass\CGrassCluster.h"
+		}
 		
 		$File	"hl2\C_Func_Monitor.cpp"
 		$File	"geiger.cpp"

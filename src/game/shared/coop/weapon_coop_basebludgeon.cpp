@@ -13,13 +13,15 @@
 	#include "vgui_controls/Controls.h"
 	//#include "c_coop_player.h"
 	#include "hud_crosshair.h"
+	#include "c_te_effect_dispatch.h"
 #else
     //#include "coop_player.h"
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
     #include "ndebugoverlay.h"
-    #include "te_effect_dispatch.h"
+	#include "te_effect_dispatch.h"
 #endif
+
 
 //================================================================================
 // Comandos
@@ -165,7 +167,7 @@ bool CWeaponCoopBaseBludgeon::ImpactWater( const Vector &start, const Vector &en
 
 	if ( waterTrace.fraction < 1.0f )
 	{
-#ifndef CLIENT_DLL
+//#ifndef CLIENT_DLL
 		CEffectData	data;
 
 		data.m_fFlags  = 0;
@@ -179,8 +181,11 @@ bool CWeaponCoopBaseBludgeon::ImpactWater( const Vector &start, const Vector &en
 			data.m_fFlags |= FX_WATER_IN_SLIME;
 		}
 
-		DispatchEffect( "watersplash", data );			
-#endif
+		CPASFilter filter(data.m_vOrigin);
+		filter.UsePredictionRules();
+
+		DispatchEffect("watersplash", data, filter);
+//#endif
 	}
 
 	return true;
