@@ -4,6 +4,11 @@
 	{
 		"lostcoast"	1
 	}
+	
+	"supers"
+	{
+		"hl2_epx" 1
+	}
 
 	420
 	{
@@ -28,11 +33,6 @@
 			{
 				"scenes"	"1"
 			}
-		}
-		
-		"hl2epX_extra"
-		{
-			folder	reloaded/reloaded
 		}
 	}
 }

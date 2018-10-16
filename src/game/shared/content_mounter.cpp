@@ -32,6 +32,14 @@ namespace Mounter
 {
 	KeyValues *g_pWritePathsToHere = nullptr;
 
+	CUtlFilenameSymbolTable g_FileNameTable;
+	/*typedef struct {
+		FileNameHandle_t file;
+		bool	bSuper;
+	} MountFileInfo_t;*/
+	CUtlMap<FileNameHandle_t, bool> g_SuperFiles(DefLessFunc(FileNameHandle_t));
+	CUtlVector<FileNameHandle_t> g_FilesToMount;
+
 	CUtlStringList g_SentenceFiles;
 
 	CUtlVector< char *, CUtlMemory< char *, int> > *GetSentenceFiles()
@@ -99,6 +107,7 @@ namespace Mounter
 
 			Q_strncpy(pchBuffer, sharedPath, maxLenInChars);
 			Q_StripLastDir(pchBuffer, maxLenInChars);
+			Q_StripTrailingSlash(pchBuffer);
 		}
 		else if (Q_strcmp(pchPathName, "sourcemods") == 0)
 		{
@@ -321,8 +330,8 @@ namespace Mounter
 				Warning("Unknown key \"%s\" in mounts\n", keyName);
 		}
 
-		//const char *pchModName = V_GetFileName(modDir);
-		CFmtStr localization("resource/%s", modDir);
+		const char *pchModName = V_GetFileName(modDir);
+		CFmtStr localization("resource/%s", pchModName);
 		localization.Append("_%language%.txt");
 		g_pVGuiLocalize->AddFile(localization);
 	}
@@ -332,9 +341,21 @@ namespace Mounter
 		char path[MAX_PATH];
 		ISteamApps* const steamApps = steamapicontext->SteamApps();
 
+		KeyValues *pkvSentences = pMounts->FindKey("sentence_files");
+		if (pkvSentences)
+		{
+			for (KeyValues * kvValue = pkvSentences->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+			{
+				g_SentenceFiles.CopyAndAddToTail(kvValue->GetString());
+			}
+		}
+
 		FOR_EACH_TRUE_SUBKEY(pMounts, pMount)
 		{
 			if (FStrEq(pMount->GetName(), "deps"))
+				continue;
+
+			if (FStrEq(pMount->GetName(), "supers"))
 				continue;
 
 			if (FStrEq(pMount->GetName(), "sentence_files"))
@@ -351,12 +372,32 @@ namespace Mounter
 		}
 	}
 
-	void MountContentFile(IFileSystem* const pFileSystem, const char *pchName);
+	void MountFiles(IFileSystem* const pFileSystem)
+	{
+		int iCount = g_FilesToMount.Count();
+		for (int i = 0; i < iCount; i++)
+		{
+			char path[MAX_PATH];
+			g_FileNameTable.String(g_FilesToMount.Element(i), path, MAX_PATH);
 
-	void MountFile(IFileSystem* const pFileSystem, const char *pchFile, const char *pchPathId)
+			KeyValuesAD pMounts("Mount");
+			if (pMounts->LoadFromFile(pFileSystem, path, PATHID_SHARED))
+			{
+				MountSection(pFileSystem, pMounts);
+			}
+		}
+
+		g_SuperFiles.Purge();
+		g_FilesToMount.Purge();
+		g_FileNameTable.RemoveAll();
+	}
+
+	void MarkContentFile(IFileSystem* const pFileSystem, const char *pchName, bool bSuper = false);
+
+	void MarkFile(IFileSystem* const pFileSystem, const char *pchFile, /*const char *pchPathId,*/ bool bSuper = false)
 	{
 		KeyValuesAD pMounts("Mount");
-		if (pMounts->LoadFromFile(pFileSystem, pchFile, pchPathId))
+		if (pMounts->LoadFromFile(pFileSystem, pchFile, PATHID_SHARED))
 		{
 			KeyValues *pkvContent = pMounts->FindKey("deps");
 
@@ -364,36 +405,56 @@ namespace Mounter
 			{
 				for (KeyValues * kvValue = pkvContent->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
 				{
-					MountContentFile(pFileSystem, kvValue->GetName());
+					MarkContentFile(pFileSystem, kvValue->GetName());
 				}
 			}
 
-			KeyValues *pkvSentences = pMounts->FindKey("sentence_files");
-			if (pkvSentences)
+			//MountSection(pFileSystem, pMounts);
+			FileNameHandle_t hFileName = g_FileNameTable.FindOrAddFileName(pchFile);
+			int iIndex = g_FilesToMount.Find(hFileName);
+			int iMIndex = g_SuperFiles.Find(hFileName);
+			bool bExists = g_FilesToMount.IsValidIndex(iIndex);
+			bool bWasSuper = bExists ? g_SuperFiles.Element(iMIndex) : false;
+			if (!bExists || bWasSuper || bSuper)
 			{
-				for (KeyValues * kvValue = pkvSentences->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+				if (!bExists)
 				{
-					g_SentenceFiles.CopyAndAddToTail(kvValue->GetString());
+					iIndex = g_FilesToMount.AddToTail(hFileName);
 				}
+				else
+				{
+					g_FilesToMount.Remove(iIndex);
+					iIndex = g_FilesToMount.AddToTail(hFileName);
+				}
+
+				iMIndex = g_SuperFiles.InsertOrReplace(hFileName, bSuper);
 			}
 
-			MountSection(pFileSystem, pMounts);
+			KeyValues *pkvSuper = pMounts->FindKey("supers");
+
+			if (pkvSuper)
+			{
+				for (KeyValues * kvValue = pkvSuper->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+				{
+					MarkContentFile(pFileSystem, kvValue->GetName(), true);
+				}
+			}
 		}
 	}
 
-	CUtlSymbolTable g_MountedFiles;
+	//CUtlSymbolTable g_MountedFiles;
 
-	void MountContentFile(IFileSystem* const pFileSystem, const char *pchName)
+	void MarkContentFile(IFileSystem* const pFileSystem, const char *pchName, bool bSuper)
 	{
-		if (g_MountedFiles.Find(pchName).IsValid())
+		/*if (g_MountedFiles.Find(pchName).IsValid())
 			return;
 
-		g_MountedFiles.AddString(pchName);
+		g_MountedFiles.AddString(pchName);*/
 
 		char path[MAX_PATH];
 		V_sprintf_safe(path, "mountlists/%s.txt", pchName);
 
-		MountFile(pFileSystem, path, PATHID_SHARED);
+		MarkFile(pFileSystem, path, bSuper);
 	}
 
 	void MountExtraContent()
@@ -417,14 +478,14 @@ namespace Mounter
 		{
 			for (KeyValues * kvValue = pkvContent->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
 			{
-				MountContentFile(filesystem, kvValue->GetName());
+				MarkContentFile(filesystem, kvValue->GetName());
 			}
 		}
 
 		// Mount shared base
-		MountFile(filesystem, "base_dirs.txt", PATHID_SHARED);
+		MarkFile(filesystem, "base_dirs.txt");
 
-		g_MountedFiles.RemoveAll();
+		MountFiles(filesystem);
 
 		// Mount Mod
 		KeyValues *pkvMounts = gameinfo->FindKey("mount");

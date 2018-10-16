@@ -4,6 +4,11 @@
 	{
 		file "scripts/sentences_hl2.txt"
 	}
+	
+	"supers"
+	{
+		"hl2_epx" 1
+	}
 
 	// 290930
 	// {
@@ -34,11 +39,6 @@
 			}
 			
 			vpk		enhanced_citizens
-		}
-		
-		"hl2epX_extra"
-		{
-			folder	reloaded/reloaded
 		}
 	}
 }

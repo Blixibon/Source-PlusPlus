@@ -1,0 +1,13 @@
+"Mount"
+{	
+	"|content_path|"
+	{
+		"head"	"1"
+		
+		"hl2epX_extra"
+		{
+			"dir"	"reloaded/reloaded"
+			vpk		mod_soldier_neworange
+		}
+	}
+}

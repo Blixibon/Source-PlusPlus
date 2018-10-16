@@ -4,10 +4,15 @@
 	"$surfaceprop" "metal"
 	"$envmap" "env_cubemap"
 	"$envmaptint" "[ .5 .5 .5]"
-	"$envmapmask" "Models/combine_helicopter/helicopter_bomb01_mask"
+	//"$envmapmask" "Models/combine_helicopter/helicopter_bomb01_mask"
 	"$selfillum" 1
 	
 	"$bumpmap" "models/combine_helicopter/helicopter_bomb01_normal"
+	"$normalmapalphaenvmapmask" "1"
+	
+	"$detail"	"detail/metal_detail_01"
+	//"$detailblendmode" "0"
+	$detailblendfactor 0.5
 }
 
 

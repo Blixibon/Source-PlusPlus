@@ -7,7 +7,7 @@
 #pragma once
 #endif
 
-#include "weapon_coop_base.h"
+#include "weapon_coop_basehlcombatweapon.h"
 
 #ifdef CLIENT_DLL
     #define CWeaponCoopMachineGun C_WeaponCoopMachineGun
@@ -16,10 +16,10 @@
 //================================================================================
 // La base para un arma cooperativo
 //================================================================================
-class CWeaponCoopMachineGun : public CWeaponCoopBase
+class CWeaponCoopMachineGun : public CWeaponCoopBaseHLCombat
 {
 public:
-    DECLARE_CLASS( CWeaponCoopMachineGun, CWeaponCoopBase );
+    DECLARE_CLASS( CWeaponCoopMachineGun, CWeaponCoopBaseHLCombat);
     DECLARE_NETWORKCLASS();
     DECLARE_PREDICTABLE();
     DECLARE_DATADESC();
