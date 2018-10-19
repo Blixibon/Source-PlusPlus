@@ -4,9 +4,13 @@
 	{
 		"head"	"1"
 		
+		"hl2epX_extra/reloaded/reloaded"
+		{
+			
+		}
+		
 		"hl2epX_extra"
 		{
-			"dir"	"reloaded/reloaded"
 			vpk		mod_soldier_neworange
 		}
 	}
