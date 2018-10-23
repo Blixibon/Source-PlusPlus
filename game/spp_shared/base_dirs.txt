@@ -10,6 +10,16 @@
 				scenes 1
 			}
 		}
+		
+		"better_effects"
+		{
+		
+		}
+		
+		"l4d2_ambient"
+		{
+		
+		}
 	}
 
 	"|shared_parent|"
@@ -25,7 +35,7 @@
 			}
 			
 			vpk		csgo_ambient
-			vpk		l4d2_ambient
+			//vpk		l4d2_ambient
 			vpk		asrd_content
 			vpk		hl2wars_content
 			"vpk"	"sdk_pak"

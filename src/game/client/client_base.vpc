@@ -203,6 +203,7 @@ $Project
 		$File	"materialproxy_modelwind.cpp"
 		
 		$File	"c_env_dof_controller.cpp"
+		$File	"object_motion_blur_effect.cpp"
 		
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
 

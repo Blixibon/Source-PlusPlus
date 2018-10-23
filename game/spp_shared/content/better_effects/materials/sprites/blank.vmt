@@ -1,0 +1,6 @@
+UnlitGeneric
+{
+	$basetexture "sprites/blank"
+
+	$additive 1
+}

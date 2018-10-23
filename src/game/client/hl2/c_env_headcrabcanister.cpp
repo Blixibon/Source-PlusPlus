@@ -10,6 +10,7 @@
 #include "c_tracer.h"
 #include "env_headcrabcanister_shared.h"
 #include "baseparticleentity.h"
+#include "object_motion_blur_effect.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -35,6 +36,8 @@ public:
 private:
 	C_EnvHeadcrabCanister( const C_EnvHeadcrabCanister & );
 
+	CMotionBlurObject m_MotionBlurObject;
+
 	CEnvHeadcrabCanisterShared	m_Shared;
 	CNetworkVar( bool, m_bLanded );
 };
@@ -51,7 +54,8 @@ END_RECV_TABLE()
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-C_EnvHeadcrabCanister::C_EnvHeadcrabCanister()
+C_EnvHeadcrabCanister::C_EnvHeadcrabCanister():
+	m_MotionBlurObject(this)
 {
 }
 

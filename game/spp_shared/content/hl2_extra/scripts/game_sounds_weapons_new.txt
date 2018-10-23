@@ -1,0 +1,85 @@
+// HL2 Weapons
+
+// weapon_shotgun.txt
+"Weapon_Shotgun.Empty"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"			"95,100"
+
+	"wave"			"weapons/shotgun/shotgun_empty.wav"
+}
+
+"Weapon_Shotgun.Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"			"weapons/shotgun/shotgun_reload1.wav"
+		"wave"			"weapons/shotgun/shotgun_reload2.wav"
+		"wave"			"weapons/shotgun/shotgun_reload3.wav"
+	}
+}
+
+"Weapon_Shotgun.Special1"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/shotgun/shotgun_cock_new.wav"
+}
+
+"Weapon_Shotgun.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.86"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"98,101"
+	"rndwave"
+	{
+	//	"wave"			"weapons/shotgun/shotgun_fire2.wav"
+	//	"wave"			"weapons/shotgun/shotgun_fire6.wav"
+		"wave"			"weapons/shotgun/shotgun_fire7.wav"
+	}
+}
+
+"Weapon_Shotgun.Double"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"90,95"
+
+	"wave"			"weapons/shotgun/shotgun_dbl_fire7.wav"
+}
+
+"Weapon_Shotgun.NPC_Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"			"weapons/shotgun/shotgun_reload1_npc.wav"
+		"wave"			"weapons/shotgun/shotgun_reload2_npc.wav"
+		"wave"			"weapons/shotgun/shotgun_reload3_npc.wav"
+	}
+}
+
+"Weapon_Shotgun.NPC_Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.86"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"98,101"
+
+	"wave"			"^weapons/shotgun/shotgun_fire7_npc.wav"
+}
+
+

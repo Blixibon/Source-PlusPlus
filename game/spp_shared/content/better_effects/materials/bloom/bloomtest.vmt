@@ -1,0 +1,51 @@
+"Refract"
+{
+ 	$normalmap					"effects/muzzleblur_fx/muzzleblur_bumpmap"
+ 	$dudvmap					"effects/muzzleblur_fx/muzzleblur_fx"
+
+	$translucent 				1
+	$additive					1
+
+	$spriteorientation 			"vp_parallel"
+	$spriteorigin 				"[ 0.50 0.50 ]"
+	$spriterendermode			9
+	
+//	$vertexalpha 				1
+//	$vertexcolor 				1
+	$vertexcolormodulate 		1	
+
+//	$refracttinttexture 		"_rt_FullFrameFB"
+	$refracttint				"[ 1 1 1 ]"
+	$refractamount 				0.01
+	$forcerefract 				0
+	$bluramount 				2
+	$nofog 						0
+	$selfillum 					1 // This is kinda unnecessary on a refract material... But what the heck.
+	$modulate 					0 // Modulation seem to wreck the fake overdraw effect, which we awfully use for the bloom.
+
+	// $nocull						1
+
+	$model 						1
+	
+	$fbtexture 					"_rt_FullFrameFB"
+	$blurtexture				"_rt_SmallHDR0"	
+
+	$linearread_basetexture 	1
+	$linearwrite				1
+
+	$c0_x						1024 	//engine bloomamount pass
+
+	$PIXSHADER		 			"bloomadd_ps20"
+
+	"Proxies"
+	{
+		"BloomAdd"
+		{
+		}
+	}
+
+	"screenspace_general_dx8"
+	{
+		$PIXSHADER "bloomadd_ps11"
+	}
+}

@@ -1,0 +1,29 @@
+"UnlitTwoTexture"
+{
+	// Original shader: VertexLitTexture
+	$basetexture		"effects/laser1" //"effects/laser_line"
+	$texture2			"effects/laser_noise"
+
+	$transculent		1
+	$additive			1
+	$alpha 			1
+//	$model 			1
+	$color "[1 0 0]"	
+
+	$MotionBlurInternal 		"[0 0 0 0]"
+
+
+	"Proxies"
+	{
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$texture2transform"
+			"texturescrollrate" 0.6
+			"texturescrollangle" 0
+		}
+		"MotionBlur"
+		{
+		}
+	}
+}

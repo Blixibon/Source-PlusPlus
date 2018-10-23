@@ -275,6 +275,8 @@ void CPropCombineBall::Precache( void )
 	}
 
 	PrecacheScriptSound( "NPC_CombineBall.HoldingInPhysCannon" );
+
+	PrecacheParticleSystem("boom_ball");
 }
 
 

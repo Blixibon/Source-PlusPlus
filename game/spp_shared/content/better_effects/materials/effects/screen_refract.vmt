@@ -1,0 +1,18 @@
+"refract"
+{
+	"$normalmap" "effects/screen_refract"
+
+	"$refractamount" "0.1"
+	"$bluramount" "0.4"	
+
+	"$vertexalpha" "1"
+	"$vertexcolor" "1"
+	"$modulate" "1"
+
+	"$translucent" "1"
+	"$forcerefract" 1
+ 
+	"$nofog" "1"
+	"$vertexcolormodulate" "1"
+	// "// $nocull" 1
+}

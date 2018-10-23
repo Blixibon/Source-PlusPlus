@@ -341,15 +341,6 @@ namespace Mounter
 		char path[MAX_PATH];
 		ISteamApps* const steamApps = steamapicontext->SteamApps();
 
-		KeyValues *pkvSentences = pMounts->FindKey("sentence_files");
-		if (pkvSentences)
-		{
-			for (KeyValues * kvValue = pkvSentences->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
-			{
-				g_SentenceFiles.CopyAndAddToTail(kvValue->GetString());
-			}
-		}
-
 		FOR_EACH_TRUE_SUBKEY(pMounts, pMount)
 		{
 			if (FStrEq(pMount->GetName(), "deps"))
@@ -383,6 +374,15 @@ namespace Mounter
 			KeyValuesAD pMounts("Mount");
 			if (pMounts->LoadFromFile(pFileSystem, path, PATHID_SHARED))
 			{
+				KeyValues *pkvSentences = pMounts->FindKey("sentence_files");
+				if (pkvSentences)
+				{
+					for (KeyValues * kvValue = pkvSentences->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+					{
+						g_SentenceFiles.CopyAndAddToTail(kvValue->GetString());
+					}
+				}
+
 				MountSection(pFileSystem, pMounts);
 			}
 		}

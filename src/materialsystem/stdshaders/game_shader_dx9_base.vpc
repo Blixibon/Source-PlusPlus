@@ -77,6 +77,7 @@ $Project
 		$File	"water.cpp"
 		$File	"worldvertextransition.cpp"
 		$File	"DepthOfField_dx9.cpp"
+		$File	"object_motion_blur_dx9.cpp"
 
 		$File	"detail_grass.cpp"
 	}

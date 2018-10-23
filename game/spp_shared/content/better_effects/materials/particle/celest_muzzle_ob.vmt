@@ -1,0 +1,11 @@
+"SpriteCard"
+{
+	$basetexture 		"particle/celest_muzzle"
+
+	$depthblend 		1
+	$depthblendscale 		4
+
+	$overbrightfactor 		16
+	$additive 			1
+	$translucent 		1
+}

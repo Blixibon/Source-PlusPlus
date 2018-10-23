@@ -1,0 +1,24 @@
+"Refract"
+{
+ 	"$normalmap" 				"effects/muzzleblur_fx/bulletfx_blur"
+
+	"$translucent" 				"1"
+
+	"$spriteorientation" 				"vp_parallel"
+	"$spriteorigin" 				"[ 0.50 0.50 ]"
+
+	"$vertexalpha" 				"1"
+	"$vertexcolor" 				"1"
+	"$vertexcolormodulate" 			"1"	
+
+	"$refracttinttexture" 				"effects/bulletfx"
+	"$refracttint" 				"[8 8 8]"
+	"$refractamount" 				".2"
+	"$forcerefract" 				"1"
+	"$bluramount" 				"0.01"
+	"$nofog" 					"0"	
+	"$selfillum" 				"0"
+	"$modulate" 				"1"
+
+	// "// $nocull"					"1"
+}

@@ -1,0 +1,37 @@
+"Sprite" //"SpriteCard" //"UnlitGeneric"
+{
+	// Original shader: AddTexture
+	$basetexture		"effects/spark" //"effects/spectral_square"
+	$brightness		"effects/spark_brightness"
+	$additive			1
+	$transculent 		1
+	$vertexcolor		1
+	$addoverblend 		1
+
+	$spriteorientation 		"vp_parallel"
+	$spriteorigin 		"[ 0 0 ]"
+	$spriterendermode 		5
+
+	$minsize 			0.001
+	$maxsize 			1
+	$maxdistance 		2048
+	$blendframes 		0
+	$depthblendscale 		50
+
+	$powerfunction 		"[ 4 1 1 ]"	
+	$overbrightfactor 		2
+	$extractgreenalpha 		1
+	$addself 			0.8
+	$depthblend 		1
+
+	$linearread_basetexture 	1
+	$linearwrite 		1
+	$PIXSHADER 		"bloomadd_ps20"
+
+	"Proxies"
+	{
+		"BloomAdd"
+		{
+		}
+	}
+}

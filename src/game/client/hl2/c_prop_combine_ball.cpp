@@ -38,7 +38,8 @@ END_RECV_TABLE()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-C_PropCombineBall::C_PropCombineBall( void )
+C_PropCombineBall::C_PropCombineBall( void ):
+	m_MotionBlurObject(this, 1.0f)
 {
 	m_pFlickerMaterial = NULL;
 	m_pBodyMaterial = NULL;
@@ -336,6 +337,8 @@ void CombineBallExplosionCallback( const CEffectData &data )
 
 	// Throw sparks
 	FX_ElectricSpark( data.m_vOrigin, 4, 1, &normal );
+
+	DispatchParticleEffect("boom_ball", data.m_vOrigin, vec3_angle);
 }
 
 DECLARE_CLIENT_EFFECT( "cball_explode", CombineBallExplosionCallback );

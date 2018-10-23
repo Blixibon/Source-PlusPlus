@@ -1,0 +1,45 @@
+
+$IKChain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$Sequence "melee_gunhit" {
+	"combine_soldier_anim3_anims\melee_gunhit.smd"
+	activity "ACT_MELEE_ATTACK1" 1
+	{ event 3 13 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	//ikrule "rhand" release
+	//ikrule "lhand" release
+	ikrule "rfoot" footstep
+	ikrule "lfoot" footstep
+}
+
+$Sequence "melee_gunhit1" {
+	"combine_soldier_anim3_anims\melee_gunhit1.smd"
+	activity "ACT_MELEE_ATTACK1" 1
+	{ event 3 13 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	//ikrule "rhand" release
+	//ikrule "lhand" release
+	ikrule "rfoot" footstep range 0 0 4 7
+	ikrule "rfoot" footstep range 25 28 .. ..
+	ikrule "lfoot" footstep
+}
+
+$Sequence "melee_gunhit2" {
+	"combine_soldier_anim3_anims\melee_gunhit2.smd"
+	activity "ACT_MELEE_ATTACK1" 1
+	{ event 3 13 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" footstep
+	ikrule "lfoot" footstep
+}

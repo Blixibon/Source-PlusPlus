@@ -142,6 +142,8 @@ protected:
 
 	void			DisplayReplayReminder();
 
+	void DoObjectMotionBlur(const CNewViewSetup *pSetup);
+
 private:
 	virtual void	UpdateReplayMessages();
 

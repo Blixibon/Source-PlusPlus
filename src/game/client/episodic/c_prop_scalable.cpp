@@ -5,6 +5,7 @@
 //=============================================================================
 
 #include "cbase.h"
+#include "object_motion_blur_effect.h"
 
 class C_PropScalable : public C_BaseAnimating
 {
@@ -40,6 +41,7 @@ private:
 
 	void	CalculateScale( void );
 	float	m_nCalcFrame;	// Frame the last calculation was made at
+	CMotionBlurObject m_MotionBlurObject;
 };
 
 void RecvProxy_ScaleX( const CRecvProxyData *pData, void *pStruct, void *pOut )
@@ -98,7 +100,8 @@ BEGIN_DATADESC( C_PropScalable )
 	DEFINE_AUTO_ARRAY( m_bRunningScale, FIELD_BOOLEAN ),
 END_DATADESC()
 
-C_PropScalable::C_PropScalable( void )
+C_PropScalable::C_PropScalable( void ):
+	m_MotionBlurObject(this)
 {
 	m_flTargetScale[0] = 1.0f;
 	m_flTargetScale[1] = 1.0f;

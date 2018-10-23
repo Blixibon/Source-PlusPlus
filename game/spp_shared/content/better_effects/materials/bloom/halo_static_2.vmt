@@ -1,0 +1,28 @@
+"Sprite"
+{
+	$basetexture 	"bloom/halo_baset_2"
+
+	$spriteorientation	"vp_parallel"
+	$spriteorigin	"[ 0.50 0.50 ]"
+	$spriterendermode 	9 //5
+
+	$vertexcolor 	1
+	$vertexalpha 	1
+	$translucent 	1
+	$nofog 		1
+	$additive 		0
+	$ignorez		0
+
+	"Proxies"
+	{
+		"BloomAdd"
+		{
+		}
+	}
+
+	$PIXSHADER 	"bloomadd_ps20"
+	$linearread_basetexture 1
+	$linearwrite 	1
+
+	%noToolTexture 	1
+}

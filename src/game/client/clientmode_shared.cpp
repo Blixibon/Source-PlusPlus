@@ -70,6 +70,10 @@ extern ConVar replay_rendersetting_renderglow;
 #include "tf_gamerules.h"
 #endif
 
+#include "clienteffectprecachesystem.h"
+#include "materialsystem/imaterialvar.h"
+#include "object_motion_blur_effect.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -90,9 +94,15 @@ ConVar cl_show_num_particle_systems( "cl_show_num_particle_systems", "0", FCVAR_
 
 extern ConVar v_viewmodel_fov;
 extern ConVar voice_modenable;
+extern ConVar mat_object_motion_blur_enable;
 
 extern bool IsInCommentaryMode( void );
 extern const char* GetWearLocalizationString( float flWear );
+
+CLIENTEFFECT_REGISTER_BEGIN(ObjectMotionBlurEffect)
+CLIENTEFFECT_MATERIAL("effects/object_motion_blur")
+CLIENTEFFECT_MATERIAL("dev/glow_color")
+CLIENTEFFECT_REGISTER_END()
 
 CON_COMMAND( cl_reload_localization_files, "Reloads all localization files" )
 {
@@ -789,6 +799,11 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 //-----------------------------------------------------------------------------
 bool ClientModeShared::DoPostScreenSpaceEffects( const CNewViewSetup *pSetup )
 {
+	if (mat_object_motion_blur_enable.GetBool())
+	{
+		DoObjectMotionBlur(pSetup);
+	}
+
 #if defined( REPLAY_ENABLED )
 	if ( engine->IsPlayingDemo() )
 	{
@@ -797,6 +812,77 @@ bool ClientModeShared::DoPostScreenSpaceEffects( const CNewViewSetup *pSetup )
 	}
 #endif
 	return true;
+}
+
+void ClientModeShared::DoObjectMotionBlur(const CNewViewSetup *pSetup)
+{
+	if (g_ObjectMotionBlurManager.GetDrawableObjectCount() <= 0)
+		return;
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	ITexture *pFullFrameFB1 = materials->FindTexture("_rt_FullFrameFB1", TEXTURE_GROUP_RENDER_TARGET);
+
+	//
+	// Render Velocities into a full-frame FB1
+	//
+	IMaterial *pGlowColorMaterial = materials->FindMaterial("dev/glow_color", TEXTURE_GROUP_OTHER, true);
+
+	pRenderContext->PushRenderTargetAndViewport();
+	pRenderContext->SetRenderTarget(pFullFrameFB1);
+	pRenderContext->Viewport(0, 0, pSetup->width, pSetup->height);
+
+	// Red and Green are x- and y- screen-space velocities biased and packed into the [0,1] range.
+	// A value of 127 gets mapped to 0, a value of 0 gets mapped to -1, and a value of 255 gets mapped to 1.
+	//
+	// Blue is set to 1 within the object's bounds and 0 outside, and is used as a mask to ensure that
+	// motion blur samples only pull from the core object itself and not surrounding pixels (even though
+	// the area being blurred is larger than the core object).
+	//
+	// Alpha is not used
+	pRenderContext->ClearColor4ub(127, 127, 0, 0);
+	// Clear only color, not depth & stencil
+	pRenderContext->ClearBuffers(true, false, false);
+
+	// Save off state
+	Vector vOrigColor;
+	render->GetColorModulation(vOrigColor.Base());
+
+	// Use a solid-color unlit material to render velocity into the buffer
+	g_pStudioRender->ForcedMaterialOverride(pGlowColorMaterial);
+	g_ObjectMotionBlurManager.DrawObjects();
+	g_pStudioRender->ForcedMaterialOverride(NULL);
+
+	render->SetColorModulation(vOrigColor.Base());
+
+	pRenderContext->PopRenderTargetAndViewport();
+
+	//
+	// Render full-screen pass
+	//
+	IMaterial *pMotionBlurMaterial;
+	IMaterialVar *pFBTextureVariable;
+	IMaterialVar *pVelocityTextureVariable;
+	bool bFound1 = false, bFound2 = false;
+
+	// Make sure our render target of choice has the results of the engine post-process pass
+	ITexture *pFullFrameFB = materials->FindTexture("_rt_FullFrameFB", TEXTURE_GROUP_RENDER_TARGET);
+	pRenderContext->CopyRenderTargetToTexture(pFullFrameFB);
+
+	pMotionBlurMaterial = materials->FindMaterial("effects/object_motion_blur", TEXTURE_GROUP_OTHER, true);
+	pFBTextureVariable = pMotionBlurMaterial->FindVar("$fb_texture", &bFound1, true);
+	pVelocityTextureVariable = pMotionBlurMaterial->FindVar("$velocity_texture", &bFound2, true);
+	if (bFound1 && bFound2)
+	{
+		pFBTextureVariable->SetTextureValue(pFullFrameFB);
+
+		pVelocityTextureVariable->SetTextureValue(pFullFrameFB1);
+
+		int nWidth, nHeight;
+		pRenderContext->GetRenderTargetDimensions(nWidth, nHeight);
+
+		pRenderContext->DrawScreenSpaceRectangle(pMotionBlurMaterial, 0, 0, nWidth, nHeight, 0.0f, 0.0f, nWidth - 1, nHeight - 1, nWidth, nHeight);
+	}
 }
 
 //-----------------------------------------------------------------------------

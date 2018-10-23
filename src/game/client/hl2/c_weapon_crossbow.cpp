@@ -10,6 +10,7 @@
 #include "fx.h"
 #include "c_te_effect_dispatch.h"
 #include "beamdraw.h"
+#include "object_motion_blur_effect.h"
 
 CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectCrossbow )
 CLIENTEFFECT_MATERIAL( "effects/muzzleflash1" )
@@ -44,6 +45,7 @@ private:
 
 	Vector	m_vecLastOrigin;
 	bool	m_bUpdated;
+	CMotionBlurObject m_MotionBlurObject;
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_CrossbowBolt, DT_CrossbowBolt, CCrossbowBolt )
@@ -52,7 +54,8 @@ END_RECV_TABLE()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-C_CrossbowBolt::C_CrossbowBolt( void )
+C_CrossbowBolt::C_CrossbowBolt( void ):
+	m_MotionBlurObject(this, 2.0f)
 {
 }
 

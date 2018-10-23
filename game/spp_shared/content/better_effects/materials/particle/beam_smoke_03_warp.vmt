@@ -1,0 +1,13 @@
+"refract"
+{
+	$normalmap 		"particle/beam_smoke_03_normal"
+	$forcerefract 	1
+	$refractamount 	0.25
+	$bluramount 	8
+	$translucent 	1
+//	$vertexalpha 	1
+//	$vertexcolor	1
+//	$nofog 			1
+	
+//	$nocull			1
+}

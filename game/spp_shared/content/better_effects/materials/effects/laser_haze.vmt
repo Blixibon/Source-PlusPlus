@@ -1,0 +1,37 @@
+"Sprite"
+{
+	// Original shader: VertexLitTexture
+	$basetexture		"effects/laser_haze"
+	$texture2			"effects/laser_noise"
+
+	$spriterendermode 		5
+	$transculent		1
+
+	$additive			1
+
+	$fbtexture 		"_rt_FullFrameFB"
+	$blurtexture		"_rt_SmallHDR0"	
+
+	$linearread_basetexture 	1
+	$linearwrite		1
+
+	$c0_x			2 	//engine bloomamount pass
+
+	$PIXSHADER		 "bloomadd_ps20"
+
+	"screenspace_general_dx8"
+	{
+		$PIXSHADER "bloomadd_ps11"
+	}
+
+	"Proxies"
+	{
+
+		"TextureScroll"
+		{
+			"texturescrollvar" "$basetexturetransform"
+			"texturescrollrate" 2
+			"texturescrollangle" 120
+		}
+	}
+}

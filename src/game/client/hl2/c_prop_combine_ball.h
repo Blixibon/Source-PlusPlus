@@ -11,6 +11,8 @@
 #pragma once
 #endif
 
+#include "object_motion_blur_effect.h"
+
 class C_PropCombineBall : public C_BaseAnimating
 {
 	DECLARE_CLASS( C_PropCombineBall, C_BaseAnimating );
@@ -39,6 +41,8 @@ protected:
 	IMaterial	*m_pFlickerMaterial;
 	IMaterial	*m_pBodyMaterial;
 	IMaterial	*m_pBlurMaterial;
+
+	CMotionBlurObject m_MotionBlurObject;
 };
 
 

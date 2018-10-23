@@ -1,0 +1,8 @@
+"VertexLitGeneric"
+{
+$basetexture "dev/hide"
+$alphatest 1
+$translucent 1
+$additive 1
+$model 1
+}

@@ -1,0 +1,12 @@
+"SpriteCard"
+{
+	$basetexture 		"particle/physwave"
+	
+//	$blendframes 		1
+
+	$overbrightfactor	6
+	$depthblend 		1
+	$depthblendscale 	4
+	
+	$additive 			1
+}

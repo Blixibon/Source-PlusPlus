@@ -1,0 +1,13 @@
+"refract"
+{
+	$normalmap 		"effects/energy_flare_05_warp"
+	$refractamount 		0.25
+	$bluramount 		10
+	$vertexalpha 		1
+	$vertexcolor 		1
+	$translucent 		1
+	$forcerefract 		1
+	$nofog 			1
+	$vertexcolormodulate 	1
+	// $nocull 			1
+}

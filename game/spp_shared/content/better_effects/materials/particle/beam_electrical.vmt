@@ -1,0 +1,6 @@
+"SpriteCard"
+{
+	$basetexture 		"particle/beam_electrical"
+	$splinetype 		1
+	$additive 			1
+}

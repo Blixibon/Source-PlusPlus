@@ -1,0 +1,55 @@
+"Refract"
+{
+ 	$normalmap					"bloom/beam_normal"
+
+	$translucent 				1
+	$additive					1
+	// $nocull						1
+	$vertexalpha 				1
+	$vertexcolor 				1
+	$vertexcolormodulate 		1	
+
+//	$refracttinttexture 		"_rt_FullFrameFB"
+	$refracttint				"[ 1 1 1 ]"
+	$refractamount 				0
+	$forcerefract 				0
+	$bluramount 				0
+	$nofog 						1
+
+	$modulate 					0
+	$selfillum					1
+
+	$spriteorientation 			"vp_parallel"
+	$spriteorigin 				"[ 0.50 0.50 ]"
+	$spriterendermode			3
+	
+	$fbtexture 					"_rt_FullFrameFB"
+	$blurtexture				"_rt_SmallHDR0"	
+	$linearread_basetexture 	1
+	$linearwrite				1
+
+	$c0_x						1024 	//engine bloomamount pass
+	$PIXSHADER		 			"bloomadd_ps20"
+
+	"Proxies"
+	{
+		"BloomAdd"
+		{
+		}
+		
+		"LampHalo"
+		{
+		}
+
+		"ParticleSphereProxy"
+		{
+		}
+	}
+
+	"screenspace_general_dx8"
+	{
+		$PIXSHADER "bloomadd_ps11"
+	}
+}
+
+// This material is one messy composition of backdoors...

@@ -1,0 +1,4 @@
+patch
+{
+	include "materials\effects\energysplash.vmt"
+}

@@ -27,7 +27,7 @@ ConVar sk_plr_dmg_fraggrenade	( "sk_plr_dmg_fraggrenade","0");
 ConVar sk_npc_dmg_fraggrenade	( "sk_npc_dmg_fraggrenade","0");
 ConVar sk_fraggrenade_radius	( "sk_fraggrenade_radius", "0");
 
-#define GRENADE_MODEL "models/Weapons/w_npcnade.mdl"
+#define GRENADE_MODEL "models/Weapons/w_grenade.mdl"
 
 class CGrenadeFrag : public CBaseGrenade
 {
