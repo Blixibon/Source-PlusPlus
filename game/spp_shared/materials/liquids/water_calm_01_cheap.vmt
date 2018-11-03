@@ -1,0 +1,40 @@
+Water
+{
+	$surfaceprop Water
+
+	$envmap "environment maps/metal_generic_005"
+
+	$normalmap "liquids/water_calm_normal"
+	$bottommaterial "liquids/water_beneath"
+
+	$abovewater 1
+	$forceexpensive 1
+
+	$flowmap "liquids/water_flowmap"
+	$flow_noise_texture "liquids/water_noise"
+	$flow_normaluvscale 545
+	$flow_worlduvscale 1
+	$flow_uvscrolldistance 0.3
+	$flow_bumpstrength 1.5
+	$flow_noise_scale 5e-05
+	$flow_timescale 0.8
+	$flow_timeintervalinseconds 3
+
+	$reflecttint "{40 47 53}"
+	$reflectamount 0.2
+
+	$refracttexture "_rt_waterrefraction"
+	$refract 1
+	$refracttint "{170 181 183}"
+	$refractamount 0.1
+
+	$fogenable 1
+	$fogcolor "{3 17 22}"
+	$fogstart 0
+	$fogend 50
+	$flashlighttint 1
+	$lightmapwaterfog 1
+
+	%compilewater 1
+	%tooltexture "liquids/water_calm_normal"
+}

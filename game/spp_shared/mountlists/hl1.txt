@@ -4,6 +4,11 @@
 	{
 		file "scripts/sentences_hl1.txt"
 	}
+	
+	"supers"
+	{
+		"hl1_extra" 1
+	}
 
 	280
 	{
@@ -11,15 +16,6 @@
 		"hl1"
 		{
 			"vpk"	"hl1_pak"
-		}
-	}
-	
-	"|content_path|"
-	{
-		"head"	"1"
-		"hl1_extra"
-		{
-			
 		}
 	}
 }

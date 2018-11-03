@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture"	"decay\{tension_a"
+	"$alphatest"	"1"
+	"$ALPHATESTREFERENCE"	"0.5"
+}

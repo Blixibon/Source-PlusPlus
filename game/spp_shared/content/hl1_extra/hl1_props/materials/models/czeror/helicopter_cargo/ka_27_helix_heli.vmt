@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/czeror/helicopter_cargo/ka_27_helix_heli"
+	"$alphatest" 1
+}

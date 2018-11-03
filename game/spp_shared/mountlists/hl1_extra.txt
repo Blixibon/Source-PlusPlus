@@ -1,0 +1,16 @@
+"Mount"
+{
+	sentence_files
+	{
+		file "scripts/sentences_hl1.txt"
+	}
+
+	"|content_path|"
+	{
+		"head"	"1"
+		"hl1_extra"
+		{
+			dir hl1_props
+		}
+	}
+}

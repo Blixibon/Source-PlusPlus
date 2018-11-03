@@ -8,7 +8,8 @@ enum GameType
 {
 	GAME_INVALID = -1,
 
-	GAME_HL1 = 0,
+	GAME_DEFAULT = 0,
+	GAME_HL1,
 	GAME_HL2,
 	GAME_EP1,
 	GAME_EP2,

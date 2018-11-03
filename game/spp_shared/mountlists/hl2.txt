@@ -39,6 +39,7 @@
 			}
 			
 			vpk		enhanced_citizens
+			vpk		hl2beta_textures
 		}
 	}
 }

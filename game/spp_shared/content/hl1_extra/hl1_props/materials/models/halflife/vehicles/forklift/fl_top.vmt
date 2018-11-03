@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/halflife/vehicles/forklift/fl_top"
+	"$nocull" "1"
+}

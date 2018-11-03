@@ -42,6 +42,7 @@ bool CGameTypeManager::Init()
 
 	char *gwCodedGames[MAX_CODE_GAMETYPES] =
 	{
+		"default",
 		"hl1",
 		"hl2",
 		"ep1",
@@ -327,7 +328,7 @@ void CGameTypeManager::LevelInitPreEntity()
 
 	if (vecCandidates.Count() == 0)
 	{
-		m_iGameType = GAME_HL2;
+		m_iGameType = GAME_DEFAULT;
 		return;
 	}
 
@@ -337,7 +338,7 @@ void CGameTypeManager::LevelInitPreEntity()
 	}
 	else
 	{
-		GameType BestType = GAME_HL2;
+		GameType BestType = GAME_DEFAULT;
 		int iBestPriority = 0;
 		for (int i = 0; i < vecCandidates.Count(); i++)
 		{

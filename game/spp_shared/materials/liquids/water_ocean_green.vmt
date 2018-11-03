@@ -1,0 +1,47 @@
+Water
+{
+	$surfaceprop Water
+
+	$normalmap "liquids/water_sea_normal"
+	$bottommaterial "liquids/water_beneath"
+
+	$abovewater 1
+	$forceexpensive 1
+	$reflect2dskybox 1
+
+	$flowmap "liquids/water_flowmap"
+	$flow_noise_texture "liquids/water_noise"
+	$flow_normaluvscale 415
+	$flow_worlduvscale 1
+	$flow_uvscrolldistance 0.3
+	$flow_bumpstrength 2.5
+	$flow_noise_scale 0.00015
+	$flow_timescale 0.6
+	$flow_timeintervalinseconds 1.5
+
+	$reflecttexture "_rt_waterreflection"
+	$reflecttint "{210 210 210}"
+	$reflectamount 0.12
+	$reflectentities 1
+	$reflectonlymarkedentities 1
+
+	$refracttexture "_rt_waterrefraction"
+	$refract 1
+	$refracttint "{167 189 166}"
+	$refractamount 0.1
+
+	$fogenable 1
+	$fogcolor "{12 33 25}"
+	$fogstart 0
+	$fogend 50
+	$flashlighttint 1
+	$lightmapwaterfog 1
+
+	%compilewater 1
+	%tooltexture "liquids/water_sea_normal"
+
+	GPU<2
+	{
+		$fallbackmaterial liquids/water_ocean_green_cheap
+	}
+}
