@@ -35,6 +35,9 @@
 #if defined( TF_CLASSIC_CLIENT )
 #include "tf_mainmenu.h"
 #include "tf_mainmenu_interface.h"
+#else
+#include "peter/base_mainmenu.h"
+#include "peter/base_mainmenu_interface.h"
 #endif
 
 using namespace vgui;
@@ -42,9 +45,9 @@ using namespace vgui;
 void MP3Player_Create( vgui::VPANEL parent );
 void MP3Player_Destroy();
 
-#if defined( TF_CLASSIC_CLIENT )
+//#if defined( TF_CLASSIC_CLIENT )
 void OverrideMainMenu();
-#endif
+//#endif
 
 #include <vgui/IInputInternal.h>
 vgui::IInputInternal *g_InputInternal = NULL;
@@ -214,10 +217,10 @@ void VGui_CreateGlobalPanels( void )
 	loadingdisc->Create( gameToolParent );
 	messagechars->Create( gameToolParent );
 
-#if defined (TF_CLASSIC_CLIENT)
+//#if defined (TF_CLASSIC_CLIENT)
 	MainMenu->Create(NULL);
 	OverrideMainMenu();
-#endif
+//#endif
 
 	// Debugging or related tool
 	fps->Create( toolParent );

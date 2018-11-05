@@ -134,7 +134,7 @@ void CNPC_Core::ModifyEmitSoundParams(EmitSound_t &params)
 
 	if (params.m_nChannel == CHAN_VOICE)
 	{
-		params.m_nFlags |= SND_IGNORE_PHONEMES;
+		//params.m_nFlags |= SND_IGNORE_PHONEMES;
 		if (params.m_SoundLevel == SNDLVL_NONE)
 			params.m_SoundLevel = SNDLVL_TALKING;
 	}

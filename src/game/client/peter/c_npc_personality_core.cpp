@@ -139,10 +139,10 @@ void C_NPC_Core::ClientThink(void)
 	Vector forward;
 	AngleVectors(effect_angles, &forward);
 
-	CMouthInfo *pMouth = GetMouth();
-	//pMouth->ActivateEnvelope();
+	//CMouthInfo *pMouth = GetMouth();
+	////pMouth->ActivateEnvelope();
 
-	float value = pMouth->mouthopen / 128.0;
+	float value = GetMouthOpenPct();
 
 	if (value > 1.0)
 		value = 1.0;

@@ -152,6 +152,15 @@ bool CModInfo::HasPortals()
 //-----------------------------------------------------------------------------
 // Purpose: data accessor
 //-----------------------------------------------------------------------------
+bool CModInfo::HasMultipleSPCampaigns()
+{
+	return (stricmp(m_pModData->GetString("multiplecampaigns", "0"), "1") == 0);
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: data accessor
+//-----------------------------------------------------------------------------
 bool CModInfo::NoDifficulty()
 {
 	return (stricmp(m_pModData->GetString("nodifficulty", "0"), "1") == 0);

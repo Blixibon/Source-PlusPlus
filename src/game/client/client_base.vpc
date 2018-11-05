@@ -212,6 +212,39 @@ $Project
 			$File	"ShaderEditor\Grass\CGrassCluster.cpp"
 			$File	"ShaderEditor\Grass\CGrassCluster.h"
 		}
+
+		$Folder "Game UI" [!$TF2CLASSIC]
+		{
+			$File	"gameui\modinfo.cpp"
+			$File	"peter\base_backgroundpanel.cpp"
+			$File	"peter\base_backgroundpanel.h"
+			$File	"peter\base_mainmenupanel.cpp"
+			$File	"peter\base_mainmenupanel.h"
+			$File	"peter\base_menupanelbase.cpp"
+			$File	"peter\base_menupanelbase.h"
+			$File	"peter\base_pausemenupanel.cpp"
+			$File	"peter\base_pausemenupanel.h"
+			$File	"peter\base_shadebackgroundpanel.cpp"
+			$File	"peter\base_shadebackgroundpanel.h"
+
+			$File	"peter\base_mainmenu.cpp"
+			$File	"peter\base_mainmenu.h"
+			$File	"peter\base_mainmenu_interface.cpp"
+			$File	"peter\base_mainmenu_interface.h"
+			$File	"peter\base_vgui_video.cpp"
+			$File	"peter\base_vgui_video.h"
+
+			$File	"gameui\backgroundmenubutton.cpp"
+			{
+				$Configuration
+				{
+					$Compiler
+					{
+						$Create/UsePrecompiledHeader	"Not Using Precompiled Headers"
+					}
+				}
+			}
+		}
 		
 		$File	"hl2\C_Func_Monitor.cpp"
 		$File	"geiger.cpp"

@@ -48,6 +48,7 @@ public:
 	bool AdvCrosshair();
    	const char *GetFallbackDir();
 	bool UseGameLogo();
+	bool HasMultipleSPCampaigns();
 
 	KeyValues *GetHiddenMaps();
 
