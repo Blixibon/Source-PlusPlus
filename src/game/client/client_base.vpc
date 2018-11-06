@@ -234,6 +234,12 @@ $Project
 			$File	"peter\base_vgui_video.cpp"
 			$File	"peter\base_vgui_video.h"
 
+			$Folder "Lazuul"
+			{
+				$File	"peter\newgamedialog.cpp"
+				$File	"peter\vsingleplayer.cpp"
+			}
+
 			$File	"gameui\backgroundmenubutton.cpp"
 			{
 				$Configuration

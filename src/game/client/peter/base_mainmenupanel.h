@@ -155,10 +155,10 @@ private:
 	//CTFServerlistPanel	*m_pServerlistPanel;
 
 	// menu logo
-	CMainMenuGameLogo *m_pGameLogo;
+	//CMainMenuGameLogo *m_pGameLogo;
 
 	// menu buttons
-	CUtlVector< CBackgroundMenuButton * >m_pGameMenuButtons;
+	//CUtlVector< CBackgroundMenuButton * >m_pGameMenuButtons;
 	CGameMenu *m_pGameMenu;
 	bool m_bPlatformMenuInitialized;
 	int m_iGameMenuInset;
@@ -167,7 +167,7 @@ private:
 		int x;
 		int y;
 	};
-	CUtlVector< coord > m_iGameTitlePos;
+	//CUtlVector< coord > m_iGameTitlePos;
 	coord m_iGameMenuPos;
 };
 

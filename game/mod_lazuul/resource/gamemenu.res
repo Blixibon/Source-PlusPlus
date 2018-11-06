@@ -10,8 +10,8 @@
 	"2"
 	{
 		"label" "#GameUI_GameMenu_NewGame"
-		//"command" "OpenNewGameDialog"
-		"command"	"engine hlms_newgame"
+		"command" "OpenNewGameDialog"
+		//"command"	"engine hlms_newgame"
 		"InGameOrder" "40"
 		"notmulti" "1"
 	}
@@ -26,7 +26,7 @@
 	{
 		"label" "#GameUI_GameMenu_LoadGame"
 		"command" "OpenLoadGameDialog"
-		"command" "engine ent_fire load setanimation podExtractor_extract"
+		//"command" "engine ent_fire load setanimation podExtractor_extract"
 		"InGameOrder" "30"
 		"notmulti" "1"
 	}
@@ -41,8 +41,8 @@
 	"6"
 	{
 		"label"	"#GameUI_LoadCommentary"
-		//"command" "OpenLoadSingleplayerCommentaryDialog"
-		"command"	"engine hlms_newgame commentary"
+		"command" "OpenLoadSingleplayerCommentaryDialog"
+		//"command"	"engine hlms_newgame commentary"
 		"InGameOrder" "60"
 		"notmulti" "1"
 	}
@@ -63,7 +63,7 @@
 	{
 		"label" "#GameUI_GameMenu_Options"
 		"command" "OpenOptionsDialog"
-		"command" "engine ent_fire settings sparkonce"
+		//"command" "engine ent_fire settings sparkonce"
 		"InGameOrder" "90"
 	}
 	// "10"

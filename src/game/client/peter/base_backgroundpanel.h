@@ -29,6 +29,7 @@ private:
 	CTFVideoPanel		*m_pVideo;
 	char				m_pzVideoLink[64];
 	char*				GetRandomVideo(bool bWidescreen);
+	CUtlVector<FileNameHandle_t> m_vecMovies;
 };
 
 #endif // TFMAINMENUBACKGROUNDPANEL_H

@@ -22,12 +22,6 @@ $Project "Client (Lazuul)"
 {
 	$Folder "Source Files"
 	{
-		$Folder "Lazuul"
-		{
-			$File	"peter\newgamedialog.cpp"
-			$File	"peter\vsingleplayer.cpp"
-		}
-		
 		$Folder "Black Mesa"
 		{
 			$File	"bms\c_npc_gargantua.cpp"

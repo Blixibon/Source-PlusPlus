@@ -91,7 +91,7 @@ void CTFBackgroundPanel::VideoUpdate()
 	if (!m_pVideo)
 		return;
 	
-	if (IsVisible() && m_pzVideoLink[0] != '\0' && !bInGameLayout)
+	if (IsVisible() && m_pzVideoLink[0] != '\0' && !bInGameLayout && !engine->IsInGame())
 	{
 		m_pVideo->Activate();
 		m_pVideo->BeginPlaybackNoAudio(m_pzVideoLink);
@@ -126,52 +126,53 @@ void CTFBackgroundPanel::GameLayout()
 
 char* CTFBackgroundPanel::GetRandomVideo(bool bWidescreen)
 {
-	char szFullFileName[MAX_PATH];
-	int iCount = 0;
+	int iCount = m_vecMovies.Count();
 
-	CUtlVector<FileNameHandle_t> vecMovies;
-
-	FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
-	
-
-	const char *fileName = "media/mainmenu_*.res";
-	fileName = g_pFullFileSystem->FindFirst(fileName, &findHandle);
-	while (fileName)
+	if (iCount <= 0)
 	{
-		// Only load chapter configs from the current mod's cfg dir
-		// or else chapters appear that we don't want!
-		Q_snprintf(szFullFileName, sizeof(szFullFileName), "media/%s", fileName);
-		FileHandle_t f = g_pFullFileSystem->Open(szFullFileName, "r", "GAME");
-		if (f)
+		char szFullFileName[MAX_PATH];
+		FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
+
+		const char *fileName = "media/mainmenu_*.res";
+		fileName = g_pFullFileSystem->FindFirst(fileName, &findHandle);
+		while (fileName)
 		{
-			// don't load chapter files that are empty, used in the demo
-			if (g_pFullFileSystem->Size(f) > 0)
+			// Only load chapter configs from the current mod's cfg dir
+			// or else chapters appear that we don't want!
+			Q_snprintf(szFullFileName, sizeof(szFullFileName), "media/%s", fileName);
+			FileHandle_t f = g_pFullFileSystem->Open(szFullFileName, "r", "GAME");
+			if (f)
 			{
-				CUtlBuffer buf(0,0, CUtlBuffer::TEXT_BUFFER);
-				KeyValuesAD KVFile("MenuMovies");
-				if (g_pFullFileSystem->ReadToBuffer(f, buf) && KVFile->LoadFromBuffer(szFullFileName, buf))
+				// don't load chapter files that are empty, used in the demo
+				if (g_pFullFileSystem->Size(f) > 0)
 				{
-					for (KeyValues * kvValue = KVFile->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+					CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+					KeyValuesAD KVFile("MenuMovies");
+					if (g_pFullFileSystem->ReadToBuffer(f, buf) && KVFile->LoadFromBuffer(szFullFileName, buf))
 					{
-						if (g_pFullFileSystem->FileExists(kvValue->GetString(),"GAME"))
+						for (KeyValues * kvValue = KVFile->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
 						{
-							FileNameHandle_t fName = g_pFullFileSystem->FindOrAddFileName(kvValue->GetString());
-							vecMovies.AddToTail(fName);
-							++iCount;
+							if (g_pFullFileSystem->FileExists(kvValue->GetString(), "GAME"))
+							{
+								FileNameHandle_t fName = g_pFullFileSystem->FindOrAddFileName(kvValue->GetString());
+								m_vecMovies.AddToTail(fName);
+								++iCount;
+							}
 						}
 					}
 				}
+				g_pFullFileSystem->Close(f);
 			}
-			g_pFullFileSystem->Close(f);
+			fileName = g_pFullFileSystem->FindNext(findHandle);
 		}
-		fileName = g_pFullFileSystem->FindNext(findHandle);
 	}
 
 	static char szResult[MAX_PATH];
 	
 	if (iCount > 0)
 	{
-		FileNameHandle_t fChosen = vecMovies.Random();
+		FileNameHandle_t fChosen = m_vecMovies.Random();
+		m_vecMovies.FindAndRemove(fChosen);
 		g_pFullFileSystem->String(fChosen, szResult, MAX_PATH);
 	}
 

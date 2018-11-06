@@ -374,7 +374,7 @@ void CGameMenuItem::ApplySchemeSettings(IScheme *pScheme)
 	SetReleasedSound("UI/buttonclickrelease.wav");
 	SetButtonActivationType(Button::ACTIVATE_ONPRESSED);
 
-	if (IsConsoleUI())
+	//if (IsConsoleUI())
 	{
 		SetArmedColor(GetSchemeColor("MainMenu.ArmedTextColor", pScheme), GetSchemeColor("Button.ArmedBgColor", pScheme));
 		SetTextInset(MAIN_MENU_INDENT_X360, 0);
@@ -388,11 +388,11 @@ void CGameMenuItem::ApplySchemeSettings(IScheme *pScheme)
 
 void CGameMenuItem::PaintBackground()
 {
-	if (!IsConsoleUI())
+	/*if (!IsConsoleUI())
 	{
 		BaseClass::PaintBackground();
 	}
-	else
+	else*/
 	{
 		if (!IsArmed() || !IsVisible() || GetParent()->GetAlpha() < 32)
 			return;
@@ -856,8 +856,8 @@ bool CTFMainMenuPanel::Init()
 	bInMenu = true;
 	bInGame = true;
 
-	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton", ModInfo().GetGameTitle()));
-	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton2", ModInfo().GetGameTitle2()));
+	//m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton", ModInfo().GetGameTitle()));
+	//m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton2", ModInfo().GetGameTitle2()));
 #ifdef CS_BETA
 	if (!ModInfo().NoCrosshair()) // hack to not show the BETA for HL2 or HL1Port
 	{
@@ -866,7 +866,7 @@ bool CTFMainMenuPanel::Init()
 #endif // CS_BETA
 
 	m_pGameMenu = NULL;
-	m_pGameLogo = NULL;
+	//m_pGameLogo = NULL;
 
 
 	CreateGameMenu();
@@ -878,7 +878,7 @@ bool CTFMainMenuPanel::Init()
 
 void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
-	int i = 0;
+	//int i = 0;
 
 	BaseClass::ApplySchemeSettings(pScheme);
 
@@ -897,7 +897,7 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 	CUtlVector< Color > buttonColor;
 	if (pClientScheme)
 	{
-		m_iGameTitlePos.RemoveAll();
+		/*m_iGameTitlePos.RemoveAll();
 		for (i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		{
 			m_pGameMenuButtons[i]->SetFont(pClientScheme->GetFont("ClientTitleFont", true));
@@ -918,7 +918,7 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 			m_pGameMenuButtons[m_pGameMenuButtons.Count() - 1]->SetFont(pClientScheme->GetFont("BetaFont", true));
 		}
 #endif // CS_BETA
-
+		*/
 		m_iGameMenuPos.x = atoi(pClientScheme->GetResourceString("Main.Menu.X"));
 		m_iGameMenuPos.x = scheme()->GetProportionalScaledValue(m_iGameMenuPos.x);
 		m_iGameMenuPos.y = atoi(pClientScheme->GetResourceString("Main.Menu.Y"));
@@ -927,7 +927,7 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 		m_iGameMenuInset = atoi(pClientScheme->GetResourceString("Main.BottomBorder"));
 		m_iGameMenuInset = scheme()->GetProportionalScaledValue(m_iGameMenuInset);
 	}
-	else
+	/*else
 	{
 		for (i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		{
@@ -941,7 +941,7 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 		m_pGameMenuButtons[i]->SetDefaultColor(buttonColor[i], Color(0, 0, 0, 0));
 		m_pGameMenuButtons[i]->SetArmedColor(buttonColor[i], Color(0, 0, 0, 0));
 		m_pGameMenuButtons[i]->SetDepressedColor(buttonColor[i], Color(0, 0, 0, 0));
-	}
+	}*/
 }	
 
 //-----------------------------------------------------------------------------
@@ -976,7 +976,7 @@ void CTFMainMenuPanel::CreateGameMenu()
 //-----------------------------------------------------------------------------
 void CTFMainMenuPanel::CreateGameLogo()
 {
-	if (ModInfo().UseGameLogo())
+	/*if (ModInfo().UseGameLogo())
 	{
 		m_pGameLogo = new CMainMenuGameLogo(this, "GameLogo");
 
@@ -992,7 +992,7 @@ void CTFMainMenuPanel::CreateGameLogo()
 	else
 	{
 		m_pGameLogo = NULL;
-	}
+	}*/
 }
 
 void CTFMainMenuPanel::CheckBonusBlinkState()
@@ -1035,6 +1035,7 @@ void CTFMainMenuPanel::UpdateGameMenus()
 CGameMenu *CTFMainMenuPanel::RecursiveLoadGameMenu(KeyValues *datafile)
 {
 	CGameMenu *menu = new CGameMenu(this, datafile->GetName());
+	menu->SetScheme("SourceScheme");
 
 	// loop through all the data adding items to the menu
 	for (KeyValues *dat = datafile->GetFirstSubKey(); dat != NULL; dat = dat->GetNextKey())
@@ -1102,7 +1103,7 @@ void CTFMainMenuPanel::PerformLayout()
 		idealMenuY = tall - menuTall - m_iGameMenuInset;
 	}
 
-	int yDiff = idealMenuY - m_iGameMenuPos.y;
+	/*int yDiff = idealMenuY - m_iGameMenuPos.y;
 
 	for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 	{
@@ -1120,7 +1121,7 @@ void CTFMainMenuPanel::PerformLayout()
 	{
 		// move the logo to sit right on top of the menu
 		m_pGameLogo->SetPos(m_iGameMenuPos.x + m_pGameLogo->GetOffsetX(), idealMenuY - m_pGameLogo->GetTall() + m_pGameLogo->GetOffsetY());
-	}
+	}*/
 
 	// position self along middle of screen
 	if (IsConsoleUI())
@@ -1134,15 +1135,25 @@ void CTFMainMenuPanel::PerformLayout()
 	UpdateGameMenus();
 };
 
-
+extern void CreateNewGameDialog(bool bCommentary);
 
 void CTFMainMenuPanel::OnCommand(const char* command)
 {
-	if (!Q_strcmp(command, "OpenNewGameDialog"))
+	if (ModInfo().HasMultipleSPCampaigns())
 	{
-
+		if (!Q_strcmp(command, "OpenNewGameDialog"))
+		{
+			CreateNewGameDialog(false);
+			return;
+		}
+		else if (!Q_strcmp(command, "OpenLoadSingleplayerCommentaryDialog"))
+		{
+			CreateNewGameDialog(true);
+			return;
+		}
 	}
-	else
+	
+
 	{
 		BaseClass::OnCommand(command);
 	}

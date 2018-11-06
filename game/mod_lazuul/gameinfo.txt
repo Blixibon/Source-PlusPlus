@@ -32,6 +32,7 @@
 	}
 	
 	supportsvr	1
+	multiplecampaigns 1
 
 	FileSystem
 	{
