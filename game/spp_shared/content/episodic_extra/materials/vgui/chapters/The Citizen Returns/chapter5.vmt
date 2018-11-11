@@ -2,4 +2,5 @@
 {
 	"$basetexture" "VGUI/chapters/The Citizen Returns/chapter5"
 	"$vertexalpha" 1
+	"$ignorez" "1"
 }

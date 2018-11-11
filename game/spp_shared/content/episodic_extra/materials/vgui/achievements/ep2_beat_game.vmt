@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "vgui\achievements/ep2_beat_game"
+	"$translucent" "1"
+	"$vertexalpha" "1"
+	"$ignorez" "1"
+}

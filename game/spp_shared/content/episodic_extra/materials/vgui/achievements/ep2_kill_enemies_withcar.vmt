@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "vgui\achievements/ep2_kill_enemies_withcar"
+	"$translucent" "1"
+	"$vertexalpha" "1"
+	"$ignorez" "1"
+}

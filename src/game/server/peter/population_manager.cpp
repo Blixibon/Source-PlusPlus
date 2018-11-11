@@ -1,3 +1,12 @@
+//-----------------------------------------------------------------------
+//	The population manager: a system to perform weighted randomization
+//	of server-side game elements based on a 'tag' string in the level's
+//	'world' entity.
+//
+//	Author: Petercov (petercov@outlook.com)
+//	Created: August 22, 2018
+//-----------------------------------------------------------------------
+
 #include "cbase.h"
 #include "population_manager.h"
 #include "gametypes.h"
@@ -28,6 +37,11 @@ void CPopulationDefinition::PostInit()
 {
 	g_pPopulationManager->AddDefinition(this);
 }
+
+#pragma region UTILS
+//-----------------------------------------------
+// Helper functions copied from code by Valve.
+//-----------------------------------------------
 
 // Strip ' ' and '\n' characters from string.
 static void StripWhitespaceChars(char *szBuffer)
@@ -71,6 +85,14 @@ void RawLoadFileIntoVector(const char *pszMapCycleFile, CUtlVector<char *> &mapL
 	}
 }
 
+#pragma endregion
+
+#pragma region MANAGER
+//----------------------------------------------------
+// The manager class. Reads population scripts and
+// weights the elements of each definition instance.
+//----------------------------------------------------
+
 void CPopulationControl::LevelInitPostEntity()
 {
 	gEntList.RemoveListenerEntity(this);
@@ -85,12 +107,16 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 {
 	if (FClassnameIs(pEntity, "worldspawn"))
 	{
+		// Get the tag string from the world entity.
 		const char *pchTag = static_cast<CWorld *>(pEntity)->GetPopulationTag();
+
+		// If it's null, ask the gametype system for the area it got from the level's name.
 		if (pchTag == nullptr)
 			pchTag = g_pGameTypeSystem->GetFirstArea();
 
 		if (FStrEq(pchTag, ""))
 		{
+			// We got nothing. Use the default.
 			m_iszPopulationTag = AllocPooledString(DEFAULT_TAG);
 		}
 		else
@@ -98,21 +124,23 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 			m_iszPopulationTag = AllocPooledString(pchTag);
 		}
 
+		// Iterate through every definition instance we know about.
 		for (int i = 0; i < m_Definitions.Count(); i++)
 		{
 			CPopulationDefinition *pDef = m_Definitions[i];
-			pDef->weighted_random.Purge();
+			pDef->weighted_random.Purge(); // Purge any previous weighting.
 
 			CFmtStrN<MAX_PATH> filename;
-			filename.AppendFormat(FILENAME_FORMAT, STRING(m_iszPopulationTag), pDef->chName);
+			filename.AppendFormat(FILENAME_FORMAT, STRING(m_iszPopulationTag), pDef->chName); // Build the filename for the weighting script.
 
-
+			// Check if it exists.
 			if (!filesystem->FileExists(filename.Access(), "GAME"))
 			{
 				bool bFound = false;
 				char chPopTag[MAX_PATH];
 				Q_strncpy(chPopTag, STRING(m_iszPopulationTag), MAX_PATH);
-				
+
+				// It wasn't found, so go up the directory tree and look for it.
 				while (!bFound && V_StripLastDir(chPopTag, MAX_PATH))
 				{
 					char chPopTagNoSlash[MAX_PATH];
@@ -127,7 +155,8 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 					if (filesystem->FileExists(filename.Access(), "GAME"))
 						bFound = true;
 				}
-				
+
+				// Still nothing; use the default.
 				if (!bFound)
 				{
 					// Try the default tag
@@ -143,11 +172,11 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 					continue;
 			}
 
-			
+
 
 			CUtlStringList typeList;
 
-			RawLoadFileIntoVector(filename.Access(), typeList);
+			RawLoadFileIntoVector(filename.Access(), typeList); // Load the file.
 
 			if (typeList.Count() <= 0)
 				continue;
@@ -167,6 +196,8 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 		}
 	}
 }
+#pragma endregion
+
 
 CPopulationControl g_PopulationManager;
 CPopulationControl *g_pPopulationManager = &g_PopulationManager;

@@ -2,4 +2,5 @@
 {
 	"$basetexture" "VGUI/chapters/hl1/chapter1"
 	"$vertexalpha" 1
+	"$ignorez" "1"
 }

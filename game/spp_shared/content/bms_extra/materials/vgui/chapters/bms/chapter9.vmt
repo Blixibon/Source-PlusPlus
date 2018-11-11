@@ -4,4 +4,5 @@
   "$vertexalpha" 1
   "$gammaColorRead" "1"
   "$linearWrite" "1"
+	"$ignorez" "1"
 }

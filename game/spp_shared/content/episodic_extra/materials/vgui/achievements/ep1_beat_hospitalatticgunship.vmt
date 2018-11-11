@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "vgui\achievements/ep1_beat_hospitalatticgunship"
+	"$translucent" "1"
+	"$vertexalpha" "1"
+	"$ignorez" "1"
+}

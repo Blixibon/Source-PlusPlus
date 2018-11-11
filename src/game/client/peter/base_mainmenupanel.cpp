@@ -340,6 +340,8 @@ private:
 CGameMenuItem::CGameMenuItem(vgui::Menu *parent, const char *name) : BaseClass(parent, name, "GameMenuItem")
 {
 	m_bRightAligned = false;
+	if (parent)
+		SetScheme(parent->GetScheme());
 }
 
 void CGameMenuItem::ApplySchemeSettings(IScheme *pScheme)

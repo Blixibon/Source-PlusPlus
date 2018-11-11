@@ -1,4 +1,11 @@
-
+//---------------------------------------------------------
+//	npc_gargantua.cpp: The 'Black Mesa: Source' compatible
+//	'Gargantua' NPC. Created base on an analysis of it's
+//	model and observations of it's behavior in 'BM:S'.
+//
+//	Author: Petercov (petercov@outlook.com)
+//	Snippets: 
+//--------------------------------------------------------
 
 #include "cbase.h"
 #include "beam_shared.h"
@@ -24,34 +31,34 @@
 #define SF_SHAKE_NO_RUMBLE	0x0040		// DON'T Rumble the XBox Controller
 
 // Garg animation events
-#define GARG_AE_SLASH_LEFT			1
+//#define GARG_AE_SLASH_LEFT			1
 //#define GARG_AE_BEAM_ATTACK_RIGHT	2		// No longer used
-#define GARG_AE_LEFT_FOOT			3
-#define GARG_AE_RIGHT_FOOT			4
-#define GARG_AE_STOMP				5
-#define GARG_AE_BREATHE				6
+//#define GARG_AE_LEFT_FOOT			3
+//#define GARG_AE_RIGHT_FOOT			4
+//#define GARG_AE_STOMP				5
+//#define GARG_AE_BREATHE				6
 
 const float GARG_ATTACKDIST = 90.0;
 
 // Gargantua is immune to any damage but this
 #define GARG_DAMAGE					(DMG_ENERGYBEAM|DMG_BLAST|DMG_ACID)
 #define GARG_MODEL					"models/xenians/garg.mdl"
-#define GARG_EYE_SPRITE_NAME		"sprites/gargeye1.vmt"
-#define GARG_BEAM_SPRITE_NAME		"sprites/xbeam3.vmt"
-#define GARG_BEAM_SPRITE2			"sprites/xbeam3.vmt"
-#define GARG_STOMP_SPRITE_NAME		"sprites/gargeye1.vmt"
-#define GARG_STOMP_BUZZ_SOUND		"weapons/mine_charge.wav"
-#define GARG_FLAME_LENGTH			330
-#define GARG_GIB_MODEL				"models/metalplategibs.mdl"
+//#define GARG_EYE_SPRITE_NAME		"sprites/gargeye1.vmt"
+//#define GARG_BEAM_SPRITE_NAME		"sprites/xbeam3.vmt"
+//#define GARG_BEAM_SPRITE2			"sprites/xbeam3.vmt"
+//#define GARG_STOMP_SPRITE_NAME		"sprites/gargeye1.vmt"
+//#define GARG_STOMP_BUZZ_SOUND		"weapons/mine_charge.wav"
+//#define GARG_FLAME_LENGTH			330
+//#define GARG_GIB_MODEL				"models/metalplategibs.mdl"
 
 ConVar sk_gargantua_melee_dmg("sk_gargantua_melee_dmg", "0");
 ConVar sk_gargantua_flame_dmg("sk_gargantua_flame_dmg", "0");
-ConVar garg_fire_time("sk_gargantua_fire_time", "0.8");
+//ConVar garg_fire_time("sk_gargantua_fire_time", "0.8");
 ConVar garg_ally("sv_garg_ally", "0", FCVAR_CHEAT);
 
 ConVar debug_garg("g_debug_garg", "0", FCVAR_CHEAT);
 
-#define GARG_FIRE_TIME garg_fire_time.GetFloat()
+//#define GARG_FIRE_TIME garg_fire_time.GetFloat()
 
 int AE_GARG_REMOVE;
 int AE_GARG_FLAME_LEFT;

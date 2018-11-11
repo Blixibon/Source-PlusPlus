@@ -1,3 +1,13 @@
+//---------------------------------------------------------------
+// basecollegue_shared.cpp: Client/Server shared functions for
+// the CNPC_BaseColleague baseclass. This class is the base for
+// the recreations of the humanoid ally NPCs from 'Black Mesa'.
+// The code in this file handles the randomization of head
+// shapes.
+//
+// Author: Petercov (petercov@outlook.com)
+//---------------------------------------------------------------
+
 #include "cbase.h"
 #include "bms_utils.h"
 
@@ -13,6 +23,7 @@
 //			*module - 
 //			line - 
 // Output : static int
+// Author : Valve
 //-----------------------------------------------------------------------------
 static int SeedFileLineHash(int seedvalue, const char *sharedname, int additionalSeed)
 {
@@ -58,6 +69,7 @@ void C_NPC_BaseColleague::OnDataChanged(DataUpdateType_t type)
 	{
 		m_iOldRndSeed = m_iHeadRndSeed;
 
+		// Client-side weight generation.
 		for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
 		{
 			LocalFlexController_t controller = m_HeadFlxs[i];
@@ -86,11 +98,13 @@ CStudioHdr *CNPC_BaseColleague::OnNewModel()
 	if (hdr)
 	{
 #ifndef CLIENT_DLL
+		// Server-side seed generation.
 		int iSeed = SeedFileLineHash(entindex(), hdr->pszName(), gpGlobals->curtime);
 		m_iHeadRndSeed = iSeed;
 
 		DevMsg(2, "ENT %d %s seed: %d\n", entindex(), (IsServer() ? "SERVER" : "CLIENT"), iSeed);
 
+		// Server-side weight generation.
 		for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
 		{
 			LocalFlexController_t controller = m_HeadFlxs[i];

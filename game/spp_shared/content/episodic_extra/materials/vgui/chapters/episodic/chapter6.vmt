@@ -3,4 +3,5 @@
 {
 	"$baseTexture" "vgui/chapters/episodic/chapter6"
 	"$vertexalpha" 1
+	"$ignorez" "1"
 }

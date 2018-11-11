@@ -3,4 +3,5 @@
 {
 	"$baseTexture" "vgui/chapters/lostcoast/chapter1"
 	"$vertexalpha" 1
+	"$ignorez" "1"
 }

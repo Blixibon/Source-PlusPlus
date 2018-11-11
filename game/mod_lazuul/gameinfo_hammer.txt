@@ -28,6 +28,7 @@
 		}
 	}
 	"supportsvr"		"1"
+	"multiplecampaigns"		"1"
 	"FileSystem"
 	{
 		"SteamAppId"		"243750"
@@ -42,6 +43,7 @@
 			"GAME+mod+scenes"		"c:\github\source-plusplus\game\spp_shared"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\l4d2_ambient"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\better_effects"
+			"game"		"c:\github\source-plusplus\game\spp_shared\content\background_movies"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal2_content"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\hl2epX_extra\mod_soldier_neworange.vpk"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\hl2epX_extra"

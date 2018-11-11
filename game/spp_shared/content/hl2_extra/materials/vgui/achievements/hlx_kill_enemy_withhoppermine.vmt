@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "vgui\achievements/hlx_kill_enemy_withhoppermine"
+	"$ignorez" "1"
+	"$translucent" "1"
+	"$vertexalpha" "1"
+}

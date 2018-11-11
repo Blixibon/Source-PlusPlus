@@ -1,3 +1,16 @@
+//------------------------------------------------------
+// npc_personality_core.cpp: A 'personality core' from
+// Portal 2. Has a simple AI to allow a player to use it
+// as a flashlight.
+// Features:
+//	-Speaks idly. Some types respond to
+//	the speech of other types.
+//	-Flashlight.
+//	-Flips to front if carried with flashlight on.
+//
+// Author: Petercov (petercov@outlook.com)
+//------------------------------------------------------
+
 #include "cbase.h"
 #include "bone_setup.h"
 #include "hl2\weapon_physcannon.h"
@@ -18,6 +31,9 @@ const char *PLUG_ANIM_PREFIX = "sphere_plug_idle";
 #define NORMAL_FRONT_ANIM "sphere_glance_front"
 #define DAMAGED_FRONT_ANIM "sphere_damaged_glance_front"
 
+// Animation state transition table.
+// Usage is: g_pszAnimTransitions[from_state][to_state]
+// NULL means no transition.
 const char *g_pszAnimTransitions[MAX_ANIMSTATES][MAX_ANIMSTATES] =
 {
 	{NULL,								"sphere_plug_attach",	"sphere_damaged_flip_to_front"},
@@ -90,6 +106,7 @@ void CNPC_Core::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 		set.AppendCriteria("brokeneye", (m_iModelSkin == 0) ? "1" : "0");
 	}
 	
+	// For responses to other core types.
 	if (GetPotentialSpeechTarget() && GetPotentialSpeechTarget()->ClassMatches(m_iClassname))
 	{
 		CNPC_Core *pCore = assert_cast<CNPC_Core *> (GetPotentialSpeechTarget());

@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "vgui\achievements/hl2_pin_soldier_tobillboard"
+	"$ignorez" "1"
+	"$translucent" "1"
+	"$vertexalpha" "1"
+}

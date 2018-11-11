@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "vgui\achievements/hl2_makeabasket"
+	"$ignorez" "1"
+	"$translucent" "1"
+	"$vertexalpha" "1"
+}

@@ -260,6 +260,7 @@ m_eHealState( HEAL_STATE_NONE )
 {
 }
 
+// Returns the desired animation speed scale.
 float CNPC_Vortigaunt::AttackSpeedScale()
 {
 	int iSeq = SelectWeightedSequence(ACT_RANGE_ATTACK1);
@@ -3405,7 +3406,7 @@ void CNPC_Vortigaunt::Dispel(const Vector &vecOrigin, float flRadius)
 	int nNumEnemies = UTIL_EntitiesInBox(pEnemySearch, ARRAYSIZE(pEnemySearch), vecOrigin - Vector(flRadius, flRadius, flRadius), vecOrigin + Vector(flRadius, flRadius, flRadius), FL_NPC|FL_CLIENT);
 	for (int i = 0; i < nNumEnemies; i++)
 	{
-		// We only care about antlions
+		// We don't care about antlions
 		if (IsAntlion(pEnemySearch[i]) == true || IRelationType(pEnemySearch[i]) != D_HT)
 			continue;
 
@@ -3432,7 +3433,7 @@ void CNPC_Vortigaunt::Dispel(const Vector &vecOrigin, float flRadius)
 		pBCC->SetGroundEntity(NULL);
 		pBCC->ApplyAbsVelocityImpulse(vecDir);
 
-		// gib nearby antlions, knock over distant ones. 
+		
 		if (flDist < sk_alien_slave_dispel_range.GetFloat())
 		{
 			// splat!
