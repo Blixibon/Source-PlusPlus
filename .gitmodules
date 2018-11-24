@@ -4,3 +4,6 @@
 [submodule "game/spp_shared/content/hl2epX_extra/reloaded"]
 	path = game/spp_shared/content/hl2epX_extra/reloaded
 	url = https://github.com/Northern3D/hl2-reloaded
+[submodule "gmod-animations"]
+	path = game/spp_shared/modelsrc/gmod-animations
+	url = https://github.com/Petercov/gmod-animations
