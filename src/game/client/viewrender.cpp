@@ -4983,15 +4983,30 @@ void CSkyboxView::Enable3dSkyboxFog( void )
 
 	CMatRenderContextPtr pRenderContext( materials );
 
-	if( GetSkyboxFogEnable() )
+	fogparams_t *pFogParams = pbp->GetFogParams();
+	
+	float scale = 1.0f;
+	if (local->m_skybox3d.scale > 0.0f)
+	{
+		scale = 1.0f / local->m_skybox3d.scale;
+	}
+
+	if (GetFogEnable(pFogParams) && GetSkyboxFogEnable())
+	{
+		float fogColor[3];
+		GetFogColor(pFogParams, fogColor);
+		
+		pRenderContext->FogMode(MATERIAL_FOG_LINEAR);
+		pRenderContext->FogColor3fv(fogColor);
+		pRenderContext->FogStart(GetFogStart(pFogParams) * scale);
+		pRenderContext->FogEnd(GetFogEnd(pFogParams) * scale);
+		pRenderContext->FogMaxDensity(GetFogMaxDensity(pFogParams));
+	}
+	else if( GetSkyboxFogEnable() )
 	{
 		float fogColor[3];
 		GetSkyboxFogColor( fogColor );
-		float scale = 1.0f;
-		if ( local->m_skybox3d.scale > 0.0f )
-		{
-			scale = 1.0f / local->m_skybox3d.scale;
-		}
+
 		pRenderContext->FogMode( MATERIAL_FOG_LINEAR );
 		pRenderContext->FogColor3fv( fogColor );
 		pRenderContext->FogStart( GetSkyboxFogStart() * scale );
