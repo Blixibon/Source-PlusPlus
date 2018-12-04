@@ -39,7 +39,11 @@ BEGIN_SIMPLE_DATADESC( CAI_Spotlight )
 
 END_DATADESC()
 
-
+BEGIN_SEND_TABLE_NOBASE(CAI_Spotlight, DT_AISpotlight)
+SendPropEHandle(SENDINFO(m_hSpotlightTarget)),
+SendPropInt(SENDINFO(m_nSpotlightAttachment)),
+SendPropInt(SENDINFO(m_nFlags)),
+END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 

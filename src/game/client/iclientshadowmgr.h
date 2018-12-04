@@ -107,6 +107,7 @@ public:
 	virtual ShadowType_t GetActualShadowCastType( ClientShadowHandle_t handle ) const = 0;
 	virtual ShadowHandle_t GetShadowHandle( ClientShadowHandle_t clienthandle ) = 0;
 	virtual int GetNumShadowDepthtextures() = 0;
+	virtual int GetMaxShadowDepthtextures() = 0;
 	virtual CTextureReference GetShadowDepthTex( int num ) = 0;
 	
 	virtual ShadowHandle_t GetShadowDepthHandle( int num ) = 0;

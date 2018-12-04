@@ -187,6 +187,12 @@ END_DATADESC()
 
 LINK_ENTITY_TO_CLASS(npc_cscanner, CNPC_CScanner);
 
+IMPLEMENT_NETWORKCLASS_DT(CNPC_CScanner, DT_NPC_CScanner)
+//SendPropBool(SENDINFO(m_bClientSpotlight)),
+//SendPropVector(SENDINFO(m_NetSpotlightDir)),
+SendPropEHandle(SENDINFO(m_hSpotlightTarget)),
+END_NETWORK_TABLE()
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 

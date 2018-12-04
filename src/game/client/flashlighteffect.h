@@ -65,6 +65,24 @@ public:
 	~CSpotlightEffect();
 
 	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance, float flScale = 1.0f);
+
+	Vector GetPosition()
+	{
+		return m_vecOrigin;
+	}
+
+protected:
+
+	virtual void LightOff();
+	void LightOffOld();
+
+	void UpdateLightNew(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, float flScale);
+	void UpdateLightOld(const Vector &vecPos, const Vector &vecDir, int nDistance, float flScale);
+
+	dlight_t*	m_pDynamicLight;
+	dlight_t*	m_pSpotlightEnd;
+
+	Vector m_vecOrigin;
 };
 
 

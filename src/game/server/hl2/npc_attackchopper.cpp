@@ -363,6 +363,7 @@ public:
 	DECLARE_CLASS( CNPC_AttackHelicopter, CBaseHelicopter );
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;
+	DECLARE_SERVERCLASS();
 
 	CNPC_AttackHelicopter();
 	~CNPC_AttackHelicopter();
@@ -778,6 +779,10 @@ static const char *pFollowerBoneNames[] =
 
 LINK_ENTITY_TO_CLASS( npc_helicopter, CNPC_AttackHelicopter );
 
+IMPLEMENT_SERVERCLASS_ST(CNPC_AttackHelicopter, DT_AttackHelicopter)
+SendPropDataTable(SENDINFO_DT(m_Spotlight), &REFERENCE_SEND_TABLE(DT_AISpotlight)),
+END_SEND_TABLE()
+
 BEGIN_DATADESC( CNPC_AttackHelicopter )
 
 	DEFINE_ENTITYFUNC( FlyTouch ),
@@ -1024,7 +1029,7 @@ bool CNPC_AttackHelicopter::CreateComponents()
 	if ( !BaseClass::CreateComponents() )
 		return false;
 
-	m_Spotlight.Init( this, AI_SPOTLIGHT_NO_DLIGHTS, 45.0f, 500.0f );
+	m_Spotlight.Init( this, AI_SPOTLIGHT_NO_DLIGHTS|AI_SPOTLIGHT_ENABLE_PROJECTED, 45.0f, 500.0f );
 	return true;
 }
 

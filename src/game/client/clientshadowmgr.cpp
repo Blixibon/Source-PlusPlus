@@ -880,6 +880,7 @@ public:
 	ShadowType_t GetActualShadowCastType( ClientShadowHandle_t handle ) const;
 	ShadowHandle_t GetShadowHandle( ClientShadowHandle_t clienthandle ) { return m_Shadows[clienthandle].m_ShadowHandle; };
 	int GetNumShadowDepthtextures()	{ return m_DepthTextureCache.Count(); }
+	int GetMaxShadowDepthtextures() { return m_nMaxDepthTextureShadows; }
 	CTextureReference GetShadowDepthTex( int num ) { return m_DepthTextureCache[num]; }
 
 	virtual ShadowHandle_t GetShadowDepthHandle( int num )

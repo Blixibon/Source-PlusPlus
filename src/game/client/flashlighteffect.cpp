@@ -459,20 +459,289 @@ void CHeadlightEffect::UpdateLight( const Vector &vecPos, const Vector &vecDir, 
 	UpdateLightProjection( state );
 }
 
+class CSpotlightLODSystem : public CAutoGameSystemPerFrame
+{
+	DECLARE_CLASS_GAMEROOT(CSpotlightLODSystem, CAutoGameSystemPerFrame);
+public:
+	CSpotlightLODSystem() : CAutoGameSystemPerFrame("CSpotlightLOD")
+	{}
+
+	// Gets called each frame
+	virtual void Update(float frametime)
+	{
+		if (frametime == 0.0f)
+			return;
+
+		if (m_Spotlights.Count() > 0)
+			m_Spotlights.Sort(ThisClass::SpotlightSort);
+	}
+
+	virtual void LevelShutdownPostEntity()
+	{
+		m_Spotlights.Purge();
+	}
+
+	void AddSpotlight(CSpotlightEffect *pLight)
+	{
+		m_Spotlights.AddToTail(pLight);
+	}
+
+	void RemoveSpotlight(CSpotlightEffect *pLight)
+	{
+		m_Spotlights.FindAndRemove(pLight);
+	}
+
+	typedef CSpotlightEffect * SpotPtr;
+
+	static int SpotlightSort(const SpotPtr *p1, const SpotPtr *p2);
+
+	bool IsSpotlightHighLOD(CSpotlightEffect *pLight);
+
+protected:
+	CUtlVector<SpotPtr> m_Spotlights;
+};
+
+CSpotlightLODSystem g_SpotlightLod;
+
+
+
+int CSpotlightLODSystem::SpotlightSort(const SpotPtr *p1, const SpotPtr *p2)
+{
+	const Vector vecView = MainViewOrigin();
+
+	SpotPtr pLeft = *p1;
+	float flDist2Left = vecView.DistToSqr(pLeft->GetPosition());
+
+	SpotPtr pRight = *p2;
+	float flDist2Right = vecView.DistToSqr(pRight->GetPosition());
+
+	if (flDist2Left < flDist2Right)
+		return -1;
+
+	if (flDist2Right < flDist2Left)
+		return 1;
+
+	return 0;
+}
+
+bool CSpotlightLODSystem::IsSpotlightHighLOD(CSpotlightEffect *pLight)
+{
+	float flDistSqr = pLight->GetPosition().DistToSqr(MainViewOrigin());
+	if (flDistSqr > Sqr(r_flashlightfar.GetInt()*1.2f))
+		return false;
+
+	int iMaxSpotlights = Floor2Int(g_pClientShadowMgr->GetMaxShadowDepthtextures() * 0.25f);
+	iMaxSpotlights = Max(iMaxSpotlights, 1);
+
+	int iIndex = m_Spotlights.Find(pLight);
+
+	return (iIndex < iMaxSpotlights) ? true : false;
+}
+
 CSpotlightEffect::CSpotlightEffect()
 {
+	m_pDynamicLight = nullptr;
+	m_pSpotlightEnd = nullptr;
 
+	m_vecOrigin = vec3_origin;
+
+	g_SpotlightLod.AddSpotlight(this);
 }
 
 CSpotlightEffect::~CSpotlightEffect()
 {
-
+	g_SpotlightLod.RemoveSpotlight(this);
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CSpotlightEffect::LightOffOld()
+{
+	if (m_pDynamicLight && (m_pDynamicLight->key == m_nEntIndex))
+	{
+		m_pDynamicLight->die = gpGlobals->curtime;
+		m_pDynamicLight = NULL;
+	}
+
+	if (m_pSpotlightEnd && (m_pSpotlightEnd->key == -m_nEntIndex))
+	{
+		m_pSpotlightEnd->die = gpGlobals->curtime;
+		m_pSpotlightEnd = NULL;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CSpotlightEffect::LightOff()
+{
+	LightOffOld();
+	LightOffNew();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Do the headlight
+//-----------------------------------------------------------------------------
 void CSpotlightEffect::UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance, float flScale)
 {
 	if (IsOn() == false)
 		return;
+
+	nDistance = r_flashlightfar.GetInt();
+
+	Vector end;
+	end = vecPos + nDistance * vecDir;
+
+	// Trace a line outward, skipping the player model and the view model.
+	trace_t pm;
+	CTraceFilterSkipPlayerAndViewModel traceFilter;
+	C_BaseEntity::PushEnableAbsRecomputations(false);	 // HACK don't recompute positions while doing RayTrace
+	UTIL_TraceHull(vecPos, end, Vector(-4, -4, -4), Vector(4, 4, 4), MASK_ALL, &traceFilter, &pm);
+	C_BaseEntity::PopEnableAbsRecomputations();
+	VectorCopy(pm.endpos, m_vecOrigin);
+
+	if( g_SpotlightLod.IsSpotlightHighLOD(this) )
+	{
+		UpdateLightNew( vecPos, vecDir, vecRight, vecUp, flScale );
+	}
+	else
+	{
+		UpdateLightOld( vecPos, vecDir, nDistance, flScale);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Do the headlight
+//-----------------------------------------------------------------------------
+void CSpotlightEffect::UpdateLightOld(const Vector &vecPos, const Vector &vecDir, int nDistance, float flScale)
+{
+
+	Vector end;
+	end = vecPos + nDistance * vecDir;
+
+	// Trace a line outward, skipping the player model and the view model.
+	trace_t pm;
+	CTraceFilterSkipPlayerAndViewModel traceFilter;
+	C_BaseEntity::PushEnableAbsRecomputations(false);	 // HACK don't recompute positions while doing RayTrace
+	UTIL_TraceLine(vecPos, end, MASK_ALL, &traceFilter, &pm);
+	C_BaseEntity::PopEnableAbsRecomputations();
+
+	float falloff = pm.fraction * nDistance;
+
+	if (falloff < 500)
+		falloff = 1.0;
+	else
+		falloff = 500.0 / falloff;
+
+	falloff *= falloff;
+
+	// Adjust end width to keep beam width constant
+	float flNewWidth = 80 * pm.fraction;
+	flNewWidth = Max(10.f, flNewWidth);
+	flNewWidth *= 3;
+
+	flScale = Clamp(flScale, 0.0f, 1.0f);
+
+	float flBaseFov = r_flashlightfov.GetFloat() /** 1.25f*/;
+	float flBaseRadius = flNewWidth;
+	float flColorScale = 1.0f;
+
+	if (flScale < 1.0f)
+	{
+		if (flScale < 0.35f)
+		{
+			float flFlicker = cosf(gpGlobals->curtime * 6.0f) * sinf(gpGlobals->curtime * 15.0f);
+
+			if (flFlicker > 0.25f && flFlicker < 0.75f)
+			{
+				// On
+				flColorScale = flScale;
+			}
+			else
+			{
+				// Off
+				flColorScale = 0.0f;
+			}
+		}
+		else
+		{
+			float flNoise = cosf(gpGlobals->curtime * 7.0f) * sinf(gpGlobals->curtime * 25.0f);
+			flColorScale = flScale + 1.5f * flNoise;
+		}
+
+		flBaseFov = (r_flashlightfov.GetFloat() /** 1.25f*/) - (16.0f * (1.0f - flScale));
+		flNewWidth = flBaseRadius - (16.0f * (1.0f - flScale));
+	}
+
+	ColorRGBExp32 clrLight;
+	clrLight.r = clrLight.g = clrLight.b = 255 * flColorScale;
+	clrLight.exponent = 0;
+
+	/*Vector clrLight;
+	clrLight.Init(flColorScale, flColorScale, flColorScale);*/
+#if 0
+	// Deal with the model light
+	if (!m_pDynamicLight || (m_pDynamicLight->key != m_nEntIndex))
+	{
+#if DLIGHT_NO_WORLD_USES_ELIGHT
+		m_pDynamicLight = ShouldBeElight() != 0
+			? effects->CL_AllocElight(m_nEntIndex)
+			: effects->CL_AllocDlight(m_nEntIndex);
+#else
+		m_pDynamicLight = effects->CL_AllocElight(m_nEntIndex);
+#endif
+		Assert(m_pDynamicLight);
+		//m_pDynamicLight->minlight = 0;
+	}
+
+	//m_pDynamicLight->style = m_LightStyle;
+	m_pDynamicLight->radius = nDistance;
+	m_pDynamicLight->flags = DLIGHT_NO_WORLD_ILLUMINATION;
+
+	//VectorToColorRGBExp32(clrLight, m_pDynamicLight->color);
+	m_pDynamicLight->color = clrLight;
+	m_pDynamicLight->origin = vecPos;
+	m_pDynamicLight->m_InnerAngle = flBaseFov * 0.85f;
+	m_pDynamicLight->m_OuterAngle = flBaseFov;
+	m_pDynamicLight->die = gpGlobals->curtime + 1e6;
+
+	// For bumped lighting
+	VectorCopy(vecDir, m_pDynamicLight->m_Direction);
+#endif
+
+	if (!m_pSpotlightEnd || (m_pSpotlightEnd->key != -m_nEntIndex))
+	{
+		// Set up the environment light
+		m_pSpotlightEnd = effects->CL_AllocDlight(-m_nEntIndex);
+	}
+
+	// For bumped lighting
+	VectorCopy(vecDir, m_pSpotlightEnd->m_Direction);
+
+	VectorCopy(pm.endpos, m_pSpotlightEnd->origin);
+
+	//m_pSpotlightEnd->flags = DLIGHT_NO_MODEL_ILLUMINATION;
+	m_pSpotlightEnd->radius = flNewWidth;
+	//VectorToColorRGBExp32(clrLight * falloff, m_pSpotlightEnd->color);
+	m_pSpotlightEnd->color = clrLight;
+	m_pSpotlightEnd->color.r *= falloff;
+	m_pSpotlightEnd->color.g *= falloff;
+	m_pSpotlightEnd->color.b *= falloff;
+
+	// Make it live for a bit
+	m_pSpotlightEnd->die = gpGlobals->curtime + 0.2f;
+
+	// Update list of surfaces we influence
+	render->TouchLight(m_pSpotlightEnd);
+
+	// kill the new flashlight if we have one
+	LightOffNew();
+}
+
+void CSpotlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, float flScale)
+{
+	
 
 	/*if (r_dynamic_shadow_mode.GetInt() < 2)
 		return;*/
@@ -540,7 +809,7 @@ void CSpotlightEffect::UpdateLight(const Vector &vecPos, const Vector &vecDir, c
 		bFlicker = true;
 	}
 
-
+	LightOffOld();
 
 	if (bFlicker == false)
 	{

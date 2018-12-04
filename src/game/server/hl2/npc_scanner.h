@@ -29,7 +29,7 @@ class CSpotlightEnd;
 class CNPC_CScanner : public CNPC_BaseScanner
 {
 	DECLARE_CLASS( CNPC_CScanner, CNPC_BaseScanner );
-
+	DECLARE_SERVERCLASS();
 public:
 	CNPC_CScanner();
 
@@ -121,7 +121,7 @@ public:
 	Vector			m_vSpotlightTargetPos;
 	Vector			m_vSpotlightCurrentPos;
 	CHandle<CBeam>	m_hSpotlight;
-	CHandle<CSpotlightEnd> m_hSpotlightTarget;
+	CNetworkHandle(CSpotlightEnd, m_hSpotlightTarget);
 	Vector			m_vSpotlightDir;
 	Vector			m_vSpotlightAngVelocity;
 	float			m_flSpotlightCurLength;

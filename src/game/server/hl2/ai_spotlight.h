@@ -22,9 +22,10 @@ class CSpotlightEnd;
 //-----------------------------------------------------------------------------
 // Parameters for how the scanner relates to citizens.
 //-----------------------------------------------------------------------------
-enum
+enum AISPOT_FLAGS
 {
 	AI_SPOTLIGHT_NO_DLIGHTS = 0x1,
+	AI_SPOTLIGHT_ENABLE_PROJECTED = 0x2,
 };
 
 
@@ -32,6 +33,7 @@ class CAI_Spotlight : public CAI_Component
 {
 	DECLARE_SIMPLE_DATADESC();
 	DECLARE_CLASS_NOBASE( CAI_Spotlight );
+	DECLARE_EMBEDDED_NETWORKVAR();
 
 public:
 	CAI_Spotlight();
@@ -64,7 +66,7 @@ private:
 
 private:
 	CHandle<CBeam>	m_hSpotlight;
-	CHandle<CSpotlightEnd>	m_hSpotlightTarget;
+	CNetworkHandle(CSpotlightEnd, m_hSpotlightTarget);
 
 	Vector			m_vSpotlightTargetPos;
 	Vector			m_vSpotlightDir;
@@ -72,12 +74,12 @@ private:
 	float			m_flSpotlightMaxLength;
 	float			m_flConstraintAngle;
 	int				m_nHaloSprite;
-	int				m_nSpotlightAttachment;
-	int				m_nFlags;
+	CNetworkVar(int, m_nSpotlightAttachment);
+	CNetworkVar(int, m_nFlags);
 	Quaternion		m_vAngularVelocity;
 };
 
-
+EXTERN_SEND_TABLE(DT_AISpotlight);
 #endif // AI_SPOTLIGHT_H
 
 
