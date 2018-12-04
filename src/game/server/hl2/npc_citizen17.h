@@ -47,7 +47,8 @@ enum CitizenType_t
 	CT_REBEL,
 	CT_UNIQUE,
 	CT_HOSTAGE,
-	CT_LOYALIST
+	CT_LOYALIST,
+	CT_GASMASK,
 };
 
 //-----------------------------------------------------------------------------
@@ -251,6 +252,7 @@ public:
 	void			FearSound( void );
 	void			DeathSound( const CTakeDamageInfo &info );
 	bool			UseSemaphore( void );
+	virtual int		GetSpecialDSP(void) { return (m_Type == CT_GASMASK) ? 134 : 0; }
 
 	virtual void	OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior );
 

@@ -272,8 +272,8 @@ static const char *g_ppszRandomHeads[] =
 	"female_07.mdl",
 	"male_08.mdl",
 	"male_09.mdl",
-	"male_10.mdl",
-	"male_11.mdl",
+	//"male_10.mdl",
+	//"male_11.mdl",
 };
 
 static const char *g_ppszModelLocs[] =
@@ -377,7 +377,8 @@ const char *CNPC_Citizen::pPopTypes[] =
 	"rebel",		// 3
 	//"unique",
 	"hostage",		// 5
-	"loyalist"		// 6
+	"loyalist",		// 6
+	"gasmask",		// 7
 };
 
 CPopulationDefinition CNPC_Citizen::gm_PopDef("citizen", pPopTypes, ARRAYSIZE(pPopTypes));
@@ -506,7 +507,7 @@ void CNPC_Citizen::Spawn()
 
 	/*if ( IsAmmoResupplier() )
 		m_nSkin = 2;*/
-	if (m_Type != CT_UNIQUE)
+	if (m_Type <= CT_LOYALIST && m_Type != CT_UNIQUE)
 	{
 		m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
 
@@ -567,7 +568,7 @@ void CNPC_Citizen::Spawn()
 	m_bRPGAvoidPlayer = false;
 
 	m_bShouldPatrol = false;
-	m_iHealth = (m_Type == CT_REBEL) ? (sk_citizen_health.GetFloat() * 1.5f) : sk_citizen_health.GetFloat();
+	m_iHealth = (m_Type == CT_REBEL || m_Type == CT_GASMASK) ? (sk_citizen_health.GetFloat() * 1.5f) : sk_citizen_health.GetFloat();
 	
 	// Are we on a train? Used in trainstation to have NPCs on trains.
 	if ( GetMoveParent() && FClassnameIs( GetMoveParent(), "func_tracktrain" ) )
@@ -708,100 +709,114 @@ void CNPC_Citizen::SelectModel()
 #endif
 	}
 
-	if( HasSpawnFlags( SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE ) || GetModelName() == NULL_STRING )
+	if (m_Type <= CT_LOYALIST)
 	{
-		Assert( m_iHead == -1 );
-		char gender = ( HasSpawnFlags( SF_CITIZEN_RANDOM_HEAD_MALE ) ) ? 'm' : 
-					  ( HasSpawnFlags( SF_CITIZEN_RANDOM_HEAD_FEMALE ) ) ? 'f' : 0;
-
-		RemoveSpawnFlags( SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE );
-		if( HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
+		if (HasSpawnFlags(SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE) || GetModelName() == NULL_STRING)
 		{
-			SetModelName( AllocPooledString("models/minic23/citizens/male_11.mdl" ) );
-			return;
-		}
-		else
-		{
-			// Count the heads
-			int headCounts[ARRAYSIZE(g_ppszRandomHeads)] = { 0 };
-			int i;
+			Assert(m_iHead == -1);
+			char gender = (HasSpawnFlags(SF_CITIZEN_RANDOM_HEAD_MALE)) ? 'm' :
+				(HasSpawnFlags(SF_CITIZEN_RANDOM_HEAD_FEMALE)) ? 'f' : 0;
 
-			for ( i = 0; i < g_AI_Manager.NumAIs(); i++ )
+			RemoveSpawnFlags(SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE);
+			if (HasSpawnFlags(SF_NPC_START_EFFICIENT))
 			{
-				CNPC_Citizen *pCitizen = dynamic_cast<CNPC_Citizen *>(g_AI_Manager.AccessAIs()[i]);
-				if ( pCitizen && pCitizen != this && pCitizen->m_iHead >= 0 && pCitizen->m_iHead < ARRAYSIZE(g_ppszRandomHeads) )
-				{
-					headCounts[pCitizen->m_iHead]++;
-				}
+				SetModelName(AllocPooledString("models/minic23/citizens/male_11.mdl"));
+				return;
 			}
-
-			// Find all candidates
-			CUtlVectorFixed<HeadCandidate_t, ARRAYSIZE(g_ppszRandomHeads)> candidates;
-
-			for ( i = 0; i < ARRAYSIZE(g_ppszRandomHeads); i++ )
+			else
 			{
-				if ( !gender || g_ppszRandomHeads[i][0] == gender )
+				// Count the heads
+				int headCounts[ARRAYSIZE(g_ppszRandomHeads)] = { 0 };
+				int i;
+
+				for (i = 0; i < g_AI_Manager.NumAIs(); i++)
 				{
-					if ( !IsExcludedHead( m_Type, IsMedic(), i ) )
+					CNPC_Citizen *pCitizen = dynamic_cast<CNPC_Citizen *>(g_AI_Manager.AccessAIs()[i]);
+					if (pCitizen && pCitizen != this && pCitizen->m_iHead >= 0 && pCitizen->m_iHead < ARRAYSIZE(g_ppszRandomHeads))
 					{
-						HeadCandidate_t candidate = { i, headCounts[i] };
-						candidates.AddToTail( candidate );
+						headCounts[pCitizen->m_iHead]++;
 					}
 				}
-			}
 
-			Assert( candidates.Count() );
-			candidates.Sort( &HeadCandidate_t::Sort );
+				// Find all candidates
+				CUtlVectorFixed<HeadCandidate_t, ARRAYSIZE(g_ppszRandomHeads)> candidates;
 
-			int iSmallestCount = candidates[0].nHeads;
-			int iLimit;
-
-			for ( iLimit = 0; iLimit < candidates.Count(); iLimit++ )
-			{
-				if ( candidates[iLimit].nHeads > iSmallestCount )
-					break;
-			}
-
-			m_iHead = candidates[random->RandomInt( 0, iLimit - 1 )].iHead;
-			pszModelName = g_ppszRandomHeads[m_iHead];
-			SetModelName(NULL_STRING);
-		}
-	}
-
-	Assert( pszModelName || GetModelName() != NULL_STRING );
-
-	if ( !pszModelName )
-	{
-		if ( GetModelName() == NULL_STRING )
-			return;
-		pszModelName = strrchr(STRING(GetModelName()), '/' );
-		if ( !pszModelName )
-			pszModelName = STRING(GetModelName());
-		else
-		{
-			pszModelName++;
-			if ( m_iHead == -1 )
-			{
-				for ( int i = 0; i < ARRAYSIZE(g_ppszRandomHeads); i++ )
+				for (i = 0; i < ARRAYSIZE(g_ppszRandomHeads); i++)
 				{
-					if ( Q_stricmp( g_ppszRandomHeads[i], pszModelName ) == 0 )
+					if (!gender || g_ppszRandomHeads[i][0] == gender)
 					{
-						m_iHead = i;
+						if (!IsExcludedHead(m_Type, IsMedic(), i))
+						{
+							HeadCandidate_t candidate = { i, headCounts[i] };
+							candidates.AddToTail(candidate);
+						}
+					}
+				}
+
+				Assert(candidates.Count());
+				candidates.Sort(&HeadCandidate_t::Sort);
+
+				int iSmallestCount = candidates[0].nHeads;
+				int iLimit;
+
+				for (iLimit = 0; iLimit < candidates.Count(); iLimit++)
+				{
+					if (candidates[iLimit].nHeads > iSmallestCount)
 						break;
+				}
+
+				m_iHead = candidates[random->RandomInt(0, iLimit - 1)].iHead;
+				pszModelName = g_ppszRandomHeads[m_iHead];
+				SetModelName(NULL_STRING);
+			}
+		}
+
+		Assert(pszModelName || GetModelName() != NULL_STRING);
+
+		if (!pszModelName)
+		{
+			if (GetModelName() == NULL_STRING)
+				return;
+			pszModelName = strrchr(STRING(GetModelName()), '/');
+			if (!pszModelName)
+				pszModelName = STRING(GetModelName());
+			else
+			{
+				pszModelName++;
+				if (m_iHead == -1)
+				{
+					for (int i = 0; i < ARRAYSIZE(g_ppszRandomHeads); i++)
+					{
+						if (Q_stricmp(g_ppszRandomHeads[i], pszModelName) == 0)
+						{
+							m_iHead = i;
+							break;
+						}
 					}
 				}
 			}
+			if (!*pszModelName)
+				return;
 		}
-		if ( !*pszModelName )
-			return;
+
+		// Unique citizen models are left alone
+		if (m_Type != CT_UNIQUE)
+		{
+			SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s", pszModelName)));
+
+			//SetModelName( AllocPooledString( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr(g_ppszModelLocs[ m_Type ], ( IsMedic() ) ? "m" : "" )), pszModelName ) ) );
+		}
 	}
-
-	// Unique citizen models are left alone
-	if ( m_Type != CT_UNIQUE )
+	else
 	{
-		SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s", pszModelName)));
-
-		//SetModelName( AllocPooledString( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr(g_ppszModelLocs[ m_Type ], ( IsMedic() ) ? "m" : "" )), pszModelName ) ) );
+		switch (m_Type)
+		{
+		default:
+			break;
+		case CT_GASMASK:
+			SetModelName(AllocPooledString("models/gasrebel.mdl"));
+			break;
+		}
 	}
 }
 
@@ -894,7 +909,7 @@ string_t CNPC_Citizen::GetModelName() const
 	if (!Q_strnicmp(STRING(iszModelName), "models/c17_", 11) ||
 		!Q_strnicmp(STRING(iszModelName), "models/male", 11) ||
 		!Q_strnicmp(STRING(iszModelName), "models/female", 13) ||
-		!Q_strnicmp(STRING(iszModelName), "models/citizen", 14) ||
+		//!Q_strnicmp(STRING(iszModelName), "models/citizen", 14) ||
 		Q_stristr(STRING(iszModelName), "male_cheaple.mdl"))
 	{
 		return NULL_STRING;

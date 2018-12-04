@@ -40,6 +40,7 @@
 			
 			vpk		enhanced_citizens
 			vpk		hl2beta_textures
+			dir		hl2beta_npcs
 		}
 	}
 }

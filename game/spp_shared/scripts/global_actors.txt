@@ -61,5 +61,7 @@ globalactors
 	"female_05_b"	"female"
 	"female_06_b"	"female"
 	"female_07_b"	"female"
+	
+	"gasrebel"		"male"
 
 }

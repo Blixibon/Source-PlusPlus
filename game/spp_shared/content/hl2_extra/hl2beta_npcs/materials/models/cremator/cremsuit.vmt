@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\cremator/cremsuit"
+	"$translucent" 0
+	"$envmap" "models/cremator/cremsuitenvmap"
+	//"$envmapsphere" 1
+	//"$envmapmask" "models/cremator/cremsuitenvmask"
+	"$normalalphaenvmapmask" 1
+	
+	"$phong" 		"1"
+	"$bumpmap" "models/cremator/cremsuit_newnormal"
+	"$phongexponent" 	"60"
+	"$phongboost" "1.75"
+	"$phongfresnelranges" "[1 0.5 1]"
+	"$phongalbedotint" "1"
+}
