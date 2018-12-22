@@ -199,11 +199,11 @@ public:
 				continue;
 			}
 
-			if (s_LumpHeaders[i].mapRevision <= s_MapHeader.mapRevision)
+			if (s_LumpHeaders[i].mapRevision < s_MapHeader.mapRevision)
 			{
 				filesystem->Close(s_LumpFileHandles[i]);
 				s_LumpFileHandles[i] = FILESYSTEM_INVALID_HANDLE;
-				Warning("CMapLoadHelper::Init, lump file %s has same or older revision as bsp!\n", lumpPath);
+				Warning("CMapLoadHelper::Init, lump file %s has older revision than bsp!\n", lumpPath);
 				continue;
 			}
 		}

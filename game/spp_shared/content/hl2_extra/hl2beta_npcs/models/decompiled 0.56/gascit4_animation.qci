@@ -1,0 +1,113 @@
+
+$IKChain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$Sequence "Idle_New_SG" {
+	"gascit4_anims\Idle_New_SG.smd"
+	activity "ACT_IDLE_SHOTGUN_RELAXED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "standing"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Idle_New_SG2" {
+	"gascit4_anims\Idle_New_SG2.smd"
+	activity "ACT_IDLE_SHOTGUN_STIMULATED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "standing"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Idle_New_SMG" {
+	"gascit4_anims\Idle_New_SMG.smd"
+	activity "ACT_IDLE_SMG1_RELAXED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "standing"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Idle_New_SMG2" {
+	"gascit4_anims\Idle_New_SMG2.smd"
+	activity "ACT_IDLE_SMG1_STIMULATED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "standing"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Idle_New_AR2" {
+	"gascit4_anims\Idle_New_AR2.smd"
+	activity "ACT_IDLE_AR2_RELAXED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "standing"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Idle_New_AR22" {
+	"gascit4_anims\Idle_New_AR22.smd"
+	activity "ACT_IDLE_AR2_STIMULATED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "standing"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "sgauto" {
+	"gascit4_anims\sgauto.smd"
+	activity "ACT_RANGE_ATTACK_SHOTGUN" 1
+	fadein 0.2
+	fadeout 0.2
+	node "shooting"
+	fps 40
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "ragdoll" {
+	"gascit4_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$IncludeModel "humans/male_shared.mdl"
+$IncludeModel "humans/male_ss.mdl"
+$IncludeModel "humans/male_gestures.mdl"
+$IncludeModel "humans/male_postures.mdl"

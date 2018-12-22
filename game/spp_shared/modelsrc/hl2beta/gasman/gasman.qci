@@ -1,0 +1,31 @@
+// Created by Crowbar 0.56
+
+$BodyGroup "gasman"
+{
+	studio "gasman_new.smd"
+}
+
+$Include "gasmask_civi_01_lod.qci"
+
+$SurfaceProp "flesh"
+
+$Contents "solid"
+
+$IllumPosition 0 0.637 35.954
+
+$EyePosition 0 0 70
+
+$MostlyOpaque
+
+$CDMaterials "models\Citizen_17\"
+//$CDMaterials "models\Humans\Male\Group01\"
+//$CDMaterials "models\Humans\Male\"
+
+
+$Include "gasmask_civi_01_box.qci"
+
+$Include "gasmask_civi_01_bone.qci"
+
+$Include "gasmask_civi_01_animation.qci"
+
+$Include "gasmask_civi_01_collision.qci"
