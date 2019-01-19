@@ -352,10 +352,10 @@ void CNPC_PlayerCompanion::GatherConditions()
 {
 	BaseClass::GatherConditions();
 
-	if ( AI_IsSinglePlayer() )
-	{
-		CBasePlayer *pPlayer = GetBestPlayer();
+	CBasePlayer *pPlayer = GetBestPlayer();
 
+	if ( AI_IsSinglePlayer() && pPlayer)
+	{
 		if ( Classify() == CLASS_PLAYER_ALLY_VITAL )
 		{
 			bool bInPlayerSquad = ( m_pSquad && MAKE_STRING(m_pSquad->GetName()) == GetPlayerSquadName() );

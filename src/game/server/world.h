@@ -11,6 +11,15 @@
 #pragma once
 #endif
 
+#include "bitvec.h"
+
+enum WorldServerBools
+{
+	WORLD_DISPLAY_TITLE = 0,
+	WORLD_IS_EPISODIC,
+
+	NUM_WORLD_BOOLS
+};
 
 class CWorld : public CBaseEntity
 {
@@ -46,6 +55,7 @@ public:
 
 	bool GetDisplayTitle() const;
 	bool GetStartDark() const;
+	bool GetWorldEpisodic() const { return GetWorldFlag(WORLD_IS_EPISODIC); }
 
 	void SetDisplayTitle( bool display );
 	void SetStartDark( bool startdark );
@@ -56,6 +66,10 @@ public:
 	{
 		return !m_iszPopulationTag ? nullptr : STRING(m_iszPopulationTag);
 	}
+protected:
+	void SetWorldFlag(int iFlag, bool bValue);
+	bool GetWorldFlag(int iFlag, bool *bDefined = nullptr) const;
+	bool GetWorldFlagDefault(int iFlag) const;
 
 private:
 	DECLARE_DATADESC();
@@ -75,7 +89,9 @@ private:
 	// start flags
 	CNetworkVar( bool, m_bStartDark );
 	CNetworkVar( bool, m_bColdWorld );
-	bool m_bDisplayTitle;
+	//bool m_bDisplayTitle;
+	CBitVec<NUM_WORLD_BOOLS> m_bitWorldFlagBools;
+	CBitVec<NUM_WORLD_BOOLS> m_bitWorldFlagDefs;
 };
 
 

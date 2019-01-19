@@ -814,7 +814,7 @@ void CNPC_Citizen::SelectModel()
 		default:
 			break;
 		case CT_GASMASK:
-			SetModelName(AllocPooledString("models/gasrebel.mdl"));
+			SetModelName(AllocPooledString("models/humans/gasmask/male_07.mdl"));
 			break;
 		}
 	}

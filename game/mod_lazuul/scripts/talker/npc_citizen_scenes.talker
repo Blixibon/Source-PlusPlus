@@ -987,7 +987,7 @@ response "DampenRules02"
 
 rule CitizenAntLionDanger02
 {
-	criteria		IsCitizen ConceptTalkAttacking EnemyIsAntLion 
+	criteria		IsCitizen ConceptTalkAttacking EnemyIsAntLion IsMap_ep2_outland_02
 	response		DampenRules02
 }
 

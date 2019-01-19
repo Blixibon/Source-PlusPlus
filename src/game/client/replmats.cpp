@@ -9,6 +9,7 @@
 #include "filesystem.h"
 #include "utlbuffer.h"
 #include "igamesystem.h"
+#include "rendertexture.h"
 #include "materialsystem_passtru.h"
 #include "materialsystem/imaterialvar.h"
 #include "materialsystem/itexture.h"
@@ -59,6 +60,7 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 	const char *pszOldShadername = pMat->GetShaderName();
 	const char *pszMatname = pMat->GetName();
 	bool bPhong = false;
+	bool bNeedsRefractTex = false;
 
 	KeyValues *msg = new KeyValues( szNewShadername );
 
@@ -143,6 +145,8 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 
 			case MATERIAL_VAR_TYPE_TEXTURE:
 				msg->SetString( pVarName, pVar->GetTextureValue()->GetName() );
+				if (pVar->GetTextureValue() == GetPowerOfTwoFrameBufferTexture())
+					bNeedsRefractTex = true;
 				break;
 
 			case MATERIAL_VAR_TYPE_MATERIAL:
@@ -273,6 +277,25 @@ static void ShaderReplaceReplMat( const char *szNewShadername, IMaterial *pMat )
 		}
 
 		pkvMat->deleteThis();
+	}
+
+	if (bNeedsRefractTex)
+	{
+		bool bFound = false;
+		IMaterialVar *pFlags2 = pMat->FindVar("$flags2", &bFound);
+		if (bFound)
+		{
+			int iFlags2 = pFlags2->GetIntValue();
+			iFlags2 |= MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE;
+			msg->SetInt("$flags2", iFlags2);
+		}
+		IMaterialVar *pFlagsDef2 = pMat->FindVar("$flags_defined2", &bFound);
+		if (bFound)
+		{
+			int iFlags2 = pFlagsDef2->GetIntValue();
+			iFlags2 |= MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE;
+			msg->SetInt("$flags_defined2", iFlags2);
+		}
 	}
 
 	pMat->SetShaderAndParams(msg);

@@ -112,3 +112,6 @@ game/spp_shared/content/background_movies/media/hl1_background01.bik
 
 
 *.mdmp
+game/bin/.vs/ProjectSettings.json
+game/bin/.vs/slnx.sqlite
+game/bin/.vs/VSWorkspaceState.json

@@ -32,6 +32,8 @@
 #include "particle_parse.h"
 #include "globalstate.h"
 #include "filesystem.h"
+#include "saverestore_bitstring.h"
+#include "peter/gametypes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -379,7 +381,7 @@ BEGIN_DATADESC( CWorld )
 	DEFINE_KEYFIELD( m_iszChapterTitle, FIELD_STRING, "chaptertitle" ),
 	DEFINE_KEYFIELD( m_iszPopulationTag, FIELD_STRING, "population"),
 	DEFINE_KEYFIELD( m_bStartDark,		FIELD_BOOLEAN, "startdark" ),
-	DEFINE_KEYFIELD( m_bDisplayTitle,	FIELD_BOOLEAN, "gametitle" ),
+	//DEFINE_KEYFIELD( m_bDisplayTitle,	FIELD_BOOLEAN, "gametitle" ),
 	DEFINE_FIELD( m_WorldMins, FIELD_VECTOR ),
 	DEFINE_FIELD( m_WorldMaxs, FIELD_VECTOR ),
 #ifdef _X360
@@ -393,6 +395,9 @@ BEGIN_DATADESC( CWorld )
 	DEFINE_KEYFIELD( m_flMinPropScreenSpaceWidth, FIELD_FLOAT, "minpropscreenwidth" ),
 	DEFINE_KEYFIELD( m_iszDetailSpriteMaterial, FIELD_STRING, "detailmaterial" ),
 	DEFINE_KEYFIELD( m_bColdWorld,		FIELD_BOOLEAN, "coldworld" ),
+
+	DEFINE_BITSTRING(m_bitWorldFlagBools),
+	DEFINE_BITSTRING(m_bitWorldFlagDefs),
 
 END_DATADESC()
 
@@ -410,6 +415,56 @@ IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD)
 	SendPropStringT (SENDINFO(m_iszDetailSpriteMaterial) ),
 	SendPropInt		(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED ),
 END_SEND_TABLE()
+
+void CWorld::SetWorldFlag(int iFlag, bool bValue)
+{
+	if (iFlag < 0 || iFlag >= NUM_WORLD_BOOLS)
+		return;
+
+	m_bitWorldFlagBools.Set(iFlag, bValue);
+	m_bitWorldFlagDefs.Set(iFlag);
+}
+
+bool CWorld::GetWorldFlag(int iFlag, bool *bDefined) const
+{
+	if (iFlag < 0 || iFlag >= NUM_WORLD_BOOLS)
+		return false;
+
+	bool bSet = m_bitWorldFlagDefs.IsBitSet(iFlag);
+
+	if (bDefined != nullptr)
+		*bDefined = bSet;
+
+	if (bSet)
+		return m_bitWorldFlagBools.IsBitSet(iFlag);
+	else
+		return GetWorldFlagDefault(iFlag);
+}
+
+bool CWorld::GetWorldFlagDefault(int iFlag) const
+{
+	switch (iFlag)
+	{
+	case WORLD_IS_EPISODIC:
+	{
+		switch (g_pGameTypeSystem->GetCurrentGameType())
+		{
+		case GAME_HL2:
+		case MOD_CITIZEN:
+		case MOD_HL2BETA:
+			return false;
+			break;
+		default:
+			return true;
+			break;
+		}
+	}
+		break;
+	default:
+		return false;
+		break;
+	}
+}
 
 //
 // Just to ignore the "wad" field.
@@ -442,6 +497,16 @@ bool CWorld::KeyValue( const char *szKeyName, const char *szValue )
 		Vector vec;
 		sscanf(	szValue, "%f %f %f", &vec.x, &vec.y, &vec.z ); 
 		m_WorldMaxs = vec;
+	}
+	else if (FStrEq(szKeyName, "gametitle"))
+	{
+		bool bValue = (atoi(szValue) != 0);
+		SetDisplayTitle(bValue);
+	}
+	else if (FStrEq(szKeyName, "episodic"))
+	{
+		bool bValue = (atoi(szValue) != 0);
+		SetWorldFlag(WORLD_IS_EPISODIC, bValue);
 	}
 	else
 		return BaseClass::KeyValue( szKeyName, szValue );
@@ -616,6 +681,8 @@ void CWorld::Precache( void )
 	CBaseEntity::SetAllowPrecache( true );
 	IGameSystem::LevelInitPreEntityAllSystems( STRING( GetModelName() ) );
 
+	hl2_episodic.SetValue(GetWorldEpisodic());
+
 	// Create the player resource
 	g_pGameRules->CreateStandardEntities();
 
@@ -722,7 +789,7 @@ float GetRealTime()
 
 bool CWorld::GetDisplayTitle() const
 {
-	return m_bDisplayTitle;
+	return GetWorldFlag(WORLD_DISPLAY_TITLE);
 }
 
 bool CWorld::GetStartDark() const
@@ -732,7 +799,7 @@ bool CWorld::GetStartDark() const
 
 void CWorld::SetDisplayTitle( bool display )
 {
-	m_bDisplayTitle = display;
+	SetWorldFlag(WORLD_DISPLAY_TITLE, display);
 }
 
 void CWorld::SetStartDark( bool startdark )
