@@ -3,3 +3,5 @@ light_volumetrics_ps20b.fxc
 
 detail_prop_shader_ps30.fxc
 detail_prop_shader_vs30.fxc
+
+pbr_ps30.fxc
