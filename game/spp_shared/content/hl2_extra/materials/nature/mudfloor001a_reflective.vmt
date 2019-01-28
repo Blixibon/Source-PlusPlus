@@ -1,0 +1,17 @@
+LightmappedReflective
+{
+	"$basetexture" "nature/mud_wet_step_marks_diffuse"
+	"$normalmap" "nature/mudfloor001a_n"
+	"$surfaceprop" "Mud"
+
+	"$envmap" "env_cubemap"
+	"$envmapmask" "nature/mudfloor001a_s"
+
+	"$reflect2dskybox" "1"
+
+	"$reflecttexture" "_rt_waterreflection"
+	"$reflectamount" "0.4"
+	"$reflectentities" "1"
+
+	"%keywords" "wasteland"
+}

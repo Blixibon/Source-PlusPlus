@@ -4,5 +4,3 @@ depth_of_field_vs20.fxc
 
 object_motion_blur_vs20.fxc
 object_motion_blur_ps2x.fxc
-
-pbr_vs20.fxc

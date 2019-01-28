@@ -4,11 +4,16 @@
 //
 //==================================================================================================
 
+//  STATIC: "MODEL"                     "0..1"
+
 //  DYNAMIC: "COMPRESSED_VERTS"			"0..1"
 //	DYNAMIC: "DOWATERFOG"				"0..1"
 //	DYNAMIC: "SKINNING"					"0..1"
 //  DYNAMIC: "LIGHTING_PREVIEW"			"0..1"
+//  DYNAMIC: "MORPHING"					"0..1" [vs30]
 //  DYNAMIC: "NUM_LIGHTS"				"0..4"
+
+//  SKIP: $MORPHING && !$MODEL
 
 #include "common_vs_fxc.h"
 
@@ -16,6 +21,15 @@ static const bool g_bSkinning		= SKINNING ? true : false;
 static const int g_FogType			= DOWATERFOG;
 
 const float4 cBaseTexCoordTransform[2]		: register( SHADER_SPECIFIC_CONST_0 );
+
+#if defined(SHADER_MODEL_VS_3_0) && MORPHING
+// NOTE: cMorphTargetTextureDim.xy = target dimensions,
+//		 cMorphTargetTextureDim.z = 4tuples/morph
+const float3 cMorphTargetTextureDim			: register( SHADER_SPECIFIC_CONST_6 );
+const float4 cMorphSubrect					: register( SHADER_SPECIFIC_CONST_7 );
+
+sampler2D morphSampler : register( s0 );
+#endif
 
 //-----------------------------------------------------------------------------
 // Input vertex format
@@ -30,6 +44,13 @@ struct VS_INPUT
 	float2 vTexCoord0	: TEXCOORD0;
 	float4 vLightmapTexCoord		: TEXCOORD1;
 	float4 vLightmapTexCoordOffset	: TEXCOORD2;
+
+    // Position and normal/tangent deltas
+    float3 vPosFlex : POSITION1;
+    float3 vNormalFlex : NORMAL1;
+#if defined(SHADER_MODEL_VS_3_0) && MORPHING
+	float vVertexID			: POSITION2;
+#endif
 };
 
 struct VS_OUTPUT
@@ -69,12 +90,21 @@ VS_OUTPUT main( const VS_INPUT v )
 	o.lightmapTexCoord3.xy = lightmapTexCoord3;
 
 
-
+    float4 vPosition = v.vPos;
 	float3 vNormal;
 	DecompressVertex_Normal( v.vNormal, vNormal );
 
+#if MODEL
+    #if !defined( SHADER_MODEL_VS_3_0 ) || !MORPHING
+	ApplyMorph( v.vPosFlex, v.vNormalFlex, vPosition.xyz, vNormal );
+#else
+	ApplyMorph( morphSampler, cMorphTargetTextureDim, cMorphSubrect, 
+		v.vVertexID, float3( 0, 0, 0 ), vPosition.xyz, vNormal ); // Decals unsupported
+#endif
+#endif
+
 	float3 worldNormal, worldPos;
-	SkinPositionAndNormal( g_bSkinning, v.vPos, vNormal, v.vBoneWeights, v.vBoneIndices, worldPos, worldNormal );
+    SkinPositionAndNormal(g_bSkinning, vPosition, vNormal, v.vBoneWeights, v.vBoneIndices, worldPos, worldNormal);
 
 	// Transform into projection space
 	float4 vProjPos = mul( float4( worldPos, 1 ), cViewProj );

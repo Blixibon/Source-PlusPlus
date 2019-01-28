@@ -1,0 +1,20 @@
+"PBR"
+{
+	$basetexture		"models/items/combine_battery_color_blue"
+	$bumpmap		"models/items/combine_battery_normal"
+	"$surfaceprop" "metal"
+	"$envmap" "env_cubemap"
+	$model 1
+	
+	$mroatexture "models/items/combine_battery_mrao"
+	$pbrlookup "dev/pbr_lookup"
+	
+	// Emissive Scroll Pass
+	"$emissiveBlendEnabled"      "1" // Enables effect
+	"$emissiveBlendTexture"      "models\props_xen\glow_blue1"
+	"$emissiveBlendBaseTexture"  "models/items/combine_battery_illumin_blue"
+	"$emissiveBlendFlowTexture"  "models/items/combine_battery_illumin_flow"
+	"$emissiveBlendTint"         "[10 10 10]"
+	"$emissiveBlendStrength"     "1.0" // Set by game code
+	"$emissiveBlendScrollVector" "[0.124 0.124]"
+}

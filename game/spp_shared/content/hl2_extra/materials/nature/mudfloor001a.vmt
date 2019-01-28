@@ -1,0 +1,14 @@
+LightmappedGeneric
+{
+	"$basetexture" "nature/mud_wet_step_marks_diffuse"
+	"$bumpmap" "nature/mudfloor001a_n"
+	"$surfaceprop" "Mud"
+
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+
+	"%keywords" "wasteland"
+
+	"$mraotexture" "nature/mud_wet_step_marks_mrao"
+	"$pbrlookup" "dev/pbr_lookup"
+}

@@ -35,4 +35,4 @@ $dstbsp_path = $game + "\maps\" + $filename_base + ".bsp"
 
 Move-Item -Path $srcbsp_path -Destination $dstbsp_path
 
-Start-Process -FilePath $toolsdir\vbspinfo.exe -ArgumentList "-X0 $dstbsp_path" -NoNewWindow -Wait
+# Start-Process -FilePath $toolsdir\vbspinfo.exe -ArgumentList "-X0 $dstbsp_path" -NoNewWindow -Wait

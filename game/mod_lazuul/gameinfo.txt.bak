@@ -5,6 +5,8 @@
 	title2	"== lazuul =="
 	type singleplayer_only
 	
+	GameData	"lazuul.fgd"
+	
 	content
 	{
 		"hl1_low"	1
