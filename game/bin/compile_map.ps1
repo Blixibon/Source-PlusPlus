@@ -11,7 +11,9 @@
     [parameter()]
     [string[]]$vis_args,
     [parameter()]
-    [string[]]$rad_args=("-both")
+    [string[]]$rad_args=("-both"),
+    [parameter()]
+    [bool]$silkRAD=(false)
 )
 
 function Get-ScriptDirectory

@@ -1,0 +1,6 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "bshift/{ba_pizza"
+	"$alphatest"	"1"
+	"$ALPHATESTREFERENCE"	"0.5"
+}
