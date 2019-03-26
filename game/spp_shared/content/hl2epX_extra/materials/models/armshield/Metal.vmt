@@ -1,0 +1,27 @@
+// envmaptint_fix
+"VertexLitGeneric"
+{
+	"$basetexture" "Metal/metalwall078a"
+	"$surfaceprop" "metal"
+	"%keywords" "combine"
+
+	// NOTE: Even though env_cubemap is here, it will turned off for DX6
+	// because $multipass 1 isn't defined
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[ .56 .56 .75 ]"
+	"$envmapcontrast" 1
+	"$envmapsaturation" 1
+	
+	"$bumpmap" "metal/metalwall078a_normal"
+	"$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[ .09 .1 .12]"
+	
+	
+	"VertexLitGeneric_DX8"
+	{
+		"$bumpmap" "metal/metalwall078a_normal"
+		"$nodiffusebumplighting" 1
+		"$normalmapalphaenvmapmask" 1
+	}
+
+}

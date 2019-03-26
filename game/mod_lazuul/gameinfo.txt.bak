@@ -3,7 +3,7 @@
 	game	"Half-Life 2: Lazuul"
 	title	"HALF-LIFE'"
 	title2	"== lazuul =="
-	type singleplayer_only
+	//type singleplayer_only
 	
 	GameData	"lazuul.fgd"
 	
@@ -33,7 +33,8 @@
 		}
 	}
 	
-	supportsvr	1
+	supportsvr	0
+	supportdx8 0
 	multiplecampaigns 1
 
 	FileSystem

@@ -4,6 +4,7 @@
 	"title"		"HALF-LIFE'"
 	"title2"		"== lazuul =="
 	"type"		"singleplayer_only"
+	"GameData"		"lazuul.fgd"
 	"content"
 	{
 		"hl1_low"		"1"
@@ -57,6 +58,7 @@
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\lostcoast\lostcoast_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\lostcoast"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\hl2beta_npcs"
+			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\vaso_restored_metal.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\hl2beta_textures.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\enhanced_citizens.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra"

@@ -43,3 +43,5 @@ $Sequence "melee_gunhit2" {
 	ikrule "rfoot" footstep
 	ikrule "lfoot" footstep
 }
+
+$IncludeModel "humans/animation/armshield_anims.mdl"

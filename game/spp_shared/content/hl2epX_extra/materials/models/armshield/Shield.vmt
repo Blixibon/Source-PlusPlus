@@ -1,0 +1,35 @@
+"VertexLitGeneric"
+{
+	$basetexture "models/armshield/plasma_energy_03"
+	//$translucent 1
+	$additive 1
+	$nocull 1
+	$selfillum 1
+	//$blendtintbybasealpha 1
+	"$selfillumtint"	"[2 2 2]"
+	$color2 "[0 1 1]"
+	
+	// Emissive Scroll Pass
+	"$emissiveBlendEnabled"      "1" // Enables effect
+	"$emissiveBlendTexture"      "Effects/Combineshield/comshieldwall_close"
+	"$emissiveBlendBaseTexture"  "Effects/Combineshield/comshieldwall"
+	"$emissiveBlendFlowTexture"  "liquids/toxic_rep_flowmapr"
+	"$emissiveBlendTint"         "[10 10 10]"
+	"$emissiveBlendStrength"     "1.0" // Set by game code
+	"$emissiveBlendScrollVector" "[0.05 0.05]"
+     
+	 "Proxies"
+	 {
+		"TextureScroll"
+		{
+			textureScrollRate 5
+			texturescrollangle 90
+			texturescrollvar "$basetexturetransform"
+		}
+		
+		"CurrentTime"
+		{
+			resultvar "$time"
+		}
+	 }
+}
