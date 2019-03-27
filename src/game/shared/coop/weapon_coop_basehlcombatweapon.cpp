@@ -439,7 +439,7 @@ acttable_t CWeaponCoopBaseHLCombat::s_acttableLowered[] =
 
 Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequired)
 {
-	if (WeaponShouldBeLowered())
+	if (CanLower() && WeaponShouldBeLowered())
 	{
 		for (int i = 0; i < ARRAYSIZE(s_acttableLowered); i++)
 		{

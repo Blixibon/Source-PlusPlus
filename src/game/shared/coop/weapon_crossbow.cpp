@@ -853,7 +853,7 @@ void CWeaponCrossbow::ToggleZoom( void )
 	}
 	else
 	{
-		if ( pPlayer->SetFOV( this, 60, 0.1f ) )
+		if ( pPlayer->SetFOV( this, 20, 0.1f ) )
 		{
 			m_bInZoom = true;
 		}
