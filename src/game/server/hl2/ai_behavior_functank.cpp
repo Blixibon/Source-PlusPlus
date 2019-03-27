@@ -626,7 +626,7 @@ CBaseEntity *CAI_FuncTankBehavior::BestEnemy( void )
 			continue;
 
 		// Establish the reachability of this enemy
-		bUnreachable = pNPC->IsUnreachable( pEnemy );
+		//bUnreachable = pNPC->IsUnreachable( pEnemy );
 
 		// Check view cone of the view tank here.
 		bUnreachable = !m_hFuncTank->IsEntityInViewCone( pEnemy );
