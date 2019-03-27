@@ -52,6 +52,11 @@ $Project
 			$File	"$SRCDIR\game\shared\peter\armshield_shared.cpp"
 			$File	"peter\ienergyshield.h"
 		}
+		
+		$Folder "HLSS"
+		{
+			$File	"hlss\ai_behavior_recharge.cpp"
+		}
 
 		$Folder	"HL2 DLL"
 		{
