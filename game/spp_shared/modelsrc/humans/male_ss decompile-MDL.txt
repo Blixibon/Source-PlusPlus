@@ -1,0 +1,1162 @@
+// Created by Crowbar 0.42.0.0
+====== File Size ======
+	150,864
+====== File Seek Log ======
+--- Summary ---
+	0 - 27,767
+	27,776 - 28,023
+	28,032 - 28,087
+	28,096 - 28,343
+	28,352 - 28,567
+	28,576 - 28,951
+	28,960 - 29,015
+	29,024 - 29,079
+	29,088 - 29,191
+	29,200 - 29,255
+	29,264 - 29,383
+	29,392 - 29,591
+	29,600 - 29,719
+	29,728 - 29,783
+	29,792 - 29,847
+	29,856 - 29,911
+	29,920 - 29,975
+	29,984 - 30,039
+	30,048 - 30,103
+	30,112 - 30,167
+	30,176 - 30,263
+	30,272 - 30,327
+	30,336 - 30,391
+	30,400 - 30,583
+	30,592 - 30,695
+	30,704 - 30,823
+	30,832 - 30,983
+	30,992 - 32,311
+	101,044 - 135,439
+	135,504 - 150,863
+------------------------
+--- Each Section or Loop ---
+	0 - 79 MDL File Header 00; MDL File Header 00
+	80 - 407 MDL File Header 01; MDL File Header 01
+	408 - 663 MDL File Header 02; MDL File Header 02
+	664 - 12,759 theMdlFileData.theBones
+	12,760 - 13,127 theMdlFileData.theAttachments
+	13,128 - 13,139 theMdlFileData.theHitboxSets
+	13,140 - 13,411 aHitboxSet.theHitboxes
+	13,412 - 13,467 theMdlFileData.theBoneTableByName
+	13,468 - 27,767 theMdlFileData.theAnimationDescs
+
+	27,776 - 27,783 anAnimationDesc.theSections
+	27,784 - 27,791 anAnimationDesc.theSections
+	27,792 - 27,799 anAnimationDesc.theSections
+	27,800 - 27,807 anAnimationDesc.theSections
+	27,808 - 27,815 anAnimationDesc.theSections
+	27,816 - 27,823 anAnimationDesc.theSections
+	27,824 - 27,831 anAnimationDesc.theSections
+	27,832 - 27,839 anAnimationDesc.theSections
+	27,840 - 27,847 anAnimationDesc.theSections
+	27,848 - 27,855 anAnimationDesc.theSections
+	27,856 - 27,863 anAnimationDesc.theSections
+	27,864 - 27,871 anAnimationDesc.theSections
+	27,872 - 27,879 anAnimationDesc.theSections
+	27,880 - 27,887 anAnimationDesc.theSections
+	27,888 - 27,895 anAnimationDesc.theSections
+	27,896 - 27,903 anAnimationDesc.theSections
+	27,904 - 27,911 anAnimationDesc.theSections
+	27,912 - 27,919 anAnimationDesc.theSections
+	27,920 - 27,927 anAnimationDesc.theSections
+	27,928 - 27,935 anAnimationDesc.theSections
+	27,936 - 27,943 anAnimationDesc.theSections
+	27,944 - 27,951 anAnimationDesc.theSections
+	27,952 - 27,959 anAnimationDesc.theSections
+	27,960 - 27,967 anAnimationDesc.theSections
+	27,968 - 27,975 anAnimationDesc.theSections
+	27,976 - 27,983 anAnimationDesc.theSections
+	27,984 - 27,991 anAnimationDesc.theSections
+	27,992 - 27,999 anAnimationDesc.theSections
+	28,000 - 28,007 anAnimationDesc.theSections
+	28,008 - 28,015 anAnimationDesc.theSections
+	28,016 - 28,023 anAnimationDesc.theSections
+
+	28,032 - 28,039 anAnimationDesc.theSections
+	28,040 - 28,047 anAnimationDesc.theSections
+	28,048 - 28,055 anAnimationDesc.theSections
+	28,056 - 28,063 anAnimationDesc.theSections
+	28,064 - 28,071 anAnimationDesc.theSections
+	28,072 - 28,079 anAnimationDesc.theSections
+	28,080 - 28,087 anAnimationDesc.theSections
+
+	28,096 - 28,103 anAnimationDesc.theSections
+	28,104 - 28,111 anAnimationDesc.theSections
+	28,112 - 28,119 anAnimationDesc.theSections
+	28,120 - 28,127 anAnimationDesc.theSections
+	28,128 - 28,135 anAnimationDesc.theSections
+	28,136 - 28,143 anAnimationDesc.theSections
+	28,144 - 28,151 anAnimationDesc.theSections
+	28,152 - 28,159 anAnimationDesc.theSections
+	28,160 - 28,167 anAnimationDesc.theSections
+	28,168 - 28,175 anAnimationDesc.theSections
+	28,176 - 28,183 anAnimationDesc.theSections
+	28,184 - 28,191 anAnimationDesc.theSections
+	28,192 - 28,199 anAnimationDesc.theSections
+	28,200 - 28,207 anAnimationDesc.theSections
+	28,208 - 28,215 anAnimationDesc.theSections
+	28,216 - 28,223 anAnimationDesc.theSections
+	28,224 - 28,231 anAnimationDesc.theSections
+	28,232 - 28,239 anAnimationDesc.theSections
+	28,240 - 28,247 anAnimationDesc.theSections
+	28,248 - 28,255 anAnimationDesc.theSections
+	28,256 - 28,263 anAnimationDesc.theSections
+	28,264 - 28,271 anAnimationDesc.theSections
+	28,272 - 28,279 anAnimationDesc.theSections
+	28,280 - 28,287 anAnimationDesc.theSections
+	28,288 - 28,295 anAnimationDesc.theSections
+	28,296 - 28,303 anAnimationDesc.theSections
+	28,304 - 28,311 anAnimationDesc.theSections
+	28,312 - 28,319 anAnimationDesc.theSections
+	28,320 - 28,327 anAnimationDesc.theSections
+	28,328 - 28,335 anAnimationDesc.theSections
+	28,336 - 28,343 anAnimationDesc.theSections
+
+	28,352 - 28,359 anAnimationDesc.theSections
+	28,360 - 28,367 anAnimationDesc.theSections
+	28,368 - 28,375 anAnimationDesc.theSections
+	28,376 - 28,383 anAnimationDesc.theSections
+	28,384 - 28,391 anAnimationDesc.theSections
+	28,392 - 28,399 anAnimationDesc.theSections
+	28,400 - 28,407 anAnimationDesc.theSections
+	28,408 - 28,415 anAnimationDesc.theSections
+	28,416 - 28,423 anAnimationDesc.theSections
+	28,424 - 28,431 anAnimationDesc.theSections
+	28,432 - 28,439 anAnimationDesc.theSections
+	28,440 - 28,447 anAnimationDesc.theSections
+	28,448 - 28,455 anAnimationDesc.theSections
+	28,456 - 28,463 anAnimationDesc.theSections
+	28,464 - 28,471 anAnimationDesc.theSections
+	28,472 - 28,479 anAnimationDesc.theSections
+	28,480 - 28,487 anAnimationDesc.theSections
+	28,488 - 28,495 anAnimationDesc.theSections
+	28,496 - 28,503 anAnimationDesc.theSections
+	28,504 - 28,511 anAnimationDesc.theSections
+	28,512 - 28,519 anAnimationDesc.theSections
+	28,520 - 28,527 anAnimationDesc.theSections
+	28,528 - 28,535 anAnimationDesc.theSections
+	28,536 - 28,543 anAnimationDesc.theSections
+	28,544 - 28,551 anAnimationDesc.theSections
+	28,552 - 28,559 anAnimationDesc.theSections
+	28,560 - 28,567 anAnimationDesc.theSections
+
+	28,576 - 28,583 anAnimationDesc.theSections
+	28,584 - 28,591 anAnimationDesc.theSections
+	28,592 - 28,599 anAnimationDesc.theSections
+	28,600 - 28,607 anAnimationDesc.theSections
+	28,608 - 28,615 anAnimationDesc.theSections
+	28,616 - 28,623 anAnimationDesc.theSections
+	28,624 - 28,631 anAnimationDesc.theSections
+	28,632 - 28,639 anAnimationDesc.theSections
+	28,640 - 28,647 anAnimationDesc.theSections
+	28,648 - 28,655 anAnimationDesc.theSections
+	28,656 - 28,663 anAnimationDesc.theSections
+	28,664 - 28,671 anAnimationDesc.theSections
+	28,672 - 28,679 anAnimationDesc.theSections
+	28,680 - 28,687 anAnimationDesc.theSections
+	28,688 - 28,695 anAnimationDesc.theSections
+	28,696 - 28,703 anAnimationDesc.theSections
+	28,704 - 28,711 anAnimationDesc.theSections
+	28,712 - 28,719 anAnimationDesc.theSections
+	28,720 - 28,727 anAnimationDesc.theSections
+	28,728 - 28,735 anAnimationDesc.theSections
+	28,736 - 28,743 anAnimationDesc.theSections
+	28,744 - 28,751 anAnimationDesc.theSections
+	28,752 - 28,759 anAnimationDesc.theSections
+	28,760 - 28,767 anAnimationDesc.theSections
+	28,768 - 28,775 anAnimationDesc.theSections
+	28,776 - 28,783 anAnimationDesc.theSections
+	28,784 - 28,791 anAnimationDesc.theSections
+	28,792 - 28,799 anAnimationDesc.theSections
+	28,800 - 28,807 anAnimationDesc.theSections
+	28,808 - 28,815 anAnimationDesc.theSections
+	28,816 - 28,823 anAnimationDesc.theSections
+	28,824 - 28,831 anAnimationDesc.theSections
+	28,832 - 28,839 anAnimationDesc.theSections
+	28,840 - 28,847 anAnimationDesc.theSections
+	28,848 - 28,855 anAnimationDesc.theSections
+	28,856 - 28,863 anAnimationDesc.theSections
+	28,864 - 28,871 anAnimationDesc.theSections
+	28,872 - 28,879 anAnimationDesc.theSections
+	28,880 - 28,887 anAnimationDesc.theSections
+	28,888 - 28,895 anAnimationDesc.theSections
+	28,896 - 28,903 anAnimationDesc.theSections
+	28,904 - 28,911 anAnimationDesc.theSections
+	28,912 - 28,919 anAnimationDesc.theSections
+	28,920 - 28,927 anAnimationDesc.theSections
+	28,928 - 28,935 anAnimationDesc.theSections
+	28,936 - 28,943 anAnimationDesc.theSections
+	28,944 - 28,951 anAnimationDesc.theSections
+
+	28,960 - 28,967 anAnimationDesc.theSections
+	28,968 - 28,975 anAnimationDesc.theSections
+	28,976 - 28,983 anAnimationDesc.theSections
+	28,984 - 28,991 anAnimationDesc.theSections
+	28,992 - 28,999 anAnimationDesc.theSections
+	29,000 - 29,007 anAnimationDesc.theSections
+	29,008 - 29,015 anAnimationDesc.theSections
+
+	29,024 - 29,031 anAnimationDesc.theSections
+	29,032 - 29,039 anAnimationDesc.theSections
+	29,040 - 29,047 anAnimationDesc.theSections
+	29,048 - 29,055 anAnimationDesc.theSections
+	29,056 - 29,063 anAnimationDesc.theSections
+	29,064 - 29,071 anAnimationDesc.theSections
+	29,072 - 29,079 anAnimationDesc.theSections
+
+	29,088 - 29,095 anAnimationDesc.theSections
+	29,096 - 29,103 anAnimationDesc.theSections
+	29,104 - 29,111 anAnimationDesc.theSections
+	29,112 - 29,119 anAnimationDesc.theSections
+	29,120 - 29,127 anAnimationDesc.theSections
+	29,128 - 29,135 anAnimationDesc.theSections
+	29,136 - 29,143 anAnimationDesc.theSections
+	29,144 - 29,151 anAnimationDesc.theSections
+	29,152 - 29,159 anAnimationDesc.theSections
+	29,160 - 29,167 anAnimationDesc.theSections
+	29,168 - 29,175 anAnimationDesc.theSections
+	29,176 - 29,183 anAnimationDesc.theSections
+	29,184 - 29,191 anAnimationDesc.theSections
+
+	29,200 - 29,207 anAnimationDesc.theSections
+	29,208 - 29,215 anAnimationDesc.theSections
+	29,216 - 29,223 anAnimationDesc.theSections
+	29,224 - 29,231 anAnimationDesc.theSections
+	29,232 - 29,239 anAnimationDesc.theSections
+	29,240 - 29,247 anAnimationDesc.theSections
+	29,248 - 29,255 anAnimationDesc.theSections
+
+	29,264 - 29,271 anAnimationDesc.theSections
+	29,272 - 29,279 anAnimationDesc.theSections
+	29,280 - 29,287 anAnimationDesc.theSections
+	29,288 - 29,295 anAnimationDesc.theSections
+	29,296 - 29,303 anAnimationDesc.theSections
+	29,304 - 29,311 anAnimationDesc.theSections
+	29,312 - 29,319 anAnimationDesc.theSections
+	29,320 - 29,327 anAnimationDesc.theSections
+	29,328 - 29,335 anAnimationDesc.theSections
+	29,336 - 29,343 anAnimationDesc.theSections
+	29,344 - 29,351 anAnimationDesc.theSections
+	29,352 - 29,359 anAnimationDesc.theSections
+	29,360 - 29,367 anAnimationDesc.theSections
+	29,368 - 29,375 anAnimationDesc.theSections
+	29,376 - 29,383 anAnimationDesc.theSections
+
+	29,392 - 29,399 anAnimationDesc.theSections
+	29,400 - 29,407 anAnimationDesc.theSections
+	29,408 - 29,415 anAnimationDesc.theSections
+	29,416 - 29,423 anAnimationDesc.theSections
+	29,424 - 29,431 anAnimationDesc.theSections
+	29,432 - 29,439 anAnimationDesc.theSections
+	29,440 - 29,447 anAnimationDesc.theSections
+	29,448 - 29,455 anAnimationDesc.theSections
+	29,456 - 29,463 anAnimationDesc.theSections
+	29,464 - 29,471 anAnimationDesc.theSections
+	29,472 - 29,479 anAnimationDesc.theSections
+	29,480 - 29,487 anAnimationDesc.theSections
+	29,488 - 29,495 anAnimationDesc.theSections
+	29,496 - 29,503 anAnimationDesc.theSections
+	29,504 - 29,511 anAnimationDesc.theSections
+	29,512 - 29,519 anAnimationDesc.theSections
+	29,520 - 29,527 anAnimationDesc.theSections
+	29,528 - 29,535 anAnimationDesc.theSections
+	29,536 - 29,543 anAnimationDesc.theSections
+	29,544 - 29,551 anAnimationDesc.theSections
+	29,552 - 29,559 anAnimationDesc.theSections
+	29,560 - 29,567 anAnimationDesc.theSections
+	29,568 - 29,575 anAnimationDesc.theSections
+	29,576 - 29,583 anAnimationDesc.theSections
+	29,584 - 29,591 anAnimationDesc.theSections
+
+	29,600 - 29,607 anAnimationDesc.theSections
+	29,608 - 29,615 anAnimationDesc.theSections
+	29,616 - 29,623 anAnimationDesc.theSections
+	29,624 - 29,631 anAnimationDesc.theSections
+	29,632 - 29,639 anAnimationDesc.theSections
+	29,640 - 29,647 anAnimationDesc.theSections
+	29,648 - 29,655 anAnimationDesc.theSections
+	29,656 - 29,663 anAnimationDesc.theSections
+	29,664 - 29,671 anAnimationDesc.theSections
+	29,672 - 29,679 anAnimationDesc.theSections
+	29,680 - 29,687 anAnimationDesc.theSections
+	29,688 - 29,695 anAnimationDesc.theSections
+	29,696 - 29,703 anAnimationDesc.theSections
+	29,704 - 29,711 anAnimationDesc.theSections
+	29,712 - 29,719 anAnimationDesc.theSections
+
+	29,728 - 29,735 anAnimationDesc.theSections
+	29,736 - 29,743 anAnimationDesc.theSections
+	29,744 - 29,751 anAnimationDesc.theSections
+	29,752 - 29,759 anAnimationDesc.theSections
+	29,760 - 29,767 anAnimationDesc.theSections
+	29,768 - 29,775 anAnimationDesc.theSections
+	29,776 - 29,783 anAnimationDesc.theSections
+
+	29,792 - 29,799 anAnimationDesc.theSections
+	29,800 - 29,807 anAnimationDesc.theSections
+	29,808 - 29,815 anAnimationDesc.theSections
+	29,816 - 29,823 anAnimationDesc.theSections
+	29,824 - 29,831 anAnimationDesc.theSections
+	29,832 - 29,839 anAnimationDesc.theSections
+	29,840 - 29,847 anAnimationDesc.theSections
+
+	29,856 - 29,863 anAnimationDesc.theSections
+	29,864 - 29,871 anAnimationDesc.theSections
+	29,872 - 29,879 anAnimationDesc.theSections
+	29,880 - 29,887 anAnimationDesc.theSections
+	29,888 - 29,895 anAnimationDesc.theSections
+	29,896 - 29,903 anAnimationDesc.theSections
+	29,904 - 29,911 anAnimationDesc.theSections
+
+	29,920 - 29,927 anAnimationDesc.theSections
+	29,928 - 29,935 anAnimationDesc.theSections
+	29,936 - 29,943 anAnimationDesc.theSections
+	29,944 - 29,951 anAnimationDesc.theSections
+	29,952 - 29,959 anAnimationDesc.theSections
+	29,960 - 29,967 anAnimationDesc.theSections
+	29,968 - 29,975 anAnimationDesc.theSections
+
+	29,984 - 29,991 anAnimationDesc.theSections
+	29,992 - 29,999 anAnimationDesc.theSections
+	30,000 - 30,007 anAnimationDesc.theSections
+	30,008 - 30,015 anAnimationDesc.theSections
+	30,016 - 30,023 anAnimationDesc.theSections
+	30,024 - 30,031 anAnimationDesc.theSections
+	30,032 - 30,039 anAnimationDesc.theSections
+
+	30,048 - 30,055 anAnimationDesc.theSections
+	30,056 - 30,063 anAnimationDesc.theSections
+	30,064 - 30,071 anAnimationDesc.theSections
+	30,072 - 30,079 anAnimationDesc.theSections
+	30,080 - 30,087 anAnimationDesc.theSections
+	30,088 - 30,095 anAnimationDesc.theSections
+	30,096 - 30,103 anAnimationDesc.theSections
+
+	30,112 - 30,119 anAnimationDesc.theSections
+	30,120 - 30,127 anAnimationDesc.theSections
+	30,128 - 30,135 anAnimationDesc.theSections
+	30,136 - 30,143 anAnimationDesc.theSections
+	30,144 - 30,151 anAnimationDesc.theSections
+	30,152 - 30,159 anAnimationDesc.theSections
+	30,160 - 30,167 anAnimationDesc.theSections
+
+	30,176 - 30,183 anAnimationDesc.theSections
+	30,184 - 30,191 anAnimationDesc.theSections
+	30,192 - 30,199 anAnimationDesc.theSections
+	30,200 - 30,207 anAnimationDesc.theSections
+	30,208 - 30,215 anAnimationDesc.theSections
+	30,216 - 30,223 anAnimationDesc.theSections
+	30,224 - 30,231 anAnimationDesc.theSections
+	30,232 - 30,239 anAnimationDesc.theSections
+	30,240 - 30,247 anAnimationDesc.theSections
+	30,248 - 30,255 anAnimationDesc.theSections
+	30,256 - 30,263 anAnimationDesc.theSections
+
+	30,272 - 30,279 anAnimationDesc.theSections
+	30,280 - 30,287 anAnimationDesc.theSections
+	30,288 - 30,295 anAnimationDesc.theSections
+	30,296 - 30,303 anAnimationDesc.theSections
+	30,304 - 30,311 anAnimationDesc.theSections
+	30,312 - 30,319 anAnimationDesc.theSections
+	30,320 - 30,327 anAnimationDesc.theSections
+
+	30,336 - 30,343 anAnimationDesc.theSections
+	30,344 - 30,351 anAnimationDesc.theSections
+	30,352 - 30,359 anAnimationDesc.theSections
+	30,360 - 30,367 anAnimationDesc.theSections
+	30,368 - 30,375 anAnimationDesc.theSections
+	30,376 - 30,383 anAnimationDesc.theSections
+	30,384 - 30,391 anAnimationDesc.theSections
+
+	30,400 - 30,407 anAnimationDesc.theSections
+	30,408 - 30,415 anAnimationDesc.theSections
+	30,416 - 30,423 anAnimationDesc.theSections
+	30,424 - 30,431 anAnimationDesc.theSections
+	30,432 - 30,439 anAnimationDesc.theSections
+	30,440 - 30,447 anAnimationDesc.theSections
+	30,448 - 30,455 anAnimationDesc.theSections
+	30,456 - 30,463 anAnimationDesc.theSections
+	30,464 - 30,471 anAnimationDesc.theSections
+	30,472 - 30,479 anAnimationDesc.theSections
+	30,480 - 30,487 anAnimationDesc.theSections
+	30,488 - 30,495 anAnimationDesc.theSections
+	30,496 - 30,503 anAnimationDesc.theSections
+	30,504 - 30,511 anAnimationDesc.theSections
+	30,512 - 30,519 anAnimationDesc.theSections
+	30,520 - 30,527 anAnimationDesc.theSections
+	30,528 - 30,535 anAnimationDesc.theSections
+	30,536 - 30,543 anAnimationDesc.theSections
+	30,544 - 30,551 anAnimationDesc.theSections
+	30,552 - 30,559 anAnimationDesc.theSections
+	30,560 - 30,567 anAnimationDesc.theSections
+	30,568 - 30,575 anAnimationDesc.theSections
+	30,576 - 30,583 anAnimationDesc.theSections
+
+	30,592 - 30,599 anAnimationDesc.theSections
+	30,600 - 30,607 anAnimationDesc.theSections
+	30,608 - 30,615 anAnimationDesc.theSections
+	30,616 - 30,623 anAnimationDesc.theSections
+	30,624 - 30,631 anAnimationDesc.theSections
+	30,632 - 30,639 anAnimationDesc.theSections
+	30,640 - 30,647 anAnimationDesc.theSections
+	30,648 - 30,655 anAnimationDesc.theSections
+	30,656 - 30,663 anAnimationDesc.theSections
+	30,664 - 30,671 anAnimationDesc.theSections
+	30,672 - 30,679 anAnimationDesc.theSections
+	30,680 - 30,687 anAnimationDesc.theSections
+	30,688 - 30,695 anAnimationDesc.theSections
+
+	30,704 - 30,711 anAnimationDesc.theSections
+	30,712 - 30,719 anAnimationDesc.theSections
+	30,720 - 30,727 anAnimationDesc.theSections
+	30,728 - 30,735 anAnimationDesc.theSections
+	30,736 - 30,743 anAnimationDesc.theSections
+	30,744 - 30,751 anAnimationDesc.theSections
+	30,752 - 30,759 anAnimationDesc.theSections
+	30,760 - 30,767 anAnimationDesc.theSections
+	30,768 - 30,775 anAnimationDesc.theSections
+	30,776 - 30,783 anAnimationDesc.theSections
+	30,784 - 30,791 anAnimationDesc.theSections
+	30,792 - 30,799 anAnimationDesc.theSections
+	30,800 - 30,807 anAnimationDesc.theSections
+	30,808 - 30,815 anAnimationDesc.theSections
+	30,816 - 30,823 anAnimationDesc.theSections
+
+	30,832 - 30,839 anAnimationDesc.theSections
+	30,840 - 30,847 anAnimationDesc.theSections
+	30,848 - 30,855 anAnimationDesc.theSections
+	30,856 - 30,863 anAnimationDesc.theSections
+	30,864 - 30,871 anAnimationDesc.theSections
+	30,872 - 30,879 anAnimationDesc.theSections
+	30,880 - 30,887 anAnimationDesc.theSections
+	30,888 - 30,895 anAnimationDesc.theSections
+	30,896 - 30,903 anAnimationDesc.theSections
+	30,904 - 30,911 anAnimationDesc.theSections
+	30,912 - 30,919 anAnimationDesc.theSections
+	30,920 - 30,927 anAnimationDesc.theSections
+	30,928 - 30,935 anAnimationDesc.theSections
+	30,936 - 30,943 anAnimationDesc.theSections
+	30,944 - 30,951 anAnimationDesc.theSections
+	30,952 - 30,959 anAnimationDesc.theSections
+	30,960 - 30,967 anAnimationDesc.theSections
+	30,968 - 30,975 anAnimationDesc.theSections
+	30,976 - 30,983 anAnimationDesc.theSections
+
+	30,992 - 31,035 anAnimationDesc.theMovements
+	31,036 - 31,079 anAnimationDesc.theMovements
+	31,080 - 31,167 anAnimationDesc.theMovements
+	31,168 - 31,255 anAnimationDesc.theMovements
+	31,256 - 31,343 anAnimationDesc.theMovements
+	31,344 - 31,431 anAnimationDesc.theMovements
+	31,432 - 31,475 anAnimationDesc.theMovements
+	31,476 - 31,519 anAnimationDesc.theMovements
+	31,520 - 31,563 anAnimationDesc.theMovements
+	31,564 - 31,607 anAnimationDesc.theMovements
+	31,608 - 31,651 anAnimationDesc.theMovements
+	31,652 - 31,695 anAnimationDesc.theMovements
+	31,696 - 31,739 anAnimationDesc.theMovements
+	31,740 - 31,783 anAnimationDesc.theMovements
+	31,784 - 31,827 anAnimationDesc.theMovements
+	31,828 - 31,871 anAnimationDesc.theMovements
+	31,872 - 32,003 anAnimationDesc.theMovements
+	32,004 - 32,091 anAnimationDesc.theMovements
+	32,092 - 32,135 anAnimationDesc.theMovements
+	32,136 - 32,179 anAnimationDesc.theMovements
+	32,180 - 32,223 anAnimationDesc.theMovements
+	32,224 - 32,267 anAnimationDesc.theMovements
+	32,268 - 32,311 anAnimationDesc.theMovements
+
+	101,044 - 131,359 theMdlFileData.theSequenceDescs
+	131,360 - 131,583 aSeqDesc.theBoneWeights
+	131,584 - 131,585 aSeqDesc.theAnimDescIndexes
+	131,586 - 131,587 aSeqDesc.theAnimDescIndexes alignment
+	131,588 - 131,589 aSeqDesc.theAnimDescIndexes
+	131,590 - 131,591 aSeqDesc.theAnimDescIndexes alignment
+	131,592 - 131,593 aSeqDesc.theAnimDescIndexes
+	131,594 - 131,595 aSeqDesc.theAnimDescIndexes alignment
+	131,596 - 131,835 aSeqDesc.theEvents
+	131,836 - 131,837 aSeqDesc.theAnimDescIndexes
+	131,838 - 131,839 aSeqDesc.theAnimDescIndexes alignment
+	131,840 - 132,079 aSeqDesc.theEvents
+	132,080 - 132,081 aSeqDesc.theAnimDescIndexes
+	132,082 - 132,083 aSeqDesc.theAnimDescIndexes alignment
+	132,084 - 132,085 aSeqDesc.theAnimDescIndexes
+	132,086 - 132,087 aSeqDesc.theAnimDescIndexes alignment
+	132,088 - 132,089 aSeqDesc.theAnimDescIndexes
+	132,090 - 132,091 aSeqDesc.theAnimDescIndexes alignment
+	132,092 - 132,093 aSeqDesc.theAnimDescIndexes
+	132,094 - 132,095 aSeqDesc.theAnimDescIndexes alignment
+	132,096 - 132,097 aSeqDesc.theAnimDescIndexes
+	132,098 - 132,099 aSeqDesc.theAnimDescIndexes alignment
+	132,100 - 132,101 aSeqDesc.theAnimDescIndexes
+	132,102 - 132,103 aSeqDesc.theAnimDescIndexes alignment
+	132,104 - 132,105 aSeqDesc.theAnimDescIndexes
+	132,106 - 132,107 aSeqDesc.theAnimDescIndexes alignment
+	132,108 - 132,109 aSeqDesc.theAnimDescIndexes
+	132,110 - 132,111 aSeqDesc.theAnimDescIndexes alignment
+	132,112 - 132,113 aSeqDesc.theAnimDescIndexes
+	132,114 - 132,115 aSeqDesc.theAnimDescIndexes alignment
+	132,116 - 132,117 aSeqDesc.theAnimDescIndexes
+	132,118 - 132,119 aSeqDesc.theAnimDescIndexes alignment
+	132,120 - 132,121 aSeqDesc.theAnimDescIndexes
+	132,122 - 132,123 aSeqDesc.theAnimDescIndexes alignment
+	132,124 - 132,125 aSeqDesc.theAnimDescIndexes
+	132,126 - 132,127 aSeqDesc.theAnimDescIndexes alignment
+	132,128 - 132,129 aSeqDesc.theAnimDescIndexes
+	132,130 - 132,131 aSeqDesc.theAnimDescIndexes alignment
+	132,132 - 132,133 aSeqDesc.theAnimDescIndexes
+	132,134 - 132,135 aSeqDesc.theAnimDescIndexes alignment
+	132,136 - 132,137 aSeqDesc.theAnimDescIndexes
+	132,138 - 132,139 aSeqDesc.theAnimDescIndexes alignment
+	132,140 - 132,219 aSeqDesc.theEvents
+	132,220 - 132,221 aSeqDesc.theAnimDescIndexes
+	132,222 - 132,223 aSeqDesc.theAnimDescIndexes alignment
+	132,224 - 132,225 aSeqDesc.theAnimDescIndexes
+	132,226 - 132,227 aSeqDesc.theAnimDescIndexes alignment
+	132,228 - 132,229 aSeqDesc.theAnimDescIndexes
+	132,230 - 132,231 aSeqDesc.theAnimDescIndexes alignment
+	132,232 - 132,233 aSeqDesc.theAnimDescIndexes
+	132,234 - 132,235 aSeqDesc.theAnimDescIndexes alignment
+	132,236 - 132,237 aSeqDesc.theAnimDescIndexes
+	132,238 - 132,239 aSeqDesc.theAnimDescIndexes alignment
+	132,240 - 132,241 aSeqDesc.theAnimDescIndexes
+	132,242 - 132,243 aSeqDesc.theAnimDescIndexes alignment
+	132,244 - 132,245 aSeqDesc.theAnimDescIndexes
+	132,246 - 132,247 aSeqDesc.theAnimDescIndexes alignment
+	132,248 - 132,249 aSeqDesc.theAnimDescIndexes
+	132,250 - 132,251 aSeqDesc.theAnimDescIndexes alignment
+	132,252 - 132,253 aSeqDesc.theAnimDescIndexes
+	132,254 - 132,255 aSeqDesc.theAnimDescIndexes alignment
+	132,256 - 132,257 aSeqDesc.theAnimDescIndexes
+	132,258 - 132,259 aSeqDesc.theAnimDescIndexes alignment
+	132,260 - 132,261 aSeqDesc.theAnimDescIndexes
+	132,262 - 132,263 aSeqDesc.theAnimDescIndexes alignment
+	132,264 - 132,265 aSeqDesc.theAnimDescIndexes
+	132,266 - 132,267 aSeqDesc.theAnimDescIndexes alignment
+	132,268 - 132,269 aSeqDesc.theAnimDescIndexes
+	132,270 - 132,271 aSeqDesc.theAnimDescIndexes alignment
+	132,272 - 132,273 aSeqDesc.theAnimDescIndexes
+	132,274 - 132,275 aSeqDesc.theAnimDescIndexes alignment
+	132,276 - 132,277 aSeqDesc.theAnimDescIndexes
+	132,278 - 132,279 aSeqDesc.theAnimDescIndexes alignment
+	132,280 - 132,281 aSeqDesc.theAnimDescIndexes
+	132,282 - 132,283 aSeqDesc.theAnimDescIndexes alignment
+	132,284 - 132,285 aSeqDesc.theAnimDescIndexes
+	132,286 - 132,287 aSeqDesc.theAnimDescIndexes alignment
+	132,288 - 132,289 aSeqDesc.theAnimDescIndexes
+	132,290 - 132,291 aSeqDesc.theAnimDescIndexes alignment
+	132,292 - 132,293 aSeqDesc.theAnimDescIndexes
+	132,294 - 132,295 aSeqDesc.theAnimDescIndexes alignment
+	132,296 - 132,297 aSeqDesc.theAnimDescIndexes
+	132,298 - 132,299 aSeqDesc.theAnimDescIndexes alignment
+	132,300 - 132,301 aSeqDesc.theAnimDescIndexes
+	132,302 - 132,303 aSeqDesc.theAnimDescIndexes alignment
+	132,304 - 132,305 aSeqDesc.theAnimDescIndexes
+	132,306 - 132,307 aSeqDesc.theAnimDescIndexes alignment
+	132,308 - 132,309 aSeqDesc.theAnimDescIndexes
+	132,310 - 132,311 aSeqDesc.theAnimDescIndexes alignment
+	132,312 - 132,313 aSeqDesc.theAnimDescIndexes
+	132,314 - 132,315 aSeqDesc.theAnimDescIndexes alignment
+	132,316 - 132,395 aSeqDesc.theEvents
+	132,396 - 132,397 aSeqDesc.theAnimDescIndexes
+	132,398 - 132,399 aSeqDesc.theAnimDescIndexes alignment
+	132,400 - 132,401 aSeqDesc.theAnimDescIndexes
+	132,402 - 132,403 aSeqDesc.theAnimDescIndexes alignment
+	132,404 - 132,405 aSeqDesc.theAnimDescIndexes
+	132,406 - 132,407 aSeqDesc.theAnimDescIndexes alignment
+	132,408 - 132,409 aSeqDesc.theAnimDescIndexes
+	132,410 - 132,411 aSeqDesc.theAnimDescIndexes alignment
+	132,412 - 132,413 aSeqDesc.theAnimDescIndexes
+	132,414 - 132,415 aSeqDesc.theAnimDescIndexes alignment
+	132,416 - 132,417 aSeqDesc.theAnimDescIndexes
+	132,418 - 132,419 aSeqDesc.theAnimDescIndexes alignment
+	132,420 - 132,421 aSeqDesc.theAnimDescIndexes
+	132,422 - 132,423 aSeqDesc.theAnimDescIndexes alignment
+	132,424 - 132,487 aSeqDesc.theIkLocks
+	132,488 - 132,489 aSeqDesc.theAnimDescIndexes
+	132,490 - 132,491 aSeqDesc.theAnimDescIndexes alignment
+	132,492 - 132,515 aSeqDesc.theAutoLayers
+	132,516 - 132,517 aSeqDesc.theAnimDescIndexes
+	132,518 - 132,519 aSeqDesc.theAnimDescIndexes alignment
+	132,520 - 132,543 aSeqDesc.theAutoLayers
+	132,544 - 132,545 aSeqDesc.theAnimDescIndexes
+	132,546 - 132,547 aSeqDesc.theAnimDescIndexes alignment
+	132,548 - 132,549 aSeqDesc.theAnimDescIndexes
+	132,550 - 132,551 aSeqDesc.theAnimDescIndexes alignment
+	132,552 - 132,553 aSeqDesc.theAnimDescIndexes
+	132,554 - 132,555 aSeqDesc.theAnimDescIndexes alignment
+	132,556 - 132,557 aSeqDesc.theAnimDescIndexes
+	132,558 - 132,559 aSeqDesc.theAnimDescIndexes alignment
+	132,560 - 132,561 aSeqDesc.theAnimDescIndexes
+	132,562 - 132,563 aSeqDesc.theAnimDescIndexes alignment
+	132,564 - 132,587 aSeqDesc.theAutoLayers
+	132,588 - 132,589 aSeqDesc.theAnimDescIndexes
+	132,590 - 132,591 aSeqDesc.theAnimDescIndexes alignment
+	132,592 - 132,615 aSeqDesc.theAutoLayers
+	132,616 - 132,617 aSeqDesc.theAnimDescIndexes
+	132,618 - 132,619 aSeqDesc.theAnimDescIndexes alignment
+	132,620 - 132,621 aSeqDesc.theAnimDescIndexes
+	132,622 - 132,623 aSeqDesc.theAnimDescIndexes alignment
+	132,624 - 132,625 aSeqDesc.theAnimDescIndexes
+	132,626 - 132,627 aSeqDesc.theAnimDescIndexes alignment
+	132,628 - 132,629 aSeqDesc.theAnimDescIndexes
+	132,630 - 132,631 aSeqDesc.theAnimDescIndexes alignment
+	132,632 - 132,633 aSeqDesc.theAnimDescIndexes
+	132,634 - 132,635 aSeqDesc.theAnimDescIndexes alignment
+	132,636 - 132,637 aSeqDesc.theAnimDescIndexes
+	132,638 - 132,639 aSeqDesc.theAnimDescIndexes alignment
+	132,640 - 132,641 aSeqDesc.theAnimDescIndexes
+	132,642 - 132,643 aSeqDesc.theAnimDescIndexes alignment
+	132,644 - 132,645 aSeqDesc.theAnimDescIndexes
+	132,646 - 132,647 aSeqDesc.theAnimDescIndexes alignment
+	132,648 - 132,649 aSeqDesc.theAnimDescIndexes
+	132,650 - 132,651 aSeqDesc.theAnimDescIndexes alignment
+	132,652 - 132,653 aSeqDesc.theAnimDescIndexes
+	132,654 - 132,655 aSeqDesc.theAnimDescIndexes alignment
+	132,656 - 132,657 aSeqDesc.theAnimDescIndexes
+	132,658 - 132,659 aSeqDesc.theAnimDescIndexes alignment
+	132,660 - 132,661 aSeqDesc.theAnimDescIndexes
+	132,662 - 132,663 aSeqDesc.theAnimDescIndexes alignment
+	132,664 - 132,743 aSeqDesc.theEvents
+	132,744 - 132,745 aSeqDesc.theAnimDescIndexes
+	132,746 - 132,747 aSeqDesc.theAnimDescIndexes alignment
+	132,748 - 132,749 aSeqDesc.theAnimDescIndexes
+	132,750 - 132,751 aSeqDesc.theAnimDescIndexes alignment
+	132,752 - 132,753 aSeqDesc.theAnimDescIndexes
+	132,754 - 132,755 aSeqDesc.theAnimDescIndexes alignment
+	132,756 - 132,757 aSeqDesc.theAnimDescIndexes
+	132,758 - 132,759 aSeqDesc.theAnimDescIndexes alignment
+	132,760 - 132,761 aSeqDesc.theAnimDescIndexes
+	132,762 - 132,763 aSeqDesc.theAnimDescIndexes alignment
+	132,764 - 132,765 aSeqDesc.theAnimDescIndexes
+	132,766 - 132,767 aSeqDesc.theAnimDescIndexes alignment
+	132,768 - 132,927 aSeqDesc.theEvents
+	132,928 - 132,929 aSeqDesc.theAnimDescIndexes
+	132,930 - 132,931 aSeqDesc.theAnimDescIndexes alignment
+	132,932 - 132,933 aSeqDesc.theAnimDescIndexes
+	132,934 - 132,935 aSeqDesc.theAnimDescIndexes alignment
+	132,936 - 132,937 aSeqDesc.theAnimDescIndexes
+	132,938 - 132,939 aSeqDesc.theAnimDescIndexes alignment
+	132,940 - 132,941 aSeqDesc.theAnimDescIndexes
+	132,942 - 132,943 aSeqDesc.theAnimDescIndexes alignment
+	132,944 - 132,945 aSeqDesc.theAnimDescIndexes
+	132,946 - 132,947 aSeqDesc.theAnimDescIndexes alignment
+	132,948 - 133,347 aSeqDesc.theEvents
+	133,348 - 133,349 aSeqDesc.theAnimDescIndexes
+	133,350 - 133,351 aSeqDesc.theAnimDescIndexes alignment
+	133,352 - 133,353 aSeqDesc.theAnimDescIndexes
+	133,354 - 133,355 aSeqDesc.theAnimDescIndexes alignment
+	133,356 - 133,357 aSeqDesc.theAnimDescIndexes
+	133,358 - 133,359 aSeqDesc.theAnimDescIndexes alignment
+	133,360 - 133,361 aSeqDesc.theAnimDescIndexes
+	133,362 - 133,363 aSeqDesc.theAnimDescIndexes alignment
+	133,364 - 133,365 aSeqDesc.theAnimDescIndexes
+	133,366 - 133,367 aSeqDesc.theAnimDescIndexes alignment
+	133,368 - 133,369 aSeqDesc.theAnimDescIndexes
+	133,370 - 133,371 aSeqDesc.theAnimDescIndexes alignment
+	133,372 - 133,373 aSeqDesc.theAnimDescIndexes
+	133,374 - 133,375 aSeqDesc.theAnimDescIndexes alignment
+	133,376 - 133,615 aSeqDesc.theEvents
+	133,616 - 133,617 aSeqDesc.theAnimDescIndexes
+	133,618 - 133,619 aSeqDesc.theAnimDescIndexes alignment
+	133,620 - 133,621 aSeqDesc.theAnimDescIndexes
+	133,622 - 133,623 aSeqDesc.theAnimDescIndexes alignment
+	133,624 - 133,625 aSeqDesc.theAnimDescIndexes
+	133,626 - 133,627 aSeqDesc.theAnimDescIndexes alignment
+	133,628 - 133,691 aSeqDesc.theIkLocks
+	133,692 - 133,693 aSeqDesc.theAnimDescIndexes
+	133,694 - 133,695 aSeqDesc.theAnimDescIndexes alignment
+	133,696 - 133,697 aSeqDesc.theAnimDescIndexes
+	133,698 - 133,699 aSeqDesc.theAnimDescIndexes alignment
+	133,700 - 133,701 aSeqDesc.theAnimDescIndexes
+	133,702 - 133,703 aSeqDesc.theAnimDescIndexes alignment
+	133,704 - 133,705 aSeqDesc.theAnimDescIndexes
+	133,706 - 133,707 aSeqDesc.theAnimDescIndexes alignment
+	133,708 - 133,709 aSeqDesc.theAnimDescIndexes
+	133,710 - 133,711 aSeqDesc.theAnimDescIndexes alignment
+	133,712 - 133,713 aSeqDesc.theAnimDescIndexes
+	133,714 - 133,715 aSeqDesc.theAnimDescIndexes alignment
+	133,716 - 133,739 aSeqDesc.theAutoLayers
+	133,740 - 133,741 aSeqDesc.theAnimDescIndexes
+	133,742 - 133,743 aSeqDesc.theAnimDescIndexes alignment
+	133,744 - 133,983 aSeqDesc.theEvents
+	133,984 - 133,985 aSeqDesc.theAnimDescIndexes
+	133,986 - 133,987 aSeqDesc.theAnimDescIndexes alignment
+	133,988 - 133,989 aSeqDesc.theAnimDescIndexes
+	133,990 - 133,991 aSeqDesc.theAnimDescIndexes alignment
+	133,992 - 133,993 aSeqDesc.theAnimDescIndexes
+	133,994 - 133,995 aSeqDesc.theAnimDescIndexes alignment
+	133,996 - 133,997 aSeqDesc.theAnimDescIndexes
+	133,998 - 133,999 aSeqDesc.theAnimDescIndexes alignment
+	134,000 - 134,001 aSeqDesc.theAnimDescIndexes
+	134,002 - 134,003 aSeqDesc.theAnimDescIndexes alignment
+	134,004 - 134,005 aSeqDesc.theAnimDescIndexes
+	134,006 - 134,007 aSeqDesc.theAnimDescIndexes alignment
+	134,008 - 134,031 aSeqDesc.theAutoLayers
+	134,032 - 134,033 aSeqDesc.theAnimDescIndexes
+	134,034 - 134,035 aSeqDesc.theAnimDescIndexes alignment
+	134,036 - 134,037 aSeqDesc.theAnimDescIndexes
+	134,038 - 134,039 aSeqDesc.theAnimDescIndexes alignment
+	134,040 - 134,041 aSeqDesc.theAnimDescIndexes
+	134,042 - 134,043 aSeqDesc.theAnimDescIndexes alignment
+	134,044 - 134,045 aSeqDesc.theAnimDescIndexes
+	134,046 - 134,047 aSeqDesc.theAnimDescIndexes alignment
+	134,048 - 134,049 aSeqDesc.theAnimDescIndexes
+	134,050 - 134,051 aSeqDesc.theAnimDescIndexes alignment
+	134,052 - 134,053 aSeqDesc.theAnimDescIndexes
+	134,054 - 134,055 aSeqDesc.theAnimDescIndexes alignment
+	134,056 - 134,057 aSeqDesc.theAnimDescIndexes
+	134,058 - 134,059 aSeqDesc.theAnimDescIndexes alignment
+	134,060 - 134,061 aSeqDesc.theAnimDescIndexes
+	134,062 - 134,063 aSeqDesc.theAnimDescIndexes alignment
+	134,064 - 134,087 aSeqDesc.theAutoLayers
+	134,088 - 134,089 aSeqDesc.theAnimDescIndexes
+	134,090 - 134,091 aSeqDesc.theAnimDescIndexes alignment
+	134,092 - 134,115 aSeqDesc.theAutoLayers
+	134,116 - 134,117 aSeqDesc.theAnimDescIndexes
+	134,118 - 134,119 aSeqDesc.theAnimDescIndexes alignment
+	134,120 - 134,121 aSeqDesc.theAnimDescIndexes
+	134,122 - 134,123 aSeqDesc.theAnimDescIndexes alignment
+	134,124 - 134,125 aSeqDesc.theAnimDescIndexes
+	134,126 - 134,127 aSeqDesc.theAnimDescIndexes alignment
+	134,128 - 134,129 aSeqDesc.theAnimDescIndexes
+	134,130 - 134,131 aSeqDesc.theAnimDescIndexes alignment
+	134,132 - 134,133 aSeqDesc.theAnimDescIndexes
+	134,134 - 134,135 aSeqDesc.theAnimDescIndexes alignment
+	134,136 - 134,137 aSeqDesc.theAnimDescIndexes
+	134,138 - 134,139 aSeqDesc.theAnimDescIndexes alignment
+	134,140 - 134,141 aSeqDesc.theAnimDescIndexes
+	134,142 - 134,143 aSeqDesc.theAnimDescIndexes alignment
+	134,144 - 134,145 aSeqDesc.theAnimDescIndexes
+	134,146 - 134,147 aSeqDesc.theAnimDescIndexes alignment
+	134,148 - 134,149 aSeqDesc.theAnimDescIndexes
+	134,150 - 134,151 aSeqDesc.theAnimDescIndexes alignment
+	134,152 - 134,153 aSeqDesc.theAnimDescIndexes
+	134,154 - 134,155 aSeqDesc.theAnimDescIndexes alignment
+	134,156 - 134,157 aSeqDesc.theAnimDescIndexes
+	134,158 - 134,159 aSeqDesc.theAnimDescIndexes alignment
+	134,160 - 134,239 aSeqDesc.theEvents
+	134,240 - 134,241 aSeqDesc.theAnimDescIndexes
+	134,242 - 134,243 aSeqDesc.theAnimDescIndexes alignment
+	134,244 - 134,245 aSeqDesc.theAnimDescIndexes
+	134,246 - 134,247 aSeqDesc.theAnimDescIndexes alignment
+	134,248 - 134,249 aSeqDesc.theAnimDescIndexes
+	134,250 - 134,251 aSeqDesc.theAnimDescIndexes alignment
+	134,252 - 134,253 aSeqDesc.theAnimDescIndexes
+	134,254 - 134,255 aSeqDesc.theAnimDescIndexes alignment
+	134,256 - 134,257 aSeqDesc.theAnimDescIndexes
+	134,258 - 134,259 aSeqDesc.theAnimDescIndexes alignment
+	134,260 - 134,261 aSeqDesc.theAnimDescIndexes
+	134,262 - 134,263 aSeqDesc.theAnimDescIndexes alignment
+	134,264 - 134,423 aSeqDesc.theEvents
+	134,424 - 134,425 aSeqDesc.theAnimDescIndexes
+	134,426 - 134,427 aSeqDesc.theAnimDescIndexes alignment
+	134,428 - 134,507 aSeqDesc.theEvents
+	134,508 - 134,509 aSeqDesc.theAnimDescIndexes
+	134,510 - 134,511 aSeqDesc.theAnimDescIndexes alignment
+	134,512 - 134,513 aSeqDesc.theAnimDescIndexes
+	134,514 - 134,515 aSeqDesc.theAnimDescIndexes alignment
+	134,516 - 134,517 aSeqDesc.theAnimDescIndexes
+	134,518 - 134,519 aSeqDesc.theAnimDescIndexes alignment
+	134,520 - 134,521 aSeqDesc.theAnimDescIndexes
+	134,522 - 134,523 aSeqDesc.theAnimDescIndexes alignment
+	134,524 - 134,525 aSeqDesc.theAnimDescIndexes
+	134,526 - 134,527 aSeqDesc.theAnimDescIndexes alignment
+	134,528 - 134,529 aSeqDesc.theAnimDescIndexes
+	134,530 - 134,531 aSeqDesc.theAnimDescIndexes alignment
+	134,532 - 134,533 aSeqDesc.theAnimDescIndexes
+	134,534 - 134,535 aSeqDesc.theAnimDescIndexes alignment
+	134,536 - 134,537 aSeqDesc.theAnimDescIndexes
+	134,538 - 134,539 aSeqDesc.theAnimDescIndexes alignment
+	134,540 - 134,541 aSeqDesc.theAnimDescIndexes
+	134,542 - 134,543 aSeqDesc.theAnimDescIndexes alignment
+	134,544 - 134,545 aSeqDesc.theAnimDescIndexes
+	134,546 - 134,547 aSeqDesc.theAnimDescIndexes alignment
+	134,548 - 134,549 aSeqDesc.theAnimDescIndexes
+	134,550 - 134,551 aSeqDesc.theAnimDescIndexes alignment
+	134,552 - 134,553 aSeqDesc.theAnimDescIndexes
+	134,554 - 134,555 aSeqDesc.theAnimDescIndexes alignment
+	134,556 - 134,619 theMdlFileData.theIkChains
+	134,620 - 134,703 anIkChain.theLinks
+	134,704 - 134,787 anIkChain.theLinks
+	134,788 - 134,871 anIkChain.theLinks
+	134,872 - 134,955 anIkChain.theLinks
+	134,956 - 135,019 theMdlFileData.theIkLocks
+	135,020 - 135,435 theAnimBlocks
+	135,436 - 135,439 theMdlFileData.theTexturePaths
+	135,440 - 135,439 theMdlFileData.theSkinFamilies
+
+	135,504 - 135,727 theMdlFileData.theLinearBoneTable.theFlags
+	135,728 - 135,951 theMdlFileData.theLinearBoneTable.theParents
+	135,952 - 136,623 theMdlFileData.theLinearBoneTable.thePositions
+	136,624 - 137,519 theMdlFileData.theLinearBoneTable.theQuaternions
+	137,520 - 138,191 theMdlFileData.theLinearBoneTable.theRotations
+	138,192 - 140,879 theMdlFileData.theLinearBoneTable.thePoseToBoneDataColumns
+	140,880 - 141,551 theMdlFileData.theLinearBoneTable.thePositionScales
+	141,552 - 142,223 theMdlFileData.theLinearBoneTable.theRotationScales
+	142,224 - 143,119 theMdlFileData.theLinearBoneTable.theQAlignments
+	143,120 - 143,120 aHitbox.theName
+	143,121 - 143,128 theSurfacePropName
+	143,129 - 143,152 aBone.theName
+	143,153 - 143,175 aBone.theName
+	143,176 - 143,199 aBone.theName
+	143,200 - 143,223 aBone.theName
+	143,224 - 143,247 aBone.theName
+	143,248 - 143,270 aBone.theName
+	143,271 - 143,293 aBone.theName
+	143,294 - 143,312 aBone.theName
+	143,313 - 143,340 aBone.theName
+	143,341 - 143,368 aBone.theName
+	143,369 - 143,395 aBone.theName
+	143,396 - 143,419 aBone.theName
+	143,420 - 143,449 aBone.theName
+	143,450 - 143,477 aBone.theName
+	143,478 - 143,505 aBone.theName
+	143,506 - 143,532 aBone.theName
+	143,533 - 143,556 aBone.theName
+	143,557 - 143,586 aBone.theName
+	143,587 - 143,611 aBone.theName
+	143,612 - 143,635 aBone.theName
+	143,636 - 143,659 aBone.theName
+	143,660 - 143,683 aBone.theName
+	143,684 - 143,708 aBone.theName
+	143,709 - 143,732 aBone.theName
+	143,733 - 143,756 aBone.theName
+	143,757 - 143,780 aBone.theName
+	143,781 - 143,807 aBone.theName
+	143,808 - 143,835 aBone.theName
+	143,836 - 143,863 aBone.theName
+	143,864 - 143,890 aBone.theName
+	143,891 - 143,918 aBone.theName
+	143,919 - 143,946 aBone.theName
+	143,947 - 143,973 aBone.theName
+	143,974 - 144,001 aBone.theName
+	144,002 - 144,029 aBone.theName
+	144,030 - 144,056 aBone.theName
+	144,057 - 144,084 aBone.theName
+	144,085 - 144,112 aBone.theName
+	144,113 - 144,139 aBone.theName
+	144,140 - 144,167 aBone.theName
+	144,168 - 144,195 aBone.theName
+	144,196 - 144,222 aBone.theName
+	144,223 - 144,250 aBone.theName
+	144,251 - 144,278 aBone.theName
+	144,279 - 144,305 aBone.theName
+	144,306 - 144,333 aBone.theName
+	144,334 - 144,361 aBone.theName
+	144,362 - 144,388 aBone.theName
+	144,389 - 144,416 aBone.theName
+	144,417 - 144,444 aBone.theName
+	144,445 - 144,471 aBone.theName
+	144,472 - 144,499 aBone.theName
+	144,500 - 144,527 aBone.theName
+	144,528 - 144,554 aBone.theName
+	144,555 - 144,582 aBone.theName
+	144,583 - 144,610 aBone.theName
+	144,611 - 144,618 anAttachment.theName
+	144,619 - 144,637 anAttachment.theName
+	144,638 - 144,656 anAttachment.theName
+	144,657 - 144,677 anAttachment.theName
+	144,678 - 144,693 anAnimationDesc.theName
+	144,694 - 144,704 anAnimationDesc.theName
+	144,705 - 144,715 anAnimationDesc.theName
+	144,716 - 144,727 anAnimationDesc.theName
+	144,728 - 144,741 anAnimationDesc.theName
+	144,742 - 144,758 anAnimationDesc.theName
+	144,759 - 144,776 anAnimationDesc.theName
+	144,777 - 144,787 anAnimationDesc.theName
+	144,788 - 144,803 anAnimationDesc.theName
+	144,804 - 144,818 anAnimationDesc.theName
+	144,819 - 144,834 anAnimationDesc.theName
+	144,835 - 144,845 anAnimationDesc.theName
+	144,846 - 144,859 anAnimationDesc.theName
+	144,860 - 144,870 anAnimationDesc.theName
+	144,871 - 144,886 anAnimationDesc.theName
+	144,887 - 144,899 anAnimationDesc.theName
+	144,900 - 144,917 anAnimationDesc.theName
+	144,918 - 144,933 anAnimationDesc.theName
+	144,934 - 144,954 anAnimationDesc.theName
+	144,955 - 144,967 anAnimationDesc.theName
+	144,968 - 144,980 anAnimationDesc.theName
+	144,981 - 144,996 anAnimationDesc.theName
+	144,997 - 145,008 anAnimationDesc.theName
+	145,009 - 145,021 anAnimationDesc.theName
+	145,022 - 145,033 anAnimationDesc.theName
+	145,034 - 145,044 anAnimationDesc.theName
+	145,045 - 145,056 anAnimationDesc.theName
+	145,057 - 145,068 anAnimationDesc.theName
+	145,069 - 145,080 anAnimationDesc.theName
+	145,081 - 145,092 anAnimationDesc.theName
+	145,093 - 145,105 anAnimationDesc.theName
+	145,106 - 145,118 anAnimationDesc.theName
+	145,119 - 145,131 anAnimationDesc.theName
+	145,132 - 145,144 anAnimationDesc.theName
+	145,145 - 145,159 anAnimationDesc.theName
+	145,160 - 145,174 anAnimationDesc.theName
+	145,175 - 145,186 anAnimationDesc.theName
+	145,187 - 145,201 anAnimationDesc.theName
+	145,202 - 145,228 anAnimationDesc.theName
+	145,229 - 145,255 anAnimationDesc.theName
+	145,256 - 145,279 anAnimationDesc.theName
+	145,280 - 145,308 anAnimationDesc.theName
+	145,309 - 145,329 anAnimationDesc.theName
+	145,330 - 145,350 anAnimationDesc.theName
+	145,351 - 145,382 anAnimationDesc.theName
+	145,383 - 145,411 anAnimationDesc.theName
+	145,412 - 145,443 anAnimationDesc.theName
+	145,444 - 145,473 anAnimationDesc.theName
+	145,474 - 145,497 anAnimationDesc.theName
+	145,498 - 145,526 anAnimationDesc.theName
+	145,527 - 145,537 anAnimationDesc.theName
+	145,538 - 145,566 anAnimationDesc.theName
+	145,567 - 145,595 anAnimationDesc.theName
+	145,596 - 145,634 anAnimationDesc.theName
+	145,635 - 145,667 anAnimationDesc.theName
+	145,668 - 145,694 anAnimationDesc.theName
+	145,695 - 145,716 anAnimationDesc.theName
+	145,717 - 145,753 anAnimationDesc.theName
+	145,754 - 145,785 anAnimationDesc.theName
+	145,786 - 145,805 anAnimationDesc.theName
+	145,806 - 145,830 anAnimationDesc.theName
+	145,831 - 145,867 anAnimationDesc.theName
+	145,868 - 145,905 anAnimationDesc.theName
+	145,906 - 145,944 anAnimationDesc.theName
+	145,945 - 145,970 anAnimationDesc.theName
+	145,971 - 145,996 anAnimationDesc.theName
+	145,997 - 146,016 anAnimationDesc.theName
+	146,017 - 146,037 anAnimationDesc.theName
+	146,038 - 146,056 anAnimationDesc.theName
+	146,057 - 146,077 anAnimationDesc.theName
+	146,078 - 146,098 anAnimationDesc.theName
+	146,099 - 146,126 anAnimationDesc.theName
+	146,127 - 146,139 anAnimationDesc.theName
+	146,140 - 146,153 anAnimationDesc.theName
+	146,154 - 146,166 anAnimationDesc.theName
+	146,167 - 146,187 anAnimationDesc.theName
+	146,188 - 146,211 anAnimationDesc.theName
+	146,212 - 146,229 anAnimationDesc.theName
+	146,230 - 146,241 anAnimationDesc.theName
+	146,242 - 146,250 anAnimationDesc.theName
+	146,251 - 146,265 anAnimationDesc.theName
+	146,266 - 146,278 anAnimationDesc.theName
+	146,279 - 146,294 anAnimationDesc.theName
+	146,295 - 146,306 anAnimationDesc.theName
+	146,307 - 146,327 anAnimationDesc.theName
+	146,328 - 146,350 anAnimationDesc.theName
+	146,351 - 146,373 anAnimationDesc.theName
+	146,374 - 146,393 anAnimationDesc.theName
+	146,394 - 146,413 anAnimationDesc.theName
+	146,414 - 146,440 anAnimationDesc.theName
+	146,441 - 146,451 anAnimationDesc.theName
+	146,452 - 146,463 anAnimationDesc.theName
+	146,464 - 146,487 anAnimationDesc.theName
+	146,488 - 146,513 anAnimationDesc.theName
+	146,514 - 146,539 anAnimationDesc.theName
+	146,540 - 146,570 anAnimationDesc.theName
+	146,571 - 146,600 anAnimationDesc.theName
+	146,601 - 146,626 anAnimationDesc.theName
+	146,627 - 146,653 anAnimationDesc.theName
+	146,654 - 146,686 anAnimationDesc.theName
+	146,687 - 146,718 anAnimationDesc.theName
+	146,719 - 146,750 anAnimationDesc.theName
+	146,751 - 146,789 anAnimationDesc.theName
+	146,790 - 146,830 anAnimationDesc.theName
+	146,831 - 146,870 anAnimationDesc.theName
+	146,871 - 146,910 anAnimationDesc.theName
+	146,911 - 146,923 anAnimationDesc.theName
+	146,924 - 146,940 anAnimationDesc.theName
+	146,941 - 146,968 anAnimationDesc.theName
+	146,969 - 147,001 anAnimationDesc.theName
+	147,002 - 147,034 anAnimationDesc.theName
+	147,035 - 147,063 anAnimationDesc.theName
+	147,064 - 147,078 anAnimationDesc.theName
+	147,079 - 147,093 anAnimationDesc.theName
+	147,094 - 147,126 anAnimationDesc.theName
+	147,127 - 147,161 anAnimationDesc.theName
+	147,162 - 147,196 anAnimationDesc.theName
+	147,197 - 147,237 anAnimationDesc.theName
+	147,238 - 147,270 anAnimationDesc.theName
+	147,271 - 147,303 anAnimationDesc.theName
+	147,304 - 147,339 anAnimationDesc.theName
+	147,340 - 147,369 anAnimationDesc.theName
+	147,370 - 147,405 anAnimationDesc.theName
+	147,406 - 147,435 anAnimationDesc.theName
+	147,436 - 147,462 anAnimationDesc.theName
+	147,463 - 147,481 anAnimationDesc.theName
+	147,482 - 147,493 anAnimationDesc.theName
+	147,494 - 147,506 anAnimationDesc.theName
+	147,507 - 147,528 anAnimationDesc.theName
+	147,529 - 147,550 anAnimationDesc.theName
+	147,551 - 147,578 anAnimationDesc.theName
+	147,579 - 147,600 anAnimationDesc.theName
+	147,601 - 147,622 anAnimationDesc.theName
+	147,623 - 147,637 anAnimationDesc.theName
+	147,638 - 147,652 anAnimationDesc.theName
+	147,653 - 147,667 anAnimationDesc.theName
+	147,668 - 147,678 anAnimationDesc.theName
+	147,679 - 147,689 anAnimationDesc.theName
+	147,690 - 147,697 anAnimationDesc.theName
+	147,698 - 147,705 anAnimationDesc.theName
+	147,706 - 147,724 anAnimationDesc.theName
+	147,725 - 147,743 anAnimationDesc.theName
+	147,744 - 147,763 anAnimationDesc.theName
+	147,764 - 147,778 aSeqDesc.theLabel
+	147,779 - 147,788 aSeqDesc.theLabel
+	147,789 - 147,798 aSeqDesc.theLabel
+	147,799 - 147,809 aSeqDesc.theLabel
+	147,810 - 147,822 aSeqDesc.theLabel
+	147,823 - 147,838 aSeqDesc.theLabel
+	147,839 - 147,855 aSeqDesc.theLabel
+	147,856 - 147,865 aSeqDesc.theLabel
+	147,866 - 147,880 aSeqDesc.theLabel
+	147,881 - 147,894 aSeqDesc.theLabel
+	147,895 - 147,909 aSeqDesc.theLabel
+	147,910 - 147,919 aSeqDesc.theLabel
+	147,920 - 147,932 aSeqDesc.theLabel
+	147,933 - 147,942 aSeqDesc.theLabel
+	147,943 - 147,957 aSeqDesc.theLabel
+	147,958 - 147,969 aSeqDesc.theLabel
+	147,970 - 147,986 aSeqDesc.theLabel
+	147,987 - 148,001 aSeqDesc.theLabel
+	148,002 - 148,021 aSeqDesc.theLabel
+	148,022 - 148,033 aSeqDesc.theLabel
+	148,034 - 148,056 anEvent.theName
+	148,057 - 148,068 aSeqDesc.theLabel
+	148,069 - 148,085 aSeqDesc.theActivityName
+	148,086 - 148,100 aSeqDesc.theLabel
+	148,101 - 148,111 aSeqDesc.theLabel
+	148,112 - 148,123 aSeqDesc.theLabel
+	148,124 - 148,134 aSeqDesc.theLabel
+	148,135 - 148,144 aSeqDesc.theLabel
+	148,145 - 148,155 aSeqDesc.theLabel
+	148,156 - 148,166 aSeqDesc.theLabel
+	148,167 - 148,177 aSeqDesc.theLabel
+	148,178 - 148,188 aSeqDesc.theLabel
+	148,189 - 148,200 aSeqDesc.theLabel
+	148,201 - 148,212 aSeqDesc.theLabel
+	148,213 - 148,224 aSeqDesc.theLabel
+	148,225 - 148,236 aSeqDesc.theLabel
+	148,237 - 148,250 aSeqDesc.theLabel
+	148,251 - 148,264 aSeqDesc.theLabel
+	148,265 - 148,275 aSeqDesc.theLabel
+	148,276 - 148,289 aSeqDesc.theLabel
+	148,290 - 148,315 aSeqDesc.theLabel
+	148,316 - 148,341 aSeqDesc.theLabel
+	148,342 - 148,364 aSeqDesc.theLabel
+	148,365 - 148,392 aSeqDesc.theLabel
+	148,393 - 148,412 aSeqDesc.theLabel
+	148,413 - 148,430 aSeqDesc.theActivityName
+	148,431 - 148,450 aSeqDesc.theLabel
+	148,451 - 148,481 aSeqDesc.theLabel
+	148,482 - 148,509 aSeqDesc.theLabel
+	148,510 - 148,540 aSeqDesc.theLabel
+	148,541 - 148,569 aSeqDesc.theLabel
+	148,570 - 148,592 aSeqDesc.theLabel
+	148,593 - 148,620 aSeqDesc.theLabel
+	148,621 - 148,630 aSeqDesc.theLabel
+	148,631 - 148,658 aSeqDesc.theLabel
+	148,659 - 148,686 aSeqDesc.theLabel
+	148,687 - 148,724 aSeqDesc.theLabel
+	148,725 - 148,756 aSeqDesc.theLabel
+	148,757 - 148,782 aSeqDesc.theLabel
+	148,783 - 148,803 aSeqDesc.theLabel
+	148,804 - 148,839 aSeqDesc.theLabel
+	148,840 - 148,870 aSeqDesc.theLabel
+	148,871 - 148,889 aSeqDesc.theLabel
+	148,890 - 148,913 aSeqDesc.theLabel
+	148,914 - 148,949 aSeqDesc.theLabel
+	148,950 - 148,986 aSeqDesc.theLabel
+	148,987 - 149,024 aSeqDesc.theLabel
+	149,025 - 149,049 aSeqDesc.theLabel
+	149,050 - 149,074 aSeqDesc.theLabel
+	149,075 - 149,093 aSeqDesc.theLabel
+	149,094 - 149,113 aSeqDesc.theLabel
+	149,114 - 149,131 aSeqDesc.theLabel
+	149,132 - 149,151 aSeqDesc.theLabel
+	149,152 - 149,171 aSeqDesc.theLabel
+	149,172 - 149,198 aSeqDesc.theLabel
+	149,199 - 149,210 aSeqDesc.theLabel
+	149,211 - 149,223 aSeqDesc.theLabel
+	149,224 - 149,235 aSeqDesc.theLabel
+	149,236 - 149,255 aSeqDesc.theLabel
+	149,256 - 149,278 aSeqDesc.theLabel
+	149,279 - 149,295 aSeqDesc.theLabel
+	149,296 - 149,306 aSeqDesc.theLabel
+	149,307 - 149,314 aSeqDesc.theLabel
+	149,315 - 149,328 aSeqDesc.theLabel
+	149,329 - 149,340 aSeqDesc.theLabel
+	149,341 - 149,356 anEvent.theName
+	149,357 - 149,371 aSeqDesc.theLabel
+	149,372 - 149,382 aSeqDesc.theLabel
+	149,383 - 149,402 aSeqDesc.theLabel
+	149,403 - 149,424 aSeqDesc.theLabel
+	149,425 - 149,446 aSeqDesc.theLabel
+	149,447 - 149,465 aSeqDesc.theLabel
+	149,466 - 149,484 aSeqDesc.theLabel
+	149,485 - 149,510 aSeqDesc.theLabel
+	149,511 - 149,520 aSeqDesc.theLabel
+	149,521 - 149,531 aSeqDesc.theLabel
+	149,532 - 149,554 aSeqDesc.theLabel
+	149,555 - 149,579 aSeqDesc.theLabel
+	149,580 - 149,604 aSeqDesc.theLabel
+	149,605 - 149,634 aSeqDesc.theLabel
+	149,635 - 149,663 aSeqDesc.theLabel
+	149,664 - 149,688 aSeqDesc.theLabel
+	149,689 - 149,714 aSeqDesc.theLabel
+	149,715 - 149,746 aSeqDesc.theLabel
+	149,747 - 149,777 aSeqDesc.theLabel
+	149,778 - 149,808 aSeqDesc.theLabel
+	149,809 - 149,846 aSeqDesc.theLabel
+	149,847 - 149,886 aSeqDesc.theLabel
+	149,887 - 149,925 aSeqDesc.theLabel
+	149,926 - 149,964 aSeqDesc.theLabel
+	149,965 - 149,976 aSeqDesc.theLabel
+	149,977 - 149,992 aSeqDesc.theLabel
+	149,993 - 150,019 aSeqDesc.theLabel
+	150,020 - 150,051 aSeqDesc.theLabel
+	150,052 - 150,083 aSeqDesc.theLabel
+	150,084 - 150,111 aSeqDesc.theLabel
+	150,112 - 150,125 aSeqDesc.theLabel
+	150,126 - 150,139 aSeqDesc.theLabel
+	150,140 - 150,171 aSeqDesc.theLabel
+	150,172 - 150,205 aSeqDesc.theLabel
+	150,206 - 150,239 aSeqDesc.theLabel
+	150,240 - 150,279 aSeqDesc.theLabel
+	150,280 - 150,311 aSeqDesc.theLabel
+	150,312 - 150,343 aSeqDesc.theLabel
+	150,344 - 150,378 aSeqDesc.theLabel
+	150,379 - 150,407 aSeqDesc.theLabel
+	150,408 - 150,442 aSeqDesc.theLabel
+	150,443 - 150,471 aSeqDesc.theLabel
+	150,472 - 150,497 aSeqDesc.theLabel
+	150,498 - 150,515 aSeqDesc.theLabel
+	150,516 - 150,526 aSeqDesc.theLabel
+	150,527 - 150,538 aSeqDesc.theLabel
+	150,539 - 150,559 aSeqDesc.theLabel
+	150,560 - 150,580 aSeqDesc.theLabel
+	150,581 - 150,607 aSeqDesc.theLabel
+	150,608 - 150,628 aSeqDesc.theLabel
+	150,629 - 150,649 aSeqDesc.theLabel
+	150,650 - 150,663 aSeqDesc.theLabel
+	150,664 - 150,677 aSeqDesc.theLabel
+	150,678 - 150,691 aSeqDesc.theLabel
+	150,692 - 150,701 aSeqDesc.theLabel
+	150,702 - 150,711 aSeqDesc.theLabel
+	150,712 - 150,718 aSeqDesc.theLabel
+	150,719 - 150,725 aSeqDesc.theLabel
+	150,726 - 150,743 aSeqDesc.theLabel
+	150,744 - 150,761 aSeqDesc.theLabel
+	150,762 - 150,780 aSeqDesc.theLabel
+	150,781 - 150,786 anIkChain.theName
+	150,787 - 150,792 anIkChain.theName
+	150,793 - 150,798 anIkChain.theName
+	150,799 - 150,804 anIkChain.theName
+	150,805 - 150,830 theAnimBlockRelativePathFileName
+	150,831 - 150,861 aTexturePath
+	150,862 - 150,863 Final bytes alignment
+========================

@@ -1,0 +1,521 @@
+// Created by Crowbar 0.42.0.0
+====== File Size ======
+	79,540
+====== File Seek Log ======
+--- Summary ---
+	0 - 20,023
+	20,032 - 20,311
+	20,320 - 20,375
+	20,384 - 20,439
+	20,448 - 20,503
+	20,512 - 20,695
+	20,704 - 20,807
+	20,816 - 21,431
+	52,404 - 67,583
+	67,648 - 79,539
+------------------------
+--- Each Section or Loop ---
+	0 - 79 MDL File Header 00; MDL File Header 00
+	80 - 407 MDL File Header 01; MDL File Header 01
+	408 - 663 MDL File Header 02; MDL File Header 02
+	664 - 12,759 theMdlFileData.theBones
+	12,760 - 13,035 theMdlFileData.theAttachments
+	13,036 - 13,047 theMdlFileData.theHitboxSets
+	13,048 - 13,251 aHitboxSet.theHitboxes
+	13,252 - 13,307 theMdlFileData.theBoneTableByName
+	13,308 - 19,807 theMdlFileData.theAnimationDescs
+	19,808 - 19,815 anAnimationDesc.theSections
+	19,816 - 19,823 anAnimationDesc.theSections
+	19,824 - 19,831 anAnimationDesc.theSections
+	19,832 - 19,839 anAnimationDesc.theSections
+	19,840 - 19,847 anAnimationDesc.theSections
+	19,848 - 19,855 anAnimationDesc.theSections
+	19,856 - 19,863 anAnimationDesc.theSections
+	19,864 - 19,871 anAnimationDesc.theSections
+	19,872 - 19,879 anAnimationDesc.theSections
+	19,880 - 19,887 anAnimationDesc.theSections
+	19,888 - 19,895 anAnimationDesc.theSections
+	19,896 - 19,903 anAnimationDesc.theSections
+	19,904 - 19,911 anAnimationDesc.theSections
+	19,912 - 19,919 anAnimationDesc.theSections
+	19,920 - 19,927 anAnimationDesc.theSections
+	19,928 - 19,935 anAnimationDesc.theSections
+	19,936 - 19,943 anAnimationDesc.theSections
+	19,944 - 19,951 anAnimationDesc.theSections
+	19,952 - 19,959 anAnimationDesc.theSections
+	19,960 - 19,967 anAnimationDesc.theSections
+	19,968 - 19,975 anAnimationDesc.theSections
+	19,976 - 19,983 anAnimationDesc.theSections
+	19,984 - 19,991 anAnimationDesc.theSections
+	19,992 - 19,999 anAnimationDesc.theSections
+	20,000 - 20,007 anAnimationDesc.theSections
+	20,008 - 20,015 anAnimationDesc.theSections
+	20,016 - 20,023 anAnimationDesc.theSections
+
+	20,032 - 20,039 anAnimationDesc.theSections
+	20,040 - 20,047 anAnimationDesc.theSections
+	20,048 - 20,055 anAnimationDesc.theSections
+	20,056 - 20,063 anAnimationDesc.theSections
+	20,064 - 20,071 anAnimationDesc.theSections
+	20,072 - 20,079 anAnimationDesc.theSections
+	20,080 - 20,087 anAnimationDesc.theSections
+	20,088 - 20,095 anAnimationDesc.theSections
+	20,096 - 20,103 anAnimationDesc.theSections
+	20,104 - 20,111 anAnimationDesc.theSections
+	20,112 - 20,119 anAnimationDesc.theSections
+	20,120 - 20,127 anAnimationDesc.theSections
+	20,128 - 20,135 anAnimationDesc.theSections
+	20,136 - 20,143 anAnimationDesc.theSections
+	20,144 - 20,151 anAnimationDesc.theSections
+	20,152 - 20,159 anAnimationDesc.theSections
+	20,160 - 20,167 anAnimationDesc.theSections
+	20,168 - 20,175 anAnimationDesc.theSections
+	20,176 - 20,183 anAnimationDesc.theSections
+	20,184 - 20,191 anAnimationDesc.theSections
+	20,192 - 20,199 anAnimationDesc.theSections
+	20,200 - 20,207 anAnimationDesc.theSections
+	20,208 - 20,215 anAnimationDesc.theSections
+	20,216 - 20,223 anAnimationDesc.theSections
+	20,224 - 20,231 anAnimationDesc.theSections
+	20,232 - 20,239 anAnimationDesc.theSections
+	20,240 - 20,247 anAnimationDesc.theSections
+	20,248 - 20,255 anAnimationDesc.theSections
+	20,256 - 20,263 anAnimationDesc.theSections
+	20,264 - 20,271 anAnimationDesc.theSections
+	20,272 - 20,279 anAnimationDesc.theSections
+	20,280 - 20,287 anAnimationDesc.theSections
+	20,288 - 20,295 anAnimationDesc.theSections
+	20,296 - 20,303 anAnimationDesc.theSections
+	20,304 - 20,311 anAnimationDesc.theSections
+
+	20,320 - 20,327 anAnimationDesc.theSections
+	20,328 - 20,335 anAnimationDesc.theSections
+	20,336 - 20,343 anAnimationDesc.theSections
+	20,344 - 20,351 anAnimationDesc.theSections
+	20,352 - 20,359 anAnimationDesc.theSections
+	20,360 - 20,367 anAnimationDesc.theSections
+	20,368 - 20,375 anAnimationDesc.theSections
+
+	20,384 - 20,391 anAnimationDesc.theSections
+	20,392 - 20,399 anAnimationDesc.theSections
+	20,400 - 20,407 anAnimationDesc.theSections
+	20,408 - 20,415 anAnimationDesc.theSections
+	20,416 - 20,423 anAnimationDesc.theSections
+	20,424 - 20,431 anAnimationDesc.theSections
+	20,432 - 20,439 anAnimationDesc.theSections
+
+	20,448 - 20,455 anAnimationDesc.theSections
+	20,456 - 20,463 anAnimationDesc.theSections
+	20,464 - 20,471 anAnimationDesc.theSections
+	20,472 - 20,479 anAnimationDesc.theSections
+	20,480 - 20,487 anAnimationDesc.theSections
+	20,488 - 20,495 anAnimationDesc.theSections
+	20,496 - 20,503 anAnimationDesc.theSections
+
+	20,512 - 20,519 anAnimationDesc.theSections
+	20,520 - 20,527 anAnimationDesc.theSections
+	20,528 - 20,535 anAnimationDesc.theSections
+	20,536 - 20,543 anAnimationDesc.theSections
+	20,544 - 20,551 anAnimationDesc.theSections
+	20,552 - 20,559 anAnimationDesc.theSections
+	20,560 - 20,567 anAnimationDesc.theSections
+	20,568 - 20,575 anAnimationDesc.theSections
+	20,576 - 20,583 anAnimationDesc.theSections
+	20,584 - 20,591 anAnimationDesc.theSections
+	20,592 - 20,599 anAnimationDesc.theSections
+	20,600 - 20,607 anAnimationDesc.theSections
+	20,608 - 20,615 anAnimationDesc.theSections
+	20,616 - 20,623 anAnimationDesc.theSections
+	20,624 - 20,631 anAnimationDesc.theSections
+	20,632 - 20,639 anAnimationDesc.theSections
+	20,640 - 20,647 anAnimationDesc.theSections
+	20,648 - 20,655 anAnimationDesc.theSections
+	20,656 - 20,663 anAnimationDesc.theSections
+	20,664 - 20,671 anAnimationDesc.theSections
+	20,672 - 20,679 anAnimationDesc.theSections
+	20,680 - 20,687 anAnimationDesc.theSections
+	20,688 - 20,695 anAnimationDesc.theSections
+
+	20,704 - 20,711 anAnimationDesc.theSections
+	20,712 - 20,719 anAnimationDesc.theSections
+	20,720 - 20,727 anAnimationDesc.theSections
+	20,728 - 20,735 anAnimationDesc.theSections
+	20,736 - 20,743 anAnimationDesc.theSections
+	20,744 - 20,751 anAnimationDesc.theSections
+	20,752 - 20,759 anAnimationDesc.theSections
+	20,760 - 20,767 anAnimationDesc.theSections
+	20,768 - 20,775 anAnimationDesc.theSections
+	20,776 - 20,783 anAnimationDesc.theSections
+	20,784 - 20,791 anAnimationDesc.theSections
+	20,792 - 20,799 anAnimationDesc.theSections
+	20,800 - 20,807 anAnimationDesc.theSections
+
+	20,816 - 20,903 anAnimationDesc.theMovements
+	20,904 - 20,991 anAnimationDesc.theMovements
+	20,992 - 21,079 anAnimationDesc.theMovements
+	21,080 - 21,123 anAnimationDesc.theMovements
+	21,124 - 21,167 anAnimationDesc.theMovements
+	21,168 - 21,211 anAnimationDesc.theMovements
+	21,212 - 21,255 anAnimationDesc.theMovements
+	21,256 - 21,299 anAnimationDesc.theMovements
+	21,300 - 21,343 anAnimationDesc.theMovements
+	21,344 - 21,387 anAnimationDesc.theMovements
+	21,388 - 21,431 anAnimationDesc.theMovements
+
+	52,404 - 66,183 theMdlFileData.theSequenceDescs
+	66,184 - 66,407 aSeqDesc.theBoneWeights
+	66,408 - 66,409 aSeqDesc.theAnimDescIndexes
+	66,410 - 66,411 aSeqDesc.theAnimDescIndexes alignment
+	66,412 - 66,413 aSeqDesc.theAnimDescIndexes
+	66,414 - 66,415 aSeqDesc.theAnimDescIndexes alignment
+	66,416 - 66,417 aSeqDesc.theAnimDescIndexes
+	66,418 - 66,419 aSeqDesc.theAnimDescIndexes alignment
+	66,420 - 66,421 aSeqDesc.theAnimDescIndexes
+	66,422 - 66,423 aSeqDesc.theAnimDescIndexes alignment
+	66,424 - 66,425 aSeqDesc.theAnimDescIndexes
+	66,426 - 66,427 aSeqDesc.theAnimDescIndexes alignment
+	66,428 - 66,429 aSeqDesc.theAnimDescIndexes
+	66,430 - 66,431 aSeqDesc.theAnimDescIndexes alignment
+	66,432 - 66,433 aSeqDesc.theAnimDescIndexes
+	66,434 - 66,435 aSeqDesc.theAnimDescIndexes alignment
+	66,436 - 66,515 aSeqDesc.theEvents
+	66,516 - 66,517 aSeqDesc.theAnimDescIndexes
+	66,518 - 66,519 aSeqDesc.theAnimDescIndexes alignment
+	66,520 - 66,521 aSeqDesc.theAnimDescIndexes
+	66,522 - 66,523 aSeqDesc.theAnimDescIndexes alignment
+	66,524 - 66,525 aSeqDesc.theAnimDescIndexes
+	66,526 - 66,527 aSeqDesc.theAnimDescIndexes alignment
+	66,528 - 66,529 aSeqDesc.theAnimDescIndexes
+	66,530 - 66,531 aSeqDesc.theAnimDescIndexes alignment
+	66,532 - 66,533 aSeqDesc.theAnimDescIndexes
+	66,534 - 66,535 aSeqDesc.theAnimDescIndexes alignment
+	66,536 - 66,537 aSeqDesc.theAnimDescIndexes
+	66,538 - 66,539 aSeqDesc.theAnimDescIndexes alignment
+	66,540 - 66,541 aSeqDesc.theAnimDescIndexes
+	66,542 - 66,543 aSeqDesc.theAnimDescIndexes alignment
+	66,544 - 66,545 aSeqDesc.theAnimDescIndexes
+	66,546 - 66,547 aSeqDesc.theAnimDescIndexes alignment
+	66,548 - 66,549 aSeqDesc.theAnimDescIndexes
+	66,550 - 66,551 aSeqDesc.theAnimDescIndexes alignment
+	66,552 - 66,553 aSeqDesc.theAnimDescIndexes
+	66,554 - 66,555 aSeqDesc.theAnimDescIndexes alignment
+	66,556 - 66,557 aSeqDesc.theAnimDescIndexes
+	66,558 - 66,559 aSeqDesc.theAnimDescIndexes alignment
+	66,560 - 66,561 aSeqDesc.theAnimDescIndexes
+	66,562 - 66,563 aSeqDesc.theAnimDescIndexes alignment
+	66,564 - 66,565 aSeqDesc.theAnimDescIndexes
+	66,566 - 66,567 aSeqDesc.theAnimDescIndexes alignment
+	66,568 - 66,569 aSeqDesc.theAnimDescIndexes
+	66,570 - 66,571 aSeqDesc.theAnimDescIndexes alignment
+	66,572 - 66,573 aSeqDesc.theAnimDescIndexes
+	66,574 - 66,575 aSeqDesc.theAnimDescIndexes alignment
+	66,576 - 66,577 aSeqDesc.theAnimDescIndexes
+	66,578 - 66,579 aSeqDesc.theAnimDescIndexes alignment
+	66,580 - 66,581 aSeqDesc.theAnimDescIndexes
+	66,582 - 66,583 aSeqDesc.theAnimDescIndexes alignment
+	66,584 - 66,585 aSeqDesc.theAnimDescIndexes
+	66,586 - 66,587 aSeqDesc.theAnimDescIndexes alignment
+	66,588 - 66,589 aSeqDesc.theAnimDescIndexes
+	66,590 - 66,591 aSeqDesc.theAnimDescIndexes alignment
+	66,592 - 66,593 aSeqDesc.theAnimDescIndexes
+	66,594 - 66,595 aSeqDesc.theAnimDescIndexes alignment
+	66,596 - 66,597 aSeqDesc.theAnimDescIndexes
+	66,598 - 66,599 aSeqDesc.theAnimDescIndexes alignment
+	66,600 - 66,601 aSeqDesc.theAnimDescIndexes
+	66,602 - 66,603 aSeqDesc.theAnimDescIndexes alignment
+	66,604 - 66,605 aSeqDesc.theAnimDescIndexes
+	66,606 - 66,607 aSeqDesc.theAnimDescIndexes alignment
+	66,608 - 66,609 aSeqDesc.theAnimDescIndexes
+	66,610 - 66,611 aSeqDesc.theAnimDescIndexes alignment
+	66,612 - 66,613 aSeqDesc.theAnimDescIndexes
+	66,614 - 66,615 aSeqDesc.theAnimDescIndexes alignment
+	66,616 - 66,617 aSeqDesc.theAnimDescIndexes
+	66,618 - 66,619 aSeqDesc.theAnimDescIndexes alignment
+	66,620 - 66,621 aSeqDesc.theAnimDescIndexes
+	66,622 - 66,623 aSeqDesc.theAnimDescIndexes alignment
+	66,624 - 66,625 aSeqDesc.theAnimDescIndexes
+	66,626 - 66,627 aSeqDesc.theAnimDescIndexes alignment
+	66,628 - 66,629 aSeqDesc.theAnimDescIndexes
+	66,630 - 66,631 aSeqDesc.theAnimDescIndexes alignment
+	66,632 - 66,633 aSeqDesc.theAnimDescIndexes
+	66,634 - 66,635 aSeqDesc.theAnimDescIndexes alignment
+	66,636 - 66,637 aSeqDesc.theAnimDescIndexes
+	66,638 - 66,639 aSeqDesc.theAnimDescIndexes alignment
+	66,640 - 66,641 aSeqDesc.theAnimDescIndexes
+	66,642 - 66,643 aSeqDesc.theAnimDescIndexes alignment
+	66,644 - 66,645 aSeqDesc.theAnimDescIndexes
+	66,646 - 66,647 aSeqDesc.theAnimDescIndexes alignment
+	66,648 - 66,649 aSeqDesc.theAnimDescIndexes
+	66,650 - 66,651 aSeqDesc.theAnimDescIndexes alignment
+	66,652 - 66,653 aSeqDesc.theAnimDescIndexes
+	66,654 - 66,655 aSeqDesc.theAnimDescIndexes alignment
+	66,656 - 66,657 aSeqDesc.theAnimDescIndexes
+	66,658 - 66,659 aSeqDesc.theAnimDescIndexes alignment
+	66,660 - 66,661 aSeqDesc.theAnimDescIndexes
+	66,662 - 66,663 aSeqDesc.theAnimDescIndexes alignment
+	66,664 - 66,743 aSeqDesc.theEvents
+	66,744 - 66,745 aSeqDesc.theAnimDescIndexes
+	66,746 - 66,747 aSeqDesc.theAnimDescIndexes alignment
+	66,748 - 66,749 aSeqDesc.theAnimDescIndexes
+	66,750 - 66,751 aSeqDesc.theAnimDescIndexes alignment
+	66,752 - 66,753 aSeqDesc.theAnimDescIndexes
+	66,754 - 66,755 aSeqDesc.theAnimDescIndexes alignment
+	66,756 - 66,757 aSeqDesc.theAnimDescIndexes
+	66,758 - 66,759 aSeqDesc.theAnimDescIndexes alignment
+	66,760 - 66,761 aSeqDesc.theAnimDescIndexes
+	66,762 - 66,763 aSeqDesc.theAnimDescIndexes alignment
+	66,764 - 66,765 aSeqDesc.theAnimDescIndexes
+	66,766 - 66,767 aSeqDesc.theAnimDescIndexes alignment
+	66,768 - 66,769 aSeqDesc.theAnimDescIndexes
+	66,770 - 66,771 aSeqDesc.theAnimDescIndexes alignment
+	66,772 - 66,835 aSeqDesc.theIkLocks
+	66,836 - 66,837 aSeqDesc.theAnimDescIndexes
+	66,838 - 66,839 aSeqDesc.theAnimDescIndexes alignment
+	66,840 - 66,863 aSeqDesc.theAutoLayers
+	66,864 - 66,865 aSeqDesc.theAnimDescIndexes
+	66,866 - 66,867 aSeqDesc.theAnimDescIndexes alignment
+	66,868 - 66,891 aSeqDesc.theAutoLayers
+	66,892 - 66,893 aSeqDesc.theAnimDescIndexes
+	66,894 - 66,895 aSeqDesc.theAnimDescIndexes alignment
+	66,896 - 66,897 aSeqDesc.theAnimDescIndexes
+	66,898 - 66,899 aSeqDesc.theAnimDescIndexes alignment
+	66,900 - 66,901 aSeqDesc.theAnimDescIndexes
+	66,902 - 66,903 aSeqDesc.theAnimDescIndexes alignment
+	66,904 - 66,905 aSeqDesc.theAnimDescIndexes
+	66,906 - 66,907 aSeqDesc.theAnimDescIndexes alignment
+	66,908 - 66,909 aSeqDesc.theAnimDescIndexes
+	66,910 - 66,911 aSeqDesc.theAnimDescIndexes alignment
+	66,912 - 66,913 aSeqDesc.theAnimDescIndexes
+	66,914 - 66,915 aSeqDesc.theAnimDescIndexes alignment
+	66,916 - 66,917 aSeqDesc.theAnimDescIndexes
+	66,918 - 66,919 aSeqDesc.theAnimDescIndexes alignment
+	66,920 - 66,921 aSeqDesc.theAnimDescIndexes
+	66,922 - 66,923 aSeqDesc.theAnimDescIndexes alignment
+	66,924 - 66,925 aSeqDesc.theAnimDescIndexes
+	66,926 - 66,927 aSeqDesc.theAnimDescIndexes alignment
+	66,928 - 66,929 aSeqDesc.theAnimDescIndexes
+	66,930 - 66,931 aSeqDesc.theAnimDescIndexes alignment
+	66,932 - 66,933 aSeqDesc.theAnimDescIndexes
+	66,934 - 66,935 aSeqDesc.theAnimDescIndexes alignment
+	66,936 - 66,937 aSeqDesc.theAnimDescIndexes
+	66,938 - 66,939 aSeqDesc.theAnimDescIndexes alignment
+	66,940 - 67,003 theMdlFileData.theIkChains
+	67,004 - 67,087 anIkChain.theLinks
+	67,088 - 67,171 anIkChain.theLinks
+	67,172 - 67,255 anIkChain.theLinks
+	67,256 - 67,339 anIkChain.theLinks
+	67,340 - 67,403 theMdlFileData.theIkLocks
+	67,404 - 67,579 theAnimBlocks
+	67,580 - 67,583 theMdlFileData.theTexturePaths
+	67,584 - 67,583 theMdlFileData.theSkinFamilies
+
+	67,648 - 67,871 theMdlFileData.theLinearBoneTable.theFlags
+	67,872 - 68,095 theMdlFileData.theLinearBoneTable.theParents
+	68,096 - 68,767 theMdlFileData.theLinearBoneTable.thePositions
+	68,768 - 69,663 theMdlFileData.theLinearBoneTable.theQuaternions
+	69,664 - 70,335 theMdlFileData.theLinearBoneTable.theRotations
+	70,336 - 73,023 theMdlFileData.theLinearBoneTable.thePoseToBoneDataColumns
+	73,024 - 73,695 theMdlFileData.theLinearBoneTable.thePositionScales
+	73,696 - 74,367 theMdlFileData.theLinearBoneTable.theRotationScales
+	74,368 - 75,263 theMdlFileData.theLinearBoneTable.theQAlignments
+	75,264 - 75,264 aHitbox.theName
+	75,265 - 75,272 theSurfacePropName
+	75,273 - 75,296 aBone.theName
+	75,297 - 75,319 aBone.theName
+	75,320 - 75,343 aBone.theName
+	75,344 - 75,367 aBone.theName
+	75,368 - 75,391 aBone.theName
+	75,392 - 75,414 aBone.theName
+	75,415 - 75,437 aBone.theName
+	75,438 - 75,456 aBone.theName
+	75,457 - 75,484 aBone.theName
+	75,485 - 75,512 aBone.theName
+	75,513 - 75,539 aBone.theName
+	75,540 - 75,563 aBone.theName
+	75,564 - 75,593 aBone.theName
+	75,594 - 75,621 aBone.theName
+	75,622 - 75,649 aBone.theName
+	75,650 - 75,676 aBone.theName
+	75,677 - 75,700 aBone.theName
+	75,701 - 75,730 aBone.theName
+	75,731 - 75,755 aBone.theName
+	75,756 - 75,779 aBone.theName
+	75,780 - 75,803 aBone.theName
+	75,804 - 75,827 aBone.theName
+	75,828 - 75,852 aBone.theName
+	75,853 - 75,876 aBone.theName
+	75,877 - 75,900 aBone.theName
+	75,901 - 75,924 aBone.theName
+	75,925 - 75,951 aBone.theName
+	75,952 - 75,979 aBone.theName
+	75,980 - 76,007 aBone.theName
+	76,008 - 76,034 aBone.theName
+	76,035 - 76,062 aBone.theName
+	76,063 - 76,090 aBone.theName
+	76,091 - 76,117 aBone.theName
+	76,118 - 76,145 aBone.theName
+	76,146 - 76,173 aBone.theName
+	76,174 - 76,200 aBone.theName
+	76,201 - 76,228 aBone.theName
+	76,229 - 76,256 aBone.theName
+	76,257 - 76,283 aBone.theName
+	76,284 - 76,311 aBone.theName
+	76,312 - 76,339 aBone.theName
+	76,340 - 76,366 aBone.theName
+	76,367 - 76,394 aBone.theName
+	76,395 - 76,422 aBone.theName
+	76,423 - 76,449 aBone.theName
+	76,450 - 76,477 aBone.theName
+	76,478 - 76,505 aBone.theName
+	76,506 - 76,532 aBone.theName
+	76,533 - 76,560 aBone.theName
+	76,561 - 76,588 aBone.theName
+	76,589 - 76,615 aBone.theName
+	76,616 - 76,643 aBone.theName
+	76,644 - 76,671 aBone.theName
+	76,672 - 76,698 aBone.theName
+	76,699 - 76,726 aBone.theName
+	76,727 - 76,754 aBone.theName
+	76,755 - 76,762 anAttachment.theName
+	76,763 - 76,781 anAttachment.theName
+	76,782 - 76,800 anAttachment.theName
+	76,801 - 76,811 anAnimationDesc.theName
+	76,812 - 76,827 anAnimationDesc.theName
+	76,828 - 76,842 anAnimationDesc.theName
+	76,843 - 76,858 anAnimationDesc.theName
+	76,859 - 76,869 anAnimationDesc.theName
+	76,870 - 76,883 anAnimationDesc.theName
+	76,884 - 76,894 anAnimationDesc.theName
+	76,895 - 76,907 anAnimationDesc.theName
+	76,908 - 76,920 anAnimationDesc.theName
+	76,921 - 76,932 anAnimationDesc.theName
+	76,933 - 76,944 anAnimationDesc.theName
+	76,945 - 76,956 anAnimationDesc.theName
+	76,957 - 76,968 anAnimationDesc.theName
+	76,969 - 76,981 anAnimationDesc.theName
+	76,982 - 76,994 anAnimationDesc.theName
+	76,995 - 77,007 anAnimationDesc.theName
+	77,008 - 77,020 anAnimationDesc.theName
+	77,021 - 77,032 anAnimationDesc.theName
+	77,033 - 77,063 anAnimationDesc.theName
+	77,064 - 77,093 anAnimationDesc.theName
+	77,094 - 77,125 anAnimationDesc.theName
+	77,126 - 77,150 anAnimationDesc.theName
+	77,151 - 77,182 anAnimationDesc.theName
+	77,183 - 77,212 anAnimationDesc.theName
+	77,213 - 77,232 anAnimationDesc.theName
+	77,233 - 77,261 anAnimationDesc.theName
+	77,262 - 77,287 anAnimationDesc.theName
+	77,288 - 77,307 anAnimationDesc.theName
+	77,308 - 77,332 anAnimationDesc.theName
+	77,333 - 77,354 anAnimationDesc.theName
+	77,355 - 77,376 anAnimationDesc.theName
+	77,377 - 77,392 anAnimationDesc.theName
+	77,393 - 77,417 anAnimationDesc.theName
+	77,418 - 77,438 anAnimationDesc.theName
+	77,439 - 77,456 anAnimationDesc.theName
+	77,457 - 77,477 anAnimationDesc.theName
+	77,478 - 77,495 anAnimationDesc.theName
+	77,496 - 77,517 anAnimationDesc.theName
+	77,518 - 77,531 anAnimationDesc.theName
+	77,532 - 77,542 anAnimationDesc.theName
+	77,543 - 77,557 anAnimationDesc.theName
+	77,558 - 77,568 anAnimationDesc.theName
+	77,569 - 77,590 anAnimationDesc.theName
+	77,591 - 77,613 anAnimationDesc.theName
+	77,614 - 77,636 anAnimationDesc.theName
+	77,637 - 77,647 anAnimationDesc.theName
+	77,648 - 77,673 anAnimationDesc.theName
+	77,674 - 77,702 anAnimationDesc.theName
+	77,703 - 77,725 anAnimationDesc.theName
+	77,726 - 77,760 anAnimationDesc.theName
+	77,761 - 77,787 anAnimationDesc.theName
+	77,788 - 77,798 anAnimationDesc.theName
+	77,799 - 77,813 anAnimationDesc.theName
+	77,814 - 77,828 anAnimationDesc.theName
+	77,829 - 77,861 anAnimationDesc.theName
+	77,862 - 77,896 anAnimationDesc.theName
+	77,897 - 77,931 anAnimationDesc.theName
+	77,932 - 77,972 anAnimationDesc.theName
+	77,973 - 78,008 anAnimationDesc.theName
+	78,009 - 78,038 anAnimationDesc.theName
+	78,039 - 78,074 anAnimationDesc.theName
+	78,075 - 78,104 anAnimationDesc.theName
+	78,105 - 78,119 anAnimationDesc.theName
+	78,120 - 78,130 anAnimationDesc.theName
+	78,131 - 78,138 anAnimationDesc.theName
+	78,139 - 78,148 aSeqDesc.theLabel
+	78,149 - 78,163 aSeqDesc.theLabel
+	78,164 - 78,177 aSeqDesc.theLabel
+	78,178 - 78,192 aSeqDesc.theLabel
+	78,193 - 78,202 aSeqDesc.theLabel
+	78,203 - 78,215 aSeqDesc.theLabel
+	78,216 - 78,225 aSeqDesc.theLabel
+	78,226 - 78,237 aSeqDesc.theLabel
+	78,238 - 78,260 anEvent.theName
+	78,261 - 78,272 aSeqDesc.theLabel
+	78,273 - 78,289 aSeqDesc.theActivityName
+	78,290 - 78,300 aSeqDesc.theLabel
+	78,301 - 78,311 aSeqDesc.theLabel
+	78,312 - 78,322 aSeqDesc.theLabel
+	78,323 - 78,333 aSeqDesc.theLabel
+	78,334 - 78,345 aSeqDesc.theLabel
+	78,346 - 78,357 aSeqDesc.theLabel
+	78,358 - 78,369 aSeqDesc.theLabel
+	78,370 - 78,381 aSeqDesc.theLabel
+	78,382 - 78,392 aSeqDesc.theLabel
+	78,393 - 78,422 aSeqDesc.theLabel
+	78,423 - 78,451 aSeqDesc.theLabel
+	78,452 - 78,482 aSeqDesc.theLabel
+	78,483 - 78,506 aSeqDesc.theLabel
+	78,507 - 78,537 aSeqDesc.theLabel
+	78,538 - 78,566 aSeqDesc.theLabel
+	78,567 - 78,585 aSeqDesc.theLabel
+	78,586 - 78,613 aSeqDesc.theLabel
+	78,614 - 78,638 aSeqDesc.theLabel
+	78,639 - 78,657 aSeqDesc.theLabel
+	78,658 - 78,681 aSeqDesc.theLabel
+	78,682 - 78,702 aSeqDesc.theLabel
+	78,703 - 78,723 aSeqDesc.theLabel
+	78,724 - 78,738 aSeqDesc.theLabel
+	78,739 - 78,762 aSeqDesc.theLabel
+	78,763 - 78,782 aSeqDesc.theLabel
+	78,783 - 78,799 aSeqDesc.theLabel
+	78,800 - 78,819 aSeqDesc.theLabel
+	78,820 - 78,836 aSeqDesc.theLabel
+	78,837 - 78,857 aSeqDesc.theLabel
+	78,858 - 78,870 aSeqDesc.theLabel
+	78,871 - 78,880 aSeqDesc.theLabel
+	78,881 - 78,894 aSeqDesc.theLabel
+	78,895 - 78,904 aSeqDesc.theLabel
+	78,905 - 78,925 aSeqDesc.theLabel
+	78,926 - 78,947 aSeqDesc.theLabel
+	78,948 - 78,969 aSeqDesc.theLabel
+	78,970 - 78,979 aSeqDesc.theLabel
+	78,980 - 79,004 aSeqDesc.theLabel
+	79,005 - 79,032 aSeqDesc.theLabel
+	79,033 - 79,054 aSeqDesc.theLabel
+	79,055 - 79,088 aSeqDesc.theLabel
+	79,089 - 79,114 aSeqDesc.theLabel
+	79,115 - 79,124 aSeqDesc.theLabel
+	79,125 - 79,138 aSeqDesc.theLabel
+	79,139 - 79,152 aSeqDesc.theLabel
+	79,153 - 79,184 aSeqDesc.theLabel
+	79,185 - 79,218 aSeqDesc.theLabel
+	79,219 - 79,252 aSeqDesc.theLabel
+	79,253 - 79,292 aSeqDesc.theLabel
+	79,293 - 79,327 aSeqDesc.theLabel
+	79,328 - 79,356 aSeqDesc.theLabel
+	79,357 - 79,391 aSeqDesc.theLabel
+	79,392 - 79,420 aSeqDesc.theLabel
+	79,421 - 79,434 aSeqDesc.theLabel
+	79,435 - 79,444 aSeqDesc.theLabel
+	79,445 - 79,451 aSeqDesc.theLabel
+	79,452 - 79,457 anIkChain.theName
+	79,458 - 79,463 anIkChain.theName
+	79,464 - 79,469 anIkChain.theName
+	79,470 - 79,475 anIkChain.theName
+	79,476 - 79,503 theAnimBlockRelativePathFileName
+	79,504 - 79,536 aTexturePath
+	79,537 - 79,539 Final bytes alignment
+========================
