@@ -89,6 +89,8 @@ typedef enum
 	ACT_RELOAD_LOW,
 	ACT_ARM,				// pull out gun, for instance
 	ACT_DISARM,				// reholster gun
+	ACT_ARM_RIFLE,
+	ACT_DISARM_RIFLE,
 	ACT_DROP_WEAPON,
 	ACT_DROP_WEAPON_SHOTGUN,
 	ACT_PICKUP_GROUND,		// pick up something in front of you on the ground

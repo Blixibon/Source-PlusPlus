@@ -47,6 +47,8 @@ public:
 		}
 	}
 
+	virtual ShieldType_t GetShieldType() { return SHIELD_TYPE_PERSONAL; }
+
 	void	TraceAttack(const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator);
 
 	virtual void ProcessSceneEvents(void);
@@ -97,7 +99,10 @@ void CArmShield::Spawn()
 
 	SetModel(SHIELD_MODEL);
 
-	VPhysicsInitNormal(SOLID_VPHYSICS, FSOLID_CUSTOMBOXTEST, false);
+	//VPhysicsInitNormal(SOLID_VPHYSICS, FSOLID_CUSTOMBOXTEST, false);
+	SetMoveType(MOVETYPE_NONE);
+	SetSolid(SOLID_BBOX);
+	SetSolidFlags(FSOLID_NOT_STANDABLE);
 
 	CollisionProp()->SetSurroundingBoundsType(USE_HITBOXES);
 

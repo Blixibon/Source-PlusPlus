@@ -6995,7 +6995,7 @@ void CAI_BaseNPC::OnChangeActiveWeapon( CBaseCombatWeapon *pOldWeapon, CBaseComb
 //-----------------------------------------------------------------------------
 bool CAI_BaseNPC::CanHolsterWeapon( void )
 {
-	int seq = SelectWeightedSequence( ACT_DISARM );
+	int seq = SelectWeightedSequence( TranslateActivity(ACT_DISARM) );
 	return (seq >= 0);
 }
 
@@ -7007,11 +7007,11 @@ int	CAI_BaseNPC::HolsterWeapon( void )
 	if ( IsWeaponHolstered() )
 		return -1;
 
-	int iHolsterGesture = FindGestureLayer( ACT_DISARM );
+	int iHolsterGesture = FindGestureLayer(TranslateActivity(ACT_DISARM));
 	if ( iHolsterGesture != -1 )
 		return iHolsterGesture;
 
-	int iLayer = AddGesture( ACT_DISARM, true );
+	int iLayer = AddGesture(TranslateActivity(ACT_DISARM), true );
 	//iLayer = AddGesture( ACT_GESTURE_DISARM, true );
 
 	if (iLayer != -1)
@@ -7046,7 +7046,7 @@ int CAI_BaseNPC::UnholsterWeapon( void )
 	if ( !IsWeaponHolstered() )
  		return -1;
 
-	int iHolsterGesture = FindGestureLayer( ACT_ARM );
+	int iHolsterGesture = FindGestureLayer( TranslateActivity(ACT_ARM) );
 	if ( iHolsterGesture != -1 )
 		return iHolsterGesture;
 
@@ -7057,7 +7057,7 @@ int CAI_BaseNPC::UnholsterWeapon( void )
 		{
 			SetActiveWeapon( GetWeapon(i) );
 
-			int iLayer = AddGesture( ACT_ARM, true );
+			int iLayer = AddGesture(TranslateActivity(ACT_ARM), true );
 			//iLayer = AddGesture( ACT_GESTURE_ARM, true );
 
 			if (iLayer != -1)

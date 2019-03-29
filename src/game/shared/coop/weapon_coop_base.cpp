@@ -388,6 +388,9 @@ acttable_t CWeaponCoopBase::s_acttableSMG1[] =
 		{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
 		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
 
+		{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+		{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
+
 		{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_SMG1,					false },
 		{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_SMG1,						false },
 		{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_SMG1,				false },
@@ -530,6 +533,9 @@ acttable_t CWeaponCoopBase::s_acttableCrossbow[] =
 		{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,				false },
 		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,			false },
 
+		{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+		{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
+
 	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_CROSSBOW,					false },
 	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_CROSSBOW,						false },
 	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,				false },
@@ -586,7 +592,8 @@ acttable_t CWeaponCoopBase::s_acttableShotgun[] =
 		{ ACT_RELOAD_LOW,				ACT_RELOAD_SHOTGUN_LOW,				false },
 		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SHOTGUN,			false },
 	
-	
+		{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+		{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
 
 		{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_SHOTGUN,					false },
 		{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_SHOTGUN,					false },
@@ -622,6 +629,9 @@ acttable_t CWeaponCoopBase::s_acttableRPG[] =
 	{ ACT_RUN,						ACT_RUN_RPG,					true },
 	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RPG,				true },
 	{ ACT_COVER_LOW,				ACT_COVER_LOW_RPG,				true },
+
+	{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+	{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
 
 	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_RPG,					false },
 	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_RPG,					false },
@@ -789,6 +799,9 @@ acttable_t CWeaponCoopBase::s_acttableAR2[] =
 		{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
 		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
 		//	{ ACT_RANGE_ATTACK2, ACT_RANGE_ATTACK_AR2_GRENADE, true },
+
+		{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+		{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
 
 			{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_AR2,					false },
 			{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_AR2,					false },
