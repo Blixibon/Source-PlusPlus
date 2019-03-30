@@ -1,0 +1,52 @@
+
+// The 32 below is a guess until further is known about the format.
+//$AnimBlockSize 32
+
+$BoneSaveFrame "ValveBiped.Bip01_Pelvis" position rotation
+$BoneSaveFrame "ValveBiped.Bip01_Spine" rotation
+$BoneSaveFrame "ValveBiped.Bip01_Spine1" rotation
+$BoneSaveFrame "ValveBiped.Bip01_Spine2" rotation
+$BoneSaveFrame "ValveBiped.Bip01_Spine4" rotation
+$BoneSaveFrame "ValveBiped.Bip01_Neck1" rotation
+$BoneSaveFrame "ValveBiped.Bip01_Head1" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_Clavicle" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_UpperArm" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_Forearm" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_Hand" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_Clavicle" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_UpperArm" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_Forearm" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_Hand" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_Thigh" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_Calf" rotation
+$BoneSaveFrame "ValveBiped.Bip01_R_Foot" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_Thigh" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_Calf" rotation
+$BoneSaveFrame "ValveBiped.Bip01_L_Foot" rotation
+
+//$SectionFrames 30 120
+
+$PoseParameter "body_yaw" -29.73426 29.73423 loop 0
+$PoseParameter "spine_yaw" -30.7085 30.70848 loop 0
+$PoseParameter "neck_trans" -0.207508 0.2594 loop 0
+$PoseParameter "head_yaw" -66.70654 66.70631 loop 0
+$PoseParameter "head_pitch" -34.86658 25.37666 loop 0
+$PoseParameter "head_roll" -10.93143 10.85243 loop 0
+$PoseParameter "move_yaw" -180 180 loop 360
+$PoseParameter "aim_pitch" -86.32401 56.20353 loop 0
+$PoseParameter "aim_yaw" -60 60 loop 0
+
+$IKChain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$IKAutoPlayLock "rfoot" 1 0.1
+$IKAutoPlayLock "lfoot" 1 0.1
+$IKAutoPlayLock "rfoot" 1 0.1
+$IKAutoPlayLock "lfoot" 1 0.1
+
+
+$IncludeModel "polhl2_animations.mdl"
+$IncludeModel "humans/animation/male_holster_anims.mdl"
+$IncludeModel "humans/animation/armshield_anims.mdl"

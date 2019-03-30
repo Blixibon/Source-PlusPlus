@@ -1,0 +1,81 @@
+
+$animation "draw_rifle_a" $g$\smgdraw.smd {
+	fps 30
+}
+$animation "draw_rifle_delta_a" $g$\smgdraw.smd {
+	subtract "draw_rifle_a" 0
+	fps 30
+}
+$animation "holster_rifle_a" $g$\smgholster.smd {
+	fps 30
+}
+$animation "holster_rifle_delta_a" $g$\smgholster.smd {
+	subtract "holster_rifle_a" 0
+	fps 30
+}
+
+$Sequence "weapon_draw_rifle_spine" {
+	"draw_rifle_delta_a"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_weapon_draw_spine"
+}
+
+$Sequence "weapon_draw_rifle_arms" {
+	"draw_rifle_a"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_weapon_draw_arms"
+}
+
+$Sequence "weapon_draw_rifle_gesture" {
+	$g$\smgdraw.smd
+	{ event AE_NPC_DRAW 14 "" }
+	Activity ACT_ARM_RIFLE 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	blendlayer "weapon_draw_rifle_arms" 0 10 26 40 spline
+	blendlayer "weapon_draw_rifle_spine" 0 10 26 40 spline
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+	weightlist "weights_weapon_draw_gesture"
+}
+
+$Sequence "weapon_holster_rifle_spine" {
+	"holster_rifle_delta_a"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_weapon_draw_spine"
+}
+
+$Sequence "weapon_holster_rifle_arms" {
+	"holster_rifle_a"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_weapon_draw_arms"
+}
+
+$Sequence "weapon_holster_rifle_gesture" {
+	$g$\smgholster.smd
+	{ event AE_NPC_HOLSTER 26 "" }
+	Activity ACT_DISARM_RIFLE 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	blendlayer "weapon_holster_rifle_arms" 0 10 26 40 spline
+	blendlayer "weapon_holster_rifle_spine" 0 10 26 40 spline
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+	weightlist "weights_weapon_draw_gesture"
+}

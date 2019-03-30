@@ -46,153 +46,98 @@ $IKAutoPlayLock "lfoot" 1 0.1
 $IKAutoPlayLock "rfoot" 1 0.1
 $IKAutoPlayLock "lfoot" 1 0.1
 
-$WeightList "weights_layer_Aim_all" {
-	 "ValveBiped.Bip01_Pelvis" 1
-	 "ValveBiped.Bip01_Spine" 1
-	 "ValveBiped.Bip01_Spine1" 1
-	 "ValveBiped.Bip01_Spine2" 1
-	 "ValveBiped.Bip01_Spine4" 1
-	 "ValveBiped.Bip01_Neck1" 1
-	 "ValveBiped.Bip01_Head1" 1
-	 "ValveBiped.forward" 1
-	 "ValveBiped.Bip01_R_Clavicle" 1
-	 "ValveBiped.Bip01_R_UpperArm" 1
-	 "ValveBiped.Bip01_R_Forearm" 1
-	 "ValveBiped.Bip01_R_Hand" 1
-	 "ValveBiped.Anim_Attachment_RH" 1
-	 "ValveBiped.Bip01_L_Clavicle" 1
-	 "ValveBiped.Bip01_L_UpperArm" 1
-	 "ValveBiped.Bip01_L_Forearm" 1
-	 "ValveBiped.Bip01_L_Hand" 1
-	 "ValveBiped.Anim_Attachment_LH" 1
-	 "ValveBiped.Bip01_R_Thigh" 0
-	 "ValveBiped.Bip01_R_Calf" 0
-	 "ValveBiped.Bip01_R_Foot" 0
-	 "ValveBiped.Bip01_R_Toe0" 0
-	 "ValveBiped.Bip01_L_Thigh" 0
-	 "ValveBiped.Bip01_L_Calf" 0
-	 "ValveBiped.Bip01_L_Foot" 0
-	 "ValveBiped.Bip01_L_Toe0" 0
-	 "ValveBiped.Bip01_L_Finger4" 1
-	 "ValveBiped.Bip01_L_Finger41" 1
-	 "ValveBiped.Bip01_L_Finger42" 1
-	 "ValveBiped.Bip01_L_Finger3" 1
-	 "ValveBiped.Bip01_L_Finger31" 1
-	 "ValveBiped.Bip01_L_Finger32" 1
-	 "ValveBiped.Bip01_L_Finger2" 1
-	 "ValveBiped.Bip01_L_Finger21" 1
-	 "ValveBiped.Bip01_L_Finger22" 1
-	 "ValveBiped.Bip01_L_Finger1" 1
-	 "ValveBiped.Bip01_L_Finger11" 1
-	 "ValveBiped.Bip01_L_Finger12" 1
-	 "ValveBiped.Bip01_L_Finger0" 1
-	 "ValveBiped.Bip01_L_Finger01" 1
-	 "ValveBiped.Bip01_L_Finger02" 1
-	 "ValveBiped.Bip01_R_Finger4" 1
-	 "ValveBiped.Bip01_R_Finger41" 1
-	 "ValveBiped.Bip01_R_Finger42" 1
-	 "ValveBiped.Bip01_R_Finger3" 1
-	 "ValveBiped.Bip01_R_Finger31" 1
-	 "ValveBiped.Bip01_R_Finger32" 1
-	 "ValveBiped.Bip01_R_Finger2" 1
-	 "ValveBiped.Bip01_R_Finger21" 1
-	 "ValveBiped.Bip01_R_Finger22" 1
-	 "ValveBiped.Bip01_R_Finger1" 1
-	 "ValveBiped.Bip01_R_Finger11" 1
-	 "ValveBiped.Bip01_R_Finger12" 1
-	 "ValveBiped.Bip01_R_Finger0" 1
-	 "ValveBiped.Bip01_R_Finger01" 1
-	 "ValveBiped.Bip01_R_Finger02" 1
+$Include "shared_weightlists.qci"
+
+$definevariable g "male_shared_anims" // this defines the gender for some animations
+
+$Include "shared_animation.qci"
+
+//$animation "draw_pistol" "police_animations_anims\drawpistol.smd"
+//$animation "holster_pistol" "police_animations_anims\holsterpistol.dmx"
+
+$animation "draw_pistol_a" "police_animations_anims\drawpistol.smd" {
+	fps 30
+}
+$animation "draw_pistol_delta_a" "police_animations_anims\drawpistol.smd" {
+	subtract "draw_pistol_a" 0
+	fps 30
+}
+$animation "holster_pistol_a" "police_animations_anims\holsterpistol.dmx" {
+	fps 30
+}
+$animation "holster_pistol_delta_a" "police_animations_anims\holsterpistol.dmx" {
+	subtract "holster_pistol_a" 0
+	fps 30
 }
 
-$WeightList "weights_layer_walk_aiming" {
-	 "ValveBiped.Bip01_Pelvis" 0.1
-	 "ValveBiped.Bip01_Spine" 0.2
-	 "ValveBiped.Bip01_Spine1" 0.4
-	 "ValveBiped.Bip01_Spine2" 0.6
-	 "ValveBiped.Bip01_Spine4" 1
-	 "ValveBiped.Bip01_Neck1" 0.1
-	 "ValveBiped.Bip01_Head1" 0.4
-	 "ValveBiped.forward" 1
-	 "ValveBiped.Bip01_R_Clavicle" 1
-	 "ValveBiped.Bip01_R_UpperArm" 1
-	 "ValveBiped.Bip01_R_Forearm" 1
-	 "ValveBiped.Bip01_R_Hand" 1
-	 "ValveBiped.Anim_Attachment_RH" 1
-	 "ValveBiped.Bip01_L_Clavicle" 1
-	 "ValveBiped.Bip01_L_UpperArm" 1
-	 "ValveBiped.Bip01_L_Forearm" 1
-	 "ValveBiped.Bip01_L_Hand" 1
-	 "ValveBiped.Anim_Attachment_LH" 1
-	 "ValveBiped.Bip01_R_Thigh" 0
-	 "ValveBiped.Bip01_R_Calf" 0
-	 "ValveBiped.Bip01_R_Foot" 0
-	 "ValveBiped.Bip01_R_Toe0" 0
-	 "ValveBiped.Bip01_L_Thigh" 0
-	 "ValveBiped.Bip01_L_Calf" 0
-	 "ValveBiped.Bip01_L_Foot" 0
-	 "ValveBiped.Bip01_L_Toe0" 0
-	 "ValveBiped.Bip01_L_Finger4" 1
-	 "ValveBiped.Bip01_L_Finger41" 1
-	 "ValveBiped.Bip01_L_Finger42" 1
-	 "ValveBiped.Bip01_L_Finger3" 1
-	 "ValveBiped.Bip01_L_Finger31" 1
-	 "ValveBiped.Bip01_L_Finger32" 1
-	 "ValveBiped.Bip01_L_Finger2" 1
-	 "ValveBiped.Bip01_L_Finger21" 1
-	 "ValveBiped.Bip01_L_Finger22" 1
-	 "ValveBiped.Bip01_L_Finger1" 1
-	 "ValveBiped.Bip01_L_Finger11" 1
-	 "ValveBiped.Bip01_L_Finger12" 1
-	 "ValveBiped.Bip01_L_Finger0" 1
-	 "ValveBiped.Bip01_L_Finger01" 1
-	 "ValveBiped.Bip01_L_Finger02" 1
-	 "ValveBiped.Bip01_R_Finger4" 1
-	 "ValveBiped.Bip01_R_Finger41" 1
-	 "ValveBiped.Bip01_R_Finger42" 1
-	 "ValveBiped.Bip01_R_Finger3" 1
-	 "ValveBiped.Bip01_R_Finger31" 1
-	 "ValveBiped.Bip01_R_Finger32" 1
-	 "ValveBiped.Bip01_R_Finger2" 1
-	 "ValveBiped.Bip01_R_Finger21" 1
-	 "ValveBiped.Bip01_R_Finger22" 1
-	 "ValveBiped.Bip01_R_Finger1" 1
-	 "ValveBiped.Bip01_R_Finger11" 1
-	 "ValveBiped.Bip01_R_Finger12" 1
-	 "ValveBiped.Bip01_R_Finger0" 1
-	 "ValveBiped.Bip01_R_Finger01" 1
-	 "ValveBiped.Bip01_R_Finger02" 1
-}
-
-
-
-
-$Sequence "weapon_draw_rifle" {
-	"male_shared_anims\smgdraw.smd"
-	{ event AE_NPC_DRAW 14 "" }
-	Activity ACT_ARM_RIFLE 1
+$Sequence "weapon_draw_spine" {
+	"draw_pistol_delta_a"
+	delta
 	fadein 0.2
 	fadeout 0.2
+	hidden
 	fps 30
-	ikrule "rhand" release
-	ikrule "lhand" release
-	iklock "rfoot" 1 0
-	iklock "lfoot" 1 0
-	weightlist "weights_layer_walk_aiming"
+	weightlist "weights_weapon_draw_spine"
 }
 
-$Sequence "weapon_holster_rifle" {
-	"male_shared_anims\smgholster.smd"
-	{ event AE_NPC_HOLSTER 26 "" }
-	Activity ACT_DISARM_RIFLE 1
+$Sequence "weapon_draw_arms" {
+	"draw_pistol_a"
 	fadein 0.2
 	fadeout 0.2
+	hidden
 	fps 30
-	ikrule "rhand" release
-	ikrule "lhand" release
+	weightlist "weights_weapon_draw_arms"
+}
+
+$Sequence "weapon_draw_gesture" {
+	"police_animations_anims\drawpistol.smd"
+	activity "ACT_ARM" 1
+	{ event AE_NPC_DRAW 11 "" }
+	fadein 0.2
+	fadeout 0.2
+	blendlayer "weapon_draw_arms" 0 6 24 35 spline
+	blendlayer "weapon_draw_spine" 0 6 24 35 spline
+	//blendlayer "pistol_Aim_all" 24 36 36 36 spline
+	fps 30
 	iklock "rfoot" 1 0
 	iklock "lfoot" 1 0
-	weightlist "weights_layer_walk_aiming"
+	ikrule "rhand" touch "ValveBiped.Bip01_R_Thigh" range 6 10 12 16
+	weightlist "weights_weapon_draw_gesture"
+}
+
+$Sequence "weapon_holster_spine" {
+	"holster_pistol_delta_a"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_weapon_draw_spine"
+}
+
+$Sequence "weapon_holster_arms" {
+	"holster_pistol_a"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_weapon_draw_arms"
+}
+
+$Sequence "weapon_holster_gesture" {
+	"police_animations_anims\holsterpistol.dmx"
+	activity "ACT_DISARM" 1
+	{ event AE_NPC_HOLSTER 24 "" }
+	fadein 0.2
+	fadeout 0.2
+	blendlayer "weapon_holster_arms" 0 14 30 35 spline
+	blendlayer "weapon_holster_spine" 0 12 30 35 spline
+	//blendlayer "pistol_Aim_all" 24 36 36 36 spline
+	fps 30
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+	ikrule "rhand" touch "ValveBiped.Bip01_R_Thigh" range 20 22 26 28
+	weightlist "weights_weapon_draw_gesture"
 }
 
 
