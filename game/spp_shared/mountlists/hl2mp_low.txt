@@ -1,0 +1,17 @@
+"Mount"
+{
+	"supers"
+	{
+		"hl2mp_extra" 1
+	}
+
+	320
+	{
+		"head"	"0"
+		"hl2mp"
+		{
+			vpk		hl2mp_pak
+		}
+	}
+	
+}

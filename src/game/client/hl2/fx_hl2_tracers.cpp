@@ -412,7 +412,7 @@ void CreateMuzzleflashELight( const Vector &origin, int exponent, int nMinRadius
 		int entityIndex = ClientEntityList().HandleToEntIndex( hEntity );
 		if ( entityIndex >= 0 )
 		{
-			dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
+			dlight_t *el = effects->CL_AllocDlight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
 
 			el->origin	= origin;
 
@@ -668,19 +668,23 @@ void MuzzleFlash_Hunter( ClientEntityHandle_t hEntity, int attachmentIndex )
 
 	// Grab the origin out of the transform for the attachment
 	Vector		origin;
-	MatrixGetColumn( matAttachment, 3, &origin );	
-	
-	dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH );
-	el->origin = origin;// + Vector( 12.0f, 0, 0 );
+	MatrixGetColumn( matAttachment, 3, &origin );
 
-	el->color.r = 50;
-	el->color.g = 222;
-	el->color.b = 213;
-	el->color.exponent = 5;
+	int entityIndex = ClientEntityList().HandleToEntIndex(hEntity);
+	if (entityIndex >= 0)
+	{
+		dlight_t *el = effects->CL_AllocElight(LIGHT_INDEX_MUZZLEFLASH + entityIndex);
+		el->origin = origin;// + Vector( 12.0f, 0, 0 );
 
-	el->radius = random->RandomInt( 120, 200 );
-	el->decay = el->radius / 0.05f;
-	el->die = gpGlobals->curtime + 0.05f;
+		el->color.r = 50;
+		el->color.g = 222;
+		el->color.b = 213;
+		el->color.exponent = 5;
+
+		el->radius = random->RandomInt(120, 200);
+		el->decay = el->radius / 0.05f;
+		el->die = gpGlobals->curtime + 0.05f;
+	}
 }
 
 

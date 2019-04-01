@@ -13,6 +13,7 @@
 
 
 #include "vgui_controls/PHandle.h"
+#include "glow_outline_effect.h"
 
 
 #define MAX_LOCATOR_BINDINGS_SHOWN	8
@@ -33,6 +34,7 @@
 #define LOCATOR_ICON_FX_FORCE_CAPTION	0x00000400	// Always draw the caption, even when the icon is occluded.
 #define LOCATOR_ICON_FX_FADE_OUT		0x00000800	// Set when deactivated so it can smoothly vanish
 #define LOCATOR_ICON_FX_FADE_IN			0x00001000	// Set when activated so it can smoothly appear
+#define LOCATOR_ICON_FX_ENTITY_GLOW		0x00002000
 
 #include "tier1/UtlSymbol.h"
 
@@ -95,9 +97,11 @@ public:
 	int			m_lastYPos;				// ''     Y
 
 	CLocatorTarget(void);
+	~CLocatorTarget();
 	void Activate(int serialNumber);
 	void Deactivate(bool bNoFade = false);
 	void Update();
+	void SetEntity(C_BaseEntity *pEnt) { m_pEntity = pEnt; }
 
 	int GetIconX(void);
 	int GetIconY(void);
@@ -151,6 +155,8 @@ public:
 	bool IsOnScreen()	{ return m_bOnscreen; }
 	bool IsOccluded()	{ return m_bOccluded; }
 
+	
+
 
 private:
 	CGameInstructorSymbol		m_szVguiTargetName;
@@ -167,9 +173,18 @@ private:
 	const char	*m_pchDrawBindingNameOffscreen;
 	int			m_iEffectsFlags;
 	CUtlVector< wchar_t > m_wszCaption;
+	
+	C_BaseEntity	*m_pEntity;
 
 public:
 	Color		m_captionColor;
+#ifdef GLOWS_ENABLE
+private:
+	CGlowObject			*m_pGlowEffect;
+	C_BaseEntity		*m_pOldGlowEnt;
+public:
+	CGlowObject			*GetGlowObject(void) { return m_pGlowEffect; }
+#endif
 };
 
 extern int Locator_AddTarget();

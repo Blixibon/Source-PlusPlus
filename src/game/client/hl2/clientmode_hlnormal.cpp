@@ -90,6 +90,17 @@ void ClientModeHLNormal::Init()
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool ClientModeHLNormal::DoPostScreenSpaceEffects(const CNewViewSetup *pSetup)
+{
+	if (!IsInFreezeCam())
+		g_GlowObjectManager.RenderGlowEffects(pSetup, 0);
+
+	return BaseClass::DoPostScreenSpaceEffects(pSetup);
+}
+
 bool ClientModeHLNormal::ShouldDrawCrosshair( void )
 {
 	return ( g_bRollingCredits == false );

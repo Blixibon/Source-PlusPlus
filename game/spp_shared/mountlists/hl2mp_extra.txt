@@ -1,0 +1,11 @@
+"Mount"
+{
+	"|content_path|"
+	{
+		"head"	"1"
+		"hl2mp_extra"
+		{
+			
+		}
+	}
+}

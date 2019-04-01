@@ -21,6 +21,11 @@
 extern ConVar NavObscureRange;
 #endif
 
+#ifdef CLIENT_DLL
+#define NPC_FOV BCC_DEFAULT_LOOK_TOWARDS_TOLERANCE
+#else
+#define NPC_FOV m_flFieldOfView
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Switches to the best weapon that is also better than the given weapon.
@@ -418,23 +423,26 @@ bool CBaseCombatCharacter::IsAbleToSee( const CBaseEntity *pEntity, FieldOfViewC
 		return false;
 #endif
 
-	if ( !ComputeLOS( vecEyePosition, vecTargetPosition ) )
+	if ( !IsLineOfSightClear(const_cast<CBaseEntity *> (pEntity), IGNORE_ACTORS) )
 		return false;
 
-#if defined(GAME_DLL) && defined(TERROR)
+#if defined(GAME_DLL) && defined(USE_NAV_MESH)
 	if ( flDistToOther > NavObscureRange.GetFloat() )
 	{
 		const float flMaxDistance = 100.0f;
+#ifdef TERROR
 		TerrorNavArea *pTargetArea = static_cast< TerrorNavArea* >( TheNavMesh->GetNearestNavArea( vecTargetPosition, false, flMaxDistance ) );
 		if ( !pTargetArea || pTargetArea->HasSpawnAttributes( TerrorNavArea::SPAWN_OBSCURED ) )
 			return false;
-
+#else
+		CNavArea *pTargetArea = TheNavMesh->GetNearestNavArea(vecTargetPosition, false, flMaxDistance);
+#endif
 		if ( ComputeTargetIsInDarkness( vecEyePosition, pTargetArea, vecTargetPosition ) )
 			return false;
 	}
 #endif
 
-	return ( checkFOV != USE_FOV || IsInFieldOfView( vecTargetPosition ) );
+	return ( checkFOV != USE_FOV || IsInFieldOfView(const_cast<CBaseEntity *>(pEntity)) );
 }
 
 static void ComputeSeeTestPosition( Vector *pEyePosition, CBaseCombatCharacter *pBCC )
@@ -488,6 +496,7 @@ bool CBaseCombatCharacter::IsAbleToSee( CBaseCombatCharacter *pBCC, FieldOfViewC
 	if ( nResult == VISCACHE_UNKNOWN )
 	{
 		bool bThisCanSeeOther = false, bOtherCanSeeThis = false;
+#if 0
 		if ( ComputeLOS( vecEyePosition, vecOtherEyePosition ) )
 		{
 #if defined(GAME_DLL) && defined(USE_NAV_MESH)
@@ -504,6 +513,39 @@ bool CBaseCombatCharacter::IsAbleToSee( CBaseCombatCharacter *pBCC, FieldOfViewC
 			bThisCanSeeOther = true, bOtherCanSeeThis = true;
 #endif
 		}
+#else
+		if (IsLineOfSightClear(pBCC, IGNORE_ACTORS))
+		{
+#if defined(GAME_DLL) && defined(USE_NAV_MESH)
+			if (!bIsInNavObscureRange)
+			{
+				bThisCanSeeOther = true;
+			}
+			else
+			{
+				bThisCanSeeOther = !ComputeTargetIsInDarkness(vecEyePosition, pBCC->GetLastKnownArea(), vecOtherEyePosition);
+			}
+#else
+			bThisCanSeeOther = true;
+#endif
+		}
+
+		if (pBCC->IsLineOfSightClear(this, IGNORE_ACTORS))
+		{
+#if defined(GAME_DLL) && defined(USE_NAV_MESH)
+			if (!bIsInNavObscureRange)
+			{
+				bOtherCanSeeThis = true;
+			}
+			else
+			{
+				bOtherCanSeeThis = !ComputeTargetIsInDarkness(vecOtherEyePosition, GetLastKnownArea(), vecEyePosition);
+			}
+#else
+			bOtherCanSeeThis = true;
+#endif
+		}
+#endif
 
 		s_CombatCharVisCache.RegisterVisibility( iCache, bThisCanSeeOther, bOtherCanSeeThis );
 		nResult = bThisCanSeeOther ? VISCACHE_IS_VISIBLE : VISCACHE_IS_NOT_VISIBLE;
@@ -640,7 +682,7 @@ bool CBaseCombatCharacter::IsLookingTowards( const Vector &target, float cosTole
 bool CBaseCombatCharacter::IsInFieldOfView( CBaseEntity *entity ) const
 {
 	CBasePlayer *pPlayer = ToBasePlayer( const_cast< CBaseCombatCharacter* >( this ) );
-	float flTolerance = pPlayer ? cos( (float)pPlayer->GetFOV() * 0.5f ) : BCC_DEFAULT_LOOK_TOWARDS_TOLERANCE;
+	float flTolerance = pPlayer ? cos( (float)pPlayer->GetFOV() * 0.5f ) : NPC_FOV;
 
 	Vector vecForward;
 	Vector vecEyePosition = EyePosition();
@@ -650,6 +692,11 @@ bool CBaseCombatCharacter::IsInFieldOfView( CBaseEntity *entity ) const
 
 	// Check 3 spots, or else when standing right next to someone looking at their eyes, 
 	// the angle will be too great to see their center.
+#ifdef GAME_DLL
+	if (IsNPC())
+		return const_cast<CBaseCombatCharacter*>(this)->FInViewCone(entity);
+#endif
+
 	Vector vecToTarget = entity->GetAbsOrigin() - vecEyePosition;
 	vecToTarget.NormalizeInPlace();
 	if ( DotProduct( vecForward, vecToTarget ) >= flTolerance )
@@ -676,8 +723,11 @@ bool CBaseCombatCharacter::IsInFieldOfView( const Vector &pos ) const
 
 	if ( pPlayer )
 		return IsLookingTowards( pos, cos( (float)pPlayer->GetFOV() * 0.5f ) );
-
-	return IsLookingTowards( pos );
+#ifdef GAME_DLL
+	if (IsNPC())
+		return const_cast<CBaseCombatCharacter*>(this)->FInViewCone(pos);
+#endif
+	return IsLookingTowards( pos, NPC_FOV);
 }
 
 //-----------------------------------------------------------------------------

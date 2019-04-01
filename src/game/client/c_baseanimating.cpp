@@ -3387,6 +3387,7 @@ extern ConVar muzzleflash_light;
 
 void C_BaseAnimating::ProcessMuzzleFlashEvent()
 {
+#if 0
 	// If we have an attachment, then stick a light on it.
 	if ( muzzleflash_light.GetBool() )
 	{
@@ -3437,6 +3438,7 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 #endif
 		}
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

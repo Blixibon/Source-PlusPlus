@@ -93,6 +93,10 @@ ConVar locator_split_len("locator_split_len", "0.5f", FCVAR_CHEAT);
 //------------------------------------
 CLocatorTarget::CLocatorTarget(void)
 {
+	m_pGlowEffect = nullptr;
+	m_pEntity = nullptr;
+	m_pOldGlowEnt = nullptr;
+
 	Deactivate(true);
 
 	PrecacheMaterial("vgui/hud/icon_arrow_left");
@@ -100,6 +104,17 @@ CLocatorTarget::CLocatorTarget(void)
 	PrecacheMaterial("vgui/hud/icon_arrow_up");
 	PrecacheMaterial("vgui/hud/icon_arrow_down");
 	PrecacheMaterial("vgui/hud/icon_arrow_plain");
+}
+
+CLocatorTarget::~CLocatorTarget(void)
+{
+#ifdef GLOWS_ENABLE
+	if (m_pGlowEffect != nullptr)
+	{
+		delete m_pGlowEffect;
+		m_pGlowEffect = nullptr;
+	}
+#endif
 }
 
 //------------------------------------
@@ -187,6 +202,12 @@ void CLocatorTarget::Deactivate(bool bNoFade)
 		AddIconEffects(LOCATOR_ICON_FX_FADE_OUT);
 		RemoveIconEffects(LOCATOR_ICON_FX_FADE_IN);
 	}
+
+	if (m_pGlowEffect)
+	{
+		delete m_pGlowEffect;
+		m_pGlowEffect = nullptr;
+	}
 }
 
 //------------------------------------
@@ -203,8 +224,36 @@ void CLocatorTarget::Update()
 		// Set the fade
 		m_fadeStart = gpGlobals->curtime - flAssumedFadeTime;
 		AddIconEffects(LOCATOR_ICON_FX_FADE_OUT);
-		RemoveIconEffects(LOCATOR_ICON_FX_FADE_OUT);
+		RemoveIconEffects(LOCATOR_ICON_FX_FADE_IN);
 	}
+#ifdef GLOWS_ENABLE
+	{
+		if (m_bVisible && (m_iEffectsFlags & LOCATOR_ICON_FX_ENTITY_GLOW) && m_pEntity)
+		{
+			Vector glowColor;
+			m_pEntity->GetColorModulation(glowColor.Base());
+
+			if (!m_pGlowEffect)
+			{
+				m_pGlowEffect = new CGlowObject(m_pEntity, glowColor, m_alpha / 255.f, true, true);
+			}
+
+			if (m_pEntity != m_pOldGlowEnt)
+			{
+				m_pOldGlowEnt = m_pEntity;
+				m_pGlowEffect->SetEntity(m_pEntity);
+				m_pGlowEffect->SetColor(glowColor);
+			}
+
+			m_pGlowEffect->SetAlpha(m_alpha / 255.f);
+		}
+		else if (m_pGlowEffect)
+		{
+			delete m_pGlowEffect;
+			m_pGlowEffect = nullptr;
+		}
+	}
+#endif
 }
 
 int CLocatorTarget::GetIconX(void)

@@ -56,11 +56,13 @@ static DynamicResupplyItems_t g_DynamicResupplyAmmoItems[] =
 	{ "item_ammo_357",				"357",			SIZE_AMMO_357,			0.0f },
 	{ "item_ammo_crossbow",			"XBowBolt",		SIZE_AMMO_CROSSBOW,		0.0f },
 	{ "item_ammo_ar2_altfire",		"AR2AltFire",	SIZE_AMMO_AR2_ALTFIRE,	0.0f },
+	{ "weapon_slam",				"slam",			1,						0.1f },
 };
 
 #define DS_HEALTH_INDEX		0
 #define DS_ARMOR_INDEX		1
 #define DS_GRENADE_INDEX	6
+#define DS_SLAM_INDEX		10
 
 #define NUM_HEALTH_ITEMS	(ARRAYSIZE(g_DynamicResupplyHealthItems))
 #define NUM_AMMO_ITEMS		(ARRAYSIZE(g_DynamicResupplyAmmoItems))
@@ -150,6 +152,7 @@ BEGIN_DATADESC( CItem_DynamicResupply )
 	DEFINE_KEYFIELD( m_flDesiredAmmo[7], FIELD_FLOAT, "DesiredAmmo357" ),
 	DEFINE_KEYFIELD( m_flDesiredAmmo[8], FIELD_FLOAT, "DesiredAmmoCrossbow" ),
 	DEFINE_KEYFIELD( m_flDesiredAmmo[9], FIELD_FLOAT, "DesiredAmmoAR2_AltFire" ),
+	DEFINE_KEYFIELD( m_flDesiredAmmo[10], FIELD_FLOAT, "DesiredAmmoSlam"),
 
 	DEFINE_FIELD( m_version, FIELD_INTEGER ),
 	DEFINE_FIELD( m_bIsMaster, FIELD_BOOLEAN ),
@@ -182,6 +185,7 @@ CItem_DynamicResupply::CItem_DynamicResupply( void )
 	m_flDesiredAmmo[7] = 0;		// 357
 	m_flDesiredAmmo[8] = 0;		// Crossbow
 	m_flDesiredAmmo[9] = 0;		// AR2 alt-fire
+	m_flDesiredAmmo[10] = 0.1f; // SLAM
 }
 
 
@@ -488,7 +492,7 @@ void CItem_DynamicResupply::ComputeAmmoRatios( CItem_DynamicResupply* pMaster, C
 		Assert( iAmmoType != -1 );
 
 		// Ignore ammo types if we don't have a weapon that uses it (except for the grenade)
-		if ( (i != DS_GRENADE_INDEX) && !pPlayer->Weapon_GetWpnForAmmo( iAmmoType ) )
+		if ( (i != DS_GRENADE_INDEX) && (i != DS_SLAM_INDEX) && !pPlayer->Weapon_GetWpnForAmmo( iAmmoType ) )
 		{
 			pSpawnInfo[i].m_flCurrentRatio = 1.0;
 		}

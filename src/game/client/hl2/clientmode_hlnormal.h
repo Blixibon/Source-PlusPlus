@@ -37,6 +37,8 @@ public:
 
 	virtual void	Init();
 	virtual bool	ShouldDrawCrosshair( void );
+
+	virtual bool	DoPostScreenSpaceEffects(const CNewViewSetup *pSetup);
 };
 
 extern IClientMode *GetClientModeNormal();

@@ -1,0 +1,174 @@
+
+$Sequence "idle" {
+	"c_ar3_anims\idle.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 24
+	loop
+}
+
+$Sequence "fire1" {
+	"c_ar3_anims\fire1.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE MUZZLE" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire2" {
+	"c_ar3_anims\fire2.smd"
+	activity "ACT_VM_RECOIL1" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE MUZZLE" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire3" {
+	"c_ar3_anims\fire3.smd"
+	activity "ACT_VM_RECOIL2" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE MUZZLE" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire4" {
+	"c_ar3_anims\fire4.smd"
+	activity "ACT_VM_RECOIL3" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE MUZZLE" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "IR_draw" {
+	"c_ar3_anims\IR_draw.smd"
+	activity "ACT_VM_DRAW" 1
+	{ event AE_CL_PLAYSOUND 0 "Weapon_AR3.Draw" }
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	snap
+	fps 30
+}
+
+$Sequence "pickup" {
+	"c_ar3_anims\pickup.smd"
+	activity "ACT_VM_PICKUP" 1
+	{ event AE_CL_PLAYSOUND 0 "Weapon_AR3.Draw" }
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	snap
+	fps 30
+}
+
+$Sequence "IR_holster" {
+	"c_ar3_anims\IR_holster.smd"
+	activity "ACT_VM_HOLSTER" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 35
+}
+
+$Sequence "idletolow" {
+	"c_ar3_anims\idletolow.smd"
+	activity "ACT_VM_LOWERED_TO_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "Ready" "Low"
+	fps 30
+}
+
+$Sequence "lowtoidle" {
+	"c_ar3_anims\lowtoidle.smd"
+	activity "ACT_VM_IDLE_TO_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "Low" "Ready"
+	fps 30
+}
+
+$Sequence "lowidle" {
+	"c_ar3_anims\lowidle.smd"
+	activity "ACT_VM_IDLE_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Low"
+	fps 3
+	loop
+}
+
+$Sequence "overheat" {
+	"c_ar3_anims\overheat.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 5 "Weapon_Generic.Movement1" }
+	{ event AE_CL_PLAYSOUND 25 "Weapon_Generic.Movement2" }
+	{ event AE_CL_PLAYSOUND 35 "Weapon_AR3.Pump" }
+	{ event AE_CL_PLAYSOUND 60 "Weapon_Generic.Movement5" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	fps 30
+}
+
+$Sequence "Walk" {
+	"c_ar3_anims\Walk.smd"
+	activity "ACT_VM_WALK" 1
+	{ event 5004 1 "Weapon_Generic.Walk1" }
+	{ event 5004 13 "Weapon_Generic.Walk2" }
+	fadein 0.35
+	fadeout 0.35
+	node "Ready"
+	fps 28
+	loop
+}
+
+$Sequence "Sprint" {
+	"c_ar3_anims\Sprint.smd"
+	activity "ACT_VM_SPRINT" 1
+	{ event 5004 2 "Weapon_Generic.Sprint1" }
+	{ event 5004 22 "Weapon_Generic.Sprint2" }
+	fadein 0.35
+	fadeout 0.35
+	node "Ready"
+	fps 50
+	loop
+}
+
+$Sequence "inspect1" {
+	"c_ar3_anims\inspect1.smd"
+	activity "ACT_VM_INSPECT" 1
+	{ event AE_CL_PLAYSOUND 0 "Weapon_Generic.Movement5" }
+	{ event AE_CL_PLAYSOUND 26 "Weapon_AR3.Fidget" }
+	{ event AE_CL_PLAYSOUND 27 "Weapon_Generic.Movement1" }
+	{ event AE_CL_PLAYSOUND 54 "Weapon_Generic.Movement2" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+}
+
+$Sequence "inspect2" {
+	"c_ar3_anims\inspect2.smd"
+	activity "ACT_VM_INSPECT" 1
+	{ event AE_CL_PLAYSOUND 0 "Weapon_Generic.Movement2" }
+	{ event AE_CL_PLAYSOUND 25 "Weapon_AR3.Barrel_Open" }
+	{ event AE_CL_PLAYSOUND 52 "Weapon_AR3.Barrel_Close" }
+	{ event AE_CL_PLAYSOUND 47 "Weapon_Generic.Movement5" }
+	fadein 0.2
+	fadeout 0.2
+	fps 38
+}

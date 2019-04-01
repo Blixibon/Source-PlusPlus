@@ -1726,18 +1726,27 @@ C_LocalTempEntity * CTempEnts::SpawnTempModel( const model_t *pModel, const Vect
 //-----------------------------------------------------------------------------
 void CTempEnts::MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachmentIndex, bool firstPerson )
 {
+	ColorRGBExp32 clrMuzLight = { 252, 238, 128 };
+
 	switch( type )
 	{
 	case MUZZLEFLASH_COMBINE:
-		if ( firstPerson )
+	{
+		if (firstPerson)
 		{
-			MuzzleFlash_Combine_Player( hEntity, attachmentIndex );
+			MuzzleFlash_Combine_Player(hEntity, attachmentIndex);
 		}
 		else
 		{
-			MuzzleFlash_Combine_NPC( hEntity, attachmentIndex );
+			MuzzleFlash_Combine_NPC(hEntity, attachmentIndex);
 		}
+
+		clrMuzLight.r = 64;
+		clrMuzLight.g = 128;
+		clrMuzLight.b = 255;
+		clrMuzLight.exponent = 5;
 		break;
+	}
 
 	case MUZZLEFLASH_AR2:
 		if (firstPerson)
@@ -1808,6 +1817,55 @@ void CTempEnts::MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachm
 			Assert( 0 );
 		}
 		break;
+	}
+
+	// If we have an attachment, then stick a light on it.
+	if (muzzleflash_light.GetBool())
+	{
+		C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle(hEntity);
+
+		//FIXME: We should really use a named attachment for this
+		if (pEnt)
+		{
+			Vector vAttachment, vAng;
+			QAngle angles;
+			pEnt->GetAttachment(attachmentIndex, vAttachment, angles);
+
+			AngleVectors(angles, &vAng);
+			vAttachment += vAng * 2;
+
+#ifdef DEFERRED
+			if (!GetLightingManager())
+				return;
+
+			def_light_temp_t *dl = new def_light_temp_t(0.05f);
+			if (!dl)
+				return;
+
+			int exponent = 5;
+
+			dl->iLighttype = DEFLIGHTTYPE_POINT;
+			dl->iFlags = (DEFLIGHT_COOKIE_ENABLED | DEFLIGHT_SHADOW_ENABLED/*|DEFLIGHT_VOLUMETRICS_ENABLED*/);
+			dl->pos = vAttachment;
+			dl->flRadius = random->RandomInt(32, 64);
+			ColorRGBExp32ToVector(clrMuzLight, dl->col_diffuse);
+			dl->flFalloffPower = exponent;
+			//dl->decay = decay;
+
+			GetLightingManager()->AddTempLight(dl);
+#else
+			// Create a "Dynamic" light that will illuminate the world
+			dlight_t *dl = effects->CL_AllocDlight(LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex());
+			if (!dl)
+				return;
+
+			dl->origin = vAttachment;
+			dl->color = clrMuzLight;
+			dl->die = gpGlobals->curtime + 0.05f;
+			dl->radius = random->RandomInt(245, 256);
+			dl->decay = 512.0f;
+#endif
+		}
 	}
 }
 
@@ -2564,7 +2622,7 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 		return;
 
 	DispatchParticleEffect("new_ar2_muzzle", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
-
+#if 0
 	matrix3x4_t	matAttachment;
 	Vector		origin;
 	
@@ -2601,6 +2659,7 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 			el->die		= gpGlobals->curtime + 0.05f;
 		}
 	}
+#endif
 }
 
 //==================================================

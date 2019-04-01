@@ -54,6 +54,7 @@
 		"hint_allow_nodraw_target"	"bool"
 		"hint_nooffscreen"			"bool"
 		"hint_forcecaption"			"bool"
+		"hint_entityglow"			"bool"
 		"hint_instance_type"		"long"
 		"hint_suppress_rest"		"bool"
 	}

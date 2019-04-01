@@ -1,0 +1,76 @@
+// MG1
+
+WeaponData
+{
+	"printname"			"#HL2_MG1"
+	"viewmodel"			"models/weapons/c_ar3.mdl"
+	"playermodel"			"models/weapons/w_mg1.mdl"
+	"anim_prefix"			"smg2"
+	"bucket"			"3"
+	"bucket_position"		"2"
+
+	"clip_size"			"60"
+	"clip2_size"			"-1"
+
+	"default_clip"			"60"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"AR2"
+	"secondary_ammo"		"None"
+
+	"weight"			"6"
+	"item_flags"			"0"
+
+	"size"				"15"
+	"autoswitchfrom"	"0"
+
+	SoundData
+	{
+		//"special1"		"Weapon_CombineGuard.Special1"
+		"empty"			"Weapon_AR3.Empty"
+		//"double_shot"		"Weapon_AR3.Single"
+		//"reload"		"Weapon_AR2.Reload"
+		"single_shot"		"Weapon_AR3.Single"
+
+		"single_shot_npc"	"Weapon_AR3.NPC_Single"
+		"reload_npc"		"Weapon_AR2.NPC_Reload"
+		"double_shot_npc"	"Weapon_AR2.NPC_Double"
+	}
+
+	TextureData
+	{
+		"weapon"
+		{
+				"font"		"NewWeaponIcons"
+				"character"	"i"
+		}
+		"weapon_s"
+		{	
+				"font"		"NewWeaponIconsSelected"
+				"character"	"i"
+		}
+		"ammo"
+		{
+				"font"		"WeaponIcons"
+				"character"	"r"
+		}
+		"ammo2"
+		{
+				"font"		"WeaponIcons"
+				"character"	"t"
+		}
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"0"
+				"y"			"48"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

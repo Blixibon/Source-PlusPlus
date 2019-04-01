@@ -3861,7 +3861,7 @@ bool CNavMesh::UpdateGeneration( float maxTime )
 		//---------------------------------------------------------------------------
 		case FIND_LIGHT_INTENSITY:
 		{
-			host_thread_mode.SetValue( 0 );	// need non-threaded server for light calcs
+			//host_thread_mode.SetValue( 0 );	// need non-threaded server for light calcs
 
 			//CBasePlayer *host = UTIL_GetListenServerHost();
 

@@ -2422,25 +2422,12 @@ bool CNPC_Citizen::IsPlayerAlly( CBasePlayer *pPlayer )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_Citizen::CanJoinPlayerSquad()
+bool CNPC_Citizen::CanJoinPlayerSquad(CBasePlayer *pPlayer)
 {
-	if ( !AI_IsSinglePlayer() )
-		return false;
-
-	if ( m_NPCState == NPC_STATE_SCRIPT || m_NPCState == NPC_STATE_PRONE )
+	if (!BaseClass::CanJoinPlayerSquad(pPlayer))
 		return false;
 
 	if ( HasSpawnFlags(SF_CITIZEN_NOT_COMMANDABLE) )
-		return false;
-
-	if ( IsInAScript() )
-		return false;
-
-	// Don't bother people who don't want to be bothered
-	if ( !CanBeUsedAsAFriend() )
-		return false;
-
-	if ( IRelationType( UTIL_GetLocalPlayer() ) != D_LI )
 		return false;
 
 	return true;

@@ -462,7 +462,7 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 	gm_PlayerSquadEvaluateTimer.Set(2.0);
 
 	// Remove stragglers
-	CAI_Squad *pPlayerSquad = g_AI_SquadManager.FindSquad(MAKE_STRING(PLAYER_SQUADNAME));
+	CAI_Squad *pPlayerSquad = pPlayer->GetPlayerSquad();
 	if (pPlayerSquad)
 	{
 		CUtlVector<CNPC_PlayerFollower *> squadMembersToRemove;
@@ -546,7 +546,7 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 					(pCitizen->m_flTimeLastCloseToPlayer == 0 || gpGlobals->curtime - pCitizen->m_flTimeLastCloseToPlayer > 15.0))
 					continue;
 
-				if (!pCitizen->CanJoinPlayerSquad())
+				if (!pCitizen->CanJoinPlayerSquad(pPlayer))
 					continue;
 
 				bool bShouldAdd = false;
@@ -622,7 +622,7 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 						if (distSq > SECOND_TIER_JOIN_DIST_SQ)
 							continue;
 
-						if (!pCitizen->CanJoinPlayerSquad())
+						if (!pCitizen->CanJoinPlayerSquad(pPlayer))
 							continue;
 
 						if (!pCitizen->FVisible(pPlayer))

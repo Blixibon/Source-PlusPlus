@@ -236,18 +236,15 @@ int CNPC_BaseColleague::DrawDebugTextOverlays(void)
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_BaseColleague::CanJoinPlayerSquad()
+bool CNPC_BaseColleague::CanJoinPlayerSquad(CBasePlayer *pPlayer)
 {
-	if (!BaseClass::CanJoinPlayerSquad())
+	if (!BaseClass::CanJoinPlayerSquad(pPlayer))
 		return false;
 
 	if (IsPreDisaster())
 		return false;
 
 	if (HasSpawnFlags(SF_COLLEGUE_DONT_FOLLOW))
-		return false;
-
-	if (IsInPlayerSquad() && m_NPCState == NPC_STATE_COMBAT)
 		return false;
 
 	return true;

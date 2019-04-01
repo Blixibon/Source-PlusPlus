@@ -99,6 +99,11 @@ public:
 
 	virtual RenderGroup_t	GetRenderGroup();
 
+	/*virtual void					SpawnClientEntity(void)
+	{
+		AddEffects(EF_NODRAW);
+	}*/
+
 	// Should this object cast shadows?
 	virtual ShadowType_t	ShadowCastType()
 	{
@@ -108,6 +113,33 @@ public:
 	}
 
 	virtual bool ShouldDraw();
+
+	virtual bool OnInternalDrawModel(ClientModelRenderInfo_t *pInfo)
+	{
+		if (m_pViewModel)
+		{
+			CStudioHdr *pHdr = m_pViewModel->GetModelPtr();
+			if (pHdr)
+			{
+				matrix3x4_t matTransform;
+				int iAttachment = pHdr->IllumPositionAttachmentIndex();
+				if (iAttachment > 0)
+				{
+					m_pViewModel->GetAttachment(iAttachment, matTransform);
+				}
+				else
+				{
+					matTransform = m_pViewModel->EntityToWorldTransform();
+				}
+
+				static Vector s_vecLOrigin;
+				VectorTransform(pHdr->illumposition(), matTransform, s_vecLOrigin);
+				pInfo->pLightingOrigin = &s_vecLOrigin;
+			}
+		}
+
+		return true;
+	}
 
 	// Determine the color modulation amount
 	virtual void	GetColorModulation(float* color)
@@ -141,6 +173,8 @@ public:
 		if (iIndex <= -1)
 			return;
 
+		//RemoveEffects(EF_NODRAW);
+
 		m_pViewModel = pModel;
 			
 		SetModelByIndex(iIndex);
@@ -152,14 +186,17 @@ public:
 
 		DrawModel(iFlags);
 
-		StopFollowingEntity();
-		SetModelByIndex(-1);
+		//StopFollowingEntity();
+		//SetModelByIndex(-1);
 
-		m_pViewModel = nullptr;
+		//m_pViewModel = nullptr;
+		//AddEffects(EF_NODRAW);
 	}
 
 	virtual bool			ShouldReceiveProjectedTextures(int flags)
 	{
+		return true;
+
 		if (m_pViewModel)
 			return m_pViewModel->ShouldReceiveProjectedTextures(flags);
 
@@ -175,10 +212,7 @@ public:
 
 bool C_ViewHands::ShouldDraw()
 {
-	if (m_pViewModel && !m_pViewModel->ShouldDraw())
-		return false;
-
-	return BaseClass::ShouldDraw();
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -187,7 +221,7 @@ bool C_ViewHands::ShouldDraw()
 //-----------------------------------------------------------------------------
 RenderGroup_t C_ViewHands::GetRenderGroup()
 {
-	return RENDER_GROUP_OTHER;
+	return RENDER_GROUP_VIEW_MODEL_OPAQUE;
 }
 
 //-----------------------------------------------------------------------------
@@ -243,7 +277,7 @@ void C_ViewHands::ApplyBoneMatrixTransform(matrix3x4_t& transform)
 
 LINK_ENTITY_TO_CLASS(viewhands, C_ViewHands);
 
-static C_ViewHands *s_pViewHands = nullptr;
+static C_ViewHands *s_pViewHands[MAX_VIEWMODELS] = { nullptr };
 
 class CViewHandsHandler : public CAutoGameSystem
 {
@@ -253,13 +287,19 @@ public:
 
 	void LevelShutdownPostEntity()
 	{
-		s_pViewHands = nullptr;
+		for (int i = 0; i < MAX_VIEWMODELS; i++)
+		{
+			s_pViewHands[i] = nullptr;
+		}
 	}
 
 	void LevelInitPostEntity()
 	{
-		s_pViewHands = (C_ViewHands *)CreateEntityByName("viewhands");
-		s_pViewHands->InitializeAsClientEntity(NULL, RENDER_GROUP_OTHER);
+		for (int i = 0; i < MAX_VIEWMODELS; i++)
+		{
+			s_pViewHands[i] = (C_ViewHands *)CreateEntityByName("viewhands");
+			s_pViewHands[i]->InitializeAsClientEntity(NULL, RENDER_GROUP_VIEW_MODEL_OPAQUE);
+		}
 	}
 };
 
@@ -494,8 +534,8 @@ int C_BaseViewModel::DrawModel( int flags )
 	}
 
 	// Now draw the arms model
-	if (s_pViewHands != nullptr)
-		s_pViewHands->DrawHands(this, flags);
+	if (s_pViewHands[ViewModelIndex()] != nullptr)
+		s_pViewHands[ViewModelIndex()]->DrawHands(this, flags);
 
 	// Now that we've rendered, reset the animation restart flag
 	if ( flags & STUDIO_RENDER )

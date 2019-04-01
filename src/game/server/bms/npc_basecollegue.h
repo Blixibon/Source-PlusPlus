@@ -58,7 +58,7 @@ public:
 	void OnChangeRunningBehavior(CAI_BehaviorBase *pOldBehavior, CAI_BehaviorBase *pNewBehavior);
 
 	void UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	bool			CanJoinPlayerSquad();
+	virtual bool	CanJoinPlayerSquad(CBasePlayer *pPlayer = nullptr);
 	
 
 	Activity		NPC_TranslateActivity(Activity eNewActivity);

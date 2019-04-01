@@ -819,12 +819,14 @@ void CIconLesson::UpdateLocatorTarget(CLocatorTarget *pLocatorTarget, C_BaseEnti
 		pLocatorTarget->SetVguiTargetName(m_szVguiTargetName.String());
 		pLocatorTarget->SetVguiTargetLookup(m_szVguiTargetLookup.String());
 		pLocatorTarget->SetVguiTargetEdge(m_nVguiTargetEdge);
+		pLocatorTarget->SetEntity(nullptr);
 	}
 	else
 	{
 		pLocatorTarget->m_bOriginInScreenspace = false;
 		pLocatorTarget->m_vecOrigin = pIconTarget->EyePosition() + MainViewUp() * m_flRelativeUpOffset + Vector(0.0f, 0.0f, m_flUpOffset);
 		pLocatorTarget->SetVguiTargetName("");
+		pLocatorTarget->SetEntity(pIconTarget);
 	}
 
 	const char *pchDisplayParamText = m_szDisplayParamText.String();
@@ -907,6 +909,15 @@ void CIconLesson::UpdateLocatorTarget(CLocatorTarget *pLocatorTarget, C_BaseEnti
 		pLocatorTarget->RemoveIconEffects(LOCATOR_ICON_FX_FORCE_CAPTION);
 	}
 
+	if (m_bEntityGlow)
+	{
+		pLocatorTarget->AddIconEffects(LOCATOR_ICON_FX_ENTITY_GLOW);
+	}
+	else
+	{
+		pLocatorTarget->RemoveIconEffects(LOCATOR_ICON_FX_ENTITY_GLOW);
+	}
+
 	pLocatorTarget->Update();
 
 	if (pLocatorTarget->m_bIsDrawing)
@@ -954,6 +965,7 @@ void CIconLesson::UpdateLocatorTarget(CLocatorTarget *pLocatorTarget, C_BaseEnti
 	LESSON_VARIABLE_MACRO_BOOL( SHOW_WHEN_OCCLUDED, m_bShowWhenOccluded, bool )						\
 	LESSON_VARIABLE_MACRO_BOOL( NO_OFFSCREEN, m_bNoOffscreen, bool )								\
 	LESSON_VARIABLE_MACRO_BOOL( FORCE_CAPTION, m_bForceCaption, bool )								\
+	LESSON_VARIABLE_MACRO_BOOL( ENTITY_GLOW, m_bEntityGlow, bool )									\
 	LESSON_VARIABLE_MACRO_STRING( ONSCREEN_ICON, m_szOnscreenIcon, CGameInstructorSymbol )			\
 	LESSON_VARIABLE_MACRO_STRING( OFFSCREEN_ICON, m_szOffscreenIcon, CGameInstructorSymbol )		\
 	LESSON_VARIABLE_MACRO( ICON_OFFSET, m_flUpOffset, float )										\

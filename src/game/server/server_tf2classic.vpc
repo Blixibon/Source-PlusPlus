@@ -16,7 +16,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\tf,.\tf,$SRCDIR\game\shared\Multiplayer,$SRCDIR\game\shared\econ"
-		$PreprocessorDefinitions		"$BASE;TF_CLASSIC;GLOWS_ENABLE"
+		$PreprocessorDefinitions		"$BASE;TF_CLASSIC"
 	}
 }
 

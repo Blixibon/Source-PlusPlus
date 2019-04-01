@@ -23,6 +23,8 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_357.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_ar2.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_ar2.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_mg1.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_mg1.h"
 				$File	"$SRCDIR\game\shared\coop\weapon_bugbait.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_crossbow.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_crowbar.cpp"

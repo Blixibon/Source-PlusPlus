@@ -1,0 +1,157 @@
+
+$DefineBone "Base" "" 0.139343 2.643134 13.132259 -89.999928 -179.999966 0 0 0 0 0 0 0
+$DefineBone "Charging_Handle" "Base" 0.582422 -2.939821 -1.676306 89.999873 0.000058 0 0 0 0 0 0 0
+$DefineBone "Bipod_Attach" "Base" -1.076292 -4.566448 -0.105641 -0.000057 -147.314846 0.000115 0 0 0 0 0 0
+$DefineBone "Bipod_Mid" "Bipod_Attach" 5.825761 0.000013 -0.000015 0.84366 -126.615111 -179.802218 0 0 0 0 0 0
+$DefineBone "Bipod_Jonction2" "Bipod_Mid" 8.478512 -0.000001 0 -2.507646 -96.025815 176.818655 0 0 0 0 0 0
+$DefineBone "Bipod_Arms2" "Bipod_Jonction2" 1.388685 -0.000005 0 0 0.000002 0.000058 0 0 0 0 0 0
+$DefineBone "Vent_1" "Base" 1.097086 13.690174 0.883551 0.000172 -89.999928 -159.999764 0 0 0 0 0 0
+$DefineBone "Vent_2" "Base" 2.849335 13.645533 -0.196503 0 -89.999812 -89.999928 0 0 0 0 0 0
+$DefineBone "Vent_3" "Base" 1.11745 13.690174 -1.112253 -0.000172 -89.999928 159.999956 0 0 0 0 0 0
+$DefineBone "Grip" "Base" 1.949306 -7.896759 0.800387 -5.240102 2.706423 -0.247346 0 0 0 0 0 0
+$DefineBone "l_wrist" "" 8.27366 -14.41854 -0.926869 0.417442 -90.644937 175.772324 0 0 0 0 0 0
+$DefineBone "l_thumb_low" "l_wrist" 2.473577 0.628737 -1.303329 42.064786 38.432747 121.667363 0 0 0 0 0 0
+$DefineBone "l_thumb_mid" "l_thumb_low" 1.83261 -0.000001 -0.000001 2.721037 43.434208 178.192465 0 0 0 0 0 0
+$DefineBone "l_thumb_tip" "l_thumb_mid" 1.003333 0.000004 -0.000002 -0.825291 -9.614634 -174.182557 0 0 0 0 0 0
+$DefineBone "l_index_low" "l_wrist" 4.823798 -0.43027 -1.419612 20.645159 -2.816888 13.450297 0 0 0 0 0 0
+$DefineBone "l_index_mid" "l_index_low" 2.187963 0.000008 -0.000005 -6.804447 21.420081 -1.453423 0 0 0 0 0 0
+$DefineBone "l_index_tip" "l_index_mid" 1.100952 0 0.000001 -4.875302 14.690456 3.264661 0 0 0 0 0 0
+$DefineBone "l_middle_low" "l_wrist" 4.987798 -0.588118 -0.482804 4.546422 21.596669 12.496727 0 0 0 0 0 0
+$DefineBone "l_middle_mid" "l_middle_low" 1.890093 0.000005 -0.000001 -8.906173 24.700269 4.019472 0 0 0 0 0 0
+$DefineBone "l_middle_tip" "l_middle_mid" 1.310924 0.00001 -0.000001 4.391949 23.590003 1.310241 0 0 0 0 0 0
+$DefineBone "l_ring_low" "l_wrist" 5.117885 -0.665196 0.445603 -10.081308 29.584504 6.061206 0 0 0 0 0 0
+$DefineBone "l_ring_mid" "l_ring_low" 1.655283 -0.000008 0 5.094396 25.615786 -6.194416 0 0 0 0 0 0
+$DefineBone "l_ring_tip" "l_ring_mid" 0.869587 0.000006 0 -1.823782 12.490308 3.304421 0 0 0 0 0 0
+$DefineBone "l_pinky_low" "l_wrist" 5.150565 -0.592257 1.346772 -13.383091 36.847375 -17.041713 0 0 0 0 0 0
+$DefineBone "l_pinky_mid" "l_pinky_low" 1.157247 0.000006 0 2.245136 28.080774 1.996464 0 0 0 0 0 0
+$DefineBone "l_pinky_tip" "l_pinky_mid" 1.019835 0 0 -2.924888 22.690736 -84.090667 0 0 0 0 0 0
+$DefineBone "l_upperarm" "" 8 11 1.176544 6.115637 -88.969348 -90.438351 0 0 0 0 0 0
+$DefineBone "l_forearm" "l_upperarm" 12.695415 0.000022 0.000012 0.84179 -2.750599 4.428851 0 0 0 0 0 0
+$DefineBone "r_wrist" "" -8.338264 -14.418537 -0.926868 0.417514 -89.35483 175.945142 0 0 0 0 0 0
+$DefineBone "r_thumb_low" "r_wrist" 2.474129 -0.486186 -1.382581 46.798623 -31.822084 67.981044 0 0 0 0 0 0
+$DefineBone "r_thumb_mid" "r_thumb_low" 1.832176 0.000009 -0.000005 -7.471426 41.830049 -146.219981 0 0 0 0 0 0
+$DefineBone "r_thumb_tip" "r_thumb_mid" 1.042029 0.000001 -0.000001 -18.307035 0.076952 -169.265995 0 0 0 0 0 0
+$DefineBone "r_index_low" "r_wrist" 4.823236 0.676598 -1.338134 20.740957 0.227865 14.010998 0 0 0 0 0 0
+$DefineBone "r_index_mid" "r_index_low" 2.152369 0.00002 0.000001 -13.264946 -24.688639 7.086568 0 0 0 0 0 0
+$DefineBone "r_index_tip" "r_index_mid" 1.056619 -0.00001 0.000001 -9.796486 -8.174734 12.921112 0 0 0 0 0 0
+$DefineBone "r_middle_low" "r_wrist" 4.985037 0.893553 -0.375445 7.376661 -15.405118 8.319003 0 0 0 0 0 0
+$DefineBone "r_middle_mid" "r_middle_low" 1.83017 0.000013 0 -13.228452 -47.159417 11.200864 0 0 0 0 0 0
+$DefineBone "r_middle_tip" "r_middle_mid" 1.561349 -0.000006 -0.000022 -1.595632 -15.762938 0.322577 0 0 0 0 0 0
+$DefineBone "r_ring_low" "r_wrist" 5.116434 0.72302 0.54541 -5.171173 -35.603376 15.91304 0 0 0 0 0 0
+$DefineBone "r_ring_mid" "r_ring_low" 1.752734 0.00001 -0.000006 -0.569864 -21.043248 2.2633 0 0 0 0 0 0
+$DefineBone "r_ring_tip" "r_ring_mid" 0.869359 0 0.000001 -3.772699 -12.054975 -2.0941 0 0 0 0 0 0
+$DefineBone "r_pinky_low" "r_wrist" 5.118731 0.342974 1.41337 -6.566097 -37.015138 17.533086 0 0 0 0 0 0
+$DefineBone "r_pinky_mid" "r_pinky_low" 1.176313 -0.000011 -0.000003 6.84129 -9.641801 7.092475 0 0 0 0 0 0
+$DefineBone "r_pinky_tip" "r_pinky_mid" 0.970202 0.000011 0 -0.117111 -32.870142 97.431761 0 0 0 0 0 0
+$DefineBone "r_upperarm" "" -7.009326 11 1.176544 6.088651 -92.524264 -88.189095 0 0 0 0 0 0
+$DefineBone "r_forearm" "r_upperarm" 12.70635 0.000031 -0.000003 0.842533 -2.742636 4.60045 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_UpperArm" "l_upperarm" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Forearm" "l_forearm" 1 0 -0.000001 0 0 -0.000001 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Hand" "l_wrist" 0 0 0 0 -15.000001 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger0" "l_thumb_low" 0 0 0.000001 -0.000002 -0.000003 -0.000003 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger01" "l_thumb_mid" 0.000001 0 0 0.000002 0.000006 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger02" "l_thumb_tip" 0 0 0 0.000002 -0.000003 -0.000003 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger1" "l_index_low" 0 0 0 -0.000001 0.000001 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger11" "l_index_mid" 0 0.000001 0 -0.000001 -0.000002 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger12" "l_index_tip" 0 0 0 -0.000002 -0.000002 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger2" "l_middle_low" 0 0.000001 0 0 -0.000003 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger21" "l_middle_mid" 0 0 0 -0.000002 0 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger22" "l_middle_tip" 0 0 0 -0.000001 0.000007 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger3" "l_ring_low" 0 0 0 0 -0.000002 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger31" "l_ring_mid" 0 0 0 -0.000001 -0.000003 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger32" "l_ring_tip" 0 0 0 -0.000001 -0.000003 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger4" "l_pinky_low" 0 0 0 0 0.000003 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger41" "l_pinky_mid" 0 0 0 0.000001 0 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_L_Finger42" "l_pinky_tip" 0 0 0 0.000002 0.000001 -90.000003 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_UpperArm" "r_upperarm" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Forearm" "r_forearm" 1 0 0 0 0 -0.000001 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Hand" "r_wrist" 0 -0.000001 0 0 14.999999 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger0" "r_thumb_low" 0 0 0 0 0 -0.000002 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger01" "r_thumb_mid" -0.000001 0 0 0 0.000001 -180.000007 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger02" "r_thumb_tip" 0 0 0 0.000002 -0.000001 -45.000002 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger1" "r_index_low" 0 0.000001 0 -0.000003 0.000001 -0.000002 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger11" "r_index_mid" 0.000001 -0.000002 0 -0.000001 0 0.000001 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger12" "r_index_tip" 0.000001 0 0 -0.000001 0 -45.000005 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger2" "r_middle_low" 0 0 0 0.000001 0.000002 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger21" "r_middle_mid" 0 0 0 -0.000001 -0.000005 0.000001 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger22" "r_middle_tip" 0 0 0 -0.000001 -0.000005 0.000002 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger3" "r_ring_low" 0 -0.000002 0 -0.000001 0.000002 0.000001 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger31" "r_ring_mid" 0 -0.000002 0 0 0 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger32" "r_ring_tip" 0 0 0 -0.000001 0.000003 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger4" "r_pinky_low" 0 0 0 0.000001 0 0 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger41" "r_pinky_mid" -0.000001 0.000002 0 0.000001 -0.000002 0.000003 0 0 0 0 0 0
+$DefineBone "ValveBiped.Bip01_R_Finger42" "r_pinky_tip" 0 0.000001 0 -0.000006 -0.000002 -90.000003 0 0 0 0 0 0
+
+$BoneMerge "l_wrist"
+$BoneMerge "l_thumb_low"
+$BoneMerge "l_thumb_mid"
+$BoneMerge "l_thumb_tip"
+$BoneMerge "l_index_low"
+$BoneMerge "l_index_mid"
+$BoneMerge "l_index_tip"
+$BoneMerge "l_middle_low"
+$BoneMerge "l_middle_mid"
+$BoneMerge "l_middle_tip"
+$BoneMerge "l_ring_low"
+$BoneMerge "l_ring_mid"
+$BoneMerge "l_ring_tip"
+$BoneMerge "l_pinky_low"
+$BoneMerge "l_pinky_mid"
+$BoneMerge "l_pinky_tip"
+$BoneMerge "l_upperarm"
+$BoneMerge "l_forearm"
+$BoneMerge "r_wrist"
+$BoneMerge "r_thumb_low"
+$BoneMerge "r_thumb_mid"
+$BoneMerge "r_thumb_tip"
+$BoneMerge "r_index_low"
+$BoneMerge "r_index_mid"
+$BoneMerge "r_index_tip"
+$BoneMerge "r_middle_low"
+$BoneMerge "r_middle_mid"
+$BoneMerge "r_middle_tip"
+$BoneMerge "r_ring_low"
+$BoneMerge "r_ring_mid"
+$BoneMerge "r_ring_tip"
+$BoneMerge "r_pinky_low"
+$BoneMerge "r_pinky_mid"
+$BoneMerge "r_pinky_tip"
+$BoneMerge "r_upperarm"
+$BoneMerge "r_forearm"
+$BoneMerge "ValveBiped.Bip01_L_UpperArm"
+$BoneMerge "ValveBiped.Bip01_L_Forearm"
+$BoneMerge "ValveBiped.Bip01_L_Hand"
+$BoneMerge "ValveBiped.Bip01_L_Finger0"
+$BoneMerge "ValveBiped.Bip01_L_Finger01"
+$BoneMerge "ValveBiped.Bip01_L_Finger02"
+$BoneMerge "ValveBiped.Bip01_L_Finger1"
+$BoneMerge "ValveBiped.Bip01_L_Finger11"
+$BoneMerge "ValveBiped.Bip01_L_Finger12"
+$BoneMerge "ValveBiped.Bip01_L_Finger2"
+$BoneMerge "ValveBiped.Bip01_L_Finger21"
+$BoneMerge "ValveBiped.Bip01_L_Finger22"
+$BoneMerge "ValveBiped.Bip01_L_Finger3"
+$BoneMerge "ValveBiped.Bip01_L_Finger31"
+$BoneMerge "ValveBiped.Bip01_L_Finger32"
+$BoneMerge "ValveBiped.Bip01_L_Finger4"
+$BoneMerge "ValveBiped.Bip01_L_Finger41"
+$BoneMerge "ValveBiped.Bip01_L_Finger42"
+$BoneMerge "ValveBiped.Bip01_R_UpperArm"
+$BoneMerge "ValveBiped.Bip01_R_Forearm"
+$BoneMerge "ValveBiped.Bip01_R_Hand"
+$BoneMerge "ValveBiped.Bip01_R_Finger0"
+$BoneMerge "ValveBiped.Bip01_R_Finger01"
+$BoneMerge "ValveBiped.Bip01_R_Finger02"
+$BoneMerge "ValveBiped.Bip01_R_Finger1"
+$BoneMerge "ValveBiped.Bip01_R_Finger11"
+$BoneMerge "ValveBiped.Bip01_R_Finger12"
+$BoneMerge "ValveBiped.Bip01_R_Finger2"
+$BoneMerge "ValveBiped.Bip01_R_Finger21"
+$BoneMerge "ValveBiped.Bip01_R_Finger22"
+$BoneMerge "ValveBiped.Bip01_R_Finger3"
+$BoneMerge "ValveBiped.Bip01_R_Finger31"
+$BoneMerge "ValveBiped.Bip01_R_Finger32"
+$BoneMerge "ValveBiped.Bip01_R_Finger4"
+$BoneMerge "ValveBiped.Bip01_R_Finger41"
+$BoneMerge "ValveBiped.Bip01_R_Finger42"
+

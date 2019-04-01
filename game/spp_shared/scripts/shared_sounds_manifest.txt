@@ -13,6 +13,7 @@
 	"precache_file"		"scripts/game_sounds_hl1_extra.soundscript"
 	"precache_file"		"scripts/game_sounds_ambient_generic_for_cc.txt"
 	
+	"precache_file"		"scripts/game_sounds_weapons_hl2mmod.txt"
 	"precache_file"		"scripts/game_sounds_weapons_new.txt"
 	"precache_file"		"scripts/game_sounds_weapons_c17.txt"
 	

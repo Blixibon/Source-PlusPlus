@@ -12,6 +12,7 @@
 #include "materialsystem/itexture.h"
 #include "view_shared.h"
 #include "viewpostprocess.h"
+#include "clienteffectprecachesystem.h"
 
 #define FULL_FRAME_TEXTURE "_rt_FullFrameFB"
 
@@ -21,6 +22,14 @@ ConVar glow_outline_effect_enable( "glow_outline_effect_enable", "1", FCVAR_ARCH
 ConVar glow_outline_effect_width( "glow_outline_width", "10.0f", FCVAR_CHEAT, "Width of glow outline effect in screen space." );
 
 extern bool g_bDumpRenderTargets; // in viewpostprocess.cpp
+
+CLIENTEFFECT_REGISTER_BEGIN(PrecachePostProcessingEffectsGlow)
+CLIENTEFFECT_MATERIAL("dev/glow_blur_x")
+CLIENTEFFECT_MATERIAL("dev/glow_blur_y")
+CLIENTEFFECT_MATERIAL("dev/glow_color")
+CLIENTEFFECT_MATERIAL("dev/glow_downsample")
+CLIENTEFFECT_MATERIAL("dev/halo_add_to_screen")
+CLIENTEFFECT_REGISTER_END_CONDITIONAL(engine->GetDXSupportLevel() >= 90)
 
 CGlowObjectManager g_GlowObjectManager;
 

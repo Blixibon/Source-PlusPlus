@@ -12,17 +12,25 @@
 		"label" "#GameUI_GameMenu_NewGame"
 		"command" "OpenNewGameDialog"
 		//"command"	"engine hlms_newgame"
-		"InGameOrder" "40"
-		"notmulti" "1"
-	}
-	"3"	[$WIN32]
-	{
-		"label" "#GameUI_GameMenu_BonusMaps"
-		"command" "OpenBonusMapsDialog"
 		"InGameOrder" "50"
 		"notmulti" "1"
 	}
+	"3"
+	{
+		"label" "#GameUI_GameMenu_PlayerList"
+		"command" "OpenPlayerListDialog"
+		"OnlyInGame" "1"
+		//"InGameOrder"	"30"
+		"notsingle"	"1"
+	}
 	"4"
+	{
+		"label" ""
+		"command" ""
+		"OnlyInGame" "1"
+		"InGameOrder" "40"
+	}
+	"5"
 	{
 		"label" "#GameUI_GameMenu_LoadGame"
 		"command" "OpenLoadGameDialog"
@@ -30,7 +38,7 @@
 		"InGameOrder" "30"
 		"notmulti" "1"
 	}
-	"5"
+	"6"
 	{
 		"label" "#GameUI_GameMenu_SaveGame"
 		"command" "OpenSaveGameDialog"
@@ -38,7 +46,7 @@
 		"notmulti" "1"
 		"OnlyInGame" "1"
 	}
-	"6"
+	"7"
 	{
 		"label"	"#GameUI_LoadCommentary"
 		"command" "OpenLoadSingleplayerCommentaryDialog"
@@ -46,20 +54,34 @@
 		"InGameOrder" "60"
 		"notmulti" "1"
 	}
-	"7"
+	"8"	[$WIN32]
+	{
+		"label" "#GameUI_GameMenu_BonusMaps"
+		"command" "OpenBonusMapsDialog"
+		"InGameOrder" "70"
+		"notmulti" "1"
+	}
+	"9"
 	{
 		"label" "#GameUI_GameMenu_Achievements"
 		"command" "OpenAchievementsDialog"
-		"InGameOrder" "70"
-	}
-	"8"
-	{
-		"label" "#GameUI_Controller"
-		"command" "OpenControllerDialog"
 		"InGameOrder" "80"
-		"ConsoleOnly" "1"
 	}
-	"9"
+	"10"
+	{
+		"label" "#GameUI_GameMenu_FindServers"
+		"command" "OpenServerBrowser"
+		"InGameOrder" "50"
+		"notsingle"	"1"
+	}
+	"11"
+	{
+		"label" "#GameUI_GameMenu_CreateServer"
+		"command" "OpenCreateMultiplayerGameDialog"
+		"InGameOrder" "60"
+		"notsingle"	"1"
+	}
+	"12"
 	{
 		"label" "#GameUI_GameMenu_Options"
 		"command" "OpenOptionsDialog"
@@ -72,14 +94,14 @@
 		// "command" "engine OpenModOptionsDialog"
 		// "InGameOrder" "100"
 	// }
-	"11"
+	"13"
 	{
 		"label" "#GameUI_GameMenu_MainMenu"
 		"command" "disconnect"
 		"OnlyInGame" "1"
 		"InGameOrder" "110"
 	}
-	"12"
+	"14"
 	{
 		"label" "#GameUI_GameMenu_Quit"
 		"command" "Quit"

@@ -36,6 +36,7 @@
 // 0x00000400 LOCATOR_ICON_FX_FORCE_CAPTION
 // 0x00000800 LOCATOR_ICON_FX_FADE_OUT
 // 0x00001000 LOCATOR_ICON_FX_FADE_IN
+// 0x00002000 LOCATOR_ICON_FX_ENTITY_GLOW
 //
 // 
 // CAPTION COLOR - supply a string in the format "rrr,ggg,bbb"  ex. "255,255,255" for white
@@ -68,6 +69,7 @@
 		"allow_nodraw_target"	"1"
 		"no_offscreen"			"0"
 		"force_caption"			"0"
+		"entity_glow"			"0"
 
 		"open"
 		{
@@ -107,6 +109,7 @@
 				"allow_nodraw_target set"	"bool hint_allow_nodraw_target"
 				"no_offscreen set"			"bool hint_nooffscreen"
 				"force_caption set"			"bool hint_forcecaption"
+				"entity_glow set"			"bool hint_hint_entityglow"
 			}
 		}
 
@@ -203,7 +206,7 @@
 	"Reload"
 	{
 		"priority" 			"2"
-	    "instance_type"    	"2"
+	    "instance_type"    	"1"
 	    "caption"          	"Reload"
 	 
 	    "onscreen_icon"    	"use_binding"
@@ -244,7 +247,7 @@
 	"Break Explosive Props"
 	{
 		"priority" 			"2"
-	    "instance_type"    	"2"
+	    "instance_type"    	"1"
 	    "caption"          	"#Instructor_Attack_Explosive"
 	 
 	    "onscreen_icon"    	"use_binding"
@@ -255,6 +258,7 @@
 	    "timeout"          	"30"
 	    "can_open_when_dead" "0"
 		"force_caption"		"1"
+		"entity_glow"		"1"
 	 
 	    "open"
 	    {
@@ -345,7 +349,7 @@
 	"Break Item Crate"
 	{
 		"priority" 			"2"
-	    "instance_type"    	"3"
+	    "instance_type"    	"0"
 	    "caption"          	"#Instructor_Break"
 	 
 	    "onscreen_icon"    	"use_binding"
@@ -356,6 +360,7 @@
 	    "timeout"          	"120"
 	    "can_open_when_dead" "0"
 		"force_caption"		"1"
+		"entity_glow"		"1"
 		
 		"icon_relative_offset"	"20"
 	 

@@ -1,0 +1,10 @@
+SpriteCard
+{
+$basetexture "effects/HL2MMod/HL2MMod_CombineEnergy_Plasma"
+//$OVERBRIGHTFACTOR 5
+//$BRIGHTNESSBIASFACTOR 0.1
+"$additive" "1"
+"$vertexcolor" 1
+"$vertexalpha" 1
+$OVERBRIGHTFACTOR 5
+}

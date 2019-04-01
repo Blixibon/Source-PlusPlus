@@ -172,7 +172,7 @@ public:
 	//---------------------------------
 	bool 			IsCommandable();
 	bool			IsPlayerAlly( CBasePlayer *pPlayer = NULL );
-	bool			CanJoinPlayerSquad();
+	virtual bool	CanJoinPlayerSquad(CBasePlayer *pPlayer = nullptr);
 	//bool			WasInPlayerSquad();
 	//bool			HaveCommandGoal() const;
 	//bool			IsCommandMoving();

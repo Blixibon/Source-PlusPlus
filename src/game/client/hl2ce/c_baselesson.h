@@ -261,6 +261,7 @@ protected:
 	bool	m_bShowWhenOccluded;
 	bool	m_bNoOffscreen;
 	bool	m_bForceCaption;
+	bool	m_bEntityGlow;
 };
 
 enum LessonAction

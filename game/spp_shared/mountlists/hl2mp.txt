@@ -1,5 +1,10 @@
 "Mount"
 {
+	"supers"
+	{
+		"hl2mp_extra" 1
+	}
+
 	320
 	{
 		"head"	"1"

@@ -240,6 +240,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_SMG1:
 	case HLSS_WEAPON_ID_SMG2:
 	case HLSS_WEAPON_ID_AR2:
+	case HLSS_WEAPON_ID_MG1:
 	case HLSS_WEAPON_ID_SHOTGUN:
 	default:
 		iWeaponRole = TF_WPN_TYPE_PRIMARY;
@@ -322,6 +323,7 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 		iWeaponVariant = 1;
 		break;
 	case HLSS_WEAPON_ID_AR2:
+	case HLSS_WEAPON_ID_MG1:
 	case HLSS_WEAPON_ID_CROSSBOW:
 		iWeaponVariant = 2;
 		break;

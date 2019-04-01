@@ -3,7 +3,6 @@
 	"game"		"Half-Life 2: Lazuul"
 	"title"		"HALF-LIFE'"
 	"title2"		"== lazuul =="
-	"type"		"singleplayer_only"
 	"GameData"		"lazuul.fgd"
 	"content"
 	{
@@ -12,6 +11,7 @@
 		"citizen2"		"1"
 		"citizen"		"1"
 		"portal_low"		"1"
+		"hl2mp_low"		"1"
 		"episodic"		"1"
 	}
 	"mount"
@@ -28,7 +28,8 @@
 			}
 		}
 	}
-	"supportsvr"		"1"
+	"supportsvr"		"0"
+	"supportdx8"		"0"
 	"multiplecampaigns"		"1"
 	"FileSystem"
 	{
@@ -62,6 +63,7 @@
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\hl2beta_textures.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra\enhanced_citizens.vpk"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\hl2_extra"
+			"game"		"c:\github\source-plusplus\game\spp_shared\content\hl2mp_extra"
 			"GAME+scenes"		"c:\github\source-plusplus\game\spp_shared\content\portal_extra"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\bms_extra\gus_redux.vpk"
 			"game"		"c:\github\source-plusplus\game\spp_shared\content\bms_extra\bms_eli_fix.vpk"
@@ -96,6 +98,8 @@
 			"GAME+scenes"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\The Citizen"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal\portal_pak.vpk"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Deathmatch\hl2mp"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Deathmatch\hl2mp\hl2mp_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2"
 		}
 	}
