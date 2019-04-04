@@ -1,0 +1,19 @@
+"ServerPaths"
+{
+    // Dedicated servers use this file to locate games and mods.
+    // The keyname should be the Steam AppID of the game and the value
+    // should be the path where that game's content is located.
+    // The keyname 'sourcemods' should point to where all the server's 
+    // source engine mod content is located.
+
+    "sourcemods"    "C:\Program Files (x86)\Steam\steamapps\sourcemods"
+    "220"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2"
+    "240"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2"
+    "320"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Deathmatch"
+    "340"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2"
+    "360"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 1 Source Deathmatch"
+    "380"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2"
+    "420"           "C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2"
+    "400"           "C:\Program Files (x86)\Steam\steamapps\common\Portal"
+    "362890"        "C:\Program Files (x86)\Steam\steamapps\common\Black Mesa"
+}

@@ -62,6 +62,7 @@ $Project
 		$Folder	"HL2 DLL"
 		{
 			$File	"$SRCDIR\game\shared\hl2\achievements_hl2.cpp"
+			$File	"$SRCDIR\game\shared\hl2\hl2_animstate.cpp"
 			$File	"hl2\ai_allymanager.cpp"
 			$File	"hl2\ai_behavior_actbusy.cpp"
 			$File	"hl2\ai_behavior_actbusy.h"

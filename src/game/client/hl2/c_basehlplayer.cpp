@@ -60,7 +60,7 @@ LINK_ENTITY_TO_CLASS( player, C_BaseHLPlayer );
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-C_BaseHLPlayer::C_BaseHLPlayer()
+C_BaseHLPlayer::C_BaseHLPlayer() : m_AnimState(this, CHL2PlayerAnimState::s_MoveParams)
 {
 	AddVar( &m_Local.m_vecPunchAngle, &m_Local.m_iv_vecPunchAngle, LATCH_SIMULATION_VAR );
 	AddVar( &m_Local.m_vecPunchAngleVel, &m_Local.m_iv_vecPunchAngleVel, LATCH_SIMULATION_VAR );

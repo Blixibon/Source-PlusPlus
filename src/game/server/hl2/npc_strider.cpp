@@ -486,7 +486,7 @@ void CNPC_Strider::Spawn()
 {
 	Precache();
 
-	m_miniGunAmmo = GetAmmoDef()->Index("StriderMinigun"); 
+	m_miniGunAmmo = GetAmmoDef()->Index(hl2_episodic.GetBool() ? "StriderMinigunEP2" : "StriderMinigun"); 
 	m_miniGunDirectAmmo = GetAmmoDef()->Index("StriderMinigunDirect");
 	m_pMinigun->Init();
 

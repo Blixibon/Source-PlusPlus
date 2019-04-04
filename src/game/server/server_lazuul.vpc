@@ -23,6 +23,11 @@ $Project "Server (Lazuul)"
 {
 	$Folder "Source Files"
 	{
+		$Folder "HL2 DLL"
+		{
+			-$File "hl2\hl2_client.cpp"
+		}
+
 		$Folder "Black Mesa"
 		{
 			$File "bms\npc_alien_controller.cpp"
@@ -34,6 +39,12 @@ $Project "Server (Lazuul)"
 			$File "bms\npc_hgrunt.cpp"
 			$File "$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
 			$File "peter\npc_human_workers.cpp"
+		}
+
+		$Folder	"Lazuul"
+		{
+			$File "$SRCDIR\game\shared\peter\lazuul_gamerules.cpp"
+			$File "peter\lazul_client.cpp"
 		}
 	}
 }

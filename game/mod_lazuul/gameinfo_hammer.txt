@@ -3,6 +3,8 @@
 	"game"		"Half-Life 2: Lazuul"
 	"title"		"HALF-LIFE'"
 	"title2"		"== lazuul =="
+	"nomodels"		"1"
+	"nohimodels"		"1"
 	"GameData"		"lazuul.fgd"
 	"content"
 	{
@@ -12,6 +14,7 @@
 		"citizen"		"1"
 		"portal_low"		"1"
 		"hl2mp_low"		"1"
+		"hl1mp_low"		"1"
 		"episodic"		"1"
 	}
 	"mount"
@@ -100,6 +103,8 @@
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Portal\portal\portal_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Deathmatch\hl2mp"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Deathmatch\hl2mp\hl2mp_pak.vpk"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 1 Source Deathmatch\hl1mp"
+			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 1 Source Deathmatch\hl1mp\hl1mp_pak.vpk"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2"
 		}
 	}

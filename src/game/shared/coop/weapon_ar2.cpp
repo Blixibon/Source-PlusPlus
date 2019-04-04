@@ -33,6 +33,8 @@
     #include "basecombatweapon.h"
 #endif
 
+#include "hl2_player_shared.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -309,8 +311,8 @@ void CWeaponAR2::SecondaryAttack( void )
 	m_bShotDelayed = true;
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flDelayedFire = gpGlobals->curtime + 0.5f;
 
+	CHL2_Player* pPlayer = ToHL2Player(GetOwner());
 #ifndef CLIENT_DLL
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 
 	if( pPlayer )
 	{
@@ -318,7 +320,7 @@ void CWeaponAR2::SecondaryAttack( void )
         gamestats->Event_WeaponFired( pPlayer, false, GetClassname() );
 	}
 #endif
-
+	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_SECONDARY);
 	SendWeaponAnim( ACT_VM_FIDGET );
 	WeaponSound( SPECIAL1 );
 

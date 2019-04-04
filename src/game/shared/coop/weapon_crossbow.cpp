@@ -21,6 +21,8 @@
 
 #include "weapon_coop_basehlcombatweapon.h"
 
+#include "hl2_player_shared.h"
+
 #ifndef CLIENT_DLL
     #include "basecombatcharacter.h"
     #include "ai_basenpc.h"
@@ -771,6 +773,10 @@ void CWeaponCrossbow::FireBolt( void )
 #endif    
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
+
+	CHL2_Player* pHL2 = ToHL2Player(pOwner);
+	if (pHL2)
+		pHL2->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	if ( !m_iClip1 && pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 	{

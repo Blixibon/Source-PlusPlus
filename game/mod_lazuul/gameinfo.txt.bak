@@ -4,6 +4,8 @@
 	title	"HALF-LIFE'"
 	title2	"== lazuul =="
 	//type singleplayer_only
+	nomodels 1
+	nohimodels 1
 	
 	GameData	"lazuul.fgd"
 	
@@ -14,6 +16,7 @@
 		citizen2	1
 		citizen		1
 		"portal_low"	1
+		hl2mp_low	1
 		episodic	1
 	}
 	

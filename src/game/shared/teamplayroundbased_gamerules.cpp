@@ -772,7 +772,7 @@ void CTeamplayRoundBasedRules::GoToIntermission( void )
 void CTeamplayRoundBasedRules::SetInWaitingForPlayers( bool bWaitingForPlayers  )
 {
 	// never waiting for players when loading a bug report
-	if ( IsLoadingBugBaitReport() || gpGlobals->eLoadType == MapLoad_Background )
+	if ( IsLoadingBugBaitReport() || gpGlobals->eLoadType == MapLoad_Background || !IsMultiplayer() )
 	{
 		m_bInWaitingForPlayers = false;
 		return;
@@ -1398,6 +1398,9 @@ void CTeamplayRoundBasedRules::State_Think_PREGAME( void )
 
 	// Commentary stays in this mode too
 	if ( IsInCommentaryMode() )
+		return;
+
+	if (!IsMultiplayer())
 		return;
 	
 	if( CountActivePlayers() > 0 || (IsInArenaMode() == true && m_flWaitingForPlayersTimeEnds == 0.0f) )

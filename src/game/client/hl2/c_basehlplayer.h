@@ -14,12 +14,14 @@
 
 
 #include "c_baseplayer.h"
+#include "multiplayer/basenetworkedplayer_cl.h"
 #include "c_hl2_playerlocaldata.h"
+#include "hl2_animstate.h"
 
-class C_BaseHLPlayer : public C_BasePlayer
+class C_BaseHLPlayer : public C_BaseNetworkedPlayer
 {
 public:
-	DECLARE_CLASS( C_BaseHLPlayer, C_BasePlayer );
+	DECLARE_CLASS( C_BaseHLPlayer, C_BaseNetworkedPlayer);
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
@@ -51,6 +53,9 @@ public:
 	void			PerformClientSideNPCSpeedModifiers( float flFrameTime, CUserCmd *pCmd );
 
 	bool				IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
+	
+protected:
+	virtual CMultiPlayerAnimState* GetAnimState();
 
 public:
 
@@ -58,6 +63,8 @@ public:
 	EHANDLE				m_hClosestNPC;
 	float				m_flSpeedModTime;
 	bool				m_fIsSprinting;
+
+	CHL2PlayerAnimState m_AnimState;
 
 private:
 	C_BaseHLPlayer( const C_BaseHLPlayer & ); // not defined, not accessible

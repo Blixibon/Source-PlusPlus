@@ -30,6 +30,8 @@
     #include "ilagcompensationmanager.h"
 #endif
 
+#include "hl2_player_shared.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -164,7 +166,10 @@ void CWeapon357::PrimaryAttack( void )
 	pPlayer->DoMuzzleFlash();
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+
+	CHL2_Player* pHL2 = ToHL2Player(pPlayer);
+	if (pHL2)
+		pHL2->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;

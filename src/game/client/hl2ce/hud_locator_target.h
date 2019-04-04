@@ -115,6 +115,8 @@ public:
 	int GetIconEffectsFlags()				{ return m_iEffectsFlags; }
 	void SetCaptionColor(Color col)		{ m_captionColor = col; }
 	void SetCaptionColor(const char *pszCaptionColor);
+	void SetGlowColor(Color col) { m_GlowColor = col; }
+	void SetGlowColor(const char *pszGlowColor);
 	bool IsStatic();
 	bool IsPresenting();
 	void StartTimedLerp();
@@ -181,6 +183,8 @@ public:
 #ifdef GLOWS_ENABLE
 private:
 	CGlowObject			*m_pGlowEffect;
+	Color				m_GlowColor;
+	Color				m_OldGlowColor;
 	C_BaseEntity		*m_pOldGlowEnt;
 public:
 	CGlowObject			*GetGlowObject(void) { return m_pGlowEffect; }

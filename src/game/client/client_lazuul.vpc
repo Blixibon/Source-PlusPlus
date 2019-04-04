@@ -27,5 +27,10 @@ $Project "Client (Lazuul)"
 			$File	"bms\c_npc_gargantua.cpp"
 			$File	"$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
 		}
+
+		$Folder	"Lazuul"
+		{
+			$File "$SRCDIR\game\shared\peter\lazuul_gamerules.cpp"
+		}
 	}
 }

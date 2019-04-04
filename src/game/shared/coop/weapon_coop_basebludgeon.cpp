@@ -22,6 +22,8 @@
 	#include "te_effect_dispatch.h"
 #endif
 
+#include "hl2_player_shared.h"
+
 
 //================================================================================
 // Comandos
@@ -84,7 +86,7 @@ void CWeaponCoopBaseBludgeon::PrimaryAttack( void )
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 
 
-    lagcompensation->StartLagCompensation( pPlayer, pPlayer->GetCurrentCommand() );
+    lagcompensation->StartLagCompensation( pPlayer, LAG_COMPENSATE_BOUNDS );
 #endif
 
     Swing( false );
@@ -103,7 +105,7 @@ void CWeaponCoopBaseBludgeon::SecondaryAttack( void )
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 
 
-    lagcompensation->StartLagCompensation( pPlayer, pPlayer->GetCurrentCommand());
+    lagcompensation->StartLagCompensation( pPlayer, LAG_COMPENSATE_BOUNDS );
 #endif
 
     Swing( true );
@@ -198,7 +200,7 @@ void CWeaponCoopBaseBludgeon::Swing( int bIsSecondary )
     trace_t traceHit;
 
 	// Try a ray
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CHL2_Player *pOwner = ToHL2Player( GetOwner() );
 
 	if ( !pOwner )
 		return;
@@ -269,7 +271,7 @@ void CWeaponCoopBaseBludgeon::Swing( int bIsSecondary )
 	// Send the anim
 	SendWeaponAnim( nHitActivity );
 
-	pOwner->SetAnimation( PLAYER_ATTACK1 );
+	pOwner->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	//Setup our next attack times
 	m_flNextPrimaryAttack = gpGlobals->curtime + GetFireRate();

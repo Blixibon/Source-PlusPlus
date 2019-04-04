@@ -31,6 +31,8 @@
     #include "ilagcompensationmanager.h"
 #endif
 
+#include "hl2_player_shared.h"
+
 extern ConVar sk_auto_reload_time;
 extern ConVar sk_plr_num_shotgun_pellets;
 
@@ -515,8 +517,9 @@ void CWeaponShotgun::PrimaryAttack( void )
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 
-	// player "shoot" animation
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	CHL2_Player* pHL2 = ToHL2Player(pPlayer);
+	if (pHL2)
+		pHL2->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
@@ -587,7 +590,9 @@ void CWeaponShotgun::SecondaryAttack( void )
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 
 	// player "shoot" animation
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	CHL2_Player* pHL2 = ToHL2Player(pPlayer);
+	if (pHL2)
+		pHL2->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();

@@ -5433,7 +5433,7 @@ int C_BaseEntity::ComputePackedSize_R( datamap_t *map )
 		case FIELD_EDICT:
 		case FIELD_POSITION_VECTOR:
 		case FIELD_FUNCTION:
-			Assert( 0 );
+			AssertOnce( 0 );
 			break;
 
 		case FIELD_EMBEDDED:

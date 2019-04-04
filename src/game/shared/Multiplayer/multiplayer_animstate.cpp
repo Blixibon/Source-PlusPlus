@@ -341,7 +341,7 @@ void CMultiPlayerAnimState::PlayFlinchGesture( Activity iActivity )
 	if ( !IsGestureSlotActive( GESTURE_SLOT_FLINCH ) )
 	{
 		// See if we have the custom flinch. If not, revert to chest
-		if ( iActivity != ACT_MP_GESTURE_FLINCH_CHEST && GetBasePlayer()->SelectWeightedSequence( iActivity ) == -1 )
+		if ( iActivity != ACT_MP_GESTURE_FLINCH_CHEST && GetBasePlayer()->SelectWeightedSequence( TranslateActivity(iActivity) ) == -1 )
 		{
 			RestartGesture( GESTURE_SLOT_FLINCH, ACT_MP_GESTURE_FLINCH_CHEST );
 		}
@@ -554,7 +554,8 @@ void CMultiPlayerAnimState::RestartGesture( int iGestureSlot, Activity iGestureA
 	if ( !VerifyAnimLayerInSlot( iGestureSlot ) )
 			return;
 
-	if ( !IsGestureSlotPlaying( iGestureSlot, iGestureActivity ) )
+	Activity iIdealGestureActivity = TranslateActivity(iGestureActivity);
+	if ( !IsGestureSlotPlaying( iGestureSlot, iIdealGestureActivity) )
 	{
 #ifdef CLIENT_DLL
 		if ( IsGestureSlotActive( iGestureSlot ) )
@@ -568,7 +569,7 @@ void CMultiPlayerAnimState::RestartGesture( int iGestureSlot, Activity iGestureA
 		}
 #endif
 
-		Activity iIdealGestureActivity = TranslateActivity( iGestureActivity );
+		
 		AddToGestureSlot( iGestureSlot, iIdealGestureActivity, bAutoKill );
 		return;
 	}
@@ -1304,7 +1305,7 @@ void CMultiPlayerAnimState::Update( float eyeYaw, float eyePitch )
 	}
 
 #ifdef CLIENT_DLL
-	if ( C_BasePlayer::ShouldDrawLocalPlayer() )
+	if ( GetBasePlayer() == C_BasePlayer::GetLocalPlayer() && GetBasePlayer()->ShouldDrawLocalPlayer() )
 	{
 		GetBasePlayer()->SetPlaybackRate( 1.0f );
 	}
@@ -1350,29 +1351,30 @@ bool CMultiPlayerAnimState::SetupPoseParameters( CStudioHdr *pStudioHdr )
 	if ( !pStudioHdr )
 		return false;
 
-	m_bPoseParameterInit = true;
 
 	// Look for the movement blenders.
 	m_PoseParameterData.m_iMoveX = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "move_x" );
 	m_PoseParameterData.m_iMoveY = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "move_y" );
-	/*
+	
 	if ( ( m_PoseParameterData.m_iMoveX < 0 ) || ( m_PoseParameterData.m_iMoveY < 0 ) )
 		return false;
-	*/
+	
 
 	// Look for the aim pitch blender.
 	m_PoseParameterData.m_iAimPitch = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "body_pitch" );
-	/*
+	
 	if ( m_PoseParameterData.m_iAimPitch < 0 )
 		return false;
-	*/
+	
 
 	// Look for aim yaw blender.
 	m_PoseParameterData.m_iAimYaw = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "body_yaw" );
-	/*
+	
 	if ( m_PoseParameterData.m_iAimYaw < 0 )
 		return false;
-	*/
+	
+	// The rest are not-critical
+	m_bPoseParameterInit = true;
 
 	m_PoseParameterData.m_iMoveYaw = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "move_yaw" );
 	m_PoseParameterData.m_iMoveScale = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "move_scale" );

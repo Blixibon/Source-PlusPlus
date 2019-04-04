@@ -1,0 +1,12 @@
+"Mount"
+{
+	360
+	{
+		"head"	"0"
+		
+		"hl1mp"
+		{
+			"vpk"	"hl1mp_pak"
+		}
+	}
+}

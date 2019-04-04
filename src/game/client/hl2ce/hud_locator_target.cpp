@@ -177,6 +177,15 @@ void CLocatorTarget::Deactivate(bool bNoFade)
 		m_bIsDrawing = false;
 		m_bVisible = false;
 
+		if (m_pGlowEffect)
+		{
+			delete m_pGlowEffect;
+			m_pGlowEffect = nullptr;
+		}
+
+		m_GlowColor = COLOR_BLACK;
+		m_OldGlowColor = COLOR_BLACK;
+
 		m_szVguiTargetName = "";
 		m_szVguiTargetLookup = "";
 		m_hVguiTarget = NULL;
@@ -202,12 +211,6 @@ void CLocatorTarget::Deactivate(bool bNoFade)
 		AddIconEffects(LOCATOR_ICON_FX_FADE_OUT);
 		RemoveIconEffects(LOCATOR_ICON_FX_FADE_IN);
 	}
-
-	if (m_pGlowEffect)
-	{
-		delete m_pGlowEffect;
-		m_pGlowEffect = nullptr;
-	}
 }
 
 //------------------------------------
@@ -231,7 +234,7 @@ void CLocatorTarget::Update()
 		if (m_bVisible && (m_iEffectsFlags & LOCATOR_ICON_FX_ENTITY_GLOW) && m_pEntity)
 		{
 			Vector glowColor;
-			m_pEntity->GetColorModulation(glowColor.Base());
+			glowColor.Init(m_GlowColor.r() / 255.0, m_GlowColor.g() / 255.0, m_GlowColor.b() / 255.0);
 
 			if (!m_pGlowEffect)
 			{
@@ -242,9 +245,9 @@ void CLocatorTarget::Update()
 			{
 				m_pOldGlowEnt = m_pEntity;
 				m_pGlowEffect->SetEntity(m_pEntity);
-				m_pGlowEffect->SetColor(glowColor);
 			}
 
+			m_pGlowEffect->SetColor(glowColor);
 			m_pGlowEffect->SetAlpha(m_alpha / 255.f);
 		}
 		else if (m_pGlowEffect)
@@ -397,6 +400,27 @@ void CLocatorTarget::SetCaptionColor(const char *pszCaptionColor)
 	else
 	{
 		DevWarning("caption_color format incorrect. RRR,GGG,BBB expected.\n");
+	}
+}
+
+void CLocatorTarget::SetGlowColor(const char *pszGlowColor)
+{
+	int r, g, b;
+	r = g = b = 0;
+
+	CSplitString colorValues(pszGlowColor, ",");
+
+	if (colorValues.Count() == 3)
+	{
+		r = atoi(colorValues[0]);
+		g = atoi(colorValues[1]);
+		b = atoi(colorValues[2]);
+
+		m_GlowColor.SetColor(r, g, b, 255);
+	}
+	else
+	{
+		DevWarning("glow_color format incorrect. RRR,GGG,BBB expected.\n");
 	}
 }
 

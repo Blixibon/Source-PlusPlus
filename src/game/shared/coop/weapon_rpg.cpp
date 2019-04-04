@@ -34,6 +34,8 @@
 	#include "hl2_shareddefs.h"
 #endif
 
+#include "hl2_player_shared.h"
+
 #include "debugoverlay_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1539,7 +1541,7 @@ bool CWeaponRPG::WeaponShouldBeLowered( void )
 void CWeaponRPG::PrimaryAttack( void )
 {
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CHL2_Player *pPlayer = ToHL2Player(GetOwner());
 
 	if (!pPlayer)
 		return;
@@ -1594,7 +1596,7 @@ void CWeaponRPG::PrimaryAttack( void )
 	WeaponSound( SINGLE );
 
 	// player "shoot" animation
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 }
 
 //-----------------------------------------------------------------------------

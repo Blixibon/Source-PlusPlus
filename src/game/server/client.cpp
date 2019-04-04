@@ -1416,8 +1416,8 @@ void CC_Notarget_f (void)
 	if ( !pPlayer )
 		return;
 
-	if ( gpGlobals->deathmatch )
-		return;
+	/*if ( gpGlobals->deathmatch )
+		return;*/
 
 	pPlayer->ToggleFlag( FL_NOTARGET );
 	if ( !(pPlayer->GetFlags() & FL_NOTARGET ) )

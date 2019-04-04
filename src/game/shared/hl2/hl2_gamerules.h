@@ -20,6 +20,7 @@
 #endif
 
 
+
 class CHalfLife2Proxy : public CGameRulesProxy
 {
 public:
@@ -27,8 +28,16 @@ public:
 	DECLARE_NETWORKCLASS();
 };
 
+class IHalfLife2
+{
+public:
+	virtual bool MegaPhyscannonActive(void) = 0;
+#ifndef CLIENT_DLL
+	virtual bool IsAlyxInDarknessMode() = 0;
+#endif
+};
 
-class CHalfLife2 : public CSingleplayRules
+class CHalfLife2 : public CSingleplayRules, public IHalfLife2
 {
 public:
 	DECLARE_CLASS( CHalfLife2, CSingleplayRules );
@@ -84,7 +93,6 @@ public:
 	bool	NPC_ShouldDropHealth( CBasePlayer *pRecipient );
 	void	NPC_DroppedHealth( void );
 	void	NPC_DroppedGrenade( void );
-	bool	MegaPhyscannonActive( void ) { return m_bMegaPhysgun;	}
 	
 	virtual bool IsAlyxInDarknessMode();
 
@@ -98,19 +106,21 @@ private:
 
 	int						DefaultFOV( void ) { return 75; }
 #endif
+public:
+	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }
 };
 
 
 //-----------------------------------------------------------------------------
 // Gets us at the Half-Life 2 game rules
 //-----------------------------------------------------------------------------
-inline CHalfLife2* HL2GameRules()
+inline IHalfLife2* HL2GameRules()
 {
 #if ( !defined( HL2_DLL ) && !defined( HL2_CLIENT_DLL ) ) || defined( HL2MP )
 	Assert( 0 );	// g_pGameRules is NOT an instance of CHalfLife2 and bad things happen
 #endif
 
-	return static_cast<CHalfLife2*>(g_pGameRules);
+	return dynamic_cast<IHalfLife2*>(g_pGameRules);
 }
 
 

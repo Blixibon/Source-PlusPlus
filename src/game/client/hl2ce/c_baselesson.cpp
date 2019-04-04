@@ -434,6 +434,7 @@ void CIconLesson::Init()
 
 	m_iFlags = LOCATOR_ICON_FX_NONE;
 	m_szCaptionColor = "255,255,255";// Default to white
+	m_szGlowColor = "255,255,255";
 }
 
 //=========================================================
@@ -495,6 +496,7 @@ void CIconLesson::Start()
 
 	pLocatorTarget->AddIconEffects(m_iFlags);
 	pLocatorTarget->SetCaptionColor(GetCaptionColorString());
+	pLocatorTarget->SetGlowColor(m_szGlowColor.String());
 	UpdateLocatorTarget(pLocatorTarget, pIconTarget);
 
 	// Update occlusion data
@@ -965,7 +967,6 @@ void CIconLesson::UpdateLocatorTarget(CLocatorTarget *pLocatorTarget, C_BaseEnti
 	LESSON_VARIABLE_MACRO_BOOL( SHOW_WHEN_OCCLUDED, m_bShowWhenOccluded, bool )						\
 	LESSON_VARIABLE_MACRO_BOOL( NO_OFFSCREEN, m_bNoOffscreen, bool )								\
 	LESSON_VARIABLE_MACRO_BOOL( FORCE_CAPTION, m_bForceCaption, bool )								\
-	LESSON_VARIABLE_MACRO_BOOL( ENTITY_GLOW, m_bEntityGlow, bool )									\
 	LESSON_VARIABLE_MACRO_STRING( ONSCREEN_ICON, m_szOnscreenIcon, CGameInstructorSymbol )			\
 	LESSON_VARIABLE_MACRO_STRING( OFFSCREEN_ICON, m_szOffscreenIcon, CGameInstructorSymbol )		\
 	LESSON_VARIABLE_MACRO( ICON_OFFSET, m_flUpOffset, float )										\
@@ -991,6 +992,9 @@ void CIconLesson::UpdateLocatorTarget(CLocatorTarget *pLocatorTarget, C_BaseEnti
 	LESSON_VARIABLE_MACRO( TIMEOUT, m_fTimeout, float )													\
 	LESSON_VARIABLE_MACRO( UPDATE_INTERVAL, m_fUpdateInterval, float )									\
 	LESSON_VARIABLE_MACRO_STRING( START_SOUND, m_szStartSound, CGameInstructorSymbol )					\
+																										\
+	LESSON_VARIABLE_MACRO_BOOL( ENTITY_GLOW, m_bEntityGlow, bool )									\
+	LESSON_VARIABLE_MACRO_STRING( GLOW_COLOR, m_szGlowColor, CGameInstructorSymbol)						\
 
 
 // Create keyvalues name symbol

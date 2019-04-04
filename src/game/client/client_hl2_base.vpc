@@ -33,6 +33,7 @@ $Project
 		{
 			$File	"$SRCDIR\game\shared\hl2\basehlcombatweapon_shared.cpp"
 			$File	"$SRCDIR\game\shared\hl2\achievements_hl2.cpp"
+			$File	"$SRCDIR\game\shared\hl2\hl2_animstate.cpp"
 			$File	"c_ai_spotlight.cpp"
 			$File	"c_ai_spotlight.h"
 			$File	"hl2\c_npc_scanner.cpp"

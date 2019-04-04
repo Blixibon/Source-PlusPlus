@@ -23,6 +23,8 @@
     #include "grenade_bugbait.h"
 #endif
 
+#include "hl2_player_shared.h"
+
 //
 // Bug Bait Weapon
 //
@@ -339,6 +341,10 @@ void CWeaponBugBait::ThrowGrenade( CBasePlayer *pPlayer )
 
 	m_bRedraw = true;
 #endif
+
+	CHL2_Player* pHL2 = ToHL2Player(pPlayer);
+	if (pHL2)
+		pHL2->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 }
 
 #ifndef CLIENT_DLL

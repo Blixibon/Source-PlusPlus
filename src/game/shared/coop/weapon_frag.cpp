@@ -21,6 +21,8 @@
 #include "effect_dispatch_data.h"
 #include "weapon_coop_basehlcombatweapon.h"
 
+#include "hl2_player_shared.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -487,7 +489,9 @@ void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
 	WeaponSound( WPN_DOUBLE );
 
 	// player "shoot" animation
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	CHL2_Player* pHL2 = ToHL2Player(pPlayer);
+	if (pHL2)
+		pHL2->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	m_bRedraw = true;
 }

@@ -1338,7 +1338,7 @@ void SENTENCEG_Init()
 	for (int i = 0; i < pList->Count(); i++)
 		engine->PrecacheSentenceFile(pList->Element(i));
 
-	engine->PrecacheSentenceFile( "scripts/sentences.txt" );
+	//engine->PrecacheSentenceFile( "scripts/sentences.txt" );
 	fSentencesInit = true;
 }
 

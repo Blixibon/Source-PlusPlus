@@ -18,13 +18,13 @@ extern IVModelInfo* modelinfo;
 #ifdef CLIENT_DLL
     #include "vgui/ISurface.h"
 	#include "vgui_controls/Controls.h"
-	//#include "c_coop_player.h"
 	#include "hud_crosshair.h"
 #else
-    //#include "coop_player.h"
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
 #endif
+
+#include "hl2_player_shared.h"
 
 //================================================================================
 // Información y Red
@@ -128,7 +128,7 @@ void CWeaponCoopBase::PrimaryAttack()
 	}
 
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CHL2_Player *pPlayer = ToHL2Player( GetOwner() );
 
 	if (!pPlayer)
 	{
@@ -140,11 +140,11 @@ void CWeaponCoopBase::PrimaryAttack()
 	SendWeaponAnim( GetPrimaryAttackActivity() );
 
 	// player "shoot" animation
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	FireBulletsInfo_t info;
 	info.m_vecSrc	 = pPlayer->Weapon_ShootPosition();	
-	info.m_vecDirShooting = pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );
+	info.m_vecDirShooting = static_cast<CBasePlayer *>(pPlayer)->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );
 
 	// To make the firing framerate independent, we may have to fire more than one bullet here on low-framerate systems, 
 	// especially if the weapon we're firing has a really fast rate of fire.

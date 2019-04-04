@@ -14,7 +14,8 @@
 #include "hl2_playerlocaldata.h"
 #include "simtimer.h"
 #include "soundenvelope.h"
-#include "basemultiplayerplayer.h"
+#include "multiplayer/basenetworkedplayer.h"
+#include "hl2_animstate.h"
 
 class CAI_Squad;
 class CPropCombineBall;
@@ -76,10 +77,10 @@ public:
 //=============================================================================
 // >> HL2_PLAYER
 //=============================================================================
-class CHL2_Player : public CBaseMultiplayerPlayer
+class CHL2_Player : public CBaseNetworkedPlayer
 {
 public:
-	DECLARE_CLASS( CHL2_Player, CBaseMultiplayerPlayer);
+	DECLARE_CLASS( CHL2_Player, CBaseNetworkedPlayer);
 
 	CHL2_Player();
 	~CHL2_Player( void );
@@ -93,7 +94,7 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	virtual void		CreateCorpse( void ) { CopyToBodyQue( this ); };
+	virtual void		CreateCorpse(void) { return; };
 
 	virtual void		Precache( void );
 	virtual void		Spawn(void);
@@ -299,6 +300,8 @@ protected:
 	virtual void		ItemPostFrame();
 	virtual void		PlayUseDenySound();
 
+	virtual CMultiPlayerAnimState* GetAnimState();
+
 private:
 	bool				CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &goal, CAI_BaseNPC **Allies, int numAllies );
 
@@ -321,6 +324,7 @@ private:
 
 protected:	// Jeep: Portal_Player needs access to this variable to overload PlayerUse for picking up objects through portals
 	bool				m_bPlayUseDenySound;		// Signaled by PlayerUse, but can be unset by HL2 ladder code...
+	CHL2PlayerAnimState m_AnimState;
 
 private:
 

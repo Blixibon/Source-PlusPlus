@@ -27,6 +27,17 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+//-----------------------------------------------------------------------------
+// Gets us at the Half-Life 2 game rules
+//-----------------------------------------------------------------------------
+inline CHalfLife2* HL2GameRulesFull()
+{
+#if ( !defined( HL2_DLL ) && !defined( HL2_CLIENT_DLL ) ) || defined( HL2MP )
+	Assert(0);	// g_pGameRules is NOT an instance of CHalfLife2 and bad things happen
+#endif
+
+	return static_cast<CHalfLife2*>(g_pGameRules);
+}
 
 REGISTER_GAMERULES_CLASS( CHalfLife2 );
 
@@ -46,7 +57,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
 #ifdef CLIENT_DLL
 	void RecvProxy_HL2GameRules( const RecvProp *pProp, void **pOut, void *pData, int objectID )
 	{
-		CHalfLife2 *pRules = HL2GameRules();
+		CHalfLife2 *pRules = HL2GameRulesFull();
 		Assert( pRules );
 		*pOut = pRules;
 	}
@@ -57,7 +68,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
 #else
 	void* SendProxy_HL2GameRules( const SendProp *pProp, const void *pStructBase, const void *pData, CSendProxyRecipients *pRecipients, int objectID )
 	{
-		CHalfLife2 *pRules = HL2GameRules();
+		CHalfLife2 *pRules = HL2GameRulesFull();
 		Assert( pRules );
 		pRecipients->SetAllRecipients();
 		return pRules;
@@ -67,6 +78,7 @@ IMPLEMENT_NETWORKCLASS_ALIASED( HalfLife2Proxy, DT_HalfLife2Proxy )
 		SendPropDataTable( "hl2_gamerules_data", 0, &REFERENCE_SEND_TABLE( DT_HL2GameRules ), SendProxy_HL2GameRules )
 	END_SEND_TABLE()
 #endif
+
 
 ConVar  physcannon_mega_enabled( "physcannon_mega_enabled", "0", FCVAR_CHEAT | FCVAR_REPLICATED );
 
@@ -1777,6 +1789,7 @@ bool CHalfLife2::ShouldBurningPropsEmitLight()
 
 #ifndef HL2MP
 #ifndef PORTAL
+#ifndef HL2_LAZUL
 
 // shared ammo definition
 // JAY: Trying to make a more physical bullet response
@@ -1876,5 +1889,6 @@ CAmmoDef *GetAmmoDef()
 	return &def;
 }
 
+#endif
 #endif
 #endif

@@ -387,7 +387,7 @@ BEGIN_DATADESC( CHL2_Player )
 
 END_DATADESC()
 
-CHL2_Player::CHL2_Player()
+CHL2_Player::CHL2_Player() : m_AnimState(this, CHL2PlayerAnimState::s_MoveParams)
 {
 	m_nNumMissPositions	= 0;
 	m_pPlayerAISquad = 0;
@@ -1160,7 +1160,7 @@ void CHL2_Player::Spawn(void)
 
 	SuitPower_SetCharge( 100 );
 
-	m_Local.m_iHideHUD |= HIDEHUD_CHAT;
+	//m_Local.m_iHideHUD |= HIDEHUD_CHAT;
 
 	const char *pchSquadName = (gpGlobals->maxClients > 1) ? UTIL_VarArgs("%s_%i", PLAYER_SQUADNAME, GetClientIndex()) : PLAYER_SQUADNAME;
 

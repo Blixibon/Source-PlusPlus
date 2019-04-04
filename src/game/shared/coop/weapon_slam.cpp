@@ -391,7 +391,7 @@ void CWeapon_SLAM::TripmineAttach( void )
 void CWeapon_SLAM::StartTripmineAttach( void )
 {
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CHL2_Player *pPlayer = ToHL2Player( GetOwner() );
 	if (!pPlayer)
 	{
 		return;
@@ -418,7 +418,7 @@ void CWeapon_SLAM::StartTripmineAttach( void )
 		if (pEntity && !(pEntity->GetFlags() & FL_CONVEYOR))
 		{
 			// player "shoot" animation
-			pPlayer->SetAnimation( PLAYER_ATTACK1 );
+			pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 			// -----------------------------------------
 			//  Play attach animation

@@ -30,6 +30,16 @@ extern ISceneFileCache *scenefilecache;
 
 namespace Mounter
 {
+	class ISteamAppInfoFinder
+	{
+	public:
+		// returns current app install folder for AppID, returns folder name length
+		virtual uint32 GetAppInstallDir(AppId_t appID, char* pchFolder, uint32 cchFolderBufferSize) = 0;
+		virtual bool BIsAppInstalled(AppId_t appID) = 0; // returns true if that app is installed (not necessarily owned)
+
+		virtual bool GetSourceModsDir(char* pchFolder, uint32 cchFolderBufferSize) = 0;
+	};
+
 	KeyValues *g_pWritePathsToHere = nullptr;
 
 	CUtlFilenameSymbolTable g_FileNameTable;
@@ -63,7 +73,7 @@ namespace Mounter
 		return gamePath;
 	}
 
-	template <size_t maxLenInChars> bool GetDirPath(ISteamApps* const steamApps, IFileSystem* const pFileSystem, const char *pchPathName, OUT_Z_ARRAY char(&pchBuffer)[maxLenInChars])
+	template <size_t maxLenInChars> bool GetDirPath(ISteamAppInfoFinder* const steamApps, IFileSystem* const pFileSystem, const char *pchPathName, OUT_Z_ARRAY char(&pchBuffer)[maxLenInChars])
 	{
 		if (!steamApps || !pFileSystem)
 			return false;
@@ -111,29 +121,7 @@ namespace Mounter
 		}
 		else if (Q_strcmp(pchPathName, "sourcemods") == 0)
 		{
-#ifdef _WIN32
-			HKEY hSteamKey;
-			LONG lResult = VCRHook_RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Valve\\Steam", 0, KEY_READ, &hSteamKey);
-			if (lResult == ERROR_SUCCESS)
-			{
-				unsigned long lBufferSize = maxLenInChars;
-				lResult = VCRHook_RegQueryValueEx(hSteamKey, "SourceModInstallPath", NULL, NULL, (byte *)pchBuffer, &lBufferSize);
-				if (lResult == ERROR_SUCCESS)
-				{
-					VCRHook_RegCloseKey(hSteamKey);
-				}
-			}
-
-			if (lResult != ERROR_SUCCESS)
-			{
-				char error[256];
-				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, lResult, NULL, error, sizeof(error), NULL);
-				AssertMsgAlways(false, (const tchar *)CFmtStr("MountExtraContent Registry Error: %s", error));
-				return false;
-			}
-#else
-#error "Not implemented!"
-#endif
+			steamApps->GetSourceModsDir(pchBuffer, maxLenInChars);
 		}
 		else
 		{
@@ -336,10 +324,9 @@ namespace Mounter
 		g_pVGuiLocalize->AddFile(localization);
 	}
 
-	void MountSection(IFileSystem* const pFileSystem, KeyValues *pMounts)
+	void MountSection(ISteamAppInfoFinder* const steamApps, IFileSystem* const pFileSystem, KeyValues *pMounts)
 	{
 		char path[MAX_PATH];
-		ISteamApps* const steamApps = steamapicontext->SteamApps();
 
 		FOR_EACH_TRUE_SUBKEY(pMounts, pMount)
 		{
@@ -363,7 +350,7 @@ namespace Mounter
 		}
 	}
 
-	void MountFiles(IFileSystem* const pFileSystem)
+	void MountFiles(ISteamAppInfoFinder* const steamApps, IFileSystem* const pFileSystem)
 	{
 		int iCount = g_FilesToMount.Count();
 		for (int i = 0; i < iCount; i++)
@@ -383,7 +370,7 @@ namespace Mounter
 					}
 				}
 
-				MountSection(pFileSystem, pMounts);
+				MountSection(steamApps, pFileSystem, pMounts);
 			}
 		}
 
@@ -457,6 +444,110 @@ namespace Mounter
 		MarkFile(pFileSystem, path, bSuper);
 	}
 
+	class CSteamClientAppInfoFinder : public ISteamAppInfoFinder
+	{
+	public:
+		CSteamClientAppInfoFinder(ISteamApps* pApps)
+		{
+			m_pSteamApps = pApps;
+		}
+
+		// returns current app install folder for AppID, returns folder name length
+		virtual uint32 GetAppInstallDir(AppId_t appID, char* pchFolder, uint32 cchFolderBufferSize)
+		{
+			return m_pSteamApps->GetAppInstallDir(appID, pchFolder, cchFolderBufferSize);
+		}
+		virtual bool BIsAppInstalled(AppId_t appID)
+		{
+			return m_pSteamApps->BIsAppInstalled(appID);
+		}
+
+		virtual bool GetSourceModsDir(char* pchFolder, uint32 cchFolderBufferSize)
+		{
+#ifdef _WIN32
+			HKEY hSteamKey;
+			LONG lResult = VCRHook_RegOpenKeyEx(HKEY_CURRENT_USER, "Software\\Valve\\Steam", 0, KEY_READ, &hSteamKey);
+			if (lResult == ERROR_SUCCESS)
+			{
+				unsigned long lBufferSize = cchFolderBufferSize;
+				lResult = VCRHook_RegQueryValueEx(hSteamKey, "SourceModInstallPath", NULL, NULL, (byte*)pchFolder, &lBufferSize);
+				if (lResult == ERROR_SUCCESS)
+				{
+					VCRHook_RegCloseKey(hSteamKey);
+				}
+			}
+
+			if (lResult != ERROR_SUCCESS)
+			{
+				char error[256];
+				FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, lResult, NULL, error, sizeof(error), NULL);
+				AssertMsgAlways(false, (const tchar*)CFmtStr("MountExtraContent Registry Error: %s", error));
+				return false;
+			}
+#else
+#pragma warning "Not implemented!"
+			return false;
+#endif
+
+			return true;
+		}
+
+	private:
+		CSteamClientAppInfoFinder() {}
+		ISteamApps* m_pSteamApps;
+	};
+
+	class CScriptAppInfoFinder : public ISteamAppInfoFinder
+	{
+	public:
+		CScriptAppInfoFinder(IFileSystem* pApps)
+		{
+			m_pFileSystem = pApps;
+
+			m_pKV = new KeyValues("ServerPaths");
+			m_pKV->UsesEscapeSequences(false);
+			m_pKV->LoadFromFile(m_pFileSystem, "dedicated_mount_paths.txt", "shared");
+		}
+
+		~CScriptAppInfoFinder()
+		{
+			if (m_pKV)
+				m_pKV->deleteThis();
+		}
+
+		// returns current app install folder for AppID, returns folder name length
+		virtual uint32 GetAppInstallDir(AppId_t appID, char* pchFolder, uint32 cchFolderBufferSize)
+		{
+			char buf[32];
+			V_snprintf(buf, 32, "%i", appID);
+			const char* pchPath = m_pKV->GetString(buf);
+
+			V_strncpy(pchFolder, pchPath, cchFolderBufferSize);
+
+			return V_strlen(pchPath);
+		}
+		virtual bool BIsAppInstalled(AppId_t appID)
+		{
+			char buf[32];
+			V_snprintf(buf, 32, "%i", appID);
+
+			return (m_pKV->FindKey(buf) != nullptr);
+		}
+		virtual bool GetSourceModsDir(char* pchFolder, uint32 cchFolderBufferSize)
+		{
+			if (!m_pKV->FindKey("sourcemods"))
+				return false;
+
+			V_strncpy(pchFolder, m_pKV->GetString("sourcemods"), cchFolderBufferSize);
+			return true;
+		}
+
+	private:
+		CScriptAppInfoFinder() {}
+		IFileSystem* m_pFileSystem;
+		KeyValues* m_pKV;
+	};
+
 	void MountExtraContent()
 	{
 		KeyValuesAD gameinfo("GameInfo");
@@ -485,18 +576,39 @@ namespace Mounter
 		// Mount shared base
 		MarkFile(filesystem, "base_dirs.txt");
 
-		MountFiles(filesystem);
+		ISteamAppInfoFinder* steamApps = nullptr;
+
+#if defined(GAME_DLL) || defined(CLIENT_DLL)
+#ifdef GAME_DLL
+		if (engine->IsDedicatedServer())
+		{
+			steamApps = new CScriptAppInfoFinder(filesystem);
+		}
+		else
+#endif
+		{
+			steamApps = new CSteamClientAppInfoFinder(steamapicontext->SteamApps());
+		}
+#endif
+
+		MountFiles(steamApps, filesystem);
 
 		// Mount Mod
 		KeyValues *pkvMounts = gameinfo->FindKey("mount");
 		if (pkvMounts)
-			MountSection(filesystem, pkvMounts);
+			MountSection(steamApps, filesystem, pkvMounts);
 
 		filesystem->MarkPathIDByRequestOnly(PATHID_SHARED, true);
 		filesystem->MarkPathIDByRequestOnly("SCENES", true);
 
 		if (g_pWritePathsToHere != nullptr)
 			g_pWritePathsToHere = nullptr;
+
+		if (steamApps != nullptr)
+		{
+			delete steamApps;
+			steamApps = nullptr;
+		}
 
 		if (pKVHammer != nullptr)
 		{

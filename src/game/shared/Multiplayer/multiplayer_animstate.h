@@ -257,7 +257,7 @@ protected:
 	void GetMovementFlags( CStudioHdr *pStudioHdr );
 
 	// Pose parameters.
-	bool				SetupPoseParameters( CStudioHdr *pStudioHdr );
+	virtual bool		SetupPoseParameters( CStudioHdr *pStudioHdr );
 	virtual void		ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr );
 	virtual void		ComputePoseParam_AimPitch( CStudioHdr *pStudioHdr );
 	virtual void		ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr );
