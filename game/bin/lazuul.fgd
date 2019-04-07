@@ -1,2 +1,23 @@
 @include "halflife1.fgd"
 @include "portal.fgd"
+
+@pointclass base(targetname) = laz_gamerules
+[
+allowdeathmatch(choices) : "Allow Deathmatch" : 0  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	allowcoop(choices) : "Allow Coop" : 0  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	allowversus(choices) : "Allow Versus" : 0  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
