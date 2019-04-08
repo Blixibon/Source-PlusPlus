@@ -487,7 +487,7 @@ const char *CTeamplayRules::TeamWithFewestPlayers( void )
 
 		if ( plr )
 		{
-			int team = GetTeamIndex( plr->TeamID() );
+			int team = plr->GetTeamNumber();
 			if ( team >= 0 )
 				teamCount[team] ++;
 		}
@@ -548,21 +548,21 @@ void CTeamplayRules::RecountTeams( void )
 
 		if ( plr )
 		{
-			const char *pTeamName = plr->TeamID();
+			//const char *pTeamName = plr->TeamID();
 			// try add to existing team
-			int tm = GetTeamIndex( pTeamName );
+			int tm = plr->GetTeamNumber();
 			
-			if ( tm < 0 ) // no team match found
-			{ 
-				if ( !m_teamLimit )
-				{
-					// add to new team
-					tm = num_teams;
-					num_teams++;
-					team_scores[tm] = 0;
-					Q_strncpy( team_names[tm], pTeamName, MAX_TEAMNAME_LENGTH );
-				}
-			}
+			//if ( tm < 0 ) // no team match found
+			//{ 
+			//	if ( !m_teamLimit )
+			//	{
+			//		// add to new team
+			//		tm = num_teams;
+			//		num_teams++;
+			//		team_scores[tm] = 0;
+			//		Q_strncpy( team_names[tm], pTeamName, MAX_TEAMNAME_LENGTH );
+			//	}
+			//}
 
 			if ( tm >= 0 )
 			{

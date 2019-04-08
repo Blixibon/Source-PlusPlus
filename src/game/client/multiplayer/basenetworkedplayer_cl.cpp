@@ -6,6 +6,8 @@
 
 #undef CBaseNetworkedPlayer
 
+#define CYCLELATCH_TOLERANCE		0.15f
+
 // ***************** C_TEPlayerAnimEvent **********************
 
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
@@ -35,6 +37,7 @@ BEGIN_RECV_TABLE_NOBASE( C_BaseNetworkedPlayer, DT_BaseNetworkedPlayerNonLocalEx
 	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin) ), // RECVINFO_NAME again
 	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
 	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
+	RecvPropInt(RECVINFO(m_cycleLatch), 0, &C_BaseNetworkedPlayer::RecvProxy_CycleLatch),
 END_RECV_TABLE()
 
 IMPLEMENT_CLIENTCLASS_DT(C_BaseNetworkedPlayer, DT_BaseNetworkedPlayer, CBaseNetworkedPlayer )
@@ -52,6 +55,19 @@ BEGIN_PREDICTION_DATA( C_BaseNetworkedPlayer )
 	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 END_PREDICTION_DATA()
 
+void C_BaseNetworkedPlayer::RecvProxy_CycleLatch(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	C_BaseNetworkedPlayer* pPlayer = static_cast<C_BaseNetworkedPlayer*>(pStruct);
+
+	float flServerCycle = (float)pData->m_Value.m_Int / 16.0f;
+	float flCurCycle = pPlayer->GetCycle();
+	// The cycle is way out of sync.
+	if (fabs(flCurCycle - flServerCycle) > CYCLELATCH_TOLERANCE)
+	{
+		pPlayer->SetServerIntendedCycle(flServerCycle);
+	}
+}
+
 C_BaseNetworkedPlayer::C_BaseNetworkedPlayer() : m_iv_angEyeAngles( "C_BaseNetworkedPlayer::m_iv_angEyeAngles" )
 {
 	m_angEyeAngles.Init();
@@ -60,6 +76,8 @@ C_BaseNetworkedPlayer::C_BaseNetworkedPlayer() : m_iv_angEyeAngles( "C_BaseNetwo
 	SetPredictionEligible(true);
 
 	//MakeAnimState();
+
+	m_flServerCycle = -1.0f;
 };
 
 const QAngle& C_BaseNetworkedPlayer::EyeAngles()

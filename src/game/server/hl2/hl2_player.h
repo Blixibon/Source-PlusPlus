@@ -300,7 +300,7 @@ protected:
 	virtual void		ItemPostFrame();
 	virtual void		PlayUseDenySound();
 
-	virtual CMultiPlayerAnimState* GetAnimState();
+	virtual CMultiPlayerAnimState* GetAnimState() OVERRIDE;
 
 private:
 	bool				CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &goal, CAI_BaseNPC **Allies, int numAllies );

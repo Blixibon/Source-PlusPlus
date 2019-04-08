@@ -3,9 +3,14 @@
 #ifndef CLIENT_DLL
 #include "globalstate.h"
 #include "ai_basenpc.h"
+#include "team.h"
+#include "peter/gametypes.h"
+#include "peter/player_models.h"
+#include "team_objectiveresource.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
+#include "hl2_player_shared.h"
 
 // Controls the application of the robus radius damage model.
 extern ConVar sv_robust_explosions;
@@ -189,6 +194,15 @@ void CLazuulProxy::Activate()
 }
 #endif
 
+// NOTE: the indices here must match TEAM_TERRORIST, TEAM_CT, TEAM_SPECTATOR, etc.
+char* sTeamNames[] =
+{
+	"Unassigned",
+	"Spectator",
+	"Combine",
+	"Rebels",
+};
+
 //-----------------------------------------------------------------------------
 	// Purpose:
 	// Input  :
@@ -198,9 +212,25 @@ CLazuul::CLazuul()
 {
 	m_bMegaPhysgun = false;
 #ifndef CLIENT_DLL
+	// Create the team managers
+	for (int i = 0; i < ARRAYSIZE(sTeamNames); i++)
+	{
+		CTeam* pTeam = static_cast<CTeam*>(CreateEntityByName("team_manager"));
+		pTeam->Init(sTeamNames[i], i);
+
+		g_Teams.AddToTail(pTeam);
+	}
+
 	m_flLastHealthDropTime = 0.0f;
 	m_flLastGrenadeDropTime = 0.0f;
 #endif
+}
+
+CLazuul::~CLazuul()
+{
+#ifndef CLIENT_DLL
+	g_Teams.Purge();
+#endif // !CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -394,6 +424,9 @@ static const char* s_LazPreserveEnts[] =
 {
 	"laz_gamerules",
 	"predicted_viewmodel",
+	"objective_resource",
+	"team_manager",
+	"player_manager",
 	"", // END Marker
 };
 
@@ -1735,6 +1768,8 @@ void CLazuul::CreateStandardEntities()
 	g_pObjectiveResource = (CTFObjectiveResource*)CBaseEntity::Create("tf_objective_resource", vec3_origin, vec3_angle);
 #else
 	BaseClass::CreateStandardEntities();
+
+	g_pObjectiveResource = (CBaseTeamObjectiveResource*)CBaseEntity::Create("objective_resource", vec3_origin, vec3_angle);
 #endif
 
 	//Assert(g_pObjectiveResource);
@@ -1866,3 +1901,73 @@ CAmmoDef* GetAmmoDef()
 
 	return &def;
 }
+
+#ifndef CLIENT_DLL
+class CTeamObjectiveResource : public CBaseTeamObjectiveResource
+{
+	DECLARE_CLASS(CTeamObjectiveResource, CBaseTeamObjectiveResource);
+public:
+	//DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+
+	virtual void Spawn(void);
+};
+
+BEGIN_DATADESC(CTeamObjectiveResource)
+END_DATADESC()
+
+
+LINK_ENTITY_TO_CLASS(objective_resource, CTeamObjectiveResource);
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTeamObjectiveResource::Spawn(void)
+{
+	BaseClass::Spawn();
+}
+
+void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
+{
+	if (!pPlayer || pPlayer->GetHealth() <= 0)
+		return;
+
+	//CHLMS_Player* pHLMS = assert_cast<CHLMS_Player*> (pPlayer);
+
+	CBaseViewModel* pHands = pPlayer->GetViewModel();
+	//pHands->NetworkStateChanged();
+
+	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentGameType(), pPlayer->IsSuitEquipped());
+
+	pPlayer->SetModel(modelType->models.Head().szModelName);
+	pPlayer->m_nSkin = modelType->models.Head().skin;
+	for (int i = 0; i < modelType->models.Head().bodygroups.Count(); i++)
+	{
+		int iGroup = pPlayer->FindBodygroupByName(modelType->models.Head().bodygroups[i].szName);
+		pPlayer->SetBodygroup(iGroup, modelType->models.Head().bodygroups[i].body);
+	}
+
+	pHands->SetHandsModel(modelType->szArmModel, modelType->armSkin);
+
+	for (int i = 0; i < modelType->armbodys.Count(); i++)
+	{
+		pHands->SetHandsBodygroupByName(modelType->armbodys[i].szName, modelType->armbodys[i].body);
+	}
+
+	/*KeyValues* pkvAbillites = modelType->kvAbilities;
+	if (pkvAbillites != nullptr)
+	{
+		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_VOICE);
+		const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_VOICE);
+		pHLMS->SetVoiceType(pchVoice, pchSuit);
+
+		const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_FEET);
+		pHLMS->SetFootsteps(pchFootSound);
+	}
+	else
+	{
+		pHLMS->SetVoiceType(DEFAULT_VOICE, DEFAULT_VOICE);
+		pHLMS->SetFootsteps(DEFAULT_FEET);
+	}*/
+}
+#endif

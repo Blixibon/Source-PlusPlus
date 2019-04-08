@@ -4417,10 +4417,12 @@ bool CBaseEntity::InSameTeam( CBaseEntity *pEntity ) const
 //-----------------------------------------------------------------------------
 const char *CBaseEntity::TeamID( void ) const
 {
-	if ( GetTeam() == NULL )
+	CTeam* pTeam = GetTeam();
+
+	if (pTeam == NULL )
 		return "";
 
-	return GetTeam()->GetName();
+	return pTeam->GetName();
 }
 
 //-----------------------------------------------------------------------------

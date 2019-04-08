@@ -178,7 +178,7 @@ int CTeam::GetTeamNumber( void ) const
 //-----------------------------------------------------------------------------
 const char *CTeam::GetName( void )
 {
-	return m_szTeamname;
+	return m_szTeamname.Get();
 }
 
 

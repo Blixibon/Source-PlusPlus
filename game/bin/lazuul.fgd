@@ -3,7 +3,7 @@
 
 @pointclass base(targetname) = laz_gamerules
 [
-allowdeathmatch(choices) : "Allow Deathmatch" : 0  =
+	allowdeathmatch(choices) : "Allow Deathmatch" : 0  =
 	[
 		0 : "No"
 		1 : "Yes"

@@ -118,7 +118,7 @@ ConCommand skip_next_map( "skip_next_map", cc_SkipNextMapInCycle, "Skips the nex
 ConCommand changelevel_next( "changelevel_next", cc_GotoNextMapInCycle, "Immediately changes to the next map in the map rotation for the server." );
 
 #if !defined( TF_DLL ) && !defined( TF_CLASSIC )		// TF overrides the default value of this convar
-ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", "0", FCVAR_GAMEDLL, "WaitingForPlayers time length in seconds" );
+ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", "4", FCVAR_GAMEDLL, "WaitingForPlayers time length in seconds" );
 #endif
 
 ConVar mp_waitingforplayers_restart( "mp_waitingforplayers_restart", "0", FCVAR_GAMEDLL, "Set to 1 to start or restart the WaitingForPlayers period." );

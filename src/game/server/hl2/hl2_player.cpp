@@ -395,6 +395,8 @@ CHL2_Player::CHL2_Player() : m_AnimState(this, CHL2PlayerAnimState::s_MoveParams
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
+
+	BaseClass::ChangeTeam(0);
 }
 
 //
@@ -1134,7 +1136,7 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 
 	BaseClass::PlayerRunCommand( ucmd, moveHelper );
 }
-
+extern void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
@@ -1148,6 +1150,8 @@ void CHL2_Player::Spawn(void)
 #endif
 
 	BaseClass::Spawn();
+
+	UTIL_UpdatePlayerModel(this);
 
 	//
 	// Our player movement speed is set once here. This will override the cl_xxxx

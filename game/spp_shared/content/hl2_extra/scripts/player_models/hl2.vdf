@@ -1,0 +1,366 @@
+"Models"
+{
+	// Default model must come first
+	// Later models with same requirements override previous ones
+	"default"
+	{
+		"needs_suit"	"0"
+		"models"
+		{
+			"0"
+			{
+				"name"		"models/player.mdl"
+			}
+		}
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_gor.mdl"
+		}
+	}
+
+	"gor_suit"
+	{
+		"needs_suit"	"1"
+		"team"			"Rebels"
+		"maxplayers"	"1"
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/sirgibs/ragdolls/gordon_survivor_player.mdl"
+			"bodygroups"
+			{
+				"body"	"1"
+			}
+			"skin"		"2"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_gor.mdl"
+		}
+		
+		"abilities"
+		{
+			"suit"		"hev5"
+		}
+	}
+	
+	"gor_citizen"
+	{
+		"needs_suit"	"0"
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/sirgibs/ragdolls/gordon_survivor_player.mdl"
+			"bodygroups"
+			{
+				"body"	"3"
+			}
+			"skin"		"2"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_citizen.mdl"
+		}
+	}
+	
+	"gor_scientist"
+	{
+		"needs_suit"	"0"
+		"games"
+		{
+			"game"		"bms"
+			"game"		"hl1"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/sirgibs/ragdolls/gordon_survivor_player.mdl"
+			"bodygroups"
+			{
+				"body"	"4"
+			}
+			"skin"		"4"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_citizen.mdl"
+		}
+	}
+	
+	"gor_oldsuit"
+	{
+		"needs_suit"	"1"
+		"games"
+		{
+			"game"		"bms"
+			"game"		"hl1"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/sirgibs/ragdolls/gordon_survivor_player.mdl"
+			"bodygroups"
+			{
+				"body"	"2"
+			}
+			"skin"		"4"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/lenoax/gordonfreeman_markiv_hands.mdl"
+		}
+		
+		"abilities"
+		{
+			"suit"		"hev4"
+		}
+	}
+
+	"gor_suit_episodic"
+	{
+		"needs_suit"	"1"
+		"games"
+		{
+			"game"		"ep1"
+			"game"		"ep2"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/sirgibs/ragdolls/gordon_survivor_player.mdl"
+			"bodygroups"
+			{
+				"body"	"1"
+			}
+			"skin"		"3"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_gor.mdl"
+		}
+		
+		"abilities"
+		{
+			"suit"		"hev5"
+		}
+	}
+	
+	"citizen"
+	{
+		"needs_suit"	"0"
+		"games"
+		{
+			"game"		"citizen"
+			"game"		"citizen2"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/normal/male_07.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_citizen.mdl"
+		}
+		
+		"abilities"
+		{
+			"voice"		"citizen"
+		}
+	}
+	
+	"rebel"
+	{
+		"needs_suit"	"1"
+		"team"			"Rebels"
+		"maxplayers"	"0"
+		"games"
+		{
+			"game"	"citizen2"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/rebel/male_07.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_rebel.mdl"
+			"skin"		"4"
+		}
+		
+		"abilities"
+		{
+			"voice"		"citizen"
+		}
+	}
+	
+	"hev_citizen"
+	{
+		"needs_suit"	"1"
+		"team"			"Rebels"
+		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"citizen"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/hev/male_07.mdl"
+			"bodygroups"
+			{
+				"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/player/lenoax_gordon_suit_hands.mdl"
+		}
+		
+		"abilities"
+		{
+			"voice"		"citizen"
+			"suit"		"hev5"
+		}
+	}
+	
+	"anders"
+	{
+		"needs_suit"	"0"
+		"team"			"Combine"
+		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"human"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/anders.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/dpfilms/weapons/v_arms_metropolice.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_MetroPolice"
+			"voice"			"metropolice"
+			"suit"			"pcv_hev"
+		}
+	}
+	
+	"combine_soldier"
+	{
+		"needs_suit"	"0"
+		"team"			"Combine"
+		"games"
+		{
+			"game"	"none"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/combine_soldier_original.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_combine.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_CombineS"
+			"voice"			"combine_soldier"
+			"suit"			"pcv_hev"
+		}
+	}
+	
+	"combine_elite"
+	{
+		"needs_suit"	"0"
+		"team"			"Combine"
+		"maxplayers"	"4"
+		"games"
+		{
+			"game"	"none"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/combine_elite_original.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_combine.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_CombineS"
+			"voice"			"combine_elite"
+			"suit"			"pcv_hev"
+		}
+	}
+}

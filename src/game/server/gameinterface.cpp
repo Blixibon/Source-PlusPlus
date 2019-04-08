@@ -133,6 +133,12 @@ extern ConVar tf_mm_servermode;
 #include "deferred/deferred_shared_common.h"
 #endif
 
+#include "peter/gametypes.h"
+
+#if HL2_DLL
+#include "peter/player_models.h"
+#endif
+
 extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;
 
@@ -708,6 +714,12 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 #endif
 	// Add sound emitter
 	IGameSystem::Add( SoundEmitterSystem() );
+
+	IGameSystem::Add(g_pGameTypeSystem);
+
+#ifdef HL2_DLL
+	IGameSystem::Add(g_pPlayerModels);
+#endif
 
 	// load Mod specific game events ( MUST be before InitAllSystems() so it can pickup the mod specific events)
 	gameeventmanager->LoadEventsFromFile("resource/ModEvents.res");

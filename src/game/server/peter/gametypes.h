@@ -58,12 +58,14 @@ typedef struct AreaName_s
 	int iArea;
 } AreaName_t;
 
-class CGameTypeManager : public CAutoGameSystem
+class CGameTypeManager : public CBaseGameSystem
 {
 public:
-	CGameTypeManager() : CAutoGameSystem("CGameTypeManager")
+	CGameTypeManager() : CBaseGameSystem()
 	{
 	}
+
+	virtual char const* Name() { return "CGameTypeManager"; }
 
 	bool Init();
 	void Shutdown()

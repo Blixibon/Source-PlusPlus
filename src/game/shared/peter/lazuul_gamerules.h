@@ -12,6 +12,12 @@
 #define CLazuulProxy C_LazuulProxy
 #endif // CLIENT_DLL
 
+enum
+{
+	TEAM_COMBINE = FIRST_GAME_TEAM,
+	TEAM_REBELS,
+};
+
 enum {
 	LAZ_GM_SINGLEPLAYER = -1,
 	LAZ_GM_DEATHMATCH = 0,
@@ -41,7 +47,7 @@ class CLazuul : public CTeamplayRoundBasedRules, public IHalfLife2
 	DECLARE_NETWORKCLASS_NOBASE()
 public:
 	CLazuul();
-	virtual ~CLazuul() {}
+	virtual ~CLazuul();
 
 	// Damage Query Overrides.
 	virtual bool			Damage_IsTimeBased(int iDmgType);

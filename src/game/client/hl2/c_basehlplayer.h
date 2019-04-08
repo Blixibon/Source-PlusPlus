@@ -55,7 +55,7 @@ public:
 	bool				IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
 	
 protected:
-	virtual CMultiPlayerAnimState* GetAnimState();
+	virtual CMultiPlayerAnimState* GetAnimState() OVERRIDE;
 
 public:
 

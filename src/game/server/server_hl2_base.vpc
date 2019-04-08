@@ -52,6 +52,7 @@ $Project
 			$File	"$SRCDIR\game\shared\peter\armshield_shared.cpp"
 			$File	"peter\ienergyshield.h"
 			$File	"peter\ai_behavior_shield.cpp"
+			$File	"peter\player_models.cpp"
 		}
 		
 		$Folder "HLSS"

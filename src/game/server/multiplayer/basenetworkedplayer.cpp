@@ -4,6 +4,8 @@
 #include "ilagcompensationmanager.h"
 #include "basenetworkedragdoll.h"
 
+#define CYCLELATCH_UPDATE_INTERVAL	0.2f
+
 //* **************** CTEPlayerAnimEvent* *********************
 
 IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEPlayerAnimEvent, DT_TEPlayerAnimEvent)
@@ -58,6 +60,9 @@ BEGIN_SEND_TABLE_NOBASE( CBaseNetworkedPlayer, DT_BaseNetworkedPlayerNonLocalExc
 	SendPropVector(SENDINFO(m_vecOrigin), -1, SPROP_COORD_MP_LOWPRECISION | SPROP_CHANGES_OFTEN, 0.0f, HIGH_DEFAULT, SendProxy_Origin),
 	SendPropFloat( SENDINFO_VECTORELEM(m_angEyeAngles, 0), 8, SPROP_CHANGES_OFTEN, -90.0f, 90.0f ),
 	SendPropAngle( SENDINFO_VECTORELEM(m_angEyeAngles, 1), 10, SPROP_CHANGES_OFTEN ),
+	// Only need to latch cycle for other players
+	// If you increase the number of bits networked, make sure to also modify the code below and in the client class.
+	SendPropInt(SENDINFO(m_cycleLatch), 4, SPROP_UNSIGNED),
 END_SEND_TABLE()
 
 IMPLEMENT_SERVERCLASS_ST(CBaseNetworkedPlayer, DT_BaseNetworkedPlayer )
@@ -93,11 +98,15 @@ CBaseNetworkedPlayer::CBaseNetworkedPlayer() {
 	m_bSpawnInterpCounter = false;
 	m_angEyeAngles.Init();
 	ragdoll_ent_name = "networked_ragdoll";
+
+	m_cycleLatch = 0;
+	m_cycleLatchTimer.Invalidate();
 	
 	//MakeAnimState();
 }
 CBaseNetworkedPlayer::~CBaseNetworkedPlayer() {
-	//m_PlayerAnimState->Release();	
+	/*if (m_pPlayerAnimState)
+		m_pPlayerAnimState->Release();	*/
 }
 
 void CBaseNetworkedPlayer::UpdateOnRemove()
@@ -109,6 +118,8 @@ void CBaseNetworkedPlayer::UpdateOnRemove()
 void CBaseNetworkedPlayer::Spawn()
 {
 	BaseClass::Spawn();
+
+	m_cycleLatchTimer.Start(CYCLELATCH_UPDATE_INTERVAL);
 
 	// used to not interp players when they spawn
 	m_bSpawnInterpCounter = !m_bSpawnInterpCounter;
@@ -156,7 +167,14 @@ void CBaseNetworkedPlayer::PostThink()
 	m_angEyeAngles = EyeAngles();
 
 	if (GetAnimState())
-		GetAnimState()->Update( m_angEyeAngles[YAW], m_angEyeAngles[PITCH] );
+		GetAnimState()->Update(m_angEyeAngles[YAW], m_angEyeAngles[PITCH]);
+
+	if (IsAlive() && m_cycleLatchTimer.IsElapsed())
+	{
+		m_cycleLatchTimer.Start(CYCLELATCH_UPDATE_INTERVAL);
+		// Compress the cycle into 4 bits. Can represent 0.0625 in steps which is enough.
+		m_cycleLatch.GetForModify() = 16 * GetCycle();
+	}
 }
 
 void CBaseNetworkedPlayer::FireBullets ( const FireBulletsInfo_t &info )

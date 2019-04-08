@@ -44,6 +44,9 @@ protected:
 	CNetworkQAngle( m_angEyeAngles );
 	CNetworkVar( bool, m_bSpawnInterpCounter );
 	CNetworkHandle( CBaseEntity, m_hRagdoll );
+
+	CNetworkVar(int, m_cycleLatch); // Network the cycle to clients periodically
+	CountdownTimer m_cycleLatchTimer;
 };
 
 // -------------------------------------------------------------------------------- //
