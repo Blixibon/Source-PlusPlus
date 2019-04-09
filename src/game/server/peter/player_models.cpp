@@ -48,12 +48,12 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 			KeyValues *pkvDef = pkvModel->FindKey("models");
 			if (pkvDef)
 			{
-				for (KeyValues* pkvModel = pKV->GetFirstTrueSubKey(); pkvModel != NULL; pkvModel = pkvModel->GetNextTrueSubKey())
+				for (KeyValues* pkvModelDef = pkvDef->GetFirstTrueSubKey(); pkvModelDef != NULL; pkvModelDef = pkvModelDef->GetNextTrueSubKey())
 				{
 					rndModel_t& hModel = player.models.Element(player.models.AddToTail());
-					Q_strncpy(hModel.szModelName, pkvDef->GetString("name"), MAX_PATH);
-					hModel.skin = pkvDef->GetInt("skin");
-					KeyValues* pkvBodyGroups = pkvDef->FindKey("bodygroups");
+					Q_strncpy(hModel.szModelName, pkvModelDef->GetString("name"), MAX_PATH);
+					hModel.skin = pkvModelDef->GetInt("skin");
+					KeyValues* pkvBodyGroups = pkvModelDef->FindKey("bodygroups");
 					if (pkvBodyGroups)
 					{
 						for (KeyValues* pkvGroup = pkvBodyGroups->GetFirstValue(); pkvGroup != NULL; pkvGroup = pkvGroup->GetNextValue())
