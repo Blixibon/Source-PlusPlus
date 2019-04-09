@@ -3196,15 +3196,6 @@ float CHL2_Player::GetHeldObjectMass( IPhysicsObject *pHeldObject )
 	return mass;
 }
 
-CBaseEntity	*CHL2_Player::GetHeldObject( void )
-{
-	CBaseEntity* pObject = GetPlayerHeldEntity(this);
-	if (!pObject)
-	{
-		pObject = PhysCannonGetHeldEntity(GetActiveWeapon());
-	}
-	return pObject;
-}
 //-----------------------------------------------------------------------------
 // Purpose: Force the player to drop any physics objects he's carrying
 //-----------------------------------------------------------------------------
