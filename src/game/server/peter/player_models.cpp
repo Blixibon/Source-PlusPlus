@@ -72,7 +72,7 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 			{
 				Q_strncpy(player.szArmModel, pkvHands->GetString("model"), MAX_PATH);
 				player.armSkin = pkvHands->GetInt("skin");
-				KeyValues *pkvBodyGroups = pkvDef->FindKey("bodygroups");
+				KeyValues *pkvBodyGroups = pkvHands->FindKey("bodygroups");
 				if (pkvBodyGroups)
 				{
 					for (KeyValues * pkvGroup = pkvBodyGroups->GetFirstSubKey(); pkvGroup != NULL; pkvGroup = pkvGroup->GetNextKey())

@@ -13,7 +13,7 @@
 
 #include "cbase.h"
 #include "bone_setup.h"
-#include "hl2\weapon_physcannon.h"
+#include "weapon_physcannon.h"
 #include "npc_personality_core.h"
 #include "IEffects.h"
 #include "info_darknessmode_lightsource.h"

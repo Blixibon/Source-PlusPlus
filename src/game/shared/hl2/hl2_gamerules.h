@@ -34,6 +34,10 @@ public:
 	virtual bool MegaPhyscannonActive(void) = 0;
 #ifndef CLIENT_DLL
 	virtual bool IsAlyxInDarknessMode() = 0;
+	virtual bool	NPC_ShouldDropGrenade(CBasePlayer* pRecipient) = 0;
+	virtual bool	NPC_ShouldDropHealth(CBasePlayer* pRecipient) = 0;
+	virtual void	NPC_DroppedHealth(void) = 0;
+	virtual void	NPC_DroppedGrenade(void) = 0;
 #endif
 };
 

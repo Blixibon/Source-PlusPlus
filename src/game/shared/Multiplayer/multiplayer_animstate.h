@@ -113,19 +113,21 @@ struct MultiPlayerPoseData_t
 	int			m_iBodyHeight;
 	int			m_iMoveYaw;
 	int			m_iMoveScale;
+	bool		m_bHL2Aim;
 
 	float		m_flEstimateYaw;
 	float		m_flLastAimTurnTime;
 
 	void Init()
 	{
-		m_iMoveX = 0;
-		m_iMoveY = 0;
-		m_iAimYaw = 0;
-		m_iAimPitch = 0;
-		m_iBodyHeight = 0;
-		m_iMoveYaw = 0;
-		m_iMoveScale = 0;
+		m_iMoveX = -1;
+		m_iMoveY = -1;
+		m_iAimYaw = -1;
+		m_iAimPitch = -1;
+		m_iBodyHeight = -1;
+		m_iMoveYaw = -1;
+		m_iMoveScale = -1;
+		m_bHL2Aim = false;
 		m_flEstimateYaw = 0.0f;
 		m_flLastAimTurnTime = 0.0f;
 	}

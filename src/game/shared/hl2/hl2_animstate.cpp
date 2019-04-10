@@ -76,6 +76,7 @@ bool CHL2PlayerAnimState::SetupPoseParameters(CStudioHdr* pStudioHdr)
 	if (!pStudioHdr)
 		return false;
 
+	m_PoseParameterData.m_bHL2Aim = true;
 
 	// Look for the movement blenders.
 	m_PoseParameterData.m_iMoveX = GetBasePlayer()->LookupPoseParameter(pStudioHdr, "move_x");
