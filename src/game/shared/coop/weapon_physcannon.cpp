@@ -1191,6 +1191,8 @@ public:
 	void	WeaponIdle();
 	void	ItemPreFrame();
 	void	ItemPostFrame();
+	
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_PHYSGUN }
 
 	void	ForceDrop( void );
 	bool	DropIfEntityHeld( CBaseEntity *pTarget );	// Drops its held entity if it matches the entity passed in
