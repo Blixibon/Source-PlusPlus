@@ -854,7 +854,7 @@
 	
 	population(string) : "NPC Population Tag" : "default" : "Tag to use for npc appearance randomization. Check 'scripts/population' for tags."
 
-	episodic(choices) : "Use HL2 Episodic mode" : 1 : "Controls weather certain objects should behave as they do in HL2 or in the Episodes."
+	episodic(choices) : "Use HL2 Episodic mode" : 1 : "Controls weather certain objects should behave as they do in HL2 or in the Episodes." =
 	[
 		0 : "No"
 		1 : "Yes"

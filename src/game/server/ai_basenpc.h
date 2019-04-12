@@ -538,6 +538,11 @@ public:
 		return const_cast<CAI_BaseNPC *>(this)->GetBestPlayer();
 	}
 
+	virtual Disposition_t	IRelationType(CBaseEntity* pTarget);
+	virtual int				IRelationPriority(CBaseEntity* pTarget);
+
+	void				UpdateTeam();
+
 	//---------------------------------
 	// Component creation factories
 	// 
@@ -563,6 +568,9 @@ public:
 	void TestPlayerPushing( CBaseEntity *pPlayer );
 	void CascadePlayerPush( const Vector &push, const Vector &pushOrigin );
 	void NotifyPushMove();
+
+	// Team Handling
+	virtual void			ChangeTeam(int iTeamNum);
 
 public:
 	//-----------------------------------------------------

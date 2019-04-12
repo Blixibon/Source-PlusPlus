@@ -22,6 +22,7 @@
 #include "worldsize.h"
 #include "game.h"
 #include "shot_manipulator.h"
+#include "team.h"
 
 #ifdef HL2_DLL
 #include "ai_interactions.h"
@@ -99,6 +100,10 @@
 #ifdef USE_NAV_MESH
 #include "nav_mesh.h"
 #endif // USE_NAV_MESH
+
+#ifdef HL2_LAZUL
+#include "peter/lazuul_gamerules.h"
+#endif // HL2_LAZUL
 
 
 #include "env_debughistory.h"
@@ -7423,6 +7428,8 @@ void CAI_BaseNPC::StartNPC( void )
 		m_nIdealSequence = GetSequence();
 		SetSchedule( SCHED_WAIT_FOR_SCRIPT );
 	}
+
+	UpdateTeam();
 }
 
 //-----------------------------------------------------------------------------
@@ -11464,6 +11471,86 @@ CAI_BaseNPC::~CAI_BaseNPC(void)
 	delete m_pTacticalServices;
 }
 
+//================================================================================
+// TEAM HANDLING
+//================================================================================
+//-----------------------------------------------------------------------------
+// Purpose: Put the player in the specified team
+//-----------------------------------------------------------------------------
+
+void CAI_BaseNPC::ChangeTeam(int iTeamNum)
+{
+	if (!GetGlobalTeam(iTeamNum))
+	{
+		Warning("CAI_BaseNPC::ChangeTeam( %d ) - invalid team index.\n", iTeamNum);
+		return;
+	}
+
+	// if this is our current team, just abort
+	if (iTeamNum == GetTeamNumber())
+	{
+		return;
+	}
+
+	// Remove him from his current team
+	if (GetTeam())
+	{
+		GetTeam()->RemoveNPC(this);
+	}
+
+	// Are we being added to a team?
+	if (iTeamNum)
+	{
+		GetGlobalTeam(iTeamNum)->AddNPC(this);
+	}
+
+	BaseClass::ChangeTeam(iTeamNum);
+}
+
+void CAI_BaseNPC::UpdateTeam()
+{
+#ifdef HL2_LAZUL
+	if (FindClassRelationship(CLASS_PLAYER)->disposition == D_LI)
+	{
+		ChangeTeam(TEAM_REBELS);
+	}
+	else if (FindClassRelationship(CLASS_COMBINE_PLAYER)->disposition == D_LI)
+	{
+		ChangeTeam(TEAM_COMBINE);
+	}
+	else
+	{
+		ChangeTeam(TEAM_UNASSIGNED);
+	}
+#endif
+}
+
+Disposition_t CAI_BaseNPC::IRelationType(CBaseEntity* pTarget)
+{
+	if (pTarget)
+	{
+#ifdef HL2_LAZUL
+		if (pTarget->Classify() == CLASS_PLAYER && pTarget->GetTeamNumber() == TEAM_COMBINE)
+			return FindClassRelationship(CLASS_COMBINE_PLAYER)->disposition;
+#endif
+		return FindEntityRelationship(pTarget)->disposition;
+	}
+	return D_NU;
+}
+
+int CAI_BaseNPC::IRelationPriority(CBaseEntity* pTarget)
+{
+	if (pTarget)
+	{
+#ifdef HL2_LAZUL
+		if (pTarget->Classify() == CLASS_PLAYER && pTarget->GetTeamNumber() == TEAM_COMBINE)
+			return FindClassRelationship(CLASS_COMBINE_PLAYER)->priority;
+#endif
+		return FindEntityRelationship(pTarget)->priority;
+	}
+	return 0;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -11475,6 +11562,12 @@ void CAI_BaseNPC::UpdateOnRemove(void)
 			DevMsg( "May not have cleaned up on NPC death\n");
 
 		CleanupOnDeath( NULL, false );
+	}
+
+	// Remove him from his current team
+	if (GetTeam())
+	{
+		GetTeam()->RemoveNPC(this);
 	}
 
 	// Chain at end to mimic destructor unwind order

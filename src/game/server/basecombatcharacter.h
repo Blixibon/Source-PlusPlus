@@ -393,6 +393,7 @@ public:
 
 protected:
 	Relationship_t			*FindEntityRelationship( CBaseEntity *pTarget );
+	Relationship_t*			FindClassRelationship(Class_T nClass);
 
 public:
 	

@@ -1,0 +1,35 @@
+
+$DefineBone "Antlion.Body_Bone" "" -0.063165 1.526461 24.721458 -13.999994 89.999983 89.999983 0 0 0 0 0 0
+$DefineBone "Antlion.Chest_Bone" "Antlion.Body_Bone" -4.609662 3.759721 0.054231 0 -12.19999 0 0 0 0 0 0 0
+$DefineBone "Antlion.ArmR1_Bone" "Antlion.Chest_Bone" -5.638219 -6.697233 -3.98936 -9.511043 -51.744219 22.534317 0 0 0 0 0 0
+$DefineBone "Antlion.ArmR2_Bone" "Antlion.ArmR1_Bone" 10.569403 0 0 0.000002 -137.590023 -0.000002 0 0 0 0 0 0
+$DefineBone "Antlion.ArmR3_Bone" "Antlion.ArmR2_Bone" 13.35794 0 0 -0.000001 159.910453 0.000001 0 0 0 0 0 0
+$DefineBone "Antlion.ArmL1_Bone" "Antlion.Chest_Bone" -5.561414 -6.622472 3.516682 8.378191 -52.843217 158.241797 0 0 0 0 0 0
+$DefineBone "Antlion.ArmL2_Bone" "Antlion.ArmL1_Bone" 10.52352 0 0 0 138.198456 0 0 0 0 0 0 0
+$DefineBone "Antlion.ArmL3_Bone" "Antlion.ArmL2_Bone" 13.611949 0.000001 0 0 -161.024689 0 0 0 0 0 0 0
+$DefineBone "Antlion.Head_Bone" "Antlion.Chest_Bone" -8.542349 -2.926287 -0.018171 0 9.900024 0 0 0 0 0 0 0
+$DefineBone "Antlion.FangBottomL1_Bone" "Antlion.Head_Bone" -9.984112 -4.710447 3.170796 -0.31779 -155.713343 -166.301898 0 0 0 0 0 0
+$DefineBone "Antlion.FangBottomL2_Bone" "Antlion.FangBottomL1_Bone" 5.945618 0 0 0 42.113086 0 0 0 0 0 0 0
+$DefineBone "Antlion.FangBottomR1_Bone" "Antlion.Head_Bone" -9.98411 -4.710446 -2.998739 0.234168 -154.582072 -12.798789 0 0 0 0 0 0
+$DefineBone "Antlion.FangBottomR2_Bone" "Antlion.FangBottomR1_Bone" 5.945625 0 0 0 -43.175002 0 0 0 0 0 0 0
+$DefineBone "Antlion.FangTopL1_Bone" "Antlion.Head_Bone" -13.167568 0.616876 1.590356 -9.025339 -179.688167 179.951075 0 0 0 0 0 0
+$DefineBone "Antlion.FangTopL2_Bone" "Antlion.FangTopL1_Bone" 1.939788 0 0 6.942498 140.357001 174.218593 0 0 0 0 0 0
+$DefineBone "Antlion.FangTopR1_Bone" "Antlion.Head_Bone" -13.157713 0.632509 -1.795553 0.9695 -175.242001 90.000003 0 0 0 0 0 0
+$DefineBone "Antlion.FangTopR2_Bone" "Antlion.FangTopR1_Bone" 2.215697 0 -0.000001 -34.841984 -179.030502 90.000003 0 0 0 0 0 0
+$DefineBone "Antlion.LegMidL1_Bone" "Antlion.Body_Bone" -1.653923 -2.390574 8.263164 6.097016 -70.694064 -164.462433 0 0 0 0 0 0
+$DefineBone "Antlion.LegMidL2_Bone" "Antlion.LegMidL1_Bone" 11.485748 0 0 0.000003 -104.39182 -0.000001 0 0 0 0 0 0
+$DefineBone "Antlion.LegMidL3_Bone" "Antlion.LegMidL2_Bone" 24.5369 -0.000001 -0.000001 0.000018 124.155751 -0.000016 0 0 0 0 0 0
+$DefineBone "Antlion.LegMidR1_Bone" "Antlion.Body_Bone" -1.653922 -2.390575 -8.136835 -5.496957 -73.87099 -15.597173 0 0 0 0 0 0
+$DefineBone "Antlion.LegMidR2_Bone" "Antlion.LegMidR1_Bone" 11.659968 0 0 0 106.689031 0 0 0 0 0 0 0
+$DefineBone "Antlion.LegMidR3_Bone" "Antlion.LegMidR2_Bone" 25.724375 0 0 0 -124.729705 0 0 0 0 0 0 0
+$DefineBone "Antlion.Back_Bone" "Antlion.Body_Bone" 3.880159 -0.980432 0.090609 0 44.099988 0 0 0 0 0 0 0
+$DefineBone "Antlion.LegL1_Bone" "Antlion.Back_Bone" 15.781343 -0.731437 -16.086088 4.679548 176.361373 6.562675 0 0 0 0 0 0
+$DefineBone "Antlion.LegL2_Bone" "Antlion.LegL1_Bone" 21.016012 0.000002 -0.000001 -0.000001 -106.326478 0.000001 0 0 0 0 0 0
+$DefineBone "Antlion.LegL3_Bone" "Antlion.LegL2_Bone" 28.47163 -0.000002 0.000002 0 120.129546 -0.000002 0 0 0 0 0 0
+$DefineBone "Antlion.LegShoulder_L_Bone" "Antlion.Back_Bone" 13.389687 0.268266 6.023556 -77.287764 -28.00383 -26.504172 0 0 0 0 0 0
+$DefineBone "Antlion.LegR1_Bone" "Antlion.LegShoulder_L_Bone" 9.768897 0.000001 0.000001 -45.174397 -98.90851 -86.168513 0 0 0 0 0 0
+$DefineBone "Antlion.LegR2_Bone" "Antlion.LegR1_Bone" 19.931143 0.000001 -0.000001 0.000001 -100.049718 -0.000001 0 0 0 0 0 0
+$DefineBone "Antlion.LegR3_Bone" "Antlion.LegR2_Bone" 26.044123 -0.000001 -0.000001 0.000001 120.206659 0.000001 0 0 0 0 0 0
+$DefineBone "Antlion.WingL_Bone" "Antlion.Body_Bone" -5.849911 4.319725 0.063164 0 46.069988 26.444985 0 0 0 0 0 0
+$DefineBone "Antlion.WingR_Bone" "Antlion.Body_Bone" -5.827133 4.411094 0.063164 0.331112 46.069934 -18.900792 0 0 0 0 0 0
+

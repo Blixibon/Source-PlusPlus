@@ -1957,6 +1957,8 @@ void CNPC_RollerMine::NotifyInteraction( CAI_BaseNPC *pUser )
 	// Force the rollermine open here. At very least, this ensures that the 
 	// correct, smaller bounding box is recomputed around it.
 	Open();
+
+	UpdateTeam();
 }
 
 //-----------------------------------------------------------------------------

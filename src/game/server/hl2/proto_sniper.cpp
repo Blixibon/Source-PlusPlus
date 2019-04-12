@@ -837,11 +837,15 @@ void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
 //-----------------------------------------------------------------------------
 bool CProtoSniper::IsPlayerAllySniper()
 {
+#if 0
 	findPlayerParams_t params;
 	params.nClass = CLASS_PLAYER;
 	CBaseEntity *pPlayer = UTIL_GetIdealPlayer(params);
 
 	return IRelationType( pPlayer ) == D_LI;
+#else
+	return FindClassRelationship(CLASS_PLAYER)->disposition == D_LI;
+#endif
 }
 			
 //-----------------------------------------------------------------------------

@@ -23,6 +23,7 @@
 #include "bspfile.h"
 #include "filesystem.h"
 #include "map_load_helper.h"
+//#include "networkstringtable_gamedll.h"
 
 #include "tier0/memdbgon.h"
 
@@ -140,6 +141,11 @@ void CWorldLights::Clear()
 //-----------------------------------------------------------------------------
 void CWorldLights::LevelInitPreEntity()
 {
+#ifndef CLIENT_DLL
+	//if (!m_pLightStyleTable)
+		//m_pLightStyleTable = networkstringtable->FindTable("lightstyles");
+#endif // !CLIENT_DLL
+
 	CMapLoadHelper::Init(VarArgs("maps/%s.bsp", MapName()));
 
 	// Grab the light lump and seek to it
@@ -203,19 +209,24 @@ void CWorldLights::LevelInitPreEntity()
 	{
 		Assert(leafLump.LumpSize() % sizeof(dleaf_t) == 0);
 		int nLeaves = leafLump.LumpSize() / sizeof(dleaf_t);
-		dleaf_t *pLeaf = reinterpret_cast<dleaf_t*>(leafLump.LumpBase());
+		dleaf_t *pLeaves = reinterpret_cast<dleaf_t*>(leafLump.LumpBase());
 		m_LeafCubes.SetCount(nLeaves);
 
-		CMapLoadHelper indexLump(bHDR ? LUMP_LEAF_AMBIENT_INDEX_HDR : LUMP_LEAF_AMBIENT_INDEX);
-		int nIndices = indexLump.LumpSize() / sizeof(dleafambientindex_t);
-		dleafambientindex_t *pIndices = reinterpret_cast<dleafambientindex_t*>(indexLump.LumpBase());
+		CMapLoadHelper ambientLightingTable(bHDR ? LUMP_LEAF_AMBIENT_INDEX_HDR : LUMP_LEAF_AMBIENT_INDEX);
+		//int nIndices = indexLump.LumpSize() / sizeof(dleafambientindex_t);
+		//dleafambientindex_t *pIndices = reinterpret_cast<dleafambientindex_t*>(indexLump.LumpBase());
 
-		CMapLoadHelper ambientLump(bHDR ? LUMP_LEAF_AMBIENT_LIGHTING_HDR : LUMP_LEAF_AMBIENT_LIGHTING);
-		int nCubes = ambientLump.LumpSize() / sizeof(dleafambientlighting_t);
-		dleafambientlighting_t *pLighting = reinterpret_cast<dleafambientlighting_t*>(ambientLump.LumpBase());
+		CMapLoadHelper ambientLightingLump(bHDR ? LUMP_LEAF_AMBIENT_LIGHTING_HDR : LUMP_LEAF_AMBIENT_LIGHTING);
+		//int nCubes = ambientLump.LumpSize() / sizeof(dleafambientlighting_t);
+		//dleafambientlighting_t *pLighting = reinterpret_cast<dleafambientlighting_t*>(ambientLump.LumpBase());
 
-		if (nIndices <= 0)
+		if (ambientLightingLump.LumpVersion() != LUMP_LEAF_AMBIENT_LIGHTING_VERSION || ambientLightingTable.LumpSize() == 0)
 		{
+			int nCubes = ambientLightingLump.LumpSize() / sizeof(CompressedLightCube);
+			CompressedLightCube*pLightCubes = reinterpret_cast<CompressedLightCube*>(ambientLightingLump.LumpBase());
+
+			Assert(nLeaves == nCubes);
+			dleaf_t* pLeaf = pLeaves;
 			for (int i = 0; i < nLeaves && i < nCubes; i++, pLeaf++)
 			{
 				CubeVec &lightCubes = m_LeafCubes.Element(i);
@@ -228,32 +239,44 @@ void CWorldLights::LevelInitPreEntity()
 				lightCubes.SetCount(1);
 				//for (int j = 0; j < ambientIndex.ambientSampleCount; j++)
 				{
-					dleafambientlighting_t &ambientLight = pLighting[i];
+					CompressedLightCube &ambientLight = pLightCubes[i];
 					lightCube_t &lightCube = lightCubes.Element(0);
-					lightCube.cube = ambientLight.cube;
-					lightCube.pos.x = RemapVal(ambientLight.x, 0, 255, mins.x, maxs.x);
-					lightCube.pos.y = RemapVal(ambientLight.y, 0, 255, mins.y, maxs.y);
-					lightCube.pos.z = RemapVal(ambientLight.z, 0, 255, mins.z, maxs.z);
+					lightCube.cube = ambientLight;
+					lightCube.pos = Lerp(0.5f, mins, maxs);
 				}
 			}
 		}
 		else
 		{
+			int nIndices = ambientLightingTable.LumpSize() / sizeof(dleafambientindex_t);
+			dleafambientindex_t *pIndices = reinterpret_cast<dleafambientindex_t*>(ambientLightingTable.LumpBase());
+
+			int nCubes = ambientLightingLump.LumpSize() / sizeof(dleafambientlighting_t);
+			dleafambientlighting_t *pLighting = reinterpret_cast<dleafambientlighting_t*>(ambientLightingLump.LumpBase());
+
 			Assert(nIndices == nLeaves);
 
-			for (int i = 0; i < nLeaves; i++, pLeaf++)
+			for (int i = 0; i < nLeaves; i++)
 			{
 				CubeVec &lightCubes = m_LeafCubes.Element(i);
+				dleaf_t* pLeaf = &pLeaves[i];
 
 				Vector mins, maxs;
 				mins.Init(pLeaf->mins[0], pLeaf->mins[1], pLeaf->mins[2]);
 				maxs.Init(pLeaf->maxs[0], pLeaf->maxs[1], pLeaf->maxs[2]);
 
-				dleafambientindex_t &ambientIndex = pIndices[i];
-				lightCubes.SetCount(ambientIndex.ambientSampleCount);
-				for (int j = 0; j < ambientIndex.ambientSampleCount; j++)
+				dleafambientindex_t *pAmbient = &pIndices[i];
+				if (!pAmbient->ambientSampleCount && pAmbient->firstAmbientSample)
 				{
-					dleafambientlighting_t &ambientLight = pLighting[ambientIndex.firstAmbientSample + j];
+					int iLeafIndex = pAmbient->firstAmbientSample;
+					pAmbient = &pIndices[iLeafIndex];
+				}
+				lightCubes.SetCount(pAmbient->ambientSampleCount);
+				for (int j = 0; j < lightCubes.Count(); j++)
+				{
+					int iSample = pAmbient->firstAmbientSample + j;
+					Assert(iSample < nCubes);
+					dleafambientlighting_t &ambientLight = pLighting[iSample];
 					lightCube_t &lightCube = lightCubes.Element(j);
 					lightCube.cube = ambientLight.cube;
 					lightCube.pos.x = RemapVal(ambientLight.x, 0, 255, mins.x, maxs.x);
@@ -293,17 +316,13 @@ CWorldLights::LightVec CWorldLights::CollectLightsAtPoint(const Vector& vecPosit
 	{
 		const dworldlight_t& light = m_pWorldLights[i];
 
-		// Skip skyambient
-		if (light.type == emit_skyambient)
-			continue;
-
 		// Handle sun
 		if (light.type == emit_skylight)
 		{
 			if (light.intensity.LengthSqr() <= 0.f)
 				continue;
 
-			const Vector& pos = vecPosition - light.normal * MAX_TRACE_LENGTH;
+			const Vector& pos = vecPosition - (light.normal * MAX_TRACE_LENGTH);
 
 			trace_t tr;
 			UTIL_TraceLine(vecPosition, pos, MASK_OPAQUE, NULL, COLLISION_GROUP_NONE, &tr);
@@ -444,21 +463,6 @@ bool CWorldLights::GetTotalLightAtPoint(const Vector& vecPosition, Vector& vecLi
 		if (light.pLight->type == emit_skyambient)
 			continue;
 
-		// Handle sun
-		if (light.pLight->type == emit_skylight)
-		{
-			if (light.intensity.LengthSqr() <= vecLightBrightness.LengthSqr())
-				continue;
-
-			vecLightBrightness += light.intensity;
-			continue;
-		}
-
-
-		// Is this light more intense than the one we already found?
-		if (light.intensity.LengthSqr() <= vecLightBrightness.LengthSqr())
-			continue;
-
 		vecLightBrightness += light.intensity;
 	}
 
@@ -469,33 +473,45 @@ bool CWorldLights::GetAmbientLightAtPoint(const Vector& vecPosition, Vector& vec
 {
 #ifndef CLIENT_DLL
 	vecLightAmbient.Init();
+	Vector vecCubeInterp[6] = { vec3_origin };
 
 	int iLeaf = GetLeafForOrigin(vecPosition);
 	if (iLeaf <= -1)
 		return false;
 
-	const CubeVec &lightCubes = m_LeafCubes.Element(iLeaf);
+	const CubeVec & lightCubes = m_LeafCubes.Element(iLeaf);
 	if (lightCubes.Count() <= 0)
 		return false;
 
+	float totalFactor = 0;
 	for (int c = 0; c < lightCubes.Count(); c++)
 	{
-		Vector vecCubeColor;
-		const CompressedLightCube &lCube = lightCubes.Element(0).cube;
-		for (int i = 0; i < ARRAYSIZE(lCube.m_Color); i++)
+		const lightCube_t& lCube = lightCubes[c];
+		float dist = (lCube.pos - vecPosition).LengthSqr();
+		float factor = 1.0f / (dist + 1.0f);
+		totalFactor += factor;
+		for (int j = 0; j < 6; j++)
 		{
-			Vector vecColor;
-			ColorRGBExp32ToVector(lCube.m_Color[i], vecColor);
-			vecColor /= 255.f;
-			vecCubeColor += vecColor;
+			Vector v;
+			ColorRGBExp32ToVector(lCube.cube.m_Color[j], v);
+			vecCubeInterp[j] += v * factor;
 		}
-		vecCubeColor /= ARRAYSIZE(lCube.m_Color);
-		vecLightAmbient += vecCubeColor;
 	}
 
-	vecLightAmbient /= lightCubes.Count();
+	for (int i = 0; i < 6; i++)
+	{
+		vecCubeInterp[i] *= (1.0f / totalFactor);
+	}
+
+	for (int it = 0; it < 6; it++)
+	{
+		VectorMax(vecLightAmbient, vecCubeInterp[it], vecLightAmbient);
+	}
 #else
-	vecLightAmbient = engine->GetLightForPointFast(vecPosition, true);
+	vecLightAmbient = engine->GetLightForPointFast(vecPosition, false);
 #endif
+	vecLightAmbient /= 255.f;
+
+	VectorMin(vecLightAmbient, Vector(1.f), vecLightAmbient);
 	return true;
 }

@@ -163,6 +163,8 @@ public:
 		KillSprites(0.0f);
 		m_bHackedByAlyx = true; 
 		StartEye();
+
+		UpdateTeam();
 	}
 
 	virtual void	InputPowerdown( inputdata_t &inputdata )

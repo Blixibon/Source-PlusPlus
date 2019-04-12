@@ -59,6 +59,8 @@ Activity CHL2PlayerAnimState::TranslateActivity(Activity actDesired)
 		// Live TF2 does this but is doing this after the above call correct?
 		actTranslated = pWeapon->GetItem()->GetActivityOverride(GetBasePlayer()->GetTeamNumber(), actTranslated);
 	}
+	else if (actTranslated == ACT_HL2MP_JUMP)
+		actTranslated = ACT_HL2MP_JUMP_SLAM;
 
 	return actTranslated;
 }
@@ -75,6 +77,12 @@ bool CHL2PlayerAnimState::SetupPoseParameters(CStudioHdr* pStudioHdr)
 	// Save off the pose parameter indices.
 	if (!pStudioHdr)
 		return false;
+
+	MDLCACHE_CRITICAL_SECTION();
+	for (int i = 0; i < pStudioHdr->GetNumPoseParameters(); i++)
+	{
+		GetBasePlayer()->SetPoseParameter(i, 0.0);
+	}
 
 	m_PoseParameterData.m_bHL2Aim = true;
 

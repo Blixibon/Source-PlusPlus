@@ -657,7 +657,7 @@ void CNPC_Antlion::MeleeAttack( float distance, float damage, QAngle &viewPunch,
 		vecForceDir = ( pHurt->WorldSpaceCenter() - WorldSpaceCenter() );
 
 		//FIXME: Until the interaction is setup, kill combine soldiers in one hit -- jdw
-		if ( FClassnameIs( pHurt, "npc_combine_s" ) )
+		if ( IsWorker() && FClassnameIs( pHurt, "npc_combine_s" ) )
 		{
 			CTakeDamageInfo	dmgInfo( this, this, pHurt->m_iHealth+25, DMG_SLASH );
 			CalculateMeleeDamageForce( &dmgInfo, vecForceDir, pHurt->GetAbsOrigin() );
@@ -3634,8 +3634,16 @@ void CNPC_Antlion::BuildScheduleTestBits( void )
 bool CNPC_Antlion::IsValidEnemy( CBaseEntity *pEnemy )
 {
 	//See if antlions are friendly to the player in this map
-	if ( IsAllied() && pEnemy->IsPlayer() )
+	if (IsAllied() && pEnemy->IsPlayer())
+	{
+#ifdef HL2_LAZUL
+		CBasePlayer* pPlayer = ToBasePlayer(pEnemy);
+		if (pPlayer->Weapon_OwnsThisType("weapon_bugbait"))
+			return false;
+#else
 		return false;
+#endif
+	}
 
 	if ( pEnemy->IsWorld() )
 		return false;

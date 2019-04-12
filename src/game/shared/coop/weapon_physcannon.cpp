@@ -1192,7 +1192,7 @@ public:
 	void	ItemPreFrame();
 	void	ItemPostFrame();
 	
-	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_PHYSGUN }
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_PHYSGUN; }
 
 	void	ForceDrop( void );
 	bool	DropIfEntityHeld( CBaseEntity *pTarget );	// Drops its held entity if it matches the entity passed in
@@ -4196,15 +4196,22 @@ void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &col
 	float alpha = m_Parameters[effectID].GetAlpha().Interp( dt );
 	
 	// Get scale
-	scale = m_Parameters[effectID].GetScale().Interp( dt );
+	scale = m_Parameters[effectID].GetScale().Interp( dt ) * SpriteScaleFactor();
 	
 	// Get material
 	*pMaterial = (IMaterial*)m_Parameters[effectID].GetMaterial(IsMegaPhysCannon() ? 1 : 0);
 
 	// Setup the color
-	color.r = (int) m_Parameters[effectID].GetColor().x;
-	color.g = (int) m_Parameters[effectID].GetColor().y;
-	color.b = (int) m_Parameters[effectID].GetColor().z;
+	if (!IsMegaPhysCannon())
+	{
+		color.r = (int)m_Parameters[effectID].GetColor().x;
+		color.g = (int)m_Parameters[effectID].GetColor().y;
+		color.b = (int)m_Parameters[effectID].GetColor().z;
+	}
+	else
+	{
+		color = COLOR_WHITE.ToColor32();
+	}
 	color.a = (int) alpha;
 
 	// Setup the attachment

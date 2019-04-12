@@ -1,7 +1,7 @@
 @include "halflife1.fgd"
 @include "portal.fgd"
 
-@pointclass base(targetname) = laz_gamerules
+@pointclass base(Targetname) = laz_gamerules
 [
 	allowdeathmatch(choices) : "Allow Deathmatch" : 0  =
 	[

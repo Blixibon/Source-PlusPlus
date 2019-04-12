@@ -1,0 +1,81 @@
+
+$LOD 15
+{
+	replacemodel "AntLion_reference.smd" "AntLion_reference_lod1.smd"
+	replacemodel "antlion_wings_reference.smd" "antlion_wings_reference_lod1.smd"
+	NoFacial
+}
+$LOD 30
+{
+	replacemodel "AntLion_reference.smd" "AntLion_reference_lod2.smd"
+	replacemodel "antlion_wings_reference.smd" "antlion_wings_reference_lod2.smd"
+	replacebone "Antlion.FangBottomL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomL2_Bone" "Antlion.FangBottomL1_Bone"
+	replacebone "Antlion.FangBottomR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomR2_Bone" "Antlion.FangBottomR1_Bone"
+	replacebone "Antlion.FangTopL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopL2_Bone" "Antlion.FangTopL1_Bone"
+	replacebone "Antlion.FangTopR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopR2_Bone" "Antlion.FangTopR1_Bone"
+	NoFacial
+}
+$LOD 55
+{
+	replacemodel "AntLion_reference.smd" "AntLion_reference_lod3.smd"
+	replacemodel "antlion_wings_reference.smd" "antlion_wings_reference_lod3.smd"
+	replacebone "Antlion.ArmR2_Bone" "Antlion.ArmR1_Bone"
+	replacebone "Antlion.ArmR3_Bone" "Antlion.ArmR2_Bone"
+	replacebone "Antlion.ArmL2_Bone" "Antlion.ArmL1_Bone"
+	replacebone "Antlion.ArmL3_Bone" "Antlion.ArmL2_Bone"
+	replacebone "Antlion.FangBottomL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomL2_Bone" "Antlion.FangBottomL1_Bone"
+	replacebone "Antlion.FangBottomR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomR2_Bone" "Antlion.FangBottomR1_Bone"
+	replacebone "Antlion.FangTopL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopL2_Bone" "Antlion.FangTopL1_Bone"
+	replacebone "Antlion.FangTopR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopR2_Bone" "Antlion.FangTopR1_Bone"
+	NoFacial
+}
+$LOD 85
+{
+	replacemodel "AntLion_reference.smd" "AntLion_reference_lod4.smd"
+	replacemodel "antlion_wings_reference.smd" "antlion_wings_reference_lod4.smd"
+	replacebone "Antlion.ArmR1_Bone" "Antlion.Chest_Bone"
+	replacebone "Antlion.ArmR2_Bone" "Antlion.ArmR1_Bone"
+	replacebone "Antlion.ArmR3_Bone" "Antlion.ArmR2_Bone"
+	replacebone "Antlion.ArmL1_Bone" "Antlion.Chest_Bone"
+	replacebone "Antlion.ArmL2_Bone" "Antlion.ArmL1_Bone"
+	replacebone "Antlion.ArmL3_Bone" "Antlion.ArmL2_Bone"
+	replacebone "Antlion.Head_Bone" "Antlion.Chest_Bone"
+	replacebone "Antlion.FangBottomL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomL2_Bone" "Antlion.FangBottomL1_Bone"
+	replacebone "Antlion.FangBottomR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomR2_Bone" "Antlion.FangBottomR1_Bone"
+	replacebone "Antlion.FangTopL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopL2_Bone" "Antlion.FangTopL1_Bone"
+	replacebone "Antlion.FangTopR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopR2_Bone" "Antlion.FangTopR1_Bone"
+	NoFacial
+}
+$ShadowLOD
+{
+	replacemodel "AntLion_reference.smd" "AntLion_reference_lod5.smd"
+	replacemodel "antlion_wings_reference.smd" "antlion_wings_reference_lod5.smd"
+	replacebone "Antlion.ArmR1_Bone" "Antlion.Chest_Bone"
+	replacebone "Antlion.ArmR2_Bone" "Antlion.ArmR1_Bone"
+	replacebone "Antlion.ArmR3_Bone" "Antlion.ArmR2_Bone"
+	replacebone "Antlion.ArmL1_Bone" "Antlion.Chest_Bone"
+	replacebone "Antlion.ArmL2_Bone" "Antlion.ArmL1_Bone"
+	replacebone "Antlion.ArmL3_Bone" "Antlion.ArmL2_Bone"
+	replacebone "Antlion.Head_Bone" "Antlion.Chest_Bone"
+	replacebone "Antlion.FangBottomL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomL2_Bone" "Antlion.FangBottomL1_Bone"
+	replacebone "Antlion.FangBottomR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangBottomR2_Bone" "Antlion.FangBottomR1_Bone"
+	replacebone "Antlion.FangTopL1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopL2_Bone" "Antlion.FangTopL1_Bone"
+	replacebone "Antlion.FangTopR1_Bone" "Antlion.Head_Bone"
+	replacebone "Antlion.FangTopR2_Bone" "Antlion.FangTopR1_Bone"
+	NoFacial
+}

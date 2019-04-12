@@ -1,0 +1,114 @@
+
+$CollisionJoints "antlion_physics.smd"
+{
+	$mass 115
+	$inertia 10
+	$damping 0.01
+	$rotdamping 1.5
+	$rootbone "antlion.body_bone"
+
+
+	$jointconstrain "Antlion.WingL_Bone" x limit 0 0 0
+	$jointconstrain "Antlion.WingL_Bone" y limit -55 0 0.6
+	$jointconstrain "Antlion.WingL_Bone" z limit -75 68 0.6
+
+	$jointconstrain "Antlion.Back_Bone" x limit 0 0 0
+	$jointconstrain "Antlion.Back_Bone" y limit -26 26 0.2
+	$jointconstrain "Antlion.Back_Bone" z limit -84 35 0.2
+
+	$jointconstrain "Antlion.LegR1_Bone" x limit -44 44 0.2
+	$jointconstrain "Antlion.LegR1_Bone" y limit -44 28 0.2
+	$jointconstrain "Antlion.LegR1_Bone" z limit -82 82 0.2
+
+	$jointconstrain "Antlion.LegR2_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegR2_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegR2_Bone" z limit -59 68 0.2
+
+	$jointconstrain "Antlion.LegL1_Bone" x limit -30 30 0.2
+	$jointconstrain "Antlion.LegL1_Bone" y limit -28 44 0.2
+	$jointconstrain "Antlion.LegL1_Bone" z limit -82 82 0.2
+
+	$jointconstrain "Antlion.LegL2_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegL2_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegL2_Bone" z limit -59 68 0.2
+
+	$jointconstrain "Antlion.LegL3_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegL3_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegL3_Bone" z limit -100 44 0.2
+
+	$jointconstrain "Antlion.LegR3_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegR3_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegR3_Bone" z limit -100 44 0.2
+
+	$jointconstrain "Antlion.LegMidR1_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidR1_Bone" y limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidR1_Bone" z limit -28 64 0.2
+
+	$jointconstrain "Antlion.LegMidR2_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidR2_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegMidR2_Bone" z limit -97 41 0.2
+
+	$jointconstrain "Antlion.LegMidR3_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidR3_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegMidR3_Bone" z limit -41 100 0.2
+
+	$jointconstrain "Antlion.LegMidL1_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidL1_Bone" y limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidL1_Bone" z limit -64 28 0.2
+
+	$jointconstrain "Antlion.LegMidL2_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidL2_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegMidL2_Bone" z limit -41 97 0.2
+
+	$jointconstrain "Antlion.LegMidL3_Bone" x limit 0 0 0.2
+	$jointconstrain "Antlion.LegMidL3_Bone" y limit 0 0 0
+	$jointconstrain "Antlion.LegMidL3_Bone" z limit -100 41 0.2
+
+	$jointconstrain "Antlion.Head_Bone" x limit -17 17 0.2
+	$jointconstrain "Antlion.Head_Bone" y limit -59 59 0.2
+	$jointconstrain "Antlion.Head_Bone" z limit -73 55 0.2
+
+	$jointconstrain "Antlion.WingR_Bone" x limit 0 0 0
+	$jointconstrain "Antlion.WingR_Bone" y limit 0 55 0.6
+	$jointconstrain "Antlion.WingR_Bone" z limit -75 68 0.6
+}
+
+$CollisionText
+{
+	break 
+	{
+		"model" "Gibs/antlion_gib_large_1"
+		"health" "0"
+		"fadetime" "10"
+		"burst" "200"
+		"placementbone" "Antlion.WingL_Bone"
+		"multiplayer_break" "client"
+	}
+	break 
+	{
+		"model" "Gibs/antlion_gib_large_2"
+		"health" "0"
+		"fadetime" "10"
+		"burst" "200"
+		"placementbone" "Antlion.Head_Bone"
+		"multiplayer_break" "client"
+	}
+	break 
+	{
+		"model" "Gibs/antlion_gib_large_3"
+		"health" "0"
+		"fadetime" "10"
+		"burst" "200"
+		"placementbone" "Antlion.Body_Bone"
+		"multiplayer_break" "client"
+	}
+	break 
+	{
+		"model" "Gibs/antlion_gib_medium_1"
+		"health" "0"
+		"fadetime" "10"
+		"burst" "200"
+		"placementbone" "Antlion.ArmR2_Bone"
+		"multiplayer_break" "client"
+	}
+}

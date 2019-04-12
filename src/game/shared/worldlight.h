@@ -63,6 +63,9 @@ private:
 	int m_nWorldLights;
 	dworldlight_t *m_pWorldLights;
 	CUtlVector<CubeVec> m_LeafCubes;
+#ifndef CLIENT_DLL
+	//INetworkStringTable* m_pLightStyleTable;
+#endif
 };
 
 //-----------------------------------------------------------------------------

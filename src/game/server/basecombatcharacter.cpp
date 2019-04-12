@@ -2746,6 +2746,41 @@ Relationship_t *CBaseCombatCharacter::FindEntityRelationship( CBaseEntity *pTarg
 	return &m_DefaultRelationship[ Classify() ][ pTarget->Classify() ];
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: describes the relationship between two types of NPC.
+// Input  :
+// Output :
+//-----------------------------------------------------------------------------
+Relationship_t* CBaseCombatCharacter::FindClassRelationship(Class_T nClass)
+{
+	if (nClass != CLASS_NONE)
+	{
+		// Then check for relationship with this edict's class
+		for (int i = 0; i < m_Relationship.Count(); i++)
+		{
+			if (nClass == m_Relationship[i].classType)
+			{
+				return &m_Relationship[i];
+			}
+		}
+	}
+
+	/*if (nClass == CLASS_PLAYER)
+	{
+		for (int i = 0; i < m_Relationship.Count(); i++)
+		{
+			if (m_Relationship[i].entity.IsValid() && m_Relationship[i].entity->IsPlayer())
+			{
+				return &m_Relationship[i];
+			}
+		}
+	}*/
+
+	AllocateDefaultRelationships();
+	// If none found return the default
+	return &m_DefaultRelationship[Classify()][nClass];
+}
+
 Disposition_t CBaseCombatCharacter::IRelationType ( CBaseEntity *pTarget )
 {
 	if ( pTarget )
