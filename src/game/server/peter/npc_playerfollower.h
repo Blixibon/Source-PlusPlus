@@ -42,6 +42,7 @@ public:
 	void			RemoveFromPlayerSquad();
 	void 			TogglePlayerSquadState(CBasePlayer *);
 	virtual string_t GetPlayerSquadName() const;
+	bool IsInThisPlayerSquad(CBasePlayer *pPlayer) const;
 
 	virtual CBasePlayer *GetBestPlayer();	
 

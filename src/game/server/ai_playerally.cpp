@@ -458,9 +458,9 @@ void CAI_PlayerAlly::GatherEnemyConditions( CBaseEntity *pEnemy )
 #ifdef HL2_DLL
 		if ( HasCondition( COND_SEE_ENEMY ) && ( pEnemy->Classify() != CLASS_BULLSEYE ) )
 		{
-			if( Classify() == CLASS_PLAYER_ALLY_VITAL && hl2_episodic.GetBool() )
+			if(IsVitalAlly() && hl2_episodic.GetBool() )
 			{
-				CBasePlayer *pPlayer = AI_GetSinglePlayer();
+				CBasePlayer *pPlayer = GetBestPlayer();
 
 				if( pPlayer )
 				{
@@ -1130,7 +1130,7 @@ int CAI_PlayerAlly::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	// Don't do damage reduction for DMG_GENERIC. This allows SetHealth inputs to still do full damage.
 	if ( subInfo.GetDamageType() != DMG_GENERIC )
 	{
-		if ( Classify() == CLASS_PLAYER_ALLY_VITAL && !(subInfo.GetDamageType() & DMG_CRUSH) )
+		if (IsVitalAlly() && !(subInfo.GetDamageType() & DMG_CRUSH) )
 		{
 			float flDamage = subInfo.GetDamage();
 			if ( flDamage > ( GetMaxHealth() * 0.25 ) )

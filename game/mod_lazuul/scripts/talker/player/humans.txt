@@ -145,7 +145,7 @@ response PlayerResponseTaunt
 
 rule PlayerTaunt
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceCitizen
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceCitizen
 	response	PlayerResponseTaunt
 }
 

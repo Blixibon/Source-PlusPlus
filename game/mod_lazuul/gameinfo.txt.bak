@@ -11,14 +11,15 @@
 	
 	content
 	{
-		"hl1_low"	1
-		"bms_low"	1
-		citizen2	1
-		citizen		1
+		"hl1_low"		1
+		"bms_low"		1
+		citizen2		1
+		citizen			1
 		"portal_low"	1
-		hl2mp_low	1
-		hl1mp_low	1
-		episodic	1
+		depot			1
+		hl2mp_low		1
+		hl1mp_low		1
+		episodic		1
 	}
 	
 	mount

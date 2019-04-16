@@ -447,12 +447,22 @@ struct FollowerSquadCandidate_t
 	int			  iSquadIndex;
 };
 
+bool CNPC_PlayerFollower::IsInThisPlayerSquad(CBasePlayer* pPlayer) const
+{
+	if (!pPlayer)
+		return false;
+
+	return (m_pSquad == pPlayer->GetPlayerSquad());
+}
+
+ConVar mp_autosquad("npc_enable_autosquad_mp", "0", FCVAR_CHEAT);
+
 void CNPC_PlayerFollower::UpdatePlayerSquad()
 {
-	if (!AI_IsSinglePlayer())
+	if (!AI_IsSinglePlayer() && !mp_autosquad.GetBool())
 		return;
 
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer *pPlayer = GetBestPlayer();
 	if ((pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D()).LengthSqr() < Square(20 * 12))
 		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
 
@@ -530,7 +540,7 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 			
 			int iNew;
 
-			if (pCitizen->IsInPlayerSquad())
+			if (pCitizen->IsInThisPlayerSquad(pPlayer))
 			{
 				iNew = candidates.AddToTail();
 				candidates[iNew].pCitizen = pCitizen;
@@ -551,7 +561,7 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 
 				bool bShouldAdd = false;
 
-				if (pCitizen->HasCondition(COND_SEE_PLAYER))
+				if (pCitizen->IsAbleToSee(pPlayer, USE_FOV))
 					bShouldAdd = true;
 				else
 				{
@@ -844,7 +854,7 @@ CAI_BaseNPC *CNPC_PlayerFollower::GetSquadCommandRepresentative()
 			hCurrent = NULL;
 
 			CUtlVectorFixed<BMSSquadMemberInfo_t, MAX_SQUAD_MEMBERS> candidates;
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+			CBasePlayer* pPlayer = m_pSquad->GetPlayerCommander();
 
 			if (pPlayer)
 			{

@@ -4581,6 +4581,17 @@
 	"wave"			"*vo/npc/$gender01/zombies02.wav"
 }
 
+"npc_citizen.zombine01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"*vo/npc/$gender01/zombine01.wav"
+}
+
 "npc_citizen.scanners01"
 {
 	"channel"		"CHAN_VOICE"

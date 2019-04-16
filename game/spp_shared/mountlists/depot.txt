@@ -1,0 +1,11 @@
+"Mount"
+{
+	sourcemods
+	{
+		"head"	"0"
+		"Depot"
+		{
+		
+		}
+	}
+}

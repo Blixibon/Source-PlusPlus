@@ -374,6 +374,8 @@ public:
 		return true;
 	}
 
+	virtual bool		IsVitalAlly() { return false; }
+
 	// VPHYSICS
 	virtual void			VPhysicsShadowCollision( int index, gamevcollisionevent_t *pEvent );
 	virtual void			VPhysicsUpdate( IPhysicsObject *pPhysics );

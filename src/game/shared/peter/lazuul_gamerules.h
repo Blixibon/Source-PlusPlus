@@ -61,6 +61,8 @@ public:
 	virtual float			GetAutoAimScale(CBasePlayer* pPlayer);
 	virtual float			GetAmmoQuantityScale(int iAmmoIndex);
 	virtual void			LevelInitPreEntity();
+
+	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 #endif
 
 	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }

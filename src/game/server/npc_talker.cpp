@@ -856,7 +856,7 @@ int CNPCSimpleTalker::SelectNonCombatSpeechSchedule()
 //-----------------------------------------------------------------------------
 bool CNPCSimpleTalker::CanSayHello( void )
 {
-#ifndef HL1_DLL
+#if !defined(HL1_DLL) && !defined(HL2_LAZUL)
 	if ( Classify() == CLASS_PLAYER_ALLY_VITAL )
 		return false;
 #endif

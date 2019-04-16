@@ -543,6 +543,8 @@ public:
 
 	void				UpdateTeam();
 
+	virtual bool		IsVitalAlly() { return (Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_COMBINE_VITAL); }
+
 	//---------------------------------
 	// Component creation factories
 	// 
@@ -1169,7 +1171,7 @@ protected:
 	void CalculateForcedInteractionPosition( void );
 	CAI_BaseNPC *GetInteractionPartner( void );
 
-private:
+protected:
 	// Forced interactions
 	CHandle<CAI_BaseNPC>				 m_hForcedInteractionPartner;
 	Vector								 m_vecForcedWorldPosition;
@@ -2009,7 +2011,7 @@ protected:
 	virtual bool Stand( void );
 	virtual void DesireCrouch( void );
 	inline void	 DesireStand( void );
-	bool		 CouldShootIfCrouching( CBaseEntity *pTarget );
+	virtual bool CouldShootIfCrouching( CBaseEntity *pTarget );
 	virtual bool IsCrouchedActivity( Activity activity );
 
 protected:

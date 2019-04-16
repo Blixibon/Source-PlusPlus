@@ -142,7 +142,7 @@ void CAI_AllyManager::CountAllies( int *pTotal, int *pMedics )
 		if ( ppAIs[i]->IsAlive() && ppAIs[i]->IsPlayerAlly() )
 		{
 			// Vital allies do not count.
-			if( ppAIs[i]->Classify() == CLASS_PLAYER_ALLY_VITAL )
+			if( ppAIs[i]->IsVitalAlly())
 				continue;
 
 			// They only count if I can use them.

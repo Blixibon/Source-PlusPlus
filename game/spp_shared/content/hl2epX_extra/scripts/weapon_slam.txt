@@ -17,6 +17,7 @@ WeaponData
 
 	"weight"				"1"
 	"item_flags"			"2"
+	//ITEM_FLAG_EXHAUSTIBLE	1
 
 	// Weapon Sprite data is loaded by the Client DLL.
 	TextureData

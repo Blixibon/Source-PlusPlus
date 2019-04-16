@@ -7,6 +7,7 @@
 #include "peter/gametypes.h"
 #include "peter/player_models.h"
 #include "team_objectiveresource.h"
+#include "peter/laz_mapents.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
@@ -123,16 +124,17 @@ extern ConVar sk_npc_dmg_gunship_to_plr;
 ConVar	sk_max_slam("sk_max_slam", "15", FCVAR_REPLICATED);
 
 #ifndef CLIENT_DLL
+static bool s_bInModeChangedScope = false;
 void LazGamemodeChangedCallback(IConVar* pConVar, const char* pOldValue, float flOldValue)
 {
-	static bool s_bInScope = false;
-	if (!s_bInScope)
+	
+	if (!s_bInModeChangedScope)
 	{
-		s_bInScope = true;
+		s_bInModeChangedScope = true;
 		ConVarRef var(pConVar);
 		if (g_pGameRules)
 			LazuulRules()->SetGameMode(var.GetInt());
-		s_bInScope = false;
+		s_bInModeChangedScope = false;
 	}
 }
 
@@ -679,6 +681,71 @@ void CLazuul::NPC_DroppedHealth(void)
 void CLazuul::NPC_DroppedGrenade(void)
 {
 	m_flLastGrenadeDropTime = gpGlobals->curtime + sk_plr_grenade_drop_time.GetFloat();
+}
+
+//=========================================================
+//=========================================================
+void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
+{
+	if (!IsMultiplayer())
+		return;
+
+	if (!pPlayer || pPlayer->IsObserver())
+		return;
+
+	bool		addDefault;
+	CBaseEntity* pWeaponEntity = NULL;
+
+	pPlayer->EquipSuit(false);
+
+	addDefault = true;
+
+	while ((pWeaponEntity = gEntList.FindEntityByClassname(pWeaponEntity, "info_player_equip")) != NULL)
+	{
+		CLazPlayerEquip* pEquip = assert_cast<CLazPlayerEquip*> (pWeaponEntity);
+		
+		if (!pEquip->IsDisabled() && pEquip->CanEquipTeam(pPlayer->GetTeamNumber()))
+		{
+			pEquip->EquipPlayer(pPlayer);
+			addDefault = false;
+		}
+	}
+
+	if (addDefault)
+	{
+		pPlayer->GiveAmmo(255, "Pistol");
+		pPlayer->GiveAmmo(45, "SMG1");
+		pPlayer->GiveAmmo(1, "grenade");
+		pPlayer->GiveAmmo(6, "Buckshot");
+		pPlayer->GiveAmmo(6, "357");
+
+		if (pPlayer->GetTeamNumber() == TEAM_COMBINE)
+		{
+			pPlayer->GiveNamedItem("weapon_stunstick");
+		}
+		else
+		{
+			pPlayer->GiveNamedItem("weapon_crowbar");
+		}
+
+		pPlayer->GiveNamedItem("weapon_pistol");
+		pPlayer->GiveNamedItem("weapon_smg1");
+		pPlayer->GiveNamedItem("weapon_frag");
+		pPlayer->GiveNamedItem("weapon_physcannon");
+
+		const char* szDefaultWeaponName = engine->GetClientConVarValue(engine->IndexOfEdict(pPlayer->edict()), "cl_defaultweapon");
+
+		CBaseCombatWeapon* pDefaultWeapon = pPlayer->Weapon_OwnsThisType(szDefaultWeaponName);
+
+		if (pDefaultWeapon)
+		{
+			pPlayer->Weapon_Switch(pDefaultWeapon);
+		}
+		else
+		{
+			pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_physcannon"));
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -2741,6 +2808,10 @@ void CLazuul::LevelInitPreEntity()
 	{
 		CBaseEntity::sm_bAccurateTriggerBboxChecks = true;
 	}
+
+	s_bInModeChangedScope = true;
+	SetGameMode(gamemode.GetInt());
+	s_bInModeChangedScope = false;
 
 	BaseClass::LevelInitPreEntity();
 }

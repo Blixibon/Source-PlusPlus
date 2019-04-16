@@ -1361,7 +1361,7 @@ bool CPropCombineBall::IsAttractiveTarget( CBaseEntity *pEntity )
 	}
 	else
 	{
-
+#ifndef HL2_LAZUL
 #ifndef HL2MP
 		if ( GetOwnerEntity() )
 		{
@@ -1397,6 +1397,44 @@ bool CPropCombineBall::IsAttractiveTarget( CBaseEntity *pEntity )
 		{
 			if ( g_pGameRules->PlayerRelationship( GetOwnerEntity(), pEntity ) == GR_TEAMMATE )
 				 return false;
+		}
+#endif
+#else
+		if (pEntity == GetOwnerEntity())
+			return false;
+
+		if (pEntity->IsNPC())
+		{
+			if (pEntity->Classify() == CLASS_BULLSEYE)
+				return false;
+
+			CAI_BaseNPC* pNPC = pEntity->MyNPCPointer();
+
+			if (GetOwnerEntity())
+			{
+				// Things we check if this ball has an owner that's not an NPC.
+				if (GetOwnerEntity()->IsPlayer())
+				{
+					if (pNPC->IsPlayerAlly(ToBasePlayer(GetOwnerEntity())))
+					{
+						// Not attracted to other players or allies.
+						return false;
+					}
+				}
+			}
+		}
+		else if (pEntity->IsPlayer())
+		{
+			//No tracking teammates in teammode!
+			if (g_pGameRules->IsTeamplay())
+			{
+				if (g_pGameRules->PlayerRelationship(GetOwnerEntity(), pEntity) == GR_TEAMMATE)
+					return false;
+			}
+		}
+		else
+		{
+			return false;
 		}
 #endif
 

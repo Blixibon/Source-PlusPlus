@@ -1,0 +1,31 @@
+
+$LOD 10
+{
+	replacemodel "soldier_stripped_reference_hd.dmx" "soldier_stripped_reference.smd"
+	NoFacial
+}
+$LOD 20
+{
+	replacemodel "soldier_stripped_reference_hd.dmx" "soldier_stripped_reference_lod1.smd"
+	NoFacial
+}
+$LOD 35
+{
+	replacemodel "soldier_stripped_reference_hd.dmx" "soldier_stripped_reference_lod2.smd"
+	NoFacial
+}
+$LOD 50
+{
+	replacemodel "soldier_stripped_reference_hd.dmx" "soldier_stripped_reference_lod3.smd"
+	NoFacial
+}
+$LOD 60
+{
+	replacemodel "soldier_stripped_reference_hd.dmx" "soldier_stripped_reference_lod4.smd"
+	NoFacial
+}
+$ShadowLOD
+{
+	replacemodel "soldier_stripped_reference_hd.dmx" "soldier_stripped_reference_lod5.smd"
+	NoFacial
+}

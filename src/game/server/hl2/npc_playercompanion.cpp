@@ -338,7 +338,7 @@ Disposition_t CNPC_PlayerCompanion::IRelationType( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 bool CNPC_PlayerCompanion::IsSilentSquadMember() const
 {
-	if ( (const_cast<CNPC_PlayerCompanion *>(this))->Classify() == CLASS_PLAYER_ALLY_VITAL && m_pSquad && MAKE_STRING(m_pSquad->GetName()) == GetPlayerSquadName() )
+	if ( (const_cast<CNPC_PlayerCompanion *>(this))->IsVitalAlly() && m_pSquad && MAKE_STRING(m_pSquad->GetName()) == GetPlayerSquadName() )
 	{
 		return true;
 	}
@@ -356,7 +356,7 @@ void CNPC_PlayerCompanion::GatherConditions()
 
 	if ( AI_IsSinglePlayer() && pPlayer)
 	{
-		if ( Classify() == CLASS_PLAYER_ALLY_VITAL )
+		if (IsVitalAlly())
 		{
 			bool bInPlayerSquad = ( m_pSquad && MAKE_STRING(m_pSquad->GetName()) == GetPlayerSquadName() );
 			if ( bInPlayerSquad )
@@ -1301,7 +1301,7 @@ Activity CNPC_PlayerCompanion::TranslateActivityReadiness( Activity activity )
 
 	if ( m_bReadinessCapable &&
 		 ( GetReadinessUse() == AIRU_ALWAYS ||
-		   ( GetReadinessUse() == AIRU_ONLY_PLAYER_SQUADMATES && (IsInPlayerSquad()||Classify()==CLASS_PLAYER_ALLY_VITAL) ) ) )
+		   ( GetReadinessUse() == AIRU_ONLY_PLAYER_SQUADMATES && (IsInPlayerSquad()|| IsVitalAlly()) ) ) )
 	{
 		bool bShouldAim = ShouldBeAiming();
 
@@ -2476,7 +2476,7 @@ void CNPC_PlayerCompanion::SetupCoverSearch( CBaseEntity *pEntity )
 	gm_bFindingCoverFromAllEnemies = false;
 	g_pMultiCoverSearcher = this;
 
-	if ( Classify() == CLASS_PLAYER_ALLY_VITAL || IsInPlayerSquad() )
+	if (IsVitalAlly() || IsInPlayerSquad() )
 	{
 		if ( GetEnemy() )
 		{
@@ -3052,7 +3052,7 @@ bool CNPC_PlayerCompanion::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, 
 			   IsCurSchedule( SCHED_GET_HEALTHKIT ) ||
 			   pBlocker->IsCurSchedule( SCHED_FAIL ) ||
 			   ( IsInPlayerSquad() && !pBlocker->IsInPlayerSquad() ) ||
-			   Classify() == CLASS_PLAYER_ALLY_VITAL ||
+				 IsVitalAlly() ||
 			   IsInAScript() ) )
 
 		{
@@ -3680,7 +3680,7 @@ bool CNPC_PlayerCompanion::IsNavigationUrgent( void )
 	bool bBase = BaseClass::IsNavigationUrgent();
 
 	// Consider follow & assault behaviour urgent
-	if ( !bBase && (m_FollowBehavior.IsActive() || ( m_AssaultBehavior.IsRunning() && m_AssaultBehavior.IsUrgent() )) && Classify() == CLASS_PLAYER_ALLY_VITAL )
+	if ( !bBase && (m_FollowBehavior.IsActive() || ( m_AssaultBehavior.IsRunning() && m_AssaultBehavior.IsUrgent() )) && IsVitalAlly())
 	{
 		// But only if the blocker isn't the player, and isn't a physics object that's still moving
 		CBaseEntity *pBlocker = GetNavigator()->GetBlockingEntity();

@@ -1113,6 +1113,12 @@ response CitizenZombie
    response CitizenZombieGroup respeakdelay 120
 }
 
+response CitizenZombine
+{
+	response CitizenZombieGroup respeakdelay 120
+	speak "npc_citizen.zombine01"
+}
+
 rule CitizenStartCombatZombie
 {
 	criteria    IsCitizen ConceptStartCombat
@@ -1139,6 +1145,13 @@ rule CitizenStartCombatZombiePoison
 	criteria    IsCitizen ConceptStartCombat
 	enemy npc_poisonzombie required
 	response    CitizenZombie
+}
+
+rule CitizenStartCombatZombine
+{
+	criteria    IsCitizen ConceptStartCombat
+	enemy npc_zombine required
+	response    CitizenZombine
 }
 
 //------------------------------------------------------------------------------------------------------------

@@ -6,6 +6,7 @@ criterion	"ConceptPlayerCoverReload"	"Concept" "TLK_PLAYER_RELOAD" required
 criterion	"ConceptPlayerGiveAmmo"		"Concept" "TLK_PLAYER_GIVEAMMO" required
 criterion	"ConceptPlayerGiveHealth"	"Concept" "TLK_PLAYER_GIVEHEALTH" required
 criterion	"ConceptPlayerTaunt"		"Concept" "TLK_PLAYER_TAUNT" required
+criterion	"ConceptPlayerKill"			"Concept" "TLK_KILLED_PLAYER" required
 criterion	"ConceptPlayerDeadPlayer"	"Concept" "TLK_PLAYER_DEAD" required
 criterion	"ConceptPlayerDeadPlayerAnswer"	"Concept" "TLK_PLAYER_DEAD_ANSWER" required
 

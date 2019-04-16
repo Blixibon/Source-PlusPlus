@@ -654,8 +654,8 @@ void CAI_BaseNPC::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bo
 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
 #ifdef HL2_EPISODIC
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	if ( pPlayer->IRelationType( this ) != D_LI )
+	//CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	if ( FindClassRelationship(CLASS_PLAYER)->disposition != D_LI )
 	{
 		CNPC_Alyx *alyx = CNPC_Alyx::GetAlyx();
 
@@ -3237,7 +3237,10 @@ void CAI_BaseNPC::UpdateEfficiency( bool bInPVS )
 				}
 			}
 			
-			iSound = pCurrentSound->NextSound();
+			if (pCurrentSound)
+				iSound = pCurrentSound->NextSound();
+			else
+				iSound = SOUNDLIST_EMPTY;
 		}
 	}
 
@@ -12212,7 +12215,7 @@ bool CAI_BaseNPC::ShouldFailNav( bool bMovementFailed )
 		if ( pEntity && pEntity->GetServerVehicle() )
 		{
 			// Vital allies never get stuck, and urgent moves cannot be blocked by a vehicle
-			if ( Classify() == CLASS_PLAYER_ALLY_VITAL || IsNavigationUrgent() )
+			if (IsVitalAlly() || IsNavigationUrgent() )
 				return false;
 		}
 	}

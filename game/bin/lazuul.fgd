@@ -1,6 +1,17 @@
 @include "halflife1.fgd"
 @include "portal.fgd"
 
+@BaseClass = TeamNum
+[
+	TeamNum(choices) : "Team" : 0 : "Team" =
+	[
+		0 : "Any"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+	input SetTeam(integer) : "Changes the entity's team."
+]
+
 @pointclass base(Targetname) = laz_gamerules
 [
 	allowdeathmatch(choices) : "Allow Deathmatch" : 0  =
@@ -20,4 +31,120 @@
 		0 : "No"
 		1 : "Yes"
 	]
+]
+
+@PointClass base(Targetname, TeamNum) color(150 150 150) = info_player_equip : "Entity that will give the player any equipment specified by it's key values (in the form of 'entity_classname' 'number_of_items').  This entity replaces the functionality of the game_player_equip."
+[
+	input Enable (void) : "Enable this entity to be searched for when the player spawns."
+	input Disable (void) : "Disable this so players ignore this when they get their items."
+
+	StartDisabled(choices) : "Start Disabled" : 0 : "If this entity starts disabled, it will be ignored when the player spawns." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	input EquipPlayer(void) : "Equip the activator of this input with the items contained in this entity, even if disabled.  Activator must be a player."
+	input EquipAllPlayers(void) : "Equip every living player with the items contained in this entity, even if this entity is disabled."
+
+	// list items
+	//item_Suit(choices) : "Item: Suit" : 1 : "Give player the hazard suit" =
+	//[
+	//	0 : "No"
+	//	1 : "Yes"
+	//]
+	
+	item_Armor(integer) : "Item: Armor" : 0 : "Give player this much armor (0-100)"
+
+	// list weapons
+	weapon_crowbar(choices) : "Weapon: Crowbar" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_stunstick(choices) : "Weapon: Stunstick" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_pistol(choices) : "Weapon: Pistol" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_357(choices) : "Weapon: Magnum .357" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_deagle(choices) : "Weapon: Desert Eagle .357" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_smg1(choices) : "Weapon: SMG1" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_ar2(choices) : "Weapon: AR2" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_mg1(choices) : "Weapon: MG1" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_shotgun(choices) : "Weapon: Shotgun" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_crossbow(choices) : "Weapon: Crossbow" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_frag(choices) : "Weapon: Frag" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_rpg(choices) : "Weapon: RPG" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_slam(choices) : "Weapon: S.L.A.M." : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_physcannon(choices) : "Weapon: Physics Cannon" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// list ammo
+	ammo_Pistol(integer) : "Ammo: Pistol" : 0 : "Give amount of named ammo"
+	ammo_357(integer) : "Ammo: Magnum .357" : 0 : "Give amount of named ammo"
+	ammo_SMG1(integer) : "Ammo: SMG1" : 0 : "Give amount of named ammo"
+	ammo_SMG1_Grenade(integer) : "Ammo: SMG1 Grenade" : 0 : "Give amount of named ammo"
+	ammo_AR2(integer) : "Ammo: AR2" : 0 : "Give amount of named ammo"
+	ammo_AR2AltFire(integer) : "Ammo: AR2 Grenade" : 0 : "Give amount of named ammo"
+	ammo_Buckshot(integer) : "Ammo: Shotgun" : 0 : "Give amount of named ammo"
+	ammo_XBowBolt(integer) : "Ammo: Crossbow Bolt" : 0 : "Give amount of named ammo"
+	ammo_Grenade(integer) : "Ammo: Frag Grenade" : 0 : "Give amount of named ammo"
+	ammo_RPG_Round(integer) : "Ammo: RPG Rocket" : 0 : "Give amount of named ammo"
+	ammo_slam(integer) : "Ammo: S.L.A.M." : 0 : "Give amount of named ammo"
 ]

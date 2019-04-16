@@ -487,11 +487,11 @@ float CGrabController::ComputeError()
 			DetachEntity( false );
 			return 9999; // force detach
 		}
-	}
-	
-	if ( pAttached->IsEFlagSet( EFL_IS_BEING_LIFTED_BY_BARNACLE ) )
-	{
-		m_error *= 3.0f;
+
+		if (pAttached->IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE))
+		{
+			m_error *= 3.0f;
+		}
 	}
 
 	m_errorTime = 0;
@@ -944,7 +944,7 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 		
 		//Adrian: Oops, our object became motion disabled, let go!
 		IPhysicsObject *pPhys = pAttached->VPhysicsGetObject();
-		if ( pPhys && pPhys->IsMoveable() == false )
+		if ( !pPhys || pPhys->IsMoveable() == false )
 		{
 			Shutdown();
 			return;
@@ -1027,13 +1027,14 @@ void PlayerPickupObject( CBasePlayer *pPlayer, CBaseEntity *pObject )
 class CPhysCannonEffect
 {
 public:
-	CPhysCannonEffect( void ) : m_vecColor( 255, 255, 255 ), m_bVisible( true ), m_nAttachment( -1 ) {};
+	CPhysCannonEffect( void ) : m_vecColor( 255, 255, 255 ), m_bVisible( true ), m_nAttachment( -1 ), m_flForceVisibleUntil(0.0f) {};
 
 	void SetAttachment( int attachment ) { m_nAttachment = attachment; }
 	int	GetAttachment( void ) const { return m_nAttachment; }
 
 	void SetVisible( bool visible = true ) { m_bVisible = visible; }
-	int IsVisible( void ) const { return m_bVisible; }
+	int IsVisible(void) const { return m_bVisible || gpGlobals->curtime < m_flForceVisibleUntil; }
+	void ForceVisibleUntil(float flTime) { m_flForceVisibleUntil = flTime; }
 
 	void SetColor( const Vector &color ) { m_vecColor = color; }
 	const Vector &GetColor( void ) const { return m_vecColor; }
@@ -1055,6 +1056,7 @@ private:
 
 	Vector				m_vecColor;
 	bool				m_bVisible;
+	float				m_flForceVisibleUntil;
 	int					m_nAttachment;
 	CMaterialReference	m_hMaterial[2];
 };
@@ -2828,7 +2830,7 @@ bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 
 	//Adrian: Oops, our object became motion disabled, let go!
 	IPhysicsObject *pPhys = pEntity->VPhysicsGetObject();
-	if ( pPhys && pPhys->IsMoveable() == false )
+	if ( !pPhys || pPhys->IsMoveable() == false )
 	{
 		return false;
 	}
@@ -3270,13 +3272,23 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 
 	StartEffects();
 
+	const float flScaleFactor = SPRITE_SCALE;
+
 	//if ( ShouldDrawUsingViewModel() )
 	{
 		// Turn on the glow sprites
 		for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_GLOW_SPRITES); i++ )
 		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 24, 32 ) );
+			if (IsMegaPhysCannon())
+			{
+				m_Parameters[i].GetAlpha().SetAbsolute(random->RandomInt(32, 48));
+				m_Parameters[i].GetScale().SetAbsolute(random->RandomFloat(0.15, 0.2) * flScaleFactor);
+			}
+			else
+			{
+				m_Parameters[i].GetScale().SetAbsolute(random->RandomFloat(0.075f, 0.05f) * flScaleFactor);
+				m_Parameters[i].GetAlpha().SetAbsolute(random->RandomInt(24, 32));
+			}
 		}
 
 		// Turn on the glow sprites
@@ -3292,6 +3304,94 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 			m_Beams[0].SetVisible( false );
 			m_Beams[1].SetVisible( false );
 			m_Beams[2].SetVisible( false );
+		}
+
+		// Only do these effects on the mega-cannon
+		if (IsMegaPhysCannon())
+		{
+			// Randomly arc between the elements and core
+			if (m_EffectState != EFFECT_HOLDING && random->RandomInt(0, 100) == 0 && !engine->IsPaused())
+			{
+				CBeam* pBeam = CBeam::BeamCreate(ShouldDrawUsingViewModel() ? MEGACANNON_BEAM_SPRITE_NOZ : MEGACANNON_BEAM_SPRITE, 1);
+
+				// Create our beams
+				CBaseEntity* pBeamEnt = nullptr;
+				if (ShouldDrawUsingViewModel())
+				{
+					CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+					pBeamEnt = pOwner->GetViewModel();
+				}
+				else
+				{
+					pBeamEnt = this;
+				}
+
+				pBeam->EntsInit(pBeamEnt, pBeamEnt);
+
+				int	startAttachment;
+				int	sprite;
+
+				if (random->RandomInt(0, 1))
+				{
+					startAttachment = LookupAttachment("fork1t");
+					sprite = PHYSCANNON_ENDCAP1;
+				}
+				else
+				{
+					startAttachment = LookupAttachment("fork2t");
+					sprite = PHYSCANNON_ENDCAP2;
+				}
+
+				int endAttachment = 1;
+
+				pBeam->SetStartAttachment(startAttachment);
+				pBeam->SetEndAttachment(endAttachment);
+				pBeam->SetNoise(random->RandomFloat(8.0f, 16.0f));
+				pBeam->SetColor(255, 255, 255);
+				pBeam->SetScrollRate(25);
+				pBeam->SetBrightness(128);
+				pBeam->SetWidth(1);
+				pBeam->SetEndWidth(random->RandomFloat(2, 8));
+
+				float lifetime = random->RandomFloat(0.2f, 0.4f);
+
+				pBeam->LiveForTime(lifetime);
+
+				{
+					// Turn on the sprite for awhile
+					m_Parameters[sprite].ForceVisibleUntil(gpGlobals->curtime + lifetime);
+					//m_flEndSpritesOverride[sprite] = gpGlobals->curtime + lifetime;
+					EmitSound("Weapon_MegaPhysCannon.ChargeZap");
+				}
+			}
+
+			//if (m_hCenterSprite != NULL)
+			{
+				if (m_EffectState == EFFECT_HOLDING)
+				{
+					m_Parameters[PHYSCANNON_CORE].GetAlpha().SetAbsolute(random->RandomInt(32, 64));
+					m_Parameters[PHYSCANNON_CORE].GetScale().SetAbsolute(random->RandomFloat(0.2, 0.25) * flScaleFactor);
+				}
+				else
+				{
+					m_Parameters[PHYSCANNON_CORE].GetAlpha().SetAbsolute(random->RandomInt(32, 64));
+					m_Parameters[PHYSCANNON_CORE].GetScale().SetAbsolute(random->RandomFloat(0.125, 0.15) * flScaleFactor);
+				}
+			}
+
+			//if (m_hBlastSprite != NULL)
+			{
+				if (m_EffectState == EFFECT_HOLDING)
+				{
+					m_Parameters[PHYSCANNON_BLAST].GetAlpha().SetAbsolute(random->RandomInt(125, 150));
+					m_Parameters[PHYSCANNON_BLAST].GetScale().SetAbsolute(random->RandomFloat(0.125, 0.15) * flScaleFactor);
+				}
+				else
+				{
+					m_Parameters[PHYSCANNON_BLAST].GetAlpha().SetAbsolute(random->RandomInt(32, 64));
+					m_Parameters[PHYSCANNON_BLAST].GetScale().SetAbsolute(random->RandomFloat(0.075, 0.15) * flScaleFactor);
+				}
+			}
 		}
 	}
 	/*

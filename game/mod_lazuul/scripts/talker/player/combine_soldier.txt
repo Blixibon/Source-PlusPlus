@@ -41,7 +41,7 @@ response SoldierResponseTaunt
 
 rule SoldierTaunt
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceCombineSoldier
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceCombineSoldier
 	response	SoldierResponseTaunt
 }
 

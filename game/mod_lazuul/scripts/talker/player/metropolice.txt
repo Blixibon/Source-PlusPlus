@@ -64,27 +64,7 @@ rule PolicePainHv
 
 response PoliceResponseTaunt
 {
-	sentence "METROPOLICE_KILL_MONST"
-}
-
-response PoliceResponseTauntAntlions
-{
-	sentence "METROPOLICE_KILL_BUGS"
-}
-
-response PoliceResponseTauntCitizen
-{
-	sentence "METROPOLICE_KILL_CITIZENS"
-}
-
-response PoliceResponseTauntZombie
-{
-	sentence "METROPOLICE_KILL_ZOMBIES"
-}
-
-response PoliceResponseTauntHeadCrab
-{
-	sentence "METROPOLICE_KILL_PARASITES"
+	sentence "METROPOLICE_DEPLOY_MANHACK"
 }
 
 rule PoliceTaunt
@@ -93,28 +73,59 @@ rule PoliceTaunt
 	response	PoliceResponseTaunt
 }
 
-rule PoliceTauntAntlion
+response PoliceResponseKill
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAntlion
-	response	PoliceResponseTauntAntlions
+	sentence "METROPOLICE_KILL_MONST"
 }
 
-rule PoliceTauntCitizen
+response PoliceResponseKillAntlions
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsCitizen
-	response	PoliceResponseTauntCitizen
+	sentence "METROPOLICE_KILL_BUGS"
 }
 
-rule PoliceTauntZombie
+response PoliceResponseKillCitizen
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAZombie
-	response	PoliceResponseTauntZombie
+	sentence "METROPOLICE_KILL_CITIZENS"
 }
 
-rule PoliceTauntParasite
+response PoliceResponseKillZombie
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAHeadcrab
-	response	PoliceResponseTauntHeadCrab
+	sentence "METROPOLICE_KILL_ZOMBIES"
+}
+
+response PoliceResponseKillHeadCrab
+{
+	sentence "METROPOLICE_KILL_PARASITES"
+}
+
+rule PoliceKill
+{
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice
+	response	PoliceResponseKill
+}
+
+rule PoliceKillAntlion
+{
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAntlion
+	response	PoliceResponseKillAntlions
+}
+
+rule PoliceKillCitizen
+{
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsCitizen
+	response	PoliceResponseKillCitizen
+}
+
+rule PoliceKillZombie
+{
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAZombie
+	response	PoliceResponseKillZombie
+}
+
+rule PoliceKillParasite
+{
+	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAHeadcrab
+	response	PoliceResponseKillHeadCrab
 }
 
 

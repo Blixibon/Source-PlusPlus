@@ -1545,7 +1545,7 @@ bool CBaseCombatCharacter::BecomeRagdoll( const CTakeDamageInfo &info, const Vec
 #endif // !HL2MP
 
 	// Mega physgun requires everything to be a server-side ragdoll
-	if ( m_bForceServerRagdoll == true || ( ( bMegaPhyscannonActive == true ) && !IsPlayer() && Classify() != CLASS_PLAYER_ALLY_VITAL && Classify() != CLASS_PLAYER_ALLY ) )
+	if ( m_bForceServerRagdoll == true || ( ( bMegaPhyscannonActive == true ) && !IsPlayer() && Classify() != CLASS_PLAYER_ALLY && !IsVitalAlly() ) )
 	{
 		if ( CanBecomeServerRagdoll() == false )
 			return false;
@@ -1559,7 +1559,7 @@ bool CBaseCombatCharacter::BecomeRagdoll( const CTakeDamageInfo &info, const Vec
 		return true;
 	}
 
-	if( hl2_episodic.GetBool() && Classify() == CLASS_PLAYER_ALLY_VITAL )
+	if( hl2_episodic.GetBool() && IsVitalAlly())
 	{
 		CreateServerRagdoll( this, m_nForceBone, newinfo, COLLISION_GROUP_INTERACTIVE_DEBRIS, true );
 		RemoveDeferred();
@@ -3078,7 +3078,7 @@ float CBaseCombatCharacter::CalculatePhysicsStressDamage( vphysics_objectstress_
 void CBaseCombatCharacter::ApplyStressDamage( IPhysicsObject *pPhysics, bool bRequireLargeObject )
 {
 #ifdef HL2_DLL
-	if( Classify() == CLASS_PLAYER_ALLY || Classify() == CLASS_PLAYER_ALLY_VITAL )
+	if( Classify() == CLASS_PLAYER_ALLY || IsVitalAlly())
 	{
 		// Bypass stress completely for allies and vitals.
 		if( hl2_episodic.GetBool() )

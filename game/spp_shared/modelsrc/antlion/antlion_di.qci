@@ -5,7 +5,7 @@
 		"antlion_v_soldier_1" 
 		{ 
 		"trigger" "auto_in_combat" 
-		"origin_relative" "240 0 0" 
+		"origin_relative"	"229 0 0"
 		"angles_relative" "0 180 0" 
 		"sequence"	"antlion_soldier_DI_01"
 		"delay" "10.0" 
@@ -15,11 +15,11 @@
 		"antlion_v_soldier_2" 
 		{ 
 		"trigger" "auto_in_combat" 
-		"origin_relative" "64 0 0" 
+		"origin_relative"	"80 0 0"
 		"angles_relative" "0 180 0" 
 		"sequence"	"antlion_soldier_DI_02"
 		"delay" "10.0"
-		"origin_max_delta"	"32"		
+		"origin_max_delta"	"64"		
 		} 
 	}
  }

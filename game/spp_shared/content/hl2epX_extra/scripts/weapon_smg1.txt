@@ -26,7 +26,7 @@ WeaponData
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
 	{
-		"reload"			"Weapon_SMG1.Reload"
+		//"reload"			"Weapon_SMG1.Reload"
 		"reload_npc"		"Weapon_SMG1.NPC_Reload"
 		"empty"				"Weapon_SMG1.Empty"
 		"single_shot"		"Weapon_SMG1.Single"

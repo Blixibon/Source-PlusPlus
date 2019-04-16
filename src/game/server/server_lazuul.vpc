@@ -45,6 +45,7 @@ $Project "Server (Lazuul)"
 		{
 			$File "$SRCDIR\game\shared\peter\lazuul_gamerules.cpp"
 			$File "peter\lazul_client.cpp"
+			$File "peter\laz_mapents.cpp"
 		}
 	}
 }

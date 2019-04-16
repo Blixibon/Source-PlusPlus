@@ -170,6 +170,7 @@ public:
 protected:
 	void			SetKickDamage( int nDamage ) { m_nKickDamage = nDamage; }
 	CAI_Sentence< CNPC_Combine > *GetSentences() { return &m_Sentences; }
+	virtual bool CouldShootIfCrouching(CBaseEntity* pTarget);
 
 private:
 	//=========================================================

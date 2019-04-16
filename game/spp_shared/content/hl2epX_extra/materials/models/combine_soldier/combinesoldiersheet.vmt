@@ -1,20 +1,20 @@
 "VertexLitGeneric"
 {
 	"$bumpmap" "models/combine_soldier/combinesoldier_normal"
-	"$surfaceprop" "flesh"
-	"$selfillum" 1
-	"$model" 1
-	"$phong" 1
+	"$model"	"1"
+	"$selfillum" "1"
+	"$selfillumtint" "[1 1 1]"
+	"$phong" "1"
 	"$phongboost" "5"
 	"$halflambert" "1"
 	"$phongexponenttexture" "models/combine_soldier/combinesoldier_phong"
 	"$phongalbedotint" "1"										
 	"$phongfresnelranges"	"[.1 .5 1.0]"
 	
-	$detail	"models/combine_soldier/combinesoldier_dirtmap"
+	$detail	"models/combine_soldier/combinesoldiersheet_ep2"
 	$detailscale 1.0
-	$detailblendmode 1
-	$detailblendfactor 2.0
+	$detailblendmode 3
+	$detailblendfactor 0
 
 	// Use separate self-illum mask on Pre DX9 hardware
 	">=dx90_20b"

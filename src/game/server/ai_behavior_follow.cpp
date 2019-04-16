@@ -1393,7 +1393,7 @@ void CAI_FollowBehavior::StartTask( const Task_t *pTask )
 					bool bIsEpisodicVitalAlly;
 					
 #ifdef HL2_DLL
-					bIsEpisodicVitalAlly = (hl2_episodic.GetBool() && GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL);
+					bIsEpisodicVitalAlly = (hl2_episodic.GetBool() && GetOuter()->IsVitalAlly());
 #else
 					bIsEpisodicVitalAlly = false;
 #endif//HL2_DLL
@@ -1941,7 +1941,7 @@ void CAI_FollowBehavior::BuildScheduleTestBits()
 		   IsCurSchedule(SCHED_ALERT_FACE_BESTSOUND ) )
 	{
 #ifdef HL2_EPISODIC
-		if( IsCurSchedule(SCHED_RELOAD, false) && GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL )
+		if( IsCurSchedule(SCHED_RELOAD, false) && GetOuter()->IsVitalAlly())
 		{
 			// Alyx and Barney do not stop reloading because the player has moved. 
 			// Citizens and other regular allies do.

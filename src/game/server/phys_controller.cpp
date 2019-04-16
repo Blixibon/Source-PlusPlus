@@ -1055,6 +1055,9 @@ IMotionEvent::simresult_e CKeepUpright::Simulate( IPhysicsMotionController *pCon
 // computes the torque necessary to align testAxis with alignAxis
 AngularImpulse ComputeRotSpeedToAlignAxes( const Vector &testAxis, const Vector &alignAxis, const AngularImpulse &currentSpeed, float damping, float scale, float maxSpeed )
 {
+	if (!testAxis.IsValid() || !alignAxis.IsValid())
+		return AngularImpulse(0.f);
+
 	Vector rotationAxis = CrossProduct( testAxis, alignAxis );
 
 	// atan2() is well defined, so do a Dot & Cross instead of asin(Cross)

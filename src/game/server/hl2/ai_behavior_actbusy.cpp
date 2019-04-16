@@ -805,7 +805,7 @@ void CAI_ActBusyBehavior::GatherConditions( void )
 				SetCondition( COND_ACTBUSY_LOST_SEE_ENTITY );
 				m_hActBusyGoal->NPCLostSeeEntity( GetOuter() );
 
-				if( IsCombatActBusy() && (GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL && m_hSeeEntity->IsPlayer()) )
+				if( IsCombatActBusy() && (GetOuter()->IsVitalAlly() && m_hSeeEntity->IsPlayer()) )
 				{
 					// Defer any actbusying for several seconds. This serves as a heuristic for waiting
 					// for the player to settle after moving out of the room. This helps Alyx pick a more

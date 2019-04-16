@@ -29,6 +29,7 @@
 #include "weapon_physcannon.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "npc_headcrab.h"
+#include "npc_antlion.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1971,6 +1972,13 @@ bool CNPC_Combine::ShouldChargePlayer()
 	return GetEnemy() && GetEnemy()->IsPlayer() && PlayerHasMegaPhysCannon() && !IsLimitingHintGroups();
 }
 
+bool CNPC_Combine::CouldShootIfCrouching(CBaseEntity* pTarget)
+{
+	if (IsAntlion(pTarget))
+		return false;
+
+	return BaseClass::CouldShootIfCrouching(pTarget);
+}
 
 //-----------------------------------------------------------------------------
 // Select attack schedules
@@ -2276,7 +2284,7 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				return SCHED_COMBINE_AR2_ALTFIRE;
 			}
 
-			if ( IsCrouching() || ( CrouchIsDesired() && !HasCondition( COND_HEAVY_DAMAGE ) ) )
+			if ( (IsCrouching() || ( CrouchIsDesired() && !HasCondition( COND_HEAVY_DAMAGE ) )) && !IsAntlion(GetEnemy()) )
 			{
 				// See if we can crouch and shoot
 				if (GetEnemy() != NULL)
@@ -3053,6 +3061,11 @@ int CNPC_Combine::MeleeAttack1Conditions ( float flDot, float flDist )
 		return COND_NONE;
 
 	if ( dynamic_cast<CBaseHeadcrab *>(GetEnemy()) != NULL )
+	{
+		return COND_NONE;
+	}
+
+	if (GetEnemy() && GetEnemy()->Classify() == CLASS_ANTLION)
 	{
 		return COND_NONE;
 	}

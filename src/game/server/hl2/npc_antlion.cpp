@@ -593,7 +593,6 @@ bool CNPC_Antlion::CanBecomeRagdoll()
 	return BaseClass::CanBecomeRagdoll();
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *pVictim - 
@@ -2578,6 +2577,11 @@ int CNPC_Antlion::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 	}
 
+	if (info.GetAttacker() && info.GetAttacker()->ClassMatches("npc_combine_s"))
+	{
+		newInfo.ScaleDamage(0.1f);
+	}
+
 	// If we're being hoisted by a barnacle, we only take damage from that barnacle (otherwise we can die too early!)
 	if ( IsEFlagSet( EFL_IS_BEING_LIFTED_BY_BARNACLE ) )
 	{
@@ -4449,7 +4453,41 @@ bool CNPC_Antlion::CanRunAScriptedNPCInteraction( bool bForced /*= false*/ )
 	if ( IsWorker() )
 		return false;
 
-	return BaseClass::CanRunAScriptedNPCInteraction( bForced );
+	if (m_NPCState != NPC_STATE_IDLE && m_NPCState != NPC_STATE_ALERT && m_NPCState != NPC_STATE_COMBAT)
+		return false;
+
+	if (!IsAlive())
+		return false;
+
+	if (IsOnFire())
+		return false;
+
+	if (IsCrouching())
+		return false;
+
+	if (IsFlipped())
+		return false;
+
+	// Not while running scripted sequences
+	if (m_hCine)
+		return false;
+
+	if (bForced)
+	{
+		if (!m_hForcedInteractionPartner)
+			return false;
+	}
+	else
+	{
+		if (m_hForcedInteractionPartner || m_hInteractionPartner)
+			return false;
+		if (IsInAScript() || !HasCondition(COND_IN_PVS))
+			return false;
+		if (HasCondition(COND_HEAR_DANGER) || HasCondition(COND_HEAR_MOVE_AWAY))
+			return false;
+	}
+
+	return true;
 }
 
 //---------------------------------------------------------
