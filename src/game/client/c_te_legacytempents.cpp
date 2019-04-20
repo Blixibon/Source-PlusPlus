@@ -96,7 +96,7 @@ C_LocalTempEntity::C_LocalTempEntity()
 }
 
 
-#if defined( CSTRIKE_DLL ) || defined (SDK_DLL )
+#if defined( CSTRIKE_DLL ) || defined (SDK_DLL ) || defined( HL2_LAZUL )
 
 #define TE_RIFLE_SHELL 1024
 #define TE_PISTOL_SHELL 2048
@@ -1726,7 +1726,7 @@ C_LocalTempEntity * CTempEnts::SpawnTempModel( const model_t *pModel, const Vect
 //-----------------------------------------------------------------------------
 void CTempEnts::MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachmentIndex, bool firstPerson )
 {
-	ColorRGBExp32 clrMuzLight = { 252, 238, 128 };
+	ColorRGBExp32 clrMuzLight = { 252, 238, 128, 2 };
 
 	switch( type )
 	{
@@ -1744,7 +1744,7 @@ void CTempEnts::MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachm
 		clrMuzLight.r = 64;
 		clrMuzLight.g = 128;
 		clrMuzLight.b = 255;
-		clrMuzLight.exponent = 5;
+		//clrMuzLight.exponent = 5;
 		break;
 	}
 
@@ -2264,7 +2264,7 @@ void CTempEnts::PlaySound ( C_LocalTempEntity *pTemp, float damp )
 		}
 		break;
 
-#ifdef CSTRIKE_DLL
+#if defined(CSTRIKE_DLL) || defined( HL2_LAZUL )
 
 		case TE_PISTOL_SHELL:
 		{
@@ -2480,12 +2480,12 @@ void CTempEnts::LevelInit()
 	m_pShells[2] = (model_t *) engine->LoadModel( "models/weapons/shotgun_shell.mdl" );
 #endif
 
-#if defined( HL1_CLIENT_DLL )
+#if defined( HL1_CLIENT_DLL ) || defined( HL2_LAZUL )
 	m_pHL1Shell			= (model_t *)engine->LoadModel( "models/shell.mdl" );
 	m_pHL1ShotgunShell	= (model_t *)engine->LoadModel( "models/shotgunshell.mdl" );
 #endif
 
-#if defined( CSTRIKE_DLL ) || defined ( SDK_DLL )
+#if defined( CSTRIKE_DLL ) || defined ( SDK_DLL ) || defined( HL2_LAZUL )
 	m_pCS_9MMShell		= (model_t *)engine->LoadModel( "models/Shells/shell_9mm.mdl" );
 	m_pCS_57Shell		= (model_t *)engine->LoadModel( "models/Shells/shell_57.mdl" );
 	m_pCS_12GaugeShell	= (model_t *)engine->LoadModel( "models/Shells/shell_12gauge.mdl" );
@@ -2517,12 +2517,12 @@ void CTempEnts::Init (void)
 	m_pShells[1] = NULL;
 	m_pShells[2] = NULL;
 
-#if defined( HL1_CLIENT_DLL )
+#if defined( HL1_CLIENT_DLL ) || defined( HL2_LAZUL )
 	m_pHL1Shell			= NULL;
 	m_pHL1ShotgunShell	= NULL;
 #endif
 
-#if defined( CSTRIKE_DLL ) || defined ( SDK_DLL )
+#if defined( CSTRIKE_DLL ) || defined ( SDK_DLL ) || defined( HL2_LAZUL )
 	m_pCS_9MMShell		= NULL;
 	m_pCS_57Shell		= NULL;
 	m_pCS_12GaugeShell	= NULL;
@@ -2603,7 +2603,7 @@ void CTempEnts::MuzzleFlash_Combine_Player( ClientEntityHandle_t hEntity, int at
 	if (!pEnt)
 		return;
 
-	DispatchParticleEffect("new_ar2_muzzle_fp", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
+	DispatchParticleEffect("hl2mmod_muzzleflash_ar2", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
 }
 
 //-----------------------------------------------------------------------------
@@ -2621,7 +2621,7 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 	if (!pEnt)
 		return;
 
-	DispatchParticleEffect("new_ar2_muzzle", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
+	DispatchParticleEffect("ar2_muzzleflash", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
 #if 0
 	matrix3x4_t	matAttachment;
 	Vector		origin;
@@ -2820,9 +2820,12 @@ void CTempEnts::MuzzleFlash_Pistol_NPC( ClientEntityHandle_t hEntity, int attach
 
 void CTempEnts::MuzzleFlash_RPG_NPC( ClientEntityHandle_t hEntity, int attachmentIndex )
 {
-	//Draw the cloud of fire
-	FX_MuzzleEffectAttached( 1.5f, hEntity, attachmentIndex );
+	C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle(hEntity);
 
+	if (!pEnt)
+		return;
+
+	DispatchParticleEffect("hl2mmod_muzzleflash_rpg", PATTACH_POINT_FOLLOW, pEnt, attachmentIndex);
 }
 
 
@@ -2861,7 +2864,7 @@ void CTempEnts::HL1EjectBrass( const Vector &vecPosition, const QAngle &angAngle
 {
 	const model_t *pModel = NULL;
 
-#if defined( HL1_CLIENT_DLL )
+#if defined( HL1_CLIENT_DLL ) || defined( HL2_LAZUL )
 	switch ( nType )
 	{
 	case 0:
@@ -2920,7 +2923,7 @@ void CTempEnts::CSEjectBrass( const Vector &vecPosition, const QAngle &angVeloci
 	const model_t *pModel = NULL;
 	int hitsound = TE_BOUNCE_SHELL;
 
-#if defined ( CSTRIKE_DLL ) || defined ( SDK_DLL )
+#if defined ( CSTRIKE_DLL ) || defined ( SDK_DLL ) || defined( HL2_LAZUL )
 
 	switch( shellType )
 	{

@@ -15,7 +15,7 @@
 #include "c_basecombatcharacter.h"
 
 // NOTE: Moved all controller code into c_basestudiomodel
-class C_AI_BaseNPC : public C_BaseCombatCharacter
+class C_AI_BaseNPC : public C_BaseCombatCharacter, public IHasAttributes
 {
 	DECLARE_CLASS( C_AI_BaseNPC, C_BaseCombatCharacter );
 
@@ -44,6 +44,11 @@ public:
 	virtual int		GetHealth() const { return m_iHealth; }
 	virtual int		GetMaxHealth() const { return m_iMaxHealth; }
 
+	virtual CAttributeManager* GetAttributeManager() { return &m_AttributeManager; }
+	virtual CAttributeContainer* GetAttributeContainer() { return NULL; }
+	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
+	virtual void ReapplyProvision(void) { /*Do nothing*/ };
+
 private:
 	C_AI_BaseNPC( const C_AI_BaseNPC & ); // not defined, not accessible
 	float m_flTimePingEffect;
@@ -59,6 +64,8 @@ private:
 	bool m_bFadeCorpse;
 	bool m_bSpeedModActive;
 	bool m_bImportanRagdoll;
+
+	CAttributeManager m_AttributeManager;
 };
 
 

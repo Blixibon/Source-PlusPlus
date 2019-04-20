@@ -18,7 +18,7 @@
 #include "c_hl2_playerlocaldata.h"
 #include "hl2_animstate.h"
 
-class C_BaseHLPlayer : public C_BaseNetworkedPlayer
+class C_BaseHLPlayer : public C_BaseNetworkedPlayer, public IHasAttributes
 {
 public:
 	DECLARE_CLASS( C_BaseHLPlayer, C_BaseNetworkedPlayer);
@@ -53,6 +53,11 @@ public:
 	void			PerformClientSideNPCSpeedModifiers( float flFrameTime, CUserCmd *pCmd );
 
 	bool				IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
+
+	virtual CAttributeManager* GetAttributeManager() { return &m_AttributeManager; }
+	virtual CAttributeContainer* GetAttributeContainer() { return NULL; }
+	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
+	virtual void ReapplyProvision(void) { /*Do nothing*/ };
 	
 protected:
 	virtual CMultiPlayerAnimState* GetAnimState() OVERRIDE;
@@ -79,6 +84,8 @@ private:
 	bool				m_bPlayUseDenySound;		// Signaled by PlayerUse, but can be unset by HL2 ladder code...
 	float				m_flSpeedMod;
 	float				m_flExitSpeedMod;
+
+	CAttributeManager m_AttributeManager;
 
 
 friend class CHL2GameMovement;

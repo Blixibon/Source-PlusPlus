@@ -131,8 +131,9 @@ EXTERN_SEND_TABLE( DT_EconItemAttribute );
 class CEconItemAttribute
 {
 public:
-	DECLARE_EMBEDDED_NETWORKVAR();
-	DECLARE_CLASS_NOBASE( CEconItemAttribute );
+	DECLARE_EMBEDDED_NETWORKVAR()
+	DECLARE_CLASS_NOBASE( CEconItemAttribute )
+	DECLARE_SIMPLE_DATADESC()
 
 	CEconItemAttribute()
 	{
@@ -154,6 +155,9 @@ public:
 	void Init( int iIndex, float flValue, const char *pszAttributeClass = NULL );
 	void Init( int iIndex, const char *pszValue, const char *pszAttributeClass = NULL );
 	EconAttributeDefinition *GetStaticData( void );
+
+	void	Save(ISave* pSave);
+	void	Restore(IRestore* pRestore);
 
 public:
 	CNetworkVar( int, m_iAttributeDefinitionIndex );

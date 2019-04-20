@@ -482,7 +482,8 @@ extern CAI_Manager g_AI_Manager;
 //=============================================================================
 
 class CAI_BaseNPC : public CBaseCombatCharacter, 
-					public CAI_DefMovementSink
+					public CAI_DefMovementSink,
+					public IHasAttributes
 {
 	DECLARE_CLASS( CAI_BaseNPC, CBaseCombatCharacter );
 
@@ -573,6 +574,12 @@ public:
 
 	// Team Handling
 	virtual void			ChangeTeam(int iTeamNum);
+
+	// Attributes
+	virtual CAttributeManager* GetAttributeManager() { return &m_AttributeManager; }
+	virtual CAttributeContainer* GetAttributeContainer() { return NULL; }
+	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
+	virtual void ReapplyProvision(void) { /*Do nothing*/ };
 
 public:
 	//-----------------------------------------------------
@@ -2019,6 +2026,8 @@ protected:
 	virtual Vector GetCrouchEyeOffset( void )		{ return Vector(0,0,40); }
 	virtual Vector GetCrouchGunOffset( void )		{ return Vector(0,0,36); }
 
+private:
+	CAttributeManager	m_AttributeManager;
 private:
 	bool	m_bCrouchDesired;
 	bool	m_bForceCrouch;

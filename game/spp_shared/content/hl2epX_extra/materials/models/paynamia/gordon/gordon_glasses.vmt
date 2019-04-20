@@ -1,0 +1,19 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/paynamia/gordon/gordon_glasses"
+	"$envmap" "env_cubemap"	
+	"$bumpmap" "Models/paynamia/gordon/gordon_glasses_normal"
+	//"$normalmapalphaenvmapmask" 1
+	//"$envmapcontrast" 1
+	"$envmaptint" "[0.01 0.01 0.01]"
+	//"$surfaceprop" "plastic"
+	"$halflambert" 1
+
+	$phong 1
+	$phongboost	.75
+	$phongfresnelranges	"[0.1 0.5 1]"
+
+	$rimlight               1
+	$rimlightexponent       60
+	$rimlightboost          .75
+}

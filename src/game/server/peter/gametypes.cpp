@@ -139,56 +139,8 @@ int CGameTypeManager::LookupGametype(const char *pchGame)
 
 void CGameTypeManager::Reload()
 {
-	m_PrefixVector.PurgeAndDeleteElements();
-	/*m_vecGames.Purge();
-
-	GameWord_t gwCodedGames[MAX_CODE_GAMETYPES] =
-	{
-		{ "hl1", GAME_HL1 },
-		{ "hl2", GAME_HL2 },
-		{ "ep1", GAME_EP1 },
-		{ "ep2", GAME_EP2 },
-		{ "bms", MOD_BMS },
-		{ "portal", GAME_PORTAL }
-	};
-
-	m_vecGames.CopyArray(gwCodedGames, MAX_CODE_GAMETYPES);*/
-
-	KeyValues *pKV = new KeyValues("MapPrefixes");
-
-	if (pKV->LoadFromFile(filesystem, "scripts/map_prefixes.txt", "MOD"))
-	{
-		KeyValues *pkvPrefixes = pKV->FindKey("Prefixes");
-		if (pkvPrefixes)
-		{
-			KeyValues *pkvNode = pkvPrefixes->GetFirstSubKey();
-			while (pkvNode)
-			{
-				RegisterPrefix(pkvNode);
-
-				pkvNode = pkvNode->GetNextKey();
-			}
-		}
-	}
-	/*else
-	{
-		RegisterPrefix("bm_", MOD_BMS);
-		RegisterPrefix("d1_", GAME_HL2);
-		RegisterPrefix("d2_", GAME_HL2);
-		RegisterPrefix("d3_", GAME_HL2);
-		RegisterPrefix("ep1_", GAME_EP1);
-		RegisterPrefix("ep2_", GAME_EP2);
-		RegisterPrefix("xen_", MOD_BMS);
-		RegisterPrefix("c", GAME_HL1);
-		RegisterPrefix("testchmb_", GAME_PORTAL);
-		RegisterPrefix("escape_", GAME_PORTAL);
-		RegisterPrefix("sp_", GAME_EP2);
-		RegisterPrefix("metastasis_", GAME_EP1);
-	}*/
-
-	pKV->deleteThis();
-
-	Msg("CGameTypeManager: Registered %i map prefixes.\n", m_PrefixVector.Count());
+	Shutdown();
+	Init();
 }
 
 //CON_COMMAND_F(gametype_reload, "Reloads TypeManager's prefixes.\n", FCVAR_CHEAT)

@@ -6946,6 +6946,8 @@ void CAI_BaseNPC::NPCInit ( void )
 	SetDeathPoseFrame( 0 );
 
 	m_EnemiesSerialNumber = -1;
+
+	m_AttributeManager.InitializeAttributes(this);
 }
 
 //-----------------------------------------------------------------------------
@@ -10765,6 +10767,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_KEYFIELD( m_iszEnemyFilterName,		FIELD_STRING, "enemyfilter" ),
 	DEFINE_FIELD( m_bImportanRagdoll,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bPlayerAvoidState,			FIELD_BOOLEAN ),
+	DEFINE_EMBEDDED(m_AttributeManager),
 
 	// Satisfy classcheck
 	// DEFINE_FIELD( m_ScheduleHistory, CUtlVector < AIScheduleChoice_t > ),
@@ -10869,6 +10872,7 @@ IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC )
 	SendPropInt( SENDINFO( m_iSpeedModSpeed ) ),
 	SendPropBool( SENDINFO( m_bImportanRagdoll ) ),
 	SendPropFloat( SENDINFO( m_flTimePingEffect ) ),
+	SendPropDataTable(SENDINFO_DT(m_AttributeManager), &REFERENCE_SEND_TABLE(DT_AttributeManager)),
 END_SEND_TABLE()
 
 //-------------------------------------
@@ -11379,6 +11383,8 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_pSenses = NULL;
 	m_pPathfinder = NULL;
 	m_pLocalNavigator = NULL;
+
+	m_pAttributes = this;
 
 	m_pSchedule = NULL;
 	m_IdealSchedule = SCHED_NONE;

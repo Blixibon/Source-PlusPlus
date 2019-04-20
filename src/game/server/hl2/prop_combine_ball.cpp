@@ -121,7 +121,7 @@ CBasePlayer *CPropCombineBall::HasPhysicsAttacker( float dt )
 bool UTIL_IsCombineBall( CBaseEntity *pEntity )
 {
 	// Must be the correct collision group
-	if ( pEntity->GetCollisionGroup() != HL2COLLISION_GROUP_COMBINE_BALL )
+	if ( pEntity->GetCollisionGroup() != HL2COLLISION_GROUP_COMBINE_BALL && pEntity->GetCollisionGroup() != HL2COLLISION_GROUP_COMBINE_BALL_NPC)
 		return false;
 
 	//NOTENOTE: This allows ANY combine ball to pass the test
@@ -144,7 +144,7 @@ bool UTIL_IsCombineBall( CBaseEntity *pEntity )
 bool UTIL_IsAR2CombineBall( CBaseEntity *pEntity )
 {
 	// Must be the correct collision group
-	if ( pEntity->GetCollisionGroup() != HL2COLLISION_GROUP_COMBINE_BALL )
+	if (pEntity->GetCollisionGroup() != HL2COLLISION_GROUP_COMBINE_BALL && pEntity->GetCollisionGroup() != HL2COLLISION_GROUP_COMBINE_BALL_NPC)
 		return false;
 
 	CPropCombineBall *pBall = dynamic_cast<CPropCombineBall *>(pEntity);
@@ -1167,7 +1167,7 @@ bool CPropCombineBall::DissolveEntity( CBaseEntity *pEntity )
 	if( pEntity->IsEFlagSet( EFL_NO_DISSOLVE ) )
 		return false;
 
-#ifdef HL2MP
+#if defined(HL2MP) || defined(HL2_LAZUL)
 	if ( pEntity->IsPlayer() )
 	{
 		m_bStruckEntity = true;

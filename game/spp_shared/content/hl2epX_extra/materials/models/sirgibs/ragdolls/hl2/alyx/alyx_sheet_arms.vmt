@@ -1,0 +1,16 @@
+"vertexlitgeneric"
+{
+	"$basetexture" "models\sirgibs\ragdolls\hl2\alyx\alyx_sheet_arms"
+	"$bumpmap" "models\sirgibs\ragdolls\hl2\alyx\alyx_sheet_arms_normal"
+	"$halflambert" 1
+//	"$nodecal" "1"
+	"$model" "1"
+	"$nocull" "1"
+// -- From here down is new stuff which will only be applied if $phong is set to 1 --
+	"$phong" "1"
+	"$phongexponent" "10"
+//	"$phongexponenttexture" "models/Slut/alyx_sheet_exponent"
+	"$phongboost"	"9"
+	"$phongfresnelranges"	"[0.04 0.4 1]"
+
+}

@@ -8,6 +8,7 @@
 #include "peter/player_models.h"
 #include "team_objectiveresource.h"
 #include "peter/laz_mapents.h"
+#include "items.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
@@ -329,7 +330,7 @@ bool CLazuul::ShouldCollide(int collisionGroup0, int collisionGroup1)
 		return false;
 
 	if ((collisionGroup0 == COLLISION_GROUP_WEAPON) ||
-		(collisionGroup0 == COLLISION_GROUP_PLAYER) ||
+		//(collisionGroup0 == COLLISION_GROUP_PLAYER) ||
 		(collisionGroup0 == COLLISION_GROUP_PROJECTILE))
 	{
 		if (collisionGroup1 == HL2COLLISION_GROUP_COMBINE_BALL)
@@ -459,6 +460,18 @@ void CLazuul::SetGameMode(int iMode)
 		gamemode.SetValue(iGameMode);
 }
 
+void CLazuul::SetAllowedModes(bool bModes[])
+{
+	for (int i = 0; i < LAZ_GM_COUNT; i++)
+	{
+		m_bitAllowedModes.Set(i, bModes[i]);
+	}
+
+	s_bInModeChangedScope = true;
+	SetGameMode(gamemode.GetInt());
+	s_bInModeChangedScope = false;
+}
+
 //-----------------------------------------------------------------------------
 // Returns whether or not Alyx cares about light levels in order to see.
 //-----------------------------------------------------------------------------
@@ -485,6 +498,32 @@ bool CLazuul::ShouldBurningPropsEmitLight()
 		return true;
 
 	return false;
+}
+
+//=========================================================
+// WeaponShouldRespawn - any conditions inhibiting the
+// respawning of this weapon?
+//=========================================================
+int CLazuul::WeaponShouldRespawn(CBaseCombatWeapon* pWeapon)
+{
+	if (pWeapon->HasSpawnFlags(SF_NORESPAWN) || !IsMultiplayer())
+	{
+		return GR_WEAPON_RESPAWN_NO;
+	}
+
+	return GR_WEAPON_RESPAWN_YES;
+}
+
+//=========================================================
+	//=========================================================
+int CLazuul::ItemShouldRespawn(CItem* pItem)
+{
+	if (pItem->HasSpawnFlags(SF_NORESPAWN) || !IsMultiplayer())
+	{
+		return GR_ITEM_RESPAWN_NO;
+	}
+
+	return GR_ITEM_RESPAWN_YES;
 }
 
 //-----------------------------------------------------------------------------
@@ -2808,10 +2847,6 @@ void CLazuul::LevelInitPreEntity()
 	{
 		CBaseEntity::sm_bAccurateTriggerBboxChecks = true;
 	}
-
-	s_bInModeChangedScope = true;
-	SetGameMode(gamemode.GetInt());
-	s_bInModeChangedScope = false;
 
 	BaseClass::LevelInitPreEntity();
 }

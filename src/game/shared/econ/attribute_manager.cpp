@@ -16,16 +16,19 @@
 // CAttributeManager
 //=============================================================================
 
-BEGIN_NETWORK_TABLE_NOBASE( CAttributeManager, DT_AttributeManager )
+BEGIN_NETWORK_TABLE_NOBASE(CAttributeManager, DT_AttributeManager)
 #ifdef CLIENT_DLL
-	RecvPropEHandle( RECVINFO( m_hOuter ) ),
-	RecvPropInt( RECVINFO( m_iReapplyProvisionParity ) ),
+RecvPropEHandle(RECVINFO(m_hOuter)),
+RecvPropInt(RECVINFO(m_iReapplyProvisionParity)),
 #else
-	SendPropEHandle( SENDINFO( m_hOuter ) ),
-	SendPropInt( SENDINFO( m_iReapplyProvisionParity ), ATTRIB_REAPPLY_PARITY_BITS, SPROP_UNSIGNED ),
+SendPropEHandle(SENDINFO(m_hOuter)),
+SendPropInt(SENDINFO(m_iReapplyProvisionParity), ATTRIB_REAPPLY_PARITY_BITS, SPROP_UNSIGNED),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE();
 
+BEGIN_SIMPLE_DATADESC(CAttributeManager)
+DEFINE_FIELD(m_hOuter, FIELD_EHANDLE),
+END_DATADESC();
 
 template <>
 string_t CAttributeManager::AttribHookValue<string_t>( string_t strValue, const char *pszClass, const CBaseEntity *pEntity )

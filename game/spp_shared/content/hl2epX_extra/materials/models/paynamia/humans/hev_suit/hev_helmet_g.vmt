@@ -1,0 +1,26 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\paynamia\humans\hev_suit\hev_helmet_d"
+	"$bumpmap" "models\paynamia\humans\hev_suit\hev_helmet_n"
+
+	"$surfaceprop" "glass"
+
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+
+	"$envmaptint" "[0.50 0.50 0.50]"
+//	"$envmaptint" "[0.15 0.15 0.15]"
+	"$envmapsaturation" "0.5"
+	"$envmapcontrast" "1"
+
+	"$phong" "1"
+	"$phongboost" "0.5"
+	"$phongexponent" "25"
+	"$phongalbedotint" "1"
+	"$phongfresnelranges"	"[0.4 0.9 2.8]"
+
+	// Rim lighting parameters
+	//"$rimlight" "1"
+	"$rimlightexponent" "25"
+	"$rimlightboost" "0.05"
+}

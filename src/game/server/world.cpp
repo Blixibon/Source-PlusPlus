@@ -599,12 +599,14 @@ void CWorld::Spawn( void )
 	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
 
 	char szMapadd[128];
-	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", gpGlobals->mapname);
+	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", STRING(gpGlobals->mapname));
 	KeyValues *pMapAdd = new KeyValues("MapData");
 	if (pMapAdd->LoadFromFile(filesystem, szMapadd, "GAME"))
 	{
 		if (pMapAdd->FindKey("population"))
 			m_iszPopulationTag = AllocPooledString(pMapAdd->GetString("population"));
+		if (pMapAdd->FindKey("cold_override"))
+			m_bColdWorld = pMapAdd->GetBool("cold_override");
 	}
 
 	pMapAdd->deleteThis();

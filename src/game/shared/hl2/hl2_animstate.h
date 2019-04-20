@@ -18,6 +18,9 @@ public:
 	CHL2PlayerAnimState(CBasePlayer* pPlayer, MultiPlayerMovementData_t& movementData) : BaseClass(pPlayer, movementData)
 	{}
 
+	CHL2PlayerAnimState(CBasePlayer* pPlayer) : BaseClass(pPlayer, s_MoveParams)
+	{}
+
 	virtual Activity TranslateActivity(Activity actDesired) OVERRIDE;
 
 	static MultiPlayerMovementData_t s_MoveParams;

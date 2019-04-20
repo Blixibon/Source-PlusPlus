@@ -1,0 +1,12 @@
+"Teeth"
+{
+	"$basetexture" "models/Humans/Male/mouth"
+	"$model" 1
+	"$clientshader" "MouthShader"
+	"$halflambert" 1
+
+// If you specify a bump map, you'll get specular
+	"$bumpmap" "models/paynamia/humans/male/mouth_normal"
+// This parameter overrides the alpha channel of the normal map (if any) to provide a phong exponent
+	"$phongexponent" "200"
+}

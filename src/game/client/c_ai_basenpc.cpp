@@ -33,6 +33,7 @@ IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
 	RecvPropInt( RECVINFO( m_bSpeedModActive ) ),
 	RecvPropBool( RECVINFO( m_bImportanRagdoll ) ),
 	RecvPropFloat( RECVINFO( m_flTimePingEffect ) ),
+	RecvPropDataTable(RECVINFO_DT(m_AttributeManager), 0, &REFERENCE_RECV_TABLE(DT_AttributeManager)),
 END_RECV_TABLE()
 
 extern ConVar cl_npc_speedmod_intime;
@@ -49,6 +50,7 @@ bool NPC_IsImportantNPC( C_BaseAnimating *pAnimating )
 
 C_AI_BaseNPC::C_AI_BaseNPC()
 {
+	m_pAttributes = this;
 }
 
 //-----------------------------------------------------------------------------

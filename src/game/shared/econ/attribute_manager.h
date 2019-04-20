@@ -26,8 +26,9 @@ EXTERN_SEND_TABLE( DT_AttributeContainer );
 class CAttributeManager
 {
 public:
-	DECLARE_EMBEDDED_NETWORKVAR();
-	DECLARE_CLASS_NOBASE( CAttributeManager );
+	DECLARE_EMBEDDED_NETWORKVAR()
+	DECLARE_CLASS_NOBASE( CAttributeManager )
+	DECLARE_SIMPLE_DATADESC()
 
 	CAttributeManager();
 

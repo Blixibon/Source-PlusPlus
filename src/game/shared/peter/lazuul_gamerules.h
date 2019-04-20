@@ -63,6 +63,18 @@ public:
 	virtual void			LevelInitPreEntity();
 
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
+
+	// Weapon spawn/respawn control
+	virtual int WeaponShouldRespawn(CBaseCombatWeapon* pWeapon);
+	//virtual float FlWeaponRespawnTime(CBaseCombatWeapon* pWeapon);
+	//virtual float FlWeaponTryRespawn(CBaseCombatWeapon* pWeapon);
+	//virtual Vector VecWeaponRespawnSpot(CBaseCombatWeapon* pWeapon);
+
+	// Item spawn/respawn control
+	virtual int ItemShouldRespawn(CItem* pItem);
+	//virtual float FlItemRespawnTime(CItem* pItem);
+	//virtual Vector VecItemRespawnSpot(CItem* pItem);
+	//virtual QAngle VecItemRespawnAngles(CItem* pItem);
 #endif
 
 	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }
@@ -107,13 +119,7 @@ public:
 
 	// Can only set on server
 	void	SetGameMode(int iMode);
-	void	SetAllowedModes(bool bModes[])
-	{
-		for (int i = 0; i < LAZ_GM_COUNT; i++)
-		{
-			m_bitAllowedModes.Set(i, bModes[i]);
-		}
-	}	
+	void	SetAllowedModes(bool bModes[]);
 
 	virtual bool			ShouldBurningPropsEmitLight();
 

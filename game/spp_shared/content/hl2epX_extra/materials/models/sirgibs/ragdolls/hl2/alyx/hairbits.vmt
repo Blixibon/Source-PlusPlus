@@ -1,0 +1,11 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitTranslucentTexture
+	//"$translucent" 1
+	"$basetexture" "models\sirgibs\ragdolls\hl2\alyx\hairbits"
+	"$translucent" "1"
+//	"$allowalphatocoverage" "1"
+	"$halflambert" 1
+	"$nodecal" "1"
+//	"$nocull" "1"
+}

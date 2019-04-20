@@ -2,6 +2,7 @@
 #include "econ_item_view.h"
 #include "econ_item_system.h"
 #include "activitylist.h"
+#include "saverestore_utlvector.h"
 
 #ifdef CLIENT_DLL
 #include "dt_utlvector_recv.h"
@@ -96,6 +97,27 @@ int CEconItemView::GetItemDefIndex( void ) const
 CEconItemDefinition *CEconItemView::GetStaticData( void ) const
 {
 	return GetItemSchema()->GetItemDefinition( m_iItemDefinitionIndex );
+}
+
+void CEconItemView::SaveAttributeList(ISave *pSave)
+{
+	int iCount = m_AttributeList.Count();
+	pSave->WriteInt(&iCount);
+	for (int i = 0; i < iCount; i++)
+	{
+		m_AttributeList[i].Save(pSave);
+	}
+}
+
+void CEconItemView::RestoreAttributeList(IRestore* pRestore)
+{
+	int iCount = pRestore->ReadInt();
+	CEconItemAttribute econAttr;
+	for (int i = 0; i < iCount; i++)
+	{
+		econAttr.Restore(pRestore);
+		AddAttribute(&econAttr);
+	}
 }
 
 //-----------------------------------------------------------------------------

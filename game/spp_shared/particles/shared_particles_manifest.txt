@@ -1,11 +1,12 @@
 particles_manifest
 {
 	"file"		"particles/spark_fx.pcf"
-	"file"		"particles/rain_fx.pcf"
+	"file"		"particles/rain_fx_mi.pcf"
 	"file"		"particles/rain_storm_fx.pcf"
 	"file"		"particles/tfa_lightningfx.pcf"
 	"file"		"!particles/weapon_fx_l4d.pcf"
 	"file"		"!particles/ar2_muzzle.pcf"
+	"file"		"!particles/ar2tracer.pcf"
 	"file"		"particles/pg_wars.pcf"
 	"file"		"!particles/c17_water_explosion.pcf"
 	"file"		"!particles/impact_fx_p2.pcf"
@@ -15,5 +16,5 @@ particles_manifest
 	"file"		"particles/npc_garg.pcf"
 	
 	"file"		"particles/hl2mmod_weaponeffects.pcf"
-	"file"		"particles/hl2mmod_muzzleflashes.pcf"
+	"file"		"!particles/hl2mmod_muzzleflashes.pcf"
 }

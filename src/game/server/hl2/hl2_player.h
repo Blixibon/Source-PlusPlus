@@ -77,7 +77,7 @@ public:
 //=============================================================================
 // >> HL2_PLAYER
 //=============================================================================
-class CHL2_Player : public CBaseNetworkedPlayer
+class CHL2_Player : public CBaseNetworkedPlayer, public IHasAttributes
 {
 public:
 	DECLARE_CLASS( CHL2_Player, CBaseNetworkedPlayer);
@@ -98,6 +98,7 @@ public:
 
 	virtual void		Precache( void );
 	virtual void		Spawn(void);
+	virtual void		InitialSpawn();
 	virtual void		Activate( void );
 	virtual void		CheatImpulseCommands( int iImpulse );
 	virtual void		PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper);
@@ -288,6 +289,12 @@ public:
 	// HUD HINTS
 	void DisplayLadderHudHint();
 
+	// Attributes
+	virtual CAttributeManager* GetAttributeManager() { return &m_AttributeManager; }
+	virtual CAttributeContainer* GetAttributeContainer() { return NULL; }
+	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
+	virtual void ReapplyProvision(void) { /*Do nothing*/ };
+
 	CSoundPatch *m_sndLeeches;
 	CSoundPatch *m_sndWaterSplashes;
 
@@ -322,6 +329,8 @@ private:
 
 	CNetworkVar( bool, m_fIsSprinting );
 	CNetworkVarForDerived( bool, m_fIsWalking );
+
+	CAttributeManager	m_AttributeManager;
 
 protected:	// Jeep: Portal_Player needs access to this variable to overload PlayerUse for picking up objects through portals
 	bool				m_bPlayUseDenySound;		// Signaled by PlayerUse, but can be unset by HL2 ladder code...

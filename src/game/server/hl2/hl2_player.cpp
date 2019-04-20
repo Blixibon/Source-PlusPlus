@@ -383,6 +383,8 @@ BEGIN_DATADESC( CHL2_Player )
 
 	DEFINE_FIELD( m_flTimeNextLadderHint, FIELD_TIME ),
 
+	DEFINE_EMBEDDED(m_AttributeManager),
+
 	//DEFINE_FIELD( m_hPlayerProxy, FIELD_EHANDLE ), //Shut up class check!
 
 END_DATADESC()
@@ -395,6 +397,8 @@ CHL2_Player::CHL2_Player() : m_AnimState(this, CHL2PlayerAnimState::s_MoveParams
 
 	m_flArmorReductionTime = 0.0f;
 	m_iArmorReductionFrom = 0;
+
+	m_pAttributes = this;
 
 	BaseClass::ChangeTeam(0);
 }
@@ -421,6 +425,7 @@ CSuitPowerDevice SuitDeviceBreather( bits_SUIT_DEVICE_BREATHER, 6.7f );		// 100 
 IMPLEMENT_SERVERCLASS_ST(CHL2_Player, DT_HL2_Player)
 	SendPropDataTable(SENDINFO_DT(m_HL2Local), &REFERENCE_SEND_TABLE(DT_HL2Local), SendProxy_SendLocalDataTable),
 	SendPropBool( SENDINFO(m_fIsSprinting) ),
+	SendPropDataTable(SENDINFO_DT(m_AttributeManager), &REFERENCE_SEND_TABLE(DT_AttributeManager)),
 END_SEND_TABLE()
 
 
@@ -1136,6 +1141,17 @@ void CHL2_Player::PlayerRunCommand(CUserCmd *ucmd, IMoveHelper *moveHelper)
 
 	BaseClass::PlayerRunCommand( ucmd, moveHelper );
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHL2_Player::InitialSpawn(void)
+{
+	BaseClass::InitialSpawn();
+
+	m_AttributeManager.InitializeAttributes(this);
+}
+
 extern void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.

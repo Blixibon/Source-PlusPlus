@@ -3718,7 +3718,7 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void MaterialFootstepSound( C_BaseAnimating *pEnt, bool bLeftFoot, float flVolume )
+void MaterialFootstepSound(C_BaseAnimating* pEnt, bool bLeftFoot, float flVolume)
 {
 	trace_t tr;
 	Vector traceStart;
@@ -3729,48 +3729,84 @@ void MaterialFootstepSound( C_BaseAnimating *pEnt, bool bLeftFoot, float flVolum
 	//!!!PERF - These string lookups here aren't the swiftest, but
 	// this doesn't get called very frequently unless a lot of NPCs
 	// are using this code.
-	if( bLeftFoot )
+	if (bLeftFoot)
 	{
-		attachment = pEnt->LookupAttachment( "LeftFoot" );
+		attachment = pEnt->LookupAttachment("LeftFoot");
 	}
 	else
 	{
-		attachment = pEnt->LookupAttachment( "RightFoot" );
+		attachment = pEnt->LookupAttachment("RightFoot");
 	}
 
-	if( attachment == -1 )
+	if (attachment == -1)
 	{
 		// Exit if this NPC doesn't have the proper attachments.
 		return;
 	}
 
-	pEnt->GetAttachment( attachment, traceStart, angles );
+	pEnt->GetAttachment(attachment, traceStart, angles);
 
-	UTIL_TraceLine( traceStart, traceStart - Vector( 0, 0, 48.0f), MASK_SHOT_HULL, pEnt, COLLISION_GROUP_NONE, &tr );
-	if( tr.fraction < 1.0 && tr.m_pEnt )
+	float height = pEnt->GetCollideable()->OBBMaxs()[2] - pEnt->GetCollideable()->OBBMins()[2];
+	Vector knee;
+
+	VectorCopy(traceStart, knee);
+	knee[2] = traceStart[2] + 0.2 * height;
+
+	surfacedata_t* psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("default"));
+
+	// find out what we're stepping in or on...
+	if (enginetrace->GetPointContents(knee) & MASK_WATER)
 	{
-		surfacedata_t *psurf = physprops->GetSurfaceData( tr.surface.surfaceProps );
-		if( psurf )
+		static int iSkipStep = 0;
+
+		if (iSkipStep == 0)
 		{
-			EmitSound_t params;
-			if( bLeftFoot )
-			{
-				params.m_pSoundName = physprops->GetString(psurf->sounds.stepleft);
-			}
-			else
-			{
-				params.m_pSoundName = physprops->GetString(psurf->sounds.stepright);
-			}
+			iSkipStep++;
+			return;
+		}
 
-			CPASAttenuationFilter filter( pEnt, params.m_pSoundName );
-
-			params.m_bWarnOnDirectWaveReference = true;
-			params.m_flVolume = flVolume;
-
-			pEnt->EmitSound( filter, pEnt->entindex(), params );
+		if (iSkipStep++ == 3)
+		{
+			iSkipStep = 0;
+		}
+		psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("wade"));
+		flVolume = 1.0f;
+	}
+	else if (enginetrace->GetPointContents(traceStart) & MASK_WATER)
+	{
+		psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("water"));
+	}
+	else
+	{
+		UTIL_TraceLine(traceStart + Vector(0, 0, 4), traceStart - Vector(0, 0, 48.0f), MASK_SHOT_HULL, pEnt, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction < 1.0 && tr.m_pEnt)
+		{
+			psurf = physprops->GetSurfaceData(tr.surface.surfaceProps);
 		}
 	}
+
+
+	if (psurf)
+	{
+		EmitSound_t params;
+		if (bLeftFoot)
+		{
+			params.m_pSoundName = physprops->GetString(psurf->sounds.stepleft);
+		}
+		else
+		{
+			params.m_pSoundName = physprops->GetString(psurf->sounds.stepright);
+		}
+
+		CPASAttenuationFilter filter(pEnt, params.m_pSoundName);
+
+		params.m_bWarnOnDirectWaveReference = true;
+		params.m_flVolume = flVolume;
+
+		pEnt->EmitSound(filter, pEnt->entindex(), params);
+	}
 }
+
 
 struct HL1Foot_t
 {
@@ -3870,28 +3906,6 @@ void HL1MaterialFootstepSound(C_BaseEntity *pEnt, bool bLeftFoot, float flVolume
 	else if (enginetrace->GetPointContents(traceStart) & MASK_WATER)
 	{
 		psurf = physprops->GetSurfaceData(physprops->GetSurfaceIndex("water"));
-
-		//trace_t	waterTrace;
-		//
-		//UTIL_TraceLine(knee, traceStart, (CONTENTS_WATER | CONTENTS_SLIME), pEnt, COLLISION_GROUP_NONE, &waterTrace);
-
-		//if (waterTrace.fraction < 1.0f)
-		//{
-		//	CEffectData	data;
-
-		//	data.m_fFlags = 0;
-		//	data.m_vOrigin = waterTrace.endpos;
-		//	data.m_vNormal = waterTrace.plane.normal;
-		//	data.m_flScale = 4.0f;
-
-		//	// See if we hit slime
-		//	if (waterTrace.contents & CONTENTS_SLIME)
-		//	{
-		//		data.m_fFlags |= FX_WATER_IN_SLIME;
-		//	}
-
-		//	DispatchEffect("watersplash", data);
-		//}
 	}
 	else
 	{

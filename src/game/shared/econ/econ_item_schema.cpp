@@ -3,6 +3,7 @@
 #include "econ_item_system.h"
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
+#include "saverestore.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,20 +42,43 @@ void RecvProxy_AttributeClass( const CRecvProxyData *pData, void *pStruct, void 
 }
 #endif
 
-BEGIN_NETWORK_TABLE_NOBASE( CEconItemAttribute, DT_EconItemAttribute )
+BEGIN_NETWORK_TABLE_NOBASE(CEconItemAttribute, DT_EconItemAttribute)
 #ifdef CLIENT_DLL
-	RecvPropInt( RECVINFO( m_iAttributeDefinitionIndex ) ),
-	RecvPropFloat( RECVINFO( value ) ),
-	RecvPropString( RECVINFO( value_string ) ),
-	RecvPropString( RECVINFO( attribute_class ), 0, RecvProxy_AttributeClass ),
+RecvPropInt(RECVINFO(m_iAttributeDefinitionIndex)),
+RecvPropFloat(RECVINFO(value)),
+RecvPropString(RECVINFO(value_string)),
+RecvPropString(RECVINFO(attribute_class), 0, RecvProxy_AttributeClass),
 #else
-	SendPropInt( SENDINFO( m_iAttributeDefinitionIndex ) ),
-	SendPropFloat( SENDINFO( value ) ),
-	SendPropString( SENDINFO( value_string ) ),
-	SendPropString( SENDINFO( attribute_class ) ),
+SendPropInt(SENDINFO(m_iAttributeDefinitionIndex)),
+SendPropFloat(SENDINFO(value)),
+SendPropString(SENDINFO(value_string)),
+SendPropString(SENDINFO(attribute_class)),
 #endif
-END_NETWORK_TABLE()
+END_NETWORK_TABLE();
 
+BEGIN_SIMPLE_DATADESC(CEconItemAttribute)
+DEFINE_FIELD(m_iAttributeDefinitionIndex, FIELD_INTEGER),
+DEFINE_FIELD(value, FIELD_FLOAT),
+DEFINE_FIELD(m_strAttributeClass, FIELD_STRING),
+END_DATADESC();
+
+void CEconItemAttribute::Save(ISave* pSave)
+{
+	pSave->StartBlock();
+	pSave->WriteAll(this);
+	pSave->WriteData(value_string.Get(), 128);
+	pSave->WriteData(attribute_class.Get(), 128);
+	pSave->EndBlock();
+}
+
+void CEconItemAttribute::Restore(IRestore* pRestore)
+{
+	pRestore->StartBlock();
+	pRestore->ReadAll(this);
+	pRestore->ReadData(value_string.GetForModify(), 128, 0);
+	pRestore->ReadData(attribute_class.GetForModify(), 128, 0);
+	pRestore->EndBlock();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 

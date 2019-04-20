@@ -55,6 +55,9 @@ public:
 	void SetItemDefIndex( int iItemID );
 	int GetItemDefIndex( void ) const;
 
+	void SaveAttributeList(ISave *pSave);
+	void RestoreAttributeList(IRestore* pRestore);
+
 private:
 	CNetworkVar( short, m_iItemDefinitionIndex );
 

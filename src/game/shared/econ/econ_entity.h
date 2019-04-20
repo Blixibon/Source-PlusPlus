@@ -51,6 +51,17 @@ public:
 	virtual bool OnFireEvent( C_BaseViewModel *pViewModel, const Vector& origin, const QAngle& angles, int event, const char *options );
 	//virtual C_ViewmodelAttachmentModel *GetViewmodelAddon( void ) { return NULL; }
 	virtual void ViewModelAttachmentBlending( CStudioHdr *hdr, Vector pos[], Quaternion q[], float currentTime, int boneMask );
+#else
+	// save/restore
+	// only overload these if you have special data to serialize
+	virtual int	Save(ISave& save);
+	virtual int	Restore(IRestore& restore);
+
+	// handler to reset stuff after you are restored
+	// called after all entities have been loaded from all affected levels
+	// called before activate
+	// NOTE: Always chain to base class when implementing this!
+	virtual void OnRestore();
 #endif
 
 	virtual int TranslateViewmodelHandActivity( int iActivity ) { return iActivity; }
