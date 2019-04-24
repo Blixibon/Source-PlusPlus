@@ -1,0 +1,12 @@
+
+$CollisionModel "agibs_physics.smd"
+{
+	$mass 55.8
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+	$rootbone " "
+	$concave
+	$maxconvexpieces 1
+
+}

@@ -1,0 +1,55 @@
+"pp_VertexLitGeneric"
+{
+	$detail "models\half-life\synth_gloves_em"
+	$detailblendmode 5
+	"$detailblendfactor" "1"
+	"$detailscale" "0.25"
+	"$seamless_scale" "0.25"
+	"$seamless_detail" "1"
+	//"$detailtexturetransform" "center .5 .5 scale 1 1 rotate 0 translate 0 0"
+
+	"$temp" "[0 0]"
+	 "$curr" 0.0
+	 "$curr2" 0.0
+
+	 "Proxies"
+	{
+		"Sine"
+		{
+			"sineperiod" "24"
+			"sinemin" -0.5
+			"sinemax" 0.5
+			"resultVar" "$curr"
+		}
+		"Sine"
+		{
+			"sineperiod" "16"
+			"sinemin" 0.5
+			"sinemax" -0.5
+			"resultVar" "$curr2"
+		}
+
+		"Equals"
+		{
+			"srcVar1" "$curr2"
+			"resultVar" "$temp[0]"
+		}
+		"Equals"
+		{
+			"srcVar1" "$curr"
+			"resultVar" "$temp[1]"
+		}
+
+		"TextureTransform"
+		{
+			"translateVar" "$temp"
+			"resultVar" "$detailtexturetransform"
+		}
+
+		"IsNPC"
+		{
+			"scale" "4.0"
+			"resultvar" "$detailblendfactor"
+		}
+	}
+}

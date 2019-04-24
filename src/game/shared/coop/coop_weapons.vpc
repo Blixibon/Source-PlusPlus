@@ -16,6 +16,8 @@ $Project
 {
 	$Folder	"Source Files"
 	{
+		$File	"$SRCDIR\game\shared\bobvars.cpp"
+
 		$Folder	"HL2 DLL"
 		{
 			$Folder "Weapons"
@@ -46,6 +48,29 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_slam.h"
 				$File	"$SRCDIR\game\shared\coop\weapon_smg1.cpp"
 				//$File	"$SRCDIR\game\shared\coop\weapon_stunstick.cpp"
+			}
+		}
+		
+		$Folder "HL1 DLL"
+		{
+			$Folder "Weapons"
+			{
+				$File	"$SRCDIR\game\shared\coop\hl1_basecombatweapon_shared.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1_basecombatweapon_shared.h"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_357.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_crossbow.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_egon.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_gauss.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_glock.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_handgrenade.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_hornetgun.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_mp5.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_rpg.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_sachel.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1mp_weapon_shotgun.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1_weapon_crowbar.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1_weapon_snark.cpp"
+				$File	"$SRCDIR\game\shared\coop\hl1_weapon_tripmine.cpp"
 			}
 		}
 	}

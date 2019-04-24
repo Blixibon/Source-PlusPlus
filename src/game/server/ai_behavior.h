@@ -475,6 +475,7 @@ public:
 
 protected:
 	void			AddBehavior( CAI_BehaviorBase *pBehavior );
+	void			RemoveBehavior(CAI_BehaviorBase* pBehavior);
 	
 	bool			BehaviorSelectSchedule();
 	virtual bool	ShouldBehaviorSelectSchedule( CAI_BehaviorBase *pBehavior ) { return true; }
@@ -1901,6 +1902,18 @@ inline void CAI_BehaviorHost<BASE_NPC>::AddBehavior( CAI_BehaviorBase *pBehavior
 	m_Behaviors.AddToTail( pBehavior );
 	pBehavior->SetOuter( this );
 	pBehavior->SetBackBridge( this );
+}
+
+template <class BASE_NPC>
+inline void CAI_BehaviorHost<BASE_NPC>::RemoveBehavior(CAI_BehaviorBase* pBehavior)
+{
+#ifdef DEBUG
+	Assert(m_Behaviors.Find(pBehavior) != m_Behaviors.InvalidIndex());
+	Assert(m_fDebugInCreateBehaviors);
+#endif
+	m_Behaviors.FindAndRemove(pBehavior);
+	pBehavior->SetOuter(nullptr);
+	pBehavior->SetBackBridge(nullptr);
 }
 
 //-------------------------------------

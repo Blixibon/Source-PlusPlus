@@ -1,0 +1,1 @@
+#include "hl1_basecombatweapon_shared.h"

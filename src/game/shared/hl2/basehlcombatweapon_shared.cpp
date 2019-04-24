@@ -6,7 +6,7 @@
 
 #include "cbase.h"
 #include "basehlcombatweapon_shared.h"
-
+#include "bobvars.h"
 #include "hl2_player_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -237,9 +237,7 @@ float	g_verticalBob;
 #define	HL2_BOB_UP		0.5f
 
 
-static ConVar	cl_bobcycle( "cl_bobcycle","0.8" );
-static ConVar	cl_bob( "cl_bob","0.002" );
-static ConVar	cl_bobup( "cl_bobup","0.5" );
+
 
 // Register these cvars if needed for easy tweaking
 static ConVar	v_iyaw_cycle( "v_iyaw_cycle", "2"/*, FCVAR_UNREGISTERED*/ );

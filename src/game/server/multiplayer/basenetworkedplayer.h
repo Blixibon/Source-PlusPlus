@@ -34,7 +34,7 @@ public:
 
 	// Implement CMultiPlayerAnimState
 	virtual void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0);
-	void SetAnimation( PLAYER_ANIM playerAnim ) {} // Deprecated; would screw up ambient animation if not overridden
+	virtual void SetAnimation(PLAYER_ANIM playerAnim);
 	virtual void PostThink();
 
 protected:

@@ -253,19 +253,25 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_CROSSBOW:
 	case HLSS_WEAPON_ID_RPG:
 	case HLSS_WEAPON_ID_SNIPER:
+	case HLSS_WEAPON_ID_EGON:
+	case HLSS_WEAPON_ID_GAUSS:
 		iWeaponRole = TF_WPN_TYPE_PRIMARY2;
 		break;
 	case HLSS_WEAPON_ID_TURRET:
 		iWeaponRole = TF_WPN_TYPE_BUILDING;
 		break;
 	case HLSS_WEAPON_ID_PHYSGUN:
+	case HLSS_WEAPON_ID_HIVEHAND:
 		iWeaponRole = TF_WPN_TYPE_ITEM1;
 		break;
 	case HLSS_WEAPON_ID_SLAM:
+	case HLSS_WEAPON_ID_SATCHEL:
+	case HLSS_WEAPON_ID_TRIPMINE:
 		iWeaponRole = TF_WPN_TYPE_ITEM2;
 		break;
 	case HLSS_WEAPON_ID_BUGBAIT:
 	case HLSS_WEAPON_ID_FRAG:
+	case HLSS_WEAPON_ID_SNARK:
 		iWeaponRole = TF_WPN_TYPE_GRENADE;
 		break;
 	case HLSS_WEAPON_ID_MEDKIT:
@@ -320,12 +326,22 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_SHOTGUN:
 	case HLSS_WEAPON_ID_SNIPER:
 	case HLSS_WEAPON_ID_357:
+	case HLSS_WEAPON_ID_SNARK:
+	case HLSS_WEAPON_ID_HIVEHAND:
+	case HLSS_WEAPON_ID_TRIPMINE:
 		iWeaponVariant = 1;
 		break;
 	case HLSS_WEAPON_ID_AR2:
 	case HLSS_WEAPON_ID_MG1:
 	case HLSS_WEAPON_ID_CROSSBOW:
+	case HLSS_WEAPON_ID_SATCHEL:
 		iWeaponVariant = 2;
+		break;
+	case HLSS_WEAPON_ID_EGON:
+		iWeaponVariant = 3;
+		break;
+	case HLSS_WEAPON_ID_GAUSS:
+		iWeaponVariant = 4;
 		break;
 	}
 
@@ -609,6 +625,32 @@ acttable_t CWeaponCoopBase::s_acttableShotgun[] =
 acttable_t CWeaponCoopBase::s_acttableGrenade[] =
 {
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_THROW,					true },
+
+	// Readiness activities (not aiming)
+		{ ACT_IDLE_RELAXED,				ACT_IDLE,		false },//never aims
+		{ ACT_IDLE_STIMULATED,			ACT_IDLE,	false },
+		{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY,		false },//always aims
+
+		{ ACT_WALK_RELAXED,				ACT_WALK,			false },//never aims
+		{ ACT_WALK_STIMULATED,			ACT_WALK,		false },
+		{ ACT_WALK_AGITATED,			ACT_WALK,				false },//always aims
+
+		{ ACT_RUN_RELAXED,				ACT_RUN,			false },//never aims
+		{ ACT_RUN_STIMULATED,			ACT_RUN,		false },
+		{ ACT_RUN_AGITATED,				ACT_RUN,				false },//always aims
+
+	// Readiness activities (aiming)
+		{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE,			false },//never aims	
+		{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_ANGRY,	false },
+		{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY,			false },//always aims
+
+		{ ACT_WALK_AIM_RELAXED,			ACT_WALK,			false },//never aims
+		{ ACT_WALK_AIM_STIMULATED,		ACT_WALK,	false },
+		{ ACT_WALK_AIM_AGITATED,		ACT_WALK,				false },//always aims
+
+		{ ACT_RUN_AIM_RELAXED,			ACT_RUN,			false },//never aims
+		{ ACT_RUN_AIM_STIMULATED,		ACT_RUN,	false },
+		{ ACT_RUN_AIM_AGITATED,			ACT_RUN,				false },//always aims
 
 	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_GRENADE,					false },
 	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_GRENADE,					false },

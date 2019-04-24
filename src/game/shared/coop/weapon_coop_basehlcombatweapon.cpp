@@ -7,6 +7,7 @@
 #include "takedamageinfo.h"
 #include "ammodef.h"
 #include "hl2_gamerules.h"
+#include "bobvars.h"
 
 #ifdef CLIENT_DLL
 extern IVModelInfoClient* modelinfo;
@@ -40,10 +41,6 @@ extern ConVar sk_auto_reload_time;
 extern float	g_lateralBob;
 extern float	g_verticalBob;
 
-static ConVar	cl_bobcycle( "cl_bobcycle","0.8" );
-static ConVar	cl_bob( "cl_bob","0.002" );
-static ConVar	cl_bobup( "cl_bobup","0.5" );
-
 // Register these cvars if needed for easy tweaking
 static ConVar	v_iyaw_cycle( "v_iyaw_cycle", "2", FCVAR_REPLICATED | FCVAR_CHEAT );
 static ConVar	v_iroll_cycle( "v_iroll_cycle", "0.5", FCVAR_REPLICATED | FCVAR_CHEAT );
@@ -54,7 +51,7 @@ static ConVar	v_ipitch_level( "v_ipitch_level", "0.3", FCVAR_REPLICATED | FCVAR_
 #endif
 
 //================================================================================
-// Información y Red
+// Informaciï¿½n y Red
 //================================================================================
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat );

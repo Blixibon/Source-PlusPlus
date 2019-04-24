@@ -2232,9 +2232,13 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Finds missiles in cone
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot )
+CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot, bool bSaved)
 {
-	return CLaserDot::Create( origin, pOwner, bVisibleDot );
+	CLaserDot *pDot = CLaserDot::Create(origin, pOwner, bVisibleDot);
+#ifndef CLIENT_DLL
+	pDot->SetSaved(bSaved);
+#endif
+	return pDot;
 }
 
 void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget )
@@ -2254,6 +2258,33 @@ void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable )
 	{
 		pDot->TurnOff();
 	}
+}
+
+bool IsLaserDotOn(CBaseEntity* pLaserDot)
+{
+	CLaserDot* pDot = assert_cast<CLaserDot*>(pLaserDot);
+	return pDot->IsOn();
+}
+
+CBaseEntity* GetFirstLaserDot()
+{
+#ifndef CLIENT_DLL
+	return GetLaserDotList();
+#else
+	return NULL;
+#endif
+}
+
+CBaseEntity* GetNextLaserDot(CBaseEntity* pLaserDot)
+{
+	CLaserDot* pDot = assert_cast<CLaserDot*>(pLaserDot);
+	return pDot->m_pNext;
+}
+
+void SetLaserDotPosition(CBaseEntity* pLaserDot, const Vector& origin, const Vector& normal)
+{
+	CLaserDot* pDot = assert_cast<CLaserDot*>(pLaserDot);
+	pDot->SetLaserPosition(origin, normal);
 }
 
 CLaserDot::CLaserDot( void )
@@ -2296,7 +2327,7 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 	pLaserDot->SetOwnerEntity( pOwner );
 
 	// HAX
-	if (FClassnameIs(pOwner, "func_tankapcrocket"))
+	if (FClassnameIs(pOwner, "func_tankapcrocket") || FClassnameIs(pOwner, "weapon_rpg_hl1"))
 		pLaserDot->SetSaved(true);
 
 	pLaserDot->AddEFlags( EFL_FORCE_CHECK_TRANSMIT );

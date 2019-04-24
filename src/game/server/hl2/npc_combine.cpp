@@ -57,7 +57,7 @@ const char *GetVoicePrefixForSoldier(CNPC_Combine *pSoldier)
 		return nullptr;
 	}
 }
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 int CAI_CombineSentence::Speak(const char *pSentence, SentencePriority_t nSoundPriority, SentenceCriteria_t nCriteria)
 {
 	if (!MatchesCriteria(nCriteria))
@@ -102,7 +102,7 @@ int CAI_CombineSentence::Speak(const char *pSentence, SentencePriority_t nSoundP
 
 	return nSentenceIndex;
 }
-
+#endif
 #define COMBINE_SKIN_DEFAULT		0
 #define COMBINE_SKIN_SHOTGUNNER		1
 
@@ -217,7 +217,10 @@ DEFINE_FIELD( m_flShotDelay, FIELD_FLOAT ),
 DEFINE_FIELD( m_flStopMoveShootTime, FIELD_TIME ),
 DEFINE_KEYFIELD( m_iNumGrenades, FIELD_INTEGER, "NumGrenades" ),
 DEFINE_KEYFIELD(m_fIsElite, FIELD_BOOLEAN, "IsElite"),
-DEFINE_EMBEDDED( m_Sentences ),
+#ifndef SOLDIER_POSSIBLE_ALLY
+DEFINE_EMBEDDED(m_Sentences),
+#endif // !SOLDIER_POSSIBLE_ALLY
+
 
 //							m_AssaultBehavior (auto saved by AI)
 //							m_StandoffBehavior (auto saved by AI)
@@ -264,8 +267,9 @@ bool CNPC_Combine::CreateComponents()
 {
 	if ( !BaseClass::CreateComponents() )
 		return false;
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 	m_Sentences.Init( this, "NPC_Combine.SentenceParameters" );
+#endif
 	return true;
 }
 
@@ -427,6 +431,7 @@ void CNPC_Combine::Spawn( void )
 //-----------------------------------------------------------------------------
 bool CNPC_Combine::CreateBehaviors()
 {
+#ifndef SOLDIER_POSSIBLE_ALLY
 	AddBehavior( &m_RappelBehavior );
 	AddBehavior( &m_ActBusyBehavior );
 	AddBehavior( &m_AssaultBehavior );
@@ -435,6 +440,18 @@ bool CNPC_Combine::CreateBehaviors()
 	AddBehavior( &m_FuncTankBehavior );
 
 	return BaseClass::CreateBehaviors();
+#else
+	bool bRet = BaseClass::CreateBehaviors();
+	
+	CAI_StandoffBehavior* pBaseStandoff = nullptr;
+	if (GetBehavior(&pBaseStandoff))
+		RemoveBehavior(pBaseStandoff);
+
+	AddBehavior(&m_RappelBehavior);
+	AddBehavior(&m_StandoffBehavior);
+
+	return bRet;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -495,9 +512,10 @@ void CNPC_Combine::GatherConditions()
 void CNPC_Combine::PrescheduleThink()
 {
 	BaseClass::PrescheduleThink();
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 	// Speak any queued sentences
 	m_Sentences.UpdateSentenceQueue();
+#endif
 
 	if ( IsOnFire() )
 	{
@@ -871,6 +889,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 			// If Primary Attack
 			if ((int)pTask->flTaskData == 1)
 			{
+#ifndef SOLDIER_POSSIBLE_ALLY
 				// -----------------------------------------------------------
 				// If enemy isn't facing me and I haven't attacked in a while
 				// annouce my attack before I start wailing away
@@ -882,7 +901,10 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					m_flLastAttackTime = gpGlobals->curtime;
 
-					m_Sentences.Speak( "COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH );
+
+					m_Sentences.Speak("COMBINE_ANNOUNCE", SENTENCE_PRIORITY_HIGH);
+
+
 
 					// Wait two seconds
 					SetWait( 2.0 );
@@ -903,10 +925,47 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 				{
 					TaskComplete();
 				}
+#else
+				// -----------------------------------------------------------
+				// If enemy isn't facing me and I haven't attacked in a while
+				// annouce my attack before I start wailing away
+				// -----------------------------------------------------------
+				CBaseCombatCharacter* pBCC = GetEnemyCombatCharacterPointer();
+
+				if (pBCC && pBCC->IsPlayer() && (!pBCC->FInViewCone(this)) &&
+					(gpGlobals->curtime - m_flLastAttackTime > 3.0))
+				{
+					m_flLastAttackTime = gpGlobals->curtime;
+
+					if (GetActiveWeapon())
+					{
+						SpeakIfAllowed(TLK_ATTACKING, UTIL_VarArgs("attacking_with_weapon:%s", GetActiveWeapon()->GetClassname()));
+					}
+
+					// Wait two seconds
+					SetWait(2.0);
+
+					if (!IsCrouching())
+					{
+						SetActivity(ACT_IDLE);
+					}
+				}
+				// -------------------------------------------------------------
+				//  Otherwise move on
+				// -------------------------------------------------------------
+				else
+				{
+					BaseClass::StartTask(pTask);
+				}
+#endif // !SOLDIER_POSSIBLE_ALLY
 			}
 			else
 			{
+#ifndef SOLDIER_POSSIBLE_ALLY
 				m_Sentences.Speak( "COMBINE_THROW_GRENADE", SENTENCE_PRIORITY_MEDIUM );
+#else
+				Speak("TLK_SOLDIER_THROW");
+#endif
 				SetActivity(ACT_IDLE);
 
 				// Wait two seconds
@@ -1041,8 +1100,9 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 						{
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 						m_Sentences.Speak( "COMBINE_PLAYERHIT", SENTENCE_PRIORITY_INVALID );
+#endif
 						JustMadeSound( SENTENCE_PRIORITY_HIGH );
 					}
 					if ( pEntity->MyNPCPointer() )
@@ -1468,7 +1528,12 @@ void CNPC_Combine::AnnounceAssault(void)
 	// Make sure player can see me
 	if ( FVisible( pBCC ) )
 	{
-		m_Sentences.Speak( "COMBINE_ASSAULT" );
+#ifndef SOLDIER_POSSIBLE_ALLY
+		m_Sentences.Speak("COMBINE_ASSAULT");
+#else
+		SpeakIfAllowed("TLK_SOLDIER_ASSAULT");
+#endif // !SOLDIER_POSSIBLE_ALLY
+
 	}
 }
 
@@ -1506,8 +1571,9 @@ void CNPC_Combine::AnnounceEnemyType( CBaseEntity *pEnemy )
 		pSentenceName = "COMBINE_MONST_PARASITES";
 		break;
 	}
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
+#endif
 }
 
 void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
@@ -1542,8 +1608,9 @@ void CNPC_Combine::AnnounceEnemyKill( CBaseEntity *pEnemy )
 	case CLASS_BARNACLE:
 		break;
 	}
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -1807,10 +1874,11 @@ int CNPC_Combine::SelectSchedule( void )
 		// If we're hit by bugbait, thrash around
 		if ( HasCondition( COND_COMBINE_HIT_BY_BUGBAIT ) )
 		{
+			CAI_FuncTankBehavior* pBehavior = nullptr;
 			// Don't do this if we're mounting a func_tank
-			if ( m_FuncTankBehavior.IsMounted() == true )
+			if (GetBehavior(&pBehavior) && pBehavior->IsMounted() == true )
 			{
-				m_FuncTankBehavior.Dismount();
+				pBehavior->Dismount();
 			}
 
 			ClearCondition( COND_COMBINE_HIT_BY_BUGBAIT );
@@ -1860,9 +1928,9 @@ int CNPC_Combine::SelectSchedule( void )
 								}
 							}
 						}
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 						m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
-
+#endif
 						// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
 						if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
 						{
@@ -2134,7 +2202,11 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 					HasCondition(COND_CAN_RANGE_ATTACK2)		&&
 					OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
 				{
+#ifndef SOLDIER_POSSIBLE_ALLY
 					m_Sentences.Speak( "COMBINE_THROW_GRENADE" );
+#else
+					Speak("TLK_SOLDIER_THROW");
+#endif
 					return SCHED_COMBINE_TOSS_GRENADE_COVER1;
 				}
 				else
@@ -2536,14 +2608,17 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 						EmitSound( "NPC_Combine.WeaponBash" );
 					}
 				}
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 				m_Sentences.Speak( "COMBINE_KICK" );
+#endif
 				handledEvent = true;
 				break;
 			}
 
 		case COMBINE_AE_CAUGHT_ENEMY:
+#ifndef SOLDIER_POSSIBLE_ALLY
 			m_Sentences.Speak( "COMBINE_ALERT" );
+#endif
 			handledEvent = true;
 			break;
 
@@ -2630,7 +2705,11 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 		// If I'm moving more than 20ft, I need to talk about it
 		if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 		{
+#ifndef SOLDIER_POSSIBLE_ALLY
 			m_Sentences.Speak( "COMBINE_FLANK" );
+#else
+			Speak("TLK_SOLDIER_FLANK");
+#endif
 		}
 		break;
 	}
@@ -2639,8 +2718,9 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_Combine::PainSound ( void )
+void CNPC_Combine::PainSound (const CTakeDamageInfo& info)
 {
+#ifndef SOLDIER_POSSIBLE_ALLY
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
@@ -2663,6 +2743,10 @@ void CNPC_Combine::PainSound ( void )
 		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 		m_flNextPainSoundTime = gpGlobals->curtime + 1;
 	}
+#else
+	//Speak(TLK_WOUND);
+	BaseClass::PainSound(info);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2685,11 +2769,12 @@ void CNPC_Combine::LostEnemySound( void)
 	{
 		pSentence = "COMBINE_LOST_SHORT";
 	}
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 	if ( m_Sentences.Speak( pSentence ) >= 0 )
 	{
 		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2700,7 +2785,11 @@ void CNPC_Combine::LostEnemySound( void)
 //-----------------------------------------------------------------------------
 void CNPC_Combine::FoundEnemySound( void)
 {
+#ifndef SOLDIER_POSSIBLE_ALLY
 	m_Sentences.Speak( "COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH );
+#else
+	Speak("TLK_SOLDIER_REFIND");
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -2715,7 +2804,9 @@ void CNPC_Combine::AlertSound( void)
 {
 	if ( gpGlobals->curtime > m_flNextAlertSoundTime )
 	{
+#ifndef SOLDIER_POSSIBLE_ALLY
 		m_Sentences.Speak( "COMBINE_GO_ALERT", SENTENCE_PRIORITY_HIGH );
+#endif
 		m_flNextAlertSoundTime = gpGlobals->curtime + 10.0f;
 	}
 }
@@ -2725,6 +2816,7 @@ void CNPC_Combine::AlertSound( void)
 //=========================================================
 void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 {
+#ifndef SOLDIER_POSSIBLE_ALLY
 	if ( GetSquad()->NumMembers() < 2 )
 	{
 		m_Sentences.Speak( "COMBINE_LAST_OF_SQUAD", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_NORMAL );
@@ -2736,6 +2828,7 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 	{
 		m_Sentences.Speak( "COMBINE_MAN_DOWN" );
 	}
+#endif
 	BaseClass::NotifyDeadFriend(pFriend);
 }
 
@@ -2744,11 +2837,13 @@ void CNPC_Combine::NotifyDeadFriend ( CBaseEntity* pFriend )
 //=========================================================
 void CNPC_Combine::DeathSound ( void )
 {
+#ifndef SOLDIER_POSSIBLE_ALLY
 	// NOTE: The response system deals with this at the moment
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
 	m_Sentences.Speak( "COMBINE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
+#endif
 }
 
 //=========================================================
@@ -2756,6 +2851,7 @@ void CNPC_Combine::DeathSound ( void )
 //=========================================================
 void CNPC_Combine::IdleSound( void )
 {
+#ifndef SOLDIER_POSSIBLE_ALLY
 	if (g_fCombineQuestion || random->RandomInt(0,1))
 	{
 		if (!g_fCombineQuestion)
@@ -2801,6 +2897,9 @@ void CNPC_Combine::IdleSound( void )
 			}
 		}
 	}
+#else
+	SpeakIfAllowed(TLK_IDLE);
+#endif
 }
 
 //-----------------------------------------------------------------------------

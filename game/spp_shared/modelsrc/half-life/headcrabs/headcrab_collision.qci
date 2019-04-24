@@ -1,0 +1,54 @@
+
+$CollisionJoints "headcrab_physics.smd"
+{
+	$mass 30
+	$inertia 5
+	$damping 0.01
+	$rotdamping 1.5
+	$rootbone "bip01"
+
+
+	$jointconstrain "Bip01 Spine" x limit 0 0 0
+	$jointconstrain "Bip01 Spine" y limit 0 0 0
+	$jointconstrain "Bip01 Spine" z limit 0 0 0
+
+	$jointconstrain "Bone05" x limit -60 60 0.2
+	$jointconstrain "Bone05" y limit -30 30 0.2
+	$jointconstrain "Bone05" z limit -70 40 0.2
+
+	$jointconstrain "Bone06" x limit -20 70 0.2
+	$jointconstrain "Bone06" y limit -30 30 0.2
+	$jointconstrain "Bone06" z limit -10 45 0.2
+
+	$jointconstrain "Bone03" x limit -60 60 0.2
+	$jointconstrain "Bone03" y limit -30 30 0.2
+	$jointconstrain "Bone03" z limit -40 70 0.2
+
+	$jointconstrain "Bip01 R Leg" x limit -20 20 0
+	$jointconstrain "Bip01 R Leg" y limit -25 15 0
+	$jointconstrain "Bip01 R Leg" z limit -30 40 0.2
+
+	$jointconstrain "Bip01 R Leg1" x limit 0 0 0
+	$jointconstrain "Bip01 R Leg1" y limit 0 0 0
+	$jointconstrain "Bip01 R Leg1" z limit -90 20 0.2
+
+	$jointconstrain "Bip01 R Foot" x limit 0 0 0
+	$jointconstrain "Bip01 R Foot" y limit 0 0 0
+	$jointconstrain "Bip01 R Foot" z limit -50 15 0.2
+
+	$jointconstrain "Bip01 L Leg" x limit -20 20 0
+	$jointconstrain "Bip01 L Leg" y limit -15 25 0
+	$jointconstrain "Bip01 L Leg" z limit -30 40 0.2
+
+	$jointconstrain "Bip01 L Leg1" x limit 0 0 0
+	$jointconstrain "Bip01 L Leg1" y limit 0 0 0
+	$jointconstrain "Bip01 L Leg1" z limit -90 20 0.2
+
+	$jointconstrain "Bip01 L Foot" x limit 0 0 0
+	$jointconstrain "Bip01 L Foot" y limit 0 0 0
+	$jointconstrain "Bip01 L Foot" z limit -50 15 0.2
+
+	$jointconstrain "Bone08" x limit -20 70 0.2
+	$jointconstrain "Bone08" y limit -30 30 0.2
+	$jointconstrain "Bone08" z limit -45 10 0.2
+}

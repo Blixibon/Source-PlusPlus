@@ -7,25 +7,15 @@
 
 // TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
 
-response SoldierResponseReloading
-{
-	sentence "COMBINE_ANNOUNCE"
-}
-
-rule SoldierReloading
+rule PlayerSoldierReloading
 {
 	criteria	ConceptPlayerCoverReload IsPlayer IsPlayerVoiceCombineSoldier
-	response	SoldierResponseReloading
+	response	SoldierAttacking
 }
 
 // TLK_PLAYER_PAIN
 
-response SoldierResponsePain
-{
-	sentence "COMBINE_PAIN"
-}
-
-rule SoldierPain
+rule PlayerSoldierPain
 {
 	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceCombineSoldier
 	response	SoldierResponsePain
@@ -33,211 +23,19 @@ rule SoldierPain
 
 // TLK_PLAYER_TAUNT
 
-response SoldierResponseTaunt
-{
-	sentence "COMBINE_KILL_MONST"
-}
-
-
-rule SoldierTaunt
+rule PlayerSoldierTaunt
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceCombineSoldier
-	response	SoldierResponseTaunt
+	response	SoldierEnemyDead
 }
 
-response SoldierResponseThrow
-{
-	sentence "COMBINE_THROW_GRENADE"
-}
-
-
-rule SoldierThrow
+rule PlayerSoldierThrow
 {
 	criteria	ConceptPlayerThrow IsPlayer IsPlayerVoiceCombineSoldier
-	response	SoldierResponseThrow
+	response	SoldierThrowGrenade
 }
 
 
-// TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
-
-response EliteResponseReloading
-{
-	sentence "PKT_COMBINE_ANNOUNCE"
-}
-
-rule EliteReloading
-{
-	criteria	ConceptPlayerCoverReload IsPlayer IsPlayerVoiceCombineElite
-	response	EliteResponseReloading
-}
-
-// TLK_PLAYER_PAIN
-
-response EliteResponsePain
-{
-	sentence "PKT_COMBINE_PAIN"
-}
-
-rule ElitePain
-{
-	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceCombineElite
-	response	EliteResponsePain
-}
-
-// TLK_PLAYER_TAUNT
-
-response EliteResponseTaunt
-{
-	sentence "PKT_COMBINE_KILL_MONST"
-}
-
-
-rule EliteTaunt
-{
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceCombineElite
-	response	EliteResponseTaunt
-}
-
-response EliteResponseThrow
-{
-	sentence "PKT_COMBINE_THROW_GRENADE"
-}
-
-
-rule EliteThrow
-{
-	criteria	ConceptPlayerThrow IsPlayer IsPlayerVoiceCombineElite
-	response	EliteResponseThrow
-}
-
-
-// TLK_PLAYER_ENEMY
-
-rule SoldierEnemy
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier
-
-//	response	SoldierResponseEnemy
-	response	SoldierResponseIncoming	// TODO: find sounds that are more like "I see an enemy"
-}
-
-// TODO: at some point, move away from using these npc_citizen responses
-
-// using CitizenCombineGroup
-rule SoldierEnemyCombine
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsCombine
-	response	CitizenCombineGroup
-}
-
-// using CitizenHeadcrabGroup
-rule SoldierEnemyHeadcrab
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsHeadcrab
-	response	CitizenHeadcrabGroup
-}
-
-rule SoldierEnemyHeadcrabBlack
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsHeadcrabBlack
-	response	CitizenHeadcrabGroup
-}
-
-rule SoldierEnemyHeadcrabPoison
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsHeadcrabPoison
-	response	CitizenHeadcrabGroup
-}
-
-rule SoldierEnemyHeadcrabFast
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsHeadcrabFast
-	response	CitizenHeadcrabGroup
-}
-
-rule SoldierEnemyZombie
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsZombie
-	response	CitizenZombieGroup
-}
-
-rule SoldierEnemyZombieTorso
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsZombieTorso
-	response	CitizenZombieGroup
-}
-
-rule SoldierEnemyZombieBlack
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsZombieBlack
-	response	CitizenZombieGroup
-}
-
-rule SoldierEnemyZombieFast
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsZombieFast
-	response	CitizenZombieGroup
-}
-
-rule SoldierEnemyScanner
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsScanner
-	response	CitizenScannersGroup
-}
-
-response PoliceEnemyStriderGroup
-{
-	scene "scenes/npc/$gender01/strider.vcd"
-}
-
-rule SoldierEnemyStrider
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsStrider
-	response	PoliceEnemyStriderGroup
-}
-
-rule SoldierEnemyManhack
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsManhack
-	response	CitizenManhacksGroup
-}
-
-rule SoldierEnemyMetro
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsMetro
-	response	CitizenMetroGroup
-}
-
-rule SoldierEnemyZombine
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsZombine
-	response	CitizenZombieGroup
-}
-
-rule SoldierEnemyHunter
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCombineSoldier PlayerEnemyIsHunter
-	response	CitizenCombineGroup
-}
-
-// TLK_PLAYER_FOLLOW
-
-response SoldierResponseFollow
-{
-	scene		"scenes/npc/$gender01/squad_away03.vcd"		weight 4
-	scene		"scenes/npc/$gender01/squad_follow02.vcd"
-	scene		"scenes/npc/$gender01/squad_follow03.vcd"
-	scene		"scenes/npc/$gender01/squad_away01.vcd"		weight 3
-	scene		"scenes/npc/$gender01/squad_away02.vcd"
-//Trav|Edt - add more Follow scenes
-	scene	"scenes/npc/$gender01/overhere01.vcd"
-}
-
-rule SoldierFollow
-{
-	criteria	ConceptPlayerFollow IsPlayer IsPlayerVoiceCombineSoldier
-	response	SoldierResponseFollow
-}
 
 
 

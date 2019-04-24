@@ -31,6 +31,7 @@
 #include "grenade_frag.h"
 #include <KeyValues.h>
 #include "physics_npc_solver.h"
+#include "basegrenade_shared.h"
 
 #include "players_system.h"
 
@@ -767,8 +768,24 @@ int CNPC_PlayerCompanion::SelectScheduleDanger()
 
 		if ( pSound && (pSound->m_iType & SOUND_DANGER) )
 		{
-			if ( !(pSound->SoundContext() & (SOUND_CONTEXT_MORTAR|SOUND_CONTEXT_FROM_SNIPER)) || IsOkToCombatSpeak() )
-				SpeakIfAllowed( TLK_DANGER );
+			if (!(pSound->SoundContext() & (SOUND_CONTEXT_MORTAR | SOUND_CONTEXT_FROM_SNIPER)) || IsOkToCombatSpeak())
+			{
+				char* pszModifiers = nullptr;
+				CBaseEntity* pSoundOwner = pSound->m_hOwner;
+				if (pSoundOwner)
+				{
+					CBaseGrenade* pGrenade = dynamic_cast<CBaseGrenade*>(pSoundOwner);
+					if (pGrenade && pGrenade->GetThrower())
+					{
+						if (IRelationType(pGrenade->GetThrower()) != D_LI)
+						{
+							pszModifiers = "danger_is_grenade:1";
+						}
+					}
+				}
+
+				SpeakIfAllowed(TLK_DANGER, pszModifiers);
+			}
 
 			if ( HasCondition( COND_PC_SAFE_FROM_MORTAR ) )
 			{
@@ -1568,10 +1585,10 @@ void CNPC_PlayerCompanion::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	else
 		set.AppendCriteria("followingplayer", "0");
 
-	Vector vecVelocity = GetAbsVelocity();
+	/*Vector vecVelocity = GetAbsVelocity();
 	float flSpeed = vecVelocity.Length2D();
 
-	set.AppendCriteria("speed", UTIL_VarArgs("%.2f", flSpeed));
+	set.AppendCriteria("speed", UTIL_VarArgs("%.2f", flSpeed));*/
 }
 
 //-----------------------------------------------------------------------------

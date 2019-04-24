@@ -21,6 +21,8 @@
 #include "engine/IEngineSound.h"
 #include "movevars_shared.h"
 #include "soundemittersystem/isoundemittersystembase.h"
+#include "beam_shared.h"
+#include "te_effect_dispatch.h"
 
 extern void ClearMultiDamage(void);
 extern void ApplyMultiDamage( void );
@@ -76,7 +78,7 @@ void CNPC_Headcrab::Spawn( void )
 
 	SetRenderColor( 255, 255, 255, 255 );
 
-	SetModel( "models/hl1hcrab.mdl" );
+	SetModel( "models/half-life/hcf_headcrab.mdl" );
 	m_iHealth = sk_headcrabhl1_health.GetFloat();
 
 	SetHullType(HULL_TINY);
@@ -99,15 +101,43 @@ void CNPC_Headcrab::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
+// Purpose:
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CNPC_Headcrab::CorpseGib(const CTakeDamageInfo& info)
+{
+	CEffectData	data;
+
+	data.m_vOrigin = WorldSpaceCenter();
+	data.m_vNormal = data.m_vOrigin - info.GetDamagePosition();
+	VectorNormalize(data.m_vNormal);
+
+	data.m_flScale = RemapVal(m_iHealth, 0, -500, 1, 3);
+	data.m_flScale = clamp(data.m_flScale, 1, 3);
+
+	data.m_nMaterial = GetGibSkin();
+
+	data.m_nColor = BloodColor();
+
+	DispatchEffect("HL1HCGib", data);
+
+	CSoundEnt::InsertSound(SOUND_MEAT, GetAbsOrigin(), 256, 0.5f, this);
+
+	///	BaseClass::CorpseGib( info );
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: 
 // Input  :
 // Output : 
 //-----------------------------------------------------------------------------
 void CNPC_Headcrab::Precache( void )
 {
-	PrecacheModel( "models/hl1hcrab.mdl" );
+	PrecacheModel( "models/half-life/hcf_headcrab.mdl" );
 //	PrecacheModel( "models/hc_squashed01.mdl" );
-//	PrecacheModel( "models/gibs/hc_gibs.mdl" );
+	PrecacheModel( "models/gibs/hcgibs.mdl" );
 
 	PrecacheScriptSound( "Headcrab.Bite" );
 	PrecacheScriptSound( "Headcrab.Attack" );
@@ -446,6 +476,13 @@ void CNPC_Headcrab::TouchDamage( CBaseEntity *pOther )
 	CTakeDamageInfo info( this, this, GetDamageAmount(), DMG_SLASH );
 	CalculateMeleeDamageForce( &info, GetAbsVelocity(), GetAbsOrigin() );
 	pOther->TakeDamage( info );
+
+	if (GetSpecialDamageAmount() > 0.0f)
+	{
+		CTakeDamageInfo info(this, this, GetSpecialDamageAmount(), GetSpecialDamageType());
+		CalculateMeleeDamageForce(&info, GetAbsVelocity(), GetAbsOrigin(), 0.2f);
+		pOther->TakeDamage(info);
+	}
 }
 
 
@@ -555,47 +592,47 @@ void CNPC_Headcrab::AttackSound( void )
 //
 //------------------------------------------------------------------------------
 
-AI_BEGIN_CUSTOM_NPC( monster_headcrab, CNPC_Headcrab )
+AI_BEGIN_CUSTOM_NPC(monster_headcrab, CNPC_Headcrab)
 
-	//=========================================================
-	// > SCHED_HL1_HEADCRAB_RANGE_ATTACK1
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_HL1_HEADCRAB_RANGE_ATTACK1,
-	
-		"	Tasks"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_IDEAL				0"
-		"		TASK_RANGE_ATTACK1			0"
-		"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
-		"		TASK_FACE_IDEAL				0"
-		"		TASK_WAIT_RANDOM			0.5"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_NO_PRIMARY_AMMO"
-	)
-	
-	//=========================================================
-	// > SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1,
-	
-		"	Tasks"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_IDEAL				0"
-		"		TASK_RANGE_ATTACK1			0"
-		"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_NO_PRIMARY_AMMO"
-	)
+//=========================================================
+// > SCHED_HL1_HEADCRAB_RANGE_ATTACK1
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_HL1_HEADCRAB_RANGE_ATTACK1,
 
-AI_END_CUSTOM_NPC()
+	"	Tasks"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_FACE_IDEAL				0"
+	"		TASK_RANGE_ATTACK1			0"
+	"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
+	"		TASK_FACE_IDEAL				0"
+	"		TASK_WAIT_RANDOM			0.5"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_NO_PRIMARY_AMMO"
+)
+
+//=========================================================
+// > SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_FAST_HL1_HEADCRAB_RANGE_ATTACK1,
+
+	"	Tasks"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_FACE_IDEAL				0"
+	"		TASK_RANGE_ATTACK1			0"
+	"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_NO_PRIMARY_AMMO"
+)
+
+AI_END_CUSTOM_NPC();
 
 
 class CNPC_BabyCrab : public CNPC_Headcrab
@@ -662,4 +699,286 @@ int CNPC_BabyCrab::RangeAttack1Conditions( float flDot, float flDist )
 float CNPC_BabyCrab::GetDamageAmount( void )
 {
 	return sk_headcrab_dmg_bite.GetFloat() * 0.3;
+}
+
+class CNPC_HCFElectoCrab : public CNPC_Headcrab
+{
+	enum { NUM_BEAMS = 2};
+
+	DECLARE_CLASS(CNPC_HCFElectoCrab, CNPC_Headcrab);
+public:
+	DECLARE_DATADESC()
+
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 4; }
+
+	void CreateBeams(void);
+	void ClearBeams(void);
+
+	virtual void	Event_Killed(const CTakeDamageInfo& info)
+	{
+		BaseClass::Event_Killed(info);
+		ClearBeams();
+	}
+
+	virtual float GetSpecialDamageAmount(void) { return 5.0f; }
+	virtual int GetSpecialDamageType(void) { return DMG_SHOCK; }
+
+private:
+	CHandle<CBeam>  m_hBeams[NUM_BEAMS]; //This is temp.
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_electroheadcrab, CNPC_HCFElectoCrab);
+
+BEGIN_DATADESC(CNPC_HCFElectoCrab)
+DEFINE_AUTO_ARRAY(m_hBeams, FIELD_EHANDLE),
+END_DATADESC();
+
+#define ELECTROCRAB_BEAM "sprites/lgtning.vmt"
+
+void CNPC_HCFElectoCrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	m_nSkin = 4;
+	CreateBeams();
+}
+
+void CNPC_HCFElectoCrab::ClearBeams(void)
+{
+	// Turn off sprites
+	for (int i = 0; i < NUM_BEAMS; i++)
+	{
+		if (m_hBeams[i] != NULL)
+		{
+			UTIL_Remove(m_hBeams[i]);
+			m_hBeams[i] = NULL;
+		}
+	}
+}
+
+void CNPC_HCFElectoCrab::CreateBeams(void)
+{
+	for (int i = 0; i < NUM_BEAMS; i++)
+	{
+		if (m_hBeams[i])
+			continue;
+
+		const char* attachNamesStart[NUM_BEAMS] =
+		{
+			"0",
+			"2"
+		};
+
+		const char* attachNamesEnd[NUM_BEAMS] =
+		{
+			"1",
+			"3"
+		};
+
+		m_hBeams[i] = CBeam::BeamCreate(ELECTROCRAB_BEAM, 3.0f);
+
+		m_hBeams[i]->EntsInit(this, this);
+		m_hBeams[i]->SetStartAttachment(LookupAttachment(attachNamesStart[i]));
+		m_hBeams[i]->SetEndAttachment(LookupAttachment(attachNamesEnd[i]));
+		m_hBeams[i]->SetColor(64, 16, 128);
+		m_hBeams[i]->SetBrightness(64);
+		m_hBeams[i]->SetNoise(12.8);
+		//m_hBeams[i]->SetWidth(0.6f);
+		//m_hBeams[i]->SetRenderMode(kRenderTransAdd);
+	}
+
+}
+
+void CNPC_HCFElectoCrab::Precache(void)
+{
+	PrecacheModel(ELECTROCRAB_BEAM);
+	BaseClass::Precache();
+}
+
+class CNPC_HCFFastHeadcrab : public CNPC_Headcrab
+{
+	DECLARE_CLASS(CNPC_HCFFastHeadcrab, CNPC_Headcrab);
+public:
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 5; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_fastheadcrab, CNPC_HCFFastHeadcrab);
+
+void CNPC_HCFFastHeadcrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	SetModel("models/half-life/hcf_fheadcrab.mdl");
+}
+
+void CNPC_HCFFastHeadcrab::Precache(void)
+{
+	PrecacheModel("models/half-life/hcf_fheadcrab.mdl");
+	BaseClass::Precache();
+}
+
+class CNPC_HCFFireHeadcrab : public CNPC_Headcrab
+{
+	DECLARE_CLASS(CNPC_HCFFireHeadcrab, CNPC_Headcrab);
+public:
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 3; }
+
+	virtual float GetSpecialDamageAmount(void) { return 5.0f; }
+	virtual int GetSpecialDamageType(void) { return DMG_BURN; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_fireheadcrab, CNPC_HCFFireHeadcrab);
+
+void CNPC_HCFFireHeadcrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	m_nSkin = 3;
+}
+
+void CNPC_HCFFireHeadcrab::Precache(void)
+{
+	BaseClass::Precache();
+}
+
+class CNPC_HCFPoisonHeadcrab : public CNPC_Headcrab
+{
+	DECLARE_CLASS(CNPC_HCFPoisonHeadcrab, CNPC_Headcrab);
+public:
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 2; }
+
+	virtual float GetSpecialDamageAmount(void) { return 10.0f; }
+	virtual int GetSpecialDamageType(void) { return DMG_POISON; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_poisonheadcrab, CNPC_HCFPoisonHeadcrab);
+
+void CNPC_HCFPoisonHeadcrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	m_nSkin = 2;
+}
+
+void CNPC_HCFPoisonHeadcrab::Precache(void)
+{
+	BaseClass::Precache();
+}
+
+class CNPC_HCFHalucinoHeadcrab : public CNPC_Headcrab
+{
+	DECLARE_CLASS(CNPC_HCFHalucinoHeadcrab, CNPC_Headcrab);
+public:
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 6; }
+
+	virtual float GetSpecialDamageAmount(void) { return 10.0f; }
+	virtual int GetSpecialDamageType(void) { return DMG_NERVEGAS; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_hallucheadcrab, CNPC_HCFHalucinoHeadcrab);
+
+void CNPC_HCFHalucinoHeadcrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	SetModel("models/half-life/hcf_hheadcrab.mdl");
+}
+
+void CNPC_HCFHalucinoHeadcrab::Precache(void)
+{
+	BaseClass::Precache();
+	PrecacheModel("models/half-life/hcf_hheadcrab.mdl");
+}
+
+class CNPC_HCFIceHeadcrab : public CNPC_Headcrab
+{
+	DECLARE_CLASS(CNPC_HCFIceHeadcrab, CNPC_Headcrab);
+public:
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 1; }
+
+	virtual float GetSpecialDamageAmount(void) { return 5.0f; }
+	virtual int GetSpecialDamageType(void) { return DMG_PARALYZE; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_iceheadcrab, CNPC_HCFIceHeadcrab);
+
+void CNPC_HCFIceHeadcrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	m_nSkin = 1;
+}
+
+void CNPC_HCFIceHeadcrab::Precache(void)
+{
+	BaseClass::Precache();
+}
+
+class CNPC_HCFEtherHeadcrab : public CNPC_Headcrab
+{
+	DECLARE_CLASS(CNPC_HCFEtherHeadcrab, CNPC_Headcrab);
+public:
+	void Spawn(void);
+	void Precache(void);
+
+	virtual int GetGibSkin(void) { return 7; }
+
+	void	TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
+	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
+
+private:
+	bool	m_bPassedTraceAttack;
+};
+
+LINK_ENTITY_TO_CLASS(monster_hcf_etherealheadcrab, CNPC_HCFEtherHeadcrab);
+
+void CNPC_HCFEtherHeadcrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	m_nSkin = 5;
+
+	m_nRenderMode = kRenderTransTexture;
+	m_nRenderFX = kRenderFxPulseSlow;
+
+	SetRenderColor(255, 255, 255, 160);
+}
+
+void CNPC_HCFEtherHeadcrab::Precache(void)
+{
+	BaseClass::Precache();
+}
+
+void CNPC_HCFEtherHeadcrab::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	if (random->RandomFloat() <= (float)(1 / 3))
+		return;
+
+	m_bPassedTraceAttack = true;
+
+	BaseClass::TraceAttack(info, vecDir, ptr, pAccumulator);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CNPC_HCFEtherHeadcrab::OnTakeDamage_Alive(const CTakeDamageInfo& info)
+{
+	CTakeDamageInfo subInfo = info;
+
+	bool bPass = m_bPassedTraceAttack || (random->RandomFloat() > (float)(1 / 3));
+	if (!bPass)
+		subInfo.SetDamage(0.0f);
+
+	return BaseClass::OnTakeDamage_Alive(subInfo);
 }

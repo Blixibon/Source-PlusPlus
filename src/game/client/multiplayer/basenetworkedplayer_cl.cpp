@@ -12,11 +12,11 @@
 
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent, CTEPlayerAnimEvent );
 
-BEGIN_RECV_TABLE_NOBASE( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent )
-	RecvPropEHandle( RECVINFO( m_hPlayer ) ),
-	RecvPropInt( RECVINFO( m_iEvent ) ),
-	RecvPropInt( RECVINFO(m_nData) ),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE(C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent)
+RecvPropEHandle(RECVINFO(m_hPlayer)),
+RecvPropInt(RECVINFO(m_iEvent)),
+RecvPropInt(RECVINFO(m_nData)),
+END_RECV_TABLE();
 
 void C_TEPlayerAnimEvent::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -28,32 +28,32 @@ void C_TEPlayerAnimEvent::PostDataUpdate( DataUpdateType_t updateType )
 
 // ***************** C_BaseNetworkedPlayer **********************
 
-BEGIN_RECV_TABLE_NOBASE( C_BaseNetworkedPlayer, DT_BaseNetworkedPlayerExclusive )
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ), // RECVINFO_NAME redirects the received var to m_vecNetworkOrigin for interpolation purposes
-	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE(C_BaseNetworkedPlayer, DT_BaseNetworkedPlayerExclusive)
+RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)), // RECVINFO_NAME redirects the received var to m_vecNetworkOrigin for interpolation purposes
+RecvPropFloat(RECVINFO(m_angEyeAngles[0])),
+END_RECV_TABLE();
 
-BEGIN_RECV_TABLE_NOBASE( C_BaseNetworkedPlayer, DT_BaseNetworkedPlayerNonLocalExclusive )
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin) ), // RECVINFO_NAME again
-	RecvPropFloat( RECVINFO( m_angEyeAngles[0] ) ),
-	RecvPropFloat( RECVINFO( m_angEyeAngles[1] ) ),
-	RecvPropInt(RECVINFO(m_cycleLatch), 0, &C_BaseNetworkedPlayer::RecvProxy_CycleLatch),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE(C_BaseNetworkedPlayer, DT_BaseNetworkedPlayerNonLocalExclusive)
+RecvPropVector(RECVINFO_NAME(m_vecNetworkOrigin, m_vecOrigin)), // RECVINFO_NAME again
+RecvPropFloat(RECVINFO(m_angEyeAngles[0])),
+RecvPropFloat(RECVINFO(m_angEyeAngles[1])),
+RecvPropInt(RECVINFO(m_cycleLatch), 0, &C_BaseNetworkedPlayer::RecvProxy_CycleLatch),
+END_RECV_TABLE();
 
-IMPLEMENT_CLIENTCLASS_DT(C_BaseNetworkedPlayer, DT_BaseNetworkedPlayer, CBaseNetworkedPlayer )
-	RecvPropBool( RECVINFO( m_bSpawnInterpCounter ) ),
-	RecvPropEHandle( RECVINFO( m_hRagdoll ) ),
-	RecvPropDataTable( "netplayer_localdata", 0, 0, &REFERENCE_RECV_TABLE(DT_BaseNetworkedPlayerExclusive) ),
-	RecvPropDataTable( "netplayer_nonlocaldata", 0, 0, &REFERENCE_RECV_TABLE(DT_BaseNetworkedPlayerNonLocalExclusive) ),
-END_NETWORK_TABLE()
+IMPLEMENT_CLIENTCLASS_DT(C_BaseNetworkedPlayer, DT_BaseNetworkedPlayer, CBaseNetworkedPlayer)
+RecvPropBool(RECVINFO(m_bSpawnInterpCounter)),
+RecvPropEHandle(RECVINFO(m_hRagdoll)),
+RecvPropDataTable("netplayer_localdata", 0, 0, &REFERENCE_RECV_TABLE(DT_BaseNetworkedPlayerExclusive)),
+RecvPropDataTable("netplayer_nonlocaldata", 0, 0, &REFERENCE_RECV_TABLE(DT_BaseNetworkedPlayerNonLocalExclusive)),
+END_NETWORK_TABLE();
 
-BEGIN_PREDICTION_DATA( C_BaseNetworkedPlayer )
-	DEFINE_PRED_FIELD( m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_FIELD( m_flPlaybackRate, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
-	DEFINE_PRED_ARRAY_TOL( m_flEncodedController, FIELD_FLOAT, MAXSTUDIOBONECTRLS, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE, 0.02f ),
-	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
-END_PREDICTION_DATA()
+BEGIN_PREDICTION_DATA(C_BaseNetworkedPlayer)
+DEFINE_PRED_FIELD(m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK),
+DEFINE_PRED_FIELD(m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK),
+DEFINE_PRED_FIELD(m_flPlaybackRate, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK),
+DEFINE_PRED_ARRAY_TOL(m_flEncodedController, FIELD_FLOAT, MAXSTUDIOBONECTRLS, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE, 0.02f),
+DEFINE_PRED_FIELD(m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK),
+END_PREDICTION_DATA();
 
 void C_BaseNetworkedPlayer::RecvProxy_CycleLatch(const CRecvProxyData* pData, void* pStruct, void* pOut)
 {
@@ -62,7 +62,7 @@ void C_BaseNetworkedPlayer::RecvProxy_CycleLatch(const CRecvProxyData* pData, vo
 	float flServerCycle = (float)pData->m_Value.m_Int / 16.0f;
 	float flCurCycle = pPlayer->GetCycle();
 	// The cycle is way out of sync.
-	if (fabs(flCurCycle - flServerCycle) > CYCLELATCH_TOLERANCE)
+	if (fabsf(flCurCycle - flServerCycle) > CYCLELATCH_TOLERANCE)
 	{
 		pPlayer->SetServerIntendedCycle(flServerCycle);
 	}
@@ -72,12 +72,14 @@ C_BaseNetworkedPlayer::C_BaseNetworkedPlayer() : m_iv_angEyeAngles( "C_BaseNetwo
 {
 	m_angEyeAngles.Init();
 	AddVar( &m_angEyeAngles, &m_iv_angEyeAngles, LATCH_SIMULATION_VAR );
-	m_bSpawnInterpCounterCache,m_bSpawnInterpCounter = false;
+	m_bSpawnInterpCounterCache = false;
+	m_bSpawnInterpCounter = false;
 	SetPredictionEligible(true);
 
 	//MakeAnimState();
 
 	m_flServerCycle = -1.0f;
+	m_cycleLatch = 0;
 };
 
 const QAngle& C_BaseNetworkedPlayer::EyeAngles()

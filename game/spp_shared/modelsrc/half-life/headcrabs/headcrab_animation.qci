@@ -1,0 +1,190 @@
+
+$Sequence "idle1" {
+	"headcrab_anims\idle1.smd"
+	activity "ACT_IDLE" 15
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+}
+
+$Sequence "idle2" {
+	"headcrab_anims\idle2.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "idle3" {
+	"headcrab_anims\idle3.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "walk" {
+	"headcrab_anims\walk.smd"
+	activity "ACT_WALK" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	walkframe 34 LX
+}
+
+$Sequence "run" {
+	"headcrab_anims\run.smd"
+	activity "ACT_RUN" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	walkframe 28 LX
+}
+
+$Sequence "angry" {
+	"headcrab_anims\angry.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "flinch" {
+	"headcrab_anims\flinch.smd"
+	activity "ACT_SMALL_FLINCH" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "dieback" {
+	"headcrab_anims\dieback.smd"
+	activity "ACT_DIESIMPLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "180_left" {
+	"headcrab_anims\180_left.smd"
+	activity "ACT_TURN_LEFT" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+}
+
+$Sequence "180_right" {
+	"headcrab_anims\180_right.smd"
+	activity "ACT_TURN_RIGHT" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+}
+
+$Sequence "jump" {
+	"headcrab_anims\jump.smd"
+	activity "ACT_RANGE_ATTACK1" 2
+	{ event 2 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "jump_variation1" {
+	"headcrab_anims\jump_variation1.smd"
+	activity "ACT_RANGE_ATTACK1" 1
+	{ event 2 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "jump_variation2" {
+	"headcrab_anims\jump_variation2.smd"
+	activity "ACT_RANGE_ATTACK1" 1
+	{ event 2 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "yaw_adjustment" {
+	"headcrab_anims\yaw_adjustment.smd"
+	activity "ACT_MELEE_ATTACK2" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "headcrabbed#1" {
+	"headcrab_anims\headcrabbed#1.smd"
+	{ event 1000 1 "" }
+	{ event 1003 110 "splat" }
+	{ event 1 109 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "headcrabbed#2" {
+	"headcrab_anims\headcrabbed#2.smd"
+	{ event 1000 1 "" }
+	{ event 1 165 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "headidle" {
+	"headcrab_anims\headidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	loop
+}
+
+$Sequence "crashidle" {
+	"headcrab_anims\crashidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 34
+	loop
+}
+
+$Sequence "crash" {
+	"headcrab_anims\crash.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+}
+
+$Sequence "hstruggleidle" {
+	"headcrab_anims\hstruggleidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	loop
+}
+
+$Sequence "hstruggle" {
+	"headcrab_anims\hstruggle.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+}
+
+$Sequence "ragdoll" {
+	"headcrab_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

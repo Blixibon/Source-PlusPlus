@@ -54,6 +54,9 @@ public:
 
 	CWeaponFrag();
 
+	//All weapons can be picked up by NPCs by default
+	virtual bool			CanBePickedUpByNPCs(void) { return false; }
+
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_FRAG; }
 
 	void	Precache( void );

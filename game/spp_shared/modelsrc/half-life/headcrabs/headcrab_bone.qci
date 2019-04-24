@@ -1,0 +1,31 @@
+
+$DefineBone "Bip01" "" 0.090678 8.370922 11.773529 0 -89.999928 0 0 0 0 0 0 0
+$DefineBone "Bip01 Pelvis" "Bip01" 0 0 0 -89.999983 -89.999928 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Leg" "Bip01 Pelvis" -0.000007 0.000009 5.704314 -9.99483 174.770158 -179.999938 0 0 0 0 0 0
+$DefineBone "Bip01 L Leg1" "Bip01 L Leg" 5.820531 0 0 0 -22.953322 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Foot" "Bip01 L Leg1" 5.877042 0 0 -9.952907 17.643378 0.920342 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe0" "Bip01 L Foot" 0.50859 1.638791 -0.536845 0.000001 89.999983 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe01" "Bip01 L Toe0" 0.16953 0 0.000002 0.000001 -0.000002 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe02" "Bip01 L Toe01" 0.16953 0 -0.000001 0.000001 -0.000002 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe1" "Bip01 L Foot" 0.50859 1.638792 0.536846 0.000001 89.999983 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe11" "Bip01 L Toe1" 0.180832 0 0 0.000001 -0.000002 0 0 0 0 0 0 0
+$DefineBone "Bip01 L Toe12" "Bip01 L Toe11" 0.180832 0 0 0.000001 -0.000002 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Leg" "Bip01 Pelvis" 0.000008 -0.000006 -5.704314 9.994994 174.770158 -179.999938 0 0 0 0 0 0
+$DefineBone "Bip01 R Leg1" "Bip01 R Leg" 5.820531 0 0 -0.000002 -22.953326 0.000001 0 0 0 0 0 0
+$DefineBone "Bip01 R Foot" "Bip01 R Leg1" 5.877042 0 0 9.952908 17.643376 -0.920342 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe0" "Bip01 R Foot" 0.50859 1.63879 0.536845 0 89.999983 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe01" "Bip01 R Toe0" 0.16953 0 0.000001 0 -0.000001 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe02" "Bip01 R Toe01" 0.16953 0 -0.000001 0 -0.000001 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe1" "Bip01 R Foot" 0.50859 1.638791 -0.536845 0 89.999983 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe11" "Bip01 R Toe1" 0.180832 0 0 0 -0.000001 0 0 0 0 0 0 0
+$DefineBone "Bip01 R Toe12" "Bip01 R Toe11" 0.180832 0 0 0 -0.000001 0 0 0 0 0 0 0
+$DefineBone "Bip01 Spine" "Bip01 Pelvis" 0.403871 0.006248 0.000001 0.000115 126.98125 -0.000229 0 0 0 0 0 0
+$DefineBone "Bip01 Neck" "Bip01 Spine" 13.047035 -0.00045 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bone04" "Bip01 Neck" -1.703965 0.198453 -4.655851 -89.999983 53.018763 0 0 0 0 0 0 0
+$DefineBone "Bone05" "Bone04" -0.974781 -2.069797 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bone06" "Bone05" -0.446564 -7.06314 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bone01" "Bip01 Neck" -1.848851 0.220504 4.241694 -89.999983 53.018763 0 0 0 0 0 0 0
+$DefineBone "Bone02" "Bone01" 0 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bone03" "Bone02" 0.95391 -2.089518 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Bone08" "Bone03" 0.863062 -7.358735 0 0 0 0 0 0 0 0 0 0
+

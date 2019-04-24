@@ -122,6 +122,47 @@ extern ConVar sk_max_gauss_round;
 extern ConVar sk_npc_dmg_gunship;
 extern ConVar sk_npc_dmg_gunship_to_plr;
 
+
+ConVar sk_npc_dmg_9mm_bullet("sk_npc_dmg_9mm_bullet", "0", FCVAR_REPLICATED);
+ConVar sk_plr_dmg_9mm_bullet("sk_plr_dmg_9mm_bullet", "0", FCVAR_REPLICATED);
+ConVar sk_max_9mm_bullet("sk_max_9mm_bullet", "0", FCVAR_REPLICATED);
+
+ConVar sk_npc_dmg_9mmAR_bullet("sk_npc_dmg_9mmAR_bullet", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_357_bullet("sk_plr_dmg_357_bullet", "0", FCVAR_REPLICATED);
+ConVar sk_max_357_bullet("sk_max_357_bullet", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_mp5_grenade("sk_plr_dmg_mp5_grenade", "0", FCVAR_REPLICATED);
+ConVar sk_max_mp5_grenade("sk_max_mp5_grenade", "0", FCVAR_REPLICATED);
+ConVar sk_mp5_grenade_radius("sk_mp5_grenade_radius", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_rpg("sk_plr_dmg_rpg", "0", FCVAR_REPLICATED);
+ConVar sk_max_rpg_rocket("sk_max_rpg_rocket", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_xbow_bolt_plr("sk_plr_dmg_xbow_bolt_plr", "0", FCVAR_REPLICATED);
+ConVar sk_plr_dmg_xbow_bolt_npc("sk_plr_dmg_xbow_bolt_npc", "0", FCVAR_REPLICATED);
+ConVar sk_max_xbow_bolt("sk_max_xbow_bolt", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_egon_narrow("sk_plr_dmg_egon_narrow", "0", FCVAR_REPLICATED);
+ConVar sk_plr_dmg_egon_wide("sk_plr_dmg_egon_wide", "0", FCVAR_REPLICATED);
+ConVar sk_max_uranium("sk_max_uranium", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_gauss("sk_plr_dmg_gauss", "0", FCVAR_REPLICATED);
+
+ConVar sk_plr_dmg_hornet("sk_plr_dmg_hornet", "0", FCVAR_REPLICATED);
+ConVar sk_npc_dmg_hornet("sk_npc_dmg_hornet", "0", FCVAR_REPLICATED);
+ConVar sk_max_hornet("sk_max_hornet", "0", FCVAR_REPLICATED);
+
+ConVar sk_max_snark("sk_max_snark", "0", FCVAR_REPLICATED);
+
+extern ConVar sk_plr_dmg_tripmine;
+ConVar sk_max_tripmine("sk_max_tripmine", "0", FCVAR_REPLICATED);
+
+extern ConVar sk_plr_dmg_satchel;
+ConVar sk_max_satchel("sk_max_satchel", "0", FCVAR_REPLICATED);
+
+ConVar sk_npc_dmg_12mm_bullet("sk_npc_dmg_12mm_bullet", "0", FCVAR_REPLICATED);
+
 ConVar	sk_max_slam("sk_max_slam", "15", FCVAR_REPLICATED);
 
 #ifndef CLIENT_DLL
@@ -3010,6 +3051,22 @@ CAmmoDef* GetAmmoDef()
 		def.AddAmmoType("CombineHeavyCannon", DMG_BULLET, TRACER_LINE, 40, 40, NULL, 10 * 750 * 12, AMMO_FORCE_DROP_IF_CARRIED); // hit like a 10 kg weight at 750 ft/s
 		def.AddAmmoType("ammo_proto1", DMG_BULLET, TRACER_LINE, 0, 0, 10, 0, 0);
 #endif // HL2_EPISODIC
+
+		// HL1
+		def.AddAmmoType("9mmRound", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_9mm_bullet", "sk_npc_dmg_9mm_bullet", "sk_max_9mm_bullet", BULLET_IMPULSE(500, 1325), 0);
+		def.AddAmmoType("357Round", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_357_bullet", "sk_npc_dmg_12mm_bullet", "sk_max_357_bullet", BULLET_IMPULSE(650, 6000), 0);
+		def.AddAmmoType("BuckshotHL1", DMG_BULLET | DMG_BUCKSHOT, TRACER_LINE, "sk_plr_dmg_buckshot", NULL, "sk_max_buckshot", BULLET_IMPULSE(200, 1200), 0);
+		def.AddAmmoType("XBowBoltHL1", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_xbow_bolt_plr", NULL, "sk_max_xbow_bolt", BULLET_IMPULSE(200, 1200), 0);
+		def.AddAmmoType("MP5_Grenade", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_mp5_grenade", NULL, "sk_max_mp5_grenade", 0, 0);
+		def.AddAmmoType("RPG_Rocket", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_rpg", NULL, "sk_max_rpg_rocket", 0, 0);
+		def.AddAmmoType("Uranium", DMG_ENERGYBEAM, TRACER_NONE, NULL, NULL, "sk_max_uranium", 0, 0);
+		def.AddAmmoType("GrenadeHL1", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_grenade", NULL, "sk_max_grenade", 0, 0);
+		def.AddAmmoType("Hornet", DMG_BULLET, TRACER_NONE, "sk_plr_dmg_hornet", "sk_npc_dmg_hornet", "sk_max_hornet", BULLET_IMPULSE(100, 1200), 0);
+		def.AddAmmoType("Snark", DMG_SLASH, TRACER_NONE, "sk_snark_dmg_bite", NULL, "sk_max_snark", 0, 0);
+		def.AddAmmoType("TripMine", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_tripmine", NULL, "sk_max_tripmine", 0, 0);
+		def.AddAmmoType("Satchel", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_satchel", NULL, "sk_max_satchel", 0, 0);
+
+		def.AddAmmoType("12mmRound", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE_AND_WHIZ, NULL, "sk_npc_dmg_12mm_bullet", NULL, BULLET_IMPULSE(300, 1200), 0);
 	}
 
 	return &def;

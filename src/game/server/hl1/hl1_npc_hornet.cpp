@@ -34,7 +34,7 @@ int iHornetPuff;
 
 LINK_ENTITY_TO_CLASS( hornet, CNPC_Hornet );
 
-#ifdef HL1_DLL
+#if defined(HL1_DLL) || defined(HL2_LAZUL)
 extern ConVar sk_npc_dmg_hornet;
 extern ConVar sk_plr_dmg_hornet;
 #else

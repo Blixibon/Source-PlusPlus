@@ -26,6 +26,9 @@ public:
 	Vector	Center( void );
 	Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
 	
+	bool	CorpseGib(const CTakeDamageInfo& info);
+	virtual int GetGibSkin(void) { return 0; }
+
 	float	MaxYawSpeed( void );
 	Class_T Classify( void );
 
@@ -40,7 +43,11 @@ public:
 	int TranslateSchedule( int scheduleType );
 	void PrescheduleThink( void );
 	int RangeAttack1Conditions ( float flDot, float flDist );
-	float GetDamageAmount( void );
+	virtual float GetDamageAmount( void );
+	virtual float GetSpecialDamageAmount(void) { return 0.0f; }
+	virtual int GetSpecialDamageType(void) { return DMG_GENERIC; }
+
+	
 
 	virtual int		GetVoicePitch( void ) { return 100; }
 	virtual float	GetSoundVolume( void ) { return 1.0; }

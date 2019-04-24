@@ -16,7 +16,7 @@
 //--------------
 #define DMG_MISSILEDEFENSE	(DMG_LASTGENERICFLAG<<2)	// The only kind of damage missiles take. (special missile defense)
 
-#ifdef HL1_DLL
+#if defined(HL1_DLL) || defined(HL2_LAZUL)
 #define HL1_PISTOL_AMMO "9mmRound"
 #define HL1_357_AMMO "357Round"
 #define HL1_12MM_AMMO "12mmRound"

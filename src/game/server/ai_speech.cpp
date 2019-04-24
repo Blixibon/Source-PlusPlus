@@ -859,7 +859,16 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 
 	if ( pSpeaker->GetEnemy() )
 	{
-		set.AppendCriteria( "enemy", pSpeaker->GetEnemy()->GetClassname() );
+		CBaseEntity* pEnemy = pSpeaker->GetEnemy();
+		set.AppendCriteria( "enemy", pEnemy->GetClassname() );
+		set.AppendCriteria("enemyclass", g_pGameRules->AIClassText(pEnemy->Classify()));
+		float healthfrac = 0.0f;
+		if (pEnemy->GetMaxHealth() > 0)
+		{
+			healthfrac = (float)pEnemy->GetHealth() / (float)pEnemy->GetMaxHealth();
+		}
+
+		set.AppendCriteria("enemyhealthfrac", UTIL_VarArgs("%.3f", healthfrac));
 		set.AppendCriteria( "timesincecombat", "-1" );
 	}
 	else

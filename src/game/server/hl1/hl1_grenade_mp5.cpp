@@ -18,7 +18,7 @@
 
 extern short	g_sModelIndexFireball;
 extern short	g_sModelIndexWExplosion;
-#ifdef HL1_DLL
+#if defined(HL1_DLL) || defined(HL2_LAZUL)
 extern ConVar sk_plr_dmg_mp5_grenade;
 extern ConVar sk_max_mp5_grenade;
 extern ConVar sk_mp5_grenade_radius;

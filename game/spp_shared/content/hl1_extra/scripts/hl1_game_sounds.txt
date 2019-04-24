@@ -871,7 +871,7 @@
 
 
 // weapon_glock
-"Weapon_Glock.Special1"
+"HL1Weapon_Glock.Special1"
 {
 	"channel"		"CHAN_ITEM"
 	"volume"		"1.0"
@@ -880,7 +880,7 @@
 	"wave"			"items/9mmclip1.wav"
 }
 
-"Weapon_Glock.Special2"
+"HL1Weapon_Glock.Special2"
 {
 	"channel"		"CHAN_ITEM"
 	"volume"		"1.0"
@@ -889,7 +889,7 @@
 	"wave"			"items/9mmclip2.wav"
 }
 
-"Weapon_Glock.Single"
+"HL1Weapon_Glock.Single"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
@@ -965,7 +965,7 @@
 
 
 // weapon_mp5
-"Weapon_MP5.Single"
+"HL1Weapon_MP5.Single"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"
@@ -979,7 +979,7 @@
 	}
 }
 
-"Weapon_MP5.Double"
+"HL1Weapon_MP5.Double"
 {
 	"channel"		"CHAN_WEAPON"
 	"volume"		"1.0"

@@ -463,6 +463,10 @@ void CNPC_PlayerFollower::UpdatePlayerSquad()
 		return;
 
 	CBasePlayer *pPlayer = GetBestPlayer();
+
+	if (!pPlayer)
+		return;
+
 	if ((pPlayer->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D()).LengthSqr() < Square(20 * 12))
 		m_flTimeLastCloseToPlayer = gpGlobals->curtime;
 

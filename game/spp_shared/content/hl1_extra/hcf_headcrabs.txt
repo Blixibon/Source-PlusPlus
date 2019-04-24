@@ -1,0 +1,9 @@
+monster_hcf_electroheadcrab
+monster_hcf_etherealheadcrab
+monster_hcf_fastheadcrab
+monster_hcf_fireheadcrab
+monster_hcf_hallucheadcrab
+monster_hcf_headcrab
+monster_hcf_iceheadcrab
+monster_hcf_poisonheadcrab
+monster_headcrab

@@ -3086,7 +3086,7 @@ void CFuncTankAPCRocket::Spawn( void )
 	AddEffects( EF_NODRAW );
 	m_nSide = 0;
 	m_bDying = false;
-	m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false );
+	m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false, true );
 	m_nBulletCount = m_nBurstCount;
 	SetSolid( SOLID_NONE );
 	SetLocalVelocity( vec3_origin );

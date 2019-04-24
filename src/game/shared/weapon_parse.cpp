@@ -347,6 +347,7 @@ FileWeaponInfo_t::FileWeaponInfo_t()
 	bShowUsageHint = false;
 	m_bAllowFlipping = true;
 	m_bBuiltRightHanded = true;
+	m_flViewModelFOV = 0.f;
 }
 
 #ifdef CLIENT_DLL
@@ -386,6 +387,8 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	iWeight = pKeyValuesData->GetInt( "weight", 0 );
 
 	iRumbleEffect = pKeyValuesData->GetInt( "rumble", -1 );
+
+	m_flViewModelFOV = pKeyValuesData->GetFloat("ViewModelFOV", 54.0f);
 	
 	// LAME old way to specify item flags.
 	// Weapon scripts should use the flag names.

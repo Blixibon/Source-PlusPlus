@@ -173,7 +173,7 @@ void CPropAPC::CreateAPCLaserDot( void )
 	// Create a laser if we don't have one
 	if ( m_hLaserDot == NULL )
 	{
-		m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false );
+		m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false, false );
 	}
 }
 

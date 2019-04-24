@@ -110,9 +110,13 @@ private:
 //-----------------------------------------------------------------------------
 // Laser dot control
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot );
+CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot, bool bSaved );
 void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget );
 void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable );
+bool IsLaserDotOn(CBaseEntity* pLaserDot);
+CBaseEntity* GetFirstLaserDot();
+CBaseEntity* GetNextLaserDot(CBaseEntity* pLaserDot);
+void SetLaserDotPosition(CBaseEntity* pLaserDot, const Vector& origin, const Vector& normal);
 
 
 //-----------------------------------------------------------------------------

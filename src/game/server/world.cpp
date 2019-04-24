@@ -395,6 +395,7 @@ BEGIN_DATADESC( CWorld )
 	DEFINE_KEYFIELD( m_flMinPropScreenSpaceWidth, FIELD_FLOAT, "minpropscreenwidth" ),
 	DEFINE_KEYFIELD( m_iszDetailSpriteMaterial, FIELD_STRING, "detailmaterial" ),
 	DEFINE_KEYFIELD( m_bColdWorld,		FIELD_BOOLEAN, "coldworld" ),
+	DEFINE_KEYFIELD(m_nMapVersion, FIELD_INTEGER, "mapversion"),
 
 	DEFINE_BITSTRING(m_bitWorldFlagBools),
 	DEFINE_BITSTRING(m_bitWorldFlagDefs),
@@ -534,6 +535,7 @@ CWorld::CWorld( )
 	SetMoveType( MOVETYPE_NONE );
 
 	m_bColdWorld = false;
+	m_nMapVersion = MV_EXTERNAL_MAP;
 }
 
 CWorld::~CWorld( )
@@ -687,6 +689,18 @@ void CWorld::Precache( void )
 
 	// Create the player resource
 	g_pGameRules->CreateStandardEntities();
+
+	if (m_nMapVersion <= MV_EXTERNAL_MAP)
+	{
+		if (m_iszDetailSpriteMaterial.Get() == FindPooledString("detail/detailsprites"))
+		{
+			char* pchNewDetail = "detail/detailsprites_hl2";
+			if (g_pGameTypeSystem->GetCurrentGameType() == GAME_EP2)
+				pchNewDetail = "detail/detailsprites_ep2";
+
+			m_iszDetailSpriteMaterial.GetForModify() = AllocPooledString(pchNewDetail);
+		}
+	}
 
 	// UNDONE: Make most of these things server systems or precache_registers
 	// =================================================

@@ -10,6 +10,8 @@
 #pragma once
 #endif
 
+#define SOLDIER_POSSIBLE_ALLY 1
+
 #include "ai_basenpc.h"
 #include "ai_basehumanoid.h"
 #include "ai_behavior.h"
@@ -21,6 +23,9 @@
 #include "ai_behavior_actbusy.h"
 #include "ai_sentence.h"
 #include "ai_baseactor.h"
+#ifdef SOLDIER_POSSIBLE_ALLY
+#include "peter/npc_playerfollower.h"
+#endif
 
 // Used when only what combine to react to what the spotlight sees
 #define SF_COMBINE_NO_LOOK	(1 << 16)
@@ -33,6 +38,7 @@ enum {
 	COMBINE_VOICE_SYNTH
 };
 
+#ifndef SOLDIER_POSSIBLE_ALLY
 class CNPC_Combine;
 
 class CAI_CombineSentence : public CAI_Sentence<CNPC_Combine>
@@ -43,15 +49,22 @@ public:
 protected:
 	CNPC_Combine * GetSoldier() { return reinterpret_cast<CNPC_Combine *>(GetOuter()); }
 };
+#endif
+
+#ifdef SOLDIER_POSSIBLE_ALLY
+typedef CNPC_PlayerFollower CNPC_CombineBase;
+#else
+typedef CAI_BaseActor CNPC_CombineBase;
+#endif
 
 //=========================================================
 //	>> CNPC_Combine
 //=========================================================
-class CNPC_Combine : public CAI_BaseActor
+class CNPC_Combine : public CNPC_CombineBase
 {
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;
-	DECLARE_CLASS( CNPC_Combine, CAI_BaseActor );
+	DECLARE_CLASS( CNPC_Combine, CNPC_CombineBase);
 
 public:
 	CNPC_Combine();
@@ -144,7 +157,7 @@ public:
 	// Sounds
 	// -------------
 	void			DeathSound( void );
-	void			PainSound( void );
+	void			PainSound(const CTakeDamageInfo& info);
 	void			IdleSound( void );
 	void			AlertSound( void );
 	void			LostEnemySound( void );
@@ -169,7 +182,9 @@ public:
 
 protected:
 	void			SetKickDamage( int nDamage ) { m_nKickDamage = nDamage; }
+#ifndef SOLDIER_POSSIBLE_ALLY
 	CAI_Sentence< CNPC_Combine > *GetSentences() { return &m_Sentences; }
+#endif
 	virtual bool CouldShootIfCrouching(CBaseEntity* pTarget);
 
 private:
@@ -292,16 +307,21 @@ private:
 	int				m_nShots;
 	float			m_flShotDelay;
 	float			m_flStopMoveShootTime;
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 	CAI_CombineSentence m_Sentences;
-
+#endif
 	int			m_iNumGrenades;
+#ifndef SOLDIER_POSSIBLE_ALLY
 	CAI_AssaultBehavior			m_AssaultBehavior;
 	CCombineStandoffBehavior	m_StandoffBehavior;
 	CAI_FollowBehavior			m_FollowBehavior;
 	CAI_FuncTankBehavior		m_FuncTankBehavior;
 	CAI_RappelBehavior			m_RappelBehavior;
 	CAI_ActBusyBehavior			m_ActBusyBehavior;
+#else
+	CCombineStandoffBehavior	m_StandoffBehavior;
+	CAI_RappelBehavior			m_RappelBehavior;
+#endif
 
 public:
 	int				m_iLastAnimEventHandled;

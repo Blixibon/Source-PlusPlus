@@ -28,6 +28,8 @@ public:
 	virtual const QAngle& EyeAngles();
 	virtual const QAngle& GetRenderAngles();
 
+	virtual void SetAnimation(PLAYER_ANIM playerAnim);
+
 	static void RecvProxy_CycleLatch(const CRecvProxyData* pData, void* pStruct, void* pOut);
 
 	virtual float GetServerIntendedCycle() { return m_flServerCycle; }

@@ -13,6 +13,13 @@
 
 #include "bitvec.h"
 
+enum MapVersion_e
+{
+	MV_EXTERNAL_MAP = 0,
+
+	MV_CURRENT_VERSION
+};
+
 enum WorldServerBools
 {
 	WORLD_DISPLAY_TITLE = 0,
@@ -85,6 +92,8 @@ private:
 	CNetworkVar( float, m_flMinPropScreenSpaceWidth );
 	CNetworkVar( float, m_flMaxPropScreenSpaceWidth );
 	CNetworkVar( string_t, m_iszDetailSpriteMaterial );
+
+	int		m_nMapVersion;
 
 	// start flags
 	CNetworkVar( bool, m_bStartDark );
