@@ -395,7 +395,7 @@ BEGIN_DATADESC( CWorld )
 	DEFINE_KEYFIELD( m_flMinPropScreenSpaceWidth, FIELD_FLOAT, "minpropscreenwidth" ),
 	DEFINE_KEYFIELD( m_iszDetailSpriteMaterial, FIELD_STRING, "detailmaterial" ),
 	DEFINE_KEYFIELD( m_bColdWorld,		FIELD_BOOLEAN, "coldworld" ),
-	DEFINE_KEYFIELD(m_nMapVersion, FIELD_INTEGER, "mapversion"),
+	DEFINE_KEYFIELD(m_nMapVersion, FIELD_INTEGER, "fgdversion"),
 
 	DEFINE_BITSTRING(m_bitWorldFlagBools),
 	DEFINE_BITSTRING(m_bitWorldFlagDefs),

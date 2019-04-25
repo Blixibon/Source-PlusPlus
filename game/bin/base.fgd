@@ -860,7 +860,7 @@
 		1 : "Yes"
 	]
 	
-	mapversion(integer)	readonly	: "FGD Version"      : 1  : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
+	levelversion(integer)	readonly	: "FGD Version"      : 1  : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
 ]
 
 
