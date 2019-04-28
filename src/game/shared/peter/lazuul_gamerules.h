@@ -6,17 +6,18 @@
 
 #include "teamplayroundbased_gamerules.h"
 #include "hl2_gamerules.h"
+#include "tf_shareddefs.h"
 
 #ifdef CLIENT_DLL
 #define CLazuul C_Lazuul
 #define CLazuulProxy C_LazuulProxy
 #endif // CLIENT_DLL
 
-enum
-{
-	TEAM_COMBINE = FIRST_GAME_TEAM,
-	TEAM_REBELS,
-};
+//enum
+//{
+//	TEAM_COMBINE = FIRST_GAME_TEAM,
+//	TEAM_REBELS,
+//};
 
 enum {
 	LAZ_GM_SINGLEPLAYER = -1,

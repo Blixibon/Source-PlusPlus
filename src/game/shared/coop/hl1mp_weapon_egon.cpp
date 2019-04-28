@@ -430,7 +430,7 @@ void CWeaponEgon::UpdateEffect( const Vector &startPoint, const Vector &endPoint
 
 void CWeaponEgon::CreateEffect( void )
 {
-#if 0
+#if 1
 #ifndef CLIENT_DLL    
 	CBasePlayer*pPlayer = ToBasePlayer( GetOwner() );
 	if ( !pPlayer )

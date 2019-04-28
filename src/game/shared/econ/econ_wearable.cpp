@@ -53,7 +53,7 @@ int CEconWearable::GetSkin( void )
 	case TF_TEAM_BLUE:
 		return 1;
 		break;
-
+#if defined(TF_CLASSIC) || defined(TF_CLASSIC_CLIENT)
 	case TF_TEAM_GREEN:
 		return 2;
 		break;
@@ -61,7 +61,7 @@ int CEconWearable::GetSkin( void )
 	case TF_TEAM_YELLOW:
 		return 3;
 		break;
-
+#endif
 	default:
 		return 0;
 		break;

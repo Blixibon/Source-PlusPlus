@@ -12,6 +12,9 @@
 #include "eventqueue.h"
 #include "ai_behavior_lead.h"
 #include "gameinterface.h"
+#ifdef HL2_LAZUL
+#include "lazuul_gamerules.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -363,30 +366,48 @@ void CAI_PlayerAlly::DisplayDeathMessage( void )
 {
 	if ( m_bGameEndAlly == false )
 		return;
-
-	if ( npc_ally_deathmessage.GetBool() == 0 )
-		return;
-
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
-
-	if ( pPlayer )	
+	if (!g_pGameRules->IsMultiplayer())
 	{
-		UTIL_ShowMessage( GetDeathMessageText(), ToBasePlayer( pPlayer ) );
-		ToBasePlayer(pPlayer)->NotifySinglePlayerGameEnding();
+		if (npc_ally_deathmessage.GetBool() == 0)
+			return;
+
+		CBaseEntity * pPlayer = AI_GetSinglePlayer();
+
+		if (pPlayer)
+		{
+			UTIL_ShowMessage(GetDeathMessageText(), ToBasePlayer(pPlayer));
+			ToBasePlayer(pPlayer)->NotifySinglePlayerGameEnding();
+		}
+
+		CBaseEntity* pReload = CreatePlayerLoadSave(GetAbsOrigin(), 1.5f, 8.0f, 4.5f);
+
+		if (pReload)
+		{
+			pReload->SetRenderColor(0, 0, 0, 255);
+
+			g_EventQueue.AddEvent(pReload, "Reload", 1.5f, pReload, pReload);
+		}
+
+		// clear any pending autosavedangerous
+		g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
+		g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
 	}
-
-	CBaseEntity *pReload = CreatePlayerLoadSave( GetAbsOrigin(), 1.5f, 8.0f, 4.5f );
-
-	if ( pReload )
+#ifdef HL2_LAZUL
+	else
 	{
-		pReload->SetRenderColor( 0, 0, 0, 255 );
-
-		g_EventQueue.AddEvent( pReload, "Reload", 1.5f, pReload, pReload );
+		switch (GetTeamNumber())
+		{
+		case TEAM_COMBINE:
+			TeamplayRoundBasedRules()->SetWinningTeam(TEAM_REBELS, WINREASON_OPPONENTS_DEAD);
+			break;
+		case TEAM_REBELS:
+			TeamplayRoundBasedRules()->SetWinningTeam(TEAM_COMBINE, WINREASON_OPPONENTS_DEAD);
+			break;
+		default:
+			break;
+		}
 	}
-
-	// clear any pending autosavedangerous
-	g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
-	g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
+#endif
 }
 
 //-----------------------------------------------------------------------------

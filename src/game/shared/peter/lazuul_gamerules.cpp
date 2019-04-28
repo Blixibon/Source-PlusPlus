@@ -239,13 +239,13 @@ void CLazuulProxy::Activate()
 #endif
 
 // NOTE: the indices here must match TEAM_TERRORIST, TEAM_CT, TEAM_SPECTATOR, etc.
-char* sTeamNames[] =
-{
-	"Unassigned",
-	"Spectator",
-	"Combine",
-	"Rebels",
-};
+//char* sTeamNames[] =
+//{
+//	"Unassigned",
+//	"Spectator",
+//	"Combine",
+//	"Rebels",
+//};
 
 //-----------------------------------------------------------------------------
 	// Purpose:
@@ -257,10 +257,10 @@ CLazuul::CLazuul()
 	m_bMegaPhysgun = false;
 #ifndef CLIENT_DLL
 	// Create the team managers
-	for (int i = 0; i < ARRAYSIZE(sTeamNames); i++)
+	for (int i = 0; i < TF_TEAM_COUNT; i++)
 	{
 		CTeam* pTeam = static_cast<CTeam*>(CreateEntityByName("team_manager"));
-		pTeam->Init(sTeamNames[i], i);
+		pTeam->Init(g_aTeamNames[i], i);
 
 		g_Teams.AddToTail(pTeam);
 	}

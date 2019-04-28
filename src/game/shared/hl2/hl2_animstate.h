@@ -22,13 +22,19 @@ public:
 	{}
 
 	virtual Activity TranslateActivity(Activity actDesired) OVERRIDE;
+	virtual Activity CalcMainActivity();
 
 	static MultiPlayerMovementData_t s_MoveParams;
 
 protected:
 	virtual bool		SetupPoseParameters(CStudioHdr* pStudioHdr);
+	virtual AimType_e	GetAimType();
+
+	virtual bool HandleJumping(Activity& idealActivity);
+	virtual bool HandleVaulting(Activity& idealActivity);
 private:
 	static acttable_t s_acttableMPToHL2MP[];
+	float	m_fGroundTime;
 };
 
 #endif

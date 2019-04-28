@@ -17,6 +17,7 @@ enum HLSS_WeaponId {
 	HLSS_WEAPON_ID_SHOTGUN, // 1
 	HLSS_WEAPON_ID_AR2, // 2
 	HLSS_WEAPON_ID_MG1, // 2
+	//HLSS_WEAPON_ID_MP5, // 3
 
 	// Primary 2
 	HLSS_WEAPON_ID_RPG, // 0

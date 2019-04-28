@@ -460,7 +460,7 @@ void CNPC_HL1Barney::Event_Killed( const CTakeDamageInfo &info )
 		GetAttachment( "gun", vecGunPos, angGunAngles );
 		
 		angGunAngles.y += 180;
-		pGun = DropItem( "weapon_glock", vecGunPos, angGunAngles );
+		pGun = DropItem( "weapon_glock_hl1", vecGunPos, angGunAngles );
 	}
 
 	SetUse( NULL );	

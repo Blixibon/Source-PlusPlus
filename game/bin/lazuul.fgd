@@ -1,5 +1,4 @@
-@include "halflife1.fgd"
-@include "portal.fgd"
+@include "halflife1_laz.fgd"
 
 @BaseClass = TeamNum
 [
@@ -31,6 +30,15 @@
 		0 : "No"
 		1 : "Yes"
 	]
+]
+
+@PointClass base(Targetname, TeamNum, EnableDisable, Angles) studio("models/player.mdl") = info_player_teamspawn :
+	"This entity marks the spawn point for Team Fortress players."
+[
+	controlpoint(target_destination) : "Associated Control Point" : : "The team_control_point associated with this spawn. Ownership of control points will control this spawn point's enabled state."
+
+ 	round_bluespawn(target_destination) : "Combine spawn for round" : : "Combine spawn point when the associated round is being played."
+	round_redspawn(target_destination) : "Rebel spawn for round" : : "Rebel spawn point when the associated round is being played."
 ]
 
 @PointClass base(Targetname, TeamNum) color(150 150 150) = info_player_equip : "Entity that will give the player any equipment specified by it's key values (in the form of 'entity_classname' 'number_of_items').  This entity replaces the functionality of the game_player_equip."
@@ -135,6 +143,82 @@
 		1 : "Yes"
 	]
 
+	weapon_shotgun_hl1(choices) : "HL1 Weapon: Shotgun" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_357_hl1(choices) : "HL1 Weapon: .357 Revolver" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_crossbow_hl1(choices) : "HL1 Weapon: Crossbow" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_crowbar_hl1(choices) : "HL1 Weapon: Crowbar" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_egon(choices) : "HL1 Weapon: Gluon Gun" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_gauss(choices) : "HL1 Weapon: Tau Cannon" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_glock_hl1(choices) : "HL1 Weapon: Glock" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_handgrenade(choices) : "HL1 Weapon: Frag Grenade" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_hornetgun(choices) : "HL1 Weapon: Hive Hand" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_mp5_hl1(choices) : "HL1 Weapon: MP5" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Yes [Empty Clip]"
+	]
+	weapon_rpg_hl1(choices) : "HL1 Weapon: RPG" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_satchel(choices) : "HL1 Weapon: Satchel Charge" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_snark(choices) : "HL1 Weapon: Snark" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	weapon_tripmine(choices) : "HL1 Weapon: Tripmine" : 0 : "Give named weapon" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
 	// list ammo
 	ammo_Pistol(integer) : "Ammo: Pistol" : 0 : "Give amount of named ammo"
 	ammo_357(integer) : "Ammo: Magnum .357" : 0 : "Give amount of named ammo"
@@ -147,4 +231,16 @@
 	ammo_Grenade(integer) : "Ammo: Frag Grenade" : 0 : "Give amount of named ammo"
 	ammo_RPG_Round(integer) : "Ammo: RPG Rocket" : 0 : "Give amount of named ammo"
 	ammo_slam(integer) : "Ammo: S.L.A.M." : 0 : "Give amount of named ammo"
+	
+	ammo_9mmRound(integer) : "HL1 Ammo: 9mm Rounds" : 0 : "Give amount of named ammo"
+	ammo_357Round(integer) : "HL1 Ammo: 357 Rounds" : 0 : "Give amount of named ammo"
+	ammo_BuckshotHL1(integer) : "HL1 Ammo: Shotgun" : 0 : "Give amount of named ammo"
+	ammo_XBowBoltHL1(integer) : "HL1 Ammo: Crossbow Bolt" : 0 : "Give amount of named ammo"
+	ammo_MP5_Grenade(integer) : "HL1 Ammo: MP5 Grenade" : 0 : "Give amount of named ammo"
+	ammo_RPG_Rocket(integer) : "HL1 Ammo: RPG Rocket" : 0 : "Give amount of named ammo"
+	ammo_Uranium(integer) : "HL1 Ammo: Uranium" : 0 : "Give amount of named ammo"
+	ammo_GrenadeHL1(integer) : "HL1 Ammo: Frag Grenade" : 0 : "Give amount of named ammo"
+	ammo_Snark(integer) : "HL1 Ammo: Snark" : 0 : "Give amount of named ammo"
+	ammo_Tripmine(integer) : "HL1 Ammo: Tripmine" : 0 : "Give amount of named ammo"
+	ammo_Satchel(integer) : "HL1 Ammo: Satchel Charge" : 0 : "Give amount of named ammo"
 ]

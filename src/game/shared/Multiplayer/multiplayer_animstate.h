@@ -104,16 +104,25 @@ inline bool IsCustomPlayerAnimEvent( PlayerAnimEvent_t event )
 		( event == PLAYERANIMEVENT_CUSTOM_SEQUENCE ) || ( event == PLAYERANIMEVENT_CUSTOM_GESTURE_SEQUENCE );
 }
 
+enum AimType_e
+{
+	AIM_MP = 0,
+	AIM_HL2,
+	AIM_BMMP,
+};
+
 struct MultiPlayerPoseData_t
 {
 	int			m_iMoveX;
 	int			m_iMoveY;
 	int			m_iAimYaw;
 	int			m_iAimPitch;
+	int			m_iBodyYaw;
+	int			m_iBodyPitch;
 	int			m_iBodyHeight;
 	int			m_iMoveYaw;
 	int			m_iMoveScale;
-	bool		m_bHL2Aim;
+	//bool		m_bHL2Aim;
 
 	float		m_flEstimateYaw;
 	float		m_flLastAimTurnTime;
@@ -124,10 +133,12 @@ struct MultiPlayerPoseData_t
 		m_iMoveY = -1;
 		m_iAimYaw = -1;
 		m_iAimPitch = -1;
+		m_iBodyYaw = -1;
+		m_iBodyPitch = -1;
 		m_iBodyHeight = -1;
 		m_iMoveYaw = -1;
 		m_iMoveScale = -1;
-		m_bHL2Aim = false;
+		//m_bHL2Aim = false;
 		m_flEstimateYaw = 0.0f;
 		m_flLastAimTurnTime = 0.0f;
 	}
@@ -226,6 +237,8 @@ protected:
 
 	virtual void GetOuterAbsVelocity( Vector& vel );
 	float GetOuterXYSpeed();
+
+	virtual AimType_e	GetAimType() { return AIM_MP; }
 
 	virtual bool HandleJumping( Activity &idealActivity );
 	virtual bool HandleDucking( Activity &idealActivity );

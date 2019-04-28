@@ -416,6 +416,7 @@ acttable_t CWeaponCoopBase::s_acttableSMG1[] =
 		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1,	false },
 		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SMG1,			false },
 		{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SMG1,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SMG1,					false},
 		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SMG1,					false },
 };
 acttable_t CWeaponCoopBase::s_acttablePistol[] =
@@ -486,6 +487,7 @@ acttable_t CWeaponCoopBase::s_acttablePistol[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PISTOL,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_PISTOL,					false},
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
 };
 acttable_t CWeaponCoopBase::s_acttableMelee[] =
@@ -501,6 +503,7 @@ acttable_t CWeaponCoopBase::s_acttableMelee[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_MELEE,			false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_MELEE,					false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableCrossbow[] =
@@ -560,6 +563,7 @@ acttable_t CWeaponCoopBase::s_acttableCrossbow[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_CROSSBOW,				false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_CROSSBOW,			false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_CROSSBOW,					false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableShotgun[] =
@@ -620,6 +624,7 @@ acttable_t CWeaponCoopBase::s_acttableShotgun[] =
 		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SHOTGUN,	false },
 		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SHOTGUN,		false },
 		{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SHOTGUN,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SHOTGUN,					false},
 		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SHOTGUN,				false },
 };
 acttable_t CWeaponCoopBase::s_acttableGrenade[] =
@@ -658,6 +663,7 @@ acttable_t CWeaponCoopBase::s_acttableGrenade[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_GRENADE,			false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_GRENADE,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_GRENADE,		false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_GRENADE,					false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_GRENADE,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableRPG[] =
@@ -684,6 +690,7 @@ acttable_t CWeaponCoopBase::s_acttableRPG[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_RPG,					false},
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_RPG,				false },
 };
 acttable_t CWeaponCoopBase::s_acttablePhysgun[] =
@@ -707,6 +714,7 @@ acttable_t CWeaponCoopBase::s_acttableSlam[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_SLAM,			false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SLAM,		false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SLAM,					false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SLAM,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableMelee2[] =
@@ -723,6 +731,7 @@ acttable_t CWeaponCoopBase::s_acttableMelee2[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE2,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE2,			false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE2,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_MELEE2,					false},
 };
 acttable_t CWeaponCoopBase::s_acttablePython[] =
 {
@@ -792,6 +801,7 @@ acttable_t CWeaponCoopBase::s_acttablePython[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_REVOLVER,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_REVOLVER,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_REVOLVER,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_REVOLVER,					false},
 };
 acttable_t CWeaponCoopBase::s_acttableAR2[] =
 {
@@ -854,7 +864,265 @@ acttable_t CWeaponCoopBase::s_acttableAR2[] =
 			{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2,	false },
 			{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_AR2,		false },
 			{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_AR2,					false },
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_AR2,					false},
 			{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_AR2,				false },
+};
+// BMS
+acttable_t CWeaponCoopBase::s_acttableMP5[] =
+{
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SMG1,			true },
+	{ ACT_RELOAD,					ACT_RELOAD_SMG1,				true },
+	{ ACT_IDLE,						ACT_IDLE_SMG1,					true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_SMG1,			true },
+
+	{ ACT_WALK,						ACT_WALK_RIFLE,					true },
+	{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true  },
+
+	// Readiness activities (not aiming)
+		{ ACT_IDLE_RELAXED,				ACT_IDLE_SMG1_RELAXED,			false },//never aims
+		{ ACT_IDLE_STIMULATED,			ACT_IDLE_SMG1_STIMULATED,		false },
+		{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_RELAXED,				ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_STIMULATED,			ACT_WALK_RIFLE_STIMULATED,		false },
+		{ ACT_WALK_AGITATED,			ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_RELAXED,				ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_STIMULATED,			ACT_RUN_RIFLE_STIMULATED,		false },
+		{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
+
+	// Readiness activities (aiming)
+		{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+		{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_AIM_RELAXED,			ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_RIFLE,				false },//always aims
+	//End readiness activities
+
+		{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true },
+		{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,			true },
+		{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,		true },
+		{ ACT_RUN,						ACT_RUN_RIFLE,					true },
+		{ ACT_RUN_AIM,					ACT_RUN_AIM_RIFLE,				true },
+		{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,			true },
+		{ ACT_RUN_CROUCH_AIM,			ACT_RUN_CROUCH_AIM_RIFLE,		true },
+		{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_SMG1,	true },
+		{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_SMG1_LOW,		true },
+		{ ACT_COVER_LOW,				ACT_COVER_SMG1_LOW,				false },
+		{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_SMG1_LOW,			false },
+		{ ACT_RELOAD_LOW,				ACT_RELOAD_SMG1_LOW,			false },
+		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SMG1,		true },
+
+		{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+		{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
+
+		{ ACT_HL2MP_IDLE,					ACT_BMMP_IDLE_MP5,					false },
+		{ ACT_HL2MP_RUN,					ACT_BMMP_RUN_MP5,						false },
+		{ ACT_HL2MP_IDLE_CROUCH,			ACT_BMMP_IDLE_CROUCH_MP5,				false },
+		{ ACT_HL2MP_WALK_CROUCH,			ACT_BMMP_WALK_CROUCH_MP5,				false },
+		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_BMMP_GESTURE_RANGE_ATTACK_MP5,	false },
+		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_BMMP_GESTURE_RELOAD_MP5,			false },
+		{ ACT_HL2MP_JUMP,					ACT_BMMP_JUMP_START_MP5,					false },
+		{ACT_HL2MP_SWIM,					ACT_BMMP_SWIM_MP5,					false},
+		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SMG1,					false },
+};
+acttable_t CWeaponCoopBase::s_acttableGlock[] =
+{
+	{ ACT_IDLE,						ACT_IDLE_PISTOL,				true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_PISTOL,			true },
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_PISTOL,		true },
+	{ ACT_RELOAD,					ACT_RELOAD_PISTOL,				true },
+	{ ACT_WALK_AIM,					ACT_WALK_AIM_PISTOL,			true },
+	{ ACT_RUN_AIM,					ACT_RUN_AIM_PISTOL,				true },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL,true },
+	{ ACT_RELOAD_LOW,				ACT_RELOAD_PISTOL_LOW,			false },
+	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_PISTOL_LOW,	false },
+	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			false },
+	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_PISTOL_LOW,		false },
+	{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_PISTOL,		false },
+	{ ACT_WALK,						ACT_WALK_PISTOL,				false },
+	{ ACT_RUN,						ACT_RUN_PISTOL,					false },
+
+	// Readiness activities (not aiming)
+	{ ACT_IDLE_RELAXED,				ACT_IDLE_PISTOL,				false },//never aims
+	{ ACT_IDLE_STIMULATED,			ACT_IDLE_STIMULATED,			false },
+	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_PISTOL,			false },//always aims
+	{ ACT_IDLE_STEALTH,				ACT_IDLE_STEALTH_PISTOL,		false },
+
+	{ ACT_WALK_RELAXED,				ACT_WALK,						false },//never aims
+	{ ACT_WALK_STIMULATED,			ACT_WALK_STIMULATED,			false },
+	{ ACT_WALK_AGITATED,			ACT_WALK_AIM_PISTOL,			false },//always aims
+	{ ACT_WALK_STEALTH,				ACT_WALK_STEALTH_PISTOL,		false },
+
+	{ ACT_RUN_RELAXED,				ACT_RUN,						false },//never aims
+	{ ACT_RUN_STIMULATED,			ACT_RUN_STIMULATED,				false },
+	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_PISTOL,				false },//always aims
+	{ ACT_RUN_STEALTH,				ACT_RUN_STEALTH_PISTOL,			false },
+
+	// Readiness activities (aiming)
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims	
+	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_ANGRY_PISTOL,			false },
+	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_PISTOL,			false },//always aims
+	{ ACT_IDLE_AIM_STEALTH,			ACT_IDLE_STEALTH_PISTOL,		false },
+
+	{ ACT_WALK_AIM_RELAXED,			ACT_WALK,						false },//never aims
+	{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_PISTOL,			false },
+	{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_PISTOL,			false },//always aims
+	{ ACT_WALK_AIM_STEALTH,			ACT_WALK_AIM_STEALTH_PISTOL,	false },//always aims
+
+	{ ACT_RUN_AIM_RELAXED,			ACT_RUN,						false },//never aims
+	{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_PISTOL,				false },
+	{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_PISTOL,				false },//always aims
+	{ ACT_RUN_AIM_STEALTH,			ACT_RUN_AIM_STEALTH_PISTOL,		false },//always aims
+	//End readiness activities
+
+	// Crouch activities
+	{ ACT_CROUCHIDLE_STIMULATED,	ACT_CROUCHIDLE_STIMULATED,		false },
+	{ ACT_CROUCHIDLE_AIM_STIMULATED,ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+	{ ACT_CROUCHIDLE_AGITATED,		ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+
+	// Readiness translations
+	{ ACT_READINESS_RELAXED_TO_STIMULATED, ACT_READINESS_PISTOL_RELAXED_TO_STIMULATED, false },
+	{ ACT_READINESS_RELAXED_TO_STIMULATED_WALK, ACT_READINESS_PISTOL_RELAXED_TO_STIMULATED_WALK, false },
+	{ ACT_READINESS_AGITATED_TO_STIMULATED, ACT_READINESS_PISTOL_AGITATED_TO_STIMULATED, false },
+	{ ACT_READINESS_STIMULATED_TO_RELAXED, ACT_READINESS_PISTOL_STIMULATED_TO_RELAXED, false },
+
+	{ ACT_HL2MP_IDLE,					ACT_BMMP_IDLE_GLOCK,					false },
+	{ ACT_HL2MP_RUN,					ACT_BMMP_RUN_GLOCK,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_BMMP_IDLE_CROUCH_GLOCK,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_BMMP_WALK_CROUCH_GLOCK,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_BMMP_GESTURE_RANGE_ATTACK_GLOCK,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_BMMP_GESTURE_RELOAD_GLOCK,		false },
+	{ ACT_HL2MP_JUMP,					ACT_BMMP_JUMP_START_GLOCK,					false },
+		{ACT_HL2MP_SWIM,					ACT_BMMP_SWIM_GLOCK,					false},
+	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
+};
+acttable_t CWeaponCoopBase::s_acttableTau[] =
+{
+	{ ACT_IDLE,						ACT_IDLE_SMG1,					true },	// FIXME: hook to shotgun unique
+
+	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SHOTGUN,			true },
+	{ ACT_RELOAD,					ACT_RELOAD_SHOTGUN,					false },
+	{ ACT_WALK,						ACT_WALK_RIFLE,						true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_SHOTGUN,				true },
+
+	// Readiness activities (not aiming)
+		{ ACT_IDLE_RELAXED,				ACT_IDLE_SHOTGUN_RELAXED,		false },//never aims
+		{ ACT_IDLE_STIMULATED,			ACT_IDLE_SHOTGUN_STIMULATED,	false },
+		{ ACT_IDLE_AGITATED,			ACT_IDLE_SHOTGUN_AGITATED,		false },//always aims
+
+		{ ACT_WALK_RELAXED,				ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_STIMULATED,			ACT_WALK_RIFLE_STIMULATED,		false },
+		{ ACT_WALK_AGITATED,			ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_RELAXED,				ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_STIMULATED,			ACT_RUN_RIFLE_STIMULATED,		false },
+		{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
+
+	// Readiness activities (aiming)
+		{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+		{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
+
+		{ ACT_WALK_AIM_RELAXED,			ACT_WALK_RIFLE_RELAXED,			false },//never aims
+		{ ACT_WALK_AIM_STIMULATED,		ACT_WALK_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_WALK_AIM_AGITATED,		ACT_WALK_AIM_RIFLE,				false },//always aims
+
+		{ ACT_RUN_AIM_RELAXED,			ACT_RUN_RIFLE_RELAXED,			false },//never aims
+		{ ACT_RUN_AIM_STIMULATED,		ACT_RUN_AIM_RIFLE_STIMULATED,	false },
+		{ ACT_RUN_AIM_AGITATED,			ACT_RUN_AIM_RIFLE,				false },//always aims
+	//End readiness activities
+
+		{ ACT_WALK_AIM,					ACT_WALK_AIM_SHOTGUN,				true },
+		{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RIFLE,				true },
+		{ ACT_WALK_CROUCH_AIM,			ACT_WALK_CROUCH_AIM_RIFLE,			true },
+		{ ACT_RUN,						ACT_RUN_RIFLE,						true },
+		{ ACT_RUN_AIM,					ACT_RUN_AIM_SHOTGUN,				true },
+		{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RIFLE,				true },
+		{ ACT_RUN_CROUCH_AIM,			ACT_RUN_CROUCH_AIM_RIFLE,			true },
+		{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_SHOTGUN,	true },
+		{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_SHOTGUN_LOW,		true },
+		{ ACT_RELOAD_LOW,				ACT_RELOAD_SHOTGUN_LOW,				false },
+		{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_SHOTGUN,			false },
+
+		{ ACT_ARM,						ACT_ARM_RIFLE,					false},
+		{ ACT_DISARM,					ACT_DISARM_RIFLE,				false},
+
+		{ ACT_HL2MP_IDLE,					ACT_BMMP_IDLE_TAU,					false },
+		{ ACT_HL2MP_RUN,					ACT_BMMP_RUN_TAU,					false },
+		{ ACT_HL2MP_IDLE_CROUCH,			ACT_BMMP_IDLE_CROUCH_TAU,			false },
+		{ ACT_HL2MP_WALK_CROUCH,			ACT_BMMP_WALK_CROUCH_TAU,			false },
+		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_BMMP_GESTURE_RANGE_ATTACK_TAU,	false },
+		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_BMMP_GESTURE_RELOAD_TAU,		false },
+		{ ACT_HL2MP_JUMP,					ACT_BMMP_JUMP_START_TAU,					false },
+		{ACT_HL2MP_SWIM,					ACT_BMMP_SWIM_TAU,					false},
+		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SHOTGUN,				false },
+};
+acttable_t CWeaponCoopBase::s_acttableGluon[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_BMMP_IDLE_GLUON, false },
+	{ ACT_HL2MP_RUN, ACT_BMMP_RUN_GLUON, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_BMMP_IDLE_CROUCH_GLUON, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_BMMP_WALK_CROUCH_GLUON, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_BMMP_GESTURE_RANGE_ATTACK_GLUON, false },
+	{ ACT_HL2MP_GESTURE_RELOAD, ACT_BMMP_GESTURE_RELOAD_GLUON, false },
+	{ ACT_HL2MP_JUMP, ACT_BMMP_JUMP_START_GLUON, false },
+	{ ACT_HL2MP_SWIM, ACT_BMMP_SWIM_GLUON, false },
+	{ ACT_HL2MP_WALK, ACT_BMMP_RUN_GLUON, false },
+};
+acttable_t CWeaponCoopBase::s_acttableHiveHand[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_BMMP_IDLE_HIVEHAND, false },
+	{ ACT_HL2MP_RUN, ACT_BMMP_RUN_HIVEHAND, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_BMMP_IDLE_CROUCH_HIVEHAND, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_BMMP_WALK_CROUCH_HIVEHAND, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_BMMP_GESTURE_RANGE_ATTACK_HIVEHAND, false },
+	{ ACT_HL2MP_GESTURE_RELOAD, ACT_BMMP_GESTURE_RELOAD_HIVEHAND, false },
+	{ ACT_HL2MP_JUMP, ACT_BMMP_JUMP_START_HIVEHAND, false },
+	{ ACT_HL2MP_SWIM, ACT_BMMP_SWIM_HIVEHAND, false },
+	{ ACT_HL2MP_WALK, ACT_BMMP_RUN_HIVEHAND, false },
+};
+acttable_t CWeaponCoopBase::s_acttableSatchel[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_BMMP_IDLE_SATCHEL, false },
+	{ ACT_HL2MP_RUN, ACT_BMMP_RUN_SATCHEL, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_BMMP_IDLE_CROUCH_SATCHEL, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_BMMP_WALK_CROUCH_SATCHEL, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_BMMP_GESTURE_RANGE_ATTACK_SATCHEL, false },
+	{ ACT_HL2MP_GESTURE_RELOAD, ACT_BMMP_GESTURE_RELOAD_SATCHEL, false },
+	{ ACT_HL2MP_JUMP, ACT_BMMP_JUMP_START_SATCHEL, false },
+	{ ACT_HL2MP_SWIM, ACT_BMMP_SWIM_SATCHEL, false },
+	{ ACT_HL2MP_WALK, ACT_BMMP_RUN_SATCHEL, false },
+};
+acttable_t CWeaponCoopBase::s_acttableSnark[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_BMMP_IDLE_SNARK, false },
+	{ ACT_HL2MP_RUN, ACT_BMMP_RUN_SNARK, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_BMMP_IDLE_CROUCH_SNARK, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_BMMP_WALK_CROUCH_SNARK, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_BMMP_GESTURE_RANGE_ATTACK_SNARK, false },
+	{ ACT_HL2MP_GESTURE_RELOAD, ACT_BMMP_GESTURE_RELOAD_SNARK, false },
+	{ ACT_HL2MP_JUMP, ACT_BMMP_JUMP_START_SNARK, false },
+	{ ACT_HL2MP_SWIM, ACT_BMMP_SWIM_SNARK, false },
+	{ ACT_HL2MP_WALK, ACT_BMMP_RUN_SNARK, false },
+};
+acttable_t CWeaponCoopBase::s_acttableTripmine[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_BMMP_IDLE_TRIPMINE, false },
+	{ ACT_HL2MP_RUN, ACT_BMMP_RUN_TRIPMINE, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_BMMP_IDLE_CROUCH_TRIPMINE, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_BMMP_WALK_CROUCH_TRIPMINE, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_BMMP_GESTURE_RANGE_ATTACK_TRIPMINE, false },
+	{ ACT_HL2MP_GESTURE_RELOAD, ACT_BMMP_GESTURE_RELOAD_TRIPMINE, false },
+	{ ACT_HL2MP_JUMP, ACT_BMMP_JUMP_START_TRIPMINE, false },
+	{ ACT_HL2MP_SWIM, ACT_BMMP_SWIM_TRIPMINE, false },
+	{ ACT_HL2MP_WALK, ACT_BMMP_RUN_TRIPMINE, false },
 };
 
 acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
@@ -884,6 +1152,10 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 			pTable = s_acttableAR2;
 			iActivityCount = ARRAYSIZE(s_acttableAR2);
 			break;
+		case 3:
+			pTable = s_acttableMP5;
+			iActivityCount = ARRAYSIZE(s_acttableMP5);
+			break;
 		}
 	}
 		break;
@@ -906,8 +1178,18 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 		iActivityCount = ARRAYSIZE(s_acttableMelee);
 		break;
 	case TF_WPN_TYPE_GRENADE:
-		pTable = s_acttableGrenade;
-		iActivityCount = ARRAYSIZE(s_acttableGrenade);
+		switch (iWeaponVariant)
+		{
+		default:
+		case 0:
+			pTable = s_acttableGrenade;
+			iActivityCount = ARRAYSIZE(s_acttableGrenade);
+			break;
+		case 1:
+			pTable = s_acttableSnark;
+			iActivityCount = ARRAYSIZE(s_acttableSnark);
+			break;
+		}
 		break;
 	/*case TF_WPN_TYPE_BUILDING:
 		pTable = s_acttableBuilding;
@@ -918,12 +1200,36 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 		iActivityCount = ARRAYSIZE(s_acttableSlam);
 		break;
 	case TF_WPN_TYPE_ITEM1:
-		pTable = s_acttablePhysgun;
-		iActivityCount = ARRAYSIZE(s_acttablePhysgun);
+		switch (iWeaponVariant)
+		{
+		default:
+		case 0:
+			pTable = s_acttablePhysgun;
+			iActivityCount = ARRAYSIZE(s_acttablePhysgun);
+			break;
+		case 1:
+			pTable = s_acttableHiveHand;
+			iActivityCount = ARRAYSIZE(s_acttableHiveHand);
+			break;
+		}
 		break;
 	case TF_WPN_TYPE_ITEM2:
-		pTable = s_acttableSlam;
-		iActivityCount = ARRAYSIZE(s_acttableSlam);
+		switch (iWeaponVariant)
+		{
+		default:
+		case 0:
+			pTable = s_acttableSlam;
+			iActivityCount = ARRAYSIZE(s_acttableSlam);
+			break;
+		case 1:
+			pTable = s_acttableTripmine;
+			iActivityCount = ARRAYSIZE(s_acttableTripmine);
+			break;
+		case 2:
+			pTable = s_acttableSatchel;
+			iActivityCount = ARRAYSIZE(s_acttableSatchel);
+			break;
+		}
 		break;
 	case TF_WPN_TYPE_MELEE_ALLCLASS:
 		pTable = s_acttableMelee2;
@@ -948,6 +1254,14 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 		case 2:
 			pTable = s_acttableCrossbow;
 			iActivityCount = ARRAYSIZE(s_acttableCrossbow);
+			break;
+		case 3:
+			pTable = s_acttableGluon;
+			iActivityCount = ARRAYSIZE(s_acttableGluon);
+			break;
+		case 4:
+			pTable = s_acttableTau;
+			iActivityCount = ARRAYSIZE(s_acttableTau);
 			break;
 		}
 		break;

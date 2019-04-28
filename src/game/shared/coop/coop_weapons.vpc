@@ -8,7 +8,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\coop"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\coop;$SRCDIR\game\shared\peter"
 	}
 }
 
@@ -72,6 +72,11 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\hl1_weapon_snark.cpp"
 				$File	"$SRCDIR\game\shared\coop\hl1_weapon_tripmine.cpp"
 			}
+		}
+
+		$Folder "Econ"
+		{
+			$File	"$SRCDIR\game\shared\peter\tf_shareddefs.cpp"
 		}
 	}
 }

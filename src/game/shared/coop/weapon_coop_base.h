@@ -48,6 +48,7 @@ public:
 	virtual int GetActivityWeaponVariant(void);
 
 	virtual acttable_t *ActivityList(int &iActivityCount);
+	// HL2
 	static acttable_t s_acttableSMG1[];
 	static acttable_t s_acttablePistol[];
 	static acttable_t s_acttableMelee[];
@@ -60,6 +61,16 @@ public:
 	static acttable_t s_acttableMelee2[];
 	static acttable_t s_acttablePython[];
 	static acttable_t s_acttableAR2[];
+
+	//BMS
+	static acttable_t s_acttableMP5[];
+	static acttable_t s_acttableGlock[];
+	static acttable_t s_acttableTau[];
+	static acttable_t s_acttableGluon[];
+	static acttable_t s_acttableHiveHand[];
+	static acttable_t s_acttableSatchel[];
+	static acttable_t s_acttableSnark[];
+	static acttable_t s_acttableTripmine[];
 };
 
 #endif // WEAPON_COOP_BASE_H

@@ -190,7 +190,7 @@ void CMultiPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 
 			// Set the modified reload playback rate
 			float flPlaybackRate = 1.0f;
-				#if defined(TF_CLIENT_DLL) || defined(TF_DLL) || defined (TF_CLASSIC_CLIENT) || defined (TF_CLASSIC)
+				#if defined(TF_CLIENT_DLL) || defined(TF_DLL) || defined (TF_CLASSIC_CLIENT) || defined (TF_CLASSIC) || defined(HL2_LAZUL)
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, mult_reload_time );
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, mult_reload_time_hidden );
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, fast_reload );
@@ -217,7 +217,7 @@ void CMultiPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 
 			// Set the modified reload playback rate
 			float flPlaybackRate = 1.0f;
-			#if defined(TF_CLIENT_DLL) || defined(TF_DLL) || defined (TF_CLASSIC_CLIENT) || defined (TF_CLASSIC)
+			#if defined(TF_CLIENT_DLL) || defined(TF_DLL) || defined (TF_CLASSIC_CLIENT) || defined (TF_CLASSIC) || defined(HL2_LAZUL)
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, mult_reload_time );
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, mult_reload_time_hidden );
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, fast_reload );
@@ -244,7 +244,7 @@ void CMultiPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 
 			// Set the modified reload playback rate
 			float flPlaybackRate = 1.0f;
-			#if defined(TF_CLIENT_DLL) || defined(TF_DLL) || defined (TF_CLASSIC_CLIENT) || defined (TF_CLASSIC)
+			#if defined(TF_CLIENT_DLL) || defined(TF_DLL) || defined (TF_CLASSIC_CLIENT) || defined (TF_CLASSIC) || defined(HL2_LAZUL)
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, mult_reload_time );
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, mult_reload_time_hidden );
 				CALL_ATTRIB_HOOK_FLOAT_ON_OTHER( GetBasePlayer(), flPlaybackRate, fast_reload );
@@ -1361,16 +1361,16 @@ bool CMultiPlayerAnimState::SetupPoseParameters( CStudioHdr *pStudioHdr )
 	
 
 	// Look for the aim pitch blender.
-	m_PoseParameterData.m_iAimPitch = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "body_pitch" );
+	m_PoseParameterData.m_iBodyPitch = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "body_pitch" );
 	
-	if ( m_PoseParameterData.m_iAimPitch < 0 )
+	if ( m_PoseParameterData.m_iBodyPitch < 0 )
 		return false;
 	
 
 	// Look for aim yaw blender.
-	m_PoseParameterData.m_iAimYaw = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "body_yaw" );
+	m_PoseParameterData.m_iBodyYaw = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "body_yaw" );
 	
-	if ( m_PoseParameterData.m_iAimYaw < 0 )
+	if ( m_PoseParameterData.m_iBodyYaw < 0 )
 		return false;
 	
 	// The rest are not-critical
@@ -1644,7 +1644,22 @@ void CMultiPlayerAnimState::ComputePoseParam_AimPitch( CStudioHdr *pStudioHdr )
 	float flAimPitch = m_flEyePitch;
 
 	// Set the aim pitch pose parameter and save.
-	GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iAimPitch, m_PoseParameterData.m_bHL2Aim ? flAimPitch : -flAimPitch );
+	switch (GetAimType())
+	{
+	case AIM_MP:
+	default:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyPitch, -flAimPitch);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimPitch, 0.0f);
+		break;
+	case AIM_HL2:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimPitch, flAimPitch);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyPitch, 0.0f);
+		break;
+	case AIM_BMMP:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimPitch, -flAimPitch);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyPitch, 0.0f);
+		break;
+	}
 	m_DebugAnimData.m_flAimPitch = flAimPitch;
 }
 
@@ -1721,7 +1736,19 @@ void CMultiPlayerAnimState::ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr )
 	flAimYaw = AngleNormalize( flAimYaw );
 
 	// Set the aim yaw and save.
-	GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iAimYaw, m_PoseParameterData.m_bHL2Aim ? flAimYaw : -flAimYaw );
+	switch (GetAimType())
+	{
+	case AIM_MP:
+	default:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw,  -flAimYaw);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, 0.0f);
+		break;
+	case AIM_HL2:
+	case AIM_BMMP:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, flAimYaw);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw, 0.0f);
+		break;
+	}
 	m_DebugAnimData.m_flAimYaw	= flAimYaw;
 
 	// Turn off a force aim yaw - either we have already updated or we don't need to.

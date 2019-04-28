@@ -1,6 +1,6 @@
 #include "cbase.h"
 #include "econ_item_system.h"
-#include "script_parser.h"
+#include "tf/script_parser.h"
 #include "activitylist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -10,10 +10,15 @@ const char *g_TeamVisualSections[TF_TEAM_COUNT] =
 {
 	"visuals",			// TEAM_UNASSIGNED
 	"",					// TEAM_SPECTATOR
+#ifdef HL2_LAZUL
+	"visuals_combine",
+	"visuals_rebel",
+#else
 	"visuals_red",		// TEAM_RED
 	"visuals_blu",		// TEAM_BLUE
 	"visuals_grn",		// TEAM_GREEN
 	"visuals_ylw",		// TEAM_YELLOW
+#endif
 	//"visuals_mvm_boss"	// ???
 };
 

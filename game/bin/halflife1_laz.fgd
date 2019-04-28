@@ -1,0 +1,678 @@
+//====== Copyright � 1996-2005, Valve Corporation, All rights reserved. =======
+//
+// Purpose: Half-Life: Source & Half-Life Deathmatch: Source game definition file (.fgd) by ts2do (Updated by Dmx6 Oktober 2007 and by SiPlus June 2011)
+//
+//=============================================================================
+
+@include "portal.fgd"
+
+//-------------------------------------------------------------------------
+//
+// NPCs
+//
+//-------------------------------------------------------------------------
+
+
+@NPCClass base(BaseNPC) studio("models/icky.mdl") = monster_ichthyosaur : "Ichthyosaur"
+[
+]
+
+@SolidClass base(Targetname, RenderFields, Global, Shadow) = func_wall : 
+	"Legacy support. Use func_brush instead." 
+[
+	_minlight(string) : "Minimum Light Level" : : "The minimum level of ambient light that hits this brush."
+	input Use(void) : "Toggle Skin"
+]
+
+@SolidClass base(Breakable, RenderFields) = func_pushable : "Pushable object"
+[
+size(choices) : "Hull Size" : 0 =
+	[
+		0: "Point size"
+		1: "Player size"
+		2: "Big Size"
+		3: "Player duck"
+	]
+	spawnflags(flags) =
+	[
+		128: "Breakable" : 0
+	]
+	friction(integer) : "Friction (0-400)" : 50
+	buoyancy(integer) : "Buoyancy" : 20
+	_minlight(string) : "Minimum light level"
+]
+@SolidClass = func_ladder : 
+	"Ladder. Players will be able to freely move along this brush, as if it was a ladder. If you are using a model prop " +
+	"for the visual representation of the ladder in the map, apply the toolsinvisibleladder material to the " +
+	"func_ladder brush."
+[
+]
+
+@SolidClass base(Targetname,Origin) = func_mortar_field : "Mortar field"
+[
+	m_fControl(choices) : "Position" : 0 : "Random: will fire anywhere in bounds. "+
+	"Above activator: will fire above or below entity activated the mortar. "+
+	"X/Y Controller: position set by momentary_rot_buttons (tactical map)." =
+	[
+		0 : "Random"
+		1 : "Above activator"
+		2 : "X/Y Controller"
+	]
+	m_flSpread(integer) : "Spread" : 0 : "Spread of fire"
+	m_iCount(integer) : "Count" : 1 : "Count of mortar shells"
+	m_iszXController(target_destination) : "X Controller" : "" : "momentary_rot_button controlling X location"
+	m_iszYController(target_destination) : "Y Controller" : "" : "momentary_rot_button controlling Y location"
+	input Trigger(void) : "Trigger"
+]
+
+@PointClass base(PlayerClass, Angles) studio("models/editor/playerstart.mdl") = info_player_deathmatch :
+	"This entity indicates the position and facing direction at which the player will spawn during a "+
+	"Half-Life Deathmatch: Source game. Any number of "+
+	"info_player_deathmatch entities may be placed in a map."
+[
+]
+
+@NPCClass base(BaseHeadcrab, Parentname) studio("models/headcrab.mdl") = monster_headcrab : "Headcrab"
+[
+]
+@NPCClass base(BaseNPC) studio("models/tentacle.mdl") = monster_tentacle : "Tentacle Arm"
+[
+	sweeparc(integer) : "Sweep Arc" : 130
+	sound(Choices) : "Tap Sound" : -1 =
+	[
+		-1 : "None"
+		0 : "Silo"
+		1 : "Dirt"
+		2 : "Water"
+	]
+]
+@NPCClass base(TalkNPC) studio("models/half-life/barney.mdl") = monster_barney : "Barney"
+[
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+@PointClass base(BaseNPC) studio("models/half-life/barney.mdl") = monster_barney_dead : "Dead Barney" 
+[
+	pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On side"
+        2 : "On stomach"
+		3 : "Stuffed in Vent"
+    ]
+]
+@NPCClass base(BaseNPC) studio("models/Sentry.mdl") = monster_sentry : "Sentry Turret Gun"
+[
+	spawnflags(Flags) = 
+	[
+		32 : "Autostart" : 0
+		64 : "Start Inactive" : 0
+	]
+]
+@SolidClass base(Trigger) = func_friction
+[
+	modifier(float) : "Friction Percent" : 100 : "Set the friction to this percent of the regular friction"
+]
+
+@NPCClass base(BaseNPC) studio("models/islave.mdl") = monster_alien_slave : "Vortigaunt"
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+		64 : "IgnorePlayer" : 0
+	]
+]
+
+@PointClass base(Targetname) color(255 128 0) = multi_manager : "MultiTarget Manager" 
+[
+	spawnflags(Flags) = 
+	[
+		1 : "multithreaded" : 0
+	]
+]
+
+@PointClass base(Targetname) color(128 255 128) = multisource : "Multisource"
+[
+	target(target_destination) : "Target"
+	globalstate(string) : "Global State Master"
+]
+@PointClass base(Targetname, RenderFields) size(-16 -16 -16, 16 16 16) color(100 100 0) = env_render : "Render Controls"
+[
+	target(target_destination) : "Target"
+	spawnflags(flags) =
+	[
+		1: "No Renderfx" : 0
+		2: "No Renderamt" : 0
+		4: "No Rendermode" : 0
+		8: "No Rendercolor" : 0
+	]
+	input Activate(void) : "Activate"
+	input Use(void) : "Use"
+]
+@PointClass sprite() base(Targetname, RenderFields) size(-4 -4 -4, 4 4 4) color(30 100 0) = env_glow : "Light Glow/Haze"
+[
+	model(sprite) : "Sprite Name" : "sprites/glow01.spr"
+	scale(integer) : "Scale" : 1
+]
+
+@PointClass iconsprite("editor/ambient_generic.vmt") = env_sound : "DSP Sound" 
+[
+	radius(integer) : "Radius" : 128
+	roomtype(Choices) : "Room Type" : 0 =
+	[
+		0 : "Normal (off)"
+		1 : "Generic"
+		
+		2 : "Metal Small"
+		3 : "Metal Medium"
+		4 : "Metal Large"
+	
+		5 : "Tunnel Small"
+		6 : "Tunnel Medium"
+		7 : "Tunnel Large"
+	
+		8 : "Chamber Small"
+		9 : "Chamber Medium"
+		10: "Chamber Large"
+
+		11: "Bright Small"
+		12: "Bright Medium"
+		13: "Bright Large"
+
+		14: "Water 1"
+		15: "Water 2"
+		16: "Water 3"
+
+		17: "Concrete Small"
+		18: "Concrete Medium"
+		19: "Concrete Large"
+
+		20: "Big 1"
+		21: "Big 2"
+		22: "Big 3"
+
+		23: "Cavern Small"
+		24: "Cavern Medium"
+		25: "Cavern Large"
+
+		26: "Weirdo 1"
+		27: "Weirdo 2"
+		28: "Weirdo 3"
+	]
+	output OnPlay(void) : "OnPlay"
+	input Enable(void) : "Enable"
+	input Disable(void) : "Disable"
+	input ToggleEnabled(void) : "ToggleEnabled"
+]
+
+@PointClass base(Targetname) size(-16 -16 -16, 16 16 16) = env_funnel : "Large Portal Funnel" 
+[
+	spawnflags(flags) =
+	[
+		1: "Reverse" : 0
+	]
+]
+@NPCClass base(BaseNPC) studio("models/houndeye.mdl") = monster_houndeye : "Houndeye" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+	]
+]
+@NPCClass base(BaseNPC) studio("models/half-life/scientist.mdl") = monster_scientist_dead : "Dead Scientist" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+	]
+]
+@NPCClass base(BaseNPC) studio("models/leech.mdl") = monster_leech : "Leech" []
+@NPCClass base(BaseNPC) studio("models/barnacle.mdl") = monster_barnacle : "Barnacle" []
+@NPCClass base(BaseNPC) studio("models/apache.mdl" ) = monster_apache : "Apache"
+[
+	spawnflags(Flags) = 
+	[
+		8 : "NoWreckage"	: 0
+		64 : "Start Inactive" : 0
+	]
+]
+
+@NPCClass base(BaseNPC) studio("models/zombie.mdl") = monster_zombie : "Zombie" []
+
+@NPCClass base(BaseNPC) studio("models/aflock.mdl") = monster_flyer_flock : "Flock of Flyers" 
+[
+	iFlockSize(Integer) : "Flock Size" : 8
+	flFlockRadius(Integer) : "Flock Radius" : 128
+]
+@NPCClass base(BaseNPC) studio("models/agrunt.mdl") = monster_alien_grunt : "Alien Grunt" 
+[
+	netname(string) : "Squad Name"
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+	]
+]
+@NPCClass base(BaseNPC) studio("models/big_mom.mdl") = monster_bigmomma : "Big Mamma" 
+[
+	netname(target_destination) : "First node" : ""
+]
+@NPCClass base(BaseNPC) studio("models/bullsquid.mdl") = monster_bullchicken : "BullChicken" []
+@NPCClass base(BaseNPC) studio("models/baby_headcrab.mdl") = monster_babycrab : "Baby Headcrab" []
+@NPCClass base(BaseNPC) studio("models/garg.mdl") = monster_gargantua : "Gargantua" []
+@NPCClass base(BaseNPC) studio("models/gman.mdl") = monster_gman : "G-Man" []
+@NPCClass base(BaseNPC) studio("models/hassassin.mdl") = monster_human_assassin : "Human Assassin" []
+@NPCClass base(BaseNPC) studio("models/hgrunt.mdl") = monster_human_grunt : "Human Grunt" []
+@PointClass base(Targetname,RenderFields,Angles) studio("models/hgrunt.mdl") = monster_hgrunt_dead : "Dead Human Grunt"
+[
+	sequence(integer) : "Sequence" : 44
+	pose(Choices) : "Pose" : 0 =
+	[
+		0 : "On stomach"
+		1 : "On side"
+		2 : "Seated"
+	]
+	body(Choices) : "Body" : 0 =
+	[
+		0 : "Grunt with Gun"
+		1 : "Commander with Gun"
+		2 : "Grunt no Gun"
+		3 : "Commander no Gun"
+	]
+]
+@NPCClass base(BaseNPC) studio("models/miniturret.mdl") = monster_miniturret : "Mini Auto Turret"
+[
+	orientation(Choices) : "Orientation" : 0 =
+	[
+		0 : "Floor Mount"
+		1 : "Ceiling Mount"
+	]
+	spawnflags(Flags) = 
+	[
+		32 : "Autostart" : 0
+		64 : "Start Inactive" : 0
+	]
+]
+@NPCClass base(BaseNPC) studio("models/nihilanth.mdl") = monster_nihilanth : "Nihilanth"  []
+@NPCClass base(BaseNPC) studio() = monster_furniture : "Monster Furniture" 
+[
+	model(studio) : "model"
+]
+@NPCClass base(BaseNPC) studio("models/roach.mdl") = monster_cockroach : "Cockroach" []
+@PointClass base(Targetname, RenderFields, Angles) studio("models/light.mdl") = xen_plantlight : "Xen Plant Light" []
+@PointClass base(Targetname, RenderFields, Angles) studio("models/hair.mdl") = xen_hair : "Xen Hair" 
+[
+	spawnflags(Flags) = 
+	[
+		1 : "Sync Movement" 	: 0
+	]
+]
+@PointClass base(Targetname, RenderFields, Angles) studio("models/tree.mdl") = xen_tree : "Xen Tree" []
+@PointClass base(Targetname, RenderFields, Angles) studio("models/fungus(small).mdl") = xen_spore_small : "Xen Spore (small)" []
+@PointClass base(Targetname, RenderFields, Angles) studio("models/fungus.mdl") = xen_spore_medium : "Xen Spore (medium)" []
+@PointClass base(Targetname, RenderFields, Angles) studio("models/fungus_large.mdl") = xen_spore_large : "Xen Spore (large)" []
+@NPCClass base(TalkNPC) studio("models/half-life/scientist.mdl") = monster_scientist : "Scientist"
+[
+	body(integer) : "Body" : -1 : "-1 = Random\n0 = Glasses\n1 = Einstein\n2 = Luther\n3 = Slick"
+]
+
+@PointClass base(TalkNPC) studio("models/opfor/otis.mdl") = monster_otis : "Otis"
+[
+	bodystate(Choices) : "bodystate" : -1 =
+	[
+		-1 : "Random"
+		0 : "Gun Holstered"
+		1 : "Gun Drawn"
+		3 : "Donut"
+	]
+	head(Choices) : "head" : -1 =
+	[
+		-1 : "Random"
+		0 : "Bald Head"
+		1 : "Head with hair"
+	]
+	suspicious(choices) : "Suspicious" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@PointClass base(BaseNPC) studio("models/opfor/otis.mdl") = monster_otis_dead : "Dead Otis" 
+[
+    pose(Choices) : "Pose" : 0 =
+    [
+        0 : "On back"
+        1 : "On side"
+        2 : "On stomach"
+		3 : "Stuffed in Vent"
+		4 : "Dead Sitting"
+    ]
+]
+
+@PointClass base(BaseNPC, RenderFields, Shadow) studio() = monster_generic : "Generic Script NPC"
+[
+	spawnflags(Flags) = 
+	[
+		65536 : "Not solid" : 0
+	]
+	model(studio) : "Model"
+	body(Integer) : "Body" : 0
+]
+
+@PointClass base(BaseNPC, RenderFields, Shadow) studio() = cycler_actor : "Actor Cycler"
+[
+	model(studio) : "Model"
+	Sentence(string) : "Sentence Group" : ""
+
+	input Alpha(integer) : "Set Alpha Value"
+]
+
+@PointClass base(Angles, BaseNPCMaker) iconsprite("editor/npc_maker.vmt") = monstermaker : "NPC Maker"
+[
+	target(string) : "Target On Release" 
+	monstertype(string) : "Monster Type"
+	netname(string) : "Childrens' Name"
+	spawnflags(Flags) = 
+	[
+		1 : "Start ON" 	: 0
+	// 	2 : "PVS On/Off" : 0  // not implemented
+		4 : "Cyclic" : 0
+		8 : "MonsterClip" : 0
+	]
+
+	// how many monsters the monstermaker can create (-1 = unlimited)
+	monstercount(integer) : "Number of Monsters" : -1
+	
+	// if delay is -1, new monster will be made when last monster dies.
+	// else, delay is how often (seconds) a new monster will be dookied out.
+	delay(string) : "Frequency" : "5"
+
+	// maximum number of live children allowed at one time. (New ones will not be made until one dies)
+	// -1 no limit
+	m_imaxlivechildren(integer) : "Max live children" : 5
+]
+
+//-------------------------------------------------------------------------
+//
+// Solid Entities
+//
+//-------------------------------------------------------------------------
+
+@SolidClass base(EnableDisable, Parentname, Origin, Global) = func_healthcharger: "Wall health recharger" 
+[
+	// dmdelay(integer) : "Deathmatch recharge delay" : 0
+	_minlight(string) : "Minimum light level"
+
+	// Outputs
+	output OutRemainingHealth(float) : "Remaining Health."
+	output OnPlayerUse(void) : "Fired when the player +USEs the charger."
+]
+
+@SolidClass base(Targetname, Parentname, Origin) = func_recharge: "Battery recharger" 
+[
+	// dmdelay(integer) : "Deathmatch recharge delay" : 0
+	_minlight(string) : "Minimum light level"
+
+	spawnflags(flags) =
+	[
+		8192  : "Citadel recharger" : 0
+	]
+
+	// Inputs
+	input Recharge(void) : "Recharge to full"
+
+	// Outputs
+	output OutRemainingCharge(float) : "Remaining Charge."
+	output OnHalfEmpty(void) : "Half-Empty"
+	output OnEmpty(void) : "Empty"
+	output OnFull(void) : "Recharged to full."
+	output OnPlayerUse(void) : "Fired when the player +USEs the charger."
+]
+
+@SolidClass base(Parentname, Targetname, Global) = func_vehicleclip: "Vehicle Clip" 
+[
+	input Kill( void ) : "Removes this entity from the world"
+]
+
+@SolidClass base(func_movelinear) = func_lookdoor : "A door that moves either when looked by a targeted object or when " +
+	"a target object comes near the door.  Behavior can be either based on viewing direction or proximity " +
+	"alone, or on a combination of both.  If inverted the doors behavior will be the opposite." 
+[
+	spawnflags(flags) =
+	[
+		8192  : "LookDoor Threshold" : 0
+		16384 : "LookDoor Invert" : 0
+		32768 : "LookDoor From Open" : 0
+	]
+
+	ProximityDistance(string) : "Proximity Distance" : "0.0"  : "If non-zero, proximity range over which door will move"
+	ProximityOffset(string) : "Proximity Offset" : "0.0" : "Offset from the target object"
+	FieldOfView(string) : "FieldOfView" : "0.0"  : "If non-zero, field of view over which door will move"
+
+	// Input
+	input InvertOn(void) : "InvertOn - when set behavior of door is inverted."
+	input InvertOff(void) : "InvertOff - when set behavior of door is normal."
+]
+
+//-------------------------------------------------------------------------
+//
+// Items
+//
+//-------------------------------------------------------------------------
+
+@PointClass base(Item) studio("models/w_9mmclip.mdl") = ammo_9mmclip : "9mm Pistol Ammo" []
+@PointClass base(Item) studio("models/w_9mmclip.mdl") = ammo_glockclip : "9mm Pistol Ammo" []
+@PointClass base(Item) studio("models/w_9mmARclip.mdl")= ammo_9mmAR : "9mm Assault Rifle Ammo" []
+@PointClass base(Item) studio("models/w_chainammo.mdl") = ammo_9mmbox : "box of 200 9mm shells" []
+@PointClass base(Item) studio("models/w_ARgrenade.mdl") = ammo_ARgrenades : "Assault Grenades" []
+@PointClass base(Item) studio("models/w_shotbox.mdl") = ammo_buckshot : "Shotgun Ammo" []
+@PointClass base(Item) studio("models/w_357ammobox.mdl") = ammo_357 : "357 Ammo" []
+@PointClass base(Item) studio("models/w_rpgammo.mdl") = ammo_rpgclip : "RPG Ammo" []
+@PointClass base(Item) studio("models/w_gaussammo.mdl") = ammo_gaussclip : "Gauss Gun Ammo" []
+@PointClass base(Item) studio("models/w_crossbow_clip.mdl") = ammo_crossbow : "Crossbow Ammo" []
+@PointClass base(Item) studio("models/w_longjump.mdl") = item_longjump : "Long Jump Item" []
+//-------------------------------------------------------------------------
+//
+// Weapons
+//
+//-------------------------------------------------------------------------
+
+@PointClass base(Weapon) studio("models/w_crowbar.mdl") = weapon_crowbar_hl1 : "Crowbar" []
+@PointClass base(Weapon) studio("models/w_9mmAR.mdl") = weapon_mp5_hl1 : "9mm Assault Rifle" []
+@PointClass base(Weapon) studio("models/w_9mmhandgun.mdl") = weapon_glock_hl1 : "9mm Handgun" []
+@PointClass base(Weapon) studio("models/w_357.mdl") = weapon_357_hl1 : "357 Handgun" []
+@PointClass base(Weapon) studio("models/w_shotgun.mdl") = weapon_shotgun_hl1 : "Shotgun" []
+@PointClass base(Weapon) studio("models/w_rpg.mdl") = weapon_rpg_hl1 : "RPG" []
+@PointClass base(Weapon) studio("models/w_gauss.mdl") = weapon_gauss : "Gauss Gun" []
+@PointClass base(Weapon) studio("models/w_crossbow.mdl") = weapon_crossbow_hl1 : "Crossbow" 
+[
+	sequence(choices) : "Placement" : 0 =
+	[
+		0 : "Normal (flat)"
+		1 : "Realistic (tilted)"
+	]
+]
+@PointClass base(Weapon) studio("models/w_egon.mdl") = weapon_egon : "Egon Gun" []
+@PointClass base(Weapon) studio("models/w_tripmine.mdl") = weapon_tripmine : "Tripmine Ammo" []
+@PointClass base(Weapon) studio("models/w_satchel.mdl") = weapon_satchel : "Satchel Charge Ammo" []
+@PointClass base(Weapon) studio("models/w_grenade.mdl") = weapon_handgrenade : "Handgrenade Ammo" []
+@PointClass base(Weapon) studio("models/w_SQKNEST.mdl") = weapon_snark : "Squeak Grenade" []
+@PointClass base(Weapon) studio("models/w_hgun.mdl") = weapon_hornetgun : "Hornet Gun" []
+@PointClass studio("models/weaponbox.mdl") =  weaponbox : "Weapon/Ammo Container" []
+
+@PointClass base(Weapon) = world_items : "World Items" 
+[
+	type(choices) :"types" : 42 =
+	[
+		42: "Antidote"
+		43: "Security Card"
+		44: "Battery"
+		45: "Suit"
+	]
+]
+
+@PointClass base(Targetname) = speaker : "Announcement Speaker"
+[
+	preset(choices) :"Announcement Presets" : 0 =
+	[
+		0: "None"
+		1: "C1A0 Announcer"
+		2: "C1A1 Announcer"
+		3: "C1A2 Announcer"
+		4: "C1A3 Announcer"
+		5: "C1A4 Announcer"  
+		6: "C2A1 Announcer"
+		7: "C2A2 Announcer"
+		// 8: "C2A3 Announcer"
+		9: "C2A4 Announcer"
+		// 10: "C2A5 Announcer"
+		11: "C3A1 Announcer"
+		12: "C3A2 Announcer"
+	]
+	message(string) : "Sentence Group Name"
+	health(integer) : "Volume (10 = loudest)" : 5
+	spawnflags(flags) =
+	[
+		1: "Start Silent" : 0
+	]
+]
+
+@PointClass base(Targetname) = target_cdaudio : "CD Audio Target"
+[
+	health(choices) : "Track #" : -1 =
+	[
+		-1 : "Stop"
+		1 : "Track 1"
+		2 : "Track 2"
+		3 : "Track 3"
+		4 : "Track 4"
+		5 : "Track 5"
+		6 : "Track 6"
+		7 : "Track 7"
+		8 : "Track 8"
+		9 : "Track 9"
+		10 : "Track 10"
+		11 : "Track 11"
+		12 : "Track 12"
+		13 : "Track 13"
+		14 : "Track 14"
+		15 : "Track 15"
+		16 : "Track 16"
+		17 : "Track 17"
+		18 : "Track 18"
+		19 : "Track 19"
+		20 : "Track 20"
+		21 : "Track 21"
+		22 : "Track 22"
+		23 : "Track 23"
+		24 : "Track 24"
+		25 : "Track 25"
+		26 : "Track 26"
+		27 : "Track 27"
+		28 : "Track 28"
+		29 : "Track 29"
+		30 : "Track 30"
+	]
+	radius(string) : "Player Radius"
+]
+
+@PointClass = trigger_auto : "AutoTrigger"
+[
+	spawnflags(Flags) =
+	[
+		1 : "Remove On fire" : 1
+	]
+	globalstate(string) : "Global State to Read"
+	triggerstate(choices) : "Trigger State" : 0 = 
+	[
+		0 : "Off"
+		1 : "On"
+		2 : "Toggle"
+	]
+]
+
+@SolidClass base(Targetname) = trigger_autosave : "AutoSave Trigger"
+[
+	master(string) : "Master" 
+]
+
+@SolidClass base(Targetname) = trigger_cdaudio : "Trigger CD Audio"
+[
+	health(choices) : "Track #" : -1 =
+	[
+		-1 : "Stop"
+		1 : "Track 1"
+		2 : "Track 2"
+		3 : "Track 3"
+		4 : "Track 4"
+		5 : "Track 5"
+		6 : "Track 6"
+		7 : "Track 7"
+		8 : "Track 8"
+		9 : "Track 9"
+		10 : "Track 10"
+		11 : "Track 11"
+		12 : "Track 12"
+		13 : "Track 13"
+		14 : "Track 14"
+		15 : "Track 15"
+		16 : "Track 16"
+		17 : "Track 17"
+		18 : "Track 18"
+		19 : "Track 19"
+		20 : "Track 20"
+		21 : "Track 21"
+		22 : "Track 22"
+		23 : "Track 23"
+		24 : "Track 24"
+		25 : "Track 25"
+		26 : "Track 26"
+		27 : "Track 27"
+		28 : "Track 28"
+		29 : "Track 29"
+		30 : "Track 30"
+	]
+]
+
+@SolidClass base(Trigger, Targetname) = trigger_counter : "Trigger counter" 
+[
+	spawnflags(flags) = 
+	[ 
+		1 : "No Message" : 0 
+	]
+	master(string) : "Master" 
+	count(integer) : "Count before activation" : 2
+]
+
+@SolidClass base(Targetname) = trigger_endsection : "EndSection Trigger"
+[
+	section(string) : "Section"
+	spawnflags(flags) =
+	[
+		1: "USE Only" : 0
+	]
+]
+
+@SolidClass base(Trigger) = trigger_gravity : "Trigger Gravity"
+[
+	gravity(integer) : "Gravity (0-1)" : 1
+]
+@PointClass base(Targetname) iconsprite("editor/trigger_relay.vmt") = trigger_relay : "Trigger Relay"
+[
+	spawnflags(flags) =
+	[
+		1: "Remove On fire" : 0
+	]
+	triggerstate(choices) : "Trigger State" : 0 = 
+	[
+		0: "Off"
+		1: "On"
+		2: "Toggle"
+	]
+]

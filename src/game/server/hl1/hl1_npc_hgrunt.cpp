@@ -324,7 +324,7 @@ int CNPC_HGrunt::IRelationPriority(CBaseEntity *pTarget)
 //=========================================================
 void CNPC_HGrunt::Precache()
 {
-	m_iAmmoType = GetAmmoDef()->Index("SMG1");
+	m_iAmmoType = GetAmmoDef()->Index("9mmRound");
 
 	PrecacheModel("models/hgrunt.mdl");
 
@@ -1049,11 +1049,11 @@ void CNPC_HGrunt::Event_Killed(const CTakeDamageInfo &info)
 	// now spawn a gun.
 	if (FBitSet(m_iWeapons, HGRUNT_SHOTGUN))
 	{
-		DropItem("weapon_shotgun", vecGunPos, vecGunAngles);
+		DropItem("weapon_shotgun_hl1", vecGunPos, vecGunAngles);
 	}
 	else
 	{
-		DropItem("weapon_mp5", vecGunPos, vecGunAngles);
+		DropItem("weapon_mp5_hl1", vecGunPos, vecGunAngles);
 	}
 
 	if (FBitSet(m_iWeapons, HGRUNT_GRENADELAUNCHER))

@@ -8,7 +8,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\tf,.\tf,$SRCDIR\game\shared\Multiplayer,$SRCDIR\game\shared\econ"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\Multiplayer;$SRCDIR\game\shared\econ"
 		$PreprocessorDefinitions		"$BASE;USES_ECON_ITEMS"
 	}
 }
@@ -34,7 +34,6 @@ $Project
 			$File	"$SRCDIR\game\shared\econ\game_item_schema.h"
 			$File	"$SRCDIR\game\shared\econ\ihasattributes.h"
 			$File	"$SRCDIR\game\shared\tf\script_parser.cpp"
-			$File	"$SRCDIR\game\shared\tf\tf_shareddefs.cpp"
 		}
 	}
 }

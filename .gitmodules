@@ -7,3 +7,6 @@
 [submodule "hl2_reloded"]
 	path = game/spp_shared/content/hl2_reloaded
 	url = https://github.com/Northern3D/hl2-reloaded
+[submodule "src/utils/xwad"]
+	path = src/utils/xwad
+	url = https://github.com/Petercov/xwad
