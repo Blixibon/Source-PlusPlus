@@ -163,7 +163,7 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 	{
 		CAI_BaseNPC* pNPC = g_AI_Manager.AccessAIs()[i];
 
-		if (!pNPC || pNPC->Classify() == CLASS_BULLSEYE)
+		if (!pNPC || pNPC->Classify() == CLASS_BULLSEYE || pNPC->GetSleepState() != AISS_AWAKE)
 		{
 			continue;
 		}

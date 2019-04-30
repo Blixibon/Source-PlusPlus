@@ -144,6 +144,8 @@ ConVar npc_alyx_force_stop_moving( "npc_alyx_force_stop_moving", "1" );
 ConVar npc_alyx_readiness_transitions( "npc_alyx_readiness_transitions", "1" );
 ConVar npc_alyx_crouch( "npc_alyx_crouch", "1" );
 
+static bool s_bAlyxHunted = false;
+
 // global pointer to Alyx for fast lookups
 CEntityClassList<CNPC_Alyx> g_AlyxList;
 template <> CNPC_Alyx *CEntityClassList<CNPC_Alyx>::m_pClassList = NULL;
@@ -339,6 +341,20 @@ void CNPC_Alyx::Spawn()
 
 	NPCInit();
 
+	if (s_bAlyxHunted)
+	{
+		s_bAlyxHunted = false;
+		m_nSkin = 2;
+	}
+	else if (hl2_episodic.GetBool())
+	{
+		m_nSkin = 1;
+	}
+	else
+	{
+		m_nSkin = 0;
+	}
+
 	SetUse( &CNPC_Alyx::Use );
 
 	m_bInteractionAllowed = true;
@@ -447,9 +463,20 @@ void CNPC_Alyx::SelectModel()
 	// Alyx is allowed to use multiple models, because she appears in the pod.
 	// She defaults to her normal model.
 	const char *szModel = STRING( GetModelName() );
-	if (!szModel || !*szModel)
+	bool bSetModel = (!szModel || !*szModel);
+	if (!bSetModel)
 	{
-		SetModelName( AllocPooledString("models/alyx.mdl") );
+		if (FStrEq(szModel, "models/alyx.mdl"))
+			bSetModel = true;
+		else if (FStrEq(szModel, "models/alyx_ep2.mdl"))
+		{
+			bSetModel = true;
+			s_bAlyxHunted = true;
+		}
+	}
+	if ( bSetModel )
+	{
+		SetModelName( AllocPooledString("models/sirgibs/ragdolls/hl2/alyx_enhanced.mdl") );
 	}
 }
 
@@ -1183,7 +1210,7 @@ void CNPC_Alyx::DoCustomSpeechAI( void )
 		{
 			CBaseHeadcrab *pHC = assert_cast<CBaseHeadcrab*>(GetEnemy());
 			// If we see a headcrab for the first time as he's jumping at me, freak out!
-			if ( ( GetEnemy()->GetEnemy() == this ) && pHC->IsJumping() && gpGlobals->curtime - GetEnemies()->FirstTimeSeen(GetEnemy()) < 0.5 )
+			if ( ( GetEnemy()->GetEnemy() == this ) && pHC->IsJumping() && gpGlobals->curtime - GetEnemies()->FirstTimeSeen(GetEnemy()) < 0.5f )
 			{
 				SpeakIfAllowed( "TLK_SPOTTED_INCOMING_HEADCRAB" );
 			}
@@ -2269,7 +2296,7 @@ int CNPC_Alyx::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		{
 			// I've taken melee damage. If I haven't seen the enemy for a few seconds, make some noise.
   			float flLastTimeSeen = GetEnemies()->LastTimeSeen( info.GetAttacker(), false );
-			if ( flLastTimeSeen == AI_INVALID_TIME || gpGlobals->curtime - flLastTimeSeen > 3.0 )
+			if ( flLastTimeSeen == AI_INVALID_TIME || gpGlobals->curtime - flLastTimeSeen > 3.0f )
 			{
 				SpeakIfAllowed( "TLK_DARKNESS_UNKNOWN_WOUND" );
 				m_fTimeUntilNextDarknessFoundPlayer = gpGlobals->curtime + RandomFloat( 3, 5 );
@@ -3001,7 +3028,7 @@ void CNPC_Alyx::ModifyOrAppendCriteria( AI_CriteriaSet &set )
 	set.AppendCriteria( "darkness_mode", UTIL_VarArgs( "%d", HasCondition( COND_ALYX_IN_DARK ) ) );
 	set.AppendCriteria( "water_level", UTIL_VarArgs( "%d", GetWaterLevel() ) );
 
-	CHL2_Player *pPlayer = assert_cast<CHL2_Player*>( UTIL_PlayerByIndex( 1 ) );
+	CHL2_Player *pPlayer = assert_cast<CHL2_Player*>( GetBestPlayer() );
 	set.AppendCriteria( "num_companions", UTIL_VarArgs( "%d", pPlayer ? pPlayer->GetNumSquadCommandables() : 0 ) );
 	set.AppendCriteria( "flashlight_on", UTIL_VarArgs( "%d", pPlayer ? pPlayer->FlashlightIsOn() : 0 ) );
 

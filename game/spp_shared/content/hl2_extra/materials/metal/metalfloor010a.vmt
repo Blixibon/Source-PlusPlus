@@ -1,0 +1,8 @@
+"LightmappedGeneric"
+{
+	// Original shader: SphericalEnvMapBlendMaskedBaseTimesLightmap
+	"$basetexture" "Metal/metalfloor010a"
+	"$surfaceprop" "metalpanel"
+	"%keywords" "borealis"
+	"$phong" "1"
+}

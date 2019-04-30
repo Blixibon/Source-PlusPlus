@@ -1,0 +1,112 @@
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\bunker_metalwall01a.vmt
+  5,3: 	"$envmaptint" "[ .004 .004 .004 ]"
+
+  6,3: 	"$envmap" "env_cubemap"
+
+  8,3: 	"$envmapcontrast" .95
+
+  9,3: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\bunker_metalwall01b.vmt
+  5,3: 	"$envmaptint" "[ .004 .004 .004 ]"
+
+  6,3: 	"$envmap" "env_cubemap"
+
+  8,3: 	"$envmapcontrast" .95
+
+  9,3: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_02a.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_02b.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_02c.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_03a.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_03b.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_03c.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_04a.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_04b.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_04c.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ .1 .1 .1 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_05a.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ 0.4 0.4 0.4 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_05b.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ 0.4 0.4 0.4  ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\forest_metal_05c.vmt
+  5,3: 	"$envmap"       "env_cubemap"
+
+  7,3: 	"$envmaptint"   "[ 0.4 0.4 0.4 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\metal_liftbase01.vmt
+  7,5: 	//"$envmaptint" "[ 0.75 0.75 0.75 ]"
+
+  8,5: 	//"$envmap" "env_cubemap"
+
+  10,5: 	//"$envmapcontrast" 1
+
+  11,5: 	//"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\metalpipe_vent001b.vmt
+  5,3: 	"$envmap"	"env_cubemap"
+
+  7,3: 	"$envmaptint" "[ 0.05 0.05 0.05 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\ep2\materials\metal\metalpipe_vent001c.vmt
+  5,3: 	"$envmap"	"env_cubemap"
+
+  7,3: 	"$envmaptint" "[ 0.05 0.05 0.05 ]"

@@ -7,6 +7,7 @@
 
 #include "ai_basenpc.h"
 #include "ai_pathfinder.h"
+#include "ai_route.h"
 
 //#include "in_player.h"
 #include "in_utils.h"
@@ -604,6 +605,9 @@ bool CPlayersSystem::HasRouteToPlayer( CPlayer *pPlayer, CAI_BaseNPC *pNPC, floa
     if ( !pRoute )
         return false;
 
+	pNPC->GetPathfinder()->UnlockRouteNodes(pRoute);
+	CAI_Path tempPath;
+	tempPath.SetWaypoints(pRoute); // path object will delete waypoints
     return true;
 }
 

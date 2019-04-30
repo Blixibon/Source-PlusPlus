@@ -4412,6 +4412,26 @@ void CNPC_Strider::FootFX( const Vector &origin )
 			VectorNormalize( dir );
 			g_pEffects->Dust( tr.endpos, dir, 12, 50 );
 		}
+
+		const surfacedata_t* pHit = physprops->GetSurfaceData(tr.surface.surfaceProps);
+		const char* pSound = physprops->GetString(pHit->sounds.impactHard);
+
+		CSoundParameters params;
+		if (!CBaseEntity::GetParametersForSound(pSound, params, NULL))
+		{
+			CPASAttenuationFilter filter(origin, params.soundlevel);
+			// JAY: If this entity gets deleted, the sound comes out at the world origin
+			// this sounds bad!  Play on ent 0 for now.
+			EmitSound_t ep;
+			ep.m_nChannel = params.channel;
+			ep.m_pSoundName = params.soundname;
+			ep.m_flVolume = params.volume;
+			ep.m_SoundLevel = params.soundlevel;
+			ep.m_nPitch = params.pitch;
+			ep.m_pOrigin = &origin;
+
+			CBaseEntity::EmitSound(filter, 0 /*sound.entityIndex*/, ep);
+		}
 	}
 	UTIL_ScreenShake( tr.endpos, 4.0, 1.0, 0.5, 1000, SHAKE_START, false );
 	

@@ -1723,7 +1723,7 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 	// if we are already in the goal area, build trivial path
 	if (startArea == goalArea)
 	{
-		return BuildLocalRoute(vStart, pathEndPosition, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags, goalTolerance);
+		return BuildLocalRoute(vStart, pathEndPosition, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 	}
 
 	//
@@ -1750,7 +1750,7 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 
 	if (count == 1)
 	{
-		return BuildLocalRoute(vStart, pathEndPosition, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags, goalTolerance);
+		return BuildLocalRoute(vStart, pathEndPosition, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 	}
 
 	// build path
@@ -1828,11 +1828,11 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 				}
 				else
 				{
-					newway = BuildLocalRoute(fromclosestpoint, closestpoint, nullptr, endFlags, NO_NODE, buildFlags, goalTolerance);
+					newway = BuildLocalRoute(fromclosestpoint, closestpoint, nullptr, endFlags, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 					if (!newway)
 						return nullptr;
 
-					AI_Waypoint_t *pToCenter = BuildLocalRoute(closestpoint, center, nullptr, endFlags, NO_NODE, buildFlags, goalTolerance);
+					AI_Waypoint_t *pToCenter = BuildLocalRoute(closestpoint, center, nullptr, endFlags, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 					if (pToCenter != nullptr)
 						AddWaypointLists(newway, pToCenter);
 				}
@@ -1861,7 +1861,7 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 						Vector bottom = ladder->m_bottom + ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth;
 						Vector top = ladder->m_top + (ladder->GetNormal() * NAV_LADDER_WAYPOINT_DIST_SCALE * HalfHumanWidth) + Vector(0, 0, 2.0f);
 
-						baseway = BuildLocalRoute(fromclosestpoint, bottom, nullptr, 0, NO_NODE, buildFlags, goalTolerance);
+						baseway = BuildLocalRoute(fromclosestpoint, bottom, nullptr, 0, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 						if (!baseway)
 							return nullptr;
 
@@ -1911,7 +1911,7 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 						Vector approach;
 						FindDescendingLadderApproachPoint(ladder, from, &approach);
 
-						baseway = BuildLocalRoute(approach, top, nullptr, 0, NO_NODE, buildFlags, goalTolerance);
+						baseway = BuildLocalRoute(approach, top, nullptr, 0, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 						if (!baseway)
 							return nullptr;
 						ladderway = BuildClimbRoute(top, bottom, nullptr, endFlags, NO_NODE, buildFlags, flYaw);
@@ -1933,7 +1933,7 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 		}
 		else
 		{
-			newway = BuildLocalRoute(vStart, area->GetCenter(), nullptr, 0, NO_NODE, buildFlags, goalTolerance);
+			newway = BuildLocalRoute(vStart, area->GetCenter(), nullptr, 0, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 		}
 
 		if (!newway)

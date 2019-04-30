@@ -1,0 +1,982 @@
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall063a_cheap.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall063a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall072a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall072b_cheap.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall072b.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall072c.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall076a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall077a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall078a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall090a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall091a_cheap.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall091a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall101a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_metalwall101b.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_tilefloor016a_cheap.vmt
+  1,4: // envmaptint_fix
+
+  6,18: 	"$normalmapalphaenvmapmask" 1
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  9,4: 	"$envmaptint" "[ .4 .4 .4 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_tilefloor016a.vmt
+  1,4: // envmaptint_fix
+
+  10,4: 	"$envmap" "env_cubemap"
+
+  11,4: 	"$envmaptint" "[ .6 .6 .6 ]"
+
+  18,5: 		"$envmaptint" "[ .01 .01 .01]"
+
+  19,19: 		"$normalmapalphaenvmapmask" 1
+
+  25,19: 		"$normalmapalphaenvmapmask" 1
+
+  26,5: 		"$envmaptint" "[ .01 .01 .01]"
+
+  33,19: 		"$normalmapalphaenvmapmask" 1
+
+  39,16: //		"$basealphaenvmapmask" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\citadel_tilewall005a.vmt
+  9,4: 	"$envmap" "env_cubemap"
+
+  10,4: 	"$envmapcontrast" 1
+
+  11,4: 	"$envmapsaturation" 1
+
+  12,6: 	//"$envmaptint" "[ 0.75 0.75 1 ]"
+
+  17,19: 		"$normalmapalphaenvmapmask" 1
+
+  24,19: 		"$normalmapalphaenvmapmask" 1
+
+  30,14: 		"$basealphaenvmapmask" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\lighthouse_platform.vmt
+  8,6: 	//"$envmap"		"env_cubemap"
+
+  9,5: 	//"envmapmask"	"Models/props_wastland/lighthouse_stairs_spec"	
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalceiling005a.vmt
+  1,4: // envmaptint_fix
+
+  12,4: 	"$envmaptint" "[ .16 .16 .16 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalcombine001.vmt
+  1,4: // envmaptint_fix
+
+  9,4: 	"$envmaptint" "[ .56 .67 .75 ]"
+
+  10,4: 	"$envmap" "env_cubemap"
+
+  11,18: 	"$normalmapalphaenvmapmask" 1
+
+  12,4: 	"$envmapcontrast" 1
+
+  13,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor004a.vmt
+  1,4: // envmaptint_fix
+
+  12,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor018a.vmt
+  1,4: // envmaptint_fix
+
+  12,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor030a.vmt
+  1,4: // envmaptint_fix
+
+  12,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor034a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor039a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor041a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor042a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor043a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor046a.vmt
+  1,4: // envmaptint_fix
+
+  12,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metaldoor059a.vmt
+  1,4: // envmaptint_fix
+
+  12,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalfloor001a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalfloor001b.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalfloor010a.vmt
+  3,31: 	// Original shader: SphericalEnvMapBlendMaskedBaseTimesLightmap
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe002a.vmt
+  12,6: 	//"$envmaptint" "[ 0.75 0.75 0.75 ]"
+
+  13,6: 	//"$envmap" "env_cubemap"
+
+  14,20: 	//"$normalmapalphaenvmapmask" 1
+
+  15,6: 	//"$envmapcontrast" 1
+
+  16,6: 	//"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe003a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .5 .5 .5 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+  22,7:     "$envmaptint" "[.1 .1 .1]"
+
+  27,7:     "$envmaptint" "[.1 .1 .1]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe005a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe007a.vmt
+  4,13: 	"$basealphaenvmapmask" 1
+
+  5,4: 	"$envmap" "env_cubemap"
+
+  13,4: 	"$envmaptint" "[ 0.5 0.5 0.5 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe008a.vmt
+  12,6: 	//"$envmaptint" "[ 0.75 0.75 0.75 ]"
+
+  13,6: 	//"$envmap" "env_cubemap"
+
+  14,20: 	//"$normalmapalphaenvmapmask" 1
+
+  15,6: 	//"$envmapcontrast" 1
+
+  16,6: 	//"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe009a.vmt
+  12,6: 	//"$envmaptint" "[ 0.75 0.75 0.75 ]"
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe009b.vmt
+  12,6: 	//"$envmaptint" "[ 0.75 0.75 0.75 ]"
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipe010a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalpipeendcap001a.vmt
+  11,4: 	"$envmap" "env_cubemap"
+
+  12,13: 	"$basealphaenvmapmask" 1
+
+  13,4: 	"$envmaptint" "[ 0.25 0.25 0.25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof003a.vmt
+  1,4: // envmaptint_fix
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  9,18: 	"$normalmapalphaenvmapmask" 1
+
+  10,4: 	"$envmapcontrast" 1
+
+  11,4: 	"$envmapsaturation" 1
+
+  12,4: 	"$envmaptint" "[ .5 .5 .5 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof004a_c17.vmt
+  1,4: // envmaptint_fix
+
+  10,5: 		"$envmap" "env_cubemap"
+
+  12,19: 		"$normalmapalphaenvmapmask" 1
+
+  13,5: 		"$envmapcontrast" 1
+
+  14,5: 		"$envmapsaturation" 1
+
+  15,5: 		"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof004a.vmt
+  1,4: // envmaptint_fix
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  9,18: 	"$normalmapalphaenvmapmask" 1
+
+  10,4: 	"$envmapcontrast" 1
+
+  11,4: 	"$envmapsaturation" 1
+
+  12,4: 	"$envmaptint" "[ .6 .6 .6 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof005a.vmt
+  1,4: // envmaptint_fix
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  9,18: 	"$normalmapalphaenvmapmask" 1
+
+  10,4: 	"$envmapcontrast" 1
+
+  11,4: 	"$envmapsaturation" 1
+
+  12,4: 	"$envmaptint" "[ .4 .4 .4 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof006a.vmt
+  1,4: // envmaptint_fix
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  9,18: 	"$normalmapalphaenvmapmask" 1
+
+  10,4: 	"$envmapcontrast" 1
+
+  11,4: 	"$envmapsaturation" 1
+
+  12,4: 	"$envmaptint" "[ .3 .3 .3 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof008a_c17.vmt
+  1,4: // envmaptint_fix
+
+  10,5: 		"$envmap" "env_cubemap"
+
+  12,19: 		"$normalmapalphaenvmapmask" 1
+
+  13,5: 		"$envmapcontrast" 1
+
+  14,5: 		"$envmapsaturation" 1
+
+  15,5: 		"$envmaptint" "[ .25 .25 .25 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalroof008a.vmt
+  1,4: // envmaptint_fix
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  9,18: 	"$normalmapalphaenvmapmask" 1
+
+  10,4: 	"$envmapcontrast" 1
+
+  11,4: 	"$envmapsaturation" 1
+
+  12,4: 	"$envmaptint" "[ .6 .6 .6 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall001a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+  21,7:     "$envmaptint" "[.25 .25 .25]"
+
+  22,21:     "$normalmapalphaenvmapmask" 1
+
+  27,7:     "$envmaptint" "[.25 .25 .25]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall001b.vmt
+  1,4: // envmaptint_fix
+
+  16,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+  17,5: 		"$envmap" "env_cubemap"
+
+  18,19: 		"$normalmapalphaenvmapmask" 1
+
+  19,5: 		"$envmapcontrast" 1
+
+  20,5: 		"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall001c.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall001d.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall001f.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+  14,4: 	"$envmap" "env_cubemap"
+
+  15,18: 	"$normalmapalphaenvmapmask" 1
+
+  16,4: 	"$envmapcontrast" 1
+
+  17,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall002a.vmt
+  11,4: 	"$envmap" "env_cubemap"
+
+  12,13: 	"$basealphaenvmapmask" 1
+
+  13,4: 	"$envmapcontrast" 1
+
+  14,4: 	"$envmapsaturation" 1
+
+  15,4: 	"$envmaptint" "[ .5 .5 .5]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall004d.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall004e.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall012a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .09 .09 .12 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall012b.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .09 .09 .12 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall018e_cheap.vmt
+  1,4: // envmaptint_fix
+
+  15,5: 		"$envmap" "env_cubemap"
+
+  16,19: 		"$normalmapalphaenvmapmask" 1
+
+  17,5: 		"$envmapcontrast" 1
+
+  18,5: 		"$envmapsaturation" 1
+
+  19,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall018e.vmt
+  1,4: // envmaptint_fix
+
+  16,5: 		"$envmap" "env_cubemap"
+
+  17,19: 		"$normalmapalphaenvmapmask" 1
+
+  18,5: 		"$envmapcontrast" 1
+
+  19,5: 		"$envmapsaturation" 1
+
+  20,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall018g.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall021d.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall021e_cheap.vmt
+  1,4: // envmaptint_fix
+
+  15,5: 		"$envmap" "env_cubemap"
+
+  16,19: 		"$normalmapalphaenvmapmask" 1
+
+  17,5: 		"$envmapcontrast" 1
+
+  18,5: 		"$envmapsaturation" 1
+
+  19,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall021e.vmt
+  1,4: // envmaptint_fix
+
+  16,5: 		"$envmap" "env_cubemap"
+
+  17,19: 		"$normalmapalphaenvmapmask" 1
+
+  18,5: 		"$envmapcontrast" 1
+
+  19,5: 		"$envmapsaturation" 1
+
+  20,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall021g.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall021h.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall031a.vmt
+  11,4: 	"$envmap" "env_cubemap"
+
+  12,13: 	"$basealphaenvmapmask" 1
+
+  13,4: 	"$envmapcontrast" 1
+
+  14,4: 	"$envmapsaturation" 1
+
+  15,4: 	"$envmaptint" "[ .5 .5 .5]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall032d.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall032e_cheap.vmt
+  1,4: // envmaptint_fix
+
+  16,5: 		"$envmap" "env_cubemap"
+
+  17,19: 		"$normalmapalphaenvmapmask" 1
+
+  18,5: 		"$envmapcontrast" 1
+
+  19,5: 		"$envmapsaturation" 1
+
+  20,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall032e.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall032g.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall032h.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall033a.vmt
+  3,27: 	// Original shader: CubicEnvMapBlendMaskedBaseTimesLightmap
+
+  4,13: 	"$basealphaenvmapmask" 1
+
+  6,4: 	"$envmap" "env_cubemap"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall041a.vmt
+  11,4: 	"$envmap" "env_cubemap"
+
+  12,13: 	"$basealphaenvmapmask" 1
+
+  13,4: 	"$envmapcontrast" 1
+
+  14,4: 	"$envmapsaturation" 1
+
+  15,4: 	"$envmaptint" "[ .5 .5 .5]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall045a.vmt
+  1,4: // envmaptint_fix
+
+  8,4: 	"$envmaptint" "[ .25 .25 .25 ]"
+
+  9,4: 	"$envmap" "env_cubemap"
+
+  10,18: 	"$normalmapalphaenvmapmask" 1
+
+  11,4: 	"$envmapcontrast" 1
+
+  12,4: 	"$envmapsaturation" .25
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall047a.vmt
+  1,4: // envmaptint_fix
+
+  7,4: 	"$envmap" "env_cubemap"
+
+  8,18: 	"$normalmapalphaenvmapmask" 1
+
+  9,4: 	"$envmapcontrast" 1
+
+  10,4: 	"$envmapsaturation" 1
+
+  11,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall048a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall050a.vmt
+  8,6: 	//"$envmap" "env_cubemap"
+
+  9,20: 	//"$normalmapalphaenvmapmask" 1
+
+  10,6: 	//"$envmapcontrast" 1
+
+  11,6: 	//"$envmapsaturation" 1
+
+  12,6: 	//"$envmaptint" "[ .5 .5 .5]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall055a.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall056a.vmt
+  3,27: 	// Original shader: CubicEnvMapBlendMaskedBaseTimesLightmap
+
+  4,13: 	"$basealphaenvmapmask" 1
+
+  6,4: 	"$envmap" "env_cubemap"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall061g.vmt
+  3,27: 	// Original shader: CubicEnvMapBlendMaskedBaseTimesLightmap
+
+  4,13: 	"$basealphaenvmapmask" 1
+
+  6,4: 	"$envmap" "env_cubemap"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall061h.vmt
+  3,27: 	// Original shader: CubicEnvMapBlendMaskedBaseTimesLightmap
+
+  4,13: 	"$basealphaenvmapmask" 1
+
+  6,4: 	"$envmap" "env_cubemap"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall063a.vmt
+  1,4: // envmaptint_fix
+
+  14,4: 	"$envmaptint" "[ .56 .56 .75 ]"
+
+  15,4: 	"$envmap" "env_cubemap"
+
+  16,18: 	"$normalmapalphaenvmapmask" 1
+
+  17,4: 	"$envmapcontrast" 1
+
+  18,4: 	"$envmapsaturation" 1
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall065e.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall066e_cheap.vmt
+  1,4: // envmaptint_fix
+
+  15,5: 		"$envmap" "env_cubemap"
+
+  16,19: 		"$normalmapalphaenvmapmask" 1
+
+  17,5: 		"$envmapcontrast" 1
+
+  18,5: 		"$envmapsaturation" 1
+
+  19,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall066e.vmt
+  1,4: // envmaptint_fix
+
+  16,5: 		"$envmap" "env_cubemap"
+
+  17,19: 		"$normalmapalphaenvmapmask" 1
+
+  18,5: 		"$envmapcontrast" 1
+
+  19,5: 		"$envmapsaturation" 1
+
+  20,5: 		"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall066g.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall067a.vmt
+  11,4: 	"$envmap" "env_cubemap"
+
+  12,13: 	"$basealphaenvmapmask" 1
+
+  13,4: 	"$envmapcontrast" 1
+
+  14,4: 	"$envmapsaturation" 1
+
+  15,4: 	"$envmaptint" "[ .5 .5 .5]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall070d.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall070e_cheap.vmt
+  1,4: // envmaptint_fix
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall070e.vmt
+  1,4: // envmaptint_fix
+
+  13,4: 	"$envmap" "env_cubemap"
+
+  14,18: 	"$normalmapalphaenvmapmask" 1
+
+  15,4: 	"$envmapcontrast" 1
+
+  16,4: 	"$envmapsaturation" 1
+
+  17,4: 	"$envmaptint" "[ .56 .56 .56 ]"
+
+
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall070g.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall070h.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall071a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall072a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall072b.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall076a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall077a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall082a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall082b.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall090a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall091a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall101a.vmt
+C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2\hl2\materials\metal\metalwall101b.vmt
