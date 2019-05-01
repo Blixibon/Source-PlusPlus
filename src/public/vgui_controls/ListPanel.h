@@ -262,7 +262,7 @@ public:
 	virtual void SetSortColumnEx( int iPrimarySortColumn, int iSecondarySortColumn, bool bSortAscending );
 	void GetSortColumnEx( int &iPrimarySortColumn, int &iSecondarySortColumn, bool &bSortAscending ) const;
 
-private:
+protected:
 	// Cleans up allocations associated with a particular item
 	void CleanupItem( FastSortListPanelItem *data );
 

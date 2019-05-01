@@ -614,6 +614,45 @@ void CWorld::Spawn( void )
 	pMapAdd->deleteThis();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Saves the current object out to disk, by iterating through the objects
+//			data description hierarchy
+// Input  : &save - save buffer which the class data is written to
+// Output : int	- 0 if the save failed, 1 on success
+//-----------------------------------------------------------------------------
+int CWorld::Save(ISave& save)
+{
+	save.WriteInt(&g_iSkillLevel);
+
+	return BaseClass::Save(save);
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Restores the current object from disk, by iterating through the objects
+//			data description hierarchy
+// Input  : &restore - restore buffer which the class data is read from
+// Output : int	- 0 if the restore failed, 1 on success
+//-----------------------------------------------------------------------------
+int CWorld::Restore(IRestore& restore)
+{
+	g_iSkillLevel = restore.ReadInt();
+
+	return BaseClass::Restore(restore);
+}
+
+//-----------------------------------------------------------------------------
+// handler to do stuff after you are restored
+//-----------------------------------------------------------------------------
+void CWorld::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	ConVarRef skill("skill");
+	skill.SetValue(g_iSkillLevel);
+	g_pGameRules->RefreshSkillData(true);
+}
+
 static const char *g_DefaultLightstyles[] =
 {
 	// 0 normal

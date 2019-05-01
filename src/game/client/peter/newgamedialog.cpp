@@ -12,7 +12,17 @@
 
 using namespace vgui;
 
+#define CHAPTERIMAGE_BASE_RECT_Y 86
+#define CHAPTERIMAGE_BASE_RECT_X 152
+
+#define CHAPTERIMAGE_DESIRED_RECT_Y ((250 - 24) / 3)
+
+static const double CHAPTERIMAGE_SCALER = ((double)CHAPTERIMAGE_DESIRED_RECT_Y / (double)CHAPTERIMAGE_BASE_RECT_Y);
 static const int MAX_CHAPTERS = 32;
+
+#define CHAPTERIMAGE_DESIRED_RECT_X (int)(CHAPTERIMAGE_BASE_RECT_X * CHAPTERIMAGE_SCALER)
+
+static bool s_bHasOpenedDialogue = false;
 
 // sort function used in displaying chapter list
 struct chapter_t
@@ -22,26 +32,26 @@ struct chapter_t
 	int image;
 };
 
-static int __cdecl ChapterSortFunc(const void* elem1, const void* elem2)
+static int __cdecl ChapterSortFunc(ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2)
 {
-	chapter_t* c1 = (chapter_t*)elem1;
-	chapter_t* c2 = (chapter_t*)elem2;
+	const char* c1 = item1.kv->GetName();
+	const char* c2 = item2.kv->GetName();
 
 	// compare chapter number first
 	static int chapterlen = strlen("chapter");
-	if (atoi(c1->filename + chapterlen) > atoi(c2->filename + chapterlen))
+	if (atoi(c1 + chapterlen) > atoi(c2 + chapterlen))
 		return 1;
-	else if (atoi(c1->filename + chapterlen) < atoi(c2->filename + chapterlen))
+	else if (atoi(c1 + chapterlen) < atoi(c2 + chapterlen))
 		return -1;
 
 	// compare length second (longer string show up later in the list, eg. chapter9 before chapter9a)
-	if (strlen(c1->filename) > strlen(c2->filename))
+	if (strlen(c1) > strlen(c2))
 		return 1;
-	else if (strlen(c1->filename) < strlen(c2->filename))
+	else if (strlen(c1) < strlen(c2))
 		return -1;
 
 	// compare strings third
-	return strcmp(c1->filename, c2->filename);
+	return strcmp(c1, c2);
 }
 
 struct chapterarray_t
@@ -51,6 +61,34 @@ struct chapterarray_t
 	int imagelist;
 	int chaptercount;
 };
+
+class ChapterListPanel : public ListPanel
+{
+	DECLARE_CLASS_SIMPLE(ChapterListPanel, ListPanel);
+public:
+	ChapterListPanel(Panel* parent, const char* panelName);
+
+	virtual void SetFont(HFont font);
+};
+
+DECLARE_BUILD_FACTORY(ChapterListPanel);
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void ChapterListPanel::SetFont(HFont font)
+{
+	Assert(font);
+	if (!font)
+		return;
+
+	m_pTextImage->SetFont(font);
+}
+
+ChapterListPanel::ChapterListPanel(Panel* parent, const char* panelName) : ListPanel(parent, panelName)
+{
+	m_iRowHeight = CHAPTERIMAGE_DESIRED_RECT_Y;
+}
 
 class CHLMSNewGame : public vgui::Frame
 {
@@ -65,6 +103,16 @@ public:
 
 protected:
 	void	BuildImageList(const char *game);
+
+	int		GetSelectedSkill()
+	{
+		if (m_pEasy->IsSelected())
+			return SKILL_EASY;
+		else if (m_pHard->IsSelected())
+			return SKILL_HARD;
+		else
+			return SKILL_MEDIUM;
+	}
 
 	bool m_bCommentaryMode;
 	vgui::ListPanel		*m_pFolderList;
@@ -135,19 +183,21 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 	// list panel
 	m_pFolderList = new ListPanel(this, "FolderList");
 	m_pFolderList->SetMultiselectEnabled(false);
+	m_pFolderList->SetIgnoreDoubleClick(true);
 
 	m_pFolderList->AddColumnHeader(0, "game", "Game", 175, 20, 10000, ListPanel::COLUMN_RESIZEWITHWINDOW);
 	m_pFolderList->SetColumnTextAlignment(0, Label::a_west);
 
 	// list panel
-	m_pChapterList = new ListPanel(this, "ChapterList");
+	m_pChapterList = new ChapterListPanel(this, "ChapterList");
 	m_pChapterList->SetMultiselectEnabled(false);
 
-	m_pChapterList->AddColumnHeader(0, "image", "Chapter Image", 175, 20, 10000, ListPanel::COLUMN_RESIZEWITHWINDOW|ListPanel::COLUMN_IMAGE);
-	m_pChapterList->SetColumnTextAlignment(0, Label::a_center);
+	m_pChapterList->AddColumnHeader(0, "image", "Chapter Image", CHAPTERIMAGE_DESIRED_RECT_X, CHAPTERIMAGE_DESIRED_RECT_X, CHAPTERIMAGE_DESIRED_RECT_X, ListPanel::COLUMN_FIXEDSIZE|ListPanel::COLUMN_IMAGE);
+	m_pChapterList->SetColumnTextAlignment(0, Label::a_northwest);
 
 	m_pChapterList->AddColumnHeader(1, "chapter", "Chapter", 175, 20, 10000, ListPanel::COLUMN_RESIZEWITHWINDOW);
 	m_pChapterList->SetColumnTextAlignment(1, Label::a_west);
+	m_pChapterList->SetSortFunc(1, ChapterSortFunc);
 
 	m_pCancelButton = new Button(this, "CancelButton", "#FileOpenDialog_Cancel", this);
 	m_pOpenButton = new Button(this, "OpenButton", "#FileOpenDialog_Open", this);
@@ -195,6 +245,7 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 
 	LoadControlSettings("resource/modsupportnewgame.res");
 
+	s_bHasOpenedDialogue = true;
 	g_pActiveNewGamePanel = this;
 }
 
@@ -254,7 +305,13 @@ void CHLMSNewGame::BuildImageList(const char* pchGame)
 		Q_snprintf(chapters[i].printname, sizeof(chapters[i].printname), "#%s_Chapter%s_Title", pchGame, chapterID);
 
 		Q_snprintf(szFullFileName, sizeof(szFullFileName), "chapters/%s/%s", pchGame, fileName);
-		IImage* pImage = scheme()->GetImage(szFullFileName, false);
+		IImage* pImage = scheme()->GetImage(szFullFileName, true);
+		if (!s_bHasOpenedDialogue)
+		{
+			int iWide, iTall;
+			pImage->GetContentSize(iWide, iTall);
+			pImage->SetSize(iWide * CHAPTERIMAGE_SCALER, iTall * CHAPTERIMAGE_SCALER);
+		}
 		chapters[i].image = m_ImageLists.Element(m_ChapterArrays.Head().imagelist)->AddImage(pImage);
 	}
 }
@@ -294,6 +351,9 @@ void CHLMSNewGame::OnSelectionUpdated(vgui::Panel* pSource)
 
 			pKV->deleteThis();
 		}
+
+		m_pChapterList->SetSortColumn(1);
+		m_pChapterList->SortList();
 	}
 }
 
@@ -304,21 +364,41 @@ void CHLMSNewGame::OnCommand(const char *command)
 {
 	if (!stricmp(command, "Play"))
 	{
-		if (m_pFolderList->GetSelectedItemsCount() == 1)
+		if (m_pFolderList->GetSelectedItemsCount() == 1 && m_pChapterList->GetSelectedItemsCount() == 1)
 		{
-			KeyValues *pkv = m_pFolderList->GetItem(m_pFolderList->GetSelectedItem(0));
+			KeyValues *pkvFolder = m_pFolderList->GetItem(m_pFolderList->GetSelectedItem(0));
+			KeyValues* pkvChapter = m_pChapterList->GetItem(m_pChapterList->GetSelectedItem(0));
 
-			CNewGameDialog *pDialog = new CNewGameDialog(NULL, "NewGameDialog", pkv->GetName(), m_bCommentaryMode);
-			Assert(pDialog);
+			char mapcommand[512];
+			mapcommand[0] = 0;
+			Q_snprintf(mapcommand, sizeof(mapcommand), "disconnect\ndeathmatch 0\ncoop 0\nmaxplayers 1\nprogress_enable\nexec \"%s/%s\"\n", pkvFolder->GetName(), pkvChapter->GetName());
+
+			// Set commentary
+			ConVarRef commentary("commentary");
+			commentary.SetValue(m_bCommentaryMode);
+
+			if (m_bCommentaryMode)
+			{
+				ConVarRef sv_cheats("sv_cheats");
+				sv_cheats.SetValue(m_bCommentaryMode);
+			}
+
+			if (m_pEasy->IsVisible())
+			{
+				ConVarRef skill("skill");
+				skill.SetValue(GetSelectedSkill());
+			}
+
+			if (IsPC())
+			{
+				{
+					// start map
+					engine->ClientCmd(mapcommand); //replace with proper fading and stuff? [str]
+	//				BasePanel()->FadeToBlackAndRunEngineCommand( mapcommand );
+				}
+			}
 
 			Close();
-
-			//pDialog->Activate();
-			//g_pActiveNewGamePanel = pDialog;
-			pDialog->DoModal();
-
-			pDialog->SetTitle(pkv->GetString("game"), true);
-			
 		}
 	}
 	else

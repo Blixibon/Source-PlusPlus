@@ -440,7 +440,7 @@
 	}
 	"ChapterList"
 	{
-		"ControlName"		"ListPanel"
+		"ControlName"		"ChapterListPanel"
 		"fieldName"		"ChapterList"
 		"xpos"		"322"
 		"ypos"		"60"

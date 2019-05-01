@@ -49,6 +49,17 @@ public:
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent ) {}
 	virtual void VPhysicsFriction( IPhysicsObject *pObject, float energy, int surfaceProps, int surfacePropsHit ) {}
 
+	// save/restore
+	// only overload these if you have special data to serialize
+	virtual int	Save(ISave& save);
+	virtual int	Restore(IRestore& restore);
+
+	// handler to reset stuff after you are restored
+	// called after all entities have been loaded from all affected levels
+	// called before activate
+	// NOTE: Always chain to base class when implementing this!
+	virtual void OnRestore();
+
 	inline void GetWorldBounds( Vector &vecMins, Vector &vecMaxs )
 	{
 		VectorCopy( m_WorldMins, vecMins );
