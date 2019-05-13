@@ -142,6 +142,9 @@ public:
 
 	virtual CBaseEntity *OnFailedPhysGunPickup ( Vector vPhysgunPos );
 
+	virtual Vector BodyTarget(const Vector &posSrc, bool bNoisy);
+	virtual Vector HeadTarget(const Vector &posSrc);
+
 	//Called when we want to let go of a grenade and let the physcannon pick it up.
 	void ReleaseGrenade( Vector vPhysgunPos );
 
@@ -523,12 +526,36 @@ bool CNPC_Zombine::HandleInteraction( int interactionType, void *data, CBaseComb
 	return BaseClass::HandleInteraction( interactionType, data, sourceEnt );
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+Vector CNPC_Zombine::BodyTarget(const Vector &posSrc, bool bNoisy)
+{
+	if (HasGrenade())
+	{
+		return m_hGrenade.Get()->GetAbsOrigin();
+	}
+
+	return BaseClass::BodyTarget(posSrc, bNoisy);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+Vector CNPC_Zombine::HeadTarget(const Vector &posSrc)
+{
+	if (HasGrenade())
+	{
+		return m_hGrenade.Get()->GetAbsOrigin();
+	}
+
+	return BaseClass::HeadTarget(posSrc);
+}
+
 void CNPC_Zombine::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
 {
 	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 
-	//Only knock grenades off their hands if it's a player doing the damage.
-	if ( info.GetAttacker() && info.GetAttacker()->IsNPC() )
+	//Only knock grenades off their hands if it's a player doing the damage. CHANGE: All hostiles now.
+	if ( info.GetAttacker() && IRelationType( info.GetAttacker() ) != D_HT )
 		return;
 
 	if ( info.GetDamageType() & ( DMG_BULLET | DMG_CLUB ) )

@@ -31,6 +31,8 @@ $Project "Client (Lazuul)"
 		$Folder	"Lazuul"
 		{
 			$File "$SRCDIR\game\shared\peter\lazuul_gamerules.cpp"
+			$File "peter\laz_hud_deathnotice.cpp"
+			$File "hud_basedeathnotice.cpp"
 		}
 
 		$Folder	"HL1 DLL"

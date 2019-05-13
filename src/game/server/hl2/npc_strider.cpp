@@ -4361,7 +4361,7 @@ void CNPC_Strider::StompHit( int followerBoneIndex )
 	damageInfo.SetDamageForce( -50 * 300 * forward );
 	pEnemy->TakeDamage( damageInfo );
 
-	if ( !pNPC || pNPC->IsAlive() )
+	if ( !pNPC || pNPC->IsAlive() || !pNPC->CanBecomeServerRagdoll())
 		return;
 
 	Vector vecBloodDelta = footPosition - vecStabPos;

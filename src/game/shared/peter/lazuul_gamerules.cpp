@@ -9,10 +9,12 @@
 #include "team_objectiveresource.h"
 #include "peter/laz_mapents.h"
 #include "items.h"
+#include "trigger_area_capture.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
 #include "hl2_player_shared.h"
+#include "weapon_coop_base.h"
 
 // Controls the application of the robus radius damage model.
 extern ConVar sv_robust_explosions;
@@ -2910,6 +2912,786 @@ void CLazuul::Think()
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CLazuul::PlayerKilled(CBasePlayer* pVictim, const CTakeDamageInfo& info)
+{
+	// Find the killer & the scorer
+	CBaseEntity* pInflictor = info.GetInflictor();
+	CBaseEntity* pKiller = info.GetAttacker();
+	CBaseMultiplayerPlayer* pScorer = ToBaseMultiplayerPlayer(GetDeathScorer(pKiller, pInflictor, pVictim));
+	
+
+	//find the area the player is in and see if his death causes a block
+	CTriggerAreaCapture* pArea = dynamic_cast<CTriggerAreaCapture*>(gEntList.FindEntityByClassname(NULL, "trigger_capture_area"));
+	while (pArea)
+	{
+		if (pArea->CheckIfDeathCausesBlock(ToBaseMultiplayerPlayer(pVictim), pScorer))
+			break;
+
+		pArea = dynamic_cast<CTriggerAreaCapture*>(gEntList.FindEntityByClassname(pArea, "trigger_capture_area"));
+	}
+
+	DeathNotice(pVictim, info);
+
+	if (!m_DisableDeathPenalty)
+	{
+		pVictim->IncrementDeathCount(1);
+
+		// dvsents2: uncomment when removing all FireTargets
+		// variant_t value;
+		// g_EventQueue.AddEvent( "game_playerdie", "Use", value, 0, pVictim, pVictim );
+		FireTargets("game_playerdie", pVictim, pVictim, USE_TOGGLE, 0);
+
+		// Did the player kill himself?
+		if (pVictim == pScorer)
+		{
+			if (UseSuicidePenalty())
+			{
+				// Players lose a frag for killing themselves
+				pVictim->IncrementFragCount(-1);
+			}
+		}
+		else if (pScorer)
+		{
+			// if a player dies in a deathmatch game and the killer is a client, award the killer some points
+			pScorer->IncrementFragCount(IPointsForKill(pScorer, pVictim));
+
+			// Allow the scorer to immediately paint a decal
+			pScorer->AllowImmediateDecalPainting();
+
+			// dvsents2: uncomment when removing all FireTargets
+			//variant_t value;
+			//g_EventQueue.AddEvent( "game_playerkill", "Use", value, 0, pScorer, pScorer );
+			FireTargets("game_playerkill", pScorer, pScorer, USE_TOGGLE, 0);
+		}
+		else
+		{
+			if (UseSuicidePenalty())
+			{
+				// Players lose a frag for letting the world kill them			
+				pVictim->IncrementFragCount(-1);
+			}
+		}
+
+		RecountTeams();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CLazuul::NPCKilled(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
+{
+	// Find the killer & the scorer
+	CBaseEntity* pInflictor = info.GetInflictor();
+	CBaseEntity* pKiller = info.GetAttacker();
+	CBaseMultiplayerPlayer* pScorer = ToBaseMultiplayerPlayer(GetDeathScorer(pKiller, pInflictor, pVictim));
+
+	DeathNotice(pVictim, info);
+
+	if (pScorer)
+	{
+		// if a player dies in a deathmatch game and the killer is a client, award the killer some points
+		pScorer->IncrementFragCount(IPointsForKill(pScorer, pVictim));
+
+		// Allow the scorer to immediately paint a decal
+		pScorer->AllowImmediateDecalPainting();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: determine the class name of the weapon that got a kill
+//-----------------------------------------------------------------------------
+const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEntity* pVictim, int& iOutputID)
+{
+	CBaseEntity* pInflictor = info.GetInflictor();
+	CBaseEntity* pKiller = info.GetAttacker();
+	CBasePlayer* pScorer = GetDeathScorer(pKiller, pInflictor, pVictim);
+	CWeaponCoopBase* pWeapon = dynamic_cast<CWeaponCoopBase*>(info.GetWeapon());
+	int iWeaponID = HLSS_WEAPON_ID_NONE;
+
+	const char* killer_weapon_name = "world";
+
+	// Handle special kill types first.
+	const char* pszCustomKill = NULL;
+
+	switch (info.GetDamageCustom())
+	{
+	case TF_DMG_CUSTOM_SUICIDE:
+		pszCustomKill = "world";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_HADOUKEN:
+		pszCustomKill = "taunt_pyro";
+		break;
+	case TF_DMG_CUSTOM_BURNING_FLARE:
+		pszCustomKill = "flaregun";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_HIGH_NOON:
+		pszCustomKill = "taunt_heavy";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_FENCING:
+		pszCustomKill = "taunt_spy";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_ARROW_STAB:
+		pszCustomKill = "taunt_sniper";
+		break;
+	case TF_DMG_CUSTOM_TELEFRAG:
+		pszCustomKill = "telefrag";
+		break;
+	case TF_DMG_CUSTOM_BURNING_ARROW:
+		pszCustomKill = "huntsman_burning";
+		break;
+	case TF_DMG_CUSTOM_FLYINGBURN:
+		pszCustomKill = "huntsman_flyingburn";
+		break;
+	case TF_DMG_CUSTOM_PUMPKIN_BOMB:
+		pszCustomKill = "pumpkindeath";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_GRENADE:
+		pszCustomKill = "taunt_soldier";
+		break;
+	case TF_DMG_CUSTOM_BASEBALL:
+		pszCustomKill = "ball";
+		break;
+	case TF_DMG_CUSTOM_CHARGE_IMPACT:
+		pszCustomKill = "demoshield";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_BARBARIAN_SWING:
+		pszCustomKill = "taunt_demoman";
+		break;
+	case TF_DMG_CUSTOM_DEFENSIVE_STICKY:
+		pszCustomKill = "sticky_resistance";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_UBERSLICE:
+		pszCustomKill = "taunt_medic";
+		break;
+	case TF_DMG_CUSTOM_PLAYER_SENTRY:
+		pszCustomKill = "player_sentry";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_ENGINEER_GUITAR_SMASH:
+		pszCustomKill = "taunt_guitar_kill";
+		break;
+	case TF_DMG_CUSTOM_BLEEDING:
+		pszCustomKill = "bleed_kill";
+		break;
+	case TF_DMG_CUSTOM_CARRIED_BUILDING:
+		pszCustomKill = "building_carried_destroyed";
+		break;
+	case TF_DMG_CUSTOM_COMBO_PUNCH:
+		pszCustomKill = "robot_arm_combo_kill";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_ENGINEER_ARM_KILL:
+		pszCustomKill = "robot_arm_blender_kill";
+		break;
+	case TF_DMG_CUSTOM_STICKBOMB_EXPLOSION:
+		pszCustomKill = "ullapool_caber_explosion";
+		break;
+	case TF_DMG_CUSTOM_DECAPITATION_BOSS:
+		pszCustomKill = "battleaxe";
+		break;
+	case TF_DMG_CUSTOM_EYEBALL_ROCKET:
+		pszCustomKill = "eyeball_rocket";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_ARMAGEDDON:
+		pszCustomKill = "armageddon";
+		break;
+	case TF_DMG_CUSTOM_CANNONBALL_PUSH:
+		pszCustomKill = "loose_cannon_impact";
+		break;
+	case TF_DMG_CUSTOM_DRAGONS_FURY_BONUS_BURNING:
+		pszCustomKill = "dragons_fury_bonus";
+		break;
+	case TF_DMG_CUSTOM_CROC:
+		pszCustomKill = "crocodile";
+		break;
+	case TF_DMG_CUSTOM_TAUNTATK_GASBLAST:
+		pszCustomKill = "gas_blast";
+		break;
+	case LFE_DMG_CUSTOM_LEECHES:
+		pszCustomKill = "leeches";
+		break;
+	case LFE_DMG_CUSTOM_JEEP:
+		pszCustomKill = "jeep";
+		break;
+	case LFE_DMG_CUSTOM_AIRBOAT:
+		pszCustomKill = "airboat";
+		break;
+	case LFE_DMG_CUSTOM_JALOPY:
+		pszCustomKill = "jeep_episodic";
+		break;
+	case LFE_DMG_CUSTOM_HUNTER_FLECHETTE:
+		pszCustomKill = "flechette";
+		break;
+	case LFE_DMG_CUSTOM_HUNTER_FLECHETTE_EXPLODE:
+		pszCustomKill = "flechette_explode";
+		break;
+	case LFE_DMG_CUSTOM_HUNTER_CHARGE:
+		pszCustomKill = "hunter_charge";
+		break;
+	case LFE_DMG_CUSTOM_ANTLION_WORKER_EXPLODE:
+		pszCustomKill = "antworker_explosion";
+		break;
+	case LFE_DMG_CUSTOM_PHYSCANNON_MEGA:
+		pszCustomKill = "physcannon_mega";
+		break;
+	case LFE_DMG_CUSTOM_PHYSCANNON_MEGA_TERTIARY:
+		pszCustomKill = "physcannon_mega_tertiary";
+		break;
+	}
+
+	if (pszCustomKill != NULL)
+		return pszCustomKill;
+
+	if (info.GetDamageCustom() == TF_DMG_CUSTOM_BURNING)
+	{
+		// Player stores last weapon that burned him so if he burns to death we know what killed him.
+		if (pWeapon)
+		{
+			killer_weapon_name = pWeapon->GetClassname();
+			iWeaponID = pWeapon->GetWeaponID();
+
+			//if (pInflictor && pInflictor != pScorer)
+			//{
+			//	CTFBaseRocket* pRocket = dynamic_cast<CTFBaseRocket*>(pInflictor);
+
+			//	if (pRocket && pRocket->m_iDeflected)
+			//	{
+			//		// Fire weapon deflects go here.
+			//		switch (pRocket->GetWeaponID())
+			//		{
+			//		case TF_WEAPON_FLAREGUN:
+			//			killer_weapon_name = "deflect_flare";
+			//			break;
+			//		}
+			//	}
+			//}
+		}
+		else
+		{
+			// Default to flamethrower if no burn weapon is specified.
+			killer_weapon_name = "tf_weapon_flamethrower";
+			iWeaponID = HLSS_WEAPON_ID_FLAMER;
+		}
+	}
+	else if (info.GetDamageCustom() == TF_DMG_CUSTOM_DRAGONS_FURY_IGNITE)
+	{
+		// Player stores last weapon that burned him so if he burns to death we know what killed him.
+		if (pWeapon)
+		{
+			killer_weapon_name = pWeapon->GetClassname();
+			iWeaponID = pWeapon->GetWeaponID();
+
+			//if (pInflictor && pInflictor != pScorer)
+			//{
+			//	CTFBaseRocket* pRocket = dynamic_cast<CTFBaseRocket*>(pInflictor);
+
+			//	if (pRocket && pRocket->m_iDeflected)
+			//	{
+			//		// Fire weapon deflects go here.
+			//		switch (pRocket->GetWeaponID())
+			//		{
+			//		case TF_WEAPON_ROCKETLAUNCHER_FIREBALL:
+			//			killer_weapon_name = "dragons_fury";
+			//			break;
+			//		}
+			//	}
+			//}
+		}
+		else
+		{
+			// Default to flamethrower if no burn weapon is specified.
+			killer_weapon_name = "dragons_fury";
+			iWeaponID = HLSS_WEAPON_ID_FLAMER;
+		}
+	}
+	else if (pScorer && pInflictor && (pInflictor == pScorer))
+	{
+		// If the inflictor is the killer, then it must be their current weapon doing the damage
+		CWeaponCoopBase* pActiveWpn = dynamic_cast< CWeaponCoopBase *>(pScorer->GetActiveWeapon());
+		if (pActiveWpn)
+		{
+			killer_weapon_name = pActiveWpn->GetClassname();
+			iWeaponID = pActiveWpn->GetWeaponID();
+		}
+	}
+	else if (pKiller && pKiller->IsNPC() && (pInflictor == pKiller))
+	{
+		// Similar case for NPCs.
+		CAI_BaseNPC* pNPC = assert_cast<CAI_BaseNPC*>(pKiller);
+		CWeaponCoopBase* pActiveWpn = dynamic_cast<CWeaponCoopBase*>(pNPC->GetActiveWeapon());
+		if (pActiveWpn)
+		{
+			killer_weapon_name = pActiveWpn->GetClassname();
+			iWeaponID = pActiveWpn->GetWeaponID();
+		}
+		else
+		{
+			killer_weapon_name = pNPC->GetClassname();
+		}
+	}
+	else if (pInflictor)
+	{
+		killer_weapon_name = pInflictor->GetClassname();
+
+		if (CWeaponCoopBase * pTFWeapon = dynamic_cast<CWeaponCoopBase*>(pInflictor))
+		{
+			iWeaponID = pTFWeapon->GetWeaponID();
+		}
+		// See if this was a deflect kill.
+		//else if (CTFBaseRocket * pRocket = dynamic_cast<CTFBaseRocket*>(pInflictor))
+		//{
+		//	iWeaponID = pRocket->GetWeaponID();
+
+		//	if (pRocket->m_iDeflected)
+		//	{
+		//		switch (pRocket->GetWeaponID())
+		//		{
+		//		case TF_WEAPON_ROCKETLAUNCHER:
+		//			killer_weapon_name = "deflect_rocket";
+		//			break;
+		//		case TF_WEAPON_COMPOUND_BOW:
+		//			if (info.GetDamageType() & DMG_IGNITE)
+		//				killer_weapon_name = "deflect_huntsman_flyingburn";
+		//			else
+		//				killer_weapon_name = "deflect_arrow";
+		//			break;
+		//		}
+		//	}
+		//}
+		//else if (CTFWeaponBaseGrenadeProj * pGrenade = dynamic_cast<CTFWeaponBaseGrenadeProj*>(pInflictor))
+		//{
+		//	iWeaponID = pGrenade->GetWeaponID();
+
+		//	// Most grenades have their own kill icons except for pipes and stickies, those use weapon icons.
+		//	if (iWeaponID == TF_WEAPON_GRENADE_DEMOMAN || iWeaponID == TF_WEAPON_GRENADE_PIPEBOMB)
+		//	{
+		//		CTFWeaponBase* pLauncher = dynamic_cast<CTFWeaponBase*>(pGrenade->m_hLauncher.Get());
+		//		if (pLauncher)
+		//		{
+		//			iWeaponID = pLauncher->GetWeaponID();
+		//		}
+		//	}
+
+		//	if (pGrenade->m_iDeflected)
+		//	{
+		//		switch (pGrenade->GetWeaponID())
+		//		{
+		//		case TF_WEAPON_GRENADE_PIPEBOMB:
+		//			killer_weapon_name = "deflect_sticky";
+		//			break;
+		//		case TF_WEAPON_GRENADE_DEMOMAN:
+		//			killer_weapon_name = "deflect_promode";
+		//			break;
+		//		}
+		//	}
+		//}
+	}
+
+	// Fix for HL2 pistol to prevent conflict with TF2 pistol. Must do this before stripping prefix.
+	if (V_strcmp(killer_weapon_name, "weapon_pistol") == 0)
+	{
+		killer_weapon_name = "weapon_pistol_hl";
+	}
+
+	// strip certain prefixes from inflictor's classname
+	const char* prefix[] = { "tf_weapon_grenade_", "tf_weapon_", "weapon_", "npc_", "func_", "prop_vehicle_", "prop_", "monster_", "grenade_" };
+	for (int i = 0; i < ARRAYSIZE(prefix); i++)
+	{
+		// if prefix matches, advance the string pointer past the prefix
+		int len = V_strlen(prefix[i]);
+		if (V_strncmp(killer_weapon_name, prefix[i], len) == 0)
+		{
+			killer_weapon_name += len;
+			break;
+		}
+	}
+
+	// In case of a sentry kill change the icon according to sentry level.
+	/*if (V_strcmp(killer_weapon_name, "obj_sentrygun") == 0)
+	{
+		CObjectSentrygun* pObject = assert_cast<CObjectSentrygun*>(pInflictor);
+
+		if (pObject)
+		{
+			switch (pObject->GetUpgradeLevel())
+			{
+			case 2:
+				killer_weapon_name = "obj_sentrygun2";
+				break;
+			case 3:
+				killer_weapon_name = "obj_sentrygun3";
+				break;
+			}
+			if (pObject->IsMiniBuilding())
+			{
+				killer_weapon_name = "obj_minisentry";
+			}
+		}
+	}
+	else*/ if (V_strcmp(killer_weapon_name, "tf_projectile_sentryrocket") == 0)
+	{
+		// look out for sentry rocket as weapon and map it to sentry gun, so we get the L3 sentry death icon
+		killer_weapon_name = "obj_sentrygun3";
+	}
+	// make sure arrow kills are mapping to the huntsman
+	else if (0 == V_strcmp(killer_weapon_name, "tf_projectile_arrow"))
+	{
+		if (info.GetDamageType() & DMG_IGNITE)
+			killer_weapon_name = "huntsman_flyingburn";
+		else
+			killer_weapon_name = "huntsman";
+	}
+	// Some special cases for NPCs.
+	else if (V_strcmp(killer_weapon_name, "strider") == 0)
+	{
+		if (info.GetDamageType() & DMG_BULLET)
+		{
+			killer_weapon_name = "strider_minigun";
+		}
+		else if (info.GetDamageType() & DMG_CRUSH)
+		{
+			killer_weapon_name = "strider_skewer";
+		}
+	}
+	else if (V_strcmp(killer_weapon_name, "concussiveblast") == 0)
+	{
+		if (pKiller && FClassnameIs(pKiller, "npc_strider"))
+		{
+			killer_weapon_name = "strider_beam";
+		}
+	}
+	else if (V_strcmp(killer_weapon_name, "vortigaunt") == 0)
+	{
+		if (info.GetDamageType() & DMG_SHOCK)
+		{
+			killer_weapon_name = "vortigaunt_beam";
+		}
+	}
+	else if (V_strcmp(killer_weapon_name, "jeep") == 0)
+	{
+		if (info.GetDamageType() & DMG_SHOCK)
+		{
+			killer_weapon_name = "gauss";
+		}
+	}
+	else if (V_strcmp(killer_weapon_name, "airboat") == 0)
+	{
+		if (info.GetAmmoType() & DMG_BULLET)
+		{
+			killer_weapon_name = "helicopter";
+		}
+	}
+	else if (V_strcmp(killer_weapon_name, "hunter") == 0)
+	{
+		if (info.GetAmmoType() & DMG_SLASH)
+		{
+			killer_weapon_name = "hunter_skewer";
+		}
+		else
+		{
+			killer_weapon_name = "hunter_pound";
+		}
+	}
+
+	else if (iWeaponID)
+	{
+		iOutputID = iWeaponID;
+	}
+
+	return killer_weapon_name;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: returns the player/NPC who assisted in the kill, or NULL if no assister
+//-----------------------------------------------------------------------------
+CBaseEntity* CLazuul::GetAssister(CBaseEntity * pVictim, CBaseEntity * pKiller, CBaseEntity * pInflictor)
+{
+	// See if the killer is a player.
+	CBasePlayer* pTFScorer = (GetDeathScorer(pKiller, pInflictor, pVictim));
+	//CTFPlayer *pTFVictim = ToTFPlayer( pVictim );
+	if (pTFScorer)
+	{
+		// if victim killed himself, don't award an assist to anyone else, even if there was a recent damager
+		if (pVictim == pTFScorer)
+			return NULL;
+#if 0
+		// If a player is healing the scorer, give that player credit for the assist
+		CTFPlayer * pHealer = ToTFPlayer(static_cast<CBaseEntity*>(pTFScorer->m_Shared.GetFirstHealer()));
+		// Must be a medic to receive a healing assist, otherwise engineers get credit for assists from dispensers doing healing.
+		// Also don't give an assist for healing if the inflictor was a sentry gun, otherwise medics healing engineers get assists for the engineer's sentry kills.
+		if (pHealer && pHealer->IsPlayerClass(TF_CLASS_MEDIC) && (dynamic_cast<CObjectSentrygun*>(pInflictor)) == NULL)
+		{
+			return pHealer;
+		}
+#endif
+		// See who has damaged the victim 2nd most recently (most recent is the killer), and if that is within a certain time window.
+		// If so, give that player an assist.  (Only 1 assist granted, to single other most recent damager.)
+		CBaseEntity* pRecentDamager = GetRecentDamager(pVictim, 1, TF_TIME_ASSIST_KILL);
+		if (pRecentDamager && (pRecentDamager != pTFScorer))
+			return pRecentDamager;
+	}
+	else if (pKiller && pKiller->IsNPC())	// See if the killer is NPC.
+	{
+		//CAI_BaseNPC* pNPCKiller = assert_cast<CAI_BaseNPC*>(pKiller);
+
+		// if victim killed himself, don't award an assist to anyone else, even if there was a recent damager
+		if (pVictim == pKiller)
+			return NULL;
+#if 0
+		CTFPlayer * pHealer = ToTFPlayer(static_cast<CBaseEntity*>(pNPCKiller->GetFirstHealer()));
+
+		if (pHealer && pHealer->IsPlayerClass(TF_CLASS_MEDIC))
+			return pHealer;
+#endif
+		// See who has damaged the victim 2nd most recently (most recent is the killer), and if that is within a certain time window.
+		// If so, give that player an assist.  (Only 1 assist granted, to single other most recent damager.)
+		CBaseEntity * pRecentDamager = GetRecentDamager(pVictim, 1, TF_TIME_ASSIST_KILL);
+		if (pRecentDamager && (pRecentDamager != pKiller))
+			return pRecentDamager;
+	}
+
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Returns specifed recent damager, if there is one who has done damage
+//			within the specified time period.  iDamager=0 returns the most recent
+//			damager, iDamager=1 returns the next most recent damager.
+//-----------------------------------------------------------------------------
+CBaseEntity* CLazuul::GetRecentDamager(CBaseEntity * pVictim, int iDamager, float flMaxElapsed)
+{
+	Assert(iDamager < MAX_DAMAGER_HISTORY);
+
+	DamagerHistory_t* pDamagerHistory = NULL;
+
+	if (pVictim->IsPlayer())
+	{
+		CBasePlayer* pTFVictim = ToBasePlayer(pVictim);
+		pDamagerHistory = &pTFVictim->GetDamagerHistory(iDamager);
+	}
+	else if (pVictim->IsNPC())
+	{
+		CAI_BaseNPC* pNPC = assert_cast<CAI_BaseNPC*>(pVictim);
+		pDamagerHistory = &pNPC->GetDamagerHistory(iDamager);
+	}
+
+	if (pDamagerHistory)
+	{
+		if ((pDamagerHistory->hDamager.Get() != NULL) && (gpGlobals->curtime - pDamagerHistory->flTimeDamage <= flMaxElapsed))
+		{
+			return pDamagerHistory->hDamager.Get();
+		}
+
+		return NULL;
+	}
+
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Returns who should be awarded the kill
+//-----------------------------------------------------------------------------
+CBasePlayer* CLazuul::GetDeathScorer(CBaseEntity * pKiller, CBaseEntity * pInflictor, CBaseEntity * pVictim)
+{
+	if ((pKiller == pVictim) && (pKiller == pInflictor))
+	{
+		// If this was an explicit suicide, see if there was a damager within a certain time window.  If so, award this as a kill to the damager.
+		if (pVictim)
+		{
+			CBasePlayer* pRecentDamager = ToBasePlayer(GetRecentDamager(pVictim, 0, TF_TIME_SUICIDE_KILL_CREDIT));
+			if (pRecentDamager)
+				return pRecentDamager;
+		}
+	}
+
+	return BaseClass::GetDeathScorer(pKiller, pInflictor, pVictim);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pVictim - 
+//			*pKiller - 
+//			*pInflictor - 
+//-----------------------------------------------------------------------------
+void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
+{
+	int killer_ID = 0;
+	int killer_index = 0;
+
+	// Find the killer & the scorer
+	CBasePlayer* pTFPlayerVictim = ToBasePlayer(pVictim);
+	CBaseEntity* pInflictor = info.GetInflictor();
+	CBaseEntity* pKiller = info.GetAttacker();
+	CBasePlayer* pScorer = GetDeathScorer(pKiller, pInflictor, pVictim);
+	CBaseEntity* pAssister = GetAssister(pVictim, pScorer, pInflictor);
+	CBasePlayer* pTFAssister = ToBasePlayer(pAssister);
+
+	int iWeaponID = HLSS_WEAPON_ID_NONE;
+
+	// Work out what killed the player, and send a message to all clients about it
+	const char* killer_weapon_name = GetKillingWeaponName(info, pTFPlayerVictim, iWeaponID);
+	const char* killer_weapon_log_name = NULL;
+
+	if (iWeaponID && pScorer)
+	{
+		//CTFWeaponBase* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
+		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
+		if (pWeapon)
+		{
+			CEconItemDefinition* pItemDef = pWeapon->GetItem()->GetStaticData();
+			if (pItemDef)
+			{
+				if (pItemDef->item_iconname[0])
+					killer_weapon_name = pItemDef->item_iconname;
+
+				if (pItemDef->item_logname[0])
+					killer_weapon_log_name = pItemDef->item_logname;
+			}
+		}
+	}
+
+	if (pScorer)	// Is the killer a client?
+	{
+		killer_ID = pScorer->GetUserID();
+		killer_index = pScorer->entindex();
+	}
+	else if (pKiller && pKiller->IsNPC())
+	{
+		killer_index = pKiller->entindex();
+	}
+
+	IGameEvent* event = gameeventmanager->CreateEvent("player_death");
+
+	if (event)
+	{
+		event->SetInt("userid", pVictim->GetUserID());
+		event->SetInt("victim_index", pVictim->entindex());
+		event->SetInt("attacker", killer_ID);
+		event->SetInt("attacker_index", killer_index);
+		event->SetString("attacker_name", pKiller ? pKiller->GetClassname() : NULL);
+		event->SetInt("attacker_team", pKiller ? pKiller->GetTeamNumber() : 0);
+		event->SetInt("assister", pTFAssister ? pTFAssister->GetUserID() : -1);
+		event->SetInt("assister_index", pAssister ? pAssister->entindex() : -1);
+		event->SetString("assister_name", pAssister ? pAssister->GetClassname() : NULL);
+		event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
+		event->SetString("weapon", killer_weapon_name);
+		event->SetString("weapon_logclassname", killer_weapon_log_name);
+		event->SetInt("playerpenetratecount", info.GetPlayerPenetrationCount());
+		event->SetInt("damagebits", info.GetDamageType());
+		event->SetInt("customkill", info.GetDamageCustom());
+		event->SetInt("priority", 7);	// HLTV event priority, not transmitted
+		event->SetInt("death_flags", 0);
+#if 0
+		if (pTFPlayerVictim->GetDeathFlags() & TF_DEATH_DOMINATION)
+		{
+			event->SetInt("dominated", 1);
+		}
+		if (pTFPlayerVictim->GetDeathFlags() & TF_DEATH_ASSISTER_DOMINATION)
+		{
+			event->SetInt("assister_dominated", 1);
+		}
+		if (pTFPlayerVictim->GetDeathFlags() & TF_DEATH_REVENGE)
+		{
+			event->SetInt("revenge", 1);
+		}
+		if (pTFPlayerVictim->GetDeathFlags() & TF_DEATH_ASSISTER_REVENGE)
+		{
+			event->SetInt("assister_revenge", 1);
+		}
+#endif
+
+		gameeventmanager->FireEvent(event);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pVictim - 
+//			*pKiller - 
+//			*pInflictor - 
+//-----------------------------------------------------------------------------
+void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
+{
+	int killer_ID = 0;
+	int killer_index = 0;
+
+	// Find the killer & the scorer
+	CBaseEntity* pInflictor = info.GetInflictor();
+	CBaseEntity* pKiller = info.GetAttacker();
+	CBasePlayer* pScorer = GetDeathScorer(pKiller, pInflictor, pVictim);
+	CBaseEntity* pAssister = GetAssister(pVictim, pScorer, pInflictor);
+	//CBasePlayer* pTFAssister = ToBasePlayer(pAssister);
+
+	int iWeaponID = HLSS_WEAPON_ID_NONE;
+
+	// Work out what killed the player, and send a message to all clients about it
+	const char* killer_weapon_name = GetKillingWeaponName(info, pVictim, iWeaponID);
+	const char* killer_weapon_log_name = NULL;
+
+	if (iWeaponID && pScorer)
+	{
+		//CTFWeaponBase* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
+		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
+		if (pWeapon)
+		{
+			CEconItemDefinition* pItemDef = pWeapon->GetItem()->GetStaticData();
+			if (pItemDef)
+			{
+				if (pItemDef->item_iconname[0])
+					killer_weapon_name = pItemDef->item_iconname;
+
+				if (pItemDef->item_logname[0])
+					killer_weapon_log_name = pItemDef->item_logname;
+			}
+		}
+	}
+
+	bool bShowDeathNotice = pVictim->IsVitalAlly();
+
+	if (pScorer)	// Is the killer a client?
+	{
+		killer_ID = pScorer->GetUserID();
+		killer_index = pScorer->entindex();
+		bShowDeathNotice = true;
+	}
+	else if (pKiller && pKiller->IsNPC())
+	{
+		killer_index = pKiller->entindex();
+		if (!bShowDeathNotice && pKiller->MyNPCPointer()->IsVitalAlly())
+		{
+			bShowDeathNotice = true;
+		}
+	}
+
+	// are we allowed to make deathnotice on THIS npc?
+	if (bShowDeathNotice)
+	{
+		IGameEvent* event = gameeventmanager->CreateEvent("npc_death");
+
+		if (event)
+		{
+			event->SetInt("victim_index", pVictim->entindex());
+			event->SetString("victim_name", pVictim->GetClassname());
+			event->SetInt("victim_team", pVictim->GetTeamNumber());
+			event->SetInt("attacker_index", killer_index);
+			event->SetString("attacker_name", pKiller ? pKiller->GetClassname() : NULL);
+			event->SetInt("attacker_team", pKiller ? pKiller->GetTeamNumber() : 0);
+			event->SetInt("assister_index", pAssister ? pAssister->entindex() : -1);
+			event->SetString("assister_name", pAssister ? pAssister->GetClassname() : NULL);
+			event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
+			event->SetString("weapon", killer_weapon_name);
+			event->SetString("weapon_logclassname", killer_weapon_log_name);
+			event->SetInt("damagebits", info.GetDamageType());
+			event->SetInt("customkill", info.GetDamageCustom());
+			event->SetInt("priority", 7);	// HLTV event priority, not transmitted
+
+			gameeventmanager->FireEvent(event);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: create some proxy entities that we use for transmitting data */
 //-----------------------------------------------------------------------------
 void CLazuul::CreateStandardEntities()
@@ -3099,7 +3881,7 @@ void CTeamObjectiveResource::Spawn(void)
 
 void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 {
-	if (!pPlayer || pPlayer->GetHealth() <= 0)
+	if (!pPlayer || pPlayer->GetHealth() <= 0 || !pPlayer->IsAlive())
 		return;
 
 	//CHLMS_Player* pHLMS = assert_cast<CHLMS_Player*> (pPlayer);

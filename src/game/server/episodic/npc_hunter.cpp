@@ -684,8 +684,11 @@ void CHunterFlechette::FlechetteTouch( CBaseEntity *pOther )
 		{
 			flDamage = MAX( (float)pOther->GetHealth(), flDamage );
 		}
-
+#ifndef HL2_LAZUL
 		CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), flDamage, DMG_DISSOLVE | DMG_NEVERGIB );
+#else
+		CTakeDamageInfo	dmgInfo(this, GetOwnerEntity(), flDamage, DMG_DISSOLVE | DMG_NEVERGIB, LFE_DMG_CUSTOM_HUNTER_FLECHETTE);
+#endif
 		CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 		dmgInfo.SetDamagePosition( tr.endpos );
 		pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
@@ -913,8 +916,11 @@ void CHunterFlechette::Explode()
 	{
 		nDamageType |= DMG_PREVENT_PHYSICS_FORCE;
 	}
-
+#ifndef HL2_LAZUL
 	RadiusDamage( CTakeDamageInfo( this, GetOwnerEntity(), sk_hunter_flechette_explode_dmg.GetFloat(), nDamageType ), GetAbsOrigin(), sk_hunter_flechette_explode_radius.GetFloat(), CLASS_NONE, NULL );
+#else
+	RadiusDamage(CTakeDamageInfo(this, GetOwnerEntity(), sk_hunter_flechette_explode_dmg.GetFloat(), nDamageType, LFE_DMG_CUSTOM_HUNTER_FLECHETTE_EXPLODE), GetAbsOrigin(), sk_hunter_flechette_explode_radius.GetFloat(), CLASS_NONE, NULL);
+#endif
 
     AddEffects( EF_NODRAW );
 
@@ -937,7 +943,11 @@ void Hunter_ApplyChargeDamage( CBaseEntity *pHunter, CBaseEntity *pTarget, float
 	Vector vecForce = attackDir * ImpulseScale( 75, 700 );
 
 	// Deal the damage
-	CTakeDamageInfo	info( pHunter, pHunter, vecForce, offset, flDamage, DMG_CLUB );
+#ifdef HL2_LAZUL
+	CTakeDamageInfo	info( pHunter, pHunter, vecForce, offset, flDamage, DMG_CLUB, LFE_DMG_CUSTOM_HUNTER_CHARGE);
+#else
+	CTakeDamageInfo	info(pHunter, pHunter, vecForce, offset, flDamage, DMG_CLUB);
+#endif
 	pTarget->TakeDamage( info );
 }
 
@@ -985,7 +995,7 @@ public:
 					}
 				}
 			}
-
+#if 0
 			// If we hit an antlion, don't stop, but kill it
 			if ( pEntity->Classify() == CLASS_ANTLION )
 			{
@@ -993,6 +1003,7 @@ public:
 				Hunter_ApplyChargeDamage( pHunter, pEntity, pEntity->GetHealth() );
 				return false;
 			}
+#endif
 		}
 
 		return true;
@@ -3441,6 +3452,10 @@ void CNPC_Hunter::StartTask( const Task_t *pTask )
 				{
 					nShots--;
 				}
+				else if (g_pGameRules->GetSkillLevel() >= SKILL_HARD)
+				{
+					nShots += (g_pGameRules->GetSkillLevel() - SKILL_MEDIUM);
+				}
 
 				// Decide when to fire the first shot.
 				float initialDelay = hunter_first_flechette_delay.GetFloat();
@@ -5089,7 +5104,11 @@ CBaseEntity *CNPC_Hunter::MeleeAttack( float flDist, int iDamage, QAngle &qaView
 	vecMins.z = vecMins.x;
 	vecMaxs.z = vecMaxs.x;
 
-	CBaseEntity *pHurt = CheckTraceHullAttack( flDist, vecMins, vecMaxs, iDamage, DMG_SLASH );
+	int iDamageType = DMG_CLUB;
+	if (GetSequenceActivity(GetSequence()) == ACT_MELEE_ATTACK1)
+		iDamageType = DMG_SLASH;
+
+	CBaseEntity *pHurt = CheckTraceHullAttack( flDist, vecMins, vecMaxs, iDamage, iDamageType);
 
 	if ( pHurt )
 	{
@@ -5155,7 +5174,7 @@ CBaseEntity *CNPC_Hunter::MeleeAttack( float flDist, int iDamage, QAngle &qaView
 							CBreakableProp *pBreak = dynamic_cast<CBreakableProp*>(pHurt);
 							if ( pBreak )
 							{
-								CTakeDamageInfo info( this, this, 20, DMG_SLASH );
+								CTakeDamageInfo info( this, this, 20, iDamageType);
 								pBreak->Break( this, info );
 							}
 						}

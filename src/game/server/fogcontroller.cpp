@@ -12,6 +12,7 @@
 #include "player.h"
 #include "world.h"
 #include "ndebugoverlay.h"
+#include "environment_volume.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -405,7 +406,7 @@ void CFogSystem::InitMasterController( void )
 }
 
 
-
+#if 0
 LINK_ENTITY_TO_CLASS( trigger_fog, CFogTrigger );
 
 BEGIN_DATADESC( CFogTrigger )
@@ -462,14 +463,14 @@ void CFogTrigger::EndTouch( CBaseEntity *other )
 
 	character->OnFogTriggerEndTouch( this );
 }
-
+#endif
 bool GetWorldFogParams( CBaseCombatCharacter *character, fogparams_t &fog )
 {
 
 	fogparams_t *targetFog = NULL;
 	if ( character && character->GetFogTrigger() )
-		{
-		CFogTrigger *trigger = dynamic_cast< CFogTrigger * >(character->GetFogTrigger());
+	{
+		CEnvVolume *trigger = dynamic_cast<CEnvVolume* >(character->GetFogTrigger());
 		if ( trigger )
 		{
 			targetFog = trigger->GetFog();

@@ -69,7 +69,7 @@ public:
 	bool					m_bUseAngles;
 	int						m_iChangedVariables;
 };
-
+#if 0
 class CFogTrigger : public CBaseTrigger
 {
 public:
@@ -88,7 +88,7 @@ public:
 protected:
 	fogparams_t	m_fog;
 };
-
+#endif
 //=============================================================================
 //
 // Fog Controller System.

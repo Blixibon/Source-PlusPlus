@@ -72,6 +72,15 @@ static ConVar airboat_fatal_stress( "airboat_fatal_stress", "5000", FCVAR_NONE, 
 
 extern ConVar autoaim_max_dist;
 
+class CAirboatFourWheelServerVehicle : public CFourWheelServerVehicle
+{
+	typedef CFourWheelServerVehicle BaseClass;
+	// IServerVehicle
+public:
+	
+	virtual bool			IsPassengerVisible(int nRole = VEHICLE_ROLE_DRIVER) { return true; }
+};
+
 class CPropAirboat : public CPropVehicleDriveable
 {
 	DECLARE_CLASS( CPropAirboat, CPropVehicleDriveable );
@@ -114,6 +123,8 @@ public:
 
 	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
+
+	virtual void	CreateServerVehicle(void);
 
 	void VPhysicsUpdate( IPhysicsObject *pPhysics );
 
@@ -463,6 +474,15 @@ void CPropAirboat::UpdateOnRemove()
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPropAirboat::CreateServerVehicle(void)
+{
+	// Create our server vehicle
+	m_pServerVehicle = new CAirboatFourWheelServerVehicle();
+	m_pServerVehicle->SetVehicle(this);
+}
 
 //-----------------------------------------------------------------------------
 // Attachment indices

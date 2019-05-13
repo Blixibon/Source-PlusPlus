@@ -55,11 +55,19 @@
 #include "portal_player.h"
 #endif // PORTAL
 
+#ifdef HL2_LAZUL
+#include "lazuul_gamerules.h"
+#include "tf_shareddefs.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 extern ConVar weapon_showproficiency;
 extern ConVar autoaim_max_dist;
+#ifdef HL2_LAZUL
+extern void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
+#endif
 
 // Do not touch with without seeing me, please! (sjb)
 // For consistency's sake, enemy gunfire is traced against a scaled down
@@ -478,6 +486,8 @@ void CHL2_Player::EquipSuit( bool bPlayEffects )
 	{
 		StartAdmireGlovesAnimation();
 	}
+
+	UTIL_UpdatePlayerModel(this);
 }
 
 void CHL2_Player::RemoveSuit( void )
@@ -485,6 +495,8 @@ void CHL2_Player::RemoveSuit( void )
 	BaseClass::RemoveSuit();
 
 	m_HL2Local.m_bDisplayReticle = false;
+
+	UTIL_UpdatePlayerModel(this);
 }
 
 void CHL2_Player::HandleSpeedChanges( void )
@@ -1152,7 +1164,6 @@ void CHL2_Player::InitialSpawn(void)
 	m_AttributeManager.InitializeAttributes(this);
 }
 
-extern void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
@@ -1180,7 +1191,7 @@ void CHL2_Player::Spawn(void)
 
 	SuitPower_SetCharge( 100 );
 
-	//m_Local.m_iHideHUD |= HIDEHUD_CHAT;
+	m_Local.m_iHideHUD = 0;
 
 	const char *pchSquadName = (gpGlobals->maxClients > 1) ? UTIL_VarArgs("%s_%i", PLAYER_SQUADNAME, GetClientIndex()) : PLAYER_SQUADNAME;
 
@@ -2519,7 +2530,33 @@ void CHL2_Player::Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo
 //-----------------------------------------------------------------------------
 void CHL2_Player::Event_Killed( const CTakeDamageInfo &info )
 {
-	BaseClass::Event_Killed( info );
+	CTakeDamageInfo info_modified = info;
+
+#ifdef HL2_LAZUL
+	CBaseEntity* pAttacker = info.GetAttacker();
+	CBaseEntity* pInflictor = info.GetInflictor();
+
+	if (info_modified.GetDamageCustom() == TF_DMG_CUSTOM_SUICIDE)
+	{
+		// if this was suicide, recalculate attacker to see if we want to award the kill to a recent damager
+		info_modified.SetAttacker(LazuulRules()->GetDeathScorer(info.GetAttacker(), pInflictor, this));
+	}
+	else if ((!pAttacker || pAttacker == this || pAttacker->IsBSPModel()))
+	{
+		// Recalculate attacker if player killed himself or this was environmental death.
+		CBaseEntity* pDamager = LazuulRules()->GetRecentDamager(this, 0, TF_TIME_ENV_DEATH_KILL_CREDIT);
+		if (pDamager)
+		{
+			info_modified.SetAttacker(pDamager);
+			info_modified.SetInflictor(NULL);
+			info_modified.SetWeapon(NULL);
+			info_modified.SetDamageType(DMG_GENERIC);
+			info_modified.SetDamageCustom(TF_DMG_CUSTOM_SUICIDE);
+		}
+	}
+#endif
+
+	BaseClass::Event_Killed(info_modified);
 
 	FirePlayerProxyOutput( "PlayerDied", variant_t(), this, this );
 	NotifyScriptsOfDeath();
@@ -2803,6 +2840,24 @@ bool CHL2_Player::BumpWeapon( CBaseCombatWeapon *pWeapon )
 
 #endif
 
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHL2_Player::CommitSuicide(bool bExplode /* = false */, bool bForce /*= false*/)
+{
+#ifdef HL2_LAZUL
+	// Don't suicide during the "bonus time" if we're not on the winning team
+	if (!bForce && LazuulRules()->State_Get() == GR_STATE_TEAM_WIN &&
+		GetTeamNumber() != LazuulRules()->GetWinningTeam())
+	{
+		return;
+	}
+
+	m_iSuicideCustomKillFlags = TF_DMG_CUSTOM_SUICIDE;
+#endif
+	BaseClass::CommitSuicide(bExplode, bForce);
 }
 
 //-----------------------------------------------------------------------------

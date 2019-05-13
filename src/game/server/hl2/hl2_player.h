@@ -112,6 +112,8 @@ public:
 
 	virtual void		CreateViewModel(int viewmodelindex = 0);
 
+	virtual void		CommitSuicide(bool bExplode = false, bool bForce = false);
+
 	void				DrawDebugGeometryOverlays(void);
 
 	virtual Vector		EyeDirection2D( void );

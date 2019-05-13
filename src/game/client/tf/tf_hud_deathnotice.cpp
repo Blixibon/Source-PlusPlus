@@ -16,7 +16,7 @@
 #include <KeyValues.h>
 #include "c_baseplayer.h"
 #include "c_team.h"
-
+#include "c_ai_basenpc.h"
 #include "hud_basedeathnotice.h"
 
 #include "tf_shareddefs.h"
@@ -130,25 +130,45 @@ void CTFHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 {
 	const char *pszEventName = event->GetName();
 
-	if ( FStrEq( pszEventName, "player_death" ) || FStrEq( pszEventName, "object_destroyed" ) )
+	bool bPlayerDeath = EventIsPlayerDeath( pszEventName );
+	bool bIsObjectDestroyed = FStrEq( pszEventName, "object_destroyed" );
+	bool bNPCDeath = FStrEq( pszEventName, "npc_death" );
+
+	if ( bPlayerDeath || bIsObjectDestroyed || bNPCDeath )
 	{
-		bool bIsObjectDestroyed = FStrEq( pszEventName, "object_destroyed" );
 		int iCustomDamage = event->GetInt( "customkill" );
 		int iLocalPlayerIndex = GetLocalPlayerIndex();
 
-		m_DeathNotices[iDeathNoticeMsg].Killer.iPlayerID = engine->GetPlayerForUserID(event->GetInt("attacker"));
-		m_DeathNotices[iDeathNoticeMsg].Victim.iPlayerID = engine->GetPlayerForUserID(event->GetInt("userid"));
-
 		// if there was an assister, put both the killer's and assister's names in the death message
-		int iAssisterID = engine->GetPlayerForUserID( event->GetInt( "assister" ) );
-		m_DeathNotices[iDeathNoticeMsg].Assister.iPlayerID = iAssisterID;
-		const char *assister_name = ( iAssisterID > 0 ? g_PR->GetPlayerName( iAssisterID ) : NULL );
+		int iAssisterID = bPlayerDeath ? event->GetInt( "assister" ) : event->GetInt( "assister_index" );
+		const char *assister_classname = event->GetString( "assister_name" );
+		int assister_team = event->GetInt( "assister_team" );
+
+		const char *assister_name = NULL;
+		if ( iAssisterID > 0 )
+		{
+			if ( iAssisterID <= gpGlobals->maxClients )
+			{
+				assister_name = g_PR->GetPlayerName( iAssisterID );
+			}
+			else
+			{
+				char nameBuf[MAX_PLAYER_NAME_LENGTH * 2];
+				GetLocalizedNPCName( assister_classname, nameBuf, sizeof( nameBuf ) );
+				assister_name = nameBuf;
+			}
+		}
+
 		if ( assister_name )
 		{
 			// Base TF2 assumes that the assister and killer are the same team, thus it 
 			// writes both of the same string, which in turn gives them both the killers team color
 			// whether or not the assister is on the killers team or not. -danielmm8888
-			m_DeathNotices[iDeathNoticeMsg].Assister.iTeam = (iAssisterID > 0) ? g_PR->GetTeam(iAssisterID) : 0;
+			if ( iAssisterID > 0 )
+			{
+				m_DeathNotices[iDeathNoticeMsg].Assister.iTeam = iAssisterID <= gpGlobals->maxClients ? g_PR->GetTeam( iAssisterID ) : assister_team;
+			}
+
 			char szKillerBuf[MAX_PLAYER_NAME_LENGTH];
 			Q_snprintf(szKillerBuf, ARRAYSIZE(szKillerBuf), "%s", assister_name);
 			Q_strncpy(m_DeathNotices[iDeathNoticeMsg].Assister.szName, szKillerBuf, ARRAYSIZE(m_DeathNotices[iDeathNoticeMsg].Assister.szName));
@@ -172,8 +192,8 @@ void CTFHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		{
 			// if this death involved a player dominating another player or getting revenge on another player, add an additional message
 			// mentioning that
-			int iKillerID = engine->GetPlayerForUserID( event->GetInt( "attacker" ) );
-			int iVictimID = engine->GetPlayerForUserID( event->GetInt( "userid" ) );
+			int iKillerID = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) : event->GetInt( "attacker_index" );
+			int iVictimID = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) : event->GetInt( "victim_index" );
 			int nDeathFlags = event->GetInt( "death_flags" );
 		
 			if ( nDeathFlags & TF_DEATH_DOMINATION )
@@ -243,12 +263,43 @@ void CTFHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 			Q_strncpy(m_DeathNotices[iDeathNoticeMsg].szIcon, "d_backstab", ARRAYSIZE(m_DeathNotices[iDeathNoticeMsg].szIcon));
 			break;
 		case TF_DMG_CUSTOM_HEADSHOT:
+			if ( FStrEq( event->GetString( "weapon" ), "huntsman" ) )
+			{
+				Q_strncpy( m_DeathNotices[iDeathNoticeMsg].szIcon, "d_huntsman_headshot", ARRAYSIZE( m_DeathNotices[iDeathNoticeMsg].szIcon ) );
+			}
+			else if ( FStrEq( event->GetString( "weapon" ), "huntsman_flyingburn" ) )
+			{
+				Q_strncpy( m_DeathNotices[iDeathNoticeMsg].szIcon, "d_huntsman_flyingburn_headshot", ARRAYSIZE( m_DeathNotices[iDeathNoticeMsg].szIcon ) );
+			}
+			else if ( FStrEq( event->GetString( "weapon" ), "deflect_arrow" ) )
+			{
+				Q_strncpy( m_DeathNotices[iDeathNoticeMsg].szIcon, "d_deflect_huntsman_headshot", ARRAYSIZE( m_DeathNotices[iDeathNoticeMsg].szIcon ) );
+			}
+			else if ( FStrEq( event->GetString( "weapon" ), "deflect_huntsman_flyingburn" ) )
+			{
+				Q_strncpy( m_DeathNotices[iDeathNoticeMsg].szIcon, "d_deflect_huntsman_flyingburn_headshot", ARRAYSIZE( m_DeathNotices[iDeathNoticeMsg].szIcon ) );
+			}
+			else 
+			{
 			Q_strncpy(m_DeathNotices[iDeathNoticeMsg].szIcon, "d_headshot", ARRAYSIZE(m_DeathNotices[iDeathNoticeMsg].szIcon));
+			}
 			break;
+		case TF_DMG_CUSTOM_BURNING:
+		{
+			// Show a special fire death icon if this was a suicide or environmental death.
+			int victim = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) : event->GetInt( "victim_index" );
+			int killer = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) : event->GetInt( "attacker_index" );
+			if ( !killer || killer == victim )
+			{
+				Q_strncpy( m_DeathNotices[iDeathNoticeMsg].szIcon, "d_firedeath", ARRAYSIZE( m_DeathNotices[iDeathNoticeMsg].szIcon ) );
+				m_DeathNotices[iDeathNoticeMsg].wzInfoText[0] = 0;
+			}
+			break;
+		}
 		case TF_DMG_CUSTOM_SUICIDE:
 			{
 				// display a different message if this was suicide, or assisted suicide (suicide w/recent damage, kill awarded to damager)
-				bool bAssistedSuicide = event->GetInt( "userid" ) != event->GetInt( "attacker" );
+			bool bAssistedSuicide = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) != engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) : event->GetInt( "victim_index" ) != event->GetInt( "attacker_index" );
 				pMsg = g_pVGuiLocalize->Find( bAssistedSuicide ? "#DeathMsg_AssistedSuicide" : "#DeathMsg_Suicide" );
 				if ( pMsg )
 				{
@@ -449,7 +500,7 @@ void CTFHudDeathNotice::Paint()
 
 		x += xMargin;
 
-		C_TF_PlayerResource *tf_PR = dynamic_cast<C_TF_PlayerResource *>(g_PR);
+		//C_TF_PlayerResource *tf_PR = GetTFPlayerResource();
 
 		// prekiller icon
 		if ( iconPreKillerName )
@@ -462,20 +513,34 @@ void CTFHudDeathNotice::Paint()
 		if ( killer[0] )
 		{
 			// Draw killer's name
-			Color clr = TFGameRules()->IsDeathmatch() ? tf_PR->GetPlayerColor(msg.Killer.iPlayerID) : GetTeamColor(msg.Killer.iTeam, msg.bLocalPlayerInvolved);
-			DrawText( x, yText, m_hTextFont, clr, killer );
+			//Color clr = TFGameRules()->IsDeathmatch() && tf_PR ? tf_PR->GetPlayerColor( msg.Killer.iPlayerID ) : GetTeamColor( msg.Killer.iTeam, msg.bLocalPlayerInvolved );
+			//DrawText( x, yText, m_hTextFont, clr, killer );
+			DrawText( x, yText, m_hTextFont, GetTeamColor( msg.Killer.iTeam, msg.bLocalPlayerInvolved ), killer );
 			x += iKillerTextWide;
 		}
 
 		if ( assister[0] )
 		{
 			// Draw a + between the names
-			DrawText( x, yText, m_hTextFont, GetInfoTextColor( i, msg.bLocalPlayerInvolved ), L"+" );
+			// If both killer and assister are on the same team paint + with their team color
+			Color plusColor;
+			if ( msg.Killer.iTeam == msg.Assister.iTeam )
+			{
+				plusColor = GetTeamColor( msg.Killer.iTeam, msg.bLocalPlayerInvolved );
+			}
+			/*
+			else
+			{
+				plusColor = GetInfoTextColor( i );
+			}
+			*/
+			DrawText( x, yText, m_hTextFont, plusColor, L"+" );
 			x += iPlusIconWide;
 
 			// Draw assister's name
-			Color clr = TFGameRules()->IsDeathmatch() ? tf_PR->GetPlayerColor(msg.Assister.iPlayerID) : GetTeamColor(msg.Assister.iTeam, msg.bLocalPlayerInvolved);
-			DrawText(x, yText, m_hTextFont, clr, assister);
+			//Color clr = TFGameRules()->IsDeathmatch() && tf_PR ? tf_PR->GetPlayerColor( msg.Assister.iPlayerID ) : GetTeamColor( msg.Assister.iTeam, msg.bLocalPlayerInvolved );
+			//DrawText( x, yText, m_hTextFont, clr, assister );
+			DrawText( x, yText, m_hTextFont, GetTeamColor( msg.Assister.iTeam, msg.bLocalPlayerInvolved ), assister );
 			x += iAssisterTextWide;
 		}
 
@@ -522,8 +587,9 @@ void CTFHudDeathNotice::Paint()
 		}
 
 		// Draw victims name
-		Color clr = TFGameRules()->IsDeathmatch() ? tf_PR->GetPlayerColor(msg.Victim.iPlayerID) : GetTeamColor(msg.Victim.iTeam, msg.bLocalPlayerInvolved);
-		DrawText(x + iVictimTextOffset, yText, m_hTextFont, clr, victim);
+		//Color clr = TFGameRules()->IsDeathmatch() ? tf_PR->GetPlayerColor( msg.Victim.iPlayerID ) : GetTeamColor( msg.Victim.iTeam, msg.bLocalPlayerInvolved );
+		//DrawText( x + iVictimTextOffset, yText, m_hTextFont, clr, victim );
+		DrawText( x + iVictimTextOffset, yText, m_hTextFont, GetTeamColor( msg.Victim.iTeam, msg.bLocalPlayerInvolved ), victim );
 		x += iVictimTextWide;
 
 		// postkiller icon

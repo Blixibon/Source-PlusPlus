@@ -610,6 +610,8 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		SetTouch( NULL );
 	}
 
+	g_pGameRules->NPCKilled(this, info);
+
 	BaseClass::Event_Killed( info );
 
 	if ( m_bFadeCorpse )

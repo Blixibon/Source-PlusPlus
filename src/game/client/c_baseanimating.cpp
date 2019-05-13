@@ -3817,13 +3817,13 @@ struct HL1Foot_t
 static HL1Foot_t s_pHL1FootSounds[26] =
 {
 	{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_ANTLION
-{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_BLOODYFLESH	
+{ "HL1.Flesh.StepLeft", "HL1.Flesh.StepRight" },	// CHAR_TEX_BLOODYFLESH	
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_CONCRETE		
 { "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_DIRT			
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_EGGSHELL		
-{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_FLESH			
+{ "HL1.Flesh.StepLeft", "HL1.Flesh.StepRight" },	// CHAR_TEX_FLESH			
 { "HL1.Grate.StepLeft", "HL1.Grate.StepRight" },	// CHAR_TEX_GRATE			
-{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_ALIENFLESH		
+{ "HL1.Flesh.StepLeft", "HL1.Flesh.StepRight" },	// CHAR_TEX_ALIENFLESH		
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_CLIP			
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
@@ -3838,7 +3838,7 @@ static HL1Foot_t s_pHL1FootSounds[26] =
 { "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },			// CHAR_TEX_TILE			
 { "HL1.Wade.StepLeft", "HL1.Wade.StepRight" },	// CHAR_TEX_WADE		
 { "HL1.Vent.StepLeft", "HL1.Vent.StepRight" },	// CHAR_TEX_VENT			
-{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_WOOD			
+{ "HL1.Wood.StepLeft", "HL1.Wood.StepRight" },	// CHAR_TEX_WOOD			
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
 { "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },	// CHAR_TEX_GLASS			
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_WARPSHIELD		

@@ -406,6 +406,8 @@ $Project
 		$File	"fogcontroller.cpp"
 		$File	"fogvolume.cpp"
 		$File	"fogvolume.h"
+		$File	"environment_volume.cpp"
+		$File	"environment_volume.h"
 		$File	"fourwheelvehiclephysics.cpp"
 		$File	"fourwheelvehiclephysics.h"
 		$File	"func_areaportal.cpp"

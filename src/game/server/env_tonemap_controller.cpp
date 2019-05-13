@@ -429,7 +429,7 @@ void CEnvTonemapController::InputUseDefaultBloomScale( inputdata_t &inputdata )
 
 	m_bUseCustomBloomScale = false;
 }
-
+#if 0
 //--------------------------------------------------------------------------------------------------------
 LINK_ENTITY_TO_CLASS( trigger_tonemap, CTonemapTrigger );
 
@@ -480,7 +480,7 @@ void CTonemapTrigger::EndTouch( CBaseEntity *other )
 
 	player->OnTonemapTriggerEndTouch( this );
 }
-
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Clear out the tonemap controller.

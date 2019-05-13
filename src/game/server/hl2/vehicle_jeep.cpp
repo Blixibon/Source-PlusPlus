@@ -97,6 +97,7 @@ public:
 	bool		NPC_HasPrimaryWeapon( void ) { return true; }
 	void		NPC_AimPrimaryWeapon( Vector vecTarget );
 	int			GetExitAnimToUse( Vector &vecEyeExitEndpoint, bool &bAllPointsBlocked );
+	virtual bool			IsPassengerVisible(int nRole = VEHICLE_ROLE_DRIVER) { return true; }
 };
 
 BEGIN_DATADESC( CPropJeep )
@@ -192,6 +193,9 @@ void CPropJeep::Precache( void )
 	PrecacheScriptSound( "PropJeep.FireChargedCannon" );
 	PrecacheScriptSound( "PropJeep.AmmoOpen" );
 
+	PrecacheScriptSound("Airboat_headlight_on");
+	PrecacheScriptSound("Airboat_headlight_off");
+
 	PrecacheScriptSound( "Jeep.GaussCharge" );
 
 	PrecacheModel( GAUSS_BEAM_SPRITE );
@@ -217,6 +221,12 @@ void CPropJeep::Spawn( void )
 
 	CAmmoDef *pAmmoDef = GetAmmoDef();
 	m_nAmmoType = pAmmoDef->Index("GaussEnergy");
+
+	if (LookupAttachment("muzzle") == 0)
+	{
+		m_bHasGun = false;
+		m_bUnableToFire = true;
+	}
 
 	if ( m_bHasGun )
 	{

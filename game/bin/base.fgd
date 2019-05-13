@@ -6845,3 +6845,10 @@
 	PostProcessName(target_destination) : "Postprocess Name" : : "The name of the postprocess entity associated with this volume."
 	ColorCorrectionName(target_destination) : "ColorCorrection Name" : : "The name of the color_correction entity associated with this volume."
 ]
+
+@SolidClass base( Targetname, Trigger ) = trigger_fxvolume : "An entity to control the fog, colorcorrection, and tonemapping in the map."
+[
+	FogName(target_destination) : "Fog Name" : : "The name of the fog entity associated with this volume."
+	TonemapName(target_destination) : "Tonemap Name" : : "The name of the tonemap entity associated with this volume."
+	ColorCorrectionName(target_destination) : "ColorCorrection Name" : : "The name of the color_correction entity associated with this volume."
+]

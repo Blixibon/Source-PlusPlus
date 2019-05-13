@@ -118,23 +118,26 @@ void CMessageEntity::Think( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	// check for player distance
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-
-	if ( !pPlayer || ( pPlayer->GetFlags() & FL_NOTARGET ) )
-		return;
-
-	Vector worldTargetPosition = pPlayer->EyePosition();
-
-	// bail if player is too far away
-	if ( (worldTargetPosition - GetAbsOrigin()).Length() > m_radius )
+	if (!engine->IsDedicatedServer())
 	{
-		m_drawText = false;
-		return;
-	}
+		// check for player distance
+		CBasePlayer* pPlayer = UTIL_GetListenServerHost();
 
-	// turn on text
-	m_drawText = true;
+		if (!pPlayer || (pPlayer->GetFlags() & FL_NOTARGET))
+			return;
+
+		Vector worldTargetPosition = pPlayer->EyePosition();
+
+		// bail if player is too far away
+		if ((worldTargetPosition - GetAbsOrigin()).Length() > m_radius)
+		{
+			m_drawText = false;
+			return;
+		}
+	
+		// turn on text
+		m_drawText = true;
+	}
 }
 	
 //-------------------------------------------

@@ -325,7 +325,7 @@ void CAI_FearBehavior::GatherConditions()
 	}
 
 	// Here's the visibility check. We can't skip this because it's time-sensitive
-	if( GetOuter()->FVisible(pPlayer) )
+	if( pPlayer && GetOuter()->FVisible(pPlayer) )
 	{
 		m_flTimePlayerLastVisible = gpGlobals->curtime;
 	}
@@ -457,7 +457,12 @@ CAI_Hint *CAI_FearBehavior::FindFearWithdrawalDest()
 
 	hintCriteria.AddHintType( HINT_PLAYER_ALLY_FEAR_DEST );
 	hintCriteria.SetFlag( bits_HINT_NODE_VISIBLE_TO_PLAYER | bits_HINT_NOT_CLOSE_TO_ENEMY /*| bits_HINT_NODE_IN_VIEWCONE | bits_HINT_NPC_IN_NODE_FOV*/ );
-	hintCriteria.AddIncludePosition( AI_GetSinglePlayer()->GetAbsOrigin(), ( ai_fear_player_dist.GetFloat() ) );
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
+			hintCriteria.AddIncludePosition(pPlayer->GetAbsOrigin(), (ai_fear_player_dist.GetFloat()));
+	}
 
 	pHint = CAI_HintManager::FindHint( pOuter, hintCriteria );
 

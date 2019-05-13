@@ -708,9 +708,9 @@ void CPropCombineBall::WhizSoundThink()
 	pPhysicsObject->GetPosition( &vecPosition, NULL );
 	pPhysicsObject->GetVelocity( &vecVelocity, NULL );
 
-	if ( gpGlobals->maxClients == 1 )
+	for ( int i = 1; i <= gpGlobals->maxClients; i++)
 	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
 		if ( pPlayer )
 		{
 			Vector vecDelta;
@@ -723,7 +723,7 @@ void CPropCombineBall::WhizSoundThink()
 				float flDist = CalcDistanceToLineSegment( pPlayer->GetAbsOrigin(), vecPosition, vecEndPoint );
 				if ( flDist < 200.0f )
 				{
-					CPASAttenuationFilter filter( vecPosition, ATTN_NORM );
+					CSingleUserRecipientFilter filter(pPlayer);
 
 					EmitSound_t ep;
 					ep.m_nChannel = CHAN_STATIC;
@@ -739,9 +739,6 @@ void CPropCombineBall::WhizSoundThink()
 					ep.m_SoundLevel = SNDLVL_NORM;
 
 					EmitSound( filter, entindex(), ep );
-
-					SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 0.5f, s_pWhizThinkContext );
-					return;
 				}
 			}
 		}
@@ -1738,6 +1735,8 @@ BEGIN_DATADESC( CFuncCombineBallSpawner )
 	DEFINE_UTLVECTOR( m_BallRespawnTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flDisableTime,	FIELD_TIME ),
 
+	DEFINE_KEYFIELD(m_CombineBallTargetName, FIELD_STRING, "combineball_targetname"),
+
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
@@ -1771,6 +1770,12 @@ CFuncCombineBallSpawner::CFuncCombineBallSpawner()
 void CFuncCombineBallSpawner::SpawnBall()
 {
 	CPropCombineBall *pBall = static_cast<CPropCombineBall*>( CreateEntityByName( "prop_combine_ball" ) );
+
+	//TERO: This next part added by me
+	if (STRING(m_CombineBallTargetName) != NULL)
+	{
+		pBall->KeyValue("targetname", STRING(m_CombineBallTargetName));
+	}
 
 	float flRadius = m_flBallRadius;
 	pBall->SetRadius( flRadius );

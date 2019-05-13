@@ -718,7 +718,11 @@ void CTriggerWateryDeath::Touch( CBaseEntity *pOther )
 
 		// Use DMG_GENERIC & make the target inflict the damage on himself.
 		// This ensures that if the target is the player, the damage isn't modified by skill
-		CTakeDamageInfo info = CTakeDamageInfo( pOther, pOther, m_flPainValue, DMG_GENERIC );
+#ifndef HL2_LAZUL
+		CTakeDamageInfo info = CTakeDamageInfo(pOther, pOther, m_flPainValue, DMG_GENERIC);
+#else
+		CTakeDamageInfo info = CTakeDamageInfo(pOther, pOther, m_flPainValue, DMG_GENERIC, LFE_DMG_CUSTOM_LEECHES);
+#endif
 
 		GuessDamageForce( &info, (pOther->GetAbsOrigin() - GetAbsOrigin()), pOther->GetAbsOrigin() );
 		pOther->TakeDamage( info );

@@ -292,6 +292,36 @@
 	}
 }
 
+"HL1.Wood.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_wood1.wav"
+		"wave"		"player/pl_wood2.wav"
+	}
+}
+
+"HL1.Wood.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_wood3.wav"
+		"wave"		"player/pl_wood4.wav"
+	}
+}
+
 "HL1.Wade.StepLeft"
 {
 	"channel"	"CHAN_BODY"
@@ -351,3 +381,34 @@
 		"wave"		"player/pl_slosh4.wav"
 	}
 }
+
+"HL1.Flesh.StepLeft"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step1.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_organic1.wav"
+		"wave"		"player/pl_organic2.wav"
+	}
+}
+
+"HL1.Flesh.StepRight"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"0.6, 0.7"
+	"soundlevel"	"SNDLVL_75dB"
+	"pitch"		"95, 105"
+
+	//"wave"		"common/npc_step3.wav"
+	"rndwave"
+	{
+		"wave"		"player/pl_organic3.wav"
+		"wave"		"player/pl_organic4.wav"
+	}
+}
+

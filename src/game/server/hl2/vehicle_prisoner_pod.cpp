@@ -62,6 +62,8 @@ public:
 	virtual bool	IsPassengerEntering( void ) { return false; }	// NOTE: This mimics the scenario HL2 would have seen
 	virtual bool	IsPassengerExiting( void ) { return false; }
 
+	virtual bool			IsPassengerVisible(int nRole = VEHICLE_ROLE_DRIVER) { return true; }
+
 protected:
 
 	CPropVehiclePrisonerPod *GetPod( void );

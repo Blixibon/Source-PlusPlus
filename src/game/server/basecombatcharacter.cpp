@@ -2395,6 +2395,8 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 	// track damage history
 	if ( info.GetAttacker() )
 	{
+		AddDamagerToHistory(info.GetAttacker());
+
 		int attackerTeam = info.GetAttacker()->GetTeamNumber();
 
 		m_hasBeenInjured |= ( 1 << attackerTeam );
@@ -3412,7 +3414,7 @@ CBaseEntity *CBaseCombatCharacter::GetFogTrigger( void )
 		CBaseEntity *fogTrigger = m_hTriggerFogList[i];
 		if ( fogTrigger != NULL )
 		{
-			float dist = WorldSpaceCenter().DistTo( fogTrigger->WorldSpaceCenter() );
+			float dist = WorldSpaceCenter().DistToSqr( fogTrigger->WorldSpaceCenter() );
 			if ( dist < bestDist )
 			{
 				bestDist = dist;
@@ -3682,3 +3684,39 @@ float CBaseCombatCharacter::GetTimeSinceLastInjury( int team /*= TEAM_ANY */ ) c
 	return never;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Adds this damager to the history list of characters who damaged NPC
+//-----------------------------------------------------------------------------
+void CBaseCombatCharacter::AddDamagerToHistory(EHANDLE hDamager)
+{
+	// sanity check: ignore damager if it is on our team.  (Catch-all for 
+	// damaging self in rocket jumps, etc.)
+	if (!hDamager || (!hDamager->IsPlayer() && !hDamager->IsNPC()) || hDamager->GetTeam() == GetTeam())
+		return;
+
+	// If this damager is different from the most recent damager, shift the
+	// damagers down and drop the oldest damager.  (If this damager is already
+	// the most recent, we will just update the damage time but not remove
+	// other damagers from history.)
+	if (m_DamagerHistory[0].hDamager != hDamager)
+	{
+		for (int i = 1; i < ARRAYSIZE(m_DamagerHistory); i++)
+		{
+			m_DamagerHistory[i] = m_DamagerHistory[i - 1];
+		}
+	}
+	// set this damager as most recent and note the time
+	m_DamagerHistory[0].hDamager = hDamager;
+	m_DamagerHistory[0].flTimeDamage = gpGlobals->curtime;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Clears damager history
+//-----------------------------------------------------------------------------
+void CBaseCombatCharacter::ClearDamagerHistory()
+{
+	for (int i = 0; i < ARRAYSIZE(m_DamagerHistory); i++)
+	{
+		m_DamagerHistory[i].Reset();
+	}
+}

@@ -17,6 +17,8 @@
 class CParticleSystem;
 class CVehicleCargoTrigger;
 class CSprite;
+class SmokeTrail;
+class CSteamJet;
 
 #define NUM_WHEEL_EFFECTS	2
 #define NUM_HAZARD_LIGHTS	4
@@ -93,6 +95,7 @@ protected:
 private:
 	
 	void	UpdateWheelDust( void );
+	void	UpdateExhaustPipe(void);
 	void	UpdateRadar( bool forceUpdate = false );
 
 	void	InputLockEntrance( inputdata_t &data );
@@ -126,6 +129,8 @@ private:
 
 	CHandle< CParticleSystem >			m_hWheelDust[NUM_WHEEL_EFFECTS];
 	CHandle< CParticleSystem >			m_hWheelWater[NUM_WHEEL_EFFECTS];
+	CHandle< SmokeTrail >				m_hExaustSmoke;
+	CHandle< CSteamJet >				m_hExaustSteam;
 	CHandle< CVehicleCargoTrigger >		m_hCargoTrigger;
 	CHandle< CPhysicsProp >				m_hCargoProp;
 

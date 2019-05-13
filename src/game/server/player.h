@@ -20,6 +20,7 @@
 #include "util_shared.h"
 #include "colorcorrection.h"
 #include "env_tonemap_controller.h"
+#include "environment_volume.h"
 
 //#ifdef INSOURCE_BOTS
 //#include "interfaces\ibot.h"
@@ -903,11 +904,11 @@ private:
 	CNetworkHandle( CColorCorrection, m_hColorCorrectionCtrl );		// active FXVolume color correction
 	CNetworkHandle( CBaseEntity, m_hTonemapController );
 
-	CUtlVector< CHandle< CTonemapTrigger > > m_hTriggerTonemapList;
+	CUtlVector< CHandle< CEnvVolume > > m_hTriggerTonemapList;
 
 public:
-	void OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger );
-	void OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTrigger );
+	void OnTonemapTriggerStartTouch(CEnvVolume*pTonemapTrigger );
+	void OnTonemapTriggerEndTouch(CEnvVolume*pTonemapTrigger );
 
 	// How long since this player last interacted with something the game considers an objective/target/goal
 	float				GetTimeSinceLastObjective( void ) const { return ( m_flLastObjectiveTime == -1.f ) ? 999.f : gpGlobals->curtime - m_flLastObjectiveTime; }

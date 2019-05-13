@@ -9,7 +9,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-
+#if 0
 CUtlVector< CFogVolume * > TheFogVolumes;
 
 ConVar fog_volume_debug( "fog_volume_debug", "0", FCVAR_CHEAT, "If enabled, prints diagnostic information about the current fog volume.\n" );
@@ -149,3 +149,4 @@ void CFogVolume::Activate()
 		AddToGlobalList();
 	}
 }
+#endif

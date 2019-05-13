@@ -22,6 +22,8 @@
 #include "hl2_vehicle_radar.h"
 #include "props.h"
 #include "ai_dynamiclink.h"
+#include "smoke_trail.h"
+#include "steamjet.h"
 
 extern ConVar phys_upimpactforcescale;
 
@@ -315,6 +317,9 @@ LINK_ENTITY_TO_CLASS( info_target_vehicle_transition, CInfoTargetVehicleTransiti
 //
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_jeep, CPropJeepEpisodic );
+LINK_ENTITY_TO_CLASS(prop_vehicle_jeep_hl2, CPropJeepEpisodic);
+LINK_ENTITY_TO_CLASS(prop_vehicle_jeep_episodic, CPropJeepEpisodic);
+LINK_ENTITY_TO_CLASS(prop_vehicle_jalopy, CPropJeepEpisodic);
 
 BEGIN_DATADESC( CPropJeepEpisodic )
 
@@ -326,6 +331,8 @@ BEGIN_DATADESC( CPropJeepEpisodic )
 	DEFINE_ARRAY( m_hWheelDust, FIELD_EHANDLE, NUM_WHEEL_EFFECTS ),
 	DEFINE_ARRAY( m_hWheelWater, FIELD_EHANDLE, NUM_WHEEL_EFFECTS ),
 	DEFINE_ARRAY( m_hHazardLights, FIELD_EHANDLE, NUM_HAZARD_LIGHTS ),
+	DEFINE_FIELD( m_hExaustSmoke, FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hExaustSteam, FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flCargoStartTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bBlink, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bRadarEnabled, FIELD_BOOLEAN ),
@@ -387,8 +394,7 @@ m_bExitLocked( false ),
 m_bAddingCargo( false ),
 m_flNextAvoidBroadcastTime( 0.0f )
 {
-	m_bHasGun = false;
-	m_bUnableToFire = true;
+	
 	m_bRadarDetectsEnemies = false;
 }
 
@@ -718,8 +724,13 @@ void CPropJeepEpisodic::CreateCargoTrigger( void )
 //-----------------------------------------------------------------------------
 void CPropJeepEpisodic::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	if (LookupAttachment("cargo") == 0)
+		BaseClass::Use(pActivator, pCaller, useType, value);
+	else
+	{
 	// Fall back and get in the vehicle instead, skip giving ammo
 	BaseClass::BaseClass::Use( pActivator, pCaller, useType, value );
+}
 }
 
 #define	MIN_WHEEL_DUST_SPEED	5
@@ -1072,6 +1083,9 @@ void CPropJeepEpisodic::Think( void )
 	// See if the wheel dust should be on or off
 	UpdateWheelDust();	
 
+	// Update the exhaust effects
+	UpdateExhaustPipe();
+
 	// Update the radar, of course.
 	UpdateRadar();
 
@@ -1081,6 +1095,68 @@ void CPropJeepEpisodic::Think( void )
 	}
 
 	CreateAvoidanceZone();
+}
+
+void CPropJeepEpisodic::UpdateExhaustPipe()
+{
+	if (LookupAttachment("exhaust") == 0)
+		return;
+
+	// Car must be active
+	bool bCarOn = m_VehiclePhysics.IsOn();
+	
+
+	if (m_hExaustSmoke == NULL)
+	{
+		SmokeTrail *pSmokeTrail = SmokeTrail::CreateSmokeTrail();
+		pSmokeTrail->FollowEntity(this, "exhaust");
+		
+		pSmokeTrail->m_SpawnRate = 4;
+		pSmokeTrail->m_ParticleLifetime = 4.0f;
+
+		pSmokeTrail->m_StartColor.Init(0.7f, 0.7f, 0.7f);
+		pSmokeTrail->m_EndColor.Init(0.6, 0.6, 0.6);
+
+		pSmokeTrail->m_StartSize = 8;
+		pSmokeTrail->m_EndSize = 16;
+		pSmokeTrail->m_SpawnRadius = 4;
+		pSmokeTrail->m_MinSpeed = 0;
+		pSmokeTrail->m_MaxSpeed = 8;
+		pSmokeTrail->m_MinDirectedSpeed = 16;
+		pSmokeTrail->m_MaxDirectedSpeed = 16;
+		pSmokeTrail->m_Opacity = 0.35f;
+
+		m_hExaustSmoke.Set(pSmokeTrail);
+	}
+
+	if (m_hExaustSteam == NULL)
+	{
+		CSteamJet *pSteam = assert_cast<CSteamJet*>(CreateEntityByName("env_steam"));
+		pSteam->SetParent(this, LookupAttachment("exhaust"));
+		pSteam->SetLocalOrigin(vec3_origin);
+		pSteam->SetLocalAngles(vec3_angle);
+		pSteam->m_nType = STEAM_HEATWAVE;
+
+		pSteam->m_Speed = 120;
+		pSteam->m_SpreadSpeed = 15;
+		pSteam->m_StartSize = 4;
+		pSteam->m_EndSize = 16;
+		pSteam->m_Rate = 28;
+		pSteam->m_JetLength = 32;
+
+		m_hExaustSteam.Set(pSteam);
+	}
+
+	if (bCarOn)
+	{
+		m_hExaustSmoke->SetEmit(true);
+		m_hExaustSteam->m_bEmit = true;
+	}
+	else
+	{
+		m_hExaustSmoke->SetEmit(false);
+		m_hExaustSteam->m_bEmit = false;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1307,8 +1383,11 @@ static void KillBlockingEnemyNPCs( CBasePlayer *pPlayer, CBaseEntity *pVehicleEn
 			float len = damageForce.Length();
 			damageForce.z += len*phys_upimpactforcescale.GetFloat();
 			Vector vehicleForce = -damageForce;
-
-			CTakeDamageInfo dmgInfo( pVehicleEntity, pVehicleEntity, damageForce, contactList[i], 200.0f, DMG_CRUSH|DMG_VEHICLE );
+#ifdef HL2_LAZUL
+			CTakeDamageInfo dmgInfo( pVehicleEntity, pVehicleEntity, damageForce, contactList[i], 200.0f, DMG_CRUSH|DMG_VEHICLE, LFE_DMG_CUSTOM_JEEP);
+#else
+			CTakeDamageInfo dmgInfo(pVehicleEntity, pVehicleEntity, damageForce, contactList[i], 200.0f, DMG_CRUSH | DMG_VEHICLE);
+#endif
 			npcList[i]->TakeDamage( dmgInfo );
 			IPhysicsObject*physicsObj = npcList[i]->VPhysicsGetObject();
 			if (physicsObj == NULL)
@@ -1365,14 +1444,21 @@ void CPropJeepEpisodic::CreateHazardLights( void )
 		"headlight_l",
 	};
 
+	bool bBlink = false;
+
 	// Turn on the hazards!	
 	for ( int i = 0; i < NUM_HAZARD_LIGHTS; i++ )
 	{
+		if (LookupAttachment(s_szAttach[i]) <= 0)
+		{
+			continue;
+		}
 		if ( m_hHazardLights[i] == NULL )
 		{
 			m_hHazardLights[i] = CSprite::SpriteCreate( s_szHazardSprite, GetLocalOrigin(), false );
 			if ( m_hHazardLights[i] )
 			{
+				bBlink = true;
 				m_hHazardLights[i]->SetTransparency( kRenderWorldGlow, 255, 220, 40, 255, kRenderFxNoDissipation );
 				m_hHazardLights[i]->SetAttachment( this, LookupAttachment( s_szAttach[i] ) );
 				m_hHazardLights[i]->SetGlowProxySize( 2.0f );
@@ -1392,11 +1478,14 @@ void CPropJeepEpisodic::CreateHazardLights( void )
 		}
 	}
 
+	if (bBlink)
+	{
 	// We start off
 	m_bBlink = false;
 
 	// Setup our blink
 	SetContextThink( &CPropJeepEpisodic::HazardBlinkThink, gpGlobals->curtime + 0.1f, "HazardBlink" );
+	}
 }
 
 //-----------------------------------------------------------------------------

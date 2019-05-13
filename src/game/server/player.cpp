@@ -9509,13 +9509,14 @@ uint64 CBasePlayer::GetSteamIDAsUInt64( void )
 
 void CBasePlayer::UpdateTonemapController( void )
 {
-	m_hTonemapController = TheTonemapSystem()->GetMasterTonemapController();
+	//m_hTonemapController = TheTonemapSystem()->GetMasterTonemapController();
 }
 
 void CBasePlayer::UpdateFXVolume( void )
 {
 	CFogController *pFogController = NULL;
 	CColorCorrection* pColorCorrectionEnt = NULL;
+	CBaseEntity* pTonemapController = NULL;
 
 	Vector eyePos;
 	CBaseEntity *pViewEntity = GetViewEntity();
@@ -9528,11 +9529,12 @@ void CBasePlayer::UpdateFXVolume( void )
 		eyePos = EyePosition();
 	}
 
-	CFogVolume *pFogVolume = CFogVolume::FindFogVolumeForPosition( eyePos );
+	CEnvVolume*pFogVolume = CEnvVolume::FindEnvVolumeForPosition( eyePos );
 	if ( pFogVolume )
 	{
 		pFogController = pFogVolume->GetFogController();
 		pColorCorrectionEnt = pFogVolume->GetColorCorrectionController();
+		pTonemapController = pFogVolume->GetTonemapController();
 
 		if ( !pFogController )
 		{
@@ -9543,13 +9545,19 @@ void CBasePlayer::UpdateFXVolume( void )
 		{
 			pColorCorrectionEnt = ColorCorrectionSystem()->GetMasterColorCorrection();
 		}
+
+		if (!pTonemapController)
+		{
+			pTonemapController = TheTonemapSystem()->GetMasterTonemapController();
+		}
 	}
-	else if ( TheFogVolumes.Count() > 0 )
+	else if ( TheEnvVolumes.Count() > 0 )
 	{
 		// If we're not in a fog volume, clear our fog volume, if the map has any.
 		// This will get us back to using the master fog controller.
 		pFogController = FogSystem()->GetMasterFogController();
 		pColorCorrectionEnt = ColorCorrectionSystem()->GetMasterColorCorrection();
+		pTonemapController = TheTonemapSystem()->GetMasterTonemapController();
 	}
 
 	if ( pFogController && m_Local.m_PlayerFog.m_hCtrl.Get() != pFogController )
@@ -9561,9 +9569,14 @@ void CBasePlayer::UpdateFXVolume( void )
 	{
 		m_hColorCorrectionCtrl.Set( pColorCorrectionEnt );
 	}
+
+	if (pTonemapController)
+	{
+		m_hTonemapController.Set(pTonemapController);
+	}
 }
 
-void CBasePlayer::OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger )
+void CBasePlayer::OnTonemapTriggerStartTouch(CEnvVolume*pTonemapTrigger )
 {
 	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
 	m_hTriggerTonemapList.AddToTail( pTonemapTrigger );
@@ -9571,7 +9584,7 @@ void CBasePlayer::OnTonemapTriggerStartTouch( CTonemapTrigger *pTonemapTrigger )
 
 
 //--------------------------------------------------------------------------------------------------------
-void CBasePlayer::OnTonemapTriggerEndTouch( CTonemapTrigger *pTonemapTrigger )
+void CBasePlayer::OnTonemapTriggerEndTouch(CEnvVolume*pTonemapTrigger )
 {
 	m_hTriggerTonemapList.FindAndRemove( pTonemapTrigger );
 }

@@ -35,6 +35,22 @@ class CNavArea;
 class CScriptedTarget;
 typedef CHandle<CBaseCombatWeapon> CBaseCombatWeaponHandle;
 
+struct DamagerHistory_t
+{
+	DamagerHistory_t()
+	{
+		Reset();
+	}
+	void Reset()
+	{
+		hDamager = NULL;
+		flTimeDamage = 0;
+	}
+	EHANDLE hDamager;
+	float	flTimeDamage;
+};
+#define MAX_DAMAGER_HISTORY 2
+
 // -------------------------------------
 //  Capability Bits
 // -------------------------------------
@@ -272,6 +288,10 @@ public:
 	virtual bool			HasEverBeenInjured( int team = TEAM_ANY ) const;			// return true if we have ever been injured by a member of the given team
 	virtual float			GetTimeSinceLastInjury( int team = TEAM_ANY ) const;		// return time since we were hurt by a member of the given team
 
+	// Damager history, used for TF2 assists.
+	void				AddDamagerToHistory(EHANDLE hDamager);
+	void				ClearDamagerHistory();
+	DamagerHistory_t& GetDamagerHistory(int i) { return m_DamagerHistory[i]; }
 
 	virtual void			OnPlayerKilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info ) {}
 
@@ -544,6 +564,8 @@ protected:
 	Vector		m_HackedGunPos;			// HACK until we can query end of gun
 	string_t	m_RelationshipString;	// Used to load up relationship keyvalues
 	float		m_impactEnergyScale;// scale the amount of energy used to calculate damage this ent takes due to physics
+
+	DamagerHistory_t m_DamagerHistory[MAX_DAMAGER_HISTORY];	// history of who has damaged this NPC
 
 public:
 	static int					GetInteractionID();	// Returns the next interaction #

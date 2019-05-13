@@ -301,6 +301,7 @@ public:
 // Client kills/scoring
 	virtual int IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled ) = 0;// how many points do I award whoever kills this player?
 	virtual void PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info ) = 0;// Called each time a player dies
+	virtual void NPCKilled(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info) { return; }
 	virtual void DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &info )=  0;// Call this from within a GameRules class to report an obituary.
 	virtual const char *GetDamageCustomString( const CTakeDamageInfo &info ) { return NULL; }
 

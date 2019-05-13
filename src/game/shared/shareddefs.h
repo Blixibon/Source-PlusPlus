@@ -1058,7 +1058,6 @@ static const char *g_charBotNames[] =
 };
 
 #endif // defined(INSOURCE_BOTS) || defined(NEXT_BOT)
-
 #endif
 
 #endif // SHAREDDEFS_H

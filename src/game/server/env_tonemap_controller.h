@@ -5,7 +5,7 @@
 #endif
 
 #include "triggers.h"
-
+#if 0
 class CTonemapTrigger : public CBaseTrigger
 {
 public:
@@ -29,7 +29,7 @@ inline CBaseEntity *CTonemapTrigger::GetTonemapController( void ) const
 {
 	return m_hTonemapController.Get();
 }
-
+#endif
 
 //--------------------------------------------------------------------------------------------------------
 // Tonemap Controller System.

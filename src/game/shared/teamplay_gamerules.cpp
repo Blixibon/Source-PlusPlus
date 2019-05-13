@@ -412,7 +412,7 @@ bool CTeamplayRules::ShouldAutoAim( CBasePlayer *pPlayer, edict_t *target )
 
 //=========================================================
 //=========================================================
-int CTeamplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled )
+int CTeamplayRules::IPointsForKill( CBasePlayer *pAttacker, CBaseEntity*pKilled )
 {
 	if ( !pKilled )
 		return 0;

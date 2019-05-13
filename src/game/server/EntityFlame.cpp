@@ -305,7 +305,11 @@ void CEntityFlame::FlameThink( void )
 		// Directly harm the entity I'm attached to. This is so we can precisely control how much damage the entity
 		// that is on fire takes without worrying about the flame's position relative to the bodytarget (which is the
 		// distance that the radius damage code uses to determine how much damage to inflict)
+#ifndef HL2_LAZUL
 		m_hEntAttached->TakeDamage( CTakeDamageInfo( this, this, FLAME_DIRECT_DAMAGE, DMG_BURN | DMG_DIRECT ) );
+#else
+		m_hEntAttached->TakeDamage(CTakeDamageInfo(this, this, FLAME_DIRECT_DAMAGE, DMG_BURN | DMG_DIRECT, TF_DMG_CUSTOM_BURNING));
+#endif
 
 		if( !m_hEntAttached->IsNPC() && hl2_episodic.GetBool() )
 		{

@@ -252,6 +252,7 @@ public:
 
 private:
 	CUtlVector< float > m_BallRespawnTime;
+	string_t m_CombineBallTargetName;
 	int m_nBallCount;
 	int m_nBallsRemainingInField;
 	float m_flRadius;

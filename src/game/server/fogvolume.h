@@ -8,6 +8,7 @@
 #pragma once
 #endif
 
+#if 0
 
 class CFogController;
 class CColorCorrection;
@@ -61,6 +62,7 @@ private:
 };
 
 extern CUtlVector< CFogVolume * > TheFogVolumes;
-
-
+#else
+#include "environment_volume.h"
+#endif
 #endif // FOG_VOLUME_H

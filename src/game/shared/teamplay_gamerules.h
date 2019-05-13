@@ -72,7 +72,7 @@ public:
 	virtual bool PlayerCanHearChat( CBasePlayer *pListener, CBasePlayer *pSpeaker );
 	virtual const char *GetTeamID( CBaseEntity *pEntity );
 	virtual bool ShouldAutoAim( CBasePlayer *pPlayer, edict_t *target );
-	virtual int IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled );
+	virtual int IPointsForKill( CBasePlayer *pAttacker, CBaseEntity*pKilled );
 	virtual void InitHUD( CBasePlayer *pl );
 	virtual void DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &info );
 	virtual const char *GetGameDescription( void ) { return "Teamplay"; }  // this is the game name that gets seen in the server browser
@@ -105,7 +105,6 @@ public:
 protected:
 	bool m_DisableDeathMessages;
 
-private:
 	void RecountTeams( void );
 	const char *TeamWithFewestPlayers( void );
 

@@ -126,6 +126,16 @@ public:
 
 	bool AllowDamage(CBaseEntity* pVictim, const CTakeDamageInfo& info);
 
+	virtual void PlayerKilled(CBasePlayer* pVictim, const CTakeDamageInfo& info);
+	virtual void NPCKilled(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info);
+	virtual void DeathNotice(CBasePlayer* pVictim, const CTakeDamageInfo& info);
+	virtual void DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info);
+	virtual CBasePlayer* GetDeathScorer(CBaseEntity* pKiller, CBaseEntity* pInflictor, CBaseEntity* pVictim);
+
+	const char* GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEntity* pVictim, int& iWeaponID);
+	CBaseEntity* GetAssister(CBaseEntity* pVictim, CBaseEntity* pKiller, CBaseEntity* pInflictor);
+	CBaseEntity* GetRecentDamager(CBaseEntity* pVictim, int iDamager, float flMaxElapsed);
+
 	bool	NPC_ShouldDropGrenade(CBasePlayer* pRecipient);
 	bool	NPC_ShouldDropHealth(CBasePlayer* pRecipient);
 	void	NPC_DroppedHealth(void);

@@ -2356,7 +2356,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 				pRagdoll->SetCollisionBounds(pEntity->CollisionProp()->OBBMins(), pEntity->CollisionProp()->OBBMaxs());
 
 				// Necessary to cause it to do the appropriate death cleanup
-				CTakeDamageInfo ragdollInfo(pOwner, pOwner, 10000.0, DMG_PHYSGUN | DMG_REMOVENORAGDOLL);
+				CTakeDamageInfo ragdollInfo(pOwner, pOwner, 10000.0, DMG_PHYSGUN | DMG_REMOVENORAGDOLL, LFE_DMG_CUSTOM_PHYSCANNON_MEGA);
 				pEntity->TakeDamage(ragdollInfo);
 
 				PuntRagdoll(pRagdoll, forward, tr);
@@ -2504,7 +2504,7 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 			pRagdoll->SetCollisionBounds(pObject->CollisionProp()->OBBMins(), pObject->CollisionProp()->OBBMaxs());
 
 			// Necessary to cause it to do the appropriate death cleanup
-			CTakeDamageInfo ragdollInfo(GetOwner(), GetOwner(), 10000.0, DMG_PHYSGUN | DMG_REMOVENORAGDOLL);
+			CTakeDamageInfo ragdollInfo(GetOwner(), GetOwner(), 10000.0, DMG_PHYSGUN | DMG_REMOVENORAGDOLL, LFE_DMG_CUSTOM_PHYSCANNON_MEGA);
 			pObject->TakeDamage(ragdollInfo);
 
 			// Now we act on the ragdoll for the remainder of the time
