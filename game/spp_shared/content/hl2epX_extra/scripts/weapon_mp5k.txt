@@ -1,0 +1,74 @@
+// MP5K
+
+WeaponData
+{
+	"printname"			"#HL2_MP5K"
+	"viewmodel"			"models/weapons/v_mp5k.mdl"
+	"playermodel"			"models/weapons/w_mp5k.mdl"
+	"anim_prefix"			"smg2"
+	"bucket"			"2"
+	"bucket_position"		"4"
+
+	"clip_size"			"30"
+	"clip2_size"			"-1"
+
+	"default_clip"			"30"
+	"default_clip2"			"-1"
+
+	"primary_ammo"			"SMG1"
+	"secondary_ammo"		"None"
+
+	"weight"			"4"
+	"item_flags"			"0"
+
+	"size"				"10"
+	"autoswitchfrom"	"0"
+
+	SoundData
+	{
+		"reload"		"Weapon_MP5K.Reload"
+		"reload_npc"		"Weapon_MP5K.NPC_Reload"
+
+		"empty"			"Weapon_MP5K.Empty"
+
+		"single_shot"		"Weapon_MP5K.Single"
+		"single_shot_npc"	"Weapon_MP5K.NPC_Single"
+	}
+
+	TextureData
+	{
+		"weapon"
+		{
+				"font"		"SynFontWeaponIcons"
+				"character"	"v"
+		}
+		"weapon_s"
+		{	
+				"font"		"SynFontSelectedWeaponIcons"
+				"character"	"v"
+		}
+		"ammo"
+		{
+				"font"		"WeaponIcons"
+				"character"	"r"
+		}
+		"ammo2"
+		{
+				"font"		"WeaponIcons"
+				"character"	"t"
+		}
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"0"
+				"y"			"48"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

@@ -1,0 +1,12 @@
+"Mount"
+{
+	240
+	{
+		"head"	"0"
+		"cstrike"
+		{
+			vpk		cstrike_pak
+		}
+	}
+	
+}

@@ -1,0 +1,601 @@
+// Synergy Game Sounds
+
+// now we can put any custom sounds here
+
+"Player.Explode"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"1.0"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"75,90"
+	"wave"		"player/player_explode.wav"
+}
+
+"SynergyPlayer.SprintNoPower"
+{
+	"channel"	"CHAN_BODY" // VOICE
+	"volume"	"0.8"
+	"soundlevel"  "SNDLVL_60dB"
+
+	"wave"	"player/suit_denydevice.wav"
+}
+
+"SynergyPlayer.SprintStart"
+{
+	"channel"	"CHAN_BODY" // VOICE
+	"volume"	"0.9"
+	"soundlevel"  "SNDLVL_60dB"
+
+	"wave"	"player/suit_sprint.wav"
+}
+
+// - - - - - - - - -
+
+// SYNERGY WEAPON:  MG1
+
+"Weapon_MG1.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.85"
+	"soundlevel"		"SNDLVL_GUNFIRE"
+	"pitch"			"85,95"
+
+	"wave"			"^weapons/ar1/ar1_dist1.wav"
+}
+
+"Weapon_MG1.Reload_Rotate"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.9"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/mg1/mg1_reload_rotate_08.wav"
+} 
+
+"Weapon_MG1.Reload_Push"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.9"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/mg1/mg1_reload_push_08.wav"
+}
+
+// SYNERGY WEAPON:  MEDKIT
+
+"Weapon_Medkit.Heal"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.75"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"		"items/medshot4.wav"
+		"wave"		"items/smallmedkit1.wav"
+	}
+}
+
+// SYNERGY WEAPON:  MP5K
+
+"Weapon_MP5K.Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/MP5K/MP5K_reload.wav"
+}
+
+"Weapon_MP5K.NPC_Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/MP5K/MP5K_reload.wav"
+}
+
+"Weapon_MP5K.MagOut"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"	"0.85"
+	"soundlevel"	"SNDLVL_NORM"
+	"wave"		"weapons/MP5K/MP5K_magOut.wav"
+}
+
+"Weapon_MP5K.MagIn"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"	"0.85"
+	"soundlevel"	"SNDLVL_NORM"
+	"wave"		"weapons/MP5K/MP5K_magIn.wav"
+}
+
+"Weapon_MP5K.Empty"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/pistol/pistol_empty.wav"
+}
+
+"Weapon_MP5K.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.55"
+	"soundlevel"		"SNDLVL_90db"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			")weapons/MP5K/MP5K_fire1.wav"
+}
+
+"Weapon_MP5K.NPC_Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			"^weapons/MP5K/npc_MP5K_fire1.wav"
+}
+// SYNERGY WEAPON:  UMP45
+
+"Weapon_UMP45.Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/ump/ump_reload.wav"
+}
+
+"Weapon_UMP45.NPC_Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/ump/ump_reload.wav"
+}
+
+"Weapon_UMP45.Empty"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/pistol/pistol_empty.wav"
+}
+
+"Weapon_UMP45.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.55"
+	"soundlevel"		"SNDLVL_90db"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			")weapons/ump/ump_fire.wav"
+}
+
+"Weapon_UMP45.NPC_Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			"^weapons/ump/ump_fire.wav"
+}
+// SYNERGY WEAPON:  DEAGLE
+
+"Weapon_Deagle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.9"
+	"soundlevel"		"SNDLVL_GUNFIRE"
+	"pitch"			"95,105"
+
+	"wave"			"^weapons/deagle/deagle_fire.wav"
+}
+
+"Weapon_Deagle.Reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"		"weapons/deagle/deagle_reload.wav"
+}
+
+// SYNERGY WEAPON:  PIPE
+
+"Weapon_Pipe.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.9"
+	"soundlevel"		"SNDLVL_NORM"
+	"pitch"			"95,105"
+
+	"wave"			"weapons/pipe/pipe_swing1.wav"
+}
+
+
+// - - - - - - - - -
+
+// TLK_PLAYER_HELP
+
+"PlayerVoice.Help_02"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+
+	"wave"	"*vo/player/$gender01/help02.wav"
+}
+
+"PlayerVoice.Help_03"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"PITCH_NORM"
+
+	"wave"	"*vo/player/$gender01/help03.wav"
+}
+
+// JEEP Elite
+
+
+"eATV_engine_idle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	//"wave"		"vehicles/atv_idle_loop1.wav"
+	"wave"		"vehicles/v8elite/v8_idle_loop1.wav"
+}
+
+"eATV_engine_null"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	"wave"		"common/null.wav"
+}
+
+"eATV_engine_start"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	//"wave"		"vehicles/atv_start_loop1.wav"
+	"wave"		"vehicles/v8elite/v8_start_loop1.wav"
+}
+
+"eATV_engine_stop"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+
+	//"wave"		"common/null.wav"
+	"wave"		"vehicles/v8elite/v8_stop1.wav"
+}
+
+"eATV_rev"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.9"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"98,105"
+	"wave"		"vehicles/v8elite/v8_rev_short_loop1.wav"
+
+//	"rndwave"
+//	{
+//		"wave"		"vehicles/v8/v8_rev_short_loop1.wav"
+//		"wave"		"vehicles/v8/v8_rev_short_loop6.wav"
+//	}
+}
+
+"eATV_reverse"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"100"
+	"wave"			"vehicles/v8elite/v8_firstgear_rev_loop1.wav"
+}
+
+
+"eATV_firstgear"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"100"
+	//"wave"		"vehicles/v8/v8_firstgear_rev_loop1.wav"
+	"wave"		"vehicles/v8elite/first.wav"
+}
+
+"eATV_secondgear"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,105"
+	//"wave"		"vehicles/atv_secondgear_to_fullthrottle_loop1.wav"
+	//"wave"		"vehicles/v8/v8_secondgear_loop1.wav"
+	"wave"		"vehicles/v8elite/second.wav"
+}
+
+"eATV_thirdgear"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,105"
+	//"wave"		"vehicles/atv_thirdgear_to_fullthrottle_loop1.wav"
+	//"wave"		"vehicles/v8/v8_secondgear_loop1.wav"
+	"wave"		"vehicles/v8elite/third.wav"
+}
+
+"eATV_fourthgear"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"105,105"
+	"wave"		"vehicles/v8elite/fourth_cruise_loop2.wav"
+}
+
+"eATV_firstgear_noshift"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"105,105"
+	// NOTE: This needs to be a looping sound
+	"wave"		"vehicles/v8elite/first.wav"
+}
+"eATV_secondgear_noshift"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"105,105"
+	// NOTE: This needs to be a looping sound
+	"wave"		"vehicles/v8elite/first.wav"
+}
+"eATV_thirdgear_noshift"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"105,105"
+	// NOTE: This needs to be a looping sound
+	"wave"		"vehicles/v8elite/first.wav"
+}
+
+"eATV_fourthgear_noshift"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"105,105"
+	// NOTE: This needs to be a looping sound
+	"wave"		"vehicles/v8elite/fourth_cruise_loop2.wav"
+}
+
+"eATV_downshift_to_2nd"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,105"
+	//"wave"		"vehicles/atv_downshift_to_2nd_loop1.wav"
+	"wave"		"vehicles/v8elite/first_rev.wav"
+	//"wave"		"vehicles/v8/downshift.wav"
+	//"wave"		"common/null.wav"
+}
+
+"eATV_downshift_to_1st"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,105"
+	//"wave"		"vehicles/atv_downshift_to_1st_loop1.wav"
+	"wave"		"vehicles/v8elite/first_rev.wav"
+	//"wave"		"vehicles/v8/downshift.wav"
+	//"wave"		"common/null.wav"
+}
+
+"eATV_throttleoff_slowspeed"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,105"
+	"wave"		"vehicles/v8elite/v8_throttle_off_slow_loop2.wav"
+	//"wave"		"vehicles/v8/v8_idle_loop1.wav"
+}
+
+"eATV_throttleoff_fastspeed"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,105"
+	//"wave"		"vehicles/atv_throttleoff_loop1.wav"
+	"wave"		"vehicles/v8elite/v8_throttle_off_fast_loop1.wav"
+	//"wave"		"common/null.wav"
+}
+
+"eATV_skid_lowfriction"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	//"wave"		"vehicles/atv_skid_lowfriction.wav"
+	"wave"		"vehicles/v8elite/skid_lowfriction.wav"
+}
+
+"eATV_skid_normalfriction"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	//"wave"		"vehicles/atv_skid_normalfriction.wav"
+	"wave"		"vehicles/v8elite/skid_normalfriction.wav"
+}
+
+"eATV_skid_highfriction"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	//"wave"		"vehicles/atv_skid_highfriction.wav"
+	"wave"		"vehicles/v8elite/skid_highfriction.wav"
+}
+
+"eATV_impact_heavy"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"95,110"
+	"rndwave"
+	{
+		"wave"	"vehicles/v8elite/vehicle_impact_heavy1.wav"
+		"wave"	"vehicles/v8elite/vehicle_impact_heavy2.wav"
+		"wave"	"vehicles/v8elite/vehicle_impact_heavy3.wav"
+		"wave"	"vehicles/v8elite/vehicle_impact_heavy4.wav"
+	}
+}
+
+"eATV_impact_medium"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"95,110"
+	"rndwave"
+	{
+		"wave"	"vehicles/v8elite/vehicle_impact_medium1.wav"
+		"wave"	"vehicles/v8elite/vehicle_impact_medium2.wav"
+		"wave"	"vehicles/v8elite/vehicle_impact_medium3.wav"
+		"wave"	"vehicles/v8elite/vehicle_impact_medium4.wav"
+	}
+}
+
+"eATV_rollover"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"95,110"
+	"rndwave"
+	{
+		"wave"	"vehicles/v8elite/vehicle_rollover1.wav"
+		"wave"	"vehicles/v8elite/vehicle_rollover2.wav"
+	}
+}
+
+
+"eATV_turbo_on"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	//"wave"		"vehicles/vehicle_turbo_loop3.wav"
+	"wave"		"vehicles/v8elite/v8_turbo_on_loop1.wav"
+}
+
+"eATV_turbo_off"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	//"wave"		"vehicles/vehicle_turbo_off1.wav"
+	"wave"		"vehicles/v8elite/v8_turbo_off.wav"
+}
+
+"eATV_start_in_water"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"100"
+	"wave"			"vehicles/jetski/jetski_no_gas_start.wav"
+}
+
+"eATV_stall_in_water"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"			"100"
+	"wave"			"vehicles/jetski/jetski_off.wav"
+}
+
+"Jeep.GaussCharge"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"wave"		"weapons/gauss/chargeloop.wav"
+}
+
+"PropJeep.FireCannon"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.750, 1.000"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/gauss/fire1.wav"
+}
+
+"PropJeep.FireChargedCannon"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.750, 1.000"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/gauss/fire1.wav"
+}
+
+"PropJeep.AmmoOpen"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	"wave"		"vehicles/atv_ammo_open.wav"
+}
+
+"PropJeep.AmmoClose"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80dB"
+	"pitch"		"90,110"
+	"wave"		"vehicles/atv_ammo_close.wav"
+}
+
+// **********************************

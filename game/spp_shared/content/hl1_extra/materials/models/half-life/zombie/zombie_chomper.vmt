@@ -1,0 +1,5 @@
+"Vertexlitgeneric"
+{
+	"$baseTexture" "models\half-life/zombie/Zombie_chomper"
+	"$bumpmap" "models\half-life/zombie/Zombie_chomper_normal"
+}

@@ -11,6 +11,7 @@
 		
 		"hl2epX_extra"
 		{
+			vpk		"Enhanced Upscaled Eyes"
 			vpk		mod_soldier_neworange
 		}
 	}

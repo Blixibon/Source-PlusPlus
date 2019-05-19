@@ -1,0 +1,72 @@
+WeaponData
+{
+	"printname"				"#SYN_Pipe"
+	"viewmodel"				"models/weapons/c_synergy_pipe.mdl"
+	"playermodel"			"models/props_canal/mattpipe.mdl"
+	"anim_prefix"			"crowbar"
+	"bucket"				"0"
+	"bucket_position"		"4"
+
+	"clip_size"				"-1"
+	"primary_ammo"			"None"
+	"secondary_ammo"		"None"
+
+	"weight"				"0"
+	"item_flags"			"0"
+
+	SoundData
+	{
+		"single_shot"		"Weapon_Pipe.Single"
+		"melee_hit"			"Weapon_Crowbar.Melee_Hit"
+		"melee_hit_world"	"Weapon_Crowbar.Melee_HitWorld"
+	}
+
+
+	TextureData
+	{
+		"weapon"
+		{
+				"font"		"SynFontWeaponIcons"
+				"character"	"x"
+		}
+		"weapon_s"
+		{	
+				"font"		"SynFontSelectedWeaponIcons"
+				"character"	"x"
+		}
+
+
+		"ammo"
+		{
+				"font"		"WeaponIcons"
+				"character"	"n"
+		}
+
+		"ammo2"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"48"
+				"y"			"72"
+				"width"		"24"
+				"height"	"24"
+		}
+
+		"crosshair"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"0"
+				"y"			"48"
+				"width"		"24"
+				"height"	"24"
+		}
+
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"48"
+				"y"			"72"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

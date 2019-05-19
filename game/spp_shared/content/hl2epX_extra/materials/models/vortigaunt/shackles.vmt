@@ -1,0 +1,46 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "models/vortigaunt/shackles"
+	"$bumpmap" "models/vortigaunt/shackles_normal"
+	"$envmap" "env_cubemap"
+	"$alphatest" 1
+	//"$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[0.1 1.15 0.1]"
+	"$envmapcontrast" "1"
+	"$nodecal" "1"
+	"$model" "1"
+	"$selfillum" 1
+	"$selfillummaskscale" 1
+	//$selfillum_envmapmask_alpha 0
+	$selfIllumFresnel 1
+	"$selfIllumFresnelMinMaxExp" "[3 1 0]" // 0.0 1.0 1.0 is the default
+	"$selfillumtint"	"[1.15 1.15 0.55]"
+
+        	//"$detail" "FF_Detail/metal_detail"
+	//"$detailscale" 3
+       	 $detailblendfactor 0.8
+       	 $detailblendmode 0
+
+
+	"$phong"     "1"
+	"$phongexponent"  "10"
+	"$phongboost"   "0.6"
+	"$phongfresnelranges"   "[.5 .8 1]"
+	"$phongwarptexture"  "models/classvort/vort_iridescence"
+
+	"$detail" "FF_Detail/metal15_detail"
+	"$detailscale" 1
+
+	// Rim lighting parameters
+	"$rimlight" "1"											// To enable rim lighting (requires phong)
+	"$rimlightexponent" "5"										// Exponent for phong component of rim lighting	
+	"$rimlightboost" "1"										                // Boost for ambient cube component of rim lighting
+	"Proxies"
+	{
+		//"IsNPC"
+		//{
+		//	"scale" "2.0"
+		//	"resultvar" "$selfillummaskscale"
+		//}
+	}
+}

@@ -24,226 +24,6 @@
 				"width"		"1"
 				"height"	"1"
 		}
-
-		"plus_sign"
-		{
-				"font"		"Icons"
-				"character"	"+"
-		}
-		
-		"minus_sign"
-		{
-				"font"		"Icons"
-				"character"	"-"
-		}
-		
-		"dollar_sign"
-		{
-				"font"		"Icons"
-				"character"	"$"
-		}
-		
-		"health_icon"
-		{
-				"font"		"Icons"
-				"character"	"b"
-		}
-		
-		"timer_icon"
-		{
-				"font"		"Icons"
-				"character"	"e"
-		}
-		
-		"shield_kevlar_bright"
-		{
-				"font"		"Icons"
-				"character"	"l"
-		}
-		
-		"shield_kevlar"
-		{
-				"font"		"Icons"
-				"character"	"l"
-		}
-		
-		"shield_bright"
-		{
-				"font"		"Icons"
-				"character"	"a"
-		}
-		
-		"shield"
-		{
-				"font"		"Icons"
-				"character"	"a"
-		}
-		
-		"number_0"
-		{
-				"font"		"Icons"
-				"character"	"0"
-		}
-
-		"number_1"
-		{
-				"font"		"Icons"
-				"character"	"1"
-		}
-
-		"number_2"
-		{
-				"font"		"Icons"
-				"character"	"2"
-		}
-
-		"number_3"
-		{
-				"font"		"Icons"
-				"character"	"3"
-		}
-
-		"number_4"
-		{
-				"font"		"Icons"
-				"character"	"4"
-		}
-
-		"number_5"
-		{
-				"font"		"Icons"
-				"character"	"5"
-		}
-
-		"number_6"
-		{
-				"font"		"Icons"
-				"character"	"6"
-		}
-
-		"number_7"
-		{
-				"font"		"Icons"
-				"character"	"7"
-		}
-
-		"number_8"
-		{
-				"font"		"Icons"
-				"character"	"8"
-		}
-
-		"number_9"
-		{
-				"font"		"Icons"
-				"character"	"9"
-		}
-		
-		"ammo_45"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"182"
-				"y"		"0"
-				"width"		"26"
-				"height"	"24"
-		}
-		
-		"ammo_357"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"208"
-				"y"		"0"
-				"width"		"24"
-				"height"	"24"
-		}
-		
-		"ammo_c4"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"182"
-				"y"		"24"
-				"width"		"26"
-				"height"	"24"
-		}
-		
-		"ammo_57"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"208"
-				"y"		"24"
-				"width"		"24"
-				"height"	"24"
-		}
-		
-		"ammo_sg"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"232"
-				"y"		"24"
-				"width"		"24"
-				"height"	"24"
-		}
-		
-		"ammo_12g"
-		{
-				"font"		"TFTypeDeath"
-				"character"	"J"
-		}
-		
-		"ammo_50"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"182"
-				"y"		"48"
-				"width"		"26"
-				"height"	"26"
-		}
-		
-		"ammo_9mm"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"208"
-				"y"		"48"
-				"width"		"24"
-				"height"	"26"
-		}
-		
-		"ammo_762"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"232"
-				"y"		"48"
-				"width"		"24"
-				"height"	"26"
-		}
-		
-		"ammo_556"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"157"
-				"y"		"74"
-				"width"		"25"
-				"height"	"24"
-		}
-		
-		"ammo_338"
-		{
-				"dfile"		"hud/640hud1"
-"dnegfile"		"hud/640hud1_neg"
-				"x"		"182"
-				"y"		"74"
-				"width"		"26"
-				"height"	"24"
-		}
 		
 		"item_healthkit"
 		{
@@ -1722,15 +1502,6 @@
 			"width"		"128"
 			"height"	"128"
 		}
-
-		"crosshair_default"
-		{
-			"file"  "sprites/crosshairs"
-			"x"   "32"
-			"y"   "0"
-			"width"  "32"
-			"height" "32"
-		}	
 
 		"obj_status_alert_background"
 		{
@@ -3616,7 +3387,7 @@
 			"height"	"32"
 		}
 
-		"ar2_grenade"
+		"grenade_ar2"
 		{
 			"dfile"	"HUD/d_images_hl2"
 			"dnegfile"	"HUD/dneg_images_hl2"
@@ -3786,7 +3557,7 @@
 			"height"	"32"
 		}
 
-		"acidball"
+		"grenade_spit"
 		{
 			"dfile"	"HUD/d_images_hl2"
 			"dnegfile"	"HUD/dneg_images_hl2"
@@ -4186,7 +3957,7 @@
 			"width"		"32"
 			"height"	"16"
 		}
-		"hand"
+		"grenade_hand"
 		{
 			"dfile"		"hud/640hud1"
 			"dnegfile"		"hud/640hud1_neg"

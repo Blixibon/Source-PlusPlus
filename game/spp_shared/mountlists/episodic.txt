@@ -33,6 +33,8 @@
 			{
 				"scenes"	"1"
 			}
+			
+			vpk		vehicle_junker
 		}
 	}
 }

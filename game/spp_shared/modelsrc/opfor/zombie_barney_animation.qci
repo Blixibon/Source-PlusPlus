@@ -1,0 +1,504 @@
+
+$SectionFrames 30 121
+
+$IKChain "lfoot" "Bip01 L Foot" knee 0.56 0.829 0
+$IKChain "rfoot" "Bip01 R Foot" knee 0.531 0.848 0
+
+$Sequence "ragdoll" {
+	"zombie_barney_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 2
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+}
+
+$Sequence "idle1" {
+	"zombie_barney_anims\idle1.smd"
+	activity "ACT_IDLE" 4
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "turnleft" {
+	"zombie_barney_anims\turnleft.smd"
+	activity "ACT_TURN_LEFT" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "turnright" {
+	"zombie_barney_anims\turnright.smd"
+	activity "ACT_TURN_RIGHT" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "flinchsmall" {
+	"zombie_barney_anims\flinchsmall.smd"
+	activity "ACT_SMALL_FLINCH" 5
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "flinch" {
+	"zombie_barney_anims\flinch.smd"
+	activity "ACT_SMALL_FLINCH" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "bigflinch" {
+	"zombie_barney_anims\bigflinch.smd"
+	activity "ACT_BIG_FLINCH" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "getup" {
+	"zombie_barney_anims\getup.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "falling" {
+	"zombie_barney_anims\falling.smd"
+	activity "ACT_FALL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 26
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "attack1" {
+	"zombie_barney_anims\attack1.smd"
+	activity "ACT_MELEE_ATTACK1" 5
+	//{ event 1100 0 "event_play Melee" }
+	{ event 1 10 "event_mattack right" }
+	{ event 2 19 "event_mattack left" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "attack2" {
+	"zombie_barney_anims\attack2.smd"
+	activity "ACT_MELEE_ATTACK1" 1
+	//{ event 1100 0 "event_play Melee" }
+	{ event 3 6 "event_mattack both" }
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "walk" {
+	"zombie_barney_anims\walk.smd"
+	activity "ACT_WALK" 1
+	{ event AE_CL_HL1_WALK_LEFT 2 "event_emit Foot" }
+	{ event AE_CL_HL1_WALK_RIGHT 12 "event_emit Foot" }
+	{ event AE_CL_HL1_WALK_LEFT 22 "event_emit Foot" }
+	{ event AE_CL_HL1_WALK_RIGHT 31 "event_emit Foot" }
+	{ event AE_CL_HL1_WALK_LEFT 41 "event_emit Foot" }
+	{ event AE_CL_HL1_WALK_RIGHT 51 "event_emit Foot" }
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	loop
+	ikrule "lfoot" release
+	ikrule "rfoot" release
+	walkframe 59 LX
+}
+
+$Sequence "laflinch" {
+	"zombie_barney_anims\laflinch.smd"
+	activity "ACT_FLINCH_LEFTARM" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "raflinch" {
+	"zombie_barney_anims\raflinch.smd"
+	activity "ACT_FLINCH_RIGHTARM" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "llflinch" {
+	"zombie_barney_anims\llflinch.smd"
+	activity "ACT_FLINCH_LEFTLEG" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "rlflinch" {
+	"zombie_barney_anims\rlflinch.smd"
+	activity "ACT_FLINCH_RIGHTLEG" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dieheadshot" {
+	"zombie_barney_anims\dieheadshot.smd"
+	activity "ACT_DIE_HEADSHOT" 1
+	{ event AE_NPC_BODYDROP_LIGHT 19 "" }
+	{ event AE_NPC_RAGDOLL 19 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dieheadshot2" {
+	"zombie_barney_anims\dieheadshot2.smd"
+	activity "ACT_DIE_GUTSHOT" 1
+	{ event AE_NPC_BODYDROP_LIGHT 18 "" }
+	{ event AE_NPC_RAGDOLL 18 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 22
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "diesimple" {
+	"zombie_barney_anims\diesimple.smd"
+	activity "ACT_DIESIMPLE" 1
+	{ event AE_NPC_BODYDROP_LIGHT 13 "" }
+	{ event AE_NPC_RAGDOLL 13 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "diebackward" {
+	"zombie_barney_anims\diebackward.smd"
+	activity "ACT_DIEBACKWARD" 1
+	{ event AE_NPC_RAGDOLL 9 "event_dropdead" }
+	{ event AE_NPC_BODYDROP_LIGHT 10 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "dieforward" {
+	"zombie_barney_anims\dieforward.smd"
+	activity "ACT_DIEFORWARD" 1
+	{ event AE_NPC_BODYDROP_LIGHT 21 "" }
+	{ event AE_NPC_RAGDOLL 21 "event_dropdead" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "pause" {
+	"zombie_barney_anims\pause.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "busting_through_wall" {
+	"zombie_barney_anims\busting_through_wall.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "kick_punch_wall" {
+	"zombie_barney_anims\kick_punch_wall.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "bust_window" {
+	"zombie_barney_anims\bust_window.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 26
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "soda" {
+	"zombie_barney_anims\soda.smd"
+	{ event 1004 63 "NPC.ButtonLatchUnlocked1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 26
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "slideidle" {
+	"zombie_barney_anims\slideidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "slidewall" {
+	"zombie_barney_anims\slidewall.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ventclimbidle" {
+	"zombie_barney_anims\ventclimbidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ventclimb" {
+	"zombie_barney_anims\ventclimb.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "deadidle" {
+	"zombie_barney_anims\deadidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 14
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "deadwall" {
+	"zombie_barney_anims\deadwall.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "freakdie" {
+	"zombie_barney_anims\freakdie.smd"
+	{ event 1000 4 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "freak" {
+	"zombie_barney_anims\freak.smd"
+	{ event 1003 2 "freak" }
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eatbodytable" {
+	"zombie_barney_anims\eatbodytable.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eatbody" {
+	"zombie_barney_anims\eatbody.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eatbodystand" {
+	"zombie_barney_anims\eatbodystand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "ripdoor" {
+	"zombie_barney_anims\ripdoor.smd"
+	{ event 1008 1 "NPC.BustCrate1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 20
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "zombie_pull_scientist" {
+	"zombie_barney_anims\zombie_pull_scientist.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 17
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "zombie_eating" {
+	"zombie_barney_anims\zombie_eating.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	loop
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "eat_to_stand" {
+	"zombie_barney_anims\eat_to_stand.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 15
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "vent_zidle" {
+	"zombie_barney_anims\vent_zidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "vent_c1a3" {
+	"zombie_barney_anims\vent_c1a3.smd"
+	{ event 1000 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "haulzombie" {
+	"zombie_barney_anims\haulzombie.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "c2a3_snack_getup" {
+	"zombie_barney_anims\c2a3_snack_getup.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 12
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "left_tug" {
+	"zombie_barney_anims\left_tug.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "left_tug_idle" {
+	"zombie_barney_anims\left_tug_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "right_tug" {
+	"zombie_barney_anims\right_tug.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 9
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
+
+$Sequence "right_tug_idle" {
+	"zombie_barney_anims\right_tug_idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 18
+	ikrule "lfoot" footstep
+	ikrule "rfoot" footstep
+}
