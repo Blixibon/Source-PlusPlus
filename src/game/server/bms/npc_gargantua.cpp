@@ -92,6 +92,8 @@ public:
 
 	Class_T Classify() { return garg_ally.GetBool() ? CLASS_VORTIGAUNT : CLASS_ANTLION; }
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	/*virtual void		StartTask(const Task_t *pTask);
 	virtual void		RunTask(const Task_t *pTask);*/
 

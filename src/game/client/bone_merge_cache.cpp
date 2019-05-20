@@ -80,7 +80,7 @@ void CBoneMergeCache::UpdateCache()
 			m_nFollowBoneSetupMask = BONE_USED_BY_BONE_MERGE;
 			for ( int i = 0; i < m_pOwnerHdr->numbones(); i++ )
 			{
-				int parentBoneIndex = Studio_BoneIndexByName( m_pFollowHdr, pOwnerBones[i].pszName() );
+				int parentBoneIndex = GetParentBone( m_pFollowHdr, pOwnerBones[i].pszName() );
 				if ( parentBoneIndex < 0 )
 					continue;
 
@@ -122,7 +122,7 @@ void CBoneMergeCache::UpdateCache()
 ConVar r_captain_canteen_is_angry ( "r_captain_canteen_is_angry", "1" );
 #endif
 
-void CBoneMergeCache::MergeMatchingBones( int boneMask )
+void CBoneMergeCache::MergeMatchingBones(int boneMask, CBoneBitList &boneComputed)
 {
 	UpdateCache();
 
@@ -163,6 +163,8 @@ void CBoneMergeCache::MergeMatchingBones( int boneMask )
 				continue;
 
 			m_pOwner->GetBoneForWrite( iOwnerBone ) = NewBone;
+
+			boneComputed.Set(iOwnerBone);
 		}
 	}
 	else
@@ -178,6 +180,8 @@ void CBoneMergeCache::MergeMatchingBones( int boneMask )
 				continue;
 
 			MatrixCopy( m_pFollow->GetBone( iParentBone ), m_pOwner->GetBoneForWrite( iOwnerBone ) );
+
+			boneComputed.Set(iOwnerBone);
 		}
 	}
 }
@@ -283,6 +287,11 @@ bool CBoneMergeCache::GetRootBone( matrix3x4_t &rootBone )
 	m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->curtime );
 	rootBone = m_pFollow->GetBone( m_MergedBones[0].m_iParentBone );
 	return true;
+}
+
+int CBoneMergeCache::GetParentBone(CStudioHdr * pHdr, const char * pszName)
+{
+	return Studio_BoneIndexByName(pHdr, pszName);
 }
 
 

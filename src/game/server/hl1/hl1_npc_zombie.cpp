@@ -38,7 +38,7 @@ void CNPC_Zombie::Spawn()
 {
 	Precache( );
 
-	SetModel( "models/zombie.mdl" );
+	SetModel(GetZombieModel());
 	
 	SetRenderColor( 255, 255, 255, 255 );
 	
@@ -64,7 +64,7 @@ void CNPC_Zombie::Spawn()
 //=========================================================
 void CNPC_Zombie::Precache()
 {
-	PrecacheModel( "models/zombie.mdl" );
+	PrecacheModel(GetZombieModel());
 
 	PrecacheScriptSound( "HL1Zombie.AttackHit" );
 	PrecacheScriptSound( "HL1Zombie.AttackMiss" );
@@ -225,7 +225,7 @@ int CNPC_Zombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 	CTakeDamageInfo info = inputInfo;
 
 	// Take 30% damage from bullets
-	if ( info.GetDamageType() == DMG_BULLET )
+	if ( info.GetDamageType() & DMG_BULLET )
 	{
 		Vector vecDir = GetAbsOrigin() - info.GetInflictor()->WorldSpaceCenter();
 		VectorNormalize( vecDir );
@@ -305,3 +305,19 @@ void CNPC_Zombie::RemoveIgnoredConditions ( void )
 
 	BaseClass::RemoveIgnoredConditions();
 }
+
+class CNPC_ZombieBarney : public CNPC_Zombie
+{
+public:
+	virtual const char *GetZombieModel() { return "models/opfor/zombie_barney.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_zombie_barney, CNPC_ZombieBarney);
+
+class CNPC_ZombieSoldier : public CNPC_Zombie
+{
+public:
+	virtual const char *GetZombieModel() { return "models/opfor/zombie_soldier.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_zombie_soldier, CNPC_ZombieSoldier);

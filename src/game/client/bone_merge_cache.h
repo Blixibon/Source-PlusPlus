@@ -13,7 +13,7 @@
 
 class C_BaseAnimating;
 class CStudioHdr;
-
+class CBoneBitList;
 
 #include "mathlib/vector.h"
 
@@ -27,11 +27,11 @@ public:
 	void Init( C_BaseAnimating *pOwner );
 
 	// Updates the lookups that let it merge bones quickly.
-	void UpdateCache();
+	virtual void UpdateCache();
 	
 	// This copies the transform from all bones in the followed entity that have 
 	// names that match our bones.
-	void MergeMatchingBones( int boneMask );
+	virtual void MergeMatchingBones(int boneMask, CBoneBitList &boneComputed);
 
 	// copy bones instead of matrices
 	void CopyParentToChild( const Vector parentPos[], const Quaternion parentQ[], Vector childPos[], Quaternion childQ[], int boneMask );
@@ -45,7 +45,8 @@ public:
 
 	bool GetRootBone( matrix3x4_t &rootBone );
 
-private:
+protected:
+	virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName);
 
 	// This is the entity that we're keeping the cache updated for.
 	C_BaseAnimating *m_pOwner;

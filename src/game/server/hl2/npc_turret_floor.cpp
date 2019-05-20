@@ -22,6 +22,7 @@
 #include "beam_shared.h"
 #include "props.h"
 #include "particle_parse.h"
+#include "weapon_physcannon.h"
 
 #ifdef PORTAL
 	#include "prop_portal_shared.h"
@@ -352,6 +353,8 @@ void CNPC_FloorTurret::Spawn( void )
 	CreateVPhysics();
 
 	SetState(NPC_STATE_IDLE);
+
+	UpdateTeam();
 }
 
 //-----------------------------------------------------------------------------
@@ -1831,6 +1834,51 @@ int CNPC_FloorTurret::VPhysicsTakeDamage( const CTakeDamageInfo &info )
 	}
 
 	return BaseClass::VPhysicsTakeDamage( info );
+}
+
+// If we are being held by an ally player, give them credit for our kills.
+CBasePlayer *CNPC_FloorTurret::GetScorer(void)
+{
+	if (IsHeldByPhyscannon())
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+			if (pPlayer)
+			{
+				if (IsPlayerAlly(pPlayer))
+				{
+					if (GetPlayerHeldEntity(pPlayer) == this || PhysCannonGetHeldEntity(pPlayer->GetActiveWeapon()) == this)
+						return pPlayer;
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+CBaseEntity *CNPC_FloorTurret::GetAssistant(void)
+{
+	if (IsHeldByPhyscannon())
+	{
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
+		{
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
+
+			if (pPlayer)
+			{
+				if (IsPlayerAlly(pPlayer))
+				{
+					if (GetPlayerHeldEntity(pPlayer) == this || PhysCannonGetHeldEntity(pPlayer->GetActiveWeapon()) == this)
+						return this;
+				}
+			}
+		}
+	}
+
+	return nullptr;
 }
 
 //-----------------------------------------------------------------------------

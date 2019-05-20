@@ -77,6 +77,7 @@ public:
 
 	bool QueryHearSound( CSound *pSound ) { return true; } // Tentacle isn't picky.
 
+	virtual bool		ShowInDeathnotice() { return true; }
 	
 	int Level( float dz );
 	int MyLevel( void );

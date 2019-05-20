@@ -1,0 +1,11 @@
+"patch"
+{
+include "materials/models/Items/buckshot_rng.vmt"
+insert
+{
+	"$basetexture" "Models/Items/buckshot"
+	"$bumpmap"		"models/Items/buckshot_normal"
+	"$phongexponenttexture" "Models/Items/buckshot_exp"
+	"$itemid" "0"
+}
+}

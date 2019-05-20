@@ -1,0 +1,8 @@
+
+$Sequence "idle" {
+	"357ammo_anims\idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 5
+	loop
+}

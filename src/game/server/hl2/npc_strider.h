@@ -100,6 +100,7 @@ public:
 	void			OnRestore();
 
 	Class_T			Classify();
+	virtual bool	ShowInDeathnotice() { return true; }
 	bool			ShouldAttractAutoAim( CBaseEntity *pAimingEnt );
 
 	virtual float	GetAutoAimRadius() { return 80.0f; }

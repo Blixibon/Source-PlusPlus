@@ -172,7 +172,8 @@ public:
 	// base model functionality
 	float		  ClampCycle( float cycle, bool isLooping );
 	virtual void GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM] );
-	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed );
+	virtual void CalcBoneMerge(CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed);
+	virtual void BuildTransformations(CStudioHdr * hdr, Vector * pos, Quaternion * q, const matrix3x4_t & cameraTransform, int boneMask, CBoneBitList & boneComputed);
 	virtual void ApplyBoneMatrixTransform( matrix3x4_t& transform );
  	virtual int	VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
 
@@ -629,7 +630,7 @@ protected:
 	float							m_flOldCycle;
 	bool							m_bNoModelParticles;
 
-private:
+protected:
 	float							m_flOldModelScale;
 	int								m_nOldSequence;
 	CBoneMergeCache					*m_pBoneMergeCache;	// This caches the strcmp lookups that it has to do

@@ -1,0 +1,11 @@
+"patch"
+{
+include "materials/models/Items/boxart_bullets.vmt"
+replace
+{
+	"$basetexture"					"models/Items/boxart_basecolor"
+	"$bumpmap"						"models/Items/boxart_normal"
+	"$phongexponenttexture"			"models/Items/boxart_exp"
+	"$itemid" "0"
+}
+}

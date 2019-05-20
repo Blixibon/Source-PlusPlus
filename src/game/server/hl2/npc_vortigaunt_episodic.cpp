@@ -1765,14 +1765,9 @@ void CNPC_Vortigaunt::Spawn( void )
 		SetModelName(AllocPooledString(szModel));
 	}
 
-	if (!Q_strnicmp(STRING(gpGlobals->mapname), "ep1_citadel_00", 14) /*&& !Q_strnicmp(STRING(GetModelName()), "models/vortigaunt.mdl", 21)*/)
+	if (g_pGameTypeSystem->GetCurrentGameType() == GAME_EP2 && !Q_strnicmp(STRING(GetModelName()), "models/vortigaunt_blue.mdl", 26))
 	{
-		SetModelName(AllocPooledString("models/vortigaunt_blue.mdl"));
-
-		variant_t var;
-		var.SetBool(true);
-
-		AcceptInput("TurnBlue", this, this, var, 0);
+		SetModelName(AllocPooledString("models/vortigaunt_blue_ep2.mdl"));
 	}
 
 	BaseClass::Spawn();

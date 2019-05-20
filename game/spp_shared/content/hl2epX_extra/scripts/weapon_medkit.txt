@@ -1,0 +1,78 @@
+WeaponData
+{
+	"printname"				"#HL2_MEDKIT"
+	"viewmodel"				"models/weapons/c_medkit.mdl"
+	"playermodel"			"models/weapons/w_medkit.mdl"
+	"anim_prefix"			"medkit"
+	"bucket"				"5"
+	"bucket_position"		"3"
+
+	"clip_size"				"-1"
+	"primary_ammo"			"None"
+	"secondary_ammo"		"None"
+
+	"weight"				"0"
+	"item_flags"			"0"
+	
+	"ITEM_FLAG_EXHAUSTIBLE"	"1"
+	
+	"autoswitchto"			"0"
+	"autoswitchfrom"		"0"
+	
+	"meleeweapon"			"1"
+
+	SoundData
+	{
+		"single_shot"		"HealthKit.Touch"
+		"empty"				"WallHealth.Deny"
+	}
+
+
+	TextureData
+	{
+		"weapon"
+		{
+				"font"		"OBWeaponIcons"
+				"character"	"A"
+		}
+		"weapon_s"
+		{	
+				"font"		"OBWeaponIconsSelected"
+				"character"	"A"
+		}
+
+
+		"ammo"
+		{
+				"font"		"OBWeaponIcons"
+				"character"	"A"
+		}
+
+		"ammo2"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"48"
+				"y"			"72"
+				"width"		"24"
+				"height"	"24"
+		}
+
+		"crosshair"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"0"
+				"y"			"48"
+				"width"		"24"
+				"height"	"24"
+		}
+
+		"autoaim"
+		{
+				"file"		"sprites/crosshairs"
+				"x"			"48"
+				"y"			"72"
+				"width"		"24"
+				"height"	"24"
+		}
+	}
+}

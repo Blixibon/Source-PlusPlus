@@ -31,7 +31,7 @@ public:
 
 	// IScorer interface
 	virtual CBasePlayer *GetScorer( void );
-	virtual CBasePlayer *GetAssistant( void ) { return NULL; }
+	virtual CBaseEntity *GetAssistant( void ) { return NULL; }
 
 	void	SetScorer( CBaseEntity *pScorer );
 

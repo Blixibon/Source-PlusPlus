@@ -23,8 +23,11 @@
 
 #define NUM_INTERIOR_PARTICLES	8
 
-#define DLIGHT_RADIUS (150.0f)
+#define DLIGHT_RADIUS (100.0f)
 #define DLIGHT_MINLIGHT (40.0f/255.0f)
+
+#define VORTIGAUNT_LEFT_CLAW "leftclaw"
+#define VORTIGAUNT_RIGHT_CLAW "rightclaw"
 
 class C_NPC_Vortigaunt : public C_AI_BaseNPC
 {
@@ -42,6 +45,15 @@ public:
 
 	bool  m_bIsBlack;    ///< wants to fade to black (networked)
 	float m_flBlackFade; ///< [0.00 .. 1.00] where 1.00 is all black. Locally interpolated.
+
+private:
+	bool	SetupEmitters(Vector lorigin, float exp = 5, float life = 0.5f, float minrad = 245.0f, float maxrad = 256.0f);
+
+	bool m_bIsLighting;
+	float m_flNextLight = 0.0f;
+
+	dlight_t						*m_pDLight;
+	dlight_t						*m_pELight;
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_NPC_Vortigaunt, DT_NPC_Vortigaunt, CNPC_Vortigaunt )
@@ -64,7 +76,7 @@ void C_NPC_Vortigaunt::OnDataChanged( DataUpdateType_t updateType )
 	BaseClass::OnDataChanged( updateType );
 
 	// start thinking if we need to fade.
-	if ( m_flBlackFade != (m_bIsBlack ? 1.0f : 0.0f) )
+	if ( m_flBlackFade != (m_bIsBlack ? 1.0f : 0.0f) /*|| m_bIsLighting*/ )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
@@ -79,13 +91,16 @@ void C_NPC_Vortigaunt::ClientThink( void )
 	if ( gpGlobals->frametime <= 0.0f )
 		return;
 
+	//bool bKeepThinking = true;
+
 	if ( m_bIsBlack )
 	{
 		// are we done?
 		if ( m_flBlackFade >= 1.0f )
 		{
 			m_flBlackFade = 1.0f;
-			SetNextClientThink( CLIENT_THINK_NEVER );
+			//SetNextClientThink( CLIENT_THINK_NEVER );
+			//bKeepThinking = false;
 		}
 		else // interpolate there
 		{
@@ -103,7 +118,8 @@ void C_NPC_Vortigaunt::ClientThink( void )
 		if ( m_flBlackFade <= 0.0f )
 		{
 			m_flBlackFade = 0.0f;
-			SetNextClientThink( CLIENT_THINK_NEVER );
+			//SetNextClientThink( CLIENT_THINK_NEVER );
+			//bKeepThinking = false;
 		}
 		else // interpolate there
 		{
@@ -115,11 +131,82 @@ void C_NPC_Vortigaunt::ClientThink( void )
 			}
 		}
 	}
+
+	//if (m_bIsLighting)
+	//{
+	//	//bKeepThinking = true;
+
+	//	Vector vecLight1Pos;
+	//	Vector vecLight2Pos;
+	//	Vector vecTotal;
+	//	Vector vecLightPos;
+
+	//	GetAttachment(VORTIGAUNT_LEFT_CLAW, vecLight1Pos);
+	//	GetAttachment(VORTIGAUNT_RIGHT_CLAW, vecLight2Pos);
+
+	//	VectorAdd(vecLight1Pos, vecLight2Pos, vecTotal);
+	//	VectorScale(vecTotal, 0.5f, vecLightPos);
+
+	//	if (m_pDLight)
+	//		m_pDLight->origin = vecLightPos;
+
+	//	if (m_pELight)
+	//		m_pELight->origin = vecLightPos;
+
+	//	if (m_flNextLight <= gpGlobals->curtime)
+	//	{
+	//		
+
+	//		//SetupEmitters(vecLight1Pos, 3, 0.2f, 100.0f, 200.0f);
+	//		SetupEmitters(vecLightPos, 4, 0.2f, 100.0f, 200.0f);
+
+	//		m_flNextLight = gpGlobals->curtime + 0.1f;
+	//	}
+
+	//}
+
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Create our emitter
+// Input: lorigin - origin of light effect
+//-----------------------------------------------------------------------------
+bool C_NPC_Vortigaunt::SetupEmitters(Vector lorigin, float exp, float life, float minrad, float maxrad)
+{
+	
+
+#ifndef _X360
+	m_pDLight = effects->CL_AllocDlight(index);
+	m_pDLight->origin = lorigin;
+	m_pDLight->color.r = 64;
+	m_pDLight->color.g = 255;
+	m_pDLight->color.b = 64;
+	m_pDLight->color.exponent = exp;
+	m_pDLight->radius = random->RandomFloat(minrad, maxrad);
+	//m_pDLight->minlight = DLIGHT_MINLIGHT;
+	m_pDLight->decay = m_pDLight->radius / life;
+	m_pDLight->die = gpGlobals->curtime + life;
+	m_pDLight->flags = DLIGHT_NO_MODEL_ILLUMINATION;
+#endif // _X360
+
+	m_pELight = effects->CL_AllocElight(-index);
+	m_pELight->origin = lorigin;
+	m_pELight->color.r = 64;
+	m_pELight->color.g = 255;
+	m_pELight->color.b = 64;
+	m_pELight->color.exponent = exp;
+	m_pELight->radius = AVG(minrad, maxrad);
+	//m_pElight->minlight = DLIGHT_MINLIGHT;
+	m_pELight->decay = m_pELight->radius / life;
+	m_pELight->die = gpGlobals->curtime + life;
+
+	return true;
 }
 
 // FIXME: Move to shared code!
 #define VORTFX_ZAPBEAM	0
 #define VORTFX_ARMBEAM	1
+#define VORTFX_LIGHTOFF	2
 
 //-----------------------------------------------------------------------------
 // Purpose: Receive messages from the server
@@ -154,7 +241,20 @@ void C_NPC_Vortigaunt::ReceiveMessage( int classID, bf_read &msg )
 			CNewParticleEffect *pEffect = ParticleProp()->Create( "vortigaunt_beam", PATTACH_POINT_FOLLOW, nAttachment );
 			if ( pEffect )
 			{
+				m_bIsLighting = false;
+				SetupEmitters(vecStart, 6);
 				pEffect->SetControlPoint( 0, vecStart );
+				//SetupEmitters(vecEndPos, 5, 0.3f, 200.0f, 245.0f);
+				dlight_t *dl = effects->CL_AllocDlight(LIGHT_INDEX_MUZZLEFLASH + index);
+				dl->origin = vecEndPos;
+				dl->color.r = 64;
+				dl->color.g = 255;
+				dl->color.b = 64;
+				dl->color.exponent = 5;
+				dl->radius = random->RandomFloat(200, 245);
+				//dl->minlight = DLIGHT_MINLIGHT;
+				dl->decay = dl->radius / 0.3f;
+				dl->die = gpGlobals->curtime + 0.3f;
 				pEffect->SetControlPoint( 1, vecEndPos );
 			}
 		}
@@ -168,6 +268,9 @@ void C_NPC_Vortigaunt::ReceiveMessage( int classID, bf_read &msg )
 			if ( pEnt )
 			{
 				unsigned char nAttachment = msg.ReadByte();
+				Vector vecAttachPos;
+				GetAttachment(nAttachment, vecAttachPos);
+
 				Vector vecEndPos;
 				msg.ReadBitVec3Coord( vecEndPos );
 				
@@ -177,6 +280,8 @@ void C_NPC_Vortigaunt::ReceiveMessage( int classID, bf_read &msg )
 				CNewParticleEffect *pEffect = pEnt->ParticleProp()->Create( "vortigaunt_beam_charge", PATTACH_POINT_FOLLOW, nAttachment );
 				if ( pEffect )
 				{
+					m_bIsLighting = true;
+					
 					// Set the control point's angles to be the surface normal we struct
 					Vector vecRight, vecUp;
 					VectorVectors( vecNormal, vecRight, vecUp );
@@ -186,10 +291,39 @@ void C_NPC_Vortigaunt::ReceiveMessage( int classID, bf_read &msg )
 			}
 		}
 		break;
+	case VORTFX_LIGHTOFF:
+	{
+		m_bIsLighting = false;
+		break;
+	}
+
 	default:
 		AssertMsg1( false, "Received unknown message %d", messageType);
 	}
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void ZapCallback(const CEffectData &data)
+{
+	C_BaseEntity *pEnt = data.GetEntity();
+	if (!pEnt)
+		return;
+
+	/*if (!pEnt->IsAlive() && pEnt->IsBaseCombatCharacter())
+	{
+		C_BaseCombatCharacter *pBCC = pEnt->MyCombatCharacterPointer();
+
+		if (pBCC->m_pRagdoll)
+			pEnt = pBCC->m_pRagdoll;
+	}*/
+
+	pEnt->ParticleProp()->Create("vort_zapped", PATTACH_ABSORIGIN_FOLLOW);
+	
+}
+
+//DECLARE_CLIENT_EFFECT("VortElectrify", ZapCallback);
 
 class C_VortigauntChargeToken : public C_BaseEntity
 {
@@ -341,6 +475,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_VortigauntEffectDispel, DT_VortigauntEffectDispel, C
 	RecvPropBool( RECVINFO( m_bFadeOut ) ),
 END_RECV_TABLE()
 
+ConVar debug_dispeleffect("cl_debug_dispel_effect", "0");
+
 void C_VortigauntEffectDispel::UpdateOnRemove( void )
 {
 	if ( m_hEffect )
@@ -367,6 +503,13 @@ void C_VortigauntEffectDispel::OnDataChanged( DataUpdateType_t type )
 			m_hEffect->StopEmission();
 			m_hEffect = NULL;
 		}
+
+		if (m_pDLight != NULL)
+		{
+			float life = 1.0f;
+			m_pDLight->decay = m_pDLight->radius / life;
+			m_pDLight->die = gpGlobals->curtime + life;
+		}
 	}
 
 	BaseClass::OnDataChanged( type );
@@ -387,13 +530,21 @@ void C_VortigauntEffectDispel::NotifyShouldTransmit( ShouldTransmitState_t state
 			m_hEffect->StopEmission();
 			m_hEffect = NULL;
 		}
+
+		if (m_pDLight != NULL)
+		{
+			m_pDLight->die = gpGlobals->curtime;
+		}
+
 	}
 
 	// Turn on
-	if ( state == SHOULDTRANSMIT_START )
+	if (state == SHOULDTRANSMIT_START && !m_bFadeOut)
 	{
 		m_hEffect = ParticleProp()->Create( "vortigaunt_hand_glow", PATTACH_ABSORIGIN_FOLLOW );
 		m_hEffect->SetControlPointEntity( 0, this );
+		SetupEmitters();
+		SetNextClientThink(CLIENT_THINK_ALWAYS);
 	}
 }
 
@@ -410,7 +561,8 @@ bool C_VortigauntEffectDispel::SetupEmitters( void )
 	m_pDLight->color.r = 64;
 	m_pDLight->color.g = 255;
 	m_pDLight->color.b = 64;
-	m_pDLight->radius = 0;
+	m_pDLight->color.exponent = 1;
+	m_pDLight->radius = DLIGHT_RADIUS;
 	m_pDLight->minlight = DLIGHT_MINLIGHT;
 	m_pDLight->die = FLT_MAX;
 #endif // _X360
@@ -426,7 +578,6 @@ void C_VortigauntEffectDispel::ClientThink( void )
 	if ( m_pDLight != NULL )
 	{
 		m_pDLight->origin = GetAbsOrigin();
-		m_pDLight->radius = DLIGHT_RADIUS;
 	}
 }
 

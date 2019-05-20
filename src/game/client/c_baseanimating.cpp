@@ -1419,6 +1419,28 @@ void C_BaseAnimating::GetPoseParameters( CStudioHdr *pStudioHdr, float poseParam
 #endif
 }
 
+void C_BaseAnimating::CalcBoneMerge(CStudioHdr * hdr, int boneMask, CBoneBitList & boneComputed)
+{
+	bool boneMerge = IsEffectActive(EF_BONEMERGE);
+	if (boneMerge || m_pBoneMergeCache)
+	{
+		if (boneMerge)
+		{
+			if (!m_pBoneMergeCache)
+			{
+				m_pBoneMergeCache = new CBoneMergeCache;
+				m_pBoneMergeCache->Init(this);
+			}
+			m_pBoneMergeCache->MergeMatchingBones(boneMask, boneComputed);
+		}
+		else
+		{
+			delete m_pBoneMergeCache;
+			m_pBoneMergeCache = NULL;
+		}
+	}
+}
+
 
 float C_BaseAnimating::ClampCycle( float flCycle, bool isLooping )
 {
@@ -1461,7 +1483,7 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 	// no bones have been simulated
 	memset( boneSimulated, 0, sizeof(boneSimulated) );
 	mstudiobone_t *pbones = hdr->pBone( 0 );
-
+	//bool bFixupSimulatedPositions = false;
 	if ( m_pRagdoll )
 	{
 		// simulate bones and update flags
@@ -1482,27 +1504,11 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 		
 		m_BoneAccessor.SetWritableBones( oldWritableBones );
 		m_BoneAccessor.SetReadableBones( oldReadableBones );
+		//bFixupSimulatedPositions = !m_pRagdoll->GetRagdoll()->allowStretch;
 	}
 
 	// For EF_BONEMERGE entities, copy the bone matrices for any bones that have matching names.
-	bool boneMerge = IsEffectActive(EF_BONEMERGE);
-	if ( boneMerge || m_pBoneMergeCache )
-	{
-		if ( boneMerge )
-		{
-			if ( !m_pBoneMergeCache )
-			{
-				m_pBoneMergeCache = new CBoneMergeCache;
-				m_pBoneMergeCache->Init( this );
-			}
-			m_pBoneMergeCache->MergeMatchingBones( boneMask );
-		}
-		else
-		{
-			delete m_pBoneMergeCache;
-			m_pBoneMergeCache = NULL;
-		}
-	}
+	CalcBoneMerge(hdr, boneMask, boneComputed);
 
 	for (int i = 0; i < hdr->numbones(); i++) 
 	{
@@ -1512,19 +1518,29 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 			continue;
 		}
 
-		if ( m_pBoneMergeCache && m_pBoneMergeCache->IsBoneMerged( i ) )
-			continue;
+		/*if ( m_pBoneMergeCache && m_pBoneMergeCache->IsBoneMerged( i ) )
+			continue;*/
 
-		// animate all non-simulated bones
-		if ( boneSimulated[i] || CalcProceduralBone( hdr, i, m_BoneAccessor ))
-		{
-			continue;
-		}
-		// skip bones that the IK has already setup
-		else if (boneComputed.IsBoneMarked( i ))
+		// skip bones that are already setup
+		if (boneComputed.IsBoneMarked(i))
 		{
 			// dummy operation, just used to verify in debug that this should have happened
-			GetBoneForWrite( i );
+			GetBoneForWrite(i);
+		}
+		else if (boneSimulated[i])
+		{
+			ApplyBoneMatrixTransform(GetBoneForWrite(i));
+			/*if (bFixupSimulatedPositions && pbones[i].parent != -1)
+			{
+				Vector boneOrigin;
+				VectorTransform(pos[i], GetBone(pbones[i].parent), boneOrigin);
+				PositionMatrix(boneOrigin, GetBoneForWrite(i));
+			}*/
+			continue;
+		}
+		else if (CalcProceduralBone(hdr, i, m_BoneAccessor))
+		{
+			continue;
 		}
 		else
 		{

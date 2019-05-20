@@ -103,6 +103,15 @@ public:
 	//bool 			ShouldAlwaysThink();
 
 	//---------------------------------
+	// Death Notice
+	//
+
+	// Print death notices involving this npc?
+	virtual bool		ShowInDeathnotice();
+
+	virtual const char *GetDeathNoticeNameOverride();
+
+	//---------------------------------
 	// Behavior
 	//---------------------------------
 	bool			ShouldBehaviorSelectSchedule( CAI_BehaviorBase *pBehavior );

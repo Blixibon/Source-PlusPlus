@@ -8,6 +8,7 @@
 #include "ai_basenpc.h"
 #include "player_pickup.h"
 #include "particle_system.h"
+#include "iscorer.h"
 
 //Turret states
 enum turretState_e
@@ -51,7 +52,7 @@ class CSprite;
 //-----------------------------------------------------------------------------
 // Purpose: Floor turret
 //-----------------------------------------------------------------------------
-class CNPC_FloorTurret : public CNPCBaseInteractive<CAI_BaseNPC>, public CDefaultPlayerPickupVPhysics
+class CNPC_FloorTurret : public CNPCBaseInteractive<CAI_BaseNPC>, public CDefaultPlayerPickupVPhysics, public IScorer
 {
 	DECLARE_CLASS( CNPC_FloorTurret, CNPCBaseInteractive<CAI_BaseNPC> );
 public:
@@ -67,6 +68,11 @@ public:
 	virtual void	PlayerPenetratingVPhysics( void );
 	virtual int		VPhysicsTakeDamage( const CTakeDamageInfo &info );
 	virtual bool	CanBecomeServerRagdoll( void ) { return false; }
+
+	// Return the entity that should receive the score
+	virtual CBasePlayer *GetScorer(void);
+	// Return the entity that should get assistance credit
+	virtual CBaseEntity *GetAssistant(void);
 
 #ifdef HL2_EPISODIC
 	// We don't want to be NPCSOLID because we'll collide with NPC clips
@@ -175,6 +181,8 @@ public:
 		// For now, turn green so we can tell who is hacked.
 		SetRenderColor( 0, 255, 0 );
 		m_bHackedByAlyx = true; 
+
+		UpdateTeam();
 	}
 
 	static float	fMaxTipControllerVelocity;

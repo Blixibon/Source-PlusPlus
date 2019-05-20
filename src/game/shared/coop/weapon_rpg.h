@@ -219,6 +219,10 @@ public:
 	float	GetMinRestTime() { return 4.0; }
 	float	GetMaxRestTime() { return 4.0; }
 
+	bool	WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions);
+	int		WeaponRangeAttack1Condition(float flDot, float flDist);
+
+	void	Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator);
 	void	StartGuiding( void );
 	void	StopGuiding( void );
 	void	ToggleGuiding( void );

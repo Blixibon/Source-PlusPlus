@@ -208,6 +208,8 @@ public:
 
 	void UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
 
+	virtual const char *GetDeathNoticeNameOverride() { return IsPlayerAllySniper() ? "npc_alyx" : nullptr; }
+
 	bool IsLaserOn( void ) { return m_pBeam != NULL; }
 
 	void Event_Killed( const CTakeDamageInfo &info );

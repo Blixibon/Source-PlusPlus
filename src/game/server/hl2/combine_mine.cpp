@@ -1080,12 +1080,13 @@ void CBounceBomb::ExplodeThink()
 
 	if (m_iModification == MINE_MODIFICATION_CAVERN)
 	{
-		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true,
-			NULL, CLASS_PLAYER_ALLY );
+		//ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true, NULL, CLASS_PLAYER_ALLY );
+		ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this, -1, NULL, CLASS_PLAYER_ALLY);
 	}
 	else
 	{
-		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true);
+		//ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true);
+		ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
 	}
 	UTIL_Remove( this );
 }

@@ -29,13 +29,13 @@ WeaponData
 	{
 		"weapon"
 		{
-			"font"		"SynFontWeaponIcons"
-			"character"	"t"
+			"font"		"NewWeaponIcons"
+			"character"	"q"
 		}
 		"weapon_s"
 		{	
-			"font"		"SynFontSelectedWeaponIcons"
-			"character"	"t"
+			"font"		"NewWeaponIconsSelected"
+			"character"	"q"
 		}
 		"ammo"
 		{

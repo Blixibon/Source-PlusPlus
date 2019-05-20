@@ -22,7 +22,7 @@ public:
 	// Return the entity that should receive the score
 	virtual CBasePlayer *GetScorer( void ) = 0;
 	// Return the entity that should get assistance credit
-	virtual CBasePlayer *GetAssistant( void ) = 0;
+	virtual CBaseEntity *GetAssistant( void ) = 0;
 };
 
 

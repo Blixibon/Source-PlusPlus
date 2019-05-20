@@ -83,6 +83,8 @@ public:
 
 	bool		IsWorker( void ) const { return HasSpawnFlags( SF_ANTLION_WORKER ); }	// NOTE: IsAntlionWorker function must agree!
 
+	virtual const char *GetDeathNoticeNameOverride() { return IsWorker() ? "npc_antlionworker" : nullptr; }
+
 	float		GetIdealAccel( void ) const;
 	float		MaxYawSpeed( void );
 	bool		FInViewCone( CBaseEntity *pEntity );

@@ -48,6 +48,8 @@ public:
 
 	Class_T Classify( void ) { return CLASS_ALIEN_MILITARY; };
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	/*	void Killed( entvars_t *pevAttacker, int iGib );
 	void GibMonster( void );
 

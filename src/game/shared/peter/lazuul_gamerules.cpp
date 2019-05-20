@@ -10,6 +10,7 @@
 #include "peter/laz_mapents.h"
 #include "items.h"
 #include "trigger_area_capture.h"
+#include "iscorer.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
@@ -710,6 +711,33 @@ bool CLazuul::AllowDamage(CBaseEntity* pVictim, const CTakeDamageInfo& info)
 #endif
 	return true;
 }
+
+//=========================================================
+//=========================================================
+int CLazuul::PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget)
+{
+	// half life multiplay has a simple concept of Player Relationships.
+	// you are either on another player's team, or you are not.
+	if (!pPlayer || !pTarget)
+		return GR_NOTTEAMMATE;
+
+	if (pTarget->IsPlayer())
+	{
+		if ((*GetTeamID(pPlayer) != '\0') && (*GetTeamID(pTarget) != '\0') && !stricmp(GetTeamID(pPlayer), GetTeamID(pTarget)))
+		{
+			return GR_TEAMMATE;
+		}
+	}
+	else if (pTarget->IsNPC())
+	{
+		CAI_BaseNPC *pNPC = pTarget->MyNPCPointer();
+		if (pNPC->IRelationType(pPlayer) == D_LI)
+			return GR_TEAMMATE;
+	}
+
+	return GR_NOTTEAMMATE;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Whether or not the NPC should drop a health vial
 // Output : Returns true on success, false on failure.
@@ -3295,7 +3323,7 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 	}
 
 	// strip certain prefixes from inflictor's classname
-	const char* prefix[] = { "tf_weapon_grenade_", "tf_weapon_", "weapon_", "npc_", "func_", "prop_vehicle_", "prop_", "monster_", "grenade_" };
+	const char* prefix[] = { "tf_weapon_grenade_", "tf_weapon_", "weapon_", "npc_", "func_", "prop_vehicle_", "prop_", "monster_" };
 	for (int i = 0; i < ARRAYSIZE(prefix); i++)
 	{
 		// if prefix matches, advance the string pointer past the prefix
@@ -3407,48 +3435,28 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 //-----------------------------------------------------------------------------
 CBaseEntity* CLazuul::GetAssister(CBaseEntity * pVictim, CBaseEntity * pKiller, CBaseEntity * pInflictor)
 {
-	// See if the killer is a player.
-	CBasePlayer* pTFScorer = (GetDeathScorer(pKiller, pInflictor, pVictim));
-	//CTFPlayer *pTFVictim = ToTFPlayer( pVictim );
-	if (pTFScorer)
+	// See who has damaged the victim 2nd most recently (most recent is the killer), and if that is within a certain time window.
+	// If so, give that player an assist.  (Only 1 assist granted, to single other most recent damager.)
+	CBaseEntity * pRecentDamager = GetRecentDamager(pVictim, 1, TF_TIME_ASSIST_KILL);
+	if (pRecentDamager && (pRecentDamager != pKiller))
+		return pRecentDamager;
+
+	// Killing entity might be specifying a scorer player
+	IScorer *pScorerInterface = dynamic_cast<IScorer*>(pKiller);
+	if (pScorerInterface)
 	{
-		// if victim killed himself, don't award an assist to anyone else, even if there was a recent damager
-		if (pVictim == pTFScorer)
-			return NULL;
-#if 0
-		// If a player is healing the scorer, give that player credit for the assist
-		CTFPlayer * pHealer = ToTFPlayer(static_cast<CBaseEntity*>(pTFScorer->m_Shared.GetFirstHealer()));
-		// Must be a medic to receive a healing assist, otherwise engineers get credit for assists from dispensers doing healing.
-		// Also don't give an assist for healing if the inflictor was a sentry gun, otherwise medics healing engineers get assists for the engineer's sentry kills.
-		if (pHealer && pHealer->IsPlayerClass(TF_CLASS_MEDIC) && (dynamic_cast<CObjectSentrygun*>(pInflictor)) == NULL)
-		{
-			return pHealer;
-		}
-#endif
-		// See who has damaged the victim 2nd most recently (most recent is the killer), and if that is within a certain time window.
-		// If so, give that player an assist.  (Only 1 assist granted, to single other most recent damager.)
-		CBaseEntity* pRecentDamager = GetRecentDamager(pVictim, 1, TF_TIME_ASSIST_KILL);
-		if (pRecentDamager && (pRecentDamager != pTFScorer))
-			return pRecentDamager;
+		CBaseEntity *pPlayer = pScorerInterface->GetAssistant();
+		if (pPlayer)
+			return pPlayer;
 	}
-	else if (pKiller && pKiller->IsNPC())	// See if the killer is NPC.
+
+	// Inflicting entity might be specifying a scoring player
+	pScorerInterface = dynamic_cast<IScorer*>(pInflictor);
+	if (pScorerInterface)
 	{
-		//CAI_BaseNPC* pNPCKiller = assert_cast<CAI_BaseNPC*>(pKiller);
-
-		// if victim killed himself, don't award an assist to anyone else, even if there was a recent damager
-		if (pVictim == pKiller)
-			return NULL;
-#if 0
-		CTFPlayer * pHealer = ToTFPlayer(static_cast<CBaseEntity*>(pNPCKiller->GetFirstHealer()));
-
-		if (pHealer && pHealer->IsPlayerClass(TF_CLASS_MEDIC))
-			return pHealer;
-#endif
-		// See who has damaged the victim 2nd most recently (most recent is the killer), and if that is within a certain time window.
-		// If so, give that player an assist.  (Only 1 assist granted, to single other most recent damager.)
-		CBaseEntity * pRecentDamager = GetRecentDamager(pVictim, 1, TF_TIME_ASSIST_KILL);
-		if (pRecentDamager && (pRecentDamager != pKiller))
-			return pRecentDamager;
+		CBaseEntity *pPlayer = pScorerInterface->GetAssistant();
+		if (pPlayer)
+			return pPlayer;
 	}
 
 	return NULL;
@@ -3519,13 +3527,32 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 	int killer_ID = 0;
 	int killer_index = 0;
 
+	const char* killer_Name = 0;
+	const char* assister_Name = 0;
+
 	// Find the killer & the scorer
 	CBasePlayer* pTFPlayerVictim = ToBasePlayer(pVictim);
 	CBaseEntity* pInflictor = info.GetInflictor();
 	CBaseEntity* pKiller = info.GetAttacker();
 	CBasePlayer* pScorer = GetDeathScorer(pKiller, pInflictor, pVictim);
-	CBaseEntity* pAssister = GetAssister(pVictim, pScorer, pInflictor);
+	CBaseEntity* pAssister = GetAssister(pVictim, pKiller, pInflictor);
 	CBasePlayer* pTFAssister = ToBasePlayer(pAssister);
+
+	if (pKiller)
+	{
+		if (pKiller->IsNPC())
+			killer_Name = pKiller->MyNPCPointer()->GetDeathNoticeNameOverride();
+		if (!killer_Name)
+			killer_Name = pKiller->GetClassname();
+	}
+
+	if (pAssister)
+	{
+		if (pAssister->IsNPC())
+			assister_Name = pAssister->MyNPCPointer()->GetDeathNoticeNameOverride();
+		if (!assister_Name)
+			assister_Name = pAssister->GetClassname();
+	}
 
 	int iWeaponID = HLSS_WEAPON_ID_NONE;
 
@@ -3569,11 +3596,11 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 		event->SetInt("victim_index", pVictim->entindex());
 		event->SetInt("attacker", killer_ID);
 		event->SetInt("attacker_index", killer_index);
-		event->SetString("attacker_name", pKiller ? pKiller->GetClassname() : NULL);
+		event->SetString("attacker_name", pKiller ? killer_Name : NULL);
 		event->SetInt("attacker_team", pKiller ? pKiller->GetTeamNumber() : 0);
 		event->SetInt("assister", pTFAssister ? pTFAssister->GetUserID() : -1);
 		event->SetInt("assister_index", pAssister ? pAssister->entindex() : -1);
-		event->SetString("assister_name", pAssister ? pAssister->GetClassname() : NULL);
+		event->SetString("assister_name", pAssister ? assister_Name : NULL);
 		event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
 		event->SetString("weapon", killer_weapon_name);
 		event->SetString("weapon_logclassname", killer_weapon_log_name);
@@ -3616,12 +3643,39 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 	int killer_ID = 0;
 	int killer_index = 0;
 
+	const char* killer_Name = 0;
+	const char* assister_Name = 0;
+	const char* victim_Name = 0;
+
 	// Find the killer & the scorer
 	CBaseEntity* pInflictor = info.GetInflictor();
 	CBaseEntity* pKiller = info.GetAttacker();
 	CBasePlayer* pScorer = GetDeathScorer(pKiller, pInflictor, pVictim);
-	CBaseEntity* pAssister = GetAssister(pVictim, pScorer, pInflictor);
+	CBaseEntity* pAssister = GetAssister(pVictim, pKiller, pInflictor);
 	//CBasePlayer* pTFAssister = ToBasePlayer(pAssister);
+
+	if (pVictim)
+	{
+		victim_Name = pVictim->GetDeathNoticeNameOverride();
+		if (!victim_Name)
+			victim_Name = pVictim->GetClassname();
+	}
+
+	if (pKiller)
+	{
+		if (pKiller->IsNPC())
+			killer_Name = pKiller->MyNPCPointer()->GetDeathNoticeNameOverride();
+		if (!killer_Name)
+			killer_Name = pKiller->GetClassname();
+	}
+
+	if (pAssister)
+	{
+		if (pAssister->IsNPC())
+			assister_Name = pAssister->MyNPCPointer()->GetDeathNoticeNameOverride();
+		if (!assister_Name)
+			assister_Name = pAssister->GetClassname();
+	}
 
 	int iWeaponID = HLSS_WEAPON_ID_NONE;
 
@@ -3647,7 +3701,7 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 		}
 	}
 
-	bool bShowDeathNotice = pVictim->IsVitalAlly();
+	bool bShowDeathNotice = pVictim->ShowInDeathnotice();
 
 	if (pScorer)	// Is the killer a client?
 	{
@@ -3658,10 +3712,16 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 	else if (pKiller && pKiller->IsNPC())
 	{
 		killer_index = pKiller->entindex();
-		if (!bShowDeathNotice && pKiller->MyNPCPointer()->IsVitalAlly())
+		if (!bShowDeathNotice && pKiller->MyNPCPointer()->ShowInDeathnotice())
 		{
 			bShowDeathNotice = true;
 		}
+	}
+
+	if (!bShowDeathNotice && pAssister)
+	{
+		if (pAssister->IsPlayer() || (pAssister->IsNPC() && pAssister->MyNPCPointer()->ShowInDeathnotice()))
+			bShowDeathNotice = true;
 	}
 
 	// are we allowed to make deathnotice on THIS npc?
@@ -3672,13 +3732,13 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 		if (event)
 		{
 			event->SetInt("victim_index", pVictim->entindex());
-			event->SetString("victim_name", pVictim->GetClassname());
+			event->SetString("victim_name", victim_Name);
 			event->SetInt("victim_team", pVictim->GetTeamNumber());
 			event->SetInt("attacker_index", killer_index);
-			event->SetString("attacker_name", pKiller ? pKiller->GetClassname() : NULL);
+			event->SetString("attacker_name", pKiller ? killer_Name : NULL);
 			event->SetInt("attacker_team", pKiller ? pKiller->GetTeamNumber() : 0);
 			event->SetInt("assister_index", pAssister ? pAssister->entindex() : -1);
-			event->SetString("assister_name", pAssister ? pAssister->GetClassname() : NULL);
+			event->SetString("assister_name", pAssister ? assister_Name : NULL);
 			event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
 			event->SetString("weapon", killer_weapon_name);
 			event->SetString("weapon_logclassname", killer_weapon_log_name);

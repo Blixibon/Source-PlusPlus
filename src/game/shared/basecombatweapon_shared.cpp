@@ -361,7 +361,7 @@ const char *CBaseCombatWeapon::GetPrintName( void ) const
 //-----------------------------------------------------------------------------
 int CBaseCombatWeapon::GetMaxClip1( void ) const
 {
-#if defined ( TF_DLL ) || defined ( TF_CLIENT_DLL ) || defined ( TF_CLASSIC ) || defined ( TF_CLASSIC_CLIENT )
+#if defined ( TF_DLL ) || defined ( TF_CLIENT_DLL ) || defined ( TF_CLASSIC ) || defined ( TF_CLASSIC_CLIENT ) || defined ( HL2_LAZUL )
 	int iModMaxClipOverride = 0;
 	CALL_ATTRIB_HOOK_INT( iModMaxClipOverride, mod_max_primary_clip_override );
 	if ( iModMaxClipOverride != 0 )

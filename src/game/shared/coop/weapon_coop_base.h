@@ -71,6 +71,9 @@ public:
 	static acttable_t s_acttableSatchel[];
 	static acttable_t s_acttableSnark[];
 	static acttable_t s_acttableTripmine[];
+
+	// Lazul
+	static acttable_t s_acttableDeagle[];
 };
 
 #endif // WEAPON_COOP_BASE_H

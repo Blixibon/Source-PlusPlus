@@ -220,6 +220,8 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	Class_T	Classify( void ) { return CLASS_ALIEN_MONSTER; };
 	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	int	OnTakeDamage( const CTakeDamageInfo &info );

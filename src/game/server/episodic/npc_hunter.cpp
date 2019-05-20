@@ -1160,6 +1160,8 @@ public:
 	Activity		GetDeathActivity();
 	void			StopLoopingSounds();
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	const impactdamagetable_t &GetPhysicsImpactDamageTable();
 
 	Class_T			Classify();

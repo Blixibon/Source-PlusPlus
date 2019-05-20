@@ -63,6 +63,8 @@ public:
 	virtual float			GetAmmoQuantityScale(int iAmmoIndex);
 	virtual void			LevelInitPreEntity();
 
+	virtual int PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget);
+
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 
 	// Weapon spawn/respawn control

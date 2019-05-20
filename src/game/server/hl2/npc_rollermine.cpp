@@ -181,6 +181,8 @@ public:
 	CNPC_RollerMine( void ) { m_bTurnedOn = true; m_bUniformSight = false; }
 	~CNPC_RollerMine( void );
 
+	virtual const char *GetDeathNoticeNameOverride() { return m_bHackedByAlyx ? "npc_rollerminered" : nullptr; }
+
 	void	Spawn( void );
 	bool	CreateVPhysics();
 	void	RunAI();

@@ -33,6 +33,8 @@ public:
 	void HandleAnimEvent( animevent_t *pEvent );
 //	int IgnoreConditions ( void );
 
+	virtual const char *GetZombieModel() { return "models/half-life/zombie.mdl"; }
+
 	float m_flNextFlinch;
 
 	void PainSound( const CTakeDamageInfo &info );

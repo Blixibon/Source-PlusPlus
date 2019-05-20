@@ -36,6 +36,8 @@ public:
 	int				GetSoundInterests( void ) { return (SOUND_WORLD|SOUND_COMBAT|SOUND_PLAYER|SOUND_DANGER); }
 	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
 
+	virtual const char *GetDeathNoticeNameOverride() { return m_bIsClawScanner ? "npc_clawscanner" : nullptr; }
+
 	bool			FValidateHintType(CAI_Hint *pHint);
 
 	virtual int		TranslateSchedule( int scheduleType );

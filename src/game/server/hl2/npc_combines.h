@@ -40,6 +40,8 @@ public:
 	void		Event_Killed( const CTakeDamageInfo &info );
 	void		OnListened();
 
+	virtual const char *GetDeathNoticeNameOverride() { return IsElite() ? "npc_combine_e" : NULL; }
+
 	void		ClearAttackConditions( void );
 
 	bool		m_fIsBlocking;

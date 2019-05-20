@@ -1,0 +1,77 @@
+"VertexLitGeneric"
+{
+	"$color2"      					"[0.5 0.5 0.5]"
+	
+	"$envmap"						"env_cubemap"
+	"$envmaptint"					"[1.6 1 .4]"
+//	"$envmapfresnel"				"1"
+//	"$nocull"						"1"
+//	"$normalmapalphaenvmapmask"		"1"
+
+	"$phong"						"1"
+	"$phongboost"					"15"
+	"$phongfresnelranges"         	"[4 4 6]"
+	"$phongalbedotint"		         "1"
+//	"$phongtint"					"[ 0.36 0.16 0.16 ]"
+	"$halflambert"					"1"
+	
+////////////////////////////////////////////////////////////////////////////////////////////////
+// REAL RNG : MODEL (2016)
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+	$objnumber 2.99 // MODIFY ONLY THIS IN THIS VMT
+	$objlimit	2.49 // MODIFY ONLY THIS IN THIS VMT
+	$selected 1000
+	$rand 1000
+
+	$one 1
+	$zero 0
+	$pf "0.5"
+
+	$itemtocheck 0
+	$itemtocheckr 0
+
+
+"Proxies"
+{
+
+	"EntityRandom"
+	{
+	"scale" "$objnumber" 
+	"resultVar" "$rand"
+	}
+
+	"LessOrEqual" 
+      	  {
+          	  "LessEqualVar" "$rand"
+          	  "greaterVar" "$zero"
+          	  "srcVar1" "$rand"
+           	  "srcVar2" "$objlimit"          
+          	  "resultVar" "$selected"    
+       	 }
+
+	"Subtract"
+      	  {
+          	  "srcVar1" "$selected"
+           	  "srcVar2" "$itemid"          
+          	  "resultVar" "$itemtocheck"    
+       	 }
+	
+	"Abs" 
+      	  {
+          	  "srcVar1" "$itemtocheck"          
+          	  "resultVar" "$itemtocheckr"    
+       	 }
+
+	"LessOrEqual" 
+      	  {
+          	  "LessEqualVar" "$one"
+          	  "greaterVar" "$zero"
+          	  "srcVar1" "$itemtocheckr"
+           	  "srcVar2" "$pf"          
+          	  "resultVar" "$alpha"    
+       	 }
+
+}
+
+}

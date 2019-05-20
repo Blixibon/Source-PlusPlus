@@ -78,7 +78,7 @@ void CNPC_Headcrab::Spawn( void )
 
 	SetRenderColor( 255, 255, 255, 255 );
 
-	SetModel( "models/half-life/hcf_headcrab.mdl" );
+	SetModel( "models/half-life/headcrab.mdl" );
 	m_iHealth = sk_headcrabhl1_health.GetFloat();
 
 	SetHullType(HULL_TINY);
@@ -135,7 +135,7 @@ bool CNPC_Headcrab::CorpseGib(const CTakeDamageInfo& info)
 //-----------------------------------------------------------------------------
 void CNPC_Headcrab::Precache( void )
 {
-	PrecacheModel( "models/half-life/hcf_headcrab.mdl" );
+	PrecacheModel( "models/half-life/headcrab.mdl" );
 //	PrecacheModel( "models/hc_squashed01.mdl" );
 	PrecacheModel( "models/gibs/hcgibs.mdl" );
 
@@ -701,7 +701,28 @@ float CNPC_BabyCrab::GetDamageAmount( void )
 	return sk_headcrab_dmg_bite.GetFloat() * 0.3;
 }
 
-class CNPC_HCFElectoCrab : public CNPC_Headcrab
+class CNPC_HCFBaseCrab : public CNPC_Headcrab
+{
+public:
+	DECLARE_CLASS(CNPC_HCFBaseCrab, CNPC_Headcrab);
+
+	void Spawn(void);
+	void Precache(void);
+};
+
+void CNPC_HCFBaseCrab::Spawn(void)
+{
+	BaseClass::Spawn();
+	SetModel("models/half-life/hcf_headcrab.mdl");
+}
+
+void CNPC_HCFBaseCrab::Precache(void)
+{
+	PrecacheModel("models/half-life/hcf_headcrab.mdl");
+	BaseClass::Precache();
+}
+
+class CNPC_HCFElectoCrab : public CNPC_HCFBaseCrab
 {
 	enum { NUM_BEAMS = 2};
 
@@ -797,7 +818,7 @@ void CNPC_HCFElectoCrab::Precache(void)
 	BaseClass::Precache();
 }
 
-class CNPC_HCFFastHeadcrab : public CNPC_Headcrab
+class CNPC_HCFFastHeadcrab : public CNPC_HCFBaseCrab
 {
 	DECLARE_CLASS(CNPC_HCFFastHeadcrab, CNPC_Headcrab);
 public:
@@ -821,7 +842,7 @@ void CNPC_HCFFastHeadcrab::Precache(void)
 	BaseClass::Precache();
 }
 
-class CNPC_HCFFireHeadcrab : public CNPC_Headcrab
+class CNPC_HCFFireHeadcrab : public CNPC_HCFBaseCrab
 {
 	DECLARE_CLASS(CNPC_HCFFireHeadcrab, CNPC_Headcrab);
 public:
@@ -847,7 +868,7 @@ void CNPC_HCFFireHeadcrab::Precache(void)
 	BaseClass::Precache();
 }
 
-class CNPC_HCFPoisonHeadcrab : public CNPC_Headcrab
+class CNPC_HCFPoisonHeadcrab : public CNPC_HCFBaseCrab
 {
 	DECLARE_CLASS(CNPC_HCFPoisonHeadcrab, CNPC_Headcrab);
 public:
@@ -873,7 +894,7 @@ void CNPC_HCFPoisonHeadcrab::Precache(void)
 	BaseClass::Precache();
 }
 
-class CNPC_HCFHalucinoHeadcrab : public CNPC_Headcrab
+class CNPC_HCFHalucinoHeadcrab : public CNPC_HCFBaseCrab
 {
 	DECLARE_CLASS(CNPC_HCFHalucinoHeadcrab, CNPC_Headcrab);
 public:
@@ -900,7 +921,7 @@ void CNPC_HCFHalucinoHeadcrab::Precache(void)
 	PrecacheModel("models/half-life/hcf_hheadcrab.mdl");
 }
 
-class CNPC_HCFIceHeadcrab : public CNPC_Headcrab
+class CNPC_HCFIceHeadcrab : public CNPC_HCFBaseCrab
 {
 	DECLARE_CLASS(CNPC_HCFIceHeadcrab, CNPC_Headcrab);
 public:
@@ -926,7 +947,7 @@ void CNPC_HCFIceHeadcrab::Precache(void)
 	BaseClass::Precache();
 }
 
-class CNPC_HCFEtherHeadcrab : public CNPC_Headcrab
+class CNPC_HCFEtherHeadcrab : public CNPC_HCFBaseCrab
 {
 	DECLARE_CLASS(CNPC_HCFEtherHeadcrab, CNPC_Headcrab);
 public:
@@ -978,7 +999,10 @@ int CNPC_HCFEtherHeadcrab::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 
 	bool bPass = m_bPassedTraceAttack || (random->RandomFloat() > (float)(1 / 3));
 	if (!bPass)
+	{
 		subInfo.SetDamage(0.0f);
+		m_bPassedTraceAttack = false;
+	}
 
 	return BaseClass::OnTakeDamage_Alive(subInfo);
 }

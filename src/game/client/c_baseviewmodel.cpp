@@ -18,6 +18,7 @@
 #include "tools/bonelist.h"
 #include <KeyValues.h>
 #include "hltvcamera.h"
+#include "bone_setup.h"
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 	#include "tf_weaponbase.h"
 #endif
@@ -35,7 +36,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#ifdef CSTRIKE_DLL
+#if defined(CSTRIKE_DLL) || defined(HL2_LAZUL)
 	ConVar cl_righthand( "cl_righthand", "1", FCVAR_ARCHIVE, "Use right-handed view models." );
 #endif
 
@@ -161,6 +162,8 @@ public:
 
 		return BaseClass::GetRenderColor();
 	}
+	
+	virtual void CalcBoneMerge(CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed);
 
 	void DrawHands(C_BaseViewModel *pModel, int iFlags)
 	{
@@ -207,6 +210,12 @@ public:
 	virtual void ApplyBoneMatrixTransform(matrix3x4_t& transform);
 
 	CBaseViewModel *m_pViewModel;
+
+	class CHandsMergeCache : public CBoneMergeCache
+	{
+	protected:
+		virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName);
+	};
 };
 
 
@@ -272,6 +281,43 @@ void C_ViewHands::ApplyBoneMatrixTransform(matrix3x4_t& transform)
 
 		// Transform back out of view space.
 		ConcatTransforms(viewMatrixInverse, temp, transform);
+	}
+}
+
+int C_ViewHands::CHandsMergeCache::GetParentBone(CStudioHdr *pHdr, const char *pszName)
+{
+	int iBone = CBoneMergeCache::GetParentBone(pHdr, pszName);
+	if (iBone < 0)
+	{
+		char name[128];
+		if (Studio_BoneIndexByName(pHdr, "v_weapon") >= 0 && V_StrSubst(pszName, "ValveBiped", "v_weapon", name, ARRAYSIZE(name), false))
+		{
+			iBone = Studio_BoneIndexByName(pHdr, name);
+		}
+	}
+
+	return iBone;
+}
+
+void C_ViewHands::CalcBoneMerge(CStudioHdr * hdr, int boneMask, CBoneBitList & boneComputed)
+{
+	bool boneMerge = IsEffectActive(EF_BONEMERGE);
+	if (boneMerge || m_pBoneMergeCache)
+	{
+		if (boneMerge)
+		{
+			if (!m_pBoneMergeCache)
+			{
+				m_pBoneMergeCache = new CHandsMergeCache;
+				m_pBoneMergeCache->Init(this);
+			}
+			m_pBoneMergeCache->MergeMatchingBones(boneMask, boneComputed);
+		}
+		else
+		{
+			delete m_pBoneMergeCache;
+			m_pBoneMergeCache = NULL;
+		}
 	}
 }
 
@@ -410,7 +456,7 @@ bool C_BaseViewModel::Interpolate( float currentTime )
 
 bool C_BaseViewModel::ShouldFlipViewModel()
 {
-#ifdef CSTRIKE_DLL
+#if defined(CSTRIKE_DLL) || defined(HL2_LAZUL)
 	// If cl_righthand is set, then we want them all right-handed.
 	CBaseCombatWeapon *pWeapon = m_hWeapon.Get();
 	if ( pWeapon )
@@ -726,3 +772,4 @@ RenderGroup_t C_BaseViewModel::GetRenderGroup()
 {
 	return RENDER_GROUP_VIEW_MODEL_OPAQUE;
 }
+

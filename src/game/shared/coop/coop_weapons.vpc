@@ -23,6 +23,7 @@ $Project
 			$Folder "Weapons"
 			{
 				$File	"$SRCDIR\game\shared\coop\weapon_357.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_deagle.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_ar2.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_ar2.h"
 				$File	"$SRCDIR\game\shared\coop\weapon_mg1.cpp"
@@ -30,6 +31,7 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_bugbait.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_crossbow.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_crowbar.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_mattspipe.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_frag.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_coop_base.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_coop_base.h"
@@ -38,6 +40,7 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_coop_basebludgeon.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_coop_basehlcombatweapon.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_coop_basehlcombatweapon.h"
+				$File	"$SRCDIR\game\shared\coop\weapon_medkit.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_physcannon.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_physcannon.h"
 				$File	"$SRCDIR\game\shared\coop\weapon_pistol.cpp"

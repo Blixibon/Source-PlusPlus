@@ -259,7 +259,7 @@ public:
 public:
 	// IScorer interface
 	virtual CBasePlayer *GetScorer( void ) { return ( CBasePlayer *)GetBuilder(); }
-	virtual CBasePlayer *GetAssistant( void ) { return NULL; }
+	virtual CBaseEntity *GetAssistant( void ) { return NULL; }
 
 public:
 	// Client/Server shared build point code

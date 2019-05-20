@@ -234,6 +234,8 @@ public:
 	virtual int		GetSoundInterests( void ) { return (SOUND_WORLD|SOUND_COMBAT|SOUND_PLAYER|SOUND_DANGER); }
 	virtual bool	QueryHearSound( CSound *pSound );
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	const impactdamagetable_t &GetPhysicsImpactDamageTable( void );
 
 	virtual int		MeleeAttack1Conditions( float flDot, float flDist );

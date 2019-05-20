@@ -47,6 +47,19 @@ public:
 	{ 
 		Precache( );
 		SetModel( "models/items/boxsrounds.mdl" );
+		switch (g_pGameRules->GetSkillLevel())
+		{
+		case SKILL_EASY:
+			m_nSkin = 0;
+			break;
+		case SKILL_MEDIUM:
+			m_nSkin = 1;
+			break;
+		case SKILL_HARD:
+		default:
+			m_nSkin = 2;
+			break;
+		}
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
@@ -116,6 +129,19 @@ public:
 	{ 
 		Precache( );
 		SetModel( "models/items/boxmrounds.mdl");
+		switch (g_pGameRules->GetSkillLevel())
+		{
+		case SKILL_EASY:
+			m_nSkin = 0;
+			break;
+		case SKILL_MEDIUM:
+			m_nSkin = 1;
+			break;
+		case SKILL_HARD:
+		default:
+			m_nSkin = 2;
+			break;
+		}
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
@@ -258,6 +284,19 @@ public:
 		Precache( );
 		SetModel( "models/items/357ammo.mdl");
 		BaseClass::Spawn( );
+		switch (g_pGameRules->GetSkillLevel())
+		{
+		case SKILL_EASY:
+			SetBodygroup(1, 0);
+			break;
+		case SKILL_MEDIUM:
+			SetBodygroup(1, 1);
+			break;
+		case SKILL_HARD:
+		default:
+			SetBodygroup(1, 2);
+			break;
+		}
 	}
 
 	bool MyTouch( CBasePlayer *pPlayer )
@@ -532,6 +571,19 @@ public:
 		Precache( );
 		SetModel( "models/items/boxbuckshot.mdl");
 		BaseClass::Spawn( );
+		switch (g_pGameRules->GetSkillLevel())
+		{
+		case SKILL_EASY:
+			SetBodygroup(1, 0);
+			break;
+		case SKILL_MEDIUM:
+			SetBodygroup(1, 1);
+			break;
+		case SKILL_HARD:
+		default:
+			SetBodygroup(1, 2);
+			break;
+		}
 	}
 	void Precache( void )
 	{

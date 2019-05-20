@@ -30,6 +30,7 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	bool MyTouch( CBasePlayer *pPlayer );
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 };
 
 LINK_ENTITY_TO_CLASS( item_healthkit, CHealthKit );
@@ -58,6 +59,31 @@ void CHealthKit::Precache( void )
 	PrecacheScriptSound( "HealthKit.Touch" );
 }
 
+void CHealthKit::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
+{
+	CBasePlayer *pPlayer = ToBasePlayer(pActivator);
+
+	if (pPlayer)
+	{
+		if (!MyTouch(pPlayer))
+		{
+			if (pPlayer->GiveNamedItem("weapon_medkit"))
+			{
+				if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_YES)
+				{
+					Respawn();
+				}
+				else
+				{
+					UTIL_Remove(this);
+				}
+				return;
+			}
+
+			pPlayer->PickupObject(this);
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -78,7 +104,7 @@ bool CHealthKit::MyTouch( CBasePlayer *pPlayer )
 		CPASAttenuationFilter filter( pPlayer, "HealthKit.Touch" );
 		EmitSound( filter, pPlayer->entindex(), "HealthKit.Touch" );
 
-		if ( g_pGameRules->ItemShouldRespawn( this ) )
+		if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_YES )
 		{
 			Respawn();
 		}
@@ -131,7 +157,7 @@ public:
 			CPASAttenuationFilter filter( pPlayer, "HealthVial.Touch" );
 			EmitSound( filter, pPlayer->entindex(), "HealthVial.Touch" );
 
-			if ( g_pGameRules->ItemShouldRespawn( this ) )
+			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_YES )
 			{
 				Respawn();
 			}

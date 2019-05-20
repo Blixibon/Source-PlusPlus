@@ -32,6 +32,7 @@
 	#include "smoke_trail.h"
 	#include "collisionutils.h"
 	#include "hl2_shareddefs.h"
+	#include "ai_basenpc.h"
 #endif
 
 #include "hl2_player_shared.h"
@@ -2208,7 +2209,154 @@ void CWeaponRPG::NotifyShouldTransmit( ShouldTransmitState_t state )
 		}
 	}
 }
+#else
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool CWeaponRPG::WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions)
+{
+	bool bResult = BaseClass::WeaponLOSCondition(ownerPos, targetPos, bSetConditions);
 
+	if (bResult)
+	{
+		CAI_BaseNPC* npcOwner = GetOwner()->MyNPCPointer();
+
+		if (npcOwner)
+		{
+			trace_t tr;
+
+			Vector vecRelativeShootPosition;
+			VectorSubtract(npcOwner->Weapon_ShootPosition(), npcOwner->GetAbsOrigin(), vecRelativeShootPosition);
+			Vector vecMuzzle = ownerPos + vecRelativeShootPosition;
+			Vector vecShootDir = npcOwner->GetActualShootTrajectory(vecMuzzle);
+
+			// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
+			AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, NULL, &tr);
+
+			if (tr.fraction != 1.0f)
+				bResult = false;
+		}
+	}
+
+	return bResult;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+// Input  : flDot -
+//			flDist -
+// Output : int
+//-----------------------------------------------------------------------------
+int CWeaponRPG::WeaponRangeAttack1Condition(float flDot, float flDist)
+{
+	if (m_hMissile != NULL)
+		return 0;
+
+	// Ignore vertical distance when doing our RPG distance calculations
+	CAI_BaseNPC *pNPC = GetOwner()->MyNPCPointer();
+	if (pNPC)
+	{
+		CBaseEntity *pEnemy = pNPC->GetEnemy();
+		Vector vecToTarget = (pEnemy->GetAbsOrigin() - pNPC->GetAbsOrigin());
+		vecToTarget.z = 0;
+		flDist = vecToTarget.Length();
+	}
+
+	if (flDist < MIN(m_fMinRange1, m_fMinRange2))
+		return COND_TOO_CLOSE_TO_ATTACK;
+
+	if (m_flNextPrimaryAttack > gpGlobals->curtime)
+		return 0;
+
+	// See if there's anyone in the way!
+	CAI_BaseNPC *pOwner = GetOwner()->MyNPCPointer();
+	ASSERT(pOwner != NULL);
+
+	if (pOwner)
+	{
+		// Make sure I don't shoot the world!
+		trace_t tr;
+
+		Vector vecMuzzle = pOwner->Weapon_ShootPosition();
+		Vector vecShootDir = pOwner->GetActualShootTrajectory(vecMuzzle);
+
+		// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
+		AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, NULL, &tr);
+
+		if (tr.fraction != 1.0)
+		{
+			return COND_WEAPON_SIGHT_OCCLUDED;
+		}
+	}
+
+	return COND_CAN_RANGE_ATTACK1;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
+//-----------------------------------------------------------------------------
+void CWeaponRPG::Operator_HandleAnimEvent(animevent_t *pEvent, CBaseCombatCharacter *pOperator)
+{
+	switch (pEvent->event)
+	{
+	case EVENT_WEAPON_SMG1:
+	{
+		if (m_hMissile != NULL)
+			return;
+
+		Vector	muzzlePoint;
+		QAngle	vecAngles;
+
+		muzzlePoint = GetOwner()->Weapon_ShootPosition();
+
+		CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+		ASSERT(npc != NULL);
+
+		Vector vecShootDir = npc->GetActualShootTrajectory(muzzlePoint);
+
+		// look for a better launch location
+		Vector altLaunchPoint;
+		if (GetAttachment("missile", altLaunchPoint))
+		{
+			// check to see if it's relativly free
+			trace_t tr;
+			AI_TraceHull(altLaunchPoint, altLaunchPoint + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, NULL, &tr);
+
+			if (tr.fraction == 1.0)
+			{
+				muzzlePoint = altLaunchPoint;
+			}
+		}
+
+		VectorAngles(vecShootDir, vecAngles);
+
+		CMissile *pMissile = CMissile::Create(muzzlePoint, vecAngles, GetOwner()->edict());
+		m_hMissile = pMissile;
+		pMissile->m_hOwner = this;
+
+		// NPCs always get a grace period
+		pMissile->SetGracePeriod(0.5);
+
+		pOperator->DoMuzzleFlash();
+
+		WeaponSound(SINGLE_NPC);
+
+		// Make sure our laserdot is off
+		m_bGuiding = false;
+
+		if (m_hLaserDot)
+		{
+			m_hLaserDot->TurnOff();
+		}
+	}
+	break;
+
+	default:
+		BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
+		break;
+	}
+}
 #endif	//CLIENT_DLL
 
 

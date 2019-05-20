@@ -20,7 +20,7 @@
 #ifdef HL2MP
 #include "hl2mp/weapon_crowbar.h"
 #else
-#include "coop/weapon_crowbar.h"
+#include "coop/weapon_mattspipe.h"
 #endif
 
 #include "eventqueue.h"
@@ -239,7 +239,7 @@ END_DATADESC()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-
+#ifdef HL2MP
 class CMattsPipe : public CWeaponCrowbar
 {
 	DECLARE_CLASS( CMattsPipe, CWeaponCrowbar );
@@ -247,7 +247,7 @@ class CMattsPipe : public CWeaponCrowbar
 	const char *GetWorldModel() const	{ return "models/props_canal/mattpipe.mdl"; }
 	void SetPickupTouch( void )	{	/* do nothing */ }
 };
-
+#endif
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
@@ -860,7 +860,7 @@ void CNPC_Citizen::FixupMattWeapon()
 	{
 		Weapon_Drop( pWeapon );
 		UTIL_Remove( pWeapon );
-		pWeapon = (CBaseCombatWeapon *)CREATE_UNSAVED_ENTITY( CMattsPipe, "weapon_crowbar" );
+		pWeapon = (CBaseCombatWeapon*)CreateNoSpawn("weapon_pipe", GetAbsOrigin(), vec3_angle);
 		pWeapon->SetName( AllocPooledString( "matt_weapon" ) );
 		DispatchSpawn( pWeapon );
 
@@ -939,6 +939,23 @@ Class_T	CNPC_Citizen::Classify()
 //{ 
 //	return ( BaseClass::ShouldAlwaysThink() || IsInPlayerSquad() ); 
 //}
+
+bool CNPC_Citizen::ShowInDeathnotice()
+{
+	return GetDeathNoticeNameOverride() != nullptr;
+}
+
+const char * CNPC_Citizen::GetDeathNoticeNameOverride()
+{
+	if (NameMatches("matt"))
+		return "Matt";
+	else if (NameMatches("griggs"))
+		return "Griggs";
+	else if (NameMatches("sheckley"))
+		return "Sheckley";
+
+	return nullptr;
+}
 	
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

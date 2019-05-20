@@ -547,6 +547,15 @@ public:
 	virtual bool		IsVitalAlly() { return (Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_COMBINE_VITAL); }
 
 	//---------------------------------
+	// Death Notice
+	//
+
+	// Print death notices involving this npc?
+	virtual bool		ShowInDeathnotice() { return IsVitalAlly(); }
+
+	virtual const char *GetDeathNoticeNameOverride() { return NULL; }
+
+	//---------------------------------
 	// Component creation factories
 	// 
 	

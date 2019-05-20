@@ -19,6 +19,8 @@ public:
 	void Precache( void );
 	Class_T  Classify ( void );
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	float MaxYawSpeed ( void );
 
 	int MeleeAttack1Conditions( float flDot, float flDist );
