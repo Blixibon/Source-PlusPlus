@@ -46,35 +46,45 @@ ConVar	combine_spawn_health( "combine_spawn_health", "1" );
 
 typedef struct
 {
-	const char *soldierModel;
-	const char *eliteModel;
-	const char *soldierShotgunModel;
-	const char *eliteShotgunModel;
-} combineModel_t;
+	typedef struct
+	{
+		const char *pszModel;
+		unsigned int nSkin;
+	} cmbMDL_t;
 
-const char *GetSoldierModel(combineModel_t variant, bool bElite, bool bHasShotgun)
+	cmbMDL_t soldierModel;
+	cmbMDL_t eliteModel;
+	cmbMDL_t soldierShotgunModel;
+	cmbMDL_t eliteShotgunModel;
+} combineModelSet_t;
+
+#define SET_IF_VALID(ptr, val) if (ptr != nullptr) *ptr = val
+
+const char *GetSoldierModel(combineModelSet_t variant, bool bElite, bool bHasShotgun, int *pSkin)
 {
 	if (bElite)
 	{
-		if (bHasShotgun && variant.eliteShotgunModel)
+		if (bHasShotgun && variant.eliteShotgunModel.pszModel)
 		{
-			return variant.eliteShotgunModel;
+			SET_IF_VALID(pSkin, variant.eliteShotgunModel.nSkin);
+			return variant.eliteShotgunModel.pszModel;
 		}
-		else
+		else if (variant.eliteModel.pszModel)
 		{
-			return variant.eliteModel;
+			SET_IF_VALID(pSkin, variant.eliteModel.nSkin);
+			return variant.eliteModel.pszModel;
 		}
+	}
+
+	if (bHasShotgun && variant.soldierShotgunModel.pszModel)
+	{
+		SET_IF_VALID(pSkin, variant.soldierShotgunModel.nSkin);
+		return variant.soldierShotgunModel.pszModel;
 	}
 	else
 	{
-		if (bHasShotgun && variant.soldierShotgunModel)
-		{
-			return variant.soldierShotgunModel;
-		}
-		else
-		{
-			return variant.soldierModel;
-		}
+		SET_IF_VALID(pSkin, variant.soldierModel.nSkin);
+		return variant.soldierModel.pszModel;
 	}
 }
 
@@ -90,19 +100,21 @@ enum
 	COMBINE_MODEL_OUTLANDGUARD,
 	COMBINE_MODEL_ADVISORGUARD,
 	COMBINE_MODEL_SYNTH,
+	COMBINE_MODEL_PROTOGUARD,
 
 	MAX_COMBINE_MODELS
 };
 
-combineModel_t g_CombineModels[MAX_COMBINE_MODELS] = {
-	{"models/combine_soldier.mdl", "models/combine_elite_soldier.mdl", "models/combine_soldier_shotgun.mdl", "models/combine_super_shotgunner.mdl"},
-	{"models/combine_soldier_prisonguard.mdl", "models/combine_elite_guard.mdl", "models/combine_soldier_prisonguard_shotgun.mdl", nullptr},
-	{"models/combine_super_elite_soldier.mdl", "models/combine_super_soldier.mdl", nullptr, nullptr},
-	{ "models/combine_hunter_soldier.mdl", "models/combine_hunter.mdl", nullptr, nullptr },
-	{ "models/combine_outland.mdl", "models/combine_super_outland.mdl", "models/combine_outland_shotgun.mdl", nullptr },
-	{ "models/combine_outland_prisonguard.mdl", "models/combine_super_outland.mdl", "models/combine_outland_prisonguard_shotgun.mdl", nullptr },
-	{ "models/combine_advisor_guard_soldier.mdl", "models/combine_advisor_guard.mdl", nullptr, nullptr },
-	{ "models/cmb_synth_soldier.mdl", "models/cmb_synth_elite.mdl", nullptr, nullptr },
+combineModelSet_t g_CombineModels[MAX_COMBINE_MODELS] = {
+	{"models/combine_soldier.mdl", 0, "models/combine_elite_soldier.mdl", 0, "models/combine_soldier_shotgun.mdl", 0, "models/combine_super_shotgunner.mdl", 0},
+	{"models/combine_soldier_prisonguard.mdl", 0, "models/combine_elite_guard.mdl", 0, "models/combine_soldier_prisonguard_shotgun.mdl", 0, nullptr, 0},
+	{"models/combine_super_elite_soldier.mdl", 0, "models/combine_super_soldier.mdl", 0, nullptr, 0, nullptr, 0},
+	{ "models/combine_hunter_soldier.mdl", 0, "models/combine_hunter.mdl", 0, nullptr, 0, nullptr, 0 },
+	{ "models/combine_outland.mdl", 0, "models/combine_super_outland.mdl", 0, "models/combine_outland_shotgun.mdl", 0, nullptr, 0 },
+	{ "models/combine_outland_prisonguard.mdl", 0, "models/combine_super_outland.mdl", 0, "models/combine_outland_prisonguard_shotgun.mdl", 0, nullptr, 0 },
+	{ "models/combine_advisor_guard_soldier.mdl", 0, "models/combine_advisor_guard.mdl", 0, nullptr, 0, nullptr, 0 },
+	{ "models/cmb_synth_soldier.mdl", 0, "models/cmb_synth_elite.mdl", 0, nullptr, 0, nullptr, 0 },
+	{ "models/protoguard/protoguard.mdl", 0, nullptr, 0, nullptr, 0, nullptr, 0 },
 };
 
 const char *g_pszCombinePopStrings[MAX_COMBINE_MODELS] = {
@@ -114,6 +126,7 @@ const char *g_pszCombinePopStrings[MAX_COMBINE_MODELS] = {
 	"outlandguard",
 	"advisorguard",
 	"synth",
+	"protoguard"
 };
 
 CPopulationDefinition g_CombineSoldierPopulation("combine_soldier", g_pszCombinePopStrings, ARRAYSIZE(g_pszCombinePopStrings));
@@ -131,7 +144,8 @@ extern Activity ACT_WALK_MARCH;
 //-----------------------------------------------------------------------------
 void CNPC_CombineS::Spawn( void )
 {
-	SelectModel();
+	int iSkin = 0;
+	SelectModel(iSkin);
 
 	Precache();
 	SetModel( STRING( GetModelName() ) );
@@ -155,6 +169,8 @@ void CNPC_CombineS::Spawn( void )
 	CapabilitiesAdd( bits_CAP_DOORS_GROUP );
 
 	BaseClass::Spawn();
+
+	m_nSkin = iSkin;
 
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
@@ -186,7 +202,7 @@ void CNPC_CombineS::Spawn( void )
 	return iszModelName;
 }*/
 
-void CNPC_CombineS::SelectModel()
+void CNPC_CombineS::SelectModel(int &nSkin)
 {
 	string_t iszModelName = GetModelName();
 
@@ -209,7 +225,7 @@ void CNPC_CombineS::SelectModel()
 			m_iSoldierVariant = g_CombineSoldierPopulation.GetRandom();
 		}
 
-		const char *pszModelName = GetSoldierModel(g_CombineModels[m_iSoldierVariant], m_fIsElite, m_spawnEquipment == FindPooledString("weapon_shotgun"));
+		const char *pszModelName = GetSoldierModel(g_CombineModels[m_iSoldierVariant], m_fIsElite, m_spawnEquipment == FindPooledString("weapon_shotgun"), &nSkin);
 
 		SetModelName(MAKE_STRING(pszModelName));
 	}
@@ -232,6 +248,8 @@ void CNPC_CombineS::Precache()
 	UTIL_PrecacheOther( "weapon_frag" );
 	UTIL_PrecacheOther( "item_ammo_ar2_altfire" );
 
+	PrecacheScriptSound("NPC_Protoguard.Die");
+
 	BaseClass::Precache();
 }
 
@@ -239,8 +257,26 @@ int CNPC_CombineS::GetVoiceType()
 {
 	if (m_iSoldierVariant == COMBINE_MODEL_SYNTH)
 		return COMBINE_VOICE_SYNTH;
+	else if (m_iSoldierVariant == COMBINE_MODEL_PROTOGUARD)
+		return COMBINE_VOICE_PROTOGUARD;
 
 	return BaseClass::GetVoiceType();
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CNPC_CombineS::ModifyOrAppendCriteria(AI_CriteriaSet& set)
+{
+	BaseClass::ModifyOrAppendCriteria(set);
+
+	const char *pszVoiceNames[NUM_COMBINE_VOICES] = {
+		"normal",
+		"normal", // elite
+		"normal", // synth
+		"protoguard"
+	};
+
+	set.AppendCriteria("voicetype", pszVoiceNames[GetVoiceType()]);
 }
 
 void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
@@ -249,7 +285,10 @@ void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 	if ( GetFlags() & FL_DISSOLVING )
 		return;
 
-	EmitSound("NPC_CombineS.ElectrocuteScream");
+	if (GetVoiceType() == COMBINE_VOICE_PROTOGUARD)
+		EmitSound("NPC_Protoguard.Die");
+	else
+		EmitSound("NPC_CombineS.ElectrocuteScream");
 }
 
 

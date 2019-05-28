@@ -11,6 +11,7 @@
 #include "items.h"
 #include "trigger_area_capture.h"
 #include "iscorer.h"
+#include "peter/laz_player.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
@@ -856,6 +857,19 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 			pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_physcannon"));
 		}
 	}
+}
+
+bool CLazuul::ClientCommand(CBaseEntity * pEdict, const CCommand & args)
+{
+	if (BaseClass::ClientCommand(pEdict, args))
+		return true;
+
+	CBasePlayer *pPlayer = (CBasePlayer *)pEdict;
+
+	if (pPlayer->ClientCommand(args))
+		return true;
+
+	return false;
 }
 
 //------------------------------------------------------------------------------
@@ -3562,8 +3576,8 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 
 	if (iWeaponID && pScorer)
 	{
-		//CTFWeaponBase* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
-		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
+		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
+		//CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
 		if (pWeapon)
 		{
 			CEconItemDefinition* pItemDef = pWeapon->GetItem()->GetStaticData();
@@ -3685,8 +3699,8 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 
 	if (iWeaponID && pScorer)
 	{
-		//CTFWeaponBase* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
-		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
+		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
+		//CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
 		if (pWeapon)
 		{
 			CEconItemDefinition* pItemDef = pWeapon->GetItem()->GetStaticData();
@@ -3941,12 +3955,16 @@ void CTeamObjectiveResource::Spawn(void)
 
 void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 {
+	// This code is only for singleplayer
+	if (g_pGameRules->IsMultiplayer())
+		return;
+
 	if (!pPlayer || pPlayer->GetHealth() <= 0 || !pPlayer->IsAlive())
 		return;
 
-	//CHLMS_Player* pHLMS = assert_cast<CHLMS_Player*> (pPlayer);
+	
 
-	CBaseViewModel* pHands = pPlayer->GetViewModel();
+	
 	//pHands->NetworkStateChanged();
 
 	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentGameType(), pPlayer->IsSuitEquipped());
@@ -3959,14 +3977,23 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		pPlayer->SetBodygroup(iGroup, modelType->models.Head().bodygroups[i].body);
 	}
 
-	pHands->SetHandsModel(modelType->szArmModel, modelType->armSkin);
-
-	for (int i = 0; i < modelType->armbodys.Count(); i++)
+	for (int i = 0; i < MAX_VIEWMODELS; i++)
 	{
-		pHands->SetHandsBodygroupByName(modelType->armbodys[i].szName, modelType->armbodys[i].body);
+		CBaseViewModel* pHands = pPlayer->GetViewModel(i);
+		if (pHands)
+		{
+			pHands->SetHandsModel(modelType->szArmModel, modelType->armSkin);
+
+			for (int i = 0; i < modelType->armbodys.Count(); i++)
+			{
+				pHands->SetHandsBodygroupByName(modelType->armbodys[i].szName, modelType->armbodys[i].body);
+			}
+		}
 	}
 
-	/*KeyValues* pkvAbillites = modelType->kvAbilities;
+	CLaz_Player* pHLMS = assert_cast<CLaz_Player*> (pPlayer);
+
+	KeyValues* pkvAbillites = modelType->kvAbilities;
 	if (pkvAbillites != nullptr)
 	{
 		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_VOICE);
@@ -3980,6 +4007,6 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 	{
 		pHLMS->SetVoiceType(DEFAULT_VOICE, DEFAULT_VOICE);
 		pHLMS->SetFootsteps(DEFAULT_FEET);
-	}*/
+	}
 }
 #endif

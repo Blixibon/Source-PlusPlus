@@ -292,6 +292,7 @@
 			"footsteps"		"NPC_MetroPolice"
 			"voice"			"metropolice"
 			"suit"			"pcv_hev"
+			"special"		"manhack"
 		}
 	}
 	

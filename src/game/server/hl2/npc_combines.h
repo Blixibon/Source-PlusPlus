@@ -40,6 +40,8 @@ public:
 	void		Event_Killed( const CTakeDamageInfo &info );
 	void		OnListened();
 
+	void			ModifyOrAppendCriteria(AI_CriteriaSet& set);
+
 	virtual const char *GetDeathNoticeNameOverride() { return IsElite() ? "npc_combine_e" : NULL; }
 
 	void		ClearAttackConditions( void );
@@ -53,7 +55,7 @@ public:
 
 	//string_t 		GetModelName() const;
 
-	virtual void	SelectModel();
+	virtual void	SelectModel(int &nSkin);
 
 	virtual int		GetVoiceType();
 

@@ -1,0 +1,8 @@
+
+$Sequence "shell" {
+	"irifleshell_anims\shell.smd"
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}

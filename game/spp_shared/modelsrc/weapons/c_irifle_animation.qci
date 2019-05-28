@@ -1,0 +1,414 @@
+
+$Sequence "idle" {
+	"c_irifle_anims\idle.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 18
+	loop
+}
+
+$Sequence "idle_midempty" {
+	"c_irifle_anims\idle_midempty.smd"
+	activity "ACT_VM_IDLE_MIDEMPTY" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 18
+	loop
+}
+
+$Sequence "idle_ironsight" {
+	"c_irifle_anims\idle_ironsight.smd"
+	activity "ACT_VM_IDLE_SILENCED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 4
+	loop
+}
+
+$Sequence "idle_midempty_ironsight" {
+	"c_irifle_anims\idle_midempty_ironsight.smd"
+	activity "ACT_VM_IDLE_EMPTY_LEFT" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 4
+	loop
+}
+
+$Sequence "fire_last" {
+	"c_irifle_anims\fire_last.smd"
+	activity "ACT_VM_SHOOTLAST" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire_last_ironsight" {
+	"c_irifle_anims\fire_last_ironsight.smd"
+	activity "ACT_VM_SHOOTLAST_IRONSIGHTED" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire1" {
+	"c_irifle_anims\fire1.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire2" {
+	"c_irifle_anims\fire2.smd"
+	activity "ACT_VM_RECOIL1" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire3" {
+	"c_irifle_anims\fire3.smd"
+	activity "ACT_VM_RECOIL2" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire4" {
+	"c_irifle_anims\fire4.smd"
+	activity "ACT_VM_RECOIL3" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire1_is" {
+	"c_irifle_anims\fire1_is.smd"
+	activity "ACT_VM_PRIMARYATTACK_IRONSIGHTED1" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire2_is" {
+	"c_irifle_anims\fire2_is.smd"
+	activity "ACT_VM_PRIMARYATTACK_IRONSIGHTED2" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire3_is" {
+	"c_irifle_anims\fire3_is.smd"
+	activity "ACT_VM_PRIMARYATTACK_IRONSIGHTED3" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire_midempty" {
+	"c_irifle_anims\fire_midempty.smd"
+	activity "ACT_VM_PRIMARYATTACK_MIDEMPTY" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire_midempty_is" {
+	"c_irifle_anims\fire_midempty_is.smd"
+	activity "ACT_VM_PRIMARYATTACK_MIDEMPTY_IRONSIGHTED" 1
+	{ event AE_MUZZLEFLASH 0 "COMBINE muzzle" }
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_punch follow_attachment punch" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_ar2 primary-attack 1" }
+	{ event 3101 0 "" }
+	{ event 3102 5 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	snap
+	fps 30
+}
+
+$Sequence "fire_alt" {
+	"c_irifle_anims\fire_alt.smd"
+	activity "ACT_VM_SECONDARYATTACK" 1
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_alt follow_attachment muzzle" }
+	{ event AE_CL_PLAYSOUND 26 "Weapon_AR2.BoltPull" }
+	{ event AE_CL_PLAYSOUND 27 "Weapon_AR2.Reload_Push" }
+	{ event AE_CL_PLAYSOUND 13 "Weapon_Generic.Movement3" }
+	{ event AE_CL_PLAYSOUND 28 "Weapon_Generic.Movement2" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "reload" {
+	"c_irifle_anims\reload.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 3 "Weapon_AR2.Reload_Rotate" }
+	{ event AE_CL_PLAYSOUND 10 "Weapon_AR2.MagOut" }
+	{ event AE_CL_PLAYSOUND 39 "Weapon_AR2.MagIn" }
+	{ event AE_CL_PLAYSOUND 40 "Weapon_AR2.Reload_Push" }
+	{ event AE_CL_PLAYSOUND 11 "Weapon_Generic.Movement2" }
+	{ event AE_CL_PLAYSOUND 25 "Weapon_Generic.Movement5" }
+	{ event 3015 20 "muzzle" }
+	{ event 3102 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	fps 30
+}
+
+$Sequence "reloadempty" {
+	"c_irifle_anims\reloadempty.smd"
+	activity "ACT_VM_RELOADEMPTY" 1
+	{ event AE_CL_PLAYSOUND 3 "Weapon_AR2.Reload_Rotate" }
+	{ event AE_CL_PLAYSOUND 10 "Weapon_AR2.MagOut" }
+	{ event AE_CL_PLAYSOUND 39 "Weapon_AR2.MagIn" }
+	{ event AE_CL_PLAYSOUND 40 "Weapon_AR2.Reload_Push" }
+	{ event AE_CL_PLAYSOUND 11 "Weapon_Generic.Movement2" }
+	{ event AE_CL_PLAYSOUND 25 "Weapon_Generic.Movement5" }
+	{ event 3015 20 "muzzle" }
+	{ event 3102 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	fps 30
+}
+
+$Sequence "reload_midempty" {
+	"c_irifle_anims\reload_midempty.smd"
+	activity "ACT_VM_RELOADMIDEMPTY" 1
+	{ event AE_CL_PLAYSOUND 3 "Weapon_AR2.Reload_Rotate" }
+	{ event AE_CL_PLAYSOUND 10 "Weapon_AR2.MagOut" }
+	{ event AE_CL_PLAYSOUND 39 "Weapon_AR2.MagIn" }
+	{ event AE_CL_PLAYSOUND 40 "Weapon_AR2.Reload_Push" }
+	{ event AE_CL_PLAYSOUND 11 "Weapon_Generic.Movement2" }
+	{ event AE_CL_PLAYSOUND 25 "Weapon_Generic.Movement5" }
+	{ event 3015 20 "muzzle" }
+	{ event 3102 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	fps 30
+}
+
+$Sequence "draw" {
+	"c_irifle_anims\draw.smd"
+	activity "ACT_VM_DRAW" 1
+	{ event 5004 0 "Weapon_Irifle.Draw" }
+	{ event AE_CL_PLAYSOUND 13 "Weapon_AR2.FidgetPush" }
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	snap
+	fps 30
+}
+
+$Sequence "draw_empty" {
+	"c_irifle_anims\draw_empty.smd"
+	activity "ACT_VM_DRAW_EMPTY" 1
+	{ event 5004 0 "Weapon_Irifle.Draw" }
+	{ event AE_CL_PLAYSOUND 13 "Weapon_AR2.FidgetPush" }
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	snap
+	fps 30
+}
+
+$Sequence "holster" {
+	"c_irifle_anims\holster.smd"
+	activity "ACT_VM_HOLSTER" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 45
+}
+
+$Sequence "idletolow" {
+	"c_irifle_anims\idletolow.smd"
+	activity "ACT_VM_LOWERED_TO_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "Ready" "Low"
+	fps 30
+}
+
+$Sequence "lowtoidle" {
+	"c_irifle_anims\lowtoidle.smd"
+	activity "ACT_VM_IDLE_TO_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "Low" "Ready"
+	fps 30
+}
+
+$Sequence "lowidle" {
+	"c_irifle_anims\lowidle.smd"
+	activity "ACT_VM_IDLE_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Low"
+	fps 30
+	loop
+}
+
+$Sequence "shake" {
+	"c_irifle_anims\shake.smd"
+	activity "ACT_VM_FIDGET" 1
+	{ event AE_CL_CREATE_PARTICLE_EFFECT 0 "hl2mmod_muzzleflash_ar2_alt_charge follow_attachment secondary" }
+	fadein 0.2
+	fadeout 0.2
+	node "Fire"
+	fps 30
+	loop
+}
+
+$Sequence "Walk" {
+	"c_irifle_anims\Walk.smd"
+	activity "ACT_VM_WALK" 1
+	{ event AE_CL_PLAYSOUND 1 "Weapon_Generic.Walk1" }
+	{ event AE_CL_PLAYSOUND 13 "Weapon_Generic.Walk2" }
+	fadein 0.4
+	fadeout 0.4
+	node "Ready"
+	fps 30
+	loop
+}
+
+$Sequence "Sprint" {
+	"c_irifle_anims\Sprint.smd"
+	activity "ACT_VM_SPRINT" 1
+	{ event AE_CL_PLAYSOUND 1 "Weapon_Generic.Sprint1" }
+	{ event AE_CL_PLAYSOUND 16 "Weapon_Generic.Sprint2" }
+	fadein 0.4
+	fadeout 0.4
+	node "Ready"
+	fps 50
+	loop
+}
+
+$Sequence "Walk_midempty" {
+	"c_irifle_anims\Walk_midempty.smd"
+	activity "ACT_VM_WALK_MIDEMPTY" 1
+	{ event AE_CL_PLAYSOUND 1 "Weapon_Generic.Walk1" }
+	{ event AE_CL_PLAYSOUND 13 "Weapon_Generic.Walk2" }
+	fadein 0.4
+	fadeout 0.4
+	node "Ready"
+	fps 30
+	loop
+}
+
+$Sequence "Sprint_midempty" {
+	"c_irifle_anims\Sprint_midempty.smd"
+	activity "ACT_VM_SPRINT_MIDEMPTY" 1
+	{ event AE_CL_PLAYSOUND 1 "Weapon_Generic.Sprint1" }
+	{ event AE_CL_PLAYSOUND 16 "Weapon_Generic.Sprint2" }
+	fadein 0.4
+	fadeout 0.4
+	node "Ready"
+	fps 50
+	loop
+}
+
+$Sequence "inspect1" {
+	"c_irifle_anims\inspect1.smd"
+	activity "ACT_VM_INSPECT" 1
+	{ event AE_CL_PLAYSOUND 8 "Weapon_AR2.FidgetRotate" }
+	{ event AE_CL_PLAYSOUND 60 "Weapon_AR2.FidgetPush" }
+	{ event AE_CL_PLAYSOUND 1 "Weapon_Generic.Movement1" }
+	{ event AE_CL_PLAYSOUND 55 "Weapon_Generic.Movement4" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "inspect2" {
+	"c_irifle_anims\inspect2.smd"
+	activity "ACT_VM_INSPECT_ALT" 1
+	{ event AE_CL_PLAYSOUND 30 "Weapon_AR2.FidgetRotate" }
+	{ event AE_CL_PLAYSOUND 37 "Weapon_AR2.FidgetPush" }
+	{ event AE_CL_PLAYSOUND 1 "Weapon_Generic.Movement2" }
+	{ event AE_CL_PLAYSOUND 40 "Weapon_Generic.Movement3" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

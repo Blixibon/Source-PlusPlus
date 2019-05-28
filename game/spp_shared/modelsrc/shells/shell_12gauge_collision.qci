@@ -1,0 +1,8 @@
+$CollisionModel "shell_12gauge_physics.smd"
+{
+	$mass 25
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+
+}

@@ -1,0 +1,10 @@
+
+$CollisionModel "w_irifle_physics.smd"
+{
+	$mass 20
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+	$rootbone " "
+
+}

@@ -267,6 +267,12 @@ $Project
 				}
 			}
 		}
+
+		$Folder "Peter"
+		{
+			$File	"peter\shelleject_new.cpp"
+			$File	"peter\shelleject_new.h"
+		}
 		
 		$File	"hl2\C_Func_Monitor.cpp"
 		$File	"geiger.cpp"

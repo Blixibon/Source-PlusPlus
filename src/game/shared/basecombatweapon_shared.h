@@ -200,6 +200,8 @@ public:
 	virtual int				GetSubType( void ) { return m_iSubType; }
 	virtual void			SetSubType( int iType ) { m_iSubType = iType; }
 
+	virtual int GetWeaponID(void) const { return -1; }
+
 	virtual void			Equip( CBaseCombatCharacter *pOwner );
 	virtual void			Drop( const Vector &vecVelocity );
 

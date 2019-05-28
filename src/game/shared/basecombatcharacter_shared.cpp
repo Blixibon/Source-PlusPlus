@@ -223,6 +223,24 @@ CBaseCombatWeapon* CBaseCombatCharacter::Weapon_OwnsThisType( const char *pszWea
 	return NULL;
 }
 
+CBaseCombatWeapon * CBaseCombatCharacter::Weapon_OwnsThisID(int iWeaponID) const
+{
+	for (int i = 0; i < WeaponCount(); i++)
+	{
+		CBaseCombatWeapon *pWpn = GetWeapon(i);
+
+		if (pWpn == NULL)
+			continue;
+
+		if (pWpn->GetWeaponID() == iWeaponID)
+		{
+			return pWpn;
+		}
+	}
+
+	return NULL;
+}
+
 
 int CBaseCombatCharacter::BloodColor()
 {

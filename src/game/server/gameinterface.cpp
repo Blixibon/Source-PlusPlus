@@ -235,6 +235,11 @@ INetworkStringTable *g_pStringTableServerPopFiles = NULL;
 INetworkStringTable *g_pStringTableServerMapCycleMvM = NULL;
 #endif
 
+#ifdef HL2_LAZUL
+INetworkStringTable *g_pStringTablePlayerFootSteps = NULL;
+#endif // HL2_LAZUL
+
+
 CStringTableSaveRestoreOps g_VguiScreenStringOps;
 
 // Holds global variables shared between engine and game.
@@ -1461,6 +1466,10 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 	g_pStringTableServerPopFiles = networkstringtable->CreateStringTable( "ServerPopFiles", 128 );
 	g_pStringTableServerMapCycleMvM = networkstringtable->CreateStringTable( "ServerMapCycleMvM", 128 );
 #endif
+#ifdef HL2_LAZUL
+	g_pStringTablePlayerFootSteps = networkstringtable->CreateStringTable("PlayerFootsteps", MAX_FOOTSTEP_STRINGS);
+#endif // HL2_LAZUL
+
 
 	bool bPopFilesValid = true;
 	(void)bPopFilesValid; // Avoid unreferenced variable warning
@@ -1482,6 +1491,10 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 #ifdef DEFERRED
 	Assert( g_pStringTable_LightCookies );
 #endif
+
+#ifdef HL2_LAZUL
+	Assert(g_pStringTablePlayerFootSteps);
+#endif
 			
 	// Need this so we have the error material always handy
 	PrecacheMaterial( "debug/debugempty" );
@@ -1494,6 +1507,11 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 
 	// Set up save/load utilities for string tables
 	g_VguiScreenStringOps.Init( g_pStringTableVguiScreen );
+
+#ifdef HL2_LAZUL
+	g_FootStepStringOps.Init(g_pStringTablePlayerFootSteps);
+#endif // HL2_LAZUL
+
 }
 
 CSaveRestoreData *CServerGameDLL::SaveInit( int size )

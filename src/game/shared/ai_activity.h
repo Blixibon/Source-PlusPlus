@@ -1495,6 +1495,9 @@ typedef enum
 			_ACT_BMMP_END,
 			_ACT_BMMP_LAST = _ACT_BMMP_END - 1,
 
+	// Lazuul
+				ACT_METROPOLICE_DEPLOY_MANHACK,
+
 // Portal!
 	ACT_VM_FIZZLE,
 

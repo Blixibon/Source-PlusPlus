@@ -24,7 +24,7 @@ class CStringTableSaveRestoreOps;
 #define MAX_MATERIAL_STRINGS			( 1 << MAX_MATERIAL_STRING_BITS )
 #define OVERLAY_MATERIAL_INVALID_STRING	( MAX_MATERIAL_STRINGS - 1 )
 
-#define MAX_CHOREO_SCENES_STRING_BITS	13
+#define MAX_CHOREO_SCENES_STRING_BITS	14
 #define MAX_CHOREO_SCENES_STRINGS		( 1 << MAX_CHOREO_SCENES_STRING_BITS )
 #define CHOREO_SCENES_INVALID_STRING	( MAX_CHOREO_SCENES_STRINGS - 1 )
 
@@ -42,5 +42,13 @@ extern INetworkStringTable *g_pStringTableClientSideChoreoScenes;
 // save/load
 extern CStringTableSaveRestoreOps g_VguiScreenStringOps;
 
+#ifdef HL2_LAZUL
+enum
+{
+	MAX_FOOTSTEP_STRING_BITS = 6,
+	MAX_FOOTSTEP_STRINGS = 1 << MAX_FOOTSTEP_STRING_BITS,
+};
+extern CStringTableSaveRestoreOps g_FootStepStringOps;
+#endif
 
 #endif // NETWORKSTRINGTABLE_GAMEDLL_H

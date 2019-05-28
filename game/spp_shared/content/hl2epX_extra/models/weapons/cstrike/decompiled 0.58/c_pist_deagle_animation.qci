@@ -1,0 +1,81 @@
+
+$Animation "a_adjustment_ref" "c_pist_deagle_anims\a_adjustment_ref.smd" {
+	fps 30
+}
+
+$Animation "a_adjustment" "c_pist_deagle_anims\a_adjustment.smd" {
+	fps 1
+	loop
+}
+
+$Sequence "idle1" {
+	"c_pist_deagle_anims\idle1.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 16
+	loop
+}
+
+$Sequence "shoot1" {
+	"c_pist_deagle_anims\shoot1.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "357 1" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_deagle primary-attack 2" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 40
+}
+
+$Sequence "shoot2" {
+	"c_pist_deagle_anims\shoot2.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "357 1" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_deagle primary-attack 2" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 40
+}
+
+$Sequence "shoot_empty" {
+	"c_pist_deagle_anims\shoot_empty.smd"
+	activity "ACT_VM_DRYFIRE" 1
+	{ event 5001 0 "21" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 40
+}
+
+$Sequence "reload" {
+	"c_pist_deagle_anims\reload.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event 5004 0 "Weapon_DEagle.Slideback" }
+	{ event 5004 14 "Weapon_DEagle.Clipout" }
+	{ event 5004 34 "Weapon_DEagle.Clipin" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "draw" {
+	"c_pist_deagle_anims\draw.smd"
+	activity "ACT_VM_DRAW" 1
+	{ event 5004 1 "Weapon_DEagle.Deploy" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "adjustment" {
+	"a_adjustment"
+	autoplay
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 1
+	loop
+}

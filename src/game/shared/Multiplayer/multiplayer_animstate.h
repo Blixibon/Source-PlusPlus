@@ -219,6 +219,8 @@ public:
 	bool	IsGestureSlotActive( int iGestureSlot );
 	bool	VerifyAnimLayerInSlot( int iGestureSlot );
 
+	bool	IsPlayingCustomSequence() { return m_nSpecificMainSequence >= 0; }
+
 	// Feet.
 	// If you are forcing aim yaw, your code is almost definitely broken if you don't include a delay between 
 	// teleporting and forcing yaw. This is due to an unfortunate interaction between the command lookback window,
@@ -262,7 +264,7 @@ protected:
 	void	RunGestureSlotAnimEventsToCompletion( GestureSlot_t *pGesture );
 #endif
 
-	virtual void PlayFlinchGesture( Activity iActivity );
+	virtual void PlayFlinchGesture( Activity iActivity, int nData );
 
 	virtual float CalcMovementSpeed( bool *bIsMoving );
 	virtual float CalcMovementPlaybackRate( bool *bIsMoving );

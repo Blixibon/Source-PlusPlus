@@ -55,6 +55,8 @@ extern CBaseEntity*	FindPickerEntity( CBasePlayer* pPlayer );
 
 extern bool IsInCommentaryMode( void );
 
+extern void PrecacheNewShells();
+
 ConVar  *sv_cheats = NULL;
 
 enum eAllowPointServerCommand {
@@ -390,6 +392,7 @@ void ClientPrecache( void )
 
 	PrecacheParticleSystem("dissolve");
 
+	PrecacheNewShells();
 	ClientGamePrecache();
 }
 

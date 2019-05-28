@@ -1,0 +1,24 @@
+// Choreo version 1
+actor "!target1"
+{
+  channel "vo"
+  {
+    event speak "NPC_Protoguard.lookout"
+    {
+      time 0.080000 0.980136
+      param "NPC_Protoguard.lookout"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+    }
+  }
+}
+
+scalesettings
+{
+  "CChoreoView" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off
+ignorePhonemes off

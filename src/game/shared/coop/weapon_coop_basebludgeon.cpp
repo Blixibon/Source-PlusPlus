@@ -69,7 +69,12 @@ void CWeaponCoopBaseBludgeon::Spawn( void )
 
     BaseClass::Spawn();
 }
-
+#ifndef CLIENT_DLL
+int CWeaponCoopBaseBludgeon::CapabilitiesGet()
+{
+	return bits_CAP_WEAPON_MELEE_ATTACK1;
+}
+#endif
 //================================================================================
 //================================================================================
 void CWeaponCoopBaseBludgeon::Precache( void ) 

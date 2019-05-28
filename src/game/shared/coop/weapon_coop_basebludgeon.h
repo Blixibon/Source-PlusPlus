@@ -49,6 +49,10 @@ public:
 	virtual float	GetRange( void )								{	return	32.0f;	}
 	virtual	float	GetDamageForActivity( Activity hitActivity )	{	return	1.0f;	}
 
+#ifndef CLIENT_DLL
+	virtual int		CapabilitiesGet(void);
+#endif
+
 protected:
     int	m_nShotsFired;	// Number of consecutive shots fired
     float	m_flNextSoundTime;	// real-time clock of when to make next sound

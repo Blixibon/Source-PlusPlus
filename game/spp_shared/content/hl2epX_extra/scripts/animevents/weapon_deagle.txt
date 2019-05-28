@@ -1,0 +1,40 @@
+"weapon_deagle"
+{
+    // Primary attack settings.
+    "primary-attack"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "100"
+        "forward_speed_max"     "150"
+        "right_speed_min"       "-30"
+        "right_speed_max"       "0"
+        "up_speed_min"          "-30"
+        "up_speed_max"          "-10"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "eject_model"       "models\shells\shell_9mm.mdl"
+    }
+    
+    // Third-person primary attack.
+    "primary-attack-thirdperson"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "100"
+        "forward_speed_max"     "150"
+        "right_speed_min"       "80"
+        "right_speed_max"       "100"
+        "up_speed_min"          "0"
+        "up_speed_max"          "0"
+        "lifetime"              "5"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+         "eject_model"       "models\shells\shell_9mm.mdl"
+    }
+}

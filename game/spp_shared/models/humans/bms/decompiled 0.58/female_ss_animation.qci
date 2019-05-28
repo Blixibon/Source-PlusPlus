@@ -1,0 +1,1075 @@
+
+$SectionFrames 30 120
+
+$PoseParameter "gesture_height" 1 -1 loop 0
+$PoseParameter "gesture_width" 1 -1 loop 0
+
+$IKChain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$WeightList "weights_g_female_shoulder_fixerapexDelta" {
+	 "ValveBiped.Bip01_Pelvis" 1
+	 "ValveBiped.Bip01_Spine" 1
+	 "ValveBiped.Bip01_Spine1" 1
+	 "ValveBiped.Bip01_Spine2" 1
+	 "ValveBiped.Bip01_Spine4" 1
+	 "ValveBiped.Bip01_Neck1" 1
+	 "ValveBiped.Bip01_Head1" 1
+	 "ValveBiped.forward" 1
+	 "ValveBiped.Bip01_R_Clavicle" 1
+	 "ValveBiped.Bip01_R_UpperArm" 1
+	 "ValveBiped.Bip01_R_Forearm" 1
+	 "ValveBiped.Bip01_R_Hand" 1
+	 "ValveBiped.Anim_Attachment_RH" 1
+	 "ValveBiped.Bip01_L_Clavicle" 1
+	 "ValveBiped.Bip01_L_UpperArm" 1
+	 "ValveBiped.Bip01_L_Forearm" 1
+	 "ValveBiped.Bip01_L_Hand" 1
+	 "ValveBiped.Anim_Attachment_LH" 1
+	 "ValveBiped.Bip01_R_Thigh" 0
+	 "ValveBiped.Bip01_R_Calf" 0
+	 "ValveBiped.Bip01_R_Foot" 0
+	 "ValveBiped.Bip01_R_Toe0" 0
+	 "ValveBiped.Bip01_L_Thigh" 0
+	 "ValveBiped.Bip01_L_Calf" 0
+	 "ValveBiped.Bip01_L_Foot" 0
+	 "ValveBiped.Bip01_L_Toe0" 0
+	 "ValveBiped.Bip01_L_Finger4" 1
+	 "ValveBiped.Bip01_L_Finger41" 1
+	 "ValveBiped.Bip01_L_Finger42" 1
+	 "ValveBiped.Bip01_L_Finger3" 1
+	 "ValveBiped.Bip01_L_Finger31" 1
+	 "ValveBiped.Bip01_L_Finger32" 1
+	 "ValveBiped.Bip01_L_Finger2" 1
+	 "ValveBiped.Bip01_L_Finger21" 1
+	 "ValveBiped.Bip01_L_Finger22" 1
+	 "ValveBiped.Bip01_L_Finger1" 1
+	 "ValveBiped.Bip01_L_Finger11" 1
+	 "ValveBiped.Bip01_L_Finger12" 1
+	 "ValveBiped.Bip01_L_Finger0" 1
+	 "ValveBiped.Bip01_L_Finger01" 1
+	 "ValveBiped.Bip01_L_Finger02" 1
+	 "ValveBiped.Bip01_R_Finger4" 1
+	 "ValveBiped.Bip01_R_Finger41" 1
+	 "ValveBiped.Bip01_R_Finger42" 1
+	 "ValveBiped.Bip01_R_Finger3" 1
+	 "ValveBiped.Bip01_R_Finger31" 1
+	 "ValveBiped.Bip01_R_Finger32" 1
+	 "ValveBiped.Bip01_R_Finger2" 1
+	 "ValveBiped.Bip01_R_Finger21" 1
+	 "ValveBiped.Bip01_R_Finger22" 1
+	 "ValveBiped.Bip01_R_Finger1" 1
+	 "ValveBiped.Bip01_R_Finger11" 1
+	 "ValveBiped.Bip01_R_Finger12" 1
+	 "ValveBiped.Bip01_R_Finger0" 1
+	 "ValveBiped.Bip01_R_Finger01" 1
+	 "ValveBiped.Bip01_R_Finger02" 1
+}
+
+$WeightList "weights_g_female_shoulder_fixer" {
+	 "ValveBiped.Bip01_Pelvis" 0
+	 "ValveBiped.Bip01_Spine" 0
+	 "ValveBiped.Bip01_Spine1" 0
+	 "ValveBiped.Bip01_Spine2" 0
+	 "ValveBiped.Bip01_Spine4" 0
+	 "ValveBiped.Bip01_Neck1" 0
+	 "ValveBiped.Bip01_Head1" 0
+	 "ValveBiped.forward" 0
+	 "ValveBiped.Bip01_R_Clavicle" 0
+	 "ValveBiped.Bip01_R_UpperArm" 0
+	 "ValveBiped.Bip01_R_Forearm" 0
+	 "ValveBiped.Bip01_R_Hand" 0
+	 "ValveBiped.Anim_Attachment_RH" 0
+	 "ValveBiped.Bip01_L_Clavicle" 0
+	 "ValveBiped.Bip01_L_UpperArm" 0
+	 "ValveBiped.Bip01_L_Forearm" 0
+	 "ValveBiped.Bip01_L_Hand" 0
+	 "ValveBiped.Anim_Attachment_LH" 0
+	 "ValveBiped.Bip01_R_Thigh" 0
+	 "ValveBiped.Bip01_R_Calf" 0
+	 "ValveBiped.Bip01_R_Foot" 0
+	 "ValveBiped.Bip01_R_Toe0" 0
+	 "ValveBiped.Bip01_L_Thigh" 0
+	 "ValveBiped.Bip01_L_Calf" 0
+	 "ValveBiped.Bip01_L_Foot" 0
+	 "ValveBiped.Bip01_L_Toe0" 0
+	 "ValveBiped.Bip01_L_Finger4" 0
+	 "ValveBiped.Bip01_L_Finger41" 0
+	 "ValveBiped.Bip01_L_Finger42" 0
+	 "ValveBiped.Bip01_L_Finger3" 0
+	 "ValveBiped.Bip01_L_Finger31" 0
+	 "ValveBiped.Bip01_L_Finger32" 0
+	 "ValveBiped.Bip01_L_Finger2" 0
+	 "ValveBiped.Bip01_L_Finger21" 0
+	 "ValveBiped.Bip01_L_Finger22" 0
+	 "ValveBiped.Bip01_L_Finger1" 0
+	 "ValveBiped.Bip01_L_Finger11" 0
+	 "ValveBiped.Bip01_L_Finger12" 0
+	 "ValveBiped.Bip01_L_Finger0" 0
+	 "ValveBiped.Bip01_L_Finger01" 0
+	 "ValveBiped.Bip01_L_Finger02" 0
+	 "ValveBiped.Bip01_R_Finger4" 0
+	 "ValveBiped.Bip01_R_Finger41" 0
+	 "ValveBiped.Bip01_R_Finger42" 0
+	 "ValveBiped.Bip01_R_Finger3" 0
+	 "ValveBiped.Bip01_R_Finger31" 0
+	 "ValveBiped.Bip01_R_Finger32" 0
+	 "ValveBiped.Bip01_R_Finger2" 0
+	 "ValveBiped.Bip01_R_Finger21" 0
+	 "ValveBiped.Bip01_R_Finger22" 0
+	 "ValveBiped.Bip01_R_Finger1" 0
+	 "ValveBiped.Bip01_R_Finger11" 0
+	 "ValveBiped.Bip01_R_Finger12" 0
+	 "ValveBiped.Bip01_R_Finger0" 0
+	 "ValveBiped.Bip01_R_Finger01" 0
+	 "ValveBiped.Bip01_R_Finger02" 0
+}
+
+$WeightList "weights_g_female_scratcheyeapexArms" {
+	 "ValveBiped.Bip01_Pelvis" 0
+	 "ValveBiped.Bip01_Spine" 0
+	 "ValveBiped.Bip01_Spine1" 0
+	 "ValveBiped.Bip01_Spine2" 0
+	 "ValveBiped.Bip01_Spine4" 0
+	 "ValveBiped.Bip01_Neck1" 0
+	 "ValveBiped.Bip01_Head1" 0
+	 "ValveBiped.forward" 0
+	 "ValveBiped.Bip01_R_Clavicle" 1
+	 "ValveBiped.Bip01_R_UpperArm" 1
+	 "ValveBiped.Bip01_R_Forearm" 1
+	 "ValveBiped.Bip01_R_Hand" 1
+	 "ValveBiped.Anim_Attachment_RH" 1
+	 "ValveBiped.Bip01_L_Clavicle" 1
+	 "ValveBiped.Bip01_L_UpperArm" 1
+	 "ValveBiped.Bip01_L_Forearm" 1
+	 "ValveBiped.Bip01_L_Hand" 1
+	 "ValveBiped.Anim_Attachment_LH" 1
+	 "ValveBiped.Bip01_R_Thigh" 0
+	 "ValveBiped.Bip01_R_Calf" 0
+	 "ValveBiped.Bip01_R_Foot" 0
+	 "ValveBiped.Bip01_R_Toe0" 0
+	 "ValveBiped.Bip01_L_Thigh" 0
+	 "ValveBiped.Bip01_L_Calf" 0
+	 "ValveBiped.Bip01_L_Foot" 0
+	 "ValveBiped.Bip01_L_Toe0" 0
+	 "ValveBiped.Bip01_L_Finger4" 1
+	 "ValveBiped.Bip01_L_Finger41" 1
+	 "ValveBiped.Bip01_L_Finger42" 1
+	 "ValveBiped.Bip01_L_Finger3" 1
+	 "ValveBiped.Bip01_L_Finger31" 1
+	 "ValveBiped.Bip01_L_Finger32" 1
+	 "ValveBiped.Bip01_L_Finger2" 1
+	 "ValveBiped.Bip01_L_Finger21" 1
+	 "ValveBiped.Bip01_L_Finger22" 1
+	 "ValveBiped.Bip01_L_Finger1" 1
+	 "ValveBiped.Bip01_L_Finger11" 1
+	 "ValveBiped.Bip01_L_Finger12" 1
+	 "ValveBiped.Bip01_L_Finger0" 1
+	 "ValveBiped.Bip01_L_Finger01" 1
+	 "ValveBiped.Bip01_L_Finger02" 1
+	 "ValveBiped.Bip01_R_Finger4" 1
+	 "ValveBiped.Bip01_R_Finger41" 1
+	 "ValveBiped.Bip01_R_Finger42" 1
+	 "ValveBiped.Bip01_R_Finger3" 1
+	 "ValveBiped.Bip01_R_Finger31" 1
+	 "ValveBiped.Bip01_R_Finger32" 1
+	 "ValveBiped.Bip01_R_Finger2" 1
+	 "ValveBiped.Bip01_R_Finger21" 1
+	 "ValveBiped.Bip01_R_Finger22" 1
+	 "ValveBiped.Bip01_R_Finger1" 1
+	 "ValveBiped.Bip01_R_Finger11" 1
+	 "ValveBiped.Bip01_R_Finger12" 1
+	 "ValveBiped.Bip01_R_Finger0" 1
+	 "ValveBiped.Bip01_R_Finger01" 1
+	 "ValveBiped.Bip01_R_Finger02" 1
+}
+
+$WeightList "weights_g_female_scratcheyeapexSpine" {
+	 "ValveBiped.Bip01_Pelvis" 1
+	 "ValveBiped.Bip01_Spine" 1
+	 "ValveBiped.Bip01_Spine1" 1
+	 "ValveBiped.Bip01_Spine2" 1
+	 "ValveBiped.Bip01_Spine4" 1
+	 "ValveBiped.Bip01_Neck1" 1
+	 "ValveBiped.Bip01_Head1" 1
+	 "ValveBiped.forward" 1
+	 "ValveBiped.Bip01_R_Clavicle" 0
+	 "ValveBiped.Bip01_R_UpperArm" 0
+	 "ValveBiped.Bip01_R_Forearm" 0
+	 "ValveBiped.Bip01_R_Hand" 0
+	 "ValveBiped.Anim_Attachment_RH" 0
+	 "ValveBiped.Bip01_L_Clavicle" 0
+	 "ValveBiped.Bip01_L_UpperArm" 0
+	 "ValveBiped.Bip01_L_Forearm" 0
+	 "ValveBiped.Bip01_L_Hand" 0
+	 "ValveBiped.Anim_Attachment_LH" 0
+	 "ValveBiped.Bip01_R_Thigh" 0
+	 "ValveBiped.Bip01_R_Calf" 0
+	 "ValveBiped.Bip01_R_Foot" 0
+	 "ValveBiped.Bip01_R_Toe0" 0
+	 "ValveBiped.Bip01_L_Thigh" 0
+	 "ValveBiped.Bip01_L_Calf" 0
+	 "ValveBiped.Bip01_L_Foot" 0
+	 "ValveBiped.Bip01_L_Toe0" 0
+	 "ValveBiped.Bip01_L_Finger4" 0
+	 "ValveBiped.Bip01_L_Finger41" 0
+	 "ValveBiped.Bip01_L_Finger42" 0
+	 "ValveBiped.Bip01_L_Finger3" 0
+	 "ValveBiped.Bip01_L_Finger31" 0
+	 "ValveBiped.Bip01_L_Finger32" 0
+	 "ValveBiped.Bip01_L_Finger2" 0
+	 "ValveBiped.Bip01_L_Finger21" 0
+	 "ValveBiped.Bip01_L_Finger22" 0
+	 "ValveBiped.Bip01_L_Finger1" 0
+	 "ValveBiped.Bip01_L_Finger11" 0
+	 "ValveBiped.Bip01_L_Finger12" 0
+	 "ValveBiped.Bip01_L_Finger0" 0
+	 "ValveBiped.Bip01_L_Finger01" 0
+	 "ValveBiped.Bip01_L_Finger02" 0
+	 "ValveBiped.Bip01_R_Finger4" 0
+	 "ValveBiped.Bip01_R_Finger41" 0
+	 "ValveBiped.Bip01_R_Finger42" 0
+	 "ValveBiped.Bip01_R_Finger3" 0
+	 "ValveBiped.Bip01_R_Finger31" 0
+	 "ValveBiped.Bip01_R_Finger32" 0
+	 "ValveBiped.Bip01_R_Finger2" 0
+	 "ValveBiped.Bip01_R_Finger21" 0
+	 "ValveBiped.Bip01_R_Finger22" 0
+	 "ValveBiped.Bip01_R_Finger1" 0
+	 "ValveBiped.Bip01_R_Finger11" 0
+	 "ValveBiped.Bip01_R_Finger12" 0
+	 "ValveBiped.Bip01_R_Finger0" 0
+	 "ValveBiped.Bip01_R_Finger01" 0
+	 "ValveBiped.Bip01_R_Finger02" 0
+}
+
+$Animation "reference_a" "female_ss_anims\reference_a.smd" {
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Animation "a_g_female_shoulder_fixer2" "female_ss_anims\a_g_female_shoulder_fixer2.smd" {
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Animation "b_g_female_shoulder_fixer2" "female_ss_anims\b_g_female_shoulder_fixer2.smd" {
+	fps 30
+}
+
+$Sequence "gesture_female_shoulder_fixer" {
+	"b_g_female_shoulder_fixer2"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "Sit_Office_Chair" {
+	"female_ss_anims\Sit_Office_Chair.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "P_BreakRoom_Sit_01" {
+	"female_ss_anims\P_BreakRoom_Sit_01.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "AM_Console01a_work_enter" {
+	"female_ss_anims\AM_Console01a_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console01a_work" {
+	"female_ss_anims\AM_Console01a_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console01a_work_exit" {
+	"female_ss_anims\AM_Console01a_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console01b_work_enter" {
+	"female_ss_anims\AM_Console01b_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console01b_work" {
+	"female_ss_anims\AM_Console01b_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console01b_work_exit" {
+	"female_ss_anims\AM_Console01b_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console01c_work_enter" {
+	"female_ss_anims\AM_Console01c_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console01c_work" {
+	"female_ss_anims\AM_Console01c_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console01c_work_exit" {
+	"female_ss_anims\AM_Console01c_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console02a_work_enter" {
+	"female_ss_anims\AM_Console02a_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console02a_work" {
+	"female_ss_anims\AM_Console02a_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console02a_work_exit" {
+	"female_ss_anims\AM_Console02a_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console02b_work_enter" {
+	"female_ss_anims\AM_Console02b_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console02b_work" {
+	"female_ss_anims\AM_Console02b_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console02b_work_exit" {
+	"female_ss_anims\AM_Console02b_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console03a_work_enter" {
+	"female_ss_anims\AM_Console03a_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console03a_work" {
+	"female_ss_anims\AM_Console03a_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console03a_work_exit" {
+	"female_ss_anims\AM_Console03a_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console03b_work_enter" {
+	"female_ss_anims\AM_Console03b_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console03b_work" {
+	"female_ss_anims\AM_Console03b_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console03b_work_exit" {
+	"female_ss_anims\AM_Console03b_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console03c_work_enter" {
+	"female_ss_anims\AM_Console03c_work_enter.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "AM_Console03c_work" {
+	"female_ss_anims\AM_Console03c_work.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 60 LX LY
+}
+
+$Sequence "AM_Console03c_work_exit" {
+	"female_ss_anims\AM_Console03c_work_exit.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+	walkframe 6 LX LY
+}
+
+$Sequence "Sit_Stool" {
+	"female_ss_anims\Sit_Stool.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Sit_Typing" {
+	"female_ss_anims\Sit_Typing.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Sit_Typing02" {
+	"female_ss_anims\Sit_Typing02.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Sit_Typing03" {
+	"female_ss_anims\Sit_Typing03.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "OC_SciVentBePulled_IdleBefore" {
+	"female_ss_anims\OC_SciVentBePulled_IdleBefore.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 1
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "OC_SciVentBePulled" {
+	"female_ss_anims\OC_SciVentBePulled.smd"
+	{ event AE_NPC_RAGDOLL 165 "" }
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "sci_syringe_heal" {
+	"female_ss_anims\sci_syringe_heal.smd"
+	activity "ACT_HEAL" 1
+	{ event AE_NPC_ITEM_ATTACH 20 "item_syringe" }
+	{ event AE_HEAL 74 "" }
+	{ event AE_NPC_ITEM_REMOVE 128 "item_syringe" }
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "AM_Office_FileGive" {
+	"female_ss_anims\AM_Office_FileGive.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "gesture_female_shoulder_fixer"
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "g_female_shoulder_fixerdefault" {
+	"female_ss_anims\g_female_shoulder_fixerdefault.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "g_female_shoulder_fixerapexDelta" {
+	"female_ss_anims\g_female_shoulder_fixerapexDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_shoulder_fixerloopDelta" {
+	"female_ss_anims\g_female_shoulder_fixerloopDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_shoulder_fixer" {
+	"female_ss_anims\g_female_shoulder_fixer.smd"
+	fadein 0.2
+	fadeout 0.2
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+
+keyvalues
+{
+	faceposer 
+	{
+		"type" "gesture"
+		 "tags" 
+		{
+			"apex" "20"
+			"extreme" "20"
+			"loop" "20"
+			"end" "40"
+		}
+		"entrytag" "apex"
+		"thumbnail_frame" "20"
+	}
+}
+	blendlayer "g_female_shoulder_fixerapexDelta" 0 0 20 20
+	blendlayer "g_female_shoulder_fixerloopDelta" 0 20 40 60 spline
+	fps 30
+	weightlist "weights_g_female_shoulder_fixer"
+}
+
+$Sequence "g_female_scratcheyeapexArms" {
+	"female_ss_anims\g_female_scratcheyeapexArms.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_scratcheyeapexArms"
+}
+
+$Sequence "g_female_scratcheyeapexSpine" {
+	"female_ss_anims\g_female_scratcheyeapexSpine.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_scratcheyeapexSpine"
+}
+
+$Sequence "g_female_scratcheyeapexDelta" {
+	"female_ss_anims\g_female_scratcheyeapexDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_scratcheyeloopArms" {
+	"female_ss_anims\g_female_scratcheyeloopArms.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_scratcheyeapexArms"
+}
+
+$Sequence "g_female_scratcheyeloopSpine" {
+	"female_ss_anims\g_female_scratcheyeloopSpine.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_scratcheyeapexSpine"
+}
+
+$Sequence "g_female_scratcheyeaccentDelta" {
+	"female_ss_anims\g_female_scratcheyeaccentDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_scratcheye" {
+	"female_ss_anims\g_female_scratcheye.smd"
+	fadein 0.2
+	fadeout 0.2
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+
+keyvalues
+{
+	faceposer 
+	{
+		"type" "gesture"
+		 "tags" 
+		{
+			"apex" "15"
+			"accent" "30"
+			"loop" "30"
+			"end" "120"
+		}
+		"entrytag" "apex"
+		"thumbnail_frame" "30"
+	}
+}
+	blendlayer "g_female_scratcheyeapexArms" 0 15 15 30 xfade spline
+	blendlayer "g_female_scratcheyeapexSpine" 0 15 15 30 spline
+	blendlayer "g_female_scratcheyeloopArms" 15 30 120 150 spline
+	blendlayer "g_female_scratcheyeloopSpine" 15 30 120 150 spline
+	blendlayer "g_female_scratcheyeapexDelta" 0 0 15 15
+	blendlayer "g_female_scratcheyeaccentDelta" 15 15 30 30
+	fps 30
+	ikrule "lhand" release
+	ikrule "rhand" release
+	weightlist "weights_g_female_shoulder_fixer"
+}
+
+$Sequence "g_female_bitenailsapexArms" {
+	"female_ss_anims\g_female_bitenailsapexArms.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_scratcheyeapexArms"
+}
+
+$Sequence "g_female_bitenailsapexSpine" {
+	"female_ss_anims\g_female_bitenailsapexSpine.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_scratcheyeapexSpine"
+}
+
+$Sequence "g_female_bitenailsapexDelta" {
+	"female_ss_anims\g_female_bitenailsapexDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_bitenailsloopArms" {
+	"female_ss_anims\g_female_bitenailsloopArms.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_scratcheyeapexArms"
+}
+
+$Sequence "g_female_bitenailsloopSpine" {
+	"female_ss_anims\g_female_bitenailsloopSpine.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_scratcheyeapexSpine"
+}
+
+$Sequence "g_female_bitenailsaccentDelta" {
+	"female_ss_anims\g_female_bitenailsaccentDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_bitenails" {
+	"female_ss_anims\g_female_bitenails.smd"
+	fadein 0.2
+	fadeout 0.2
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+
+keyvalues
+{
+	faceposer 
+	{
+		"type" "gesture"
+		 "tags" 
+		{
+			"apex" "30"
+			"accent" "30"
+			"loop" "30"
+			"end" "210"
+		}
+		"entrytag" "apex"
+		"thumbnail_frame" "30"
+	}
+}
+	blendlayer "g_female_bitenailsapexArms" 0 30 30 30 xfade spline
+	blendlayer "g_female_bitenailsapexSpine" 0 30 30 30 spline
+	blendlayer "g_female_bitenailsloopArms" 30 30 210 240 spline
+	blendlayer "g_female_bitenailsloopSpine" 30 30 210 240 spline
+	blendlayer "g_female_bitenailsapexDelta" 0 0 30 30
+	addlayer "g_female_bitenailsaccentDelta"
+	fps 30
+	ikrule "lhand" release
+	ikrule "rhand" release
+	weightlist "weights_g_female_shoulder_fixer"
+}
+
+$Sequence "g_female_neckrollapexArms" {
+	"female_ss_anims\g_female_neckrollapexArms.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_scratcheyeapexArms"
+}
+
+$Sequence "g_female_neckrollapexSpine" {
+	"female_ss_anims\g_female_neckrollapexSpine.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_scratcheyeapexSpine"
+}
+
+$Sequence "g_female_neckrollapexDelta" {
+	"female_ss_anims\g_female_neckrollapexDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_neckrollloopArms" {
+	"female_ss_anims\g_female_neckrollloopArms.smd"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_scratcheyeapexArms"
+}
+
+$Sequence "g_female_neckrollloopSpine" {
+	"female_ss_anims\g_female_neckrollloopSpine.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	realtime
+	fps 30
+	loop
+	weightlist "weights_g_female_scratcheyeapexSpine"
+}
+
+$Sequence "g_female_neckrollaccentDelta" {
+	"female_ss_anims\g_female_neckrollaccentDelta.smd"
+	delta
+	fadein 0.2
+	fadeout 0.2
+	hidden
+	fps 30
+	weightlist "weights_g_female_shoulder_fixerapexDelta"
+}
+
+$Sequence "g_female_neckroll" {
+	"female_ss_anims\g_female_neckroll.smd"
+	fadein 0.2
+	fadeout 0.2
+	iklock "rfoot" 1 0
+	iklock "lfoot" 1 0
+
+keyvalues
+{
+	faceposer 
+	{
+		"type" "gesture"
+		 "tags" 
+		{
+			"apex" "30"
+			"accent" "30"
+			"loop" "30"
+			"end" "115"
+		}
+		"entrytag" "apex"
+		"thumbnail_frame" "30"
+	}
+}
+	blendlayer "g_female_neckrollapexArms" 0 30 30 30 xfade spline
+	blendlayer "g_female_neckrollapexSpine" 0 30 30 30 spline
+	blendlayer "g_female_neckrollloopArms" 30 30 115 145 spline
+	blendlayer "g_female_neckrollloopSpine" 30 30 115 145 spline
+	blendlayer "g_female_neckrollapexDelta" 0 0 30 30
+	addlayer "g_female_neckrollaccentDelta"
+	fps 30
+	ikrule "lhand" release
+	ikrule "rhand" release
+	weightlist "weights_g_female_shoulder_fixer"
+}

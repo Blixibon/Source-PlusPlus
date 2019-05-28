@@ -1,0 +1,23 @@
+
+$PoseParameter "move_yaw" -180 180 loop 0
+$PoseParameter "body_pitch" -90 90 loop 0
+$PoseParameter "body_yaw" -90 90 loop 0
+
+$IKChain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$Sequence "ragdoll" {
+	"protoguard_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$IncludeModel "combine_soldier_anims.mdl"

@@ -105,6 +105,7 @@ $Project
 			$File	"peter\gametypes.h"
 			$File	"peter\population_manager.h"
 			$File	"peter\population_manager.cpp"
+			$File	"shelleject_precache.cpp"
 		}
 		
 		$Folder	"Multiplayer"

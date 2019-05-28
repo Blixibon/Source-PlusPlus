@@ -66,6 +66,7 @@ public:
 	virtual int PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget);
 
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
+	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
 	// Weapon spawn/respawn control
 	virtual int WeaponShouldRespawn(CBaseCombatWeapon* pWeapon);
@@ -101,7 +102,10 @@ public:
 		return m_nGameMode;
 	}
 
-	
+	int		GetProtaganistTeam()
+	{
+		return TEAM_REBELS;
+	}
 
 #ifndef CLIENT_DLL
 	virtual float			GetAmmoDamage(CBaseEntity* pAttacker, CBaseEntity* pVictim, int nAmmoType);

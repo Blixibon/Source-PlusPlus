@@ -286,6 +286,10 @@ INetworkStringTable *g_pStringTableServerPopFiles = NULL;
 INetworkStringTable *g_pStringTableServerMapCycleMvM = NULL;
 #endif
 
+#ifdef HL2_LAZUL
+INetworkStringTable *g_pStringTablePlayerFootSteps = NULL;
+#endif // HL2_LAZUL
+
 static CGlobalVarsBase dummyvars( true );
 // So stuff that might reference gpGlobals during DLL initialization won't have a NULL pointer.
 // Once the engine calls Init on this DLL, this pointer gets assigned to the shared data in the engine
@@ -1682,6 +1686,10 @@ void CHLClient::ResetStringTablePointers()
 	g_pStringTableServerPopFiles = NULL;
 	g_pStringTableServerMapCycleMvM = NULL;
 #endif
+
+#ifdef HL2_LAZUL
+	g_pStringTablePlayerFootSteps = NULL;
+#endif // HL2_LAZUL
 }
 
 //-----------------------------------------------------------------------------
@@ -1924,6 +1932,12 @@ void CHLClient::InstallStringTableCallback( const char *tableName )
 	else if ( !Q_strcasecmp( tableName, "ServerMapCycleMvM" ) )
 	{
 		g_pStringTableServerMapCycleMvM = networkstringtable->FindTable( tableName );
+	}
+#endif
+#ifdef HL2_LAZUL
+	else if (!Q_strcasecmp(tableName, "PlayerFootsteps"))
+	{
+		g_pStringTablePlayerFootSteps = networkstringtable->FindTable(tableName);
 	}
 #endif
 

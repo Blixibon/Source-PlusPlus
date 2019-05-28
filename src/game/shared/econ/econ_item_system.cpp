@@ -485,6 +485,8 @@ public:
 
 		GET_BOOL( pItem, pData, flip_viewmodel );
 
+		GET_STRING(pItem, pData, shell_script);
+
 		for ( KeyValues *pSubData = pData->GetFirstSubKey(); pSubData != NULL; pSubData = pSubData->GetNextKey() )
 		{
 			if ( !V_stricmp( pSubData->GetName(), "capabilities" ) )

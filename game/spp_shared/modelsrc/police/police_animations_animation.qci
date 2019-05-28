@@ -48,5 +48,6 @@ $IKAutoPlayLock "lfoot" 1 0.1
 
 
 $IncludeModel "polhl2_animations.mdl"
+$IncludeModel "humans/animation/di_death_antlion.mdl"
 $IncludeModel "humans/animation/male_holster_anims.mdl"
 $IncludeModel "humans/animation/armshield_anims.mdl"

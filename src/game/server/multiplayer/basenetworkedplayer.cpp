@@ -19,7 +19,8 @@ static CTEPlayerAnimEvent g_TEPlayerAnimEvent( "PlayerAnimEvent" );
 void TE_PlayerAnimEvent( CBasePlayer* pPlayer, PlayerAnimEvent_t event, int nData )
 {
 	CPVSFilter filter( (const Vector&)pPlayer->EyePosition() );
-	filter.RemoveRecipient( pPlayer );
+	if (gpGlobals->maxClients > 1 && event < PLAYERANIMEVENT_DIE)
+		filter.RemoveRecipient(pPlayer);
 
 	g_TEPlayerAnimEvent.m_hPlayer = pPlayer;
 	g_TEPlayerAnimEvent.m_iEvent = event;

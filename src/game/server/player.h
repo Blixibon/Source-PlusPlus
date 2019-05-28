@@ -629,7 +629,7 @@ virtual CAI_Senses *GetSenses() {
 	virtual CBaseEntity		*GetHeldObject( void );
 
 	void					CheckSuitUpdate();
-	void					SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
+	virtual void			SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
 	virtual void			UpdateGeigerCounter( void );
 	void					CheckTimeBasedDamage( void );
 
@@ -1089,7 +1089,7 @@ protected: //used to be private, but need access for portal mod (Dave Kircher)
 	bool						m_touchedPhysObject;
 	bool						m_bPhysicsWasFrozen;
 
-private:
+protected:
 
 	int						m_iPlayerSound;// the index of the sound list slot reserved for this player
 	int						m_iTargetVolume;// ideal sound volume.

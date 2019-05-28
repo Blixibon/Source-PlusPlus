@@ -1,0 +1,21 @@
+"weapon_ar2"
+{
+    // Primary attack settings.
+    "primary-attack"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "50"
+        "forward_speed_max"     "80"
+        "right_speed_min"       "30"
+        "right_speed_max"       "60"
+        "up_speed_min"          "0"
+        "up_speed_max"          "0"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "eject_model"       "models\weapons\irifleshell.mdl"
+    }
+}

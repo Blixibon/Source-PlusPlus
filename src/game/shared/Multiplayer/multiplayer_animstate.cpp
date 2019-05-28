@@ -306,26 +306,26 @@ void CMultiPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 
 	case PLAYERANIMEVENT_CUSTOM_GESTURE_SEQUENCE:
 		// Weapon primary fire.
-//		RestartGestureSequence( nData, false );
+		AddVCDSequenceToGestureSlot(GESTURE_SLOT_CUSTOM, nData);
 		break;
 
 	case PLAYERANIMEVENT_FLINCH_CHEST:
-		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_CHEST );
+		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_CHEST, nData);
 		break;
 	case PLAYERANIMEVENT_FLINCH_HEAD:
-		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_HEAD );
+		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_HEAD, nData);
 		break;
 	case PLAYERANIMEVENT_FLINCH_LEFTARM:
-		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_LEFTARM );
+		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_LEFTARM, nData);
 		break;
 	case PLAYERANIMEVENT_FLINCH_RIGHTARM:
-		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_RIGHTARM );
+		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_RIGHTARM, nData);
 		break;
 	case PLAYERANIMEVENT_FLINCH_LEFTLEG:
-		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_LEFTLEG );
+		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_LEFTLEG, nData);
 		break;
 	case PLAYERANIMEVENT_FLINCH_RIGHTLEG:
-		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_RIGHTLEG );
+		PlayFlinchGesture( ACT_MP_GESTURE_FLINCH_RIGHTLEG, nData);
 		break;
 
 	default:
@@ -336,7 +336,7 @@ void CMultiPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CMultiPlayerAnimState::PlayFlinchGesture( Activity iActivity )
+void CMultiPlayerAnimState::PlayFlinchGesture( Activity iActivity, int nData )
 {
 	if ( !IsGestureSlotActive( GESTURE_SLOT_FLINCH ) )
 	{

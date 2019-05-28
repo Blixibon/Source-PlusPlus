@@ -1,0 +1,8 @@
+
+$IncludeModel "humans\animation\DI_death_antlion.mdl"
+$IncludeModel "combine_soldier_anim1.mdl"
+$IncludeModel "combine_soldier_anim2.mdl"
+$IncludeModel "combine_soldier_anim3.mdl"
+$IncludeModel "combine_soldier_anim4.mdl"
+$IncludeModel "police_ss.mdl"
+$IncludeModel "police_animations.mdl"

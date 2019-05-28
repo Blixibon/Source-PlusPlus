@@ -2708,7 +2708,7 @@ void CNPC_Combine::SpeakSentence( int sentenceType )
 #ifndef SOLDIER_POSSIBLE_ALLY
 			m_Sentences.Speak( "COMBINE_FLANK" );
 #else
-			Speak("TLK_SOLDIER_FLANK");
+			SpeakIfAllowed("TLK_SOLDIER_FLANK");
 #endif
 		}
 		break;
@@ -2788,7 +2788,7 @@ void CNPC_Combine::FoundEnemySound( void)
 #ifndef SOLDIER_POSSIBLE_ALLY
 	m_Sentences.Speak( "COMBINE_REFIND_ENEMY", SENTENCE_PRIORITY_HIGH );
 #else
-	Speak("TLK_SOLDIER_REFIND");
+	SpeakIfAllowed("TLK_SOLDIER_REFIND");
 #endif
 }
 

@@ -34,6 +34,7 @@ void Host_Say(edict_t* pEdict, bool teamonly);
 extern CBaseEntity* FindPickerEntityClass(CBasePlayer* pPlayer, char* classname);
 extern bool			g_fGameOver;
 
+
 /*
 ===========
 ClientPutInServer
@@ -107,7 +108,7 @@ void ClientGamePrecache(void)
 {
 	CBaseEntity::PrecacheModel("models/player.mdl");
 	CBaseEntity::PrecacheModel("models/gibs/agibs.mdl");
-	CBaseEntity::PrecacheModel("models/weapons/v_hands.mdl");
+	CBaseEntity::PrecacheModel("models/weapons/c_hands.mdl");
 
 	CBaseEntity::PrecacheScriptSound("HUDQuickInfo.LowAmmo");
 	CBaseEntity::PrecacheScriptSound("HUDQuickInfo.LowHealth");

@@ -8549,6 +8549,12 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 				BecomeRagdollOnClient( vec3_origin );
 				return;
 			}
+			else if (pEvent->event == AE_NPC_DEATHSOUND)
+			{
+				CTakeDamageInfo info(this, this, m_iHealth, DMG_GENERIC);
+				DeathSound(info);
+				return;
+			}
 			else if ( pEvent->event == AE_NPC_ADDGESTURE )
 			{
 				Activity act = ( Activity )LookupActivity( pEvent->options );

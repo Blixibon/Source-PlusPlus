@@ -1,0 +1,10 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models\nova prospekt\protoguard\riot_vest_RU"
+	"$bumpmap" "models\nova prospekt\protoguard\vest_NORM"
+	"$nocull" 1
+ 	"$phong" "1"
+	"$phongexponent" "33"
+	"$phongboost"	"1"
+	"$phongfresnelranges"	"[.1 .1 1]"
+}

@@ -299,9 +299,11 @@ void CC_ToggleDuck( void )
 
 static ConCommand toggle_duck("toggle_duck", CC_ToggleDuck, "Toggles duck" );
 
+#ifndef HL2_LAZUL
 #ifndef HL2MP
 #ifndef PORTAL
 LINK_ENTITY_TO_CLASS( player, CHL2_Player );
+#endif
 #endif
 #endif
 
@@ -309,93 +311,93 @@ PRECACHE_REGISTER(player);
 
 CBaseEntity *FindEntityForward( CBasePlayer *pMe, bool fHull );
 
-BEGIN_SIMPLE_DATADESC( LadderMove_t )
-	DEFINE_FIELD( m_bForceLadderMove, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bForceMount, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flStartTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flArrivalTime, FIELD_TIME ),
-	DEFINE_FIELD( m_vecGoalPosition, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecStartPosition, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_hForceLadder, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hReservedSpot, FIELD_EHANDLE ),
+BEGIN_SIMPLE_DATADESC(LadderMove_t)
+DEFINE_FIELD(m_bForceLadderMove, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bForceMount, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flStartTime, FIELD_TIME),
+DEFINE_FIELD(m_flArrivalTime, FIELD_TIME),
+DEFINE_FIELD(m_vecGoalPosition, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vecStartPosition, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_hForceLadder, FIELD_EHANDLE),
+DEFINE_FIELD(m_hReservedSpot, FIELD_EHANDLE),
 END_DATADESC()
 
 // Global Savedata for HL2 player
-BEGIN_DATADESC( CHL2_Player )
+BEGIN_DATADESC(CHL2_Player)
 
-	DEFINE_FIELD( m_nControlClass, FIELD_INTEGER ),
-	DEFINE_EMBEDDED( m_HL2Local ),
+DEFINE_FIELD(m_nControlClass, FIELD_INTEGER),
+DEFINE_EMBEDDED(m_HL2Local),
 
-	DEFINE_FIELD( m_bSprintEnabled, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeAllSuitDevicesOff, FIELD_TIME ),
-	DEFINE_FIELD( m_fIsSprinting, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fIsWalking, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bSprintEnabled, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flTimeAllSuitDevicesOff, FIELD_TIME),
+DEFINE_FIELD(m_fIsSprinting, FIELD_BOOLEAN),
+DEFINE_FIELD(m_fIsWalking, FIELD_BOOLEAN),
 
-	/*
-	// These are initialized every time the player calls Activate()
-	DEFINE_FIELD( m_bIsAutoSprinting, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fAutoSprintMinTime, FIELD_TIME ),
-	*/
+/*
+// These are initialized every time the player calls Activate()
+DEFINE_FIELD( m_bIsAutoSprinting, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_fAutoSprintMinTime, FIELD_TIME ),
+*/
 
-	// 	Field is used within a single tick, no need to save restore
-	// DEFINE_FIELD( m_bPlayUseDenySound, FIELD_BOOLEAN ),  
-	//							m_pPlayerAISquad reacquired on load
+// 	Field is used within a single tick, no need to save restore
+// DEFINE_FIELD( m_bPlayUseDenySound, FIELD_BOOLEAN ),  
+//							m_pPlayerAISquad reacquired on load
 
-	DEFINE_AUTO_ARRAY( m_vecMissPositions, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_nNumMissPositions, FIELD_INTEGER ),
+DEFINE_AUTO_ARRAY(m_vecMissPositions, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_nNumMissPositions, FIELD_INTEGER),
 
-	//					m_pPlayerAISquad
-	DEFINE_EMBEDDED( m_CommanderUpdateTimer ),
-	//					m_RealTimeLastSquadCommand
-	DEFINE_FIELD( m_QueuedCommand, FIELD_INTEGER ),
+//					m_pPlayerAISquad
+DEFINE_EMBEDDED(m_CommanderUpdateTimer),
+//					m_RealTimeLastSquadCommand
+DEFINE_FIELD(m_QueuedCommand, FIELD_INTEGER),
 
-	DEFINE_FIELD( m_flTimeIgnoreFallDamage, FIELD_TIME ),
-	DEFINE_FIELD( m_bIgnoreFallDamageResetAfterImpact, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_flTimeIgnoreFallDamage, FIELD_TIME),
+DEFINE_FIELD(m_bIgnoreFallDamageResetAfterImpact, FIELD_BOOLEAN),
 
-	// Suit power fields
-	DEFINE_FIELD( m_flSuitPowerLoad, FIELD_FLOAT ),
+// Suit power fields
+DEFINE_FIELD(m_flSuitPowerLoad, FIELD_FLOAT),
 
-	DEFINE_FIELD( m_flIdleTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flMoveTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flLastDamageTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flTargetFindTime, FIELD_TIME ),
+DEFINE_FIELD(m_flIdleTime, FIELD_TIME),
+DEFINE_FIELD(m_flMoveTime, FIELD_TIME),
+DEFINE_FIELD(m_flLastDamageTime, FIELD_TIME),
+DEFINE_FIELD(m_flTargetFindTime, FIELD_TIME),
 
-	DEFINE_FIELD( m_flAdmireGlovesAnimTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextFlashlightCheckTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flFlashlightPowerDrainScale, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bFlashlightDisabled, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_flAdmireGlovesAnimTime, FIELD_TIME),
+DEFINE_FIELD(m_flNextFlashlightCheckTime, FIELD_TIME),
+DEFINE_FIELD(m_flFlashlightPowerDrainScale, FIELD_FLOAT),
+DEFINE_FIELD(m_bFlashlightDisabled, FIELD_BOOLEAN),
 
-	DEFINE_FIELD( m_bUseCappedPhysicsDamageTable, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bUseCappedPhysicsDamageTable, FIELD_BOOLEAN),
 
-	DEFINE_FIELD( m_hLockedAutoAimEntity, FIELD_EHANDLE ),
+DEFINE_FIELD(m_hLockedAutoAimEntity, FIELD_EHANDLE),
 
-	DEFINE_EMBEDDED( m_LowerWeaponTimer ),
-	DEFINE_EMBEDDED( m_AutoaimTimer ),
+DEFINE_EMBEDDED(m_LowerWeaponTimer),
+DEFINE_EMBEDDED(m_AutoaimTimer),
 
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "IgnoreFallDamage", InputIgnoreFallDamage ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "IgnoreFallDamageWithoutReset", InputIgnoreFallDamageWithoutReset ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "OnSquadMemberKilled", OnSquadMemberKilled ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableFlashlight", InputDisableFlashlight ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableFlashlight", InputEnableFlashlight ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDropPhysObjects", InputForceDropPhysObjects ),
+DEFINE_INPUTFUNC(FIELD_FLOAT, "IgnoreFallDamage", InputIgnoreFallDamage),
+DEFINE_INPUTFUNC(FIELD_FLOAT, "IgnoreFallDamageWithoutReset", InputIgnoreFallDamageWithoutReset),
+DEFINE_INPUTFUNC(FIELD_VOID, "OnSquadMemberKilled", OnSquadMemberKilled),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableFlashlight", InputDisableFlashlight),
+DEFINE_INPUTFUNC(FIELD_VOID, "EnableFlashlight", InputEnableFlashlight),
+DEFINE_INPUTFUNC(FIELD_VOID, "ForceDropPhysObjects", InputForceDropPhysObjects),
 
-	DEFINE_SOUNDPATCH( m_sndLeeches ),
-	DEFINE_SOUNDPATCH( m_sndWaterSplashes ),
+DEFINE_SOUNDPATCH(m_sndLeeches),
+DEFINE_SOUNDPATCH(m_sndWaterSplashes),
 
-	DEFINE_FIELD( m_flArmorReductionTime, FIELD_TIME ),
-	DEFINE_FIELD( m_iArmorReductionFrom, FIELD_INTEGER ),
+DEFINE_FIELD(m_flArmorReductionTime, FIELD_TIME),
+DEFINE_FIELD(m_iArmorReductionFrom, FIELD_INTEGER),
 
-	DEFINE_FIELD( m_flTimeUseSuspended, FIELD_TIME ),
+DEFINE_FIELD(m_flTimeUseSuspended, FIELD_TIME),
 
-	DEFINE_FIELD( m_hLocatorTargetEntity, FIELD_EHANDLE ),
+DEFINE_FIELD(m_hLocatorTargetEntity, FIELD_EHANDLE),
 
-	DEFINE_FIELD( m_flTimeNextLadderHint, FIELD_TIME ),
+DEFINE_FIELD(m_flTimeNextLadderHint, FIELD_TIME),
 
-	DEFINE_EMBEDDED(m_AttributeManager),
+DEFINE_EMBEDDED(m_AttributeManager),
 
-	//DEFINE_FIELD( m_hPlayerProxy, FIELD_EHANDLE ), //Shut up class check!
+//DEFINE_FIELD( m_hPlayerProxy, FIELD_EHANDLE ), //Shut up class check!
 
-END_DATADESC()
+END_DATADESC();
 
 CHL2_Player::CHL2_Player() : m_AnimState(this, CHL2PlayerAnimState::s_MoveParams)
 {
@@ -937,7 +939,7 @@ void CHL2_Player::StartAdmireGlovesAnimation( void )
 
 	if ( vm && !GetActiveWeapon() )
 	{
-		vm->SetWeaponModel( "models/weapons/v_hands.mdl", NULL );
+		vm->SetWeaponModel( "models/weapons/c_hands.mdl", NULL );
 		ShowViewModel( true );
 						
 		int	idealSequence = vm->SelectWeightedSequence( ACT_VM_IDLE );

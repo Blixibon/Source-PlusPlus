@@ -1,0 +1,943 @@
+//*****************************************************
+// Combine Solider sounds
+
+"NPC_Combine.SentenceParameters"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.80"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"common/null.wav"
+}
+
+
+"NPC_Combine.WeaponBash"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM0"
+	"pitch"		"0.80"
+
+	"soundlevel"	"SNDLVL_NORM"
+	"wave"		"physics/body/body_medium_impact_hard6.wav"
+}
+
+"NPC_Combine.GrenadeLaunch"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM0"
+	"pitch"			"0.80"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"weapons/grenade_launcher1.wav"
+}
+
+
+"NPC_CombineS.FootstepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"		"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"player/footsteps/tile1.wav"
+		"wave"	"player/footsteps/tile2.wav"
+	}
+}
+
+"NPC_CombineS.FootstepRight"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"1.0"
+	"pitch"		"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		"wave"	"player/footsteps/tile3.wav"
+		"wave"	"player/footsteps/tile4.wav"
+	}
+}
+
+"NPC_CombineS.RunFootstepLeft"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.75"
+	"pitch"		"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		//"wave"	"player/footsteps/tile1.wav"
+		//"wave"	"player/footsteps/tile2.wav"
+		"wave"	"npc/combine_soldier/gear1.wav"
+		"wave"	"npc/combine_soldier/gear3.wav"
+		"wave"	"npc/combine_soldier/gear5.wav"
+	}
+}
+
+"NPC_CombineS.RunFootstepRight"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.75"
+	"pitch"		"95, 105"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"rndwave"
+	{
+		//"wave"	"player/footsteps/tile3.wav"
+		//"wave"	"player/footsteps/tile4.wav"
+		"wave"	"npc/combine_soldier/gear2.wav"
+		"wave"	"npc/combine_soldier/gear4.wav"
+		"wave"	"npc/combine_soldier/gear6.wav"
+	}
+}
+
+"NPC_CombineS.ElectrocuteScream"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_90DB"
+
+	"rndwave"
+	{
+		"wave"	"npc/combine_soldier/die1.wav"
+		"wave"	"npc/combine_soldier/die2.wav"
+		"wave"	"npc/combine_soldier/die3.wav"
+	}
+}
+
+"NPC_CombineS.DissolveScream"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"95, 105"
+
+	"soundlevel"	"SNDLVL_90DB"
+
+	"rndwave"
+	{
+		"wave"	"npc/combine_soldier/die1.wav"
+		"wave"	"npc/combine_soldier/die2.wav"
+		"wave"	"npc/combine_soldier/die3.wav"
+	}
+}
+
+// Protoguard
+
+"NPC_Protoguard.aroundhere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_aroundhere.wav"
+}
+"NPC_Protoguard.backitup"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_backitup.wav"
+}
+"NPC_Protoguard.backitup_loud"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_backitup_loud.wav"
+}
+"NPC_Protoguard.boxaintempty"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_boxaintempty.wav"
+}
+"NPC_Protoguard.breakitdown"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_breakitdown.wav"
+}
+"NPC_Protoguard.breakthebox"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_breakthebox.wav"
+}
+"NPC_Protoguard.bugs"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_bugs.wav"
+}
+"NPC_Protoguard.bumperinnotch"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_bumperinnotch.wav"
+}
+"NPC_Protoguard.bumperslap"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_bumperslap.wav"
+}
+"NPC_Protoguard.cracks"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_cracks.wav"
+}
+"NPC_Protoguard.cracksinhardpack"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_cracksinhardpack.wav"
+}
+"NPC_Protoguard.dontmove"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_dontmove.wav"
+}
+"NPC_Protoguard.downthere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/csdownthere_.wav"
+}
+"NPC_Protoguard.emptybox"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_emptybox.wav"
+}
+"NPC_Protoguard.eyesonprize"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_eyesonprize.wav"
+}
+"NPC_Protoguard.fire"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_fire.wav"
+}
+"NPC_Protoguard.freeze"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_freeze.wav"
+}
+"NPC_Protoguard.getitoffme"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_getitoffme.wav"
+}
+"NPC_Protoguard.go"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_go.wav"
+}
+"NPC_Protoguard.gothim"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_gothim.wav"
+}
+"NPC_Protoguard.gotsomeonme"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_gotsomeonme.wav"
+}
+"NPC_Protoguard.halt"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_halt.wav"
+}
+"NPC_Protoguard.halt_loud"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_halt_loud.wav"
+}
+"NPC_Protoguard.hesinthebox"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_hesinthebox.wav"
+}
+"NPC_Protoguard.hesinthere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_hesinthere.wav"
+}
+"NPC_Protoguard.hesmine"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_hesmine.wav"
+}
+"NPC_Protoguard.hesupthere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_hesupthere.wav"
+}
+"NPC_Protoguard.holdit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_holdit.wav"
+}
+"NPC_Protoguard.holdit_loud"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_holdit_loud.wav"
+}
+"NPC_Protoguard.holditthere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_holditthere.wav"
+}
+"NPC_Protoguard.hotrags"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_hotrags.wav"
+}
+"NPC_Protoguard.hotspew"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_hotspew.wav"
+}
+"NPC_Protoguard.jackinthebox"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_jackinthebox.wav"
+}
+"NPC_Protoguard.lookout"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_lookout.wav"
+}
+"NPC_Protoguard.lookout_loud"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_lookout_loud.wav"
+}
+"NPC_Protoguard.losthim"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_losthim.wav"
+}
+"NPC_Protoguard.manwithrags"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_manwithrags.wav"
+}
+"NPC_Protoguard.morties"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_morties.wav"
+}
+"NPC_Protoguard.morties_loud"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_morties_loud.wav"
+}
+"NPC_Protoguard.mortinbox"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_mortinbox.wav"
+}
+"NPC_Protoguard.mortonslap"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_mortonslap.wav"
+}
+"NPC_Protoguard.mortsinnotch"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_mortsinnotch.wav"
+}
+"NPC_Protoguard.mortsonparade"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_mortsonparade.wav"
+}
+"NPC_Protoguard.mortyparade"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_mortyparade.wav"
+}
+"NPC_Protoguard.movement"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_movement.wav"
+}
+"NPC_Protoguard.nonono"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_nonono.wav"
+}
+"NPC_Protoguard.now"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_now.wav"
+}
+"NPC_Protoguard.outoftheway"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_outoftheway.wav"
+}
+"NPC_Protoguard.outoftheway_loud"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_outoftheway_loud.wav"
+}
+"NPC_Protoguard.overthere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_overthere.wav"
+}
+"NPC_Protoguard.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"rndwave"
+	{
+		"wave"	"npc/protoguard/cs_pain01.wav"
+		"wave"	"npc/protoguard/cs_pain02.wav"
+		"wave"	"npc/protoguard/cs_pain03.wav"
+		"wave"	"npc/protoguard/cs_pain04.wav"
+		"wave"	"npc/protoguard/cs_pain05.wav"
+		"wave"	"npc/protoguard/cs_pain06.wav"
+		"wave"	"npc/protoguard/cs_pain07.wav"
+		"wave"	"npc/protoguard/cs_pain08.wav"
+		"wave"	"npc/protoguard/cs_pain09.wav"
+		"wave"	"npc/protoguard/cs_pain10.wav"
+		"wave"	"npc/protoguard/cs_pain11.wav"
+		"wave"	"npc/protoguard/cs_pain12.wav"
+		"wave"	"npc/protoguard/cs_pain13.wav"
+	}
+}
+"NPC_Protoguard.prizeismine"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_prizeismine.wav"
+}
+"NPC_Protoguard.prizeonhigh"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_prizeonhigh.wav"
+}
+"NPC_Protoguard.quiet"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_quiet.wav"
+}
+"NPC_Protoguard.rags"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_rags.wav"
+}
+"NPC_Protoguard.ragsinnotch"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_ragsinnotch.wav"
+}
+"NPC_Protoguard.scratcher"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scratcher.wav"
+}
+"NPC_Protoguard.scratchermob"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scratchermob.wav"
+}
+"NPC_Protoguard.scratcherparade"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scratcherparade.wav"
+}
+"NPC_Protoguard.scratchers"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scratchers.wav"
+}
+"NPC_Protoguard.scream_long01"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scream_long.wav"
+}
+"NPC_Protoguard.scream_long02"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scream_long02.wav"
+}
+"NPC_Protoguard.scream_long03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scream_long03.wav"
+}
+"NPC_Protoguard.scream_long04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scream_long04.wav"
+}
+"NPC_Protoguard.scream_long05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_scream_long05.wav"
+}
+"NPC_Protoguard.Die"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"rndwave"
+	{
+		"wave"		"npc/protoguard/cs_scream_long05.wav"
+		"wave"		"npc/protoguard/cs_scream_long.wav"
+		"wave"		"npc/protoguard/cs_scream_long03.wav"
+		"wave"		"npc/protoguard/cs_scream_long04.wav"
+		"wave"		"npc/protoguard/cs_scream_long02.wav"
+	}
+}
+"NPC_Protoguard.shititsonme"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_shititsonme.wav"
+}
+"NPC_Protoguard.someoneinthere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_someoneinthere.wav"
+}
+"NPC_Protoguard.spew"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_spew.wav"
+}
+"NPC_Protoguard.standback"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_standback.wav"
+}
+"NPC_Protoguard.steady"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_steady.wav"
+}
+"NPC_Protoguard.stillhere"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_stillhere.wav"
+}
+"NPC_Protoguard.target"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_target.wav"
+}
+"NPC_Protoguard.there"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_there.wav"
+}
+"NPC_Protoguard.thereheis"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_thereheis.wav"
+}
+"NPC_Protoguard.toomany"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_toomany.wav"
+}
+"NPC_Protoguard.waitforhim"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_waitforhim.wav"
+}
+"NPC_Protoguard.waitforit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_waitforit.wav"
+}
+"NPC_Protoguard.wecantholdem"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_wecantholdem.wav"
+}
+"NPC_Protoguard.wegotabumper"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_wegotabumper.wav"
+}
+"NPC_Protoguard.whatisthisshit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_whatisthisshit.wav"
+}
+"NPC_Protoguard.whatsthatshit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_whatsthatshit.wav"
+}
+"NPC_Protoguard.whereprize"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_whereprize.wav"
+}
+"NPC_Protoguard.whosthat"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/cs_whosthat.wav"
+}
+"NPC_Protoguard.run"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/e3_run.wav"
+}
+"NPC_Protoguard.takecover"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/e3_takecover.wav"
+}
+"NPC_Protoguard.watchout"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"		"95,103"
+
+	"soundlevel"	"SNDLVL_90dB"
+	"wave"		"npc/protoguard/e3_watchout.wav"
+}
+
+

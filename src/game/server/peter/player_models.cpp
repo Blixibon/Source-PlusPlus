@@ -125,6 +125,7 @@ void CPlayerModels::LevelInitPreEntity()
 			CBaseEntity::PrecacheModel(m_Models[i].models[j].szModelName);
 		}
 		CBaseEntity::PrecacheModel(m_Models[i].szArmModel);
+		m_Models[i].iRefCount = 0;
 	}
 }
 
@@ -199,6 +200,55 @@ playerModel_t *CPlayerModels::SelectPlayerModel(int iGame, bool bSuit)
 	m_Selected = m_Models[iBestIndex];
 
 	return &m_Selected;
+}
+
+CUtlVector<playerModel_t> CPlayerModels::GetAvailableModelsForTeam(const char * pszTeam)
+{
+	CUtlVector<playerModel_t> candidates;
+
+	for (int i = 0; i < (m_Models).Count(); i++)
+	{
+		if (FStrEq(m_Models[i].reqs.multiplayer.szTeam, pszTeam))
+		{
+			if (m_Models[i].reqs.multiplayer.iMaxNum == 0 || m_Models[i].iRefCount < m_Models[i].reqs.multiplayer.iMaxNum)
+			{
+				candidates.AddToTail(m_Models[i]);
+			}
+		}
+	}
+
+	return candidates;
+}
+
+bool CPlayerModels::PlayerGrabModel(const char * pszName)
+{
+	for (int i = 0; i < (m_Models).Count(); i++)
+	{
+		if (FStrEq(m_Models[i].szSectionID, pszName))
+		{
+			m_Models[i].iRefCount++;
+			if (m_Models[i].reqs.multiplayer.iMaxNum > 0)
+				Assert(m_Models[i].iRefCount <= m_Models[i].reqs.multiplayer.iMaxNum);
+			break;
+		}
+	}
+
+	return true;
+}
+
+bool CPlayerModels::PlayerReleaseModel(const char * pszName)
+{
+	for (int i = 0; i < (m_Models).Count(); i++)
+	{
+		if (FStrEq(m_Models[i].szSectionID, pszName))
+		{
+			m_Models[i].iRefCount--;
+			Assert(m_Models[i].iRefCount >= 0);
+			break;
+		}
+	}
+
+	return true;
 }
 
 CPlayerModels g_PlayerModels;

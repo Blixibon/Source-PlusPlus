@@ -35,6 +35,10 @@
 #include "grenade_spit.h"
 #endif
 
+#ifdef HL2_LAZUL
+#include "hlss_weapon_id.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -3642,14 +3646,22 @@ void CNPC_Antlion::BuildScheduleTestBits( void )
 bool CNPC_Antlion::IsValidEnemy( CBaseEntity *pEnemy )
 {
 	//See if antlions are friendly to the player in this map
-	if (IsAllied() && pEnemy->IsPlayer())
+	if (pEnemy->IsPlayer())
 	{
+		if (AI_IsSinglePlayer())
+		{
+			if (IsAllied())
+			{
+				return false;
+			}
+		}
 #ifdef HL2_LAZUL
-		CBasePlayer* pPlayer = ToBasePlayer(pEnemy);
-		if (pPlayer->Weapon_OwnsThisType("weapon_bugbait"))
-			return false;
-#else
-		return false;
+		else
+		{
+			CBasePlayer* pPlayer = ToBasePlayer(pEnemy);
+			if (pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_BUGBAIT))
+				return false;
+		}
 #endif
 	}
 

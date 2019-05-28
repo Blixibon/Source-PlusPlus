@@ -1,0 +1,39 @@
+
+// The 32 below is a guess until further is known about the format.
+$AnimBlockSize 32
+
+$IKChain "rhand" "ValveBiped.Bip01_R_Hand" knee 0.707 0.707 0
+$IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
+$IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
+$IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
+
+$IKAutoPlayLock "rfoot" 1 0.1
+$IKAutoPlayLock "lfoot" 1 0.1
+
+
+$Sequence "antlion_soldier_DI_01" {
+	"combine_soldier_anim2_anims\antlion_soldier_DI_01.smd"
+	{ event AE_NPC_WEAPON_DROP 17 "" }
+	{ event AE_NPC_HURT_INTERACTION_PARTNER 55 "ME 100" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "antlion_soldier_DI_02" {
+	"combine_soldier_anim2_anims\antlion_soldier_DI_02.smd"
+	{ event AE_NPC_WEAPON_DROP 24 "" }
+	{ event AE_NPC_HURT_INTERACTION_PARTNER 44 "ME 100" }
+	{ event AE_NPC_DEATHSOUND 40 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}

@@ -14,7 +14,7 @@ typedef struct requirement_s
 {
 	struct {
 		bool bSuit;
-		CUtlVector<int> games;
+		CCopyableUtlVector<int> games;
 	} singleplayer;
 
 	struct {
@@ -27,16 +27,16 @@ typedef struct rndModel_s
 {
 	char szModelName[MAX_PATH];
 	short skin;
-	CUtlVector<bodygroup_t> bodygroups;
+	CCopyableUtlVector<bodygroup_t> bodygroups;
 } rndModel_t;
 
 typedef struct playerModel_s
 {
 	char szSectionID[32];
-	CUtlVector<rndModel_t> models;
+	CCopyableUtlVector<rndModel_t> models;
 	char szArmModel[MAX_PATH];
 	short armSkin;
-	CUtlVector<bodygroup_t> armbodys;
+	CCopyableUtlVector<bodygroup_t> armbodys;
 	requirement_t reqs;
 	KeyValues *kvAbilities = NULL;
 	/*~playerModel_s()
@@ -44,6 +44,8 @@ typedef struct playerModel_s
 		if (kvAbilities != NULL)
 			kvAbilities->deleteThis();
 	}*/
+
+	int iRefCount;
 } playerModel_t;
 
 class CPlayerModels : public CBaseGameSystem
@@ -60,6 +62,11 @@ public:
 	virtual void Shutdown();
 
 	playerModel_t *SelectPlayerModel(int iGame, bool bSuit);
+
+	CUtlVector<playerModel_t> GetAvailableModelsForTeam(const char *pszTeam);
+
+	bool PlayerGrabModel(const char *pszName);
+	bool PlayerReleaseModel(const char *pszName);
 
 protected:
 	bool		LoadModelsFromFile(const char* szFilename);

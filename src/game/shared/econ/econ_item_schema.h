@@ -246,6 +246,7 @@ public:
 		CLEAR_STR(mouse_pressed_sound);
 		CLEAR_STR(drop_sound);
 		flip_viewmodel = false;
+		CLEAR_STR(shell_script);
 	}
 
 	EconItemVisuals *GetVisuals( int iTeamNum = TEAM_UNASSIGNED );
@@ -289,6 +290,7 @@ public:
 	char mouse_pressed_sound[128];
 	char drop_sound[128];
 	bool flip_viewmodel;
+	char shell_script[128];
 };
 
 #endif // ECON_ITEM_SCHEMA_H

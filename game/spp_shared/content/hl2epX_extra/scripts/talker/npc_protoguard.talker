@@ -1,0 +1,168 @@
+
+criterion "ProtoGEnemyIsHuman" required
+{
+	SoldierEnemyIsRebel
+	SoldierEnemyIsVitalAlly
+}
+
+response "ProtoGDanger"
+{
+	 scene "scenes/protoguard/cs_danger1.vcd"
+	 scene "scenes/protoguard/cs_danger2.vcd"
+	 speak "NPC_Protoguard.lookout_loud"
+	 speak "NPC_Protoguard.outoftheway_loud"
+	 speak "NPC_Protoguard.watchout"
+	 speak "NPC_Protoguard.takecover"
+}
+
+rule ProtoGDanger
+{
+	criteria IsCombineS ConceptTalkDanger SoldierVoiceProtoGuard
+	response ProtoGDanger
+}
+
+response "ProtoGPain"
+{
+	speak "NPC_Protoguard.Pain"
+}
+
+rule ProtoGPain
+{
+	criteria IsCombineS ConceptTalkWound SoldierVoiceProtoGuard
+	response ProtoGPain
+}
+
+response ProtoGPainHeavy
+{
+	speak "NPC_Protoguard.nonono"
+}
+
+rule ProtoGPainHeavy
+{
+	criteria	ConceptTalkMortal IsCombineS SoldierVoiceProtoGuard
+	CombineSpokePainHeavy "!=1" required
+	applycontext "CombineSpokePainHeavy:1:60"
+	response	ProtoGPainHeavy
+}
+
+response ProtoGStartCombat
+{
+	speak "NPC_Protoguard.target"
+	speak "NPC_Protoguard.there"
+	speak "NPC_Protoguard.movement"
+	speak "NPC_Protoguard.steady"
+}
+
+rule ProtoGStartCombat
+{
+	criteria    IsCombineS ConceptStartCombat SoldierVoiceProtoGuard
+	response ProtoGStartCombat
+}
+
+response ProtoGStartCombatHuman
+{
+	response "ProtoGStartCombat" weight 4
+	speak "NPC_Protoguard.whosthat"
+	speak "NPC_Protoguard.holdit"
+	speak "NPC_Protoguard.holdit_loud"
+	speak "NPC_Protoguard.holditthere"
+	speak "NPC_Protoguard.halt"
+	speak "NPC_Protoguard.halt_loud"
+	speak "NPC_Protoguard.freeze"
+	speak "NPC_Protoguard.dontmove"
+}
+
+rule ProtoGStartCombatHuman
+{
+	criteria    IsCombineS ConceptStartCombat ProtoGEnemyIsHuman SoldierVoiceProtoGuard
+	response ProtoGStartCombatHuman
+}
+
+response ProtoGStartCombatPlayer
+{
+	response "ProtoGStartCombatHuman" weight 12
+	speak "NPC_Protoguard.thereheis"
+}
+
+rule ProtoGStartCombatPlayer
+{
+	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsPlayer SoldierVoiceProtoGuard
+	response ProtoGStartCombatPlayer
+}
+
+// Attacking
+response ProtoGAttacking
+{
+	speak "NPC_Protoguard.steady"
+	speak "NPC_Protoguard.fire"
+	speak "NPC_Protoguard.eyesonprize"
+	speak "NPC_Protoguard.breakitdown"
+	speak "NPC_Protoguard.go"
+}
+
+rule ProtoGAttacking
+{
+	criteria	IsCombineS ConceptTalkAttacking SoldierVoiceProtoGuard
+	response ProtoGAttacking
+}
+
+response ProtoGAttackingLowPlayer
+{
+	speak "NPC_Protoguard.hesmine"
+	speak "NPC_Protoguard.hesinthebox"
+	speak "NPC_Protoguard.now"
+}
+
+rule ProtoGAttackingLowPlayer
+{
+	criteria	IsCombineS ConceptTalkAttacking SoldierEnemyIsPlayer SoldierVoiceProtoGuard
+	enemyhealthfrac ">0,<.2" required
+	response ProtoGAttackingLowPlayer
+}
+
+// Lost Enemy
+response SoldierVoiceProtoGuard
+{
+	speak "NPC_Protoguard.stillhere"
+	speak "NPC_Protoguard.waitforhim"
+	speak "NPC_Protoguard.losthim"
+	speak "NPC_Protoguard.emptybox"
+}
+
+rule ProtoGLostShort
+{
+	criteria		IsCombineS ConceptTalkIdle SoldierRecentCombat SoldierVoiceProtoGuard
+	response ProtoGLostShort
+}
+
+// Grenade throw
+response ProtoGThrowGrenade
+{
+	speak "NPC_Protoguard.jackinthebox"
+	speak "NPC_Protoguard.outoftheway"
+	speak "NPC_Protoguard.standback"
+}
+
+rule ProtoGThrowGrenade
+{
+	criteria	IsCombineS SoldierVoiceProtoGuard
+	concept	"TLK_SOLDIER_THROW"	required
+	response ProtoGThrowGrenade
+}
+
+response ProtoGFlanking
+{
+	speak "NPC_Protoguard.run"
+	speak "NPC_Protoguard.prizeonhigh"
+	speak "NPC_Protoguard.outoftheway_loud"
+	speak "NPC_Protoguard.now"
+	speak "NPC_Protoguard.go"
+	speak "NPC_Protoguard.breakthebox"
+}
+
+rule ProtoGFlanking
+{
+	criteria	IsCombineS SoldierVoiceProtoGuard
+	concept	"TLK_SOLDIER_FLANK"	required
+	response ProtoGFlanking
+}

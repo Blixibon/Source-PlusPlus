@@ -1,0 +1,7 @@
+
+$Sequence "idle" {
+	"shell_12gauge_anims\idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

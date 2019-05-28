@@ -54,6 +54,7 @@
 #include "replay/replay_ragdoll.h"
 #include "studio_stats.h"
 #include "tier1/callqueue.h"
+#include "peter/shelleject_new.h"
 
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
@@ -4163,6 +4164,16 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 				{
 					tempents->EjectBrass( attachOrigin, attachAngles, GetAbsAngles(), atoi( options ) );
 				}
+			}
+		}
+		break;
+		// Eject brass
+	case AE_CL_EJECTBRASS_SCRIPT:
+		if (m_Attachments.Count() > 0)
+		{
+			if (MainViewOrigin().DistToSqr(GetAbsOrigin()) < (256 * 256))
+			{
+				NewShellSystem()->EjectShell(this, options);
 			}
 		}
 		break;

@@ -71,6 +71,7 @@ public:
 	int					GetAmmoCount( char *szName ) const;
 
 	C_BaseCombatWeapon*	Weapon_OwnsThisType( const char *pszWeapon, int iSubType = 0 ) const;  // True if already owns a weapon of this class
+	C_BaseCombatWeapon	*Weapon_OwnsThisID(int iWeaponID) const;
 	virtual	bool		Weapon_Switch( C_BaseCombatWeapon *pWeapon, int viewmodelindex = 0 );
 	virtual bool		Weapon_CanSwitchTo(C_BaseCombatWeapon *pWeapon);
 	

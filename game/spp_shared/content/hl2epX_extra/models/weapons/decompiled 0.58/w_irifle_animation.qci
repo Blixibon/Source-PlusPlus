@@ -1,0 +1,30 @@
+
+$SectionFrames 30 150
+
+$Sequence "idle1" {
+	"w_irifle_anims\idle1.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "attack_npc" {
+	"w_irifle_anims\attack_npc.smd"
+	activity "ACT_RANGE_ATTACK_AR2" 1
+	{ event AE_NPC_MUZZLEFLASH 0 "COMBINE MUZZLE" }
+	{ event 3007 0 "1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "attack_player" {
+	"w_irifle_anims\attack_player.smd"
+	activity "ACT_HL2MP_RANGE_ATTACK_AR2" 1
+	{ event 5003 0 "5" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

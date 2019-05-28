@@ -5,6 +5,7 @@ criterion "IsCombineS" "classname" "npc_combine_s" "required"
 criterion "SoldierVoiceNormal" "voicetype"	"normal" required
 criterion "SoldierVoiceElite" "voicetype"	"elite" required
 criterion "SoldierVoiceSynth" "voicetype"	"synth" required
+criterion "SoldierVoiceProtoGuard" "voicetype" "protoguard" required
 
 criterion "SoldierEnteredCombat"	"worldsoldierincombat"	"1" required
 criterion "SoldierNotEnteredCombat"	"worldsoldierincombat"	"!=1" required
@@ -19,7 +20,7 @@ criterion "SEIR2"	"enemyclass"	"CLASS_CITIZEN_REBEL" required
 criterion "SEIR3"	"enemyclass"	"CLASS_CITIZEN_PASSIVE" required
 criterion "SEIR4"	"enemyclass"	"CLASS_VORTIGAUNT" required
 criterion "SEIR5"	"enemyclass"	"CLASS_HUMAN_PASSIVE" required
-criterion "SoldierEnemyIsRebel required
+criterion "SoldierEnemyIsRebel" required
 {
 	SEIR1
 	SEIR2
@@ -79,13 +80,13 @@ response SoldierResponsePainHeavy
 
 rule SoldierPain
 {
-	criteria	ConceptTalkWound IsCombineS
+	criteria	ConceptTalkWound IsCombineS SoldierVoiceNormal
 	response	SoldierResponsePain
 }
 
 rule SoldierPainHeavy
 {
-	criteria	ConceptTalkMortal IsCombineS
+	criteria	ConceptTalkMortal IsCombineS SoldierVoiceNormal
 	CombineSpokePainHeavy "!=1" required
 	applycontext "CombineSpokePainHeavy:1:60"
 	response	SoldierResponsePainHeavy
@@ -93,7 +94,7 @@ rule SoldierPainHeavy
 
 rule SoldierPainLight
 {
-	criteria	ConceptTalkWound IsCombineS
+	criteria	ConceptTalkWound IsCombineS SoldierVoiceNormal
 	healthfrac	">.9" required
 	CombineSpokePainLight "!=1" required
 	applycontext "CombineSpokePainLight:1"
@@ -107,7 +108,7 @@ response "SoldierDanger"
 
 rule SoldierDanger
 {
-	criteria IsCombineS ConceptTalkDanger
+	criteria IsCombineS SoldierVoiceNormal ConceptTalkDanger
 	response SoldierDanger
 }
 
@@ -118,7 +119,7 @@ response "SoldierDangerGrenade"
 
 rule SoldierDangerGrenade
 {
-	criteria IsCombineS ConceptTalkDanger
+	criteria IsCombineS SoldierVoiceNormal ConceptTalkDanger
 	danger_is_grenade	"1" required
 	response SoldierDangerGrenade
 }
@@ -130,7 +131,7 @@ response SoldierEnemyDead
 
 rule SoldierEnemyDead
 {
-	criteria		IsCombineS ConceptEnemyDead
+	criteria		IsCombineS SoldierVoiceNormal ConceptEnemyDead
 	applycontext	"soldierincombat:0"
 	applycontexttoworld
 	response		SoldierEnemyDead
@@ -143,7 +144,7 @@ response SoldierKillPlayer
 
 rule SoldierKillPlayer
 {
-	criteria		IsCombineS ConceptEnemyDead SoldierEnemyIsPlayer
+	criteria		IsCombineS SoldierVoiceNormal ConceptEnemyDead SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:0"
 	applycontexttoworld
 	response		SoldierKillPlayer
@@ -162,13 +163,13 @@ response SoldierLostLong
 
 rule SoldierLostShort
 {
-	criteria		IsCombineS ConceptTalkIdle SoldierEnteredCombat SoldierRecentCombat
+	criteria		IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierEnteredCombat SoldierRecentCombat
 	response SoldierLostShort
 }
 
 rule SoldierLostLong
 {
-	criteria		IsCombineS ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
+	criteria		IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
 	applycontext	"soldierincombat:0"
 	applycontexttoworld
 	response SoldierLostLong
@@ -212,7 +213,7 @@ response SoldierStartParasites
 
 rule CombineStartCombat
 {
-	criteria    IsCombineS ConceptStartCombat
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartMonster
@@ -220,7 +221,7 @@ rule CombineStartCombat
 
 rule CombineStartCombatPlayer
 {
-	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsPlayer
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartPlayer
@@ -228,7 +229,7 @@ rule CombineStartCombatPlayer
 
 rule CombineStartCombatRebels
 {
-	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsRebel
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsRebel
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartRebel
@@ -236,7 +237,7 @@ rule CombineStartCombatRebels
 
 rule CombineStartCombatVital
 {
-	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsVitalAlly
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsVitalAlly
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartVitalAlly
@@ -244,7 +245,7 @@ rule CombineStartCombatVital
 
 rule CombineStartCombatAntlions
 {
-	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsAntlion
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsAntlion
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartAntlions
@@ -252,7 +253,7 @@ rule CombineStartCombatAntlions
 
 rule CombineStartCombatZombies
 {
-	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsZombie
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsZombie
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartZombies
@@ -260,7 +261,7 @@ rule CombineStartCombatZombies
 
 rule CombineStartCombatParasite
 {
-	criteria    IsCombineS ConceptStartCombat SoldierEnemyIsParasite
+	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsParasite
 	applycontext	"soldierincombat:1"
 	applycontexttoworld
 	response    SoldierStartParasites
@@ -275,7 +276,7 @@ response SoldierAttacking
 
 rule SoldierAttacking
 {
-	criteria	IsCombineS ConceptTalkAttacking
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkAttacking
 	response SoldierAttacking
 }
 
@@ -286,7 +287,7 @@ response SoldierAttackingLowPlayer
 
 rule SoldierAttackingLowPlayer
 {
-	criteria	IsCombineS ConceptTalkAttacking SoldierEnemyIsPlayer
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkAttacking SoldierEnemyIsPlayer
 	enemyhealthfrac ">0,<.2" required
 	response SoldierAttackingLowPlayer
 }
@@ -299,7 +300,7 @@ response SoldierManDown
 
 rule SoldierManDown
 {
-	criteria	IsCombineS ConceptTalkAllyKilled
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkAllyKilled
 	response	SoldierManDown
 }
 
@@ -311,7 +312,7 @@ response SoldierReplyAffimative
 
 rule SoldierAnswer
 {
-	criteria	IsCombineS ConceptTalkAnswer SoldierNotEnteredCombat
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkAnswer SoldierNotEnteredCombat
 	response	SoldierReplyAffimative
 }
 
@@ -322,7 +323,7 @@ response SoldierQuestion
 
 rule SoldierQuestion
 {
-	criteria	IsCombineS ConceptTalkQuestion SoldierNotEnteredCombat
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkQuestion SoldierNotEnteredCombat
 	response	SoldierQuestion
 }
 
@@ -333,7 +334,7 @@ response SoldierIdle
 
 rule SoldierIdle
 {
-	criteria	IsCombineS ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
 	response	SoldierIdle
 }
 
@@ -344,7 +345,7 @@ response SoldierAskCheck
 
 rule SoldierAskCheck
 {
-	criteria	IsCombineS ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
 	applycontext	"soldierreplytocheck:1"
 	applycontexttoworld
 	response	SoldierAskCheck
@@ -357,7 +358,7 @@ response SoldierReplyCheck
 
 rule SoldierReplyCheck
 {
-	criteria	IsCombineS ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck
+	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck
 	applycontext	"soldierreplytocheck:0"
 	applycontexttoworld
 	response	SoldierReplyCheck
@@ -366,13 +367,13 @@ rule SoldierReplyCheck
 // Commander Mode
 rule SoldierCommanded
 {
-	criteria		IsCombineS ConceptTalkCommanded
+	criteria		IsCombineS SoldierVoiceNormal ConceptTalkCommanded
 	response		SoldierReplyAffimative
 }
 
 rule SoldierFollow
 {
-	criteria		IsCombineS ConceptTalkStartFollow
+	criteria		IsCombineS SoldierVoiceNormal ConceptTalkStartFollow
 	response		SoldierReplyAffimative
 }
 
@@ -384,7 +385,7 @@ response SoldierAnnounceAssault
 
 rule SoldierAnnounceAssault
 {
-	criteria		IsCombineS
+	criteria		IsCombineS SoldierVoiceNormal
 	concept	"TLK_SOLDIER_ASSAULT" required
 	response SoldierAnnounceAssault
 }
@@ -396,7 +397,7 @@ response SoldierThrowGrenade
 
 rule SoldierThrowGrenade
 {
-	criteria	IsCombineS
+	criteria	IsCombineS SoldierVoiceNormal
 	concept	"TLK_SOLDIER_THROW"	required
 	response SoldierThrowGrenade
 }
@@ -408,7 +409,7 @@ response SoldierFlanking
 
 rule SoldierFlanking
 {
-	criteria	IsCombineS
+	criteria	IsCombineS SoldierVoiceNormal
 	concept	"TLK_SOLDIER_FLANK"	required
 	response SoldierFlanking
 }
@@ -420,7 +421,9 @@ response SoldierRefindEnemy
 
 rule SoldierRefindEnemy
 {
-	criteria	IsCombineS
+	criteria	IsCombineS SoldierVoiceNormal
 	concept	"TLK_SOLDIER_REFIND"	required
 	response SoldierRefindEnemy
 }
+
+#include "talker/npc_protoguard.talker"
