@@ -33,13 +33,13 @@ static ConVar ai_inhibit_spawners( "ai_inhibit_spawners", "0", FCVAR_CHEAT );
 
 LINK_ENTITY_TO_CLASS( info_npc_spawn_destination, CNPCSpawnDestination );
 
-BEGIN_DATADESC( CNPCSpawnDestination )
-	DEFINE_KEYFIELD( m_ReuseDelay, FIELD_FLOAT, "ReuseDelay" ),
-	DEFINE_KEYFIELD( m_RenameNPC,FIELD_STRING, "RenameNPC" ),
-	DEFINE_FIELD( m_TimeNextAvailable, FIELD_TIME ),
+BEGIN_DATADESC(CNPCSpawnDestination)
+DEFINE_KEYFIELD(m_ReuseDelay, FIELD_FLOAT, "ReuseDelay"),
+DEFINE_KEYFIELD(m_RenameNPC, FIELD_STRING, "RenameNPC"),
+DEFINE_FIELD(m_TimeNextAvailable, FIELD_TIME),
 
-	DEFINE_OUTPUT( m_OnSpawnNPC,	"OnSpawnNPC" ),
-END_DATADESC()
+DEFINE_OUTPUT(m_OnSpawnNPC, "OnSpawnNPC"),
+END_DATADESC();
 
 //---------------------------------------------------------
 //---------------------------------------------------------
@@ -76,37 +76,37 @@ void CNPCSpawnDestination::OnSpawnedNPC( CAI_BaseNPC *pNPC )
 }
 
 //-------------------------------------
-BEGIN_DATADESC( CBaseNPCMaker )
+BEGIN_DATADESC(CBaseNPCMaker)
 
-	DEFINE_KEYFIELD( m_nMaxNumNPCs,			FIELD_INTEGER,	"MaxNPCCount" ),
-	DEFINE_KEYFIELD( m_nMaxLiveChildren,		FIELD_INTEGER,	"MaxLiveChildren" ),
-	DEFINE_KEYFIELD( m_flSpawnFrequency,		FIELD_FLOAT,	"SpawnFrequency" ),
-	DEFINE_KEYFIELD( m_bDisabled,			FIELD_BOOLEAN,	"StartDisabled" ),
+DEFINE_KEYFIELD(m_nMaxNumNPCs, FIELD_INTEGER, "MaxNPCCount"),
+DEFINE_KEYFIELD(m_nMaxLiveChildren, FIELD_INTEGER, "MaxLiveChildren"),
+DEFINE_KEYFIELD(m_flSpawnFrequency, FIELD_FLOAT, "SpawnFrequency"),
+DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "StartDisabled"),
 
-	DEFINE_FIELD(	m_nLiveChildren,		FIELD_INTEGER ),
+DEFINE_FIELD(m_nLiveChildren, FIELD_INTEGER),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Spawn",	InputSpawnNPC ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Enable",	InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Disable",	InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Toggle",	InputToggle ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxChildren", InputSetMaxChildren ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddMaxChildren", InputAddMaxChildren ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetMaxLiveChildren", InputSetMaxLiveChildren ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT,	 "SetSpawnFrequency", InputSetSpawnFrequency ),
+// Inputs
+DEFINE_INPUTFUNC(FIELD_VOID, "Spawn", InputSpawnNPC),
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "SetMaxChildren", InputSetMaxChildren),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "AddMaxChildren", InputAddMaxChildren),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "SetMaxLiveChildren", InputSetMaxLiveChildren),
+DEFINE_INPUTFUNC(FIELD_FLOAT, "SetSpawnFrequency", InputSetSpawnFrequency),
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnAllSpawned,		"OnAllSpawned" ),
-	DEFINE_OUTPUT( m_OnAllSpawnedDead,	"OnAllSpawnedDead" ),
-	DEFINE_OUTPUT( m_OnAllLiveChildrenDead,	"OnAllLiveChildrenDead" ),
-	DEFINE_OUTPUT( m_OnSpawnNPC,		"OnSpawnNPC" ),
+// Outputs
+DEFINE_OUTPUT(m_OnAllSpawned, "OnAllSpawned"),
+DEFINE_OUTPUT(m_OnAllSpawnedDead, "OnAllSpawnedDead"),
+DEFINE_OUTPUT(m_OnAllLiveChildrenDead, "OnAllLiveChildrenDead"),
+DEFINE_OUTPUT(m_OnSpawnNPC, "OnSpawnNPC"),
 
-	// Function Pointers
-	DEFINE_THINKFUNC( MakerThink ),
+// Function Pointers
+DEFINE_THINKFUNC(MakerThink),
 
-	DEFINE_FIELD( m_hIgnoreEntity, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_iszIngoreEnt, FIELD_STRING, "IgnoreEntity" ), 
-END_DATADESC()
+DEFINE_FIELD(m_hIgnoreEntity, FIELD_EHANDLE),
+DEFINE_KEYFIELD(m_iszIngoreEnt, FIELD_STRING, "IgnoreEntity"),
+END_DATADESC();
 
 
 //-----------------------------------------------------------------------------

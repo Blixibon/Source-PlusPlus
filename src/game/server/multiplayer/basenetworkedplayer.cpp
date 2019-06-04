@@ -215,7 +215,7 @@ void CBaseNetworkedPlayer::Event_Killed( const CTakeDamageInfo &info )
 		}
 	}
 
-	RemoveEffects(EF_NODRAW);	// still draw player body
+	//RemoveEffects(EF_NODRAW);	// still draw player body
 }
 
 //-----------------------------------------------------------------------------
@@ -251,6 +251,8 @@ void CBaseNetworkedPlayer::CreateRagdollEntity(bool bGib, bool bBurning)
 		pRagdoll->m_bBurning = bBurning;
 		pRagdoll->SetAbsOrigin(GetAbsOrigin());
 	}
+
+	//AddEffects(EF_NODRAW | EF_NOSHADOW);
 
 	// ragdolls will be removed on round restart automatically
 	m_hRagdoll = pRagdoll;

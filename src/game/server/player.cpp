@@ -1173,6 +1173,8 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	// keep track of amount of damage last sustained
 	m_lastDamageAmount = info.GetDamage();
 
+	//int iOldArmorValue = m_ArmorValue;
+
 	// Armor.
 	if (m_ArmorValue && !(info.GetDamageType() & (DMG_FALL | DMG_DROWN | DMG_POISON | DMG_RADIATION)) )// armor doesn't protect against fall or drown damage!
 	{
@@ -1279,16 +1281,16 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		if (bitsDamage & DMG_CLUB)
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG4", false, SUIT_NEXT_IN_30SEC);	// minor fracture
+				SetSuitUpdate(HEV_MINOR_FRACTURE, false, SUIT_NEXT_IN_30SEC);	// minor fracture
 			bitsDamage &= ~DMG_CLUB;
 			ffound = true;
 		}
 		if (bitsDamage & (DMG_FALL | DMG_CRUSH))
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG5", false, SUIT_NEXT_IN_30SEC);	// major fracture
+				SetSuitUpdate(HEV_MAJOR_FRACTURE, false, SUIT_NEXT_IN_30SEC);	// major fracture
 			else
-				SetSuitUpdate("!HEV_DMG4", false, SUIT_NEXT_IN_30SEC);	// minor fracture
+				SetSuitUpdate(HEV_MINOR_FRACTURE, false, SUIT_NEXT_IN_30SEC);	// minor fracture
 
 			bitsDamage &= ~(DMG_FALL | DMG_CRUSH);
 			ffound = true;
@@ -1297,7 +1299,15 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		if (bitsDamage & DMG_BULLET)
 		{
 			if (m_lastDamageAmount > 5)
-				SetSuitUpdate("!HEV_DMG6", false, SUIT_NEXT_IN_30SEC);	// blood loss detected
+			{
+				SetSuitUpdate(HEV_BLOOD_LOSS, false, SUIT_NEXT_IN_30SEC);	// blood loss detected
+				if (fmajor)
+				{
+					SetSuitUpdate(HEV_INTERNAL_BLEEDING, false, SUIT_NEXT_IN_1MIN);	// internal bleeding
+					SetSuitUpdate(HEV_AUTOMEDIC_ON, false, SUIT_NEXT_IN_5MIN);	// automedic on
+					SetSuitUpdate(HEV_BLEEDING_STOPPED, false, SUIT_NEXT_IN_5MIN);	// bleeding stopped
+				}
+			}
 			//else
 			//	SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
 
@@ -1308,9 +1318,9 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		if (bitsDamage & DMG_SLASH)
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG1", false, SUIT_NEXT_IN_30SEC);	// major laceration
+				SetSuitUpdate(HEV_MAJOR_LACERATION, false, SUIT_NEXT_IN_30SEC);	// major laceration
 			else
-				SetSuitUpdate("!HEV_DMG0", false, SUIT_NEXT_IN_30SEC);	// minor laceration
+				SetSuitUpdate(HEV_MINOR_LACERATION, false, SUIT_NEXT_IN_30SEC);	// minor laceration
 
 			bitsDamage &= ~DMG_SLASH;
 			ffound = true;
@@ -1319,7 +1329,7 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 		if (bitsDamage & DMG_SONIC)
 		{
 			if (fmajor)
-				SetSuitUpdate("!HEV_DMG2", false, SUIT_NEXT_IN_1MIN);	// internal bleeding
+				SetSuitUpdate(HEV_INTERNAL_BLEEDING, false, SUIT_NEXT_IN_1MIN);	// internal bleeding
 			bitsDamage &= ~DMG_SONIC;
 			ffound = true;
 		}
@@ -1333,34 +1343,57 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 				m_rgbTimeBasedDamage[itbd_PoisonRecover] = 0;
 			}
 
-			SetSuitUpdate("!HEV_DMG3", false, SUIT_NEXT_IN_1MIN);	// blood toxins detected
+			SetSuitUpdate(HEV_POISON, false, SUIT_NEXT_IN_1MIN);	// blood toxins detected
+			SetSuitUpdate(HEV_AUTOMEDIC_ON, false, SUIT_NEXT_IN_5MIN);	// automedic on
+			SetSuitUpdate(HEV_ANTI_TOXIN, false, SUIT_NEXT_IN_1MIN);	// blood toxins detected
 			bitsDamage &= ~( DMG_POISON | DMG_PARALYZE );
 			ffound = true;
 		}
 
 		if (bitsDamage & DMG_ACID)
 		{
-			SetSuitUpdate("!HEV_DET1", false, SUIT_NEXT_IN_1MIN);	// hazardous chemicals detected
+			SetSuitUpdate(HEV_CHEMICAL, false, SUIT_NEXT_IN_1MIN);	// hazardous chemicals detected
 			bitsDamage &= ~DMG_ACID;
 			ffound = true;
 		}
 
 		if (bitsDamage & DMG_NERVEGAS)
 		{
-			SetSuitUpdate("!HEV_DET0", false, SUIT_NEXT_IN_1MIN);	// biohazard detected
+			SetSuitUpdate(HEV_BIOHAZARD, false, SUIT_NEXT_IN_1MIN);	// biohazard detected
 			bitsDamage &= ~DMG_NERVEGAS;
 			ffound = true;
 		}
 
 		if (bitsDamage & DMG_RADIATION)
 		{
-			SetSuitUpdate("!HEV_DET2", false, SUIT_NEXT_IN_1MIN);	// radiation detected
+			SetSuitUpdate(HEV_RADIATION, false, SUIT_NEXT_IN_1MIN);	// radiation detected
 			bitsDamage &= ~DMG_RADIATION;
 			ffound = true;
 		}
 		if (bitsDamage & DMG_SHOCK)
 		{
+			SetSuitUpdate(HEV_SHOCK, false, SUIT_NEXT_IN_30SEC);
 			bitsDamage &= ~DMG_SHOCK;
+			ffound = true;
+		}
+		if (bitsDamage & DMG_BURN)
+		{
+			SetSuitUpdate(HEV_HEAT, false, SUIT_NEXT_IN_30SEC);
+			bitsDamage &= ~DMG_BURN;
+			ffound = true;
+		}
+		if (bitsDamage & DMG_BLAST)
+		{
+			if (fmajor)
+			{
+				SetSuitUpdate(HEV_INTERNAL_BLEEDING, false, SUIT_NEXT_IN_1MIN);	// internal bleeding
+				SetSuitUpdate(HEV_AUTOMEDIC_ON, false, SUIT_NEXT_IN_5MIN);	// automedic on
+				SetSuitUpdate(HEV_BLEEDING_STOPPED, false, SUIT_NEXT_IN_5MIN);	// bleeding stopped
+			}
+			else
+				SetSuitUpdate(HEV_MINOR_LACERATION, false, SUIT_NEXT_IN_30SEC);	// minor laceration
+
+			bitsDamage &= ~DMG_BLAST;
 			ffound = true;
 		}
 	}
@@ -1381,10 +1414,10 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	{
 		// first time we take major damage...
 		// turn automedic on if not on
-		SetSuitUpdate("!HEV_MED1", false, SUIT_NEXT_IN_30MIN);	// automedic on
+		SetSuitUpdate(HEV_AUTOMEDIC_ON, false, SUIT_NEXT_IN_5MIN);	// automedic on
 
 		// give morphine shot if not given recently
-		SetSuitUpdate("!HEV_HEAL7", false, SUIT_NEXT_IN_30MIN);	// morphine shot
+		SetSuitUpdate(HEV_MORPHINE, false, SUIT_NEXT_IN_5MIN);	// morphine shot
 	}
 
 	if (fTookDamage && !ftrivial && fcritical && flHealthPrev < 75)
@@ -1392,13 +1425,13 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 		// already took major damage, now it's critical...
 		if (m_iHealth < 6)
-			SetSuitUpdate("!HEV_HLTH3", false, SUIT_NEXT_IN_10MIN);	// near death
+			SetSuitUpdate(HEV_NEARDEATH, false, SUIT_NEXT_IN_10MIN);	// near death
 		else if (m_iHealth < 20)
-			SetSuitUpdate("!HEV_HLTH2", false, SUIT_NEXT_IN_10MIN);	// health critical
+			SetSuitUpdate(HEV_HEALTH_CRITICAL, false, SUIT_NEXT_IN_10MIN);	// health critical
 
 		// give critical health warnings
 		if (!random->RandomInt(0,3) && flHealthPrev < 50)
-			SetSuitUpdate("!HEV_DMG7", false, SUIT_NEXT_IN_5MIN); //seek medical attention
+			SetSuitUpdate(HEV_SEEK_MEDICAL_ATTENTION, false, SUIT_NEXT_IN_5MIN); //seek medical attention
 	}
 
 	// if we're taking time based damage, warn about its continuing effects
@@ -1407,20 +1440,20 @@ int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 			if (flHealthPrev < 50)
 			{
 				if (!random->RandomInt(0,3))
-					SetSuitUpdate("!HEV_DMG7", false, SUIT_NEXT_IN_5MIN); //seek medical attention
+					SetSuitUpdate(HEV_SEEK_MEDICAL_ATTENTION, false, SUIT_NEXT_IN_5MIN); //seek medical attention
 			}
 			else
-				SetSuitUpdate("!HEV_HLTH1", false, SUIT_NEXT_IN_10MIN);	// health dropping
+				SetSuitUpdate(HEV_HEALTH_DROPPING, false, SUIT_NEXT_IN_10MIN);	// health dropping
 		}
 
 	// Do special explosion damage effect
-	if ( bitsDamage & DMG_BLAST )
+	if (info.GetDamageType() & DMG_BLAST )
 	{
 		OnDamagedByExplosion( info );
 	}
 
 	if (GetBotController()) {
-		GetBotController()->OnTakeDamage(inputInfo);
+		GetBotController()->OnTakeDamage(info);
 	}
 
 	return fTookDamage;

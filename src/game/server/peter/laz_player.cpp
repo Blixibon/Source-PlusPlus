@@ -19,6 +19,9 @@
 #include "lazuul_gamerules.h"
 #include "team.h"
 #include "gamevars_shared.h"
+#include "npcevent.h"
+#include "npc_manhack.h"
+#include "ai_squad.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -56,6 +59,11 @@ END_SEND_TABLE();
 #define TEAM_CHANGE_INTERVAL 5.0f
 
 #define HL2MPPLAYER_PHYSDAMAGE_SCALE 4.0f
+
+CLaz_Player::CLaz_Player()
+{
+	m_nSpecialAttack = -1;
+}
 
 void CLaz_Player::Precache(void)
 {
@@ -165,9 +173,35 @@ void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo
 
 void CLaz_Player::Event_Killed(const CTakeDamageInfo & info)
 {
+	// Release the manhack if we're in the middle of deploying him
+	if (m_hMinion && m_hMinion->IsAlive() && m_hMinion->Classify() == CLASS_MANHACK)
+	{
+		ReleaseManhack();
+	}
+
 	BaseClass::Event_Killed(info);
 
 	StartObserverMode(OBS_MODE_DEATHCAM);
+}
+
+void CLaz_Player::HandleAnimEvent(animevent_t * pEvent)
+{
+	if ((pEvent->type & AE_TYPE_NEWEVENTSYSTEM) && (pEvent->type & AE_TYPE_SERVER))
+	{
+		if (pEvent->event == AE_METROPOLICE_START_DEPLOY)
+		{
+			OnAnimEventStartDeployManhack();
+			return;
+		}
+
+		if (pEvent->event == AE_METROPOLICE_DEPLOY_MANHACK)
+		{
+			OnAnimEventDeployManhack(pEvent);
+			return;
+		}
+	}
+
+	BaseClass::HandleAnimEvent(pEvent);
 }
 
 void CLaz_Player::ChangeTeam(int iTeam)
@@ -249,6 +283,16 @@ int CLaz_Player::GetAutoTeam(void)
 	}
 
 	return iTeam;
+}
+
+void CLaz_Player::SetMinion(CBaseCombatCharacter * pMinion)
+{
+	m_hMinion.Set(pMinion);
+	const char *pchClassName = (pMinion->IsNPC()) ? pMinion->MyNPCPointer()->GetDeathNoticeNameOverride() : nullptr;
+	if (!pchClassName)
+		pchClassName = pMinion->GetClassname();
+
+	V_strncpy(m_strMinionClass.GetForModify(), pchClassName, 32);
 }
 
 bool CLaz_Player::HandleCommand_JoinTeam(int team)
@@ -333,6 +377,8 @@ void CLaz_Player::SetPlayerModel(void)
 	{
 		m_MPModel = models.Random();
 	}
+
+	PlayerModelSystem()->PlayerGrabModel(m_MPModel.szSectionID);
 }
 
 bool CLaz_Player::ClientCommand(const CCommand &args)
@@ -376,6 +422,100 @@ bool CLaz_Player::ClientCommand(const CCommand &args)
 	}
 
 	return BaseClass::ClientCommand(args);
+}
+
+void CLaz_Player::OnAnimEventDeployManhack(animevent_t * pEvent)
+{
+	// Let it go
+	ReleaseManhack();
+
+	Vector forward, right;
+	GetVectors(&forward, &right, NULL);
+
+	IPhysicsObject *pPhysObj = m_hMinion->VPhysicsGetObject();
+
+	if (pPhysObj)
+	{
+		Vector	yawOff = right * random->RandomFloat(-1.0f, 1.0f);
+
+		Vector	forceVel = (forward + yawOff * 16.0f) + Vector(0, 0, 250);
+		Vector	forceAng = vec3_origin;
+
+		// Give us velocity
+		pPhysObj->AddVelocity(&forceVel, &forceAng);
+	}
+}
+
+void CLaz_Player::OnAnimEventStartDeployManhack(void)
+{
+	//Assert(m_iManhacks);
+
+	/*if (m_iManhacks <= 0)
+	{
+		DevMsg("Error: Throwing manhack but out of manhacks!\n");
+		return;
+	}*/
+
+	//m_iManhacks--;
+
+	// Turn off the manhack on our body
+	/*if (m_iManhacks <= 0)
+	{
+		SetBodygroup(METROPOLICE_BODYGROUP_MANHACK, false);
+	}*/
+
+	// Create the manhack to throw
+	CNPC_Manhack *pManhack = (CNPC_Manhack *)CreateEntityByName("npc_manhack");
+
+	Vector	vecOrigin;
+	QAngle	vecAngles;
+
+	int handAttachment = LookupAttachment("anim_attachment_LH");
+	GetAttachment(handAttachment, vecOrigin, vecAngles);
+
+	pManhack->SetLocalOrigin(vecOrigin);
+	pManhack->SetLocalAngles(vecAngles);
+	pManhack->AddSpawnFlags((SF_MANHACK_PACKED_UP | SF_MANHACK_CARRIED | SF_NPC_WAIT_FOR_SCRIPT));
+
+	pManhack->AddSpawnFlags(SF_NPC_FADE_CORPSE);
+
+	pManhack->Spawn();
+	pManhack->SetDeployingPlayer(this);
+
+	// Make us move with his hand until we're deployed
+	pManhack->SetParent(this, handAttachment);
+
+	SetMinion(pManhack);
+}
+
+void CLaz_Player::ReleaseManhack(void)
+{
+	CNPC_Manhack *pManhack = dynamic_cast<CNPC_Manhack *> (m_hMinion.Get());
+
+	if (!pManhack)
+		return;
+
+	// Make us physical
+	pManhack->RemoveSpawnFlags(SF_MANHACK_CARRIED);
+	pManhack->CreateVPhysics();
+
+	// Release us
+	pManhack->RemoveSolidFlags(FSOLID_NOT_SOLID);
+	pManhack->SetMoveType(MOVETYPE_VPHYSICS);
+	pManhack->SetParent(NULL);
+
+	// Make us active
+	pManhack->RemoveSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT);
+	pManhack->ClearSchedule("Manhack released by metropolice");
+
+	// Start him with knowledge of our current enemy
+	
+
+	// Place him into our squad so we can communicate
+	if (GetPlayerSquad())
+	{
+		GetPlayerSquad()->AddToSquad(pManhack);
+	}
 }
 
 bool CLaz_Player::ShouldRunRateLimitedCommand(const CCommand &args)
@@ -570,6 +710,9 @@ void CLaz_Player::Special()
 	{
 	case LAZ_SPECIAL_MANHACK:
 	{
+		if (m_hMinion && m_hMinion->IsAlive())
+			return;
+
 		int iSequence = SelectWeightedSequence(ACT_METROPOLICE_DEPLOY_MANHACK);
 		if (iSequence != ACT_INVALID)
 		{
@@ -587,12 +730,68 @@ void CLaz_Player::Special()
 #define SUITUPDATETIME	3.5
 #define SUITFIRSTUPDATETIME 0.1
 
+void CLaz_Player::CheckSuitUpdate()
+{
+	int isentence = 0;
+	int isearch = m_iSuitPlayNext;
+
+	// Ignore suit updates if no suit
+	if (!IsSuitEquipped())
+		return;
+
+	// if in range of radiation source, ping geiger counter
+	UpdateGeigerCounter();
+
+	if (g_pGameRules->IsMultiplayer())
+	{
+		const char *pchVar = engine->GetClientConVarValue(entindex(), "cl_laz_mp_suit");
+		// don't bother updating HEV voice in multiplayer.
+		if (atoi(pchVar) <= 0)
+			return;
+	}
+
+	if (gpGlobals->curtime >= m_flSuitUpdate && m_flSuitUpdate > 0)
+	{
+		// play a sentence off of the end of the queue
+		for (int i = 0; i < CSUITPLAYLIST; i++)
+		{
+			if ((isentence = m_rgSuitPlayList[isearch]) != 0)
+				break;
+
+			if (++isearch == CSUITPLAYLIST)
+				isearch = 0;
+		}
+
+		if (isentence)
+		{
+			m_rgSuitPlayList[isearch] = 0;
+			if (isentence > 0)
+			{
+				// play sentence number
+
+				char sentence[512];
+				V_sprintf_safe(sentence, "!%s", engine->SentenceNameFromIndex(isentence));
+				UTIL_EmitSoundSuit(edict(), sentence);
+			}
+			else
+			{
+				// play sentence group
+				UTIL_EmitGroupIDSuit(edict(), -isentence);
+			}
+			m_flSuitUpdate = gpGlobals->curtime + SUITUPDATETIME;
+		}
+		else
+			// queue is empty, don't check
+			m_flSuitUpdate = 0;
+	}
+}
+
+
 // add sentence to suit playlist queue. if fgroup is true, then
 // name is a sentence group (HEV_AA), otherwise name is a specific
 // sentence name ie: !HEV_AA0.  If iNoRepeat is specified in
 // seconds, then we won't repeat playback of this word or sentence
 // for at least that number of seconds.
-
 void CLaz_Player::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 {
 	int i;
@@ -607,8 +806,10 @@ void CLaz_Player::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 
 	if (g_pGameRules->IsMultiplayer())
 	{
-		// due to static channel design, etc. We don't play HEV sounds in multiplayer right now.
-		return;
+		const char *pchVar = engine->GetClientConVarValue(entindex(), "cl_laz_mp_suit");
+		// don't bother updating HEV voice in multiplayer.
+		if (atoi(pchVar) <= 0)
+			return;
 	}
 
 
@@ -825,6 +1026,12 @@ void CLaz_Player::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 	BaseClass::ModifyOrAppendCriteria(set);
 	set.AppendCriteria("voice", STRING(m_iszVoiceType));
 	set.AppendCriteria("suitvoice", STRING(m_iszSuitVoice));
+}
+
+void CLaz_Player::DeathNotice(CBaseEntity * pVictim)
+{
+	if (pVictim == m_hMinion.Get())
+		ClearMinion();
 }
 
 void CLaz_Player::SetFootsteps(const char *pchPrefix)

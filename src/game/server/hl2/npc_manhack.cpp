@@ -124,84 +124,86 @@ enum ManhackTasks
 	TASK_MANHACK_MOVEAT_SAVEPOSITION,
 };
 
-BEGIN_DATADESC( CNPC_Manhack )
+BEGIN_DATADESC(CNPC_Manhack)
 
-	DEFINE_FIELD( m_vForceVelocity,			FIELD_VECTOR),
+DEFINE_FIELD(m_vForceVelocity, FIELD_VECTOR),
 
-	DEFINE_FIELD( m_vTargetBanking,			FIELD_VECTOR),
-	DEFINE_FIELD( m_vForceMoveTarget,			FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_fForceMoveTime,			FIELD_TIME),
-	DEFINE_FIELD( m_vSwarmMoveTarget,			FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_fSwarmMoveTime,			FIELD_TIME),
-	DEFINE_FIELD( m_fEnginePowerScale,		FIELD_FLOAT),
+DEFINE_FIELD(m_vTargetBanking, FIELD_VECTOR),
+DEFINE_FIELD(m_vForceMoveTarget, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_fForceMoveTime, FIELD_TIME),
+DEFINE_FIELD(m_vSwarmMoveTarget, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_fSwarmMoveTime, FIELD_TIME),
+DEFINE_FIELD(m_fEnginePowerScale, FIELD_FLOAT),
 
-	DEFINE_FIELD( m_flNextEngineSoundTime,	FIELD_TIME),
-	DEFINE_FIELD( m_flEngineStallTime,		FIELD_TIME),
-	DEFINE_FIELD( m_flNextBurstTime,			FIELD_TIME ),
-	DEFINE_FIELD( m_flWaterSuspendTime,		FIELD_TIME),
-	DEFINE_FIELD( m_nLastSpinSound,			FIELD_INTEGER ),
+DEFINE_FIELD(m_flNextEngineSoundTime, FIELD_TIME),
+DEFINE_FIELD(m_flEngineStallTime, FIELD_TIME),
+DEFINE_FIELD(m_flNextBurstTime, FIELD_TIME),
+DEFINE_FIELD(m_flWaterSuspendTime, FIELD_TIME),
+DEFINE_FIELD(m_nLastSpinSound, FIELD_INTEGER),
 
-	// Death
-	DEFINE_FIELD( m_fSparkTime,				FIELD_TIME),
-	DEFINE_FIELD( m_fSmokeTime,				FIELD_TIME),
+// Death
+DEFINE_FIELD(m_fSparkTime, FIELD_TIME),
+DEFINE_FIELD(m_fSmokeTime, FIELD_TIME),
 
-	DEFINE_FIELD( m_bDirtyPitch,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bGib,					FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bHeld,					FIELD_BOOLEAN),
-	
-	DEFINE_FIELD( m_bHackedByAlyx,			FIELD_BOOLEAN),
-	DEFINE_FIELD( m_vecLoiterPosition,		FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_fTimeNextLoiterPulse,	FIELD_TIME),
+DEFINE_FIELD(m_bDirtyPitch, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bGib, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bHeld, FIELD_BOOLEAN),
 
-	DEFINE_FIELD( m_flBumpSuppressTime,		FIELD_TIME ),
+DEFINE_FIELD(m_bHackedByAlyx, FIELD_BOOLEAN),
+DEFINE_FIELD(m_vecLoiterPosition, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_fTimeNextLoiterPulse, FIELD_TIME),
 
-	DEFINE_FIELD( m_bBladesActive,			FIELD_BOOLEAN),
-	DEFINE_FIELD( m_flBladeSpeed,				FIELD_FLOAT),
-	DEFINE_KEYFIELD( m_bIgnoreClipbrushes,	FIELD_BOOLEAN, "ignoreclipbrushes" ),
-	DEFINE_FIELD( m_hSmokeTrail,				FIELD_EHANDLE),
+DEFINE_FIELD(m_flBumpSuppressTime, FIELD_TIME),
 
-	// DEFINE_FIELD( m_pLightGlow,				FIELD_CLASSPTR ),
-	// DEFINE_FIELD( m_pEyeGlow,					FIELD_CLASSPTR ),
+DEFINE_FIELD(m_bBladesActive, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flBladeSpeed, FIELD_FLOAT),
+DEFINE_KEYFIELD(m_bIgnoreClipbrushes, FIELD_BOOLEAN, "ignoreclipbrushes"),
+DEFINE_FIELD(m_hSmokeTrail, FIELD_EHANDLE),
 
-	DEFINE_FIELD( m_iPanel1, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iPanel2, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iPanel3, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iPanel4, FIELD_INTEGER ),
+// DEFINE_FIELD( m_pLightGlow,				FIELD_CLASSPTR ),
+// DEFINE_FIELD( m_pEyeGlow,					FIELD_CLASSPTR ),
 
-	DEFINE_FIELD( m_nLastWaterLevel,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_bDoSwarmBehavior,			FIELD_BOOLEAN ),
+DEFINE_FIELD(m_iPanel1, FIELD_INTEGER),
+DEFINE_FIELD(m_iPanel2, FIELD_INTEGER),
+DEFINE_FIELD(m_iPanel3, FIELD_INTEGER),
+DEFINE_FIELD(m_iPanel4, FIELD_INTEGER),
 
-	DEFINE_FIELD( m_nEnginePitch1,				FIELD_INTEGER ),
-	DEFINE_FIELD( m_flEnginePitch1Time,			FIELD_TIME ),
-	DEFINE_FIELD( m_nEnginePitch2,				FIELD_INTEGER ),
-	DEFINE_FIELD( m_flEnginePitch2Time,			FIELD_TIME ),
+DEFINE_FIELD(m_nLastWaterLevel, FIELD_INTEGER),
+DEFINE_FIELD(m_bDoSwarmBehavior, FIELD_BOOLEAN),
 
-	// Physics Influence
-	DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
+DEFINE_FIELD(m_nEnginePitch1, FIELD_INTEGER),
+DEFINE_FIELD(m_flEnginePitch1Time, FIELD_TIME),
+DEFINE_FIELD(m_nEnginePitch2, FIELD_INTEGER),
+DEFINE_FIELD(m_flEnginePitch2Time, FIELD_TIME),
 
-	DEFINE_FIELD( m_flBurstDuration,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_vecBurstDirection,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_bShowingHostile,	FIELD_BOOLEAN ),
+// Physics Influence
+DEFINE_FIELD(m_hPhysicsAttacker, FIELD_EHANDLE),
+DEFINE_FIELD(m_flLastPhysicsInfluenceTime, FIELD_TIME),
 
-	// Function Pointers
-	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableSwarm", InputDisableSwarm ),
-	DEFINE_INPUTFUNC( FIELD_VOID,   "Unpack",		InputUnpack ),
+DEFINE_FIELD(m_flBurstDuration, FIELD_FLOAT),
+DEFINE_FIELD(m_vecBurstDirection, FIELD_VECTOR),
+DEFINE_FIELD(m_bShowingHostile, FIELD_BOOLEAN),
 
-	DEFINE_ENTITYFUNC( CrashTouch ),
+DEFINE_FIELD(m_hOwningPlayer, FIELD_EHANDLE),
 
-	DEFINE_BASENPCINTERACTABLE_DATADESC(),
+// Function Pointers
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableSwarm", InputDisableSwarm),
+DEFINE_INPUTFUNC(FIELD_VOID, "Unpack", InputUnpack),
 
-END_DATADESC()
+DEFINE_ENTITYFUNC(CrashTouch),
+
+DEFINE_BASENPCINTERACTABLE_DATADESC(),
+
+END_DATADESC();
 
 
 LINK_ENTITY_TO_CLASS( npc_manhack, CNPC_Manhack );
 
 IMPLEMENT_SERVERCLASS_ST(CNPC_Manhack, DT_NPC_Manhack)
-	SendPropIntWithMinusOneFlag	(SENDINFO(m_nEnginePitch1), 8 ),
-	SendPropFloat(SENDINFO(m_flEnginePitch1Time), 0, SPROP_NOSCALE),
-	SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch2), 8 )
-END_SEND_TABLE()
+SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch1), 8),
+SendPropFloat(SENDINFO(m_flEnginePitch1Time), 0, SPROP_NOSCALE),
+SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch2), 8)
+END_SEND_TABLE();
 
 
 
@@ -240,7 +242,10 @@ CNPC_Manhack::~CNPC_Manhack()
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Manhack::Classify(void)
 {
-	return (m_bHeld||m_bHackedByAlyx) ? CLASS_PLAYER_ALLY : CLASS_MANHACK; 
+	if (m_bHeld && !InSameTeam(GetOwnerEntity()))
+		return (!m_bHackedByAlyx) ? CLASS_PLAYER_ALLY : CLASS_MANHACK;
+
+	return (m_bHackedByAlyx) ? CLASS_PLAYER_ALLY : CLASS_MANHACK; 
 }
 
 
@@ -2410,7 +2415,7 @@ void CNPC_Manhack::Spawn(void)
 
 	m_flNextBurstTime	= gpGlobals->curtime;
 
-	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_MOVE_FLY | bits_CAP_SQUAD );
+	CapabilitiesAdd( bits_CAP_INNATE_MELEE_ATTACK1 | bits_CAP_MOVE_FLY | bits_CAP_SQUAD | bits_CAP_SIMPLE_VISIBILITY );
 
 	m_flNextEngineSoundTime		= gpGlobals->curtime;
 	m_flWaterSuspendTime		= gpGlobals->curtime;
@@ -2711,6 +2716,13 @@ void CNPC_Manhack::StartTask( const Task_t *pTask )
 				}
 			}
 
+			// Player commander has heavy influence
+			if (m_pSquad->GetPlayerCommander())
+			{
+				m_vSavePosition += (m_pSquad->GetPlayerCommander()->EyePosition() + Vector(0, 0, 32)) * 10;
+				count += 10;
+			}
+
 			// pull towards enemy
 			if (GetEnemy() != NULL)
 			{
@@ -2732,21 +2744,28 @@ void CNPC_Manhack::StartTask( const Task_t *pTask )
 				CAI_BaseNPC *pSquadMember = m_pSquad->GetAnyMember();
 				m_vSavePosition = pSquadMember->GetAbsOrigin();
 
-				// find attacking members
-				AISquadIter_t iter;
-				for (pSquadMember = m_pSquad->GetFirstMember( &iter ); pSquadMember; pSquadMember = m_pSquad->GetNextMember( &iter ) )
+				if (m_pSquad->GetPlayerCommander())
 				{
-					// are they attacking?
-					if (pSquadMember->HasStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ))
+					m_vSavePosition = (m_pSquad->GetPlayerCommander()->EyePosition() + Vector(0, 0, 32));
+				}
+				else
+				{
+					// find attacking members
+					AISquadIter_t iter;
+					for (pSquadMember = m_pSquad->GetFirstMember(&iter); pSquadMember; pSquadMember = m_pSquad->GetNextMember(&iter))
 					{
-						m_vSavePosition = pSquadMember->GetAbsOrigin();
-						break;
-					}
-					// do they have a goal?
-					if (pSquadMember->GetNavigator()->IsGoalActive())
-					{
-						m_vSavePosition = pSquadMember->GetAbsOrigin();
-						break;
+						// are they attacking?
+						if (pSquadMember->HasStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
+						{
+							m_vSavePosition = pSquadMember->GetAbsOrigin();
+							break;
+						}
+						// do they have a goal?
+						if (pSquadMember->GetNavigator()->IsGoalActive())
+						{
+							m_vSavePosition = pSquadMember->GetAbsOrigin();
+							break;
+						}
 					}
 				}
 			}
@@ -3006,6 +3025,9 @@ void CNPC_Manhack::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 	}
 	else
 	{
+		// FIX: Remember the current owner in case we are from a npc_template_maker/npc_maker.
+		m_pPrevOwner.Set(GetOwnerEntity());
+
 		// Suppress collisions between the manhack and the player; we're currently bumping
 		// almost certainly because it's not purely a physics object.
 		SetOwnerEntity( pPhysGunUser );
@@ -3022,7 +3044,10 @@ void CNPC_Manhack::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 void CNPC_Manhack::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
 {
 	// Stop suppressing collisions between the manhack and the player
-	SetOwnerEntity( NULL );
+	SetOwnerEntity(m_pPrevOwner.Get());
+
+	// Reset previous owner back to NULL.
+	m_pPrevOwner.Set(NULL);
 
 	m_bHeld = false;
 

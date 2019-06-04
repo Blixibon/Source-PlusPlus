@@ -708,6 +708,8 @@ public:
 
 	void Spawn(void);
 	void Precache(void);
+
+	bool CanBecomeRagdoll() { return false; }
 };
 
 void CNPC_HCFBaseCrab::Spawn(void)
@@ -726,7 +728,7 @@ class CNPC_HCFElectoCrab : public CNPC_HCFBaseCrab
 {
 	enum { NUM_BEAMS = 2};
 
-	DECLARE_CLASS(CNPC_HCFElectoCrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFElectoCrab, CNPC_HCFBaseCrab);
 public:
 	DECLARE_DATADESC()
 
@@ -820,7 +822,7 @@ void CNPC_HCFElectoCrab::Precache(void)
 
 class CNPC_HCFFastHeadcrab : public CNPC_HCFBaseCrab
 {
-	DECLARE_CLASS(CNPC_HCFFastHeadcrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFFastHeadcrab, CNPC_HCFBaseCrab);
 public:
 	void Spawn(void);
 	void Precache(void);
@@ -844,7 +846,7 @@ void CNPC_HCFFastHeadcrab::Precache(void)
 
 class CNPC_HCFFireHeadcrab : public CNPC_HCFBaseCrab
 {
-	DECLARE_CLASS(CNPC_HCFFireHeadcrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFFireHeadcrab, CNPC_HCFBaseCrab);
 public:
 	void Spawn(void);
 	void Precache(void);
@@ -870,7 +872,7 @@ void CNPC_HCFFireHeadcrab::Precache(void)
 
 class CNPC_HCFPoisonHeadcrab : public CNPC_HCFBaseCrab
 {
-	DECLARE_CLASS(CNPC_HCFPoisonHeadcrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFPoisonHeadcrab, CNPC_HCFBaseCrab);
 public:
 	void Spawn(void);
 	void Precache(void);
@@ -896,7 +898,7 @@ void CNPC_HCFPoisonHeadcrab::Precache(void)
 
 class CNPC_HCFHalucinoHeadcrab : public CNPC_HCFBaseCrab
 {
-	DECLARE_CLASS(CNPC_HCFHalucinoHeadcrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFHalucinoHeadcrab, CNPC_HCFBaseCrab);
 public:
 	void Spawn(void);
 	void Precache(void);
@@ -923,7 +925,7 @@ void CNPC_HCFHalucinoHeadcrab::Precache(void)
 
 class CNPC_HCFIceHeadcrab : public CNPC_HCFBaseCrab
 {
-	DECLARE_CLASS(CNPC_HCFIceHeadcrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFIceHeadcrab, CNPC_HCFBaseCrab);
 public:
 	void Spawn(void);
 	void Precache(void);
@@ -949,7 +951,7 @@ void CNPC_HCFIceHeadcrab::Precache(void)
 
 class CNPC_HCFEtherHeadcrab : public CNPC_HCFBaseCrab
 {
-	DECLARE_CLASS(CNPC_HCFEtherHeadcrab, CNPC_Headcrab);
+	DECLARE_CLASS(CNPC_HCFEtherHeadcrab, CNPC_HCFBaseCrab);
 public:
 	void Spawn(void);
 	void Precache(void);

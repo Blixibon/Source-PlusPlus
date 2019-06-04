@@ -47,6 +47,8 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
+	CLaz_Player();
+
 	virtual void Precache(void);
 	//virtual void CreateSounds(void);
 	//virtual void StopLoopingSounds(void);
@@ -81,11 +83,12 @@ public:
 
 	void			ModifyOrAppendCriteria(AI_CriteriaSet& set);
 
-
+	virtual void	DeathNotice(CBaseEntity *pVictim);
 
 	virtual int	OnTakeDamage(const CTakeDamageInfo &inputInfo);
 	virtual void Event_Killed(const CTakeDamageInfo &info);
 
+	void		HandleAnimEvent(animevent_t *pEvent);
 
 	//virtual void			PlayerDeathThink(void);
 
@@ -101,11 +104,13 @@ public:
 	void	PrecacheFootStepSounds(void);
 	const char *GetPlayerModelSoundPrefix(void);
 
+
 	//virtual CStudioHdr *OnNewModel(void);
 
 	// Starts a special attack.
 	void					Special();
 
+	virtual void			CheckSuitUpdate();
 	virtual void			SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
 
 	void State_Transition(LAZPlayerState newState);
@@ -134,12 +139,25 @@ protected:
 	LAZPlayerState m_iPlayerState;
 	CLAZPlayerStateInfo *m_pCurStateInfo;
 
+	// Anim event handlers
+	void OnAnimEventDeployManhack(animevent_t *pEvent);
+	void OnAnimEventStartDeployManhack(void);
+	void		ReleaseManhack(void);
+
 	bool ShouldRunRateLimitedCommand(const CCommand &args);
 
 	// This lets us rate limit the commands the players can execute so they don't overflow things like reliable buffers.
 	CUtlDict<float, int>	m_RateLimitLastCommandTimes;
 
 	int					GetAutoTeam(void);
+
+	void				SetMinion(CBaseCombatCharacter *pMinion);
+
+	void				ClearMinion()
+	{
+		m_hMinion.Set(NULL);
+		V_memset(m_strMinionClass.GetForModify(), '\0', 32);
+	}
 
 	bool		HasMPModel()
 	{
@@ -149,6 +167,9 @@ protected:
 	playerModel_t m_MPModel;
 	int				m_nSpecialAttack;
 	float				m_flNextSpecialAttackTime;
+
+	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
+	CNetworkString(m_strMinionClass, 32);
 public:
 	CNetworkVar(bool, m_bHasLongJump);
 };

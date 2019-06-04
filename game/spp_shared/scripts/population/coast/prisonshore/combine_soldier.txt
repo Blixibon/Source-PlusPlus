@@ -1,3 +1,4 @@
 prisonguard
+protoguard
 outlandguard
 outlandguard

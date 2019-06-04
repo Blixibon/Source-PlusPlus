@@ -14,6 +14,7 @@
 #include "Sprite.h"
 #include "SpriteTrail.h"
 #include "player_pickup.h"
+#include "iscorer.h"
 
 // Start with the engine off and folded up.
 #define SF_MANHACK_PACKED_UP			(1 << 16)
@@ -51,7 +52,7 @@ class CSoundPatch;
 //-----------------------------------------------------------------------------
 // Manhack 
 //-----------------------------------------------------------------------------
-class CNPC_Manhack : public CNPCBaseInteractive<CAI_BasePhysicsFlyingBot>, public CDefaultPlayerPickupVPhysics
+class CNPC_Manhack : public CNPCBaseInteractive<CAI_BasePhysicsFlyingBot>, public CDefaultPlayerPickupVPhysics, public IScorer
 {
 DECLARE_CLASS( CNPC_Manhack, CNPCBaseInteractive<CAI_BasePhysicsFlyingBot> );
 DECLARE_SERVERCLASS();
@@ -60,7 +61,31 @@ public:
 	CNPC_Manhack();
 	~CNPC_Manhack();
 
+	// Return the player that should receive the score
+	virtual CBasePlayer *GetScorer(void) { return m_hOwningPlayer.Get(); }
+	// Return the entity that should get assistance credit
+	virtual CBaseEntity *GetAssistant(void)
+	{
+		if (m_hOwningPlayer.IsValid())
+			return this;
+
+		return nullptr;
+	}
+
 	Class_T			Classify(void);
+
+	virtual CBasePlayer *GetBestPlayer()
+	{
+		if (m_hOwningPlayer.IsValid())
+			return m_hOwningPlayer.Get();
+
+		return BaseClass::GetBestPlayer();
+	}
+
+	virtual CBasePlayer *GetBestPlayer() const
+	{
+		return const_cast<CNPC_Manhack *>(this)->GetBestPlayer();
+	}
 
 	bool			CorpseGib( const CTakeDamageInfo &info );
 	void			Event_Dying(void);
@@ -172,6 +197,12 @@ public:
 		m_iHealth = 0;
 	}
 
+	void	SetDeployingPlayer(CBasePlayer *pPlayer)
+	{
+		m_hOwningPlayer.Set(pPlayer);
+		SetOwnerEntity(pPlayer);
+	}
+
 
 	DEFINE_CUSTOM_AI;
 
@@ -256,6 +287,8 @@ private:
 	CSprite			*m_pLightGlow;
 	
 	CHandle<SmokeTrail>	m_hSmokeTrail;
+	CHandle<CBaseEntity> m_pPrevOwner;
+	CHandle<CBasePlayer> m_hOwningPlayer;
 
 	int				m_iPanel1;
 	int				m_iPanel2;

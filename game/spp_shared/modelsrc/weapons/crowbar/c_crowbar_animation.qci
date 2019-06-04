@@ -1,0 +1,157 @@
+
+$SectionFrames 30 120
+
+$Sequence "idle01" {
+	"c_crowbar_anims\idle01.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 24
+	loop
+}
+
+$Sequence "draw" {
+	"c_crowbar_anims\draw.smd"
+	activity "ACT_VM_DRAW" 1
+	{ event 5004 0 "Weapon_Crowbar.Draw" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "misscenter1" {
+	"c_crowbar_anims\misscenter1.smd"
+	activity "ACT_VM_MISSCENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "misscenter2" {
+	"c_crowbar_anims\misscenter2.smd"
+	activity "ACT_VM_MISSCENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "hitcenter1" {
+	"c_crowbar_anims\hitcenter1.smd"
+	activity "ACT_VM_HITCENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "hitcenter2" {
+	"c_crowbar_anims\hitcenter2.smd"
+	activity "ACT_VM_HITCENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "hitcenter3" {
+	"c_crowbar_anims\hitcenter3.smd"
+	activity "ACT_VM_HITCENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "hitkill1" {
+	"c_crowbar_anims\hitkill1.smd"
+	activity "ACT_VM_HITKILL" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "holster" {
+	"c_crowbar_anims\holster.smd"
+	activity "ACT_VM_HOLSTER" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "sprint" {
+	"c_crowbar_anims\sprint.smd"
+	activity "ACT_VM_SPRINT" 1
+	{ event 5004 1 "Weapon_Generic.Sprint1" }
+	{ event 5004 16 "Weapon_Generic.Sprint2" }
+	fadein 0.35
+	fadeout 0.35
+	node "Ready"
+	fps 43
+	loop
+}
+
+$Sequence "walk" {
+	"c_crowbar_anims\walk.smd"
+	activity "ACT_VM_WALK" 1
+	{ event 5004 0 "Weapon_Generic.Walk1" }
+	{ event 5004 15 "Weapon_Generic.Walk2" }
+	fadein 0.35
+	fadeout 0.35
+	node "Ready"
+	fps 35
+	loop
+}
+
+$Sequence "idletolow" {
+	"c_crowbar_anims\idletolow.smd"
+	activity "ACT_VM_LOWERED_TO_IDLE" 1
+	fadein 0.65
+	fadeout 0.65
+	node "Fire"
+	fps 30
+}
+
+$Sequence "lowtoidle" {
+	"c_crowbar_anims\lowtoidle.smd"
+	activity "ACT_VM_IDLE_TO_LOWERED" 1
+	fadein 0.65
+	fadeout 0.65
+	node "Fire"
+	fps 45
+}
+
+$Sequence "lowidle" {
+	"c_crowbar_anims\lowidle.smd"
+	activity "ACT_VM_IDLE_LOWERED" 1
+	fadein 0.65
+	fadeout 0.65
+	node "Fire"
+	fps 30
+	loop
+}
+
+$Sequence "inspect1" {
+	"c_crowbar_anims\inspect1.smd"
+	activity "ACT_VM_INSPECT" 1
+	{ event 5004 1 "Weapon_Generic.Movement1" }
+	{ event 5004 41 "Weapon_Generic.Movement2" }
+	{ event 5004 95 "Weapon_Generic.Movement5" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+}
+
+$Sequence "inspect2" {
+	"c_crowbar_anims\inspect2.smd"
+	activity "ACT_VM_INSPECT_ALT" 1
+	{ event 5004 1 "Weapon_Generic.Movement1" }
+	{ event 5004 41 "Weapon_Generic.Movement2" }
+	{ event 5004 95 "Weapon_Generic.Movement5" }
+	fadein 0.2
+	fadeout 0.2
+	fps 28
+}

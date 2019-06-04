@@ -1347,9 +1347,11 @@ response "CitizenLeadAttractPlayer"
 	scene "scenes/episode_1/npc/$gender01/cit_heyoverhere.vcd"
 }
 
+criterion "NotIsSheckley" "name" "!=sheckley" required
+
 rule CitizenLeadAttractPlayer
 {
-	criteria		IsCitizen ConceptLeadAttractPlayer
+	criteria		IsCitizen ConceptLeadAttractPlayer NotIsSheckley
 	response		CitizenLeadAttractPlayer
 }
 

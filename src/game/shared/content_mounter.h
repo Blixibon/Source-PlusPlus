@@ -3,7 +3,7 @@
 namespace Mounter
 {
 	void MountExtraContent();
-	CUtlVector< char *, CUtlMemory< char *, int> > *GetSentenceFiles();
+	bool RegenSentenceFile(IFileSystem* const pFileSystem, const char *pszFileName);
 }
 
 #endif

@@ -168,7 +168,7 @@ bool CAI_Senses::ShouldSeeEntity( CBaseEntity *pSightEnt )
 
 bool CAI_Senses::CanSeeEntity( CBaseEntity *pSightEnt )
 {
-	if (GetOuter() && (GetOuter()->CapabilitiesGet() & bits_CAP_SIMPLE_VISIBILITY) != 0)
+	if (GetOuter() && (GetOuter()->CapabilitiesGet() & bits_CAP_SIMPLE_VISIBILITY))
 		return (GetOuter()->FInViewCone(pSightEnt) && GetOuter()->FVisible(pSightEnt));
 
     return GetCharacter()->IsAbleToSee( pSightEnt, CBaseCombatCharacter::USE_FOV );

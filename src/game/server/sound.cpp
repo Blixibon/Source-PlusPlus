@@ -1334,11 +1334,14 @@ void SENTENCEG_Init()
 	if (fSentencesInit)
 		return;
 
-	CUtlVector< char *, CUtlMemory< char *, int> > *pList = Mounter::GetSentenceFiles();
+	/*CUtlVector< char *, CUtlMemory< char *, int> > *pList = Mounter::GetSentenceFiles();
 	for (int i = 0; i < pList->Count(); i++)
-		engine->PrecacheSentenceFile(pList->Element(i));
+		engine->PrecacheSentenceFile(pList->Element(i));*/
 
-	//engine->PrecacheSentenceFile( "scripts/sentences.txt" );
+	if (engine->IsDedicatedServer())
+		Mounter::RegenSentenceFile(filesystem, "scripts/sentences.txt");
+
+	engine->PrecacheSentenceFile( "scripts/sentences.txt" );
 	fSentencesInit = true;
 }
 

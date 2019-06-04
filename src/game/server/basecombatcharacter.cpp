@@ -528,12 +528,31 @@ bool CBaseCombatCharacter::FInViewCone( CBaseEntity *pEntity )
 //=========================================================
 bool CBaseCombatCharacter::FInViewCone( const Vector &vecSpot )
 {
+	// I don't know where this came from. It's not the original code, and it causes big problems.
+#if 0
 	Vector eyepos = EyePosition();
 
 	// do this in 2D
 	eyepos.z = vecSpot.z;
 
 	return PointWithinViewAngle( eyepos, vecSpot, EyeDirection2D(), m_flFieldOfView );
+#else
+	// The original code
+	Vector los = (vecSpot - EyePosition());
+
+	// do this in 2D
+	los.z = 0;
+	VectorNormalize(los);
+
+	Vector facingDir = EyeDirection2D();
+
+	float flDot = DotProduct(los, facingDir);
+
+	if (flDot > m_flFieldOfView)
+		return true;
+
+	return false;
+#endif
 }
 
 #ifdef PORTAL
@@ -3166,12 +3185,15 @@ void CBaseCombatCharacter::VPhysicsShadowCollision( int index, gamevcollisioneve
 	// inertia tensor to get torque?
 	Vector damageForce = pEvent->postVelocity[index] * pEvent->pObjects[index]->GetMass() * phys_impactforcescale.GetFloat();
 	
+	CBaseEntity *pAttacker = pOther;
 	IServerVehicle *vehicleOther = pOther->GetServerVehicle();
 	if ( vehicleOther )
 	{
 		CBaseCombatCharacter *pPassenger = vehicleOther->GetPassenger();
 		if ( pPassenger != NULL )
 		{
+			pAttacker = pPassenger;
+
 			// flag as vehicle damage
 			damageType |= DMG_VEHICLE;
 			// if hit by vehicle driven by player, add some upward velocity to force
@@ -3196,7 +3218,7 @@ void CBaseCombatCharacter::VPhysicsShadowCollision( int index, gamevcollisioneve
 
 	Vector damagePos;
 	pEvent->pInternalData->GetContactPoint( damagePos );
-	CTakeDamageInfo dmgInfo( pOther, pOther, damageForce, damagePos, damage, damageType );
+	CTakeDamageInfo dmgInfo( pOther, pAttacker, damageForce, damagePos, damage, damageType );
 
 	// FIXME: is there a better way for physics objects to keep track of what root entity responsible for them moving?
 	CBasePlayer *pPlayer = pOther->HasPhysicsAttacker( 1.0 );

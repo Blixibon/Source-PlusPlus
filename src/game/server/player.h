@@ -130,8 +130,36 @@ enum PlayerPhysFlag_e
 //-----------------------------------------------------
 //This is Half-Life player entity
 //-----------------------------------------------------
-#define CSUITPLAYLIST	4		// max of 4 suit sentences queued up at any time
+#define CSUITPLAYLIST	8		// max of 4 suit sentences queued up at any time //Peter: Upped to 8.
 #define	SUIT_REPEAT_OK		0
+
+#define HEV_MAJOR_FRACTURE "!HEV_DMG5"
+#define HEV_MINOR_FRACTURE "!HEV_DMG4"
+#define HEV_INTERNAL_BLEEDING "!HEV_DMG2"
+#define HEV_BLEEDING_STOPPED "!HEV_HEAL2"
+#define HEV_BLOOD_LOSS "!HEV_DMG6"
+#define HEV_MAJOR_LACERATION "!HEV_DMG1"
+#define HEV_MINOR_LACERATION "!HEV_DMG0"
+#define HEV_POISON "!HEV_DMG3"
+#define HEV_ANTI_TOXIN "!HEV_HEAL4"
+#define HEV_BIOHAZARD "!HEV_DET0"
+#define HEV_CHEMICAL "!HEV_DET1"
+#define HEV_RADIATION "!HEV_DET2"
+#define HEV_SHOCK "!HEV_SHOCK"
+#define HEV_HEAT "!HEV_FIRE"
+#define HEV_AUTOMEDIC_ON "!HEV_MED1"
+#define HEV_MORPHINE "!HEV_HEAL7"
+#define HEV_NEARDEATH "!HEV_HLTH3"
+#define HEV_HEALTH_CRITICAL "!HEV_HLTH2"
+#define HEV_HEALTH_DROPPING "!HEV_HLTH1"
+#define HEV_SEEK_MEDICAL_ATTENTION "!HEV_DMG7"
+#define HEV_CRITICAL_FAILURE "!HEV_E2"
+#define HEV_GENERAL_FAILURE "!HEV_E3"
+#define HEV_INSUFFICENT_POWER "!HEV_D01"
+#define HEV_VOICE_ON "!HEV_V0"
+#define HEV_VOICE_OFF "!HEV_V1"
+#define HEV_LOGON "!HEV_AAx"
+#define HEV_LOGON_SHORT "!HEV_A0"
 
 #define SUIT_NEXT_IN_30SEC	30
 #define SUIT_NEXT_IN_1MIN	60
@@ -628,7 +656,7 @@ virtual CAI_Senses *GetSenses() {
 	virtual float			GetHeldObjectMass( IPhysicsObject *pHeldObject );
 	virtual CBaseEntity		*GetHeldObject( void );
 
-	void					CheckSuitUpdate();
+	virtual void			CheckSuitUpdate();
 	virtual void			SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
 	virtual void			UpdateGeigerCounter( void );
 	void					CheckTimeBasedDamage( void );

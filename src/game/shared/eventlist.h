@@ -99,6 +99,10 @@ typedef enum
 
 	AE_CL_EJECTBRASS_SCRIPT,
 
+	// These are here because CLaz_Player needs them.
+	AE_METROPOLICE_START_DEPLOY,
+	AE_METROPOLICE_DEPLOY_MANHACK,
+
 	LAST_SHARED_ANIMEVENT,
 } Animevent;
 

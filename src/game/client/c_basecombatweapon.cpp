@@ -197,7 +197,7 @@ bool C_BaseCombatWeapon::IsCarrierAlive() const
 //-----------------------------------------------------------------------------
 ShadowType_t C_BaseCombatWeapon::ShadowCastType()
 {
-	if ( IsEffectActive( /*EF_NODRAW |*/ EF_NOSHADOW ) )
+	if ( IsEffectActive( EF_NODRAW | EF_NOSHADOW ) )
 		return SHADOWS_NONE;
 
 	if (!IsBeingCarried())

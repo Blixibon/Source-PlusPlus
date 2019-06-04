@@ -3404,6 +3404,7 @@ void CHL2_Player::OnRestore()
 {
 	BaseClass::OnRestore();
 	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(PLAYER_SQUADNAME));
+	m_pPlayerAISquad->SetPlayerCommander(this);
 }
 
 //---------------------------------------------------------

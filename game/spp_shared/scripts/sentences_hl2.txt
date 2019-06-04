@@ -1858,164 +1858,477 @@ METROPOLICE_HIT_BY_PHYSOBJECT4 on1 malcompliant10107my1020 off1 {Len 1.5}
 
 
 
-// HEV Suit
+// HEV5 Suit
 
 // powerup
 
-HEV_AAx hl1/fvox/bell
+HEV5_AAx hl1/fvox/bell, HEV5_logon {Len 11.07}
 
-//HEV_logon, powerarmor_on, atmospherics_on,vitalsigns_on, automedic_on, weaponselect_on, munitionview_on, communications_on, safe_day {Len 41.76}
+//HEV5_logon, powerarmor_on, atmospherics_on,vitalsigns_on, automedic_on, weaponselect_on, munitionview_on, communications_on, safe_day {Len 41.76}
 
-//HEV_A0 hl1/fvox/bell, HEV_logon {Len 11.07}
+HEV5_A0 hl1/fvox/bell {Len 0.5}
 
-//HEV_A1 hl1/fvox/blip blip(p130) powermove_on {Len 3.71}
-//HEV_A2 hl1/fvox/blip blip powerarmor_on {Len 4.42}
-//HEV_A3 hl1/fvox/blip blip(p130) atmospherics_on {Len 4.41}
-//HEV_A4 hl1/fvox/blip blip vitalsigns_on boop, boop, boop {Len 5.28}
-//HEV_A5 hl1/fvox/blip blip(p130) munitionview_on {Len 3.84}
-//HEV_A6 hl1/fvox/blip blip communications_on {Len 3.59}
-//HEV_A7 hl1/fvox/blip blip(p70) weaponselect_on {Len 3.97}
-//HEV_A8 hl1/fvox/blip blip(p70) automedic_on {Len 3.77}
-//HEV_A9 hl1/fvox/fuzz power_level_is onehundred percent {Len 4.14}
-//HEV_A10 hl1/fvox/safe_day, bell {Len 3.66}
+//HEV5_A1 hl1/fvox/blip blip(p130) powermove_on {Len 3.71}
+//HEV5_A2 hl1/fvox/blip blip powerarmor_on {Len 4.42}
+//HEV5_A3 hl1/fvox/blip blip(p130) atmospherics_on {Len 4.41}
+//HEV5_A4 hl1/fvox/blip blip vitalsigns_on boop, boop, boop {Len 5.28}
+//HEV5_A5 hl1/fvox/blip blip(p130) munitionview_on {Len 3.84}
+//HEV5_A6 hl1/fvox/blip blip communications_on {Len 3.59}
+//HEV5_A7 hl1/fvox/blip blip(p70) weaponselect_on {Len 3.97}
+//HEV5_A8 hl1/fvox/blip blip(p70) automedic_on {Len 3.77}
+//HEV5_A9 hl1/fvox/fuzz power_level_is onehundred percent {Len 4.14}
+//HEV5_A10 hl1/fvox/safe_day, bell {Len 3.66}
 
 // medical
-HEV_DEAD0 hl1/fvox/beep beep, beep beep, beep, beep, flatline {Len 6.29 closecaption HEV.Flatline}
-HEV_DEAD1 hl1/fvox/beep beep, beep beep, beep, flatline {Len 5.82 closecaption HEV.Flatline}
+HEV5_DEAD0 hl1/fvox/beep beep, beep beep, beep, beep, flatline {Len 6.29 closecaption HEV.Flatline}
+HEV5_DEAD1 hl1/fvox/beep beep, beep beep, beep, flatline {Len 5.82 closecaption HEV.Flatline}
 
-HEV_MED0 hl1/fvox/(p140) boop, boop, boop, (p100) innsuficient_medical {Len 1.41 closecaption HEV.insufficient_medical}
-HEV_MED1 hl1/fvox/(p140) boop, boop, boop, (p100) automedic_on {Len 4.92 closecaption HEV.automedic_on}
-HEV_MED2 hl1/fvox/(p140) boop, boop, boop, (p100) administering_medical {Len 1.41 closecaption HEV.administering_medical}
+HEV5_MED0 hl1/fvox/(p140) boop, boop, boop, (p100) innsuficient_medical {Len 1.41 closecaption HEV.insufficient_medical}
+HEV5_MED1 hl1/fvox/(p140) boop, boop, boop, (p100) automedic_on {Len 4.92 closecaption HEV.automedic_on}
+HEV5_MED2 hl1/fvox/(p140) boop, boop, boop, (p100) administering_medical {Len 1.41 closecaption HEV.administering_medical}
 
-HEV_HEAL0 hl1/fvox/(p140) boop, boop, boop, (p100) wound_sterilized, blip(p130 v50), blip(p130 v40), hiss, morphine_shot {Len 7.03 closecaption HEV.sterilized_morphine}
-HEV_HEAL1 hl1/fvox/(p140) boop, boop, boop, (p100) torniquette_applied, bleeding_stopped {Len 7.03 closecaption HEV.torni_bleed}
-HEV_HEAL2 hl1/fvox/(p140) boop, boop, boop, (p100) bleeding_stopped {Len 3.66 closecaption HEV.bleeding_stopped}
-HEV_HEAL3 hl1/fvox/(p140) boop, boop, boop, (p100) blood_plasma {Len 4.02 closecaption HEV.blood_plasma}
-HEV_HEAL4 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, antitoxin_shot {Len 4.38 closecaption HEV.antitoxin_shot}
-HEV_HEAL5 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, antidote_shot {Len 4.17 closecaption HEV.antidote_shot}
-HEV_HEAL6 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, wound_sterilized {Len 4.16 closecaption HEV.wound_sterilized}
-HEV_HEAL7 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, morphine_shot {Len 4.16 closecaption HEV.morphine_shot}
-HEV_HEAL8 hl1/fvox/(p140) boop, boop, boop, (p100) medical_repaired {Len 4.17 closecaption HEV.medical_repaired}
-
-
-HEV_DMG0 hl1/fvox/(p160) boop, boop, boop, (p100) minor_lacerations {Len 4.09 closecaption HEV.minor_lacerations}
-HEV_DMG1 hl1/fvox/(p160) boop, boop, boop, (p100) major_lacerations {Len 4.19 closecaption HEV.major_lacerations}
-HEV_DMG2 hl1/fvox/(p160) boop, boop, boop, (p100) internal_bleeding {Len 3.64 closecaption HEV.internal_bleeding}
-HEV_DMG3 hl1/fvox/(p160) boop, boop, boop, (p100) blood_toxins {Len 5.04 closecaption HEV.blood_toxins}
-HEV_DMG4 hl1/fvox/(p160) boop, boop, boop, (p100) minor_fracture {Len 3.67 closecaption HEV.minor_fracture}
-HEV_DMG5 hl1/fvox/(p160) boop, boop, boop, (p100) major_fracture {Len 3.67 closecaption HEV.major_fracture}
-HEV_DMG6 hl1/fvox/(p160) boop, boop, boop, (p100) blood_loss {Len 3.39 closecaption HEV.blood_loss}
-HEV_DMG7 hl1/fvox/(p140) boop, boop, boop, (p100) seek_medic {Len 3.92 closecaption HEV.seek_medic}
+HEV5_HEAL0 hl1/fvox/(p140) boop, boop, boop, (p100) wound_sterilized, blip(p130 v50), blip(p130 v40), hiss, morphine_shot {Len 7.03 closecaption HEV.sterilized_morphine}
+HEV5_HEAL1 hl1/fvox/(p140) boop, boop, boop, (p100) torniquette_applied, bleeding_stopped {Len 7.03 closecaption HEV.torni_bleed}
+HEV5_HEAL2 hl1/fvox/(p140) boop, boop, boop, (p100) bleeding_stopped {Len 3.66 closecaption HEV.bleeding_stopped}
+HEV5_HEAL3 hl1/fvox/(p140) boop, boop, boop, (p100) blood_plasma {Len 4.02 closecaption HEV.blood_plasma}
+HEV5_HEAL4 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, antitoxin_shot {Len 4.38 closecaption HEV.antitoxin_shot}
+HEV5_HEAL5 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, antidote_shot {Len 4.17 closecaption HEV.antidote_shot}
+HEV5_HEAL6 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, wound_sterilized {Len 4.16 closecaption HEV.wound_sterilized}
+HEV5_HEAL7 hl1/fvox/(p140) boop, boop, boop, (p100) hiss, morphine_shot {Len 4.16 closecaption HEV.morphine_shot}
+HEV5_HEAL8 hl1/fvox/(p140) boop, boop, boop, (p100) medical_repaired {Len 4.17 closecaption HEV.medical_repaired}
 
 
+HEV5_DMG0 hl1/fvox/(p160) boop, boop, boop, (p100) minor_lacerations {Len 4.09 closecaption HEV.minor_lacerations}
+HEV5_DMG1 hl1/fvox/(p160) boop, boop, boop, (p100) major_lacerations {Len 4.19 closecaption HEV.major_lacerations}
+HEV5_DMG2 hl1/fvox/(p160) boop, boop, boop, (p100) internal_bleeding {Len 3.64 closecaption HEV.internal_bleeding}
+HEV5_DMG3 hl1/fvox/(p160) boop, boop, boop, (p100) blood_toxins {Len 5.04 closecaption HEV.blood_toxins}
+HEV5_DMG4 hl1/fvox/(p160) boop, boop, boop, (p100) minor_fracture {Len 3.67 closecaption HEV.minor_fracture}
+HEV5_DMG5 hl1/fvox/(p160) boop, boop, boop, (p100) major_fracture {Len 3.67 closecaption HEV.major_fracture}
+HEV5_DMG6 hl1/fvox/(p160) boop, boop, boop, (p100) blood_loss {Len 3.39 closecaption HEV.blood_loss}
+HEV5_DMG7 hl1/fvox/(p140) boop, boop, boop, (p100) seek_medic {Len 3.92 closecaption HEV.seek_medic}
 
-HEV_HLTH0 hl1/fvox/(p120) beep, beep, (p100) health_dropping {Len 4.31 closecaption HEV.health_dropping}
-HEV_HLTH1 hl1/fvox/(p120) beep, beep, (p100) health_dropping2 {Len 3.68 closecaption HEV.health_dropping2}
-HEV_HLTH2 hl1/fvox/(p120) beep, beep, beep, (p100) health_critical {Len 4.32 closecaption HEV.health_critical}
-HEV_HLTH3 hl1/fvox/(p120) beep, beep, beep, (p100) near_death {Len 4.77 closecaption HEV.near_death}
-HEV_HLTH4 hl1/fvox/(p140) beep, beep, (p100) health_dropping2, evacuate_area {Len 5.93 closecaption HEV.health2_evac}
-HEV_HLTH5 hl1/fvox/(p140) beep, beep, beep, (p100) health_critical, evacuate_area {Len 6.52 closecaption HEV.health_crit_evac}
-HEV_HLTH6 hl1/fvox/(p140) beep, beep, beep, (p100) near_death, evacuate_area immediately {Len 8.22 closecaption HEV.near_death_evac}
 
 
-HEV_SHOCK hl1/fvox/(p120) beep, beep, (p100) warning, shock_damage {Len 4.05 closecaption HEV.shock_damage}
-HEV_FIRE hl1/fvox/(p120) beep, beep, (p100) warning, heat_damage {Len 4.77 closecaption HEV.heat_damage}
+HEV5_HLTH0 hl1/fvox/(p120) beep, beep, (p100) health_dropping {Len 4.31 closecaption HEV.health_dropping}
+HEV5_HLTH1 hl1/fvox/(p120) beep, beep, (p100) health_dropping2 {Len 3.68 closecaption HEV.health_dropping2}
+HEV5_HLTH2 hl1/fvox/(p120) beep, beep, beep, (p100) health_critical {Len 4.32 closecaption HEV.health_critical}
+HEV5_HLTH3 hl1/fvox/(p120) beep, beep, beep, (p100) near_death {Len 4.77 closecaption HEV.near_death}
+HEV5_HLTH4 hl1/fvox/(p140) beep, beep, (p100) health_dropping2, evacuate_area {Len 5.93 closecaption HEV.health2_evac}
+HEV5_HLTH5 hl1/fvox/(p140) beep, beep, beep, (p100) health_critical, evacuate_area {Len 6.52 closecaption HEV.health_crit_evac}
+HEV5_HLTH6 hl1/fvox/(p140) beep, beep, beep, (p100) near_death, evacuate_area immediately {Len 8.22 closecaption HEV.near_death_evac}
+
+
+HEV5_SHOCK hl1/fvox/(p120) beep, beep, (p100) warning, shock_damage {Len 4.05 closecaption HEV.shock_damage}
+HEV5_FIRE hl1/fvox/(p120) beep, beep, (p100) warning, heat_damage {Len 4.77 closecaption HEV.heat_damage}
 
 // items
-HEV_AIM_ON hl1/fvox/blip targetting_system activated {Len 4.02 closecaption HEV.targetting_system_on}
-HEV_AIM_OFF hl1/fvox/blip targetting_system deactivated {Len 4.27 closecaption HEV.targetting_system_off}
-HEV_BATTERY hl1/fvox/blip get_battery acquired {Len 0.92}
-HEV_MEDKIT hl1/fvox/blip get_medkit(v80) {Len 0.11}
+HEV5_AIM_ON hl1/fvox/blip targetting_system activated {Len 4.02 closecaption HEV.targetting_system_on}
+HEV5_AIM_OFF hl1/fvox/blip targetting_system deactivated {Len 4.27 closecaption HEV.targetting_system_off}
+HEV5_BATTERY hl1/fvox/blip get_battery acquired {Len 0.92}
+HEV5_MEDKIT hl1/fvox/blip get_medkit(v80) {Len 0.11}
 
-HEV_PISTOL hl1/fvox/blip get_pistol acquired {Len 0.92}
-HEV_SHOTGUN hl1/fvox/blip get_shotgun {Len 0.11}
-HEV_GRENADE hl1/fvox/blip get_grenade acquired {Len 0.92}
-HEV_ASSAULT hl1/fvox/blip get_assault acquired {Len 0.92}
-HEV_44PISTOL hl1/fvox/blip get_44pistol acquired {Len 0.92}
-HEV_RPG hl1/fvox/blip get_rpg acquired {Len 0.92}
-HEV_SATCHEL hl1/fvox/blip get_satchel acquired {Len 0.92}
-HEV_TRIPMINE hl1/fvox/blip get_tripmine acquired {Len 0.92}
-HEV_HORNET hl1/fvox/blip get_alien_wpn {Len 0.11}
-HEV_SQUEEK hl1/fvox/blip get_alien_wpn {Len 0.11}
-HEV_EGON hl1/fvox/blip get_egon acquired {Len 0.92}
-HEV_GAUSS hl1/fvox/blip get_gauss acquired {Len 0.92}
-HEV_XBOW hl1/fvox/blip get_crossbow acquired {Len 0.92}
+//HEV5_PISTOL hl1/fvox/blip get_pistol acquired {Len 0.92}
+//HEV5_SHOTGUN hl1/fvox/blip get_shotgun {Len 0.11}
+//HEV5_GRENADE hl1/fvox/blip get_grenade acquired {Len 0.92}
+HEV5_ASSAULT hl1/fvox/blip get_assault acquired {Len 0.92}
+HEV5_44PISTOL hl1/fvox/blip get_44pistol acquired {Len 0.92}
+//HEV5_RPG hl1/fvox/blip get_rpg acquired {Len 0.92}
+HEV5_SATCHEL hl1/fvox/blip get_satchel acquired {Len 0.92}
+HEV5_TRIPMINE hl1/fvox/blip get_tripmine acquired {Len 0.92}
+HEV5_HORNET hl1/fvox/blip get_alien_wpn {Len 0.11}
+HEV5_SQUEEK hl1/fvox/blip get_alien_wpn {Len 0.11}
+//HEV5_EGON hl1/fvox/blip get_egon acquired {Len 0.92}
+HEV5_GAUSS hl1/fvox/blip get_gauss acquired {Len 0.92}
+HEV5_XBOW hl1/fvox/blip get_crossbow acquired {Len 0.92}
 
-HEV_9MM hl1/fvox/blip get_9mmclip acquired {Len 0.92}
-HEV_44AMMO hl1/fvox/blip get_44ammo acquired {Len 0.92}
-HEV_BUCKSHOT hl1/fvox/blip get_buckshot acquired {Len 0.92}
-HEV_BOLTS hl1/fvox/blip get_bolts acquired {Len 0.92}
-HEV_RPGAMMO hl1/fvox/blip get_rpgammo acquired {Len 0.92}
-HEV_AGRENADE hl1/fvox/blip get_assaultgren acquired {Len 0.92}
-HEV_EGONPOWER hl1/fvox/blip get_egonpower acquired {Len 0.92}
+HEV5_9MM hl1/fvox/blip get_9mmclip acquired {Len 0.92}
+HEV5_44AMMO hl1/fvox/blip get_44ammo acquired {Len 0.92}
+HEV5_BUCKSHOT hl1/fvox/blip get_buckshot acquired {Len 0.92}
+HEV5_BOLTS hl1/fvox/blip get_bolts acquired {Len 0.92}
+HEV5_RPGAMMO hl1/fvox/blip get_rpgammo acquired {Len 0.92}
+HEV5_AGRENADE hl1/fvox/blip get_assaultgren acquired {Len 0.92}
+HEV5_EGONPOWER hl1/fvox/blip get_egonpower acquired {Len 0.92}
+
+// HL2MMod Start
+
+HEV5_CROWBAR hl1/fvox/blip get_melee_1 get_melee_2 acquired {Len 0.92}
+HEV5_GRAVITYGUN hl1/fvox/blip get_gravgun_1 get_gravgun_2 acquired {Len 1.2}
+HEV5_STUNSTICK hl1/fvox/blip get_melee_1 get_melee_2 acquired {Len 0.92}
+
+HEV5_PISTOL hl1/fvox/blip get_pistol_1 get_pistol_2 get_pistol_3 acquired {Len 1.2}
+HEV5_357 hl1/fvox/blip get_357_1 get_357_2 get_357_3 acquired {Len 1.1}
+HEV5_DUALPISTOL hl1/fvox/blip two get_pistol_1 get_pistol_2 get_pistol_3 acquired {Len 3.00}
+HEV5_DUAL357 hl1/fvox/blip two get_357_1 get_357_2 get_357_3 acquired {Len 0.92}
+
+HEV5_SMG1 hl1/fvox/blip get_smg1_1 get_smg1_2 get_smg1_3 get_smg1_4 acquired {Len 1.2}
+HEV5_AR2 hl1/fvox/blip get_ar2_1 get_ar2_2 get_ar2_3 get_ar2_4 get_ar2_5 acquired {Len 5.00}
+HEV5_OICW hl1/fvox/blip get_oicw_1 get_oicw_2 get_oicw_3 get_oicw_4 get_oicw_5 acquired {Len 5.00}
+HEV5_AR1 hl1/fvox/blip get_ar1_1 get_ar1_2 acquired {Len 0.92}
+
+HEV5_SHOTGUN hl1/fvox/blip get_shotgun_1 get_shotgun_2 acquired {Len 1.5}
+HEV5_CROSSBOW hl1/fvox/blip get_crossbow_1 get_crossbow_2 acquired {Len 1.5}
+HEV5_AR3 hl1/fvox/blip get_ar3_1 get_ar3_2 get_ar3_3 get_ar3_4 get_ar3_5 acquired {Len 1.5}
+
+HEV5_GRENADE hl1/fvox/blip get_grenade_1 get_grenade_2 acquired {Len 1.1}
+HEV5_RPG hl1/fvox/blip get_rpg_1 get_rpg_2 acquired {Len 1.5}
+HEV5_SLAM hl1/fvox/blip get_slam_1 get_slam_2 get_slam_3 get_slam_4 get_slam_5 get_slam_6 acquired {Len 3.92}
+
+HEV5_PHEROPOD hl1/fvox/blip get_bugbait_1 get_bugbait_2 acquired {Len 0.92}
+HEV5_EGON hl1/fvox/blip get_egon_1 get_egon_2 acquired {Len 0.92}
+
+// HL2MMod End
 
 // time
 
-//HEV_C1t hl1/fvox/bell time_is_now one AM
-//HEV_C13t hl1/fvox/bell time_is_now one PM
+//HEV5_C1t hl1/fvox/bell time_is_now one AM
+//HEV5_C13t hl1/fvox/bell time_is_now one PM
 
 // power levels
 
-HEV_D00 hl1/fvox/fuzz fuzz(p130), power_restored {Len 2.12 closecaption HEV.power_restored}
-HEV_D01 hl1/fvox/fuzz fuzz(p80), hev_shutdown {Len 4.99 closecaption HEV.hev_shutdown}
+HEV5_D00 hl1/fvox/fuzz fuzz(p130), power_restored {Len 2.12 closecaption HEV.power_restored}
+HEV5_D01 hl1/fvox/fuzz fuzz(p80), hev_shutdown {Len 4.99 closecaption HEV.hev_shutdown}
 
-HEV_0P hl1/fvox/fuzz fuzz, power_below five percent {Len 6.35}
-HEV_1P hl1/fvox/fuzz fuzz, power_restored(e30), ten percent {Len 2.75}
-HEV_2P hl1/fvox/fuzz fuzz, power_restored(e30), fifteen percent {Len 3.15}
-HEV_3P hl1/fvox/fuzz fuzz, power_restored(e30), twenty percent {Len 2.99}
-HEV_4P hl1/fvox/fuzz fuzz, power_restored(e30), twenty five percent {Len 3.87}
-HEV_5P hl1/fvox/fuzz fuzz, power_restored(e30), thirty percent {Len 3.04}
-HEV_6P hl1/fvox/fuzz fuzz, power_restored(e30), thirty five percent {Len 3.91}
-HEV_7P hl1/fvox/fuzz fuzz, power_restored(e30), fourty percent {Len 3.07}
-HEV_8P hl1/fvox/fuzz fuzz, power_restored(e30), fourty five percent {Len 3.95}
-HEV_9P hl1/fvox/fuzz fuzz, power_restored(e30), fifty percent {Len 3.17}
-HEV_10P hl1/fvox/fuzz fuzz, power_restored(e30), fifty five percent {Len 4.05}
-HEV_11P hl1/fvox/fuzz fuzz, power_restored(e30), sixty percent {Len 3.16}
-HEV_12P hl1/fvox/fuzz fuzz, power_restored(e30), sixty five percent {Len 4.04}
-HEV_13P hl1/fvox/fuzz fuzz, power_restored(e30), seventy percent {Len 3.12}
-HEV_14P hl1/fvox/fuzz fuzz, power_restored(e30), seventy five percent {Len 4.00}
-HEV_15P hl1/fvox/fuzz fuzz, power_restored(e30), eighty percent {Len 2.88}
-HEV_16P hl1/fvox/fuzz fuzz, power_restored(e30), eighty five percent {Len 3.76}
-HEV_17P hl1/fvox/fuzz fuzz, power_restored(e30), ninety percent {Len 3.12}
-HEV_18P hl1/fvox/fuzz fuzz, power_restored(e30), ninety five percent {Len 4.00}
-HEV_19P hl1/fvox/fuzz fuzz, power_level_is onehundred percent {Len 4.62}
+HEV5_0P hl1/fvox/fuzz fuzz, power_below five percent {Len 6.35}
+HEV5_1P hl1/fvox/fuzz fuzz, power_restored(e30), ten percent {Len 2.75}
+HEV5_2P hl1/fvox/fuzz fuzz, power_restored(e30), fifteen percent {Len 3.15}
+HEV5_3P hl1/fvox/fuzz fuzz, power_restored(e30), twenty percent {Len 2.99}
+HEV5_4P hl1/fvox/fuzz fuzz, power_restored(e30), twenty five percent {Len 3.87}
+HEV5_5P hl1/fvox/fuzz fuzz, power_restored(e30), thirty percent {Len 3.04}
+HEV5_6P hl1/fvox/fuzz fuzz, power_restored(e30), thirty five percent {Len 3.91}
+HEV5_7P hl1/fvox/fuzz fuzz, power_restored(e30), fourty percent {Len 3.07}
+HEV5_8P hl1/fvox/fuzz fuzz, power_restored(e30), fourty five percent {Len 3.95}
+HEV5_9P hl1/fvox/fuzz fuzz, power_restored(e30), fifty percent {Len 3.17}
+HEV5_10P hl1/fvox/fuzz fuzz, power_restored(e30), fifty five percent {Len 4.05}
+HEV5_11P hl1/fvox/fuzz fuzz, power_restored(e30), sixty percent {Len 3.16}
+HEV5_12P hl1/fvox/fuzz fuzz, power_restored(e30), sixty five percent {Len 4.04}
+HEV5_13P hl1/fvox/fuzz fuzz, power_restored(e30), seventy percent {Len 3.12}
+HEV5_14P hl1/fvox/fuzz fuzz, power_restored(e30), seventy five percent {Len 4.00}
+HEV5_15P hl1/fvox/fuzz fuzz, power_restored(e30), eighty percent {Len 2.88}
+HEV5_16P hl1/fvox/fuzz fuzz, power_restored(e30), eighty five percent {Len 3.76}
+HEV5_17P hl1/fvox/fuzz fuzz, power_restored(e30), ninety percent {Len 3.12}
+HEV5_18P hl1/fvox/fuzz fuzz, power_restored(e30), ninety five percent {Len 4.00}
+HEV5_19P hl1/fvox/fuzz fuzz, power_level_is onehundred percent {Len 4.62}
 
 // weapon/ammo
 
-HEV_AMO0 hl1/fvox/blip ammo_depleted {Len 2.16 closecaption HEV.ammo_depleted}
+HEV5_AMO0 hl1/fvox/blip ammo_depleted {Len 2.16 closecaption HEV.ammo_depleted}
 
 // suit
 
-HEV_V0 hl1/fvox/blip, voice_on {Len 3.17}
-HEV_V1 hl1/fvox/blip, voice_off {Len 3.06}
+HEV5_V0 hl1/fvox/blip, voice_on {Len 3.17}
+HEV5_V1 hl1/fvox/blip, voice_off {Len 3.06}
 
 
-HEV_E0 hl1/fvox/buzz buzz, armor_gone {Len 2.95 closecaption HEV.armor_gone}
-HEV_E1 hl1/fvox/buzz, armor_gone {Len 2.62 closecaption HEV.armor_gone}
-HEV_E2 hl1/fvox/buzz, hev_critical_fail {Len 4.75 closecaption HEV.hev_critical_fail}
-HEV_E3 hl1/fvox/buzz, hev_general_fail {Len 3.22 closecaption HEV.hev_general_fail}
-HEV_E4 hl1/fvox/buzz, hev_damage {Len 3.53 closecaption HEV.hev_damage}
-HEV_E5 hl1/fvox/buzz, powermove_overload {Len 4.98 closecaption HEV.powermove_overload}
+HEV5_E0 hl1/fvox/buzz buzz, armor_gone {Len 2.95 closecaption HEV.armor_gone}
+HEV5_E1 hl1/fvox/buzz, armor_gone {Len 2.62 closecaption HEV.armor_gone}
+HEV5_E2 hl1/fvox/buzz, hev_critical_fail {Len 4.75 closecaption HEV.hev_critical_fail}
+HEV5_E3 hl1/fvox/buzz, hev_general_fail {Len 3.22 closecaption HEV.hev_general_fail}
+HEV5_E4 hl1/fvox/buzz, hev_damage {Len 3.53 closecaption HEV.hev_damage}
+HEV5_E5 hl1/fvox/buzz, powermove_overload {Len 4.98 closecaption HEV.powermove_overload}
 
 // time remaining countdown
 
-//HEV_F10t hl1/fvox/bell time_remaining ten seconds
-//HEV_F15t hl1/fvox/bell time_remaining fifteen seconds
-//HEV_F20t hl1/fvox/bell time_remaining twenty seconds
-//HEV_F30t hl1/fvox/bell time_remaining thirty seconds
+//HEV5_F10t hl1/fvox/bell time_remaining ten seconds
+//HEV5_F15t hl1/fvox/bell time_remaining fifteen seconds
+//HEV5_F20t hl1/fvox/bell time_remaining twenty seconds
+//HEV5_F30t hl1/fvox/bell time_remaining thirty seconds
 
 // detections
 
-HEV_DET0 hl1/fvox/blip blip blip, biohazard_detected {Len 3.67 closecaption HEV.biohazard_detected}
-HEV_DET1 hl1/fvox/blip blip blip, chemical_detected {Len 4.33 closecaption HEV.chemical_detected}
-HEV_DET2 hl1/fvox/blip blip blip, radiation_detected {Len 5.08 closecaption HEV.radiation_detected}
-HEV_DET3 hl1/fvox/blip blip blip, bio_reading {Len 2.93 closecaption HEV.bio_reading}
-HEV_DET4 hl1/fvox/blip blip blip, antitoxin_shot(e50), onehundred percent {Len 3.67 closecaption HEV.biohazard_detected}
-HEV_DET5 hl1/fvox/blip blip blip, antitoxin_shot(e25) radiation_detected(e50), onehundred percent {Len 5.37 closecaption HEV.radiation_detected}
+HEV5_DET0 hl1/fvox/blip blip blip, biohazard_detected {Len 3.67 closecaption HEV.biohazard_detected}
+HEV5_DET1 hl1/fvox/blip blip blip, chemical_detected {Len 4.33 closecaption HEV.chemical_detected}
+HEV5_DET2 hl1/fvox/blip blip blip, radiation_detected {Len 5.08 closecaption HEV.radiation_detected}
+HEV5_DET3 hl1/fvox/blip blip blip, bio_reading {Len 2.93 closecaption HEV.bio_reading}
+HEV5_DET4 hl1/fvox/blip blip blip, antitoxin_shot(e50), onehundred percent {Len 3.67 closecaption HEV.biohazard_detected}
+HEV5_DET5 hl1/fvox/blip blip blip, antitoxin_shot(e25) radiation_detected(e50), onehundred percent {Len 5.37 closecaption HEV.radiation_detected}
 
-//HEV_GR0r hl1/fvox/range twenty meters(t60)
-//HEV_GR1r hl1/fvox/range nineteen meters
-//HEV_GR2r hl1/fvox/range eighteen meters
+//HEV5_GR0r hl1/fvox/range twenty meters(t60)
+//HEV5_GR1r hl1/fvox/range nineteen meters
+//HEV5_GR2r hl1/fvox/range eighteen meters
+
+//========================================================
+// 	HEV4 SUIT  LOGIN		
+//========================================================
+//HEV4_LOGON
+HEV4_AAx hev_vox/bell, 01_hev_logon, 05_automedic_on, 02_powerarmor_on, 03_atmospherics_on, 04_vitalsigns_on, 05_automedic_on, 06_weaponselect_on, 07_munitionview_on, 08_communications_on, 09_safe_day {Len 41.76}
+//HEV4_LOGON_SHORT
+HEV4_A0 hev_vox/bell, 01_hev_logon {Len 11.07}
+//HEV4_LONG_JUMP
+HEV4_A1 hev_vox/blip blip(p130) powermove_on {Len 3.71}
+
+// HEV4 Suit Section directory Updated by debeerguy007- NEW HEV4 Voice Pending
+// NOTE: any entry commented out is not being used, and/or has likely never been used in the history of HL, and is legacy stuff as a result.
+
+//================================//
+//	HEV4 DEATH		//
+//===============================//
+
+// medical hl1/fvox/
+HEV4_DEAD0 hev_vox/beep beep, beep beep, beep, beep, flatline {Len 6.29 closecaption HEV.Flatline}
+HEV4_DEAD1 hev_vox/beep beep, beep beep, beep, flatline {Len 5.82 closecaption HEV.Flatline}
+
+HEV4_MED0 hev_vox/(p140) boop, boop, boop, (p100) innsuficient_medical {Len 1.41 closecaption HEV.insufficient_medical}
+HEV4_MED1 hev_vox/(p140) boop, boop, boop, (p100) 05_automedic_on {Len 4.92 closecaption HEV.automedic_on}
 
 
+//===============================//
+//	HEV4 AUTOMEDIC		//
+//===============================//
+
+HEV4_HEAL0 hev_vox/(p140) boop, boop, boop, (p100) wound_sterilized, blip(p130 v50), blip(p130 v40), hiss, morphine_shot {Len 7.03 closecaption HEV.sterilized_morphine}
+	//HEV4_HEAL1 hev_vox/(p140) boop, boop, boop, (p100) torniquette_applied, bleeding_stopped {Len 7.03 closecaption HEV.torni_bleed}
+HEV4_HEAL2 hev_vox/(p140) boop, boop, boop, (p100) bleeding_stopped {Len 3.66 closecaption HEV.bleeding_stopped}
+	//HEV4_HEAL3 hev_vox/(p140) boop, boop, boop, (p100) blood_plasma {Len 4.02 closecaption HEV.blood_plasma}
+HEV4_HEAL4 hev_vox/(p140) boop, boop, boop, (p100) hiss, antitoxin_shot {Len 4.38 closecaption HEV.antitoxin_shot}
+HEV4_HEAL5 hev_vox/(p140) boop, boop, boop, (p100) hiss, antidote_shot {Len 4.17 closecaption HEV.antidote_shot}
+HEV4_HEAL6 hev_vox/(p140) boop, boop, boop, (p100) hiss, wound_sterilized {Len 4.16 closecaption HEV.wound_sterilized}
+HEV4_HEAL7 hev_vox/(p140) boop, boop, boop, (p100) hiss, morphine_shot {Len 4.16 closecaption HEV.morphine_shot}
+	//HEV4_HEAL8 hev_vox/(p140) boop, boop, boop, (p100) medical_repaired {Len 4.17 closecaption HEV.medical_repaired}
+
+//=======================================//
+//	HEV4 USER INJURY DETECTION	//
+//======================================//
+
+HEV4_DMG0 hev_vox/(p160) boop, boop, boop, (p100) minor_lacerations {Len 4.09 closecaption HEV.minor_lacerations}
+HEV4_DMG1 hev_vox/(p160) boop, boop, boop, (p100) major_lacerations {Len 4.19 closecaption HEV.major_lacerations}
+	//HEV4_DMG2 hev_vox/(p160) boop, boop, boop, (p100) internal_bleeding {Len 3.64 closecaption HEV.internal_bleeding}
+HEV4_DMG3 hev_vox/(p160) boop, boop, boop, (p100) blood_toxins {Len 5.04 closecaption HEV.blood_toxins}
+HEV4_DMG4 hev_vox/(p160) boop, boop, boop, (p100) minor_fracture {Len 3.67 closecaption HEV.minor_fracture}
+HEV4_DMG5 hev_vox/(p160) boop, boop, boop, (p100) major_fracture {Len 3.67 closecaption HEV.major_fracture}
+HEV4_DMG6 hev_vox/(p160) boop, boop, boop, (p100) blood_loss {Len 3.39 closecaption HEV.blood_loss}
+HEV4_DMG7 hev_vox/(p140) boop, boop, boop, (p100) seek_medic {Len 3.92 closecaption HEV.seek_medic}
+
+//=======================================//
+//	HEV4-USER HEALTH READOUTS	//
+//======================================//
+
+	//HEV4_HLTH0 hev_vox/(p120) beep, beep, (p100) health_dropping {Len 4.31 closecaption HEV.health_dropping}
+HEV4_HLTH1 hev_vox/(p120) beep, beep, (p100) health_dropping2 {Len 3.68 closecaption HEV.health_dropping2}
+HEV4_HLTH2 hev_vox/(p120) beep, beep, beep, (p100) health_critical {Len 4.32 closecaption HEV.health_critical}
+HEV4_HLTH3 hev_vox/(p120) beep, beep, beep, (p100) near_death {Len 4.77 closecaption HEV.near_death}
+	//HEV4_HLTH4 hev_vox/(p140) beep, beep, (p100) health_dropping2, evacuate_area {Len 5.93 closecaption HEV.health2_evac}
+HEV4_HLTH5 hev_vox/(p140) beep, beep, beep, (p100) health_critical, evacuate_area {Len 6.52 closecaption HEV.health_crit_evac}
+HEV4_HLTH6 hev_vox/(p140) beep, beep, beep, (p100) near_death, evacuate_area immediately {Len 8.22 closecaption HEV.near_death_evac}
+
+//===============================================//
+//        HEV4-FIRE AND ELECTRICAL- NOT USED EVER	//
+//===============================================//
+
+	//HEV4_SHOCK hev_vox/(p120) beep, beep, (p100) warning, shock_damage {Len 4.05 closecaption HEV.shock_damage}
+	//HEV4_FIRE hev_vox/(p120) beep, beep, (p100) warning, heat_damage {Len 4.77 closecaption HEV.heat_damage}
+
+	//HEV4_D00 hev_vox/fuzz fuzz(p100), power_restored {Len 2.12 closecaption HEV.power_restored}
+	//HEV4_D01 hev_vox/fuzz fuzz(p80), hev_shutdown {Len 4.99 closecaption HEV.hev_shutdown}
+	//HEV4_0P hev_vox/(p103) fuzz fuzz, power_below five percent {Len 6.35}
+
+//===============================//
+//	HEV4 POWER STATUS	//
+//===============================//
+
+HEV4_1P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), ten percent {Len 2.75}
+HEV4_2P hev_vox/(p103) fuzz (p103) fuzz, (p103) power_restored(e30), fifteen percent {Len 3.15}
+HEV4_3P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), twenty percent {Len 2.99}
+HEV4_4P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), twenty five percent {Len 3.87}
+HEV4_5P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), thirty percent {Len 3.04}
+HEV4_6P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), thirty five percent {Len 3.91}
+HEV4_7P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), fourty percent {Len 3.07}
+HEV4_8P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), fourty five percent {Len 3.95}
+HEV4_9P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), fifty percent {Len 3.17}
+HEV4_10P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), fifty five percent {Len 4.05}
+HEV4_11P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), sixty percent {Len 3.16}
+HEV4_12P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), sixty five percent {Len 4.04}
+HEV4_13P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), seventy percent {Len 3.12}
+HEV4_14P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), seventy five percent {Len 4.00}
+HEV4_15P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), eighty percent {Len 2.88}
+HEV4_16P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), eighty five percent {Len 3.76}
+HEV4_17P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), ninety percent {Len 3.12}
+HEV4_18P hev_vox/(p103) fuzz fuzz, (p103) power_restored(e30), ninety five percent {Len 4.00}
+HEV4_19P hev_vox/(p103) fuzz fuzz, (p103) power_level_is onehundred percent {Len 4.62}
+
+//========================================//
+//	HEV4- AMMO DEPLETION		//
+//=======================================//
+HEV4_AMO0 hev_vox/blip ammo_depleted {Len 2.16 closecaption HEV.ammo_depleted}
+
+//=======================================================//
+//	HEV4- SUIT SYSTEMS STATUSES (NOT USED EVER)	//
+//=======================================================//
+	//HEV4_V0 hev_vox/blip, voice_on {Len 3.17}
+	//HEV4_V1 hev_vox/blip, voice_off {Len 3.06}
+	//HEV4_E0 hev_vox/buzz buzz, armor_gone {Len 2.95 closecaption HEV.armor_gone}
+	//HEV4_E1 hev_vox/buzz, armor_gone {Len 2.62 closecaption HEV.armor_gone}
+	//HEV4_E2 hev_vox/buzz, hev_critical_fail {Len 4.75 closecaption HEV.hev_critical_fail}
+	//HEV4_E3 hev_vox/buzz, hev_general_fail {Len 3.22 closecaption HEV.hev_general_fail}
+	//HEV4_E4 hev_vox/buzz, hev_damage {Len 3.53 closecaption HEV.hev_damage}
+	//HEV4_E5 hev_vox/buzz, powermove_overload {Len 4.98 closecaption HEV.powermove_overload}
+
+//=======================================================//
+//	HEV4- AMMO, BIOHAZARD, AND RADIATION		//
+//=======================================================//
+HEV4_DET0 hev_vox/blip blip blip, biohazard_detected {Len 3.67 closecaption HEV.biohazard_detected}
+HEV4_DET1 hev_vox/blip blip blip, chemical_detected {Len 4.33 closecaption HEV.chemical_detected}
+HEV4_DET2 hev_vox/blip blip blip, radiation_detected {Len 5.08 closecaption HEV.radiation_detected}
+HEV4_DET3 hev_vox/blip blip blip, bio_reading {Len 2.93 closecaption HEV.bio_reading}
+HEV4_DET4 hev_vox/blip blip blip, antitoxin_shot(e50), onehundred percent {Len 3.67 closecaption HEV.biohazard_detected}
+HEV4_DET5 hev_vox/blip blip blip, antitoxin_shot(e25) radiation_detected(e50), onehundred percent {Len 5.37 closecaption HEV.radiation_detected}
+
+
+// PCV_HEV Suit
+
+// powerup
+
+PCV_HEV_AAx pkt/mvox/bell
+
+//PCV_HEV_logon, powerarmor_on, atmospherics_on,vitalsigns_on, automedic_on, weaponselect_on, munitionview_on, communications_on, safe_day {Len 41.76}
+
+PCV_HEV_A0 pkt/mvox/bell, PCV_HEV_logon {Len 11.07}
+
+PCV_HEV_A1 pkt/mvox/blip blip(p130) powermove_onpkt {Len 3.71}
+//PCV_HEV_A2 pkt/mvox/blip blip powerarmor_onpkt {Len 4.42}
+//PCV_HEV_A3 pkt/mvox/blip blip(p130) atmospherics_onpkt {Len 4.41}
+//PCV_HEV_A4 pkt/mvox/blip blip vitalsigns_onpkt boop, boop, boop {Len 5.28}
+//PCV_HEV_A5 pkt/mvox/blip blip(p130) munitionview_onpkt {Len 3.84}
+//PCV_HEV_A6 pkt/mvox/blip blip communications_onpkt {Len 3.59}
+//PCV_HEV_A7 pkt/mvox/blip blip(p70) weaponselect_onpkt {Len 3.97}
+//PCV_HEV_A8 pkt/mvox/blip blip(p70) automedic_onpkt {Len 3.77}
+//PCV_HEV_A9 pkt/mvox/fuzz power_level_ispkt onehundredpkt percentpkt {Len 4.14}
+//PCV_HEV_A10 pkt/mvox/safe_daypkt, bell {Len 3.66}
+
+// medical
+PCV_HEV_DEAD0 pkt/mvox/beep beep, beep beep, beep, beep, flatline {Len 6.29 closecaption HEV.Flatline}
+PCV_HEV_DEAD1 pkt/mvox/beep beep, beep beep, beep, flatline {Len 5.82 closecaption HEV.Flatline}
+
+PCV_HEV_MED0 pkt/mvox/(p140) boop, boop, boop, (p100) innsuficient_medicalpkt {Len 1.41 closecaption HEV.insufficient_medical}
+PCV_HEV_MED1 pkt/mvox/(p140) boop, boop, boop, (p100) automedic_onpkt {Len 4.92 closecaption HEV.automedic_on}
+PCV_HEV_MED2 pkt/mvox/(p140) boop, boop, boop, (p100) administering_medicalpkt {Len 1.41 closecaption HEV.administering_medical}
+
+PCV_HEV_HEAL0 pkt/mvox/(p140) boop, boop, boop, (p100) wound_sterilizedpkt, blip(p130 v50), blip(p130 v40), hiss, morphine_shot {Len 7.03 closecaption HEV.sterilized_morphine}
+PCV_HEV_HEAL1 pkt/mvox/(p140) boop, boop, boop, (p100) torniquette_appliedpkt, bleeding_stopped {Len 7.03 closecaption HEV.torni_bleed}
+PCV_HEV_HEAL2 pkt/mvox/(p140) boop, boop, boop, (p100) bleeding_stoppedpkt {Len 3.66 closecaption HEV.bleeding_stopped}
+PCV_HEV_HEAL3 pkt/mvox/(p140) boop, boop, boop, (p100) blood_plasmapkt {Len 4.02 closecaption HEV.blood_plasma}
+PCV_HEV_HEAL4 pkt/mvox/(p140) boop, boop, boop, (p100) hiss, antitoxin_shotpkt {Len 4.38 closecaption HEV.antitoxin_shot}
+PCV_HEV_HEAL5 pkt/mvox/(p140) boop, boop, boop, (p100) hiss, antidote_shotpkt {Len 4.17 closecaption HEV.antidote_shot}
+PCV_HEV_HEAL6 pkt/mvox/(p140) boop, boop, boop, (p100) hiss, wound_sterilizedpkt {Len 4.16 closecaption HEV.wound_sterilized}
+PCV_HEV_HEAL7 pkt/mvox/(p140) boop, boop, boop, (p100) hiss, morphine_shotpkt {Len 4.16 closecaption HEV.morphine_shot}
+PCV_HEV_HEAL8 pkt/mvox/(p140) boop, boop, boop, (p100) medical_repairedpkt {Len 4.17 closecaption HEV.medical_repaired}
+
+
+PCV_HEV_DMG0 pkt/mvox/(p160) boop, boop, boop, (p100) minor_lacerationspkt {Len 4.09 closecaption HEV.minor_lacerations}
+PCV_HEV_DMG1 pkt/mvox/(p160) boop, boop, boop, (p100) major_lacerationspkt {Len 4.19 closecaption HEV.major_lacerations}
+PCV_HEV_DMG2 pkt/mvox/(p160) boop, boop, boop, (p100) internal_bleedingpkt {Len 3.64 closecaption HEV.internal_bleeding}
+PCV_HEV_DMG3 pkt/mvox/(p160) boop, boop, boop, (p100) blood_toxinspkt {Len 5.04 closecaption HEV.blood_toxins}
+PCV_HEV_DMG4 pkt/mvox/(p160) boop, boop, boop, (p100) minor_fracturepkt {Len 3.67 closecaption HEV.minor_fracture}
+PCV_HEV_DMG5 pkt/mvox/(p160) boop, boop, boop, (p100) major_fracturepkt {Len 3.67 closecaption HEV.major_fracture}
+PCV_HEV_DMG6 pkt/mvox/(p160) boop, boop, boop, (p100) blood_losspkt {Len 3.39 closecaption HEV.blood_loss}
+PCV_HEV_DMG7 pkt/mvox/(p140) boop, boop, boop, (p100) seek_medicpkt {Len 3.92 closecaption HEV.seek_medic}
+
+
+
+PCV_HEV_HLTH0 pkt/mvox/(p120) beep, beep, (p100) health_droppingpkt {Len 4.31 closecaption HEV.health_dropping}
+PCV_HEV_HLTH1 pkt/mvox/(p120) beep, beep, (p100) health_dropping2pkt {Len 3.68 closecaption HEV.health_dropping2}
+PCV_HEV_HLTH2 pkt/mvox/(p120) beep, beep, beep, (p100) health_criticalpkt {Len 4.32 closecaption HEV.health_critical}
+PCV_HEV_HLTH3 pkt/mvox/(p120) beep, beep, beep, (p100) near_deathpkt {Len 4.77 closecaption HEV.near_death}
+PCV_HEV_HLTH4 pkt/mvox/(p140) beep, beep, (p100) health_dropping2pkt, evacuate_areapkt {Len 5.93 closecaption HEV.health2_evac}
+PCV_HEV_HLTH5 pkt/mvox/(p140) beep, beep, beep, (p100) health_criticalpkt, evacuate_areapkt {Len 6.52 closecaption HEV.health_crit_evac}
+PCV_HEV_HLTH6 pkt/mvox/(p140) beep, beep, beep, (p100) near_deathpkt, evacuate_areapkt immediatelypkt {Len 8.22 closecaption HEV.near_death_evac}
+
+
+PCV_HEV_SHOCK pkt/mvox/(p120) beep, beep, (p100) warningpkt, shock_damagepkt {Len 4.05 closecaption HEV.shock_damage}
+PCV_HEV_FIRE pkt/mvox/(p120) beep, beep, (p100) warningpkt, heat_damagepkt {Len 4.77 closecaption HEV.heat_damage}
+
+// items
+PCV_HEV_AIM_ON pkt/mvox/blip targetting_system activated {Len 4.02 closecaption HEV.targetting_system_on}
+PCV_HEV_AIM_OFF pkt/mvox/blip targetting_system deactivated {Len 4.27 closecaption HEV.targetting_system_off}
+PCV_HEV_BATTERY pkt/mvox/blip get_battery acquired {Len 0.92}
+PCV_HEV_MEDKIT pkt/mvox/blip get_medkit(v80) {Len 0.11}
+
+PCV_HEV_PISTOL pkt/mvox/blip get_pistol acquired {Len 0.92}
+PCV_HEV_SHOTGUN pkt/mvox/blip get_shotgun {Len 0.11}
+PCV_HEV_GRENADE pkt/mvox/blip get_grenade acquired {Len 0.92}
+PCV_HEV_ASSAULT pkt/mvox/blip get_assault acquired {Len 0.92}
+PCV_HEV_44PISTOL pkt/mvox/blip get_44pistol acquired {Len 0.92}
+PCV_HEV_RPG pkt/mvox/blip get_rpg acquired {Len 0.92}
+PCV_HEV_SATCHEL pkt/mvox/blip get_satchel acquired {Len 0.92}
+PCV_HEV_TRIPMINE pkt/mvox/blip get_tripmine acquired {Len 0.92}
+PCV_HEV_HORNET pkt/mvox/blip get_alien_wpn {Len 0.11}
+PCV_HEV_SQUEEK pkt/mvox/blip get_alien_wpn {Len 0.11}
+PCV_HEV_EGON pkt/mvox/blip get_egon acquired {Len 0.92}
+PCV_HEV_GAUSS pkt/mvox/blip get_gauss acquired {Len 0.92}
+PCV_HEV_XBOW pkt/mvox/blip get_crossbow acquired {Len 0.92}
+
+PCV_HEV_9MM pkt/mvox/blip get_9mmclip acquired {Len 0.92}
+PCV_HEV_44AMMO pkt/mvox/blip get_44ammo acquired {Len 0.92}
+PCV_HEV_BUCKSHOT pkt/mvox/blip get_buckshot acquired {Len 0.92}
+PCV_HEV_BOLTS pkt/mvox/blip get_bolts acquired {Len 0.92}
+PCV_HEV_RPGAMMO pkt/mvox/blip get_rpgammo acquired {Len 0.92}
+PCV_HEV_AGRENADE pkt/mvox/blip get_assaultgren acquired {Len 0.92}
+PCV_HEV_EGONPOWER pkt/mvox/blip get_egonpower acquired {Len 0.92}
+
+// time
+
+//PCV_HEV_C1t pkt/mvox/bell time_is_now one AM
+//PCV_HEV_C13t pkt/mvox/bell time_is_now one PM
+
+// power levels
+
+PCV_HEV_D00 pkt/mvox/fuzz fuzz(p130), power_restoredpkt {Len 2.12 closecaption HEV.power_restored}
+PCV_HEV_D01 pkt/mvox/fuzz fuzz(p80), hev_shutdownpkt {Len 4.99 closecaption HEV.hev_shutdown}
+
+//PCV_HEV_0P pkt/mvox/fuzz fuzz, power_belowpkt fivepkt percentpkt {Len 6.35}
+PCV_HEV_1P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), tenpkt percentpkt {Len 2.75}
+PCV_HEV_2P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), fifteenpkt percentpkt {Len 3.15}
+PCV_HEV_3P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), twentypkt percentpkt {Len 2.99}
+PCV_HEV_4P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), twentypkt fivepkt percentpkt {Len 3.87}
+PCV_HEV_5P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), thirtypkt percentpkt {Len 3.04}
+PCV_HEV_6P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), thirtypkt fivepkt percentpkt {Len 3.91}
+PCV_HEV_7P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), fourtypkt percentpkt {Len 3.07}
+PCV_HEV_8P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), fourtypkt fivepkt percentpkt {Len 3.95}
+PCV_HEV_9P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), fiftypkt percentpkt {Len 3.17}
+PCV_HEV_10P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), fiftypkt fivepkt percentpkt {Len 4.05}
+PCV_HEV_11P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), sixtypkt percentpkt {Len 3.16}
+PCV_HEV_12P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), sixtypkt fivepkt percentpkt {Len 4.04}
+PCV_HEV_13P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), seventypkt percentpkt {Len 3.12}
+PCV_HEV_14P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), seventypkt fivepkt percentpkt {Len 4.00}
+PCV_HEV_15P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), eightypkt percentpkt {Len 2.88}
+PCV_HEV_16P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), eightypkt fivepkt percentpkt {Len 3.76}
+PCV_HEV_17P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), ninetypkt percentpkt {Len 3.12}
+PCV_HEV_18P pkt/mvox/fuzz fuzz, power_restoredpkt(e30), ninetypkt fivepkt percentpkt {Len 4.00}
+PCV_HEV_19P pkt/mvox/fuzz fuzz, power_level_ispkt onehundredpkt percentpkt {Len 4.62}
+
+// weapon/ammo
+
+PCV_HEV_AMO0 pkt/mvox/blip ammo_depletedpkt {Len 2.16 closecaption HEV.ammo_depleted}
+
+// suit
+
+PCV_HEV_V0 pkt/mvox/blip, voice_onpkt {Len 3.17}
+PCV_HEV_V1 pkt/mvox/blip, voice_offpkt {Len 3.06}
+
+
+PCV_HEV_E0 pkt/mvox/buzz buzz, armor_gonepkt {Len 2.95 closecaption HEV.armor_gone}
+PCV_HEV_E1 pkt/mvox/buzz, armor_gonepkt {Len 2.62 closecaption HEV.armor_gone}
+PCV_HEV_E2 pkt/mvox/buzz, hev_critical_failpkt {Len 4.75 closecaption HEV.hev_critical_fail}
+PCV_HEV_E3 pkt/mvox/buzz, hev_general_failpkt {Len 3.22 closecaption HEV.hev_general_fail}
+PCV_HEV_E4 pkt/mvox/buzz, hev_damagepkt {Len 3.53 closecaption HEV.hev_damage}
+PCV_HEV_E5 pkt/mvox/buzz, powermove_overloadpkt {Len 4.98 closecaption HEV.powermove_overload}
+
+// time remaining countdown
+
+//PCV_HEV_F10t pkt/mvox/bell time_remaining ten seconds
+//PCV_HEV_F15t pkt/mvox/bell time_remaining fifteen seconds
+//PCV_HEV_F20t pkt/mvox/bell time_remaining twenty seconds
+//PCV_HEV_F30t pkt/mvox/bell time_remaining thirty seconds
+
+// detections
+
+PCV_HEV_DET0 pkt/mvox/blip blip blip, biohazard_detectedpkt {Len 3.67 closecaption HEV.biohazard_detected}
+PCV_HEV_DET1 pkt/mvox/blip blip blip, chemical_detectedpkt {Len 4.33 closecaption HEV.chemical_detected}
+PCV_HEV_DET2 pkt/mvox/blip blip blip, radiation_detectedpkt {Len 5.08 closecaption HEV.radiation_detected}
+PCV_HEV_DET3 pkt/mvox/blip blip blip, bio_readingpkt {Len 2.93 closecaption HEV.bio_reading}
+PCV_HEV_DET4 pkt/mvox/blip blip blip, antitoxin_shotpkt(e50), onehundred percent {Len 3.67 closecaption HEV.biohazard_detected}
+PCV_HEV_DET5 pkt/mvox/blip blip blip, antitoxin_shotpkt(e25) radiation_detected(e50), onehundred percent {Len 5.37 closecaption HEV.radiation_detected}
+
+//PCV_HEV_GR0r pkt/mvox/range twenty meters(t60)
+//PCV_HEV_GR1r pkt/mvox/range nineteen meters
+//PCV_HEV_GR2r pkt/mvox/range eighteen meters
 

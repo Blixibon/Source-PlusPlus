@@ -329,15 +329,6 @@
 		"tall"	 "480"
 	}
 
-	HudDeathNotice
-	{
-		"fieldName" "HudDeathNotice"
-		"visible" "1"
-		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
-	}
-
 	HudVehicle
 	{
 		"fieldName" "HudVehicle"
@@ -746,9 +737,10 @@
 		"IconColor"		"HudWhite"
 		"LocalPlayerColor"	"HUDBlack"
 
-		"BaseBackgroundColor"	"46 43 42 220"		[$WIN32]
+		//"BaseBackgroundColor"	"46 43 42 220"		[$WIN32]
+		"BaseBackgroundColor"	"TransparentBlack"
 		"LocalBackgroundColor"	"245 229 196 200"	[$WIN32]
-		"BaseBackgroundColor"	"32 32 32 255"		[$X360]
+		//"BaseBackgroundColor"	"32 32 32 255"		[$X360]
 		"LocalBackgroundColor"	"0 0 0 255"		[$X360]
 	}
 }

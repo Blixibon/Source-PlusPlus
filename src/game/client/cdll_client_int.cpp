@@ -997,6 +997,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	g_pcv_ThreadMode = g_pCVar->FindVar( "host_thread_mode" );
 
 	Mounter::MountExtraContent();
+	Mounter::RegenSentenceFile(filesystem, "scripts/sentences.txt");
 
 	if (!Initializer::InitializeAllObjects())
 		return false;

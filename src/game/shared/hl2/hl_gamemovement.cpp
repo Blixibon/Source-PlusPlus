@@ -283,7 +283,7 @@ bool CHL2GameMovement::ContinueForcedMove()
 //-----------------------------------------------------------------------------
 bool CHL2GameMovement::OnLadder( trace_t &trace )
 {
-	return ( GetLadder() != NULL ) ? true : false;
+	return ( GetLadder() != NULL ) ? true : BaseClass::OnLadder(trace);
 }
 
 //-----------------------------------------------------------------------------
@@ -527,6 +527,7 @@ void CHL2GameMovement::FullLadderMove()
 	Assert( ladder );
 	if ( !ladder )
 	{
+		BaseClass::FullLadderMove();
 		return;
 	}
 
@@ -910,6 +911,9 @@ bool CHL2GameMovement::LadderMove( void )
 		GetHL2Player()->ExitLadder();
 		ladder = NULL;
 	}
+
+	if (!ladder && BaseClass::LadderMove())
+		return true;
 
 	if ( !ladder )
 	{

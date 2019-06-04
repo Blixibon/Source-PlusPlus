@@ -28,8 +28,11 @@ public:
 
 	virtual bool CreateMove(float flInputSampleTime, CUserCmd *pCmd);
 
-	// Should this object cast shadows?
-	virtual ShadowType_t		ShadowCastType(void);
+	// Shadows
+	virtual ShadowType_t ShadowCastType(void);
+	virtual void GetShadowRenderBounds(Vector &mins, Vector &maxs, ShadowType_t shadowType);
+	virtual void GetRenderBounds(Vector& theMins, Vector& theMaxs);
+	virtual bool GetShadowCastDirection(Vector *pDirection, ShadowType_t shadowType) const;
 	virtual bool ShouldReceiveProjectedTextures(int flags);
 
 	virtual void PlayStepSound(Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
