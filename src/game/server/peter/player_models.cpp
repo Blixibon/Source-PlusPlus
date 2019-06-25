@@ -61,7 +61,17 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 							hModel.bodygroups.AddToTail();
 							bodygroup_s& body = hModel.bodygroups.Tail();
 							Q_strncpy(body.szName, pkvGroup->GetName(), 32);
-							body.body = pkvGroup->GetInt();
+							if (V_strrchr(pkvGroup->GetString(), ' ') != 0)
+							{
+								int iBodies[2];
+								UTIL_StringToIntArray(iBodies, 2, pkvGroup->GetString());
+								body.body = iBodies[0];
+								body.bodyMax = iBodies[1];
+							}
+							else
+							{
+								body.body = body.bodyMax = pkvGroup->GetInt();
+							}
 						}
 					}
 				}

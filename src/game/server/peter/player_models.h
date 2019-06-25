@@ -8,6 +8,7 @@ typedef struct bodygroup_s
 {
 	char szName[32];
 	short body;
+	short bodyMax;
 } bodygroup_t;
 
 typedef struct requirement_s
