@@ -1,0 +1,7 @@
+unlitgeneric
+{
+	$basetexture "models\ryu-gi_effect_props\incendiary\flash_3"
+	$additive 1
+	
+}
+
