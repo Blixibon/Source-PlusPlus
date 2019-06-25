@@ -1631,6 +1631,7 @@ void CPropAirboat::FireGun( )
 	info.m_flDistance = 4096;
 	info.m_iAmmoType = ammoType;
 	info.m_nFlags = FIRE_BULLETS_TEMPORARY_DANGER_SOUND;
+	info.m_pAttacker = GetDriver();
 
 	if ( gpGlobals->curtime >= m_flNextHeavyShotTime )
 	{
