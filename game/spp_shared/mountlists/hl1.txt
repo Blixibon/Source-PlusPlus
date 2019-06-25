@@ -1,10 +1,5 @@
 "Mount"
 {
-	sentence_files
-	{
-		file "scripts/sentences_hl1.txt"
-	}
-	
 	"supers"
 	{
 		"hl1_extra" 1
