@@ -34,6 +34,7 @@
 #include "filesystem.h"
 #include "saverestore_bitstring.h"
 #include "peter/gametypes.h"
+#include "fmtstr.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -599,6 +600,57 @@ void CWorld::Spawn( void )
 	Precache( );
 	GlobalEntity_Add( "is_console", STRING(gpGlobals->mapname), ( IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
 	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
+
+	// Half-Life: Source uses chapter based population tags
+	if (g_pGameTypeSystem->GetCurrentGameType() == GAME_HL1 && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
+	{
+		struct chapterID_s
+		{
+			const char *pszName;
+			const char *pszChapter;
+		};
+
+		chapterID_s chapters[] = {
+			{ "t0a0", "hazard" },
+			{ "c0a0", "inbound" },
+			{ "c1a0", "anom_mat" },
+			{ "c1a1", "unforseen" },
+			{ "c1a2", "office" },
+			{ "c1a3", "wgh" },
+			{ "c1a4", "blast_pit" },
+			{ "c2a1", "power_up" },
+			{ "c2a2", "oar" },
+			{ "c2a3", "app" },
+			{ "c2a4d", "questionable" },	// These must appear before "C2A4" so all other map names starting with C2A4 get that title
+			{ "c2a4e", "questionable" },
+			{ "c2a4f", "questionable" },
+			{ "c2a4g", "questionable" },
+			{ "c2a4", "residue" },
+			{ "c2a5", "surface" },
+			{ "c3a1", "faf" },
+			{ "c3a2", "lcore" },
+			{ "c4a1a", "interloper"  },	// Order is important, see above
+			{ "c4a1b", "interloper"  },
+			{ "c4a1c", "interloper"  },
+			{ "c4a1d", "interloper"  },
+			{ "c4a1e", "interloper"  },
+			{ "c4a1", "xen" },
+			{ "c4a2", "gon_lair"  },
+			{ "c4a3", "nihil"  },
+			{ "c5a1", "endgame"  },
+		};
+
+		// Try to find a matching title comment for this mapname
+		for (int i = 0; i < ARRAYSIZE(chapters); i++)
+		{
+			if (!Q_strnicmp(STRING(gpGlobals->mapname), chapters[i].pszName, strlen(chapters[i].pszName)))
+			{
+				CFmtStr str("hl1/%s", chapters[i].pszChapter);
+				m_iszPopulationTag = AllocPooledString(str.Access());
+				break;
+			}
+		}
+	}
 
 	char szMapadd[128];
 	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", STRING(gpGlobals->mapname));
