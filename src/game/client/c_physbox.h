@@ -27,9 +27,11 @@ public:
 					C_PhysBox();
 	virtual			~C_PhysBox();
 	virtual ShadowType_t ShadowCastType();
+	bool CanBePickedUpByPhyscannon() { return m_bNetCanPickup; }
 	
 public:
 	float			m_mass;	// TEST..
+	bool			m_bNetCanPickup;
 };
 
 

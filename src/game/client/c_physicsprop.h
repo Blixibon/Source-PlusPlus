@@ -24,11 +24,12 @@ public:
 	~C_PhysicsProp();
 
 	virtual bool OnInternalDrawModel( ClientModelRenderInfo_t *pInfo );
-
+	bool CanBePickedUpByPhyscannon(void) { return m_bNetCanPickup; }
 protected:
 	// Networked vars.
 	bool m_bAwake;
 	bool m_bAwakeLastTime;
+	bool m_bNetCanPickup;
 };
 
 #endif // C_PHYSICSPROP_H 

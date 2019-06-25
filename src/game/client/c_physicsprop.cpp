@@ -23,6 +23,7 @@
 
 IMPLEMENT_CLIENTCLASS_DT(C_PhysicsProp, DT_PhysicsProp, CPhysicsProp)
 	RecvPropBool( RECVINFO( m_bAwake ) ),
+	RecvPropBool(RECVINFO(m_bNetCanPickup)),
 END_RECV_TABLE()
 
 ConVar r_PhysPropStaticLighting( "r_PhysPropStaticLighting", "1" );

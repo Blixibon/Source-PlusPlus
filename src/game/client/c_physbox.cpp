@@ -11,6 +11,7 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_PhysBox, DT_PhysBox, CPhysBox)
+	RecvPropBool(RECVINFO(m_bNetCanPickup)),
 	RecvPropFloat(RECVINFO(m_mass), 0), // Test..
 END_RECV_TABLE()
 

@@ -16,6 +16,12 @@
 	#include "model_types.h"
 	#include "clienteffectprecachesystem.h"
 	#include "fx_interpvalue.h"
+	#include "c_physicsprop.h"
+	#include "c_physbox.h"
+
+#define CPhysicsProp C_PhysicsProp
+#define CPhysBox C_PhysBox
+
 #else
 	#include "hl2_player.h"
 	#include "soundent.h"
@@ -49,6 +55,7 @@
 #include "vphysics/friction.h"
 #include "debugoverlay_shared.h"
 #include "hl2_gamerules.h"
+#include "model_types.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -144,31 +151,181 @@ extern ConVar hl2_walkspeed;
 
 //#endif
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-// this will hit skip the pass entity, but not anything it owns 
-// (lets player grab own grenades)
-class CTraceFilterNoOwnerTest : public CTraceFilterSimple
-{
-public:
-	DECLARE_CLASS( CTraceFilterNoOwnerTest, CTraceFilterSimple );
-	
-	CTraceFilterNoOwnerTest( const IHandleEntity *passentity, int collisionGroup )
-		: CTraceFilterSimple( NULL, collisionGroup ), m_pPassNotOwner(passentity)
-	{
-	}
-	
-	virtual bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
-	{
-		if ( pHandleEntity != m_pPassNotOwner )
-			return BaseClass::ShouldHitEntity( pHandleEntity, contentsMask );
+// -------------------------------------------------------------------------
+//  Physcannon trace filter to handle special cases
+// -------------------------------------------------------------------------
 
-		return false;
+	class CTraceFilterPhyscannon : public CTraceFilterSimple
+	{
+	public:
+		DECLARE_CLASS(CTraceFilterPhyscannon, CTraceFilterSimple);
+
+		CTraceFilterPhyscannon(const IHandleEntity *passentity, int collisionGroup)
+			: CTraceFilterSimple(NULL, collisionGroup), m_pTraceOwner(passentity) {	}
+
+		// For this test, we only test against entities (then world brushes afterwards)
+		virtual TraceType_t	GetTraceType() const { return TRACE_ENTITIES_ONLY; }
+
+		bool HasContentsGrate(CBaseEntity *pEntity)
+		{
+			// FIXME: Move this into the GetModelContents() function in base entity
+
+			// Find the contents based on the model type
+			int nModelType = modelinfo->GetModelType(pEntity->GetModel());
+			if (nModelType == mod_studio)
+			{
+				CBaseAnimating *pAnim = dynamic_cast<CBaseAnimating *>(pEntity);
+				if (pAnim != NULL)
+				{
+					CStudioHdr *pStudioHdr = pAnim->GetModelPtr();
+					if (pStudioHdr != NULL && (pStudioHdr->contents() & CONTENTS_GRATE))
+						return true;
+				}
+			}
+			else if (nModelType == mod_brush)
+			{
+				// Brushes poll their contents differently
+				int contents = modelinfo->GetModelContents(pEntity->GetModelIndex());
+				if (contents & CONTENTS_GRATE)
+					return true;
+			}
+
+			return false;
+		}
+
+		virtual bool ShouldHitEntity(IHandleEntity *pHandleEntity, int contentsMask)
+		{
+			// Only skip ourselves (not things we own)
+			if (pHandleEntity == m_pTraceOwner)
+				return false;
+
+			// Get the entity referenced by this handle
+			CBaseEntity *pEntity = EntityFromEntityHandle(pHandleEntity);
+			if (pEntity == NULL)
+				return false;
+
+			// Handle grate entities differently
+			if (HasContentsGrate(pEntity))
+			{
+				// See if it's a grabbable physics prop
+				CPhysicsProp *pPhysProp = dynamic_cast<CPhysicsProp *>(pEntity);
+				if (pPhysProp != NULL)
+					return pPhysProp->CanBePickedUpByPhyscannon();
+
+				// Must be a moveable physbox
+				CPhysBox *pPhysBox = dynamic_cast<CPhysBox *>(pEntity);
+				if (pPhysBox)
+					return pPhysBox->CanBePickedUpByPhyscannon();
+
+				// Don't bother with any other sort of grated entity
+				return false;
+			}
+
+			// Use the default rules
+			return BaseClass::ShouldHitEntity(pHandleEntity, contentsMask);
+		}
+
+	protected:
+		const IHandleEntity *m_pTraceOwner;
+	};
+
+	// We want to test against brushes alone
+	class CTraceFilterOnlyBrushes : public CTraceFilterSimple
+	{
+	public:
+		DECLARE_CLASS(CTraceFilterOnlyBrushes, CTraceFilterSimple);
+		CTraceFilterOnlyBrushes(int collisionGroup) : CTraceFilterSimple(NULL, collisionGroup) {}
+		virtual TraceType_t	GetTraceType() const { return TRACE_WORLD_ONLY; }
+	};
+
+	//-----------------------------------------------------------------------------
+	// this will hit skip the pass entity, but not anything it owns
+	// (lets player grab own grenades)
+	class CTraceFilterNoOwnerTest : public CTraceFilterSimple
+	{
+	public:
+		DECLARE_CLASS(CTraceFilterNoOwnerTest, CTraceFilterSimple);
+
+		CTraceFilterNoOwnerTest(const IHandleEntity *passentity, int collisionGroup)
+			: CTraceFilterSimple(NULL, collisionGroup), m_pPassNotOwner(passentity)
+		{
+		}
+
+		virtual bool ShouldHitEntity(IHandleEntity *pHandleEntity, int contentsMask)
+		{
+			if (pHandleEntity != m_pPassNotOwner)
+				return BaseClass::ShouldHitEntity(pHandleEntity, contentsMask);
+
+			return false;
+		}
+
+	protected:
+		const IHandleEntity *m_pPassNotOwner;
+	};
+
+	//-----------------------------------------------------------------------------
+// Purpose: Trace a line the special physcannon way!
+//-----------------------------------------------------------------------------
+	void UTIL_PhyscannonTraceLine(const Vector &vecAbsStart, const Vector &vecAbsEnd, CBaseEntity *pTraceOwner, trace_t *pTrace)
+	{
+		// Default to HL2 vanilla
+		if (hl2_episodic.GetBool() == false)
+		{
+			CTraceFilterNoOwnerTest filter(pTraceOwner, COLLISION_GROUP_NONE);
+			UTIL_TraceLine(vecAbsStart, vecAbsEnd, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+			return;
+		}
+
+		// First, trace against entities
+		CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
+		UTIL_TraceLine(vecAbsStart, vecAbsEnd, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+
+		// If we've hit something, test again to make sure no brushes block us
+		if (pTrace->m_pEnt != NULL)
+		{
+			trace_t testTrace;
+			CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
+			UTIL_TraceLine(pTrace->startpos, pTrace->endpos, MASK_SHOT, &brushFilter, &testTrace);
+
+			// If we hit a brush, replace the trace with that result
+			if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+			{
+				*pTrace = testTrace;
+			}
+		}
 	}
 
-protected:
-	const IHandleEntity *m_pPassNotOwner;
-};
+	//-----------------------------------------------------------------------------
+	// Purpose: Trace a hull for the physcannon
+	//-----------------------------------------------------------------------------
+	void UTIL_PhyscannonTraceHull(const Vector &vecAbsStart, const Vector &vecAbsEnd, const Vector &vecAbsMins, const Vector &vecAbsMaxs, CBaseEntity *pTraceOwner, trace_t *pTrace)
+	{
+		// Default to HL2 vanilla
+		if (hl2_episodic.GetBool() == false)
+		{
+			CTraceFilterNoOwnerTest filter(pTraceOwner, COLLISION_GROUP_NONE);
+			UTIL_TraceHull(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+			return;
+		}
+
+		// First, trace against entities
+		CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
+		UTIL_TraceHull(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+
+		// If we've hit something, test again to make sure no brushes block us
+		if (pTrace->m_pEnt != NULL)
+		{
+			trace_t testTrace;
+			CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
+			UTIL_TraceHull(pTrace->startpos, pTrace->endpos, vecAbsMins, vecAbsMaxs, MASK_SHOT, &brushFilter, &testTrace);
+
+			// If we hit a brush, replace the trace with that result
+			if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+			{
+				*pTrace = testTrace;
+			}
+		}
+	}
 
 static void MatrixOrthogonalize( matrix3x4_t &matrix, int column )
 {
@@ -1167,7 +1324,7 @@ struct thrown_objects_t
 BEGIN_SIMPLE_DATADESC(thrown_objects_t)
 DEFINE_FIELD(fTimeThrown, FIELD_TIME),
 DEFINE_FIELD(hEntity, FIELD_EHANDLE),
-END_DATADESC()
+END_DATADESC();
 #endif
 
 class CWeaponPhysCannon : public CWeaponCoopBaseHLCombat
@@ -1618,7 +1775,7 @@ void CWeaponPhysCannon::OnDataChanged( DataUpdateType_t type )
 //-----------------------------------------------------------------------------
 inline float CWeaponPhysCannon::SpriteScaleFactor() 
 {
-	return IsMegaPhysCannon() ? 1.5f : 1.0f;
+	return IsMegaPhysCannon() ? 1.15f : 1.0f;
 }
 
 
@@ -1709,9 +1866,14 @@ void CWeaponPhysCannon::Drop( const Vector &vecVelocity )
 {
 	ForceDrop();
 
+	if (gpGlobals->maxClients > 1)
+	{
 #ifndef CLIENT_DLL
-	UTIL_Remove( this );
+		UTIL_Remove(this);
 #endif
+	}
+	else
+		BaseClass::Drop(vecVelocity);
 }
 
 //-----------------------------------------------------------------------------
@@ -1845,7 +2007,7 @@ void CWeaponPhysCannon::Physgun_OnPhysGunPickup( CBaseEntity *pEntity, CBasePlay
 
 		for (int i = 0; i < nAIs; i++)
 		{
-			if (ppAIs[i]->Classify() == CLASS_PLAYER_ALLY_VITAL)
+			if (ppAIs[i]->IsVitalAlly())
 			{
 				ppAIs[i]->DispatchInteraction(g_interactionPlayerPuntedHeavyObject, pEntity, pOwner);
 			}
@@ -2299,9 +2461,10 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	CAutoScopeLagComp lagScope(pOwner);
 #endif
 
-	CTraceFilterNoOwnerTest filter( pOwner, COLLISION_GROUP_NONE );
+	//CTraceFilterNoOwnerTest filter( pOwner, COLLISION_GROUP_NONE );
 	trace_t tr;
-	UTIL_TraceHull( start, end, -Vector(8,8,8), Vector(8,8,8), MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+	//UTIL_TraceHull( start, end, -Vector(8,8,8), Vector(8,8,8), MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+	UTIL_PhyscannonTraceHull(start, end, -Vector(8, 8, 8), Vector(8, 8, 8), pOwner, &tr);
 	bool bValid = true;
 	CBaseEntity *pEntity = tr.m_pEnt;
 	if ( tr.fraction == 1 || !tr.m_pEnt || tr.m_pEnt->IsEFlagSet( EFL_NO_PHYSCANNON_INTERACTION ) )
@@ -2316,7 +2479,8 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	// If the entity we've hit is invalid, try a traceline instead
 	if ( !bValid )
 	{
-		UTIL_TraceLine( start, end, MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+		//UTIL_TraceLine( start, end, MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+		UTIL_PhyscannonTraceLine(start, end, pOwner, &tr);
 		if ( tr.fraction == 1 || !tr.m_pEnt || tr.m_pEnt->IsEFlagSet( EFL_NO_PHYSCANNON_INTERACTION ) )
 		{
 			// Play dry-fire sequence
@@ -2563,13 +2727,13 @@ bool CWeaponPhysCannon::AttachObject( CBaseEntity *pObject, const Vector &vPosit
 	// Don't drop again for a slight delay, in case they were pulling objects near them
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.4f;
 
-	DoEffect( EFFECT_HOLDING );
 	OpenElements();
+	DoEffect( EFFECT_HOLDING );
 
 	if ( GetMotorSound() )
 	{
 		(CSoundEnvelopeController::GetController()).Play( GetMotorSound(), 0.0f, 50 );
-		(CSoundEnvelopeController::GetController()).SoundChangePitch( GetMotorSound(), 100, 0.5f );
+		(CSoundEnvelopeController::GetController()).SoundChangePitch( GetMotorSound(), Lerp(GetLoadPercentage(), 90.f, 115.f), 0.5f ); //100
 		(CSoundEnvelopeController::GetController()).SoundChangeVolume( GetMotorSound(), 0.8f, 0.5f );
 	}
 
@@ -2596,13 +2760,13 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 
 	// Try to find an object by looking straight ahead
 	trace_t tr;
-	CTraceFilterNoOwnerTest filter( pPlayer, COLLISION_GROUP_NONE );
-	UTIL_TraceLine( start, end, MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+	//CTraceFilterNoOwnerTest filter( pPlayer, COLLISION_GROUP_NONE );
+	UTIL_PhyscannonTraceLine( start, end, pPlayer, &tr );
 	
 	// Try again with a hull trace
 	if ( ( tr.fraction == 1.0 ) || ( tr.m_pEnt == NULL ) || ( tr.m_pEnt->IsWorld() ) )
 	{
-		UTIL_TraceHull( start, end, -Vector(4,4,4), Vector(4,4,4), MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+		UTIL_PhyscannonTraceHull( start, end, -Vector(4,4,4), Vector(4,4,4), pPlayer, &tr );
 	}
 
 	CBaseEntity *pEntity = tr.m_pEnt ? tr.m_pEnt->GetRootMoveParent() : NULL;
@@ -2757,8 +2921,8 @@ CBaseEntity* CWeaponPhysCannon::MegaPhysCannonFindObjectInCone(const Vector& vec
 
 		// Make sure it isn't occluded!
 		trace_t tr;
-		CTraceFilterNoOwnerTest filter(GetOwner(), COLLISION_GROUP_NONE);
-		UTIL_TraceLine(vecOrigin, list[i]->WorldSpaceCenter(), MASK_SHOT | CONTENTS_GRATE, &filter, &tr);
+		//CTraceFilterNoOwnerTest filter(GetOwner(), COLLISION_GROUP_NONE);
+		UTIL_PhyscannonTraceLine(vecOrigin, list[i]->WorldSpaceCenter(), GetOwner(), &tr);
 		if (tr.m_pEnt == list[i])
 		{
 			flNearestDist = flDist;
@@ -2800,8 +2964,8 @@ CBaseEntity *CWeaponPhysCannon::FindObjectInCone( const Vector &vecOrigin, const
 
 		// Make sure it isn't occluded!
 		trace_t tr;
-		CTraceFilterNoOwnerTest filter( GetOwner(), COLLISION_GROUP_NONE );
-		UTIL_TraceLine( vecOrigin, list[ i ]->WorldSpaceCenter(), MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+		//CTraceFilterNoOwnerTest filter( GetOwner(), COLLISION_GROUP_NONE );
+		UTIL_PhyscannonTraceLine( vecOrigin, list[ i ]->WorldSpaceCenter(), GetOwner(), &tr );
 		if( tr.m_pEnt == list[ i ] )
 		{
 			flNearestDist = flDist;
@@ -2985,7 +3149,7 @@ void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
 	if ( GetMotorSound() )
 	{
 		(CSoundEnvelopeController::GetController()).SoundChangeVolume( GetMotorSound(), 0.0f, 1.0f );
-		(CSoundEnvelopeController::GetController()).SoundChangePitch( GetMotorSound(), 50, 1.0f );
+		(CSoundEnvelopeController::GetController()).SoundChangePitch( GetMotorSound(), 40, 1.0f );
 	}
 	
 	if ( pObject && m_bResetOwnerEntity == true )
@@ -3167,7 +3331,7 @@ void CWeaponPhysCannon::CheckForTarget( void )
 	VectorMA( startPos, TraceLength(), aimDir, endPos );
 
 	trace_t	tr;
-	UTIL_TraceHull( startPos, endPos, -Vector(4,4,4), Vector(4,4,4), MASK_SHOT|CONTENTS_GRATE, pOwner, COLLISION_GROUP_NONE, &tr );
+	UTIL_PhyscannonTraceHull( startPos, endPos, -Vector(4,4,4), Vector(4,4,4), pOwner, &tr );
 
 	if ( ( tr.fraction != 1.0f ) && ( tr.m_pEnt != NULL ) )
 	{

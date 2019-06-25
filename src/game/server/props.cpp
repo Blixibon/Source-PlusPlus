@@ -2463,6 +2463,7 @@ END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST( CPhysicsProp, DT_PhysicsProp )
 	SendPropBool( SENDINFO( m_bAwake ) ),
+	SendPropBool(SENDINFO(m_bNetCanPickup)),
 END_SEND_TABLE()
 
 // external function to tell if this entity is a gib physics prop
@@ -2543,6 +2544,8 @@ void CPhysicsProp::Spawn( )
 		SetFadeDistance( -1, 0 );
 		DisableAutoFade();
 	}
+
+	m_bNetCanPickup = CanBePickedUpByPhyscannon();
 
 #ifdef USE_NAV_MESH
 	if ( IsPotentiallyAbleToObstructNavAreas() )
@@ -2944,6 +2947,8 @@ void CPhysicsProp::VPhysicsUpdate( IPhysicsObject *pPhysics )
 {
 	BaseClass::VPhysicsUpdate( pPhysics );
 	m_bAwake = !pPhysics->IsAsleep();
+	if (m_bNetCanPickup != CanBePickedUpByPhyscannon())
+		m_bNetCanPickup = CanBePickedUpByPhyscannon();
 	NetworkStateChanged();
 	if ( HasSpawnFlags( SF_PHYSPROP_START_ASLEEP ) )
 	{

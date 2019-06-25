@@ -415,6 +415,7 @@ private:
 
 protected:
 	CNetworkVar( bool, m_bAwake );
+	CNetworkVar(bool, m_bNetCanPickup);
 };
 
 

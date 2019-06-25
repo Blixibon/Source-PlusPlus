@@ -365,43 +365,44 @@ void CPhysicsSpring::NotifySystemEvent( CBaseEntity *pNotify, notify_system_even
 
 // SendTable stuff.
 IMPLEMENT_SERVERCLASS_ST(CPhysBox, DT_PhysBox)
-END_SEND_TABLE()
+SendPropBool(SENDINFO(m_bNetCanPickup)),
+END_SEND_TABLE();
 
 LINK_ENTITY_TO_CLASS( func_physbox, CPhysBox );
 
-BEGIN_DATADESC( CPhysBox )
+BEGIN_DATADESC(CPhysBox)
 
-	DEFINE_FIELD( m_hCarryingPlayer, FIELD_EHANDLE ),
+DEFINE_FIELD(m_hCarryingPlayer, FIELD_EHANDLE),
 
-	DEFINE_KEYFIELD( m_massScale, FIELD_FLOAT, "massScale" ),
-	DEFINE_KEYFIELD( m_damageType, FIELD_INTEGER, "Damagetype" ),
-	DEFINE_KEYFIELD( m_iszOverrideScript, FIELD_STRING, "overridescript" ),
-	DEFINE_KEYFIELD( m_damageToEnableMotion, FIELD_INTEGER, "damagetoenablemotion" ),
-	DEFINE_KEYFIELD( m_flForceToEnableMotion, FIELD_FLOAT, "forcetoenablemotion" ), 
-	DEFINE_KEYFIELD( m_angPreferredCarryAngles, FIELD_VECTOR, "preferredcarryangles" ),
-	DEFINE_KEYFIELD( m_bNotSolidToWorld, FIELD_BOOLEAN, "notsolid" ),
+DEFINE_KEYFIELD(m_massScale, FIELD_FLOAT, "massScale"),
+DEFINE_KEYFIELD(m_damageType, FIELD_INTEGER, "Damagetype"),
+DEFINE_KEYFIELD(m_iszOverrideScript, FIELD_STRING, "overridescript"),
+DEFINE_KEYFIELD(m_damageToEnableMotion, FIELD_INTEGER, "damagetoenablemotion"),
+DEFINE_KEYFIELD(m_flForceToEnableMotion, FIELD_FLOAT, "forcetoenablemotion"),
+DEFINE_KEYFIELD(m_angPreferredCarryAngles, FIELD_VECTOR, "preferredcarryangles"),
+DEFINE_KEYFIELD(m_bNotSolidToWorld, FIELD_BOOLEAN, "notsolid"),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Wake", InputWake ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Sleep", InputSleep ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableMotion", InputEnableMotion ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableMotion", InputDisableMotion ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ForceDrop", InputForceDrop ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableFloating", InputDisableFloating ),
+DEFINE_INPUTFUNC(FIELD_VOID, "Wake", InputWake),
+DEFINE_INPUTFUNC(FIELD_VOID, "Sleep", InputSleep),
+DEFINE_INPUTFUNC(FIELD_VOID, "EnableMotion", InputEnableMotion),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableMotion", InputDisableMotion),
+DEFINE_INPUTFUNC(FIELD_VOID, "ForceDrop", InputForceDrop),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableFloating", InputDisableFloating),
 
-	// Function pointers
-	DEFINE_ENTITYFUNC( BreakTouch ),
+// Function pointers
+DEFINE_ENTITYFUNC(BreakTouch),
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnDamaged, "OnDamaged" ),
-	DEFINE_OUTPUT( m_OnAwakened, "OnAwakened" ),
-	DEFINE_OUTPUT( m_OnMotionEnabled, "OnMotionEnabled" ),
-	DEFINE_OUTPUT( m_OnPhysGunPickup, "OnPhysGunPickup" ),
-	DEFINE_OUTPUT( m_OnPhysGunPunt, "OnPhysGunPunt" ),
-	DEFINE_OUTPUT( m_OnPhysGunOnlyPickup, "OnPhysGunOnlyPickup" ),
-	DEFINE_OUTPUT( m_OnPhysGunDrop, "OnPhysGunDrop" ),
-	DEFINE_OUTPUT( m_OnPlayerUse, "OnPlayerUse" ),
+// Outputs
+DEFINE_OUTPUT(m_OnDamaged, "OnDamaged"),
+DEFINE_OUTPUT(m_OnAwakened, "OnAwakened"),
+DEFINE_OUTPUT(m_OnMotionEnabled, "OnMotionEnabled"),
+DEFINE_OUTPUT(m_OnPhysGunPickup, "OnPhysGunPickup"),
+DEFINE_OUTPUT(m_OnPhysGunPunt, "OnPhysGunPunt"),
+DEFINE_OUTPUT(m_OnPhysGunOnlyPickup, "OnPhysGunOnlyPickup"),
+DEFINE_OUTPUT(m_OnPhysGunDrop, "OnPhysGunDrop"),
+DEFINE_OUTPUT(m_OnPlayerUse, "OnPlayerUse"),
 
-END_DATADESC()
+END_DATADESC();
 
 // UNDONE: Save/Restore needs to take the physics object's properties into account
 // UNDONE: Acceleration, velocity, angular velocity, etc. must be preserved
@@ -473,6 +474,8 @@ void CPhysBox::Spawn( void )
 	{
 		m_impactEnergyScale = 1.0;
 	}
+
+	m_bNetCanPickup = CanBePickedUpByPhyscannon();
 }
 
 // shared from studiomdl, checks for long, thin objects and adds some damping 
@@ -723,6 +726,9 @@ void CPhysBox::VPhysicsUpdate( IPhysicsObject *pPhysics )
 			RemoveSpawnFlags( SF_PHYSBOX_ASLEEP );
 		}
 	}
+
+	if (m_bNetCanPickup.Get() != CanBePickedUpByPhyscannon())
+		m_bNetCanPickup = CanBePickedUpByPhyscannon();
 }
 
 //-----------------------------------------------------------------------------

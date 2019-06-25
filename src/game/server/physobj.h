@@ -87,6 +87,7 @@ protected:
 	float			m_flForceToEnableMotion;
 	QAngle			m_angPreferredCarryAngles;
 	bool			m_bNotSolidToWorld;
+	CNetworkVar(bool, m_bNetCanPickup);
 
 	// Outputs
 	COutputEvent	m_OnDamaged;
