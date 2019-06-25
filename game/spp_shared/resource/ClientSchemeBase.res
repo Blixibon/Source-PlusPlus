@@ -879,6 +879,66 @@ Scheme
 			}
 		}
 
+		CreditsLogo
+		{
+			"1"
+			{
+				"name"		"HalfLife2"
+				"tall"		"128"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		CreditsText
+		{
+			"1"
+			{
+				"name"		"Trebuchet MS"
+				"tall"		"20"
+				"weight"	"900"
+				"antialias" "1"
+				"additive"	"1"
+			}
+		}
+		CreditsOutroLogos
+		{
+			"1"
+			{
+				"name"		"HalfLife2"
+				"tall"		"48"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		CreditsOutroText
+		{
+			"1"
+			{
+				"name"		"Verdana" [!$OSX]
+				"name"		"Courier Bold" [$OSX]
+				"tall"		"9"
+				"weight"	"900"
+				"antialias" "1"
+			}
+		}
+		CenterPrintText
+		{
+			// note that this scales with the screen resolution
+			"1"
+			{
+				"name"		"Trebuchet MS" [!$OSX]
+				"name"		"Helvetica" [$OSX]
+				"tall"		"18"
+				"weight"	"900"
+				"antialias" "1"
+				"additive"	"1"
+			}
+		}
+
 		HDRDemoText
 		{
 			// note that this scales with the screen resolution
@@ -889,6 +949,17 @@ Scheme
 				"weight"	"900"
 				"antialias" "1"
 				"additive"	"1"
+			}
+		}
+
+		"AchievementNotification"
+		{
+			"1"
+			{
+				"name"		"Trebuchet MS"
+				"tall"		"14"
+				"weight"	"900"
+				"antialias" "1"
 			}
 		}
 
