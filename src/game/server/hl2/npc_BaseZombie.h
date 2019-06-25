@@ -226,6 +226,7 @@ public:
 	virtual const char *GetLegsModel( void ) = 0;
 	virtual const char *GetTorsoModel( void ) = 0;
 	virtual const char *GetHeadcrabModel( void ) = 0;
+	virtual int			GetLegsSkin(void) { return m_nSkin; }
 
 	virtual Vector BodyTarget( const Vector &posSrc, bool bNoisy );
 	virtual Vector HeadTarget( const Vector &posSrc );

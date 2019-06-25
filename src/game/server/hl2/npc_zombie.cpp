@@ -120,6 +120,7 @@ public:
 	virtual const char *GetTorsoModel( void );
 	virtual const char *GetHeadcrabClassname( void );
 	virtual const char *GetHeadcrabModel( void );
+	virtual int			GetLegsSkin(void) { return m_iZombieSkin; }
 
 	virtual bool OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, 
 								 CBaseDoor *pDoor,
@@ -155,6 +156,7 @@ public:
 
 protected:
 	static const char *pMoanSounds[];
+	int			m_iZombieSkin;
 public:
 	static const char *pPopTypes[];
 	static CPopulationDefinition gm_PopDef;
@@ -182,14 +184,34 @@ const char *CZombie::pMoanSounds[] =
 	 "NPC_BaseZombie.Moan4",
 };
 
-const char *CZombie::pPopTypes[] =
+enum zombieTypes_e
+{
+	Z_REFUGEE = 0,
+	Z_CITIZEN,
+	Z_REBEL,
+	Z_MEDIC,
+	Z_METROPOLICE,
+
+	NUM_Z_MODELS
+};
+
+enum zombieSkins_e
+{
+	ZS_REFUGEE = 0,
+	ZS_CITIZEN,
+	ZS_REBEL,
+	ZS_REBEL2,
+	ZS_MEDIC,
+	ZS_MEDIC2,
+	ZS_METROPOLICE
+};
+
+const char *CZombie::pPopTypes[NUM_Z_MODELS] =
 {
 	"refugee",
 	"citizen",
 	"rebel",
-	"rebel2",
 	"medic",
-	"medic2",
 	"metropolice"
 };
 
@@ -232,15 +254,16 @@ enum
 int ACT_ZOMBIE_TANTRUM;
 int ACT_ZOMBIE_WALLPOUND;
 
-BEGIN_DATADESC( CZombie )
+BEGIN_DATADESC(CZombie)
 
-	DEFINE_FIELD( m_hBlockingDoor, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flDoorBashYaw, FIELD_FLOAT ),
-	DEFINE_EMBEDDED( m_DurationDoorBash ),
-	DEFINE_EMBEDDED( m_NextTimeToStartDoorBash ),
-	DEFINE_FIELD( m_vPositionCharged, FIELD_POSITION_VECTOR ),
+DEFINE_FIELD(m_hBlockingDoor, FIELD_EHANDLE),
+DEFINE_FIELD(m_flDoorBashYaw, FIELD_FLOAT),
+DEFINE_EMBEDDED(m_DurationDoorBash),
+DEFINE_EMBEDDED(m_NextTimeToStartDoorBash),
+DEFINE_FIELD(m_vPositionCharged, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_iZombieSkin, FIELD_INTEGER),
 
-END_DATADESC()
+END_DATADESC();
 
 
 //-----------------------------------------------------------------------------
@@ -277,6 +300,8 @@ void CZombie::Precache( void )
 //-----------------------------------------------------------------------------
 void CZombie::Spawn( void )
 {
+	m_iZombieSkin = gm_PopDef.GetRandom();
+
 	Precache();
 
 	if( FClassnameIs( this, "npc_zombie" ) )
@@ -306,10 +331,36 @@ void CZombie::Spawn( void )
 
 	BaseClass::Spawn();
 
-	m_nSkin = gm_PopDef.GetRandom();
+	switch (m_iZombieSkin)
+	{
+	case Z_REFUGEE:
+	default:
+		m_nSkin = ZS_REFUGEE;
+		break;
+	case Z_CITIZEN:
+		m_nSkin = ZS_CITIZEN;
+		break;
+	case Z_REBEL:
+		m_nSkin = RandomInt(ZS_REBEL, ZS_REBEL2);
+		break;
+	case Z_MEDIC:
+		m_nSkin = RandomInt(ZS_MEDIC, ZS_MEDIC2);
+		break;
+	case Z_METROPOLICE:
+		m_nSkin = ZS_METROPOLICE;
+		break;
+	}
 
 	m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 4.0 );
 }
+
+/*"refugee",
+	"citizen",
+	"rebel",
+	"rebel2",
+	"medic",
+	"medic2",
+	"metropolice"*/
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

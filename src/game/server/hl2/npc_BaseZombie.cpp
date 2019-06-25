@@ -1100,6 +1100,8 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 	if ( pLegGib )
 	{
 		CopyRenderColorTo( pLegGib );
+		if (pLegGib->GetBaseAnimating())
+			pLegGib->GetBaseAnimating()->m_nSkin = GetLegsSkin();
 	}
 
 	forceVector *= random->RandomFloat( 0.04, 0.06 );
@@ -1127,6 +1129,8 @@ void CNPC_BaseZombie::DieChopped( const CTakeDamageInfo &info )
 		pTorsoGib->SetOwnerEntity( this );
 		CopyRenderColorTo( pTorsoGib );
 
+		if (pTorsoGib->GetBaseAnimating())
+			pTorsoGib->GetBaseAnimating()->m_nSkin = m_nSkin;
 	}
 
 	if ( UTIL_ShouldShowBlood( BLOOD_COLOR_YELLOW ) )
@@ -1245,8 +1249,6 @@ void CNPC_BaseZombie::CopyRenderColorTo( CBaseEntity *pOther )
 {
 	color32 color = GetRenderColor();
 	pOther->SetRenderColor( color.r, color.g, color.b, color.a );
-	if (pOther->GetBaseAnimating() && !pOther->IsNPC())
-		pOther->GetBaseAnimating()->m_nSkin = m_nSkin;
 }
 
 //-----------------------------------------------------------------------------
@@ -2268,6 +2270,8 @@ void CNPC_BaseZombie::BecomeTorso( const Vector &vecTorsoForce, const Vector &ve
 		{
 			CopyRenderColorTo(pGib);
 			pGib->SetOwnerEntity( this );
+			if (pGib->GetBaseAnimating())
+				pGib->GetBaseAnimating()->m_nSkin = GetLegsSkin();
 		}
 	}
 
