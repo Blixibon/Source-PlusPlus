@@ -1,0 +1,12 @@
+"Mount"
+{
+	747250
+	{
+		"head"	"0"
+		
+		"yearlongalarm"
+		{
+			
+		}
+	}
+}
