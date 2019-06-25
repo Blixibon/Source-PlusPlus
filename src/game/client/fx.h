@@ -43,6 +43,7 @@ void FX_RicochetSound( const Vector& pos );
 void FX_AntlionImpact( const Vector &pos, trace_t *tr );
 void FX_DebrisFlecks( const Vector& origin, trace_t *trace, char materialType, int iScale, bool bNoFlecks = false );
 void FX_Tracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz = true );
+void FX_AddTracerModel(const Vector& start, const Vector& end, int velocity, int iSkin = 0, bool bCombineFX = false, float flScale = 1.0f);
 void FX_GunshipTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz = true );
 void FX_StriderTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz = true );
 void FX_HunterTracer( const Vector& start, const Vector& end, int velocity, bool makeWhiz = true );

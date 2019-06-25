@@ -9,12 +9,18 @@
 #include "basecombatweapon_shared.h"
 #include "baseviewmodel_shared.h"
 #include "particles_new.h"
+#include "vprof.h"
+#include "clientsideeffects.h"
+#include "view.h"
+#include "model_types.h"
+#include "studio.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 ConVar r_drawtracers( "r_drawtracers", "1", FCVAR_CHEAT );
 ConVar r_drawtracers_firstperson( "r_drawtracers_firstperson", "1", FCVAR_ARCHIVE, "Toggle visibility of first person weapon tracers" );
+ConVar r_tracermodels("r_tracermodels", "1", FCVAR_ARCHIVE);
 
 #define	TRACER_SPEED			5000 
 
@@ -118,7 +124,14 @@ void TracerCallback( const CEffectData &data )
 	}
 
 	// Do tracer effect
-	FX_Tracer( vecStart, data.m_vOrigin, flVelocity, bWhiz );
+	if (!r_tracermodels.GetBool())
+		FX_Tracer( vecStart, data.m_vOrigin, flVelocity, bWhiz );
+	else
+	{
+		FX_AddTracerModel(vecStart, data.m_vOrigin, flVelocity);
+		if (bWhiz)
+			FX_TracerSound(vecStart, data.m_vOrigin, TRACER_TYPE_DEFAULT);
+	}
 }
 
 DECLARE_CLIENT_EFFECT( "Tracer", TracerCallback );
@@ -187,3 +200,191 @@ void TracerSoundCallback( const CEffectData &data )
 
 DECLARE_CLIENT_EFFECT( "TracerSound", TracerSoundCallback );
 
+// Model Tracers
+#define TRACER_MODEL_LENGTH 24.2f
+#define TRACER_MODEL_TIP_OFFSET 10.0f
+class CFXTracerModel : public C_BaseAnimating
+{
+	DECLARE_CLASS(CFXTracerModel, C_BaseAnimating);
+
+public:
+	void			Init(const Vector& start, const Vector& end, float scale, float life, int iSkin, bool bCombineFX);
+
+	virtual const Vector &			GetRenderOrigin(void);
+	virtual const QAngle &			GetRenderAngles(void)
+	{
+		static QAngle angRot;
+		VectorAngles(m_vecDirection, angRot);
+		return angRot;
+	}
+	virtual bool					ShouldDraw(void)
+	{
+		return r_drawtracers.GetBool() && BaseClass::ShouldDraw();
+	}
+
+	// Should this object cast shadows?
+	virtual ShadowType_t	ShadowCastType() { return SHADOWS_NONE; }
+
+	// Should this object receive shadows?
+	virtual bool			ShouldReceiveProjectedTextures(int flags)
+	{
+		return false;
+	}
+
+	virtual int DrawModel(int flags);
+	virtual void					ClientThink();
+
+private:
+	float			m_fLife;
+	Vector			m_vecOrigin, m_vecEnd, m_vecDirection;
+	float			m_fStartTime;
+	float			m_fScale;
+	VPlane			m_ClipPlanes[2];
+	bool			m_bCombineTracer;
+};
+
+void CFXTracerModel::Init(const Vector& start, const Vector& end, float scale, float life, int iSkin, bool bCombineFX)
+{
+	m_vecOrigin = start;
+	m_vecEnd = end;
+	m_vecDirection = (end - start).Normalized();
+	m_fScale = scale;
+	m_fLife = life;
+	m_fStartTime = gpGlobals->curtime;
+	m_nSkin = iSkin;
+	m_bCombineTracer = bCombineFX;
+
+	InitializeAsClientEntity("models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl", RENDER_GROUP_TRANSLUCENT_ENTITY);
+
+	SetAbsOrigin(start);
+	SetAbsAngles(GetRenderAngles());
+
+	{
+		Vector normal = m_vecDirection;
+		float flDist = DotProduct(normal, start);
+		m_ClipPlanes[0].Init(normal, flDist);
+	}
+	
+	{
+		Vector normal = -m_vecDirection;
+		float flDist = DotProduct(normal, end);
+		m_ClipPlanes[1].Init(normal, flDist);
+	}
+
+	SetModelScale(scale);
+
+	SetNextClientThink(CLIENT_THINK_ALWAYS);
+}
+
+const Vector & CFXTracerModel::GetRenderOrigin(void)
+{
+	float fT = (gpGlobals->curtime - m_fStartTime) / m_fLife;
+	fT = Min(fT, 1.0f);
+
+	static Vector vecRet;
+	vecRet = VecLerp(m_vecOrigin, m_vecEnd + m_vecDirection*TRACER_MODEL_LENGTH, fT) - (m_vecDirection*TRACER_MODEL_TIP_OFFSET*GetModelScale());
+	return vecRet;
+}
+
+int CFXTracerModel::DrawModel(int flags)
+{
+	VPROF_BUDGET("CFXTracerModel::DrawModel", VPROF_BUDGETGROUP_MODEL_RENDERING);
+	if (!m_bReadyToDraw)
+		return 0;
+
+	int drawn = 0;
+
+#if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
+	ValidateModelIndex();
+#endif
+
+	int iOriginalSkin = GetSkin();
+
+	if (r_drawtracers.GetInt())
+	{
+		MDLCACHE_CRITICAL_SECTION();
+
+		if (flags & (STUDIO_SHADOWDEPTHTEXTURE| STUDIO_SSAODEPTHTEXTURE))
+		{
+			return 0;
+		}
+
+		// Necessary for lighting blending
+		//CreateModelInstance();
+
+		CMatRenderContextPtr pRenderContext(materials);
+		if (!materials->UsingFastClipping()) //do NOT change the fast clip plane mid-scene, depth problems result. Regular user clip planes are fine though
+		{
+			pRenderContext->PushCustomClipPlane(m_ClipPlanes[1].m_Normal.Base());
+			pRenderContext->PushCustomClipPlane(m_ClipPlanes[0].m_Normal.Base());
+		}
+
+		drawn = InternalDrawModel(flags);
+
+		if (drawn && m_bCombineTracer)
+		{
+			if (iOriginalSkin == 0)
+				m_nSkin = 8;
+			else
+				m_nSkin += 7;
+
+			SetModelScale(m_fScale * 1.4f);
+
+			drawn = InternalDrawModel(flags);
+
+			m_nSkin = iOriginalSkin;
+			SetModelScale(m_fScale);
+		}
+
+		if (!materials->UsingFastClipping())
+		{
+			pRenderContext->PopCustomClipPlane();
+			pRenderContext->PopCustomClipPlane();
+		}
+	}
+
+	// If we're visualizing our bboxes, draw them
+	DrawBBoxVisualizations();
+
+	return drawn;
+}
+
+void CFXTracerModel::ClientThink()
+{
+	if (gpGlobals->curtime > m_fStartTime + m_fLife)
+	{
+		//SetNextClientThink(CLIENT_THINK_NEVER);
+		Remove();
+		return;
+	}
+
+	Assert(!GetMoveParent());
+
+	SetLocalOrigin(GetRenderOrigin());
+}
+
+
+void FX_AddTracerModel(const Vector & start, const Vector & end, int velocity, int iSkin, bool bCombineFX, float flScale)
+{
+	VPROF_BUDGET("FX_AddTracerModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING);
+	//Don't make small tracers
+	float dist;
+	Vector dir;
+
+	VectorSubtract(end, start, dir);
+	dist = VectorNormalize(dir);
+
+	// Don't make short tracers.
+	if (dist >= TRACER_MODEL_LENGTH*0.5f)
+	{
+		float length = TRACER_MODEL_LENGTH;
+		float life = (dist + length) / velocity;	//NOTENOTE: We want the tail to finish its run as well
+
+		//Add it
+		//FX_AddDiscreetLine(start, dir, velocity, length, dist, random->RandomFloat(0.75f, 0.9f), life, "effects/spark");
+		CFXTracerModel	*t = new CFXTracerModel;
+		Assert(t);
+
+		t->Init(start, end, flScale, life, iSkin, bCombineFX);
+	}
+}

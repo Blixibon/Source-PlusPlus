@@ -833,6 +833,8 @@ void FX_GunshipMuzzleEffect( const Vector &origin, const QAngle &angles, float s
 	pParticle->m_uchEndAlpha	= 255;
 }
 
+extern ConVar r_tracermodels;
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : start - 
@@ -853,11 +855,18 @@ void FX_GunshipTracer( const Vector& start, const Vector& end, int velocity, boo
 	if ( totalDist <= 256 )
 		return;
 
-	const float length = random->RandomFloat( 128.0f, 256.0f );
-	const float life = ( totalDist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
-	
-	//Add it
-	FX_AddDiscreetLine( start, shotDir, velocity, length, totalDist, 5.0f, life, "effects/gunshiptracer" );
+	if (!r_tracermodels.GetBool())
+	{
+		const float length = random->RandomFloat(128.0f, 256.0f);
+		const float life = (totalDist + length) / velocity;	//NOTENOTE: We want the tail to finish its run as well
+
+		//Add it
+		FX_AddDiscreetLine(start, shotDir, velocity, length, totalDist, 5.0f, life, "effects/gunshiptracer");
+	}
+	else
+	{
+		FX_AddTracerModel(start, end, velocity, 3, true, 5.0f);
+	}
 
 	if( makeWhiz )
 	{
@@ -902,11 +911,18 @@ void FX_StriderTracer( const Vector& start, const Vector& end, int velocity, boo
 	if ( totalDist <= 256 )
 		return;
 
-	const float length = random->RandomFloat( 64.0f, 128.0f );
-	const float life = ( totalDist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
-	
-	//Add it
-	FX_AddDiscreetLine( start, shotDir, velocity, length, totalDist, 2.5f, life, "effects/gunshiptracer" );
+	if (!r_tracermodels.GetBool())
+	{
+		const float length = random->RandomFloat(64.0f, 128.0f);
+		const float life = (totalDist + length) / velocity;	//NOTENOTE: We want the tail to finish its run as well
+
+		//Add it
+		FX_AddDiscreetLine(start, shotDir, velocity, length, totalDist, 2.5f, life, "effects/gunshiptracer");
+	}
+	else
+	{
+		FX_AddTracerModel(start, end, velocity, 4, true, 2.5f);
+	}
 
 	if( makeWhiz )
 	{

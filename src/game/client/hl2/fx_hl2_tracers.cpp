@@ -22,13 +22,14 @@ extern Vector GetTracerOrigin( const CEffectData &data );
 extern void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType );
 
 extern ConVar muzzleflash_light;
+extern ConVar r_tracermodels;
 
 
-CLIENTEFFECT_REGISTER_BEGIN( PrecacheTracers )
-CLIENTEFFECT_MATERIAL( "effects/gunshiptracer" )
-CLIENTEFFECT_MATERIAL( "effects/combinemuzzle1" )
-CLIENTEFFECT_MATERIAL( "effects/combinemuzzle2_nocull" )
-CLIENTEFFECT_REGISTER_END()
+CLIENTEFFECT_REGISTER_BEGIN(PrecacheTracers)
+CLIENTEFFECT_MATERIAL("effects/gunshiptracer")
+CLIENTEFFECT_MATERIAL("effects/combinemuzzle1")
+CLIENTEFFECT_MATERIAL("effects/combinemuzzle2_nocull")
+CLIENTEFFECT_REGISTER_END();
 
 //-----------------------------------------------------------------------------
 // Purpose: Gunship's Tracer
@@ -242,11 +243,18 @@ void FX_AR2Tracer( const Vector& start, const Vector& end, int velocity, bool ma
 	if ( dist < 128 )
 		return;
 
-	float length = random->RandomFloat( 128.0f, 256.0f );
-	float life = ( dist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
-	
-	//Add it
-	FX_AddDiscreetLine( start, dir, velocity, length, dist, random->RandomFloat( 0.5f, 1.5f ), life, "effects/gunshiptracer" );
+	if (!r_tracermodels.GetBool())
+	{
+		float length = random->RandomFloat(128.0f, 256.0f);
+		float life = (dist + length) / velocity;	//NOTENOTE: We want the tail to finish its run as well
+
+		//Add it
+		FX_AddDiscreetLine(start, dir, velocity, length, dist, random->RandomFloat(0.5f, 1.5f), life, "effects/gunshiptracer");
+	}
+	else
+	{
+		FX_AddTracerModel(start, end, velocity, 2, true, random->RandomFloat(1.1f, 1.2f));
+	}
 
 	if( makeWhiz )
 	{

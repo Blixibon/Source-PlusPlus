@@ -1,0 +1,9 @@
+unlitgeneric
+{
+	$basetexture "models\ryu-gi_effect_props\incendiary\bullet3"
+	$model 1
+	$additive 1
+	$translucent 1
+	
+}
+

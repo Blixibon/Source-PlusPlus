@@ -390,6 +390,8 @@ void ClientPrecache( void )
 	CBaseEntity::PrecacheScriptSound( "Bounce.Shell" );
 	CBaseEntity::PrecacheScriptSound( "Bounce.Concrete" );
 
+	CBaseEntity::PrecacheModel("models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl");
+
 	PrecacheParticleSystem("dissolve");
 
 	PrecacheNewShells();
