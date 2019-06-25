@@ -291,8 +291,8 @@ $Sequence "flashlight" {
 }
 
 $Sequence "shootgun" {
-	"barney_anims\shootgun.smd"
 	"barney_anims\shootgun_2.smd"
+	"barney_anims\shootgun.smd"
 	activity "ACT_RANGE_ATTACK1" -1
 	blend "aim_pitch" -50 50
 	blendwidth 2
@@ -307,8 +307,8 @@ $Sequence "shootgun" {
 }
 
 $Sequence "shootgun2" {
-	"barney_anims\shootgun2.smd"
 	"barney_anims\shootgun2_2.smd"
+	"barney_anims\shootgun2.smd"
 	blend "aim_pitch" -50 50
 	blendwidth 2
 	{ event 3 1 "" }
