@@ -763,7 +763,7 @@ void CFuncMortarField::InputTrigger( inputdata_t &inputdata )
 	}
 }
 
-#ifdef HL1_DLL
+//#ifdef HL1_DLL
 
 class CMortar : public CHL1BaseGrenade
 {
@@ -823,7 +823,7 @@ void CMortar::MortarExplode( void )
 	UTIL_ScreenShake( tr.endpos, 25.0, 150.0, 1.0, 750, SHAKE_START );
 }
 
-#endif
+//#endif
 
 //=========================================================
 // Dead HEV suit prop

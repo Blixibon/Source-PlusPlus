@@ -86,6 +86,9 @@ public:
 
 	bool			OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, CBaseDoor *pDoor, float distClear, AIMoveResult_t *pResult );
 
+	//Check if this entity will ragdoll when dead.
+	//virtual bool CanBecomeRagdoll(void);
+
 	// Hacks! HL2 has a system for avoiding the player, we don't
 	// This ensures that we fall back to the real player avoidance
 	// Essentially does the opposite of what it says

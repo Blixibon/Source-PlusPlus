@@ -219,7 +219,7 @@ DEFINE_FIELD(m_flLastEnemySightTime, FIELD_TIME),
 DEFINE_FIELD(m_flTalkWaitTime, FIELD_TIME),
 //DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER ),
 
-END_DATADESC()
+END_DATADESC();
 
 
 //=========================================================
@@ -229,7 +229,7 @@ void CNPC_HGrunt::Spawn()
 {
 	Precache();
 
-	SetModel("models/hgrunt.mdl");
+	SetModel("models/half-life/hgrunt.mdl");
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -247,9 +247,9 @@ void CNPC_HGrunt::Spawn()
 	m_iSentence = HGRUNT_SENT_NONE;
 
 	CapabilitiesClear();
-	CapabilitiesAdd(bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_MOVE_GROUND);
+	CapabilitiesAdd(bits_CAP_SQUAD | bits_CAP_TURN_HEAD | bits_CAP_ANIMATEDFACE | bits_CAP_DOORS_GROUP | bits_CAP_MOVE_GROUND);
 
-	CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK1);
+	CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_AIM_GUN);
 
 	// Innate range attack for grenade
 	CapabilitiesAdd(bits_CAP_INNATE_RANGE_ATTACK2);
@@ -291,7 +291,7 @@ void CNPC_HGrunt::Spawn()
 	else if (FBitSet(m_iWeapons, HGRUNT_GRENADELAUNCHER))
 	{
 		SetBodygroup(HEAD_GROUP, HEAD_M203);
-		m_nSkin = 1; // alway dark skin
+		//m_nSkin = 1; // alway dark skin
 	}
 
 	m_flTalkWaitTime = 0;
@@ -326,7 +326,7 @@ void CNPC_HGrunt::Precache()
 {
 	m_iAmmoType = GetAmmoDef()->Index("9mmRound");
 
-	PrecacheModel("models/hgrunt.mdl");
+	PrecacheModel("models/half-life/hgrunt.mdl");
 
 	// get voice pitch
 	if (random->RandomInt(0, 1))
@@ -591,8 +591,8 @@ void CNPC_HGrunt::StartNPC(void)
 
 	if (m_pSquad && m_pSquad->IsLeader(this))
 	{
-		SetBodygroup(1, 1); // UNDONE: truly ugly hack
-		m_nSkin = 0;
+		SetBodygroup(HEAD_GROUP, HEAD_COMMANDER); // UNDONE: truly ugly hack
+		//m_nSkin = 0;
 	}
 }
 
@@ -632,7 +632,7 @@ int CNPC_HGrunt::RangeAttack1Conditions(float flDot, float flDist)
 		Vector vecSrc;
 		QAngle angAngles;
 
-		GetAttachment("0", vecSrc, angAngles);
+		GetAttachment("muzzle", vecSrc, angAngles);
 
 		//NDebugOverlay::Line( GetAbsOrigin() + GetViewOffset(), GetEnemy()->BodyTarget(GetAbsOrigin() + GetViewOffset()), 255, 0, 0, false, 0.1 );
 		// verify that a bullet fired from the gun will hit the enemy before the world.
@@ -737,7 +737,7 @@ int CNPC_HGrunt::GetGrenadeConditions(float flDot, float flDist)
 	{
 		Vector vGunPos;
 		QAngle angGunAngles;
-		GetAttachment("0", vGunPos, angGunAngles);
+		GetAttachment("muzzle", vGunPos, angGunAngles);
 
 
 		Vector vecToss = VecCheckToss(this, vGunPos, vecTarget, -1, 0.5, false);
@@ -763,7 +763,7 @@ int CNPC_HGrunt::GetGrenadeConditions(float flDot, float flDist)
 	{
 		Vector vGunPos;
 		QAngle angGunAngles;
-		GetAttachment("0", vGunPos, angGunAngles);
+		GetAttachment("muzzle", vGunPos, angGunAngles);
 
 		Vector vecToss = VecCheckThrow(this, vGunPos, vecTarget, sk_hgrunt_gspeed.GetFloat(), 0.5);
 
@@ -1035,7 +1035,7 @@ void CNPC_HGrunt::Event_Killed(const CTakeDamageInfo &info)
 	Vector	vecGunPos;
 	QAngle	vecGunAngles;
 
-	GetAttachment("0", vecGunPos, vecGunAngles);
+	GetAttachment("r_hand", vecGunPos, vecGunAngles);
 
 	// switch to body group with no gun.
 	SetBodygroup(GUN_GROUP, GUN_NONE);
@@ -1108,7 +1108,7 @@ void CNPC_HGrunt::HandleAnimEvent(animevent_t *pEvent)
 		Vector vecSrc;
 		QAngle angAngles;
 
-		GetAttachment("0", vecSrc, angAngles);
+		GetAttachment("muzzle", vecSrc, angAngles);
 
 		CGrenadeMP5 * m_pMyGrenade = (CGrenadeMP5*)Create("grenade_mp5", vecSrc, angAngles, this);
 		m_pMyGrenade->SetAbsVelocity(m_vecTossVelocity);
@@ -1215,10 +1215,10 @@ void CNPC_HGrunt::SetAim(const Vector &aimDir)
 	QAngle angDir;
 	VectorAngles(aimDir, angDir);
 
-	float curPitch = GetPoseParameter("XR");
+	float curPitch = GetPoseParameter("aim_pitch");
 	float newPitch = curPitch + UTIL_AngleDiff(UTIL_ApproachAngle(angDir.x, curPitch, 60), curPitch);
 
-	SetPoseParameter("XR", -newPitch);
+	SetPoseParameter("aim_pitch", newPitch);
 }
 
 //=========================================================
@@ -1446,7 +1446,14 @@ Activity CNPC_HGrunt::NPC_TranslateActivity(Activity eNewActivity)
 		{
 			eNewActivity = ACT_IDLE_ANGRY;
 		}
-
+		break;
+	case ACT_RELOAD:
+		{
+			if (FBitSet(m_iWeapons, HGRUNT_SHOTGUN))
+			{
+				return ACT_RELOAD_SHOTGUN;
+			}
+		}
 		break;
 	}
 
@@ -1910,12 +1917,12 @@ void CNPC_HGruntRepel::RepelUse(CBaseEntity *pActivator, CBaseEntity *pCaller, U
 	// UNDONE: position?
 	pGrunt->m_vecLastPosition = tr.endpos;
 
-	CBeam *pBeam = CBeam::BeamCreate("sprites/rope.vmt", 10);
+	CBeam *pBeam = CBeam::BeamCreate("sprites/rope.vmt", 4);
 	pBeam->PointEntInit(GetAbsOrigin() + Vector(0, 0, 112), pGrunt);
 	pBeam->SetBeamFlags(FBEAM_SOLID);
 	pBeam->SetColor(255, 255, 255);
 	pBeam->SetThink(&CBaseEntity::SUB_Remove);
-	SetNextThink(gpGlobals->curtime + -4096.0 * tr.fraction / pGrunt->GetAbsVelocity().z + 0.5);
+	pBeam->SetNextThink(gpGlobals->curtime + -4096.0 * tr.fraction / pGrunt->GetAbsVelocity().z + 0.5);
 
 	UTIL_Remove(this);
 }
@@ -2598,8 +2605,8 @@ LINK_ENTITY_TO_CLASS(monster_hgrunt_dead, CNPC_DeadHGrunt);
 //=========================================================
 void CNPC_DeadHGrunt::Spawn(void)
 {
-	PrecacheModel("models/hgrunt.mdl");
-	SetModel("models/hgrunt.mdl");
+	PrecacheModel("models/half-life/hgrunt.mdl");
+	SetModel("models/half-life/hgrunt.mdl");
 
 	ClearEffects();
 	SetSequence(0);
@@ -2620,29 +2627,34 @@ void CNPC_DeadHGrunt::Spawn(void)
 	{
 	case 0: // Grunt with Gun
 		m_nBody = 0;
-		m_nSkin = 0;
+		//m_nSkin = 0;
 		SetBodygroup(HEAD_GROUP, HEAD_GRUNT);
 		SetBodygroup(GUN_GROUP, GUN_MP5);
 		break;
 	case 1: // Commander with Gun
 		m_nBody = 0;
-		m_nSkin = 0;
+		//m_nSkin = 0;
 		SetBodygroup(HEAD_GROUP, HEAD_COMMANDER);
 		SetBodygroup(GUN_GROUP, GUN_MP5);
 		break;
 	case 2: // Grunt no Gun
 		m_nBody = 0;
-		m_nSkin = 0;
+		//m_nSkin = 0;
 		SetBodygroup(HEAD_GROUP, HEAD_GRUNT);
 		SetBodygroup(GUN_GROUP, GUN_NONE);
 		break;
 	case 3: // Commander no Gun
 		m_nBody = 0;
-		m_nSkin = 0;
+		//m_nSkin = 0;
 		SetBodygroup(HEAD_GROUP, HEAD_COMMANDER);
 		SetBodygroup(GUN_GROUP, GUN_NONE);
 		break;
 	}
+
+	if (random->RandomInt(0, 99) < 80)
+		m_nSkin = 0;	// light skin
+	else
+		m_nSkin = 1;	// dark skin
 
 	NPCInitDead();
 }

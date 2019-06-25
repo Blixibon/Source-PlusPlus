@@ -21,6 +21,7 @@
 #include "ndebugoverlay.h"
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
+#include "peter/population_manager.h"
 
 ConVar	sk_zombiehl1_health( "sk_zombiehl1_health","50");
 ConVar  sk_zombiehl1_dmg_one_slash( "sk_zombiehl1_dmg_one_slash", "20" );
@@ -38,7 +39,7 @@ void CNPC_Zombie::Spawn()
 {
 	Precache( );
 
-	SetModel(GetZombieModel());
+	SetModel(STRING(GetModelName()));
 	
 	SetRenderColor( 255, 255, 255, 255 );
 	
@@ -64,7 +65,9 @@ void CNPC_Zombie::Spawn()
 //=========================================================
 void CNPC_Zombie::Precache()
 {
-	PrecacheModel(GetZombieModel());
+	SetModelName(AllocPooledString(GetZombieModel()));
+
+	PrecacheModel(STRING(GetModelName()));
 
 	PrecacheScriptSound( "HL1Zombie.AttackHit" );
 	PrecacheScriptSound( "HL1Zombie.AttackMiss" );
@@ -198,6 +201,27 @@ void CNPC_Zombie::HandleAnimEvent( animevent_t *pEvent )
 	}
 }
 
+const char *pHL1ZPopTypes[] =
+{
+	"scientist",
+	"barney",
+	"soldier"
+};
+
+CPopulationDefinition g_hl1zombiePop("zombie_hl1", pHL1ZPopTypes, ARRAYSIZE(pHL1ZPopTypes));
+
+const char *CNPC_Zombie::GetZombieModel()
+{
+	const char *pszZombieModels[] =
+	{
+		"models/half-life/zombie.mdl",
+		"models/opfor/zombie_barney.mdl",
+		"models/opfor/zombie_soldier.mdl"
+	};
+
+	return pszZombieModels[g_hl1zombiePop.GetRandom()];
+}
+
 
 static float DamageForce( const Vector &size, float damage )
 { 
@@ -305,6 +329,15 @@ void CNPC_Zombie::RemoveIgnoredConditions ( void )
 
 	BaseClass::RemoveIgnoredConditions();
 }
+
+class CNPC_ZombieScientist : public CNPC_Zombie
+{
+public:
+	virtual const char *GetZombieModel() { return "models/half-life/zombie.mdl"; }
+};
+
+LINK_ENTITY_TO_CLASS(monster_zombie_scientist, CNPC_ZombieScientist);
+
 
 class CNPC_ZombieBarney : public CNPC_Zombie
 {

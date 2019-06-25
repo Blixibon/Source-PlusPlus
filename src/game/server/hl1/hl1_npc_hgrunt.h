@@ -78,6 +78,19 @@ public:
 	
 	void	Event_Killed( const CTakeDamageInfo &info );
 
+	/*virtual bool CanBecomeRagdoll(void)
+	{
+		bool bBase = BaseClass::CanBecomeRagdoll();
+		Activity iCurAct = GetIdealActivity();
+
+		if (iCurAct == ACT_RUN)
+			return bBase;
+
+		if (!IsFirmlyOnGround())
+			return bBase;
+
+		return false;
+	}*/
 	
 	static const char *pGruntSentences[];
 	

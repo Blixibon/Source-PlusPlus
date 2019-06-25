@@ -35,14 +35,14 @@ ConVar hl1_fixup_sentence_sndlevel( "hl1_fixup_sentence_sndlevel", "1" );
 
 //#define TALKER_LOOK 0
 
-BEGIN_DATADESC( CHL1NPCTalker )
+BEGIN_DATADESC(CHL1NPCTalker)
 
-	DEFINE_ENTITYFUNC( Touch ),
-	DEFINE_USEFUNC( FollowerUse ),
-	DEFINE_FIELD( m_bInBarnacleMouth,	FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD(m_bStartSuspicious, FIELD_BOOLEAN, "suspicious"),
+DEFINE_ENTITYFUNC(Touch),
+DEFINE_USEFUNC(FollowerUse),
+DEFINE_FIELD(m_bInBarnacleMouth, FIELD_BOOLEAN),
+DEFINE_KEYFIELD(m_bStartSuspicious, FIELD_BOOLEAN, "suspicious"),
 
-END_DATADESC()
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: Need a custom save restore so we can restore the instanced response system by name
@@ -584,6 +584,23 @@ bool CHL1NPCTalker::OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, CBaseDoor *
 
 	return false;
 }
+
+//bool CHL1NPCTalker::CanBecomeRagdoll(void)
+//{
+//	bool bBase = BaseClass::CanBecomeRagdoll();
+//	Activity iCurAct = GetIdealActivity();
+//
+//	if (iCurAct == ACT_RUN)
+//		return bBase;
+//
+//	if (m_lifeState == LIFE_DEAD || m_lifeState == LIFE_DYING)
+//		return bBase;
+//
+//	if (!IsFirmlyOnGround())
+//		return bBase;
+//
+//	return false;
+//}
 
 // HL1 version - never return Ragdoll as the automatic schedule at the end of a
 // scripted sequence

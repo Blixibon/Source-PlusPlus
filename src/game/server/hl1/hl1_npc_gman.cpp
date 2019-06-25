@@ -117,7 +117,7 @@ void CNPC_HL1GMan::Spawn()
 
 	BaseClass::Spawn();
 
-	SetModel( "models/hl1gman.mdl" );
+	SetModel( "models/half-life/gman.mdl" );
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
@@ -140,7 +140,7 @@ void CNPC_HL1GMan::Spawn()
 //=========================================================
 void CNPC_HL1GMan::Precache()
 {
-	PrecacheModel( "models/hl1gman.mdl" );
+	PrecacheModel( "models/half-life/gman.mdl" );
 }	
 
 
