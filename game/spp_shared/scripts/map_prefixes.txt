@@ -36,6 +36,8 @@
 		"leonhl2"		"hl2"
 		"he"			"human"
 		"uplink"		"bms"
+		"dwn"			"ep2"
+		"yla_"			"ep2"
 	}
 	
 	"Areas"
@@ -66,5 +68,7 @@
 		"bm_"			"blackmesa"
 		"hc_"			"blackmesa"
 		"xen_"			"xen"
+		"yla"			"outlands"
+		"dwn"			"outlands"
 	}
 }
