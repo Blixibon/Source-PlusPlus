@@ -129,7 +129,7 @@ bool CTFVideoPanel::BeginPlaybackNoAudio(const char *pFilename)
 	}
 
 	m_VideoMaterial = g_pVideo->CreateVideoMaterial("VideoMaterial", pFilename, "GAME",
-		VideoPlaybackFlags::DEFAULT_MATERIAL_OPTIONS,
+		VideoPlaybackFlags::NO_AUDIO,
 		VideoSystem::DETERMINE_FROM_FILE_EXTENSION, m_bAllowAlternateMedia);
 
 	if (m_VideoMaterial == NULL)
