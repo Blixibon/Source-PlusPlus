@@ -226,10 +226,10 @@ void InterpolateVector( float frac, const Vector& src, const Vector& dest, Vecto
 	}
 }
 
-client_textmessage_t *TextMessageGet( const char *pName )
-{ 
-	return engine->TextMessageGet( pName );
-}
+//client_textmessage_t *TextMessageGet( const char *pName )
+//{ 
+//	return engine->TextMessageGet( pName );
+//}
 
 //-----------------------------------------------------------------------------
 // Purpose: ScreenHeight returns the height of the screen, in pixels

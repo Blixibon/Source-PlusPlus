@@ -176,6 +176,8 @@ extern vgui::IInputInternal *g_InputInternal;
 #include "deferred/deferred_shared_common.h"
 #endif
 
+#include "tmessage.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -999,6 +1001,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	Mounter::MountExtraContent();
 	Mounter::RegenSentenceFile(filesystem, "scripts/sentences.txt");
 
+	TextMessageInit();
+
 	if (!Initializer::InitializeAllObjects())
 		return false;
 
@@ -1214,6 +1218,8 @@ void CHLClient::Shutdown( void )
 	
 	gHUD.Shutdown();
 	VGui_Shutdown();
+
+	TextMessageShutdown();
 	
 	ParticleMgr()->Term();
 	
