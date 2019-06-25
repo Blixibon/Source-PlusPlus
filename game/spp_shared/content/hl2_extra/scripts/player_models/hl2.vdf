@@ -22,7 +22,7 @@
 	{
 		"needs_suit"	"1"
 		"team"			"Rebels"
-		"maxplayers"	"1"
+		//"maxplayers"	"1"
 		"models"
 		{
 			"0"
@@ -195,7 +195,7 @@
 	"rebel"
 	{
 		"needs_suit"	"1"
-		"team"			"Rebels"
+		//"team"			"Rebels"
 		"maxplayers"	"0"
 		"games"
 		{
@@ -229,8 +229,8 @@
 	"hev_citizen"
 	{
 		"needs_suit"	"1"
-		"team"			"Rebels"
-		"maxplayers"	"1"
+		//"team"			"Rebels"
+		//"maxplayers"	"1"
 		"games"
 		{
 			"game"	"citizen"
@@ -260,11 +260,11 @@
 		}
 	}
 	
-	"anders"
+	"metropolice"
 	{
 		"needs_suit"	"0"
 		"team"			"Combine"
-		"maxplayers"	"1"
+		//"maxplayers"	"4"
 		"games"
 		{
 			"game"	"human"
@@ -273,10 +273,11 @@
 		{
 			"0"
 			{
-			"name"		"models/player/anders.mdl"
+			"name"		"models/player/police.mdl"
 			"bodygroups"
 			{
 				//"body"	"0"
+				"manhack"	"1"
 			}
 			"skin"		"0"
 			}
@@ -299,7 +300,7 @@
 	"combine_soldier"
 	{
 		"needs_suit"	"0"
-		"team"			"Combine"
+		//"team"			"Combine"
 		"games"
 		{
 			"game"	"none"
@@ -333,8 +334,8 @@
 	"combine_elite"
 	{
 		"needs_suit"	"0"
-		"team"			"Combine"
-		"maxplayers"	"4"
+		//"team"			"Combine"
+		"maxplayers"	"2"
 		"games"
 		{
 			"game"	"none"
