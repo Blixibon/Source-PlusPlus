@@ -85,6 +85,7 @@ public:
 	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 	virtual bool	IsCurTaskContinuousMove();
 	virtual int		GetVoiceType() { return IsElite() ? COMBINE_VOICE_ELITE : COMBINE_VOICE_NORMAL; }
+	virtual float	GetIdealSpeed() const;
 
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
 
@@ -110,6 +111,7 @@ public:
 	void			Spawn( void );
 	void			Precache( void );
 	void			Activate();
+	float			CombineSpeed;
 
 	Class_T			Classify( void );
 	bool			IsElite() { return m_fIsElite; }
@@ -133,8 +135,10 @@ public:
 	virtual void	PrescheduleThink();
 
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
+	bool			IsValidCover(const Vector &vecCoverLocation, CAI_Hint const *pHint);
 	void			BuildScheduleTestBits( void );
 	virtual int		SelectSchedule( void );
+	int				SelectScheduleObject();
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	int				SelectScheduleAttack();
 
@@ -229,6 +233,7 @@ private:
 		SCHED_COMBINE_MOVE_TO_FORCED_GREN_LOS,
 		SCHED_COMBINE_FACE_IDEAL_YAW,
 		SCHED_COMBINE_MOVE_TO_MELEE,
+		SCHED_COMBINE_FLANK_ENEMY,
 		NEXT_SCHEDULE,
 	};
 
@@ -246,6 +251,7 @@ private:
 		TASK_COMBINE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET,
 		TASK_COMBINE_GET_PATH_TO_FORCED_GREN_LOS,
 		TASK_COMBINE_SET_STANDING,
+		TASK_COMBINE_BEGIN_FLANK,
 		NEXT_TASK
 	};
 
