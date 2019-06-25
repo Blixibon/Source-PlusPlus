@@ -524,7 +524,7 @@ void CHL2GameMovement::FullLadderMove()
 {
 #if !defined( CLIENT_DLL )
 	CFuncLadder *ladder = GetLadder();
-	Assert( ladder );
+	//Assert( ladder );
 	if ( !ladder )
 	{
 		BaseClass::FullLadderMove();

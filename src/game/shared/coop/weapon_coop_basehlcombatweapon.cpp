@@ -56,7 +56,7 @@ static ConVar	v_ipitch_level( "v_ipitch_level", "0.3", FCVAR_REPLICATED | FCVAR_
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat );
 
-BEGIN_NETWORK_TABLE( CWeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat )
+BEGIN_NETWORK_TABLE(CWeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat)
 #ifndef CLIENT_DLL
 SendPropTime(SENDINFO(m_flRaiseTime)),
 SendPropTime(SENDINFO(m_flHolsterTime)),
@@ -68,7 +68,7 @@ RecvPropBool(RECVINFO(m_bLowered)),
 #endif
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponCoopBaseHLCombat )
+BEGIN_PREDICTION_DATA(CWeaponCoopBaseHLCombat)
 #ifdef CLIENT_DLL
 DEFINE_PRED_FIELD(m_bLowered, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE),
 DEFINE_PRED_FIELD(m_flRaiseTime, FIELD_TIME, FTYPEDESC_INSENDTABLE),
@@ -80,11 +80,11 @@ END_PREDICTION_DATA()
 #include "globalstate.h"
 #endif
 
-BEGIN_DATADESC( CWeaponCoopBaseHLCombat )
-    DEFINE_FIELD( m_bLowered,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flRaiseTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_flHolsterTime,		FIELD_TIME ),
-END_DATADESC()
+BEGIN_DATADESC(CWeaponCoopBaseHLCombat)
+DEFINE_FIELD(m_bLowered, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flRaiseTime, FIELD_TIME),
+DEFINE_FIELD(m_flHolsterTime, FIELD_TIME),
+END_DATADESC();
 
 //================================================================================
 //================================================================================
@@ -436,7 +436,7 @@ acttable_t CWeaponCoopBaseHLCombat::s_acttableLowered[] =
 
 Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequired)
 {
-	if (/*CanLower() &&*/ WeaponShouldBeLowered())
+	if (/*CanLower() &&*/ WeaponShouldBeLowered() || m_bLowered)
 	{
 		for (int i = 0; i < ARRAYSIZE(s_acttableLowered); i++)
 		{
