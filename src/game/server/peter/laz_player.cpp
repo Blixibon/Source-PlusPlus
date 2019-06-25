@@ -22,12 +22,15 @@
 #include "npcevent.h"
 #include "npc_manhack.h"
 #include "ai_squad.h"
+#include "world.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 
 #define HL2MP_COMMAND_MAX_RATE 0.3
+
+extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
 
 ConVar sv_forcedspecialattack("sv_laz_forcedspecial", "-1", FCVAR_CHEAT);
 
@@ -63,6 +66,7 @@ END_SEND_TABLE();
 CLaz_Player::CLaz_Player()
 {
 	m_nSpecialAttack = -1;
+	m_iPlayerSoundType = INVALID_STRING_INDEX;
 }
 
 void CLaz_Player::Precache(void)
@@ -72,11 +76,44 @@ void CLaz_Player::Precache(void)
 	PrecacheFootStepSounds();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Force this player to immediately respawn
+//-----------------------------------------------------------------------------
+void CLaz_Player::ForceRespawn(void)
+{
+	RemoveAllItems(true);
+
+	// Reset ground state for airwalk animations
+	SetGroundEntity(NULL);
+
+	// Stop any firing that was taking place before respawn.
+	m_nButtons = 0;
+
+	State_Transition(STATE_ACTIVE);
+	Spawn();
+}
+
 void CLaz_Player::Spawn(void)
 {
 	m_iszVoiceType = AllocPooledString(DEFAULT_VOICE);
 
+	if (!g_pGameRules->IsMultiplayer())
+		ChangeTeam(GetAutoTeam());
+
 	BaseClass::Spawn();
+
+	// Kind of lame, but CBasePlayer::Spawn resets a lot of the state that we initially want on.
+	// So if we're in the welcome state, call its enter function to reset 
+	if (m_iPlayerState == STATE_WELCOME)
+	{
+		StateEnterWELCOME();
+	}
+
+	// If they were dead, then they're respawning. Put them in the active state.
+	if (m_iPlayerState == STATE_DYING)
+	{
+		State_Transition(STATE_ACTIVE);
+	}
 
 	if (HasMPModel())
 	{
@@ -86,7 +123,7 @@ void CLaz_Player::Spawn(void)
 		for (int i = 0; i < variant->bodygroups.Count(); i++)
 		{
 			int iGroup = FindBodygroupByName(variant->bodygroups[i].szName);
-			SetBodygroup(iGroup, variant->bodygroups[i].body);
+			SetBodygroup(iGroup, RandomInt(variant->bodygroups[i].body, variant->bodygroups[i].bodyMax));
 		}
 
 		for (int i = 0; i < MAX_VIEWMODELS; i++)
@@ -134,9 +171,14 @@ void CLaz_Player::Spawn(void)
 
 		RemoveEffects(EF_NODRAW);
 	}
+}
 
-	if (!g_pGameRules->IsMultiplayer())
-		ChangeTeam(GetAutoTeam());
+void CLaz_Player::InitialSpawn(void)
+{
+	BaseClass::InitialSpawn();
+
+	if (gpGlobals->maxClients > 1)
+		State_Transition(STATE_WELCOME);
 }
 
 void CLaz_Player::UpdateOnRemove()
@@ -167,7 +209,7 @@ void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo
 	if (pVictim->IsNPC())
 	{
 		CFmtStrN<128> modifiers("playerenemy:%s", pVictim->GetClassname());
-		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_TAUNT, modifiers);
+		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_TAUNTS, modifiers);
 	}
 }
 
@@ -181,7 +223,7 @@ void CLaz_Player::Event_Killed(const CTakeDamageInfo & info)
 
 	BaseClass::Event_Killed(info);
 
-	StartObserverMode(OBS_MODE_DEATHCAM);
+	State_Transition(STATE_DYING);	// Transition into the dying state.
 }
 
 void CLaz_Player::HandleAnimEvent(animevent_t * pEvent)
@@ -215,7 +257,13 @@ void CLaz_Player::ChangeTeam(int iTeam)
 			return;
 		}*/
 
-	bool bKill = false;
+	//bool bKill = false;
+
+	int iOldTeam = GetTeamNumber();
+
+	// if this is our current team, just abort
+	if (iTeam == iOldTeam)
+		return;
 
 	if (g_pGameRules->IsMultiplayer() == true)
 	{
@@ -224,11 +272,6 @@ void CLaz_Player::ChangeTeam(int iTeam)
 		{
 			if (GetTeamNumber() != iTeam)
 				iTeam = LazuulRules()->GetProtaganistTeam();
-		}
-
-		if (iTeam != GetTeamNumber() && GetTeamNumber() != TEAM_UNASSIGNED)
-		{
-			bKill = true;
 		}
 	}
 
@@ -242,11 +285,22 @@ void CLaz_Player::ChangeTeam(int iTeam)
 
 		State_Transition(STATE_OBSERVER_MODE);
 	}
-
-	if (bKill == true)
+	else // active player
 	{
-		CommitSuicide();
-	}
+		if (!IsDead() && (iOldTeam >= FIRST_GAME_TEAM))
+		{
+			// Kill player if switching teams while alive
+			CommitSuicide(false, true);
+		}
+		else if (IsDead() && iOldTeam < FIRST_GAME_TEAM)
+		{
+			SetObserverMode(OBS_MODE_CHASE);
+			//HandleFadeToBlack();
+		}
+
+		if (iTeam >= FIRST_GAME_TEAM && m_iPlayerState == STATE_WELCOME)
+			State_Transition(STATE_OBSERVER_MODE);
+	}	
 
 	SetPlayerModel();
 }
@@ -315,25 +369,25 @@ bool CLaz_Player::HandleCommand_JoinTeam(int team)
 			return false;
 		}
 
-		if (GetTeamNumber() != TEAM_UNASSIGNED && !IsDead())
-		{
-			m_fNextSuicideTime = gpGlobals->curtime;	// allow the suicide to work
+		//if (GetTeamNumber() != TEAM_UNASSIGNED && !IsDead())
+		//{
+		//	m_fNextSuicideTime = gpGlobals->curtime;	// allow the suicide to work
 
-			CommitSuicide();
+		//	CommitSuicide();
 
-			// add 1 to frags to balance out the 1 subtracted for killing yourself
-			IncrementFragCount(1);
-		}
+		//	// add 1 to frags to balance out the 1 subtracted for killing yourself
+		//	IncrementFragCount(1);
+		//}
 
 		ChangeTeam(TEAM_SPECTATOR);
 
 		return true;
 	}
-	else
+	/*else
 	{
 		StopObserverMode();
 		State_Transition(STATE_ACTIVE);
-	}
+	}*/
 
 	// Switch their actual team...
 	ChangeTeam(team);
@@ -357,15 +411,18 @@ void CLaz_Player::SetPlayerModel(void)
 	if (!models.Count())
 		return;
 
-	const char *pszModel = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
 	bool bFound = false;
 	int i = 0;
-	for (i = 0; i < models.Count(); i++)
+	if (!IsFakeClient())
 	{
-		if (FStrEq(pszModel, models[i].szSectionID))
+		const char *pszModel = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
+		for (i = 0; i < models.Count(); i++)
 		{
-			bFound = true;
-			break;
+			if (FStrEq(pszModel, models[i].szSectionID))
+			{
+				bFound = true;
+				break;
+			}
 		}
 	}
 
@@ -428,6 +485,9 @@ void CLaz_Player::OnAnimEventDeployManhack(animevent_t * pEvent)
 {
 	// Let it go
 	ReleaseManhack();
+
+	if (!m_hMinion)
+		return;
 
 	Vector forward, right;
 	GetVectors(&forward, &right, NULL);
@@ -507,9 +567,16 @@ void CLaz_Player::ReleaseManhack(void)
 	// Make us active
 	pManhack->RemoveSpawnFlags(SF_NPC_WAIT_FOR_SCRIPT);
 	pManhack->ClearSchedule("Manhack released by metropolice");
-
-	// Start him with knowledge of our current enemy
 	
+	trace_t tr;
+	CTraceFilterWorldAndPropsOnly filter;
+	UTIL_TraceEntity(pManhack, pManhack->GetAbsOrigin(), pManhack->GetAbsOrigin() + Vector(0, 0, 1), pManhack->PhysicsSolidMaskForEntity(), &filter, &tr);
+	if (tr.startsolid || tr.DidHit())
+	{
+		CTakeDamageInfo info(GetWorldEntity(), GetWorldEntity(), 100.f, DMG_CRUSH);
+		pManhack->TakeDamage(info);
+		return;
+	}
 
 	// Place him into our squad so we can communicate
 	if (GetPlayerSquad())
@@ -730,6 +797,39 @@ void CLaz_Player::Special()
 #define SUITUPDATETIME	3.5
 #define SUITFIRSTUPDATETIME 0.1
 
+void UTIL_LazEmitSoundSuit(CBasePlayer *entity, const char *sample)
+{
+	float fvol;
+	int pitch = PITCH_NORM;
+
+	fvol = 0.25f;
+	if (random->RandomInt(0, 1))
+		pitch = random->RandomInt(0, 6) + 98;
+
+	CAI_TimedSemaphore *pSemaphore = (entity->GetTeamNumber() == LazuulRules()->GetProtaganistTeam()) ? &g_AIFriendliesTalkSemaphore : &g_AIFoesTalkSemaphore;
+
+	// If friendlies are talking, reduce the volume of the suit
+	if (!pSemaphore->IsAvailable(nullptr))
+	{
+		fvol *= 0.3;
+	}
+
+	if (fvol > 0.05)
+	{
+		CSingleUserRecipientFilter filter(entity);
+		filter.MakeReliable();
+
+		EmitSound_t ep;
+		ep.m_nChannel = CHAN_STATIC;
+		ep.m_pSoundName = sample;
+		ep.m_flVolume = fvol;
+		ep.m_SoundLevel = SNDLVL_NORM;
+		ep.m_nPitch = pitch;
+
+		CBaseEntity::EmitSound(filter, ENTINDEX(entity), ep);
+	}
+}
+
 void CLaz_Player::CheckSuitUpdate()
 {
 	int isentence = 0;
@@ -737,6 +837,9 @@ void CLaz_Player::CheckSuitUpdate()
 
 	// Ignore suit updates if no suit
 	if (!IsSuitEquipped())
+		return;
+
+	if (IsBot())
 		return;
 
 	// if in range of radiation source, ping geiger counter
@@ -771,7 +874,7 @@ void CLaz_Player::CheckSuitUpdate()
 
 				char sentence[512];
 				V_sprintf_safe(sentence, "!%s", engine->SentenceNameFromIndex(isentence));
-				UTIL_EmitSoundSuit(edict(), sentence);
+				UTIL_LazEmitSoundSuit(this, sentence);
 			}
 			else
 			{
@@ -802,6 +905,9 @@ void CLaz_Player::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 
 	// Ignore suit updates if no suit
 	if (!IsSuitEquipped())
+		return;
+
+	if (IsBot())
 		return;
 
 	if (g_pGameRules->IsMultiplayer())
@@ -916,6 +1022,10 @@ void CLaz_Player::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 			m_flSuitUpdate = gpGlobals->curtime + SUITUPDATETIME;
 	}
 
+}
+
+void CLaz_Player::PlayerDeathThink(void)
+{
 }
 
 Class_T CLaz_Player::Classify()
@@ -1090,7 +1200,9 @@ CLAZPlayerStateInfo *CLaz_Player::State_LookupInfo(LAZPlayerState state)
 	static CLAZPlayerStateInfo playerStateInfos[] =
 	{
 		{ STATE_ACTIVE,			"STATE_ACTIVE",			&CLaz_Player::State_Enter_ACTIVE, NULL, &CLaz_Player::State_PreThink_ACTIVE },
-		{ STATE_OBSERVER_MODE,	"STATE_OBSERVER_MODE",	&CLaz_Player::State_Enter_OBSERVER_MODE,	NULL, &CLaz_Player::State_PreThink_OBSERVER_MODE }
+		{ STATE_WELCOME,				"TF_STATE_WELCOME",				&CLaz_Player::StateEnterWELCOME,				NULL,	&CLaz_Player::StateThinkWELCOME },
+		{ STATE_OBSERVER_MODE,	"STATE_OBSERVER_MODE",	&CLaz_Player::State_Enter_OBSERVER_MODE,	NULL, &CLaz_Player::State_PreThink_OBSERVER_MODE },
+		{ STATE_DYING,				"TF_STATE_DYING",				&CLaz_Player::StateEnterDYING,				NULL,	&CLaz_Player::StateThinkDYING },
 	};
 
 	for (int i = 0; i < ARRAYSIZE(playerStateInfos); i++)
@@ -1130,20 +1242,174 @@ void CLaz_Player::State_PreThink_OBSERVER_MODE()
 	//	Assert( IsEffectActive( EF_NODRAW ) );
 
 	// Must be dead.
-	Assert(m_lifeState == LIFE_DEAD);
+	Assert(m_lifeState == LIFE_DEAD || m_lifeState == LIFE_RESPAWNABLE);
 	Assert(pl.deadflag);
+}
+
+void CLaz_Player::StateEnterWELCOME(void)
+{
+	//PickWelcomeObserverPoint();
+
+	StartObserverMode(OBS_MODE_FIXED);
+
+	// Important to set MOVETYPE_NONE or our physics object will fall while we're sitting at one of the intro cameras.
+	SetMoveType(MOVETYPE_NONE);
+	AddSolidFlags(FSOLID_NOT_SOLID);
+	AddEffects(EF_NODRAW | EF_NOSHADOW);
+
+	//PhysObjectSleep();
+
+	if (gpGlobals->eLoadType == MapLoad_Background)
+	{
+		//m_bSeenRoundInfo = true;
+
+		ChangeTeam(TEAM_SPECTATOR);
+	}
+	/*else if ((TFGameRules() && TFGameRules()->IsLoadingBugBaitReport()))
+	{
+		m_bSeenRoundInfo = true;
+
+		ChangeTeam(TF_TEAM_BLUE);
+		SetDesiredPlayerClassIndex(TF_CLASS_SCOUT);
+		ForceRespawn();
+	}
+	else if (IsInCommentaryMode())
+	{
+		m_bSeenRoundInfo = true;
+	}*/
+	else
+	{
+		//if (!IsX360())
+		//{
+		//	KeyValues *data = new KeyValues("data");
+		//	data->SetString("title", "#TF_Welcome");	// info panel title
+		//	data->SetString("type", "1");				// show userdata from stringtable entry
+		//	data->SetString("msg", "motd");			// use this stringtable entry
+		//	data->SetString("cmd", "mapinfo");		// exec this command if panel closed
+
+		//	ShowViewPortPanel(PANEL_INFO, true, data);
+
+		//	data->deleteThis();
+		//}
+		//else
+		//{
+		//	ShowViewPortPanel(PANEL_MAPINFO, true);
+		//}
+
+		//m_bSeenRoundInfo = false;
+	}
+
+	//m_bIsIdle = false;
+}
+
+void CLaz_Player::StateThinkWELCOME(void)
+{
+}
+
+void CLaz_Player::StateEnterDYING(void)
+{
+	SetMoveType(MOVETYPE_NONE);
+	AddSolidFlags(FSOLID_NOT_SOLID);
+}
+
+void CLaz_Player::StateThinkDYING(void)
+{
+	// If we have a ragdoll, it's time to go to deathcam
+	if (/*!m_bAbortFreezeCam &&*/ m_hRagdoll &&
+		(m_lifeState == LIFE_DYING || m_lifeState == LIFE_DEAD) &&
+		GetObserverMode() != OBS_MODE_FREEZECAM)
+	{
+		if (GetObserverMode() != OBS_MODE_DEATHCAM)
+		{
+			StartObserverMode(OBS_MODE_DEATHCAM);	// go to observer mode
+		}
+		//RemoveEffects(EF_NODRAW | EF_NOSHADOW);	// still draw player body
+	}
+
+	float flTimeInFreeze = spec_freeze_traveltime.GetFloat() + spec_freeze_time.GetFloat();
+	float flFreezeEnd = (m_flDeathTime + TF_DEATH_ANIMATION_TIME + flTimeInFreeze);
+	//if (!m_bPlayedFreezeCamSound  && GetObserverTarget() && GetObserverTarget() != this)
+	//{
+	//	// Start the sound so that it ends at the freezecam lock on time
+	//	float flFreezeSoundLength = 0.3;
+	//	float flFreezeSoundTime = (m_flDeathTime + TF_DEATH_ANIMATION_TIME) + spec_freeze_traveltime.GetFloat() - flFreezeSoundLength;
+	//	if (gpGlobals->curtime >= flFreezeSoundTime)
+	//	{
+	//		CSingleUserRecipientFilter filter(this);
+	//		EmitSound_t params;
+	//		params.m_flSoundTime = 0;
+	//		params.m_pSoundName = "TFPlayer.FreezeCam";
+	//		EmitSound(filter, entindex(), params);
+
+	//		m_bPlayedFreezeCamSound = true;
+	//	}
+	//}
+
+	if (gpGlobals->curtime >= (m_flDeathTime + TF_DEATH_ANIMATION_TIME))	// allow x seconds death animation / death cam
+	{
+		if (GetObserverTarget() && GetObserverTarget() != this)
+		{
+			if (/*!m_bAbortFreezeCam &&*/ gpGlobals->curtime < flFreezeEnd)
+			{
+				if (GetObserverMode() != OBS_MODE_FREEZECAM)
+				{
+					StartObserverMode(OBS_MODE_FREEZECAM);
+					//PhysObjectSleep();
+				}
+				return;
+			}
+		}
+
+		if (GetObserverMode() == OBS_MODE_FREEZECAM)
+		{
+			// If we're in freezecam, and we want out, abort.  (only if server is not using mp_fadetoblack)
+			//if (m_bAbortFreezeCam && !mp_fadetoblack.GetBool())
+			//{
+			//	if (m_hObserverTarget == NULL)
+			//	{
+			//		// find a new observer target
+			//		CheckObserverSettings();
+			//	}
+
+			//	FindInitialObserverTarget();
+			//	SetObserverMode(OBS_MODE_CHASE);
+			//	ShowViewPortPanel("specgui", ModeWantsSpectatorGUI(OBS_MODE_CHASE));
+			//}
+		}
+
+		// Don't allow anyone to respawn until freeze time is over, even if they're not
+		// in freezecam. This prevents players skipping freezecam to spawn faster.
+		if (gpGlobals->curtime < flFreezeEnd)
+			return;
+
+		if (gpGlobals->maxClients <= 1)
+		{
+			::respawn(this, false);
+			return;
+		}
+
+		m_lifeState = LIFE_RESPAWNABLE;
+
+		StopAnimation();
+
+		AddEffects(EF_NOINTERP);
+
+		if (GetMoveType() != MOVETYPE_NONE && (GetFlags() & FL_ONGROUND))
+			SetMoveType(MOVETYPE_NONE);
+
+		State_Transition(STATE_OBSERVER_MODE);
+	}
 }
 
 
 void CLaz_Player::State_Enter_ACTIVE()
 {
 	SetMoveType(MOVETYPE_WALK);
-
-	// md 8/15/07 - They'll get set back to solid when they actually respawn. If we set them solid now and mp_forcerespawn
-	// is false, then they'll be spectating but blocking live players from moving.
-	// RemoveSolidFlags( FSOLID_NOT_SOLID );
-
+	RemoveEffects(EF_NODRAW | EF_NOSHADOW);
+	RemoveSolidFlags(FSOLID_NOT_SOLID);
+	RemoveFlag(FL_NOTARGET);
 	m_Local.m_iHideHUD = 0;
+	//PhysObjectWake();
 }
 
 

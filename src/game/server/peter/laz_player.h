@@ -50,10 +50,20 @@ public:
 	CLaz_Player();
 
 	virtual void Precache(void);
+	virtual void ForceRespawn(void);
 	//virtual void CreateSounds(void);
 	//virtual void StopLoopingSounds(void);
 	virtual void Spawn(void);
+	virtual void			InitialSpawn(void);
 	virtual void UpdateOnRemove();
+
+	virtual bool	IsReadyToPlay(void)
+	{
+		if (m_iPlayerState == STATE_WELCOME)
+			return false;
+
+		return true;
+	}
 
 	//virtual void PostThink(void);
 	virtual void PreThink(void);
@@ -100,10 +110,11 @@ public:
 
 	void		SetFootsteps(const char *);
 
-	virtual void PlayStepSound(Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
+	virtual void PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
 	void	PrecacheFootStepSounds(void);
 	const char *GetPlayerModelSoundPrefix(void);
 
+	virtual void		PlayerDeathThink(void);
 
 	//virtual CStudioHdr *OnNewModel(void);
 
@@ -123,6 +134,10 @@ public:
 	void State_PreThink_ACTIVE();
 	void State_Enter_OBSERVER_MODE();
 	void State_PreThink_OBSERVER_MODE();
+	void				StateEnterWELCOME(void);
+	void				StateThinkWELCOME(void);
+	void				StateEnterDYING(void);
+	void				StateThinkDYING(void);
 
 	virtual bool		SetObserverMode(int mode);
 

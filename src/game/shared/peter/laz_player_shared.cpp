@@ -262,7 +262,7 @@ void CLaz_Player::PrecacheFootStepSounds(void)
 //			fvol - 
 //			force - force sound to play
 //-----------------------------------------------------------------------------
-void CLaz_Player::PlayStepSound(Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force)
+void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force)
 {
 	BaseClass::PlayStepSound(vecOrigin, psurface, fvol, force);
 

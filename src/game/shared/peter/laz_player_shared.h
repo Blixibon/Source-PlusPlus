@@ -15,7 +15,9 @@ enum LAZPlayerState
 {
 	// Happily running around in the game.
 	STATE_ACTIVE = 0,
+	STATE_WELCOME,
 	STATE_OBSERVER_MODE,		// Noclipping around, watching players, etc.
+	STATE_DYING,
 	NUM_PLAYER_STATES
 };
 

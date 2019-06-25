@@ -35,7 +35,7 @@ public:
 	virtual bool GetShadowCastDirection(Vector *pDirection, ShadowType_t shadowType) const;
 	virtual bool ShouldReceiveProjectedTextures(int flags);
 
-	virtual void PlayStepSound(Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
+	virtual void PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
 	void	PrecacheFootStepSounds(void);
 	const char *GetPlayerModelSoundPrefix(void);
 

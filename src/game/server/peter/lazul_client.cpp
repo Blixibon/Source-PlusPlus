@@ -60,6 +60,13 @@ void ClientActive(edict_t* pEdict, bool bLoadGame)
 		return;
 	}
 
+	if (pPlayer->IsBot())
+	{
+		CCommand cmd;
+		cmd.Tokenize("joingame");
+		pPlayer->ClientCommand(cmd);
+	}
+
 	pPlayer->InitialSpawn();
 
 	if (!bLoadGame)
@@ -108,7 +115,7 @@ void ClientGamePrecache(void)
 {
 	CBaseEntity::PrecacheModel("models/player.mdl");
 	CBaseEntity::PrecacheModel("models/gibs/agibs.mdl");
-	CBaseEntity::PrecacheModel("models/weapons/c_hands.mdl");
+	CBaseEntity::PrecacheModel("models/weapons/c_arms.mdl");
 
 	CBaseEntity::PrecacheScriptSound("HUDQuickInfo.LowAmmo");
 	CBaseEntity::PrecacheScriptSound("HUDQuickInfo.LowHealth");
