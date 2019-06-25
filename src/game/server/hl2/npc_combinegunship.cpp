@@ -51,6 +51,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef HL2_LAZUL
+#define BELLYBLAST 1
+#endif
+
 #define GUNSHIP_MSG_BIG_SHOT			1
 #define GUNSHIP_MSG_STREAKS				2
 
@@ -159,8 +163,8 @@ public:
 	}
 };
 
-BEGIN_SIMPLE_DATADESC( CGunshipRagdollMotion )
-END_DATADESC()
+BEGIN_SIMPLE_DATADESC(CGunshipRagdollMotion)
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -196,16 +200,16 @@ private:
 
 LINK_ENTITY_TO_CLASS( info_target_gunshipcrash, CTargetGunshipCrash );
 
-BEGIN_DATADESC( CTargetGunshipCrash )
-	DEFINE_FIELD( m_bDisabled, FIELD_BOOLEAN ),
+BEGIN_DATADESC(CTargetGunshipCrash)
+DEFINE_FIELD(m_bDisabled, FIELD_BOOLEAN),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+// Inputs
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnCrashed,			"OnCrashed" ),
-END_DATADESC()
+// Outputs
+DEFINE_OUTPUT(m_OnCrashed, "OnCrashed"),
+END_DATADESC();
 
 
 //===================================================================
@@ -410,78 +414,78 @@ private:
 
 LINK_ENTITY_TO_CLASS( npc_combinegunship, CNPC_CombineGunship );
 
-IMPLEMENT_SERVERCLASS_ST( CNPC_CombineGunship, DT_CombineGunship )
-	SendPropVector(SENDINFO(m_vecHitPos), -1, SPROP_COORD),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST(CNPC_CombineGunship, DT_CombineGunship)
+SendPropVector(SENDINFO(m_vecHitPos), -1, SPROP_COORD),
+END_SEND_TABLE();
 
-BEGIN_DATADESC( CNPC_CombineGunship )
+BEGIN_DATADESC(CNPC_CombineGunship)
 
-	DEFINE_ENTITYFUNC( FlyTouch ),
+DEFINE_ENTITYFUNC(FlyTouch),
 
-	DEFINE_FIELD( m_flNextGroundAttack,FIELD_TIME ),
-	DEFINE_FIELD( m_bIsGroundAttacking,FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bCanGroundAttack,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flGroundAttackTime,FIELD_TIME ),
-	DEFINE_FIELD( m_pRotorWashModel,	FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_pSmokeTrail,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hGroundAttackTarget, FIELD_EHANDLE ),
-	DEFINE_SOUNDPATCH( m_pAirExhaustSound ),
-	DEFINE_SOUNDPATCH( m_pAirBlastSound ),
-	DEFINE_SOUNDPATCH( m_pCannonSound ),
-	DEFINE_FIELD( m_vecAngAcceleration,FIELD_VECTOR ),
-	DEFINE_FIELD( m_flDeltaT,			FIELD_FLOAT ),
-	DEFINE_FIELD( m_flTimeNextAttack,	FIELD_TIME ),
-	DEFINE_FIELD( m_flNextSeeEnemySound,	FIELD_TIME ),
-	DEFINE_FIELD( m_flEndDestructTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_flNextRocket,		FIELD_TIME ),
-	DEFINE_FIELD( m_iDoSmokePuff,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_iAmmoType,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_iBurstSize,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_flBurstDelay,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_fBlindfire,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fOmniscient,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIsFiring,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iBurstHits,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_flTimeNextPing,	FIELD_TIME ),
-	DEFINE_FIELD( m_flPenetrationDepth,FIELD_FLOAT ),
-	DEFINE_FIELD( m_vecAttackPosition,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecAttackVelocity,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_angGun,				FIELD_VECTOR ),
-	DEFINE_PHYSPTR( m_pCrashingController ),
-	DEFINE_EMBEDDED( m_crashCallback ),
-	DEFINE_FIELD( m_hRagdoll,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hCrashTarget,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecHitPos,			FIELD_VECTOR ),
-	DEFINE_FIELD( m_fPatrolLoopPlaying,FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bPreFire,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bInvulnerable,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flNextGunshipCrashFind, FIELD_TIME ),
+DEFINE_FIELD(m_flNextGroundAttack, FIELD_TIME),
+DEFINE_FIELD(m_bIsGroundAttacking, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bCanGroundAttack, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flGroundAttackTime, FIELD_TIME),
+DEFINE_FIELD(m_pRotorWashModel, FIELD_CLASSPTR),
+DEFINE_FIELD(m_pSmokeTrail, FIELD_EHANDLE),
+DEFINE_FIELD(m_hGroundAttackTarget, FIELD_EHANDLE),
+DEFINE_SOUNDPATCH(m_pAirExhaustSound),
+DEFINE_SOUNDPATCH(m_pAirBlastSound),
+DEFINE_SOUNDPATCH(m_pCannonSound),
+DEFINE_FIELD(m_vecAngAcceleration, FIELD_VECTOR),
+DEFINE_FIELD(m_flDeltaT, FIELD_FLOAT),
+DEFINE_FIELD(m_flTimeNextAttack, FIELD_TIME),
+DEFINE_FIELD(m_flNextSeeEnemySound, FIELD_TIME),
+DEFINE_FIELD(m_flEndDestructTime, FIELD_TIME),
+DEFINE_FIELD(m_flNextRocket, FIELD_TIME),
+DEFINE_FIELD(m_iDoSmokePuff, FIELD_INTEGER),
+DEFINE_FIELD(m_iAmmoType, FIELD_INTEGER),
+DEFINE_FIELD(m_iBurstSize, FIELD_INTEGER),
+DEFINE_FIELD(m_flBurstDelay, FIELD_FLOAT),
+DEFINE_FIELD(m_fBlindfire, FIELD_BOOLEAN),
+DEFINE_FIELD(m_fOmniscient, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsFiring, FIELD_BOOLEAN),
+DEFINE_FIELD(m_iBurstHits, FIELD_INTEGER),
+DEFINE_FIELD(m_flTimeNextPing, FIELD_TIME),
+DEFINE_FIELD(m_flPenetrationDepth, FIELD_FLOAT),
+DEFINE_FIELD(m_vecAttackPosition, FIELD_VECTOR),
+DEFINE_FIELD(m_vecAttackVelocity, FIELD_VECTOR),
+DEFINE_FIELD(m_angGun, FIELD_VECTOR),
+DEFINE_PHYSPTR(m_pCrashingController),
+DEFINE_EMBEDDED(m_crashCallback),
+DEFINE_FIELD(m_hRagdoll, FIELD_EHANDLE),
+DEFINE_FIELD(m_hCrashTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_vecHitPos, FIELD_VECTOR),
+DEFINE_FIELD(m_fPatrolLoopPlaying, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bPreFire, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bInvulnerable, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flNextGunshipCrashFind, FIELD_TIME),
 
-	DEFINE_FIELD( m_hEnergyCore, FIELD_EHANDLE ),
+DEFINE_FIELD(m_hEnergyCore, FIELD_EHANDLE),
 
-	DEFINE_ARRAY( m_bDamageOutputsFired, FIELD_BOOLEAN, GUNSHIP_NUM_DAMAGE_OUTPUTS ),
+DEFINE_ARRAY(m_bDamageOutputsFired, FIELD_BOOLEAN, GUNSHIP_NUM_DAMAGE_OUTPUTS),
 
-	// Function pointers
-	DEFINE_INPUTFUNC( FIELD_VOID, "OmniscientOn", InputOmniscientOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "OmniscientOff", InputOmniscientOff ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPenetrationDepth", InputSetPenetrationDepth ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "BlindfireOn", InputBlindfireOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "BlindfireOff", InputBlindfireOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "SelfDestruct", InputSelfDestruct ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "SetDockingBBox", InputSetDockingBBox ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "SetNormalBBox", InputSetNormalBBox ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableGroundAttack", InputEnableGroundAttack ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableGroundAttack", InputDisableGroundAttack ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "DoGroundAttack", InputDoGroundAttack ),
+// Function pointers
+DEFINE_INPUTFUNC(FIELD_VOID, "OmniscientOn", InputOmniscientOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "OmniscientOff", InputOmniscientOff),
+DEFINE_INPUTFUNC(FIELD_FLOAT, "SetPenetrationDepth", InputSetPenetrationDepth),
+DEFINE_INPUTFUNC(FIELD_VOID, "BlindfireOn", InputBlindfireOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "BlindfireOff", InputBlindfireOff),
+DEFINE_INPUTFUNC(FIELD_VOID, "SelfDestruct", InputSelfDestruct),
+DEFINE_INPUTFUNC(FIELD_VOID, "SetDockingBBox", InputSetDockingBBox),
+DEFINE_INPUTFUNC(FIELD_VOID, "SetNormalBBox", InputSetNormalBBox),
+DEFINE_INPUTFUNC(FIELD_VOID, "EnableGroundAttack", InputEnableGroundAttack),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableGroundAttack", InputDisableGroundAttack),
+DEFINE_INPUTFUNC(FIELD_STRING, "DoGroundAttack", InputDoGroundAttack),
 
-	DEFINE_OUTPUT( m_OnFireCannon,		"OnFireCannon" ),
-	DEFINE_OUTPUT( m_OnFirstDamage,	"OnFirstDamage" ),
-	DEFINE_OUTPUT( m_OnSecondDamage,	"OnSecondDamage" ),
-	DEFINE_OUTPUT( m_OnThirdDamage,	"OnThirdDamage" ),
-	DEFINE_OUTPUT( m_OnFourthDamage,	"OnFourthDamage" ),
-	DEFINE_OUTPUT( m_OnCrashed,			"OnCrashed" ),
+DEFINE_OUTPUT(m_OnFireCannon, "OnFireCannon"),
+DEFINE_OUTPUT(m_OnFirstDamage, "OnFirstDamage"),
+DEFINE_OUTPUT(m_OnSecondDamage, "OnSecondDamage"),
+DEFINE_OUTPUT(m_OnThirdDamage, "OnThirdDamage"),
+DEFINE_OUTPUT(m_OnFourthDamage, "OnFourthDamage"),
+DEFINE_OUTPUT(m_OnCrashed, "OnCrashed"),
 
-END_DATADESC()
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -854,6 +858,9 @@ Vector CNPC_CombineGunship::GetGroundAttackHitPosition( void )
 bool CNPC_CombineGunship::CheckGroundAttack( void )
 {
 	if ( m_bCanGroundAttack == false )
+		return false;
+
+	if (HasSpawnFlags(SF_GUNSHIP_USE_CHOPPER_MODEL))
 		return false;
 
 	if ( m_bIsGroundAttacking )
