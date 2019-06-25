@@ -195,5 +195,6 @@
 #include "talker/npc_eloise.txt"
 #include "talker/npc_larson.txt"
 #include "talker/npc_metropolice.talker"
+#include "talker/player/response_rules.txt"
 
 #include "talker/bms_rules.talker"

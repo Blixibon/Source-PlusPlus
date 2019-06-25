@@ -7,6 +7,17 @@
 
 // TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
 
+response PoliceDeployManhack
+{
+	sentence "METROPOLICE_DEPLOY_MANHACK"
+}
+
+rule PoliceDeployManhack
+{
+	criteria	IsPlayer ConceptPlayerDeployManhack IsPlayerVoiceMetroPolice
+	response PoliceDeployManhack
+}
+
 response PoliceResponseReloading
 {
 	sentence "METROPOLICE_COVER_NO_AMMO"
@@ -69,7 +80,7 @@ response PoliceResponseTaunt
 
 rule PoliceTaunt
 {
-	criteria	ConceptPlayerTaunt IsPlayer IsPlayerVoiceMetroPolice
+	criteria	ConceptPlayerDeployManhack IsPlayer IsPlayerVoiceMetroPolice
 	response	PoliceResponseTaunt
 }
 

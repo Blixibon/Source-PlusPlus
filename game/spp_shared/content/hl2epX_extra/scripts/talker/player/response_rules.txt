@@ -6,7 +6,7 @@ criterion	"ConceptPlayerCoverReload"	"Concept" "TLK_PLAYER_RELOAD" required
 criterion	"ConceptPlayerGiveAmmo"		"Concept" "TLK_PLAYER_GIVEAMMO" required
 criterion	"ConceptPlayerGiveHealth"	"Concept" "TLK_PLAYER_GIVEHEALTH" required
 criterion	"ConceptPlayerTaunt"		"Concept" "TLK_PLAYER_TAUNT" required
-criterion	"ConceptPlayerKill"			"Concept" "TLK_KILLED_PLAYER" required
+criterion	"ConceptPlayerKill"			"Concept" "TLK_PLAYER_TAUNTS" required
 criterion	"ConceptPlayerDeadPlayer"	"Concept" "TLK_PLAYER_DEAD" required
 criterion	"ConceptPlayerDeadPlayerAnswer"	"Concept" "TLK_PLAYER_DEAD_ANSWER" required
 
@@ -19,6 +19,7 @@ criterion	"ConceptPlayerLead"		"Concept" "TLK_PLAYER_LEAD" required
 criterion	"ConceptPlayerGo"		"Concept" "TLK_PLAYER_GO" required
 
 criterion	"ConceptPlayerThrow"		"Concept" "TLK_PLAYER_THROW" required
+criterion	"ConceptPlayerDeployManhack"	"Concept" "TLK_PLAYER_CAST_MONOCULOUS" required
 
 // VARIABLES
 criterion	"IsPlayer"			"classname" "player" required
