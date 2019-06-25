@@ -23,9 +23,19 @@ $Project "Server (Lazuul)"
 {
 	$Folder "Source Files"
 	{
+		-$File	"$SRCDIR\game\shared\achievements_hlx.cpp"
+
 		$Folder "HL2 DLL"
 		{
 			-$File "hl2\hl2_client.cpp"
+			-$File	"$SRCDIR\game\shared\hl2\achievements_hl2.cpp"
+
+			$Folder "Episodic"
+			{
+				-$File	"$SRCDIR\game\shared\episodic\achievements_ep1.cpp"
+				-$File	"$SRCDIR\game\shared\episodic\achievements_ep2.cpp"
+				-$File	"$SRCDIR\game\shared\episodic\achievements_epx.cpp"
+			}
 		}
 
 		$Folder "Black Mesa"
