@@ -652,7 +652,7 @@ bool CNPC_PlayerCompanion::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateO
 	CAI_BaseNPC *pOther = pEntity->MyNPCPointer();
 	if ( pOther &&
 		 ( pOther->GetState() == NPC_STATE_ALERT || GetState() == NPC_STATE_ALERT ||  pOther->GetState() == NPC_STATE_COMBAT || GetState() == NPC_STATE_COMBAT ) &&
-		 pOther->IsPlayerAlly() )
+		 pOther->IsPlayerAlly(AI_IsSinglePlayer() ? nullptr : GetBestPlayer()) )
 	{
 		return true;
 	}
@@ -1598,12 +1598,12 @@ bool CNPC_PlayerCompanion::IsReadinessCapable()
 	if ( GlobalEntity_GetState("gordon_precriminal") == GLOBAL_ON )
 		return false;
 
-#ifndef HL2_EPISODIC
+//#ifndef HL2_EPISODIC
 	// Allow episodic companions to use readiness even if unarmed. This allows for the panicked
 	// citizens in ep1_c17_05 (sjb)
-	if( !GetActiveWeapon() )
+	if( !hl2_episodic.GetBool() && !GetActiveWeapon() )
 		return false;
-#endif
+//#endif
 
 	if( GetActiveWeapon() && LookupActivity("ACT_IDLE_AIM_RIFLE_STIMULATED") == ACT_INVALID )
 		return false;
@@ -3064,7 +3064,7 @@ bool CNPC_PlayerCompanion::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, 
 	if ( pMoveGoal->directTrace.flTotalDist - pMoveGoal->directTrace.flDistObstructed < GetHullWidth() * 1.5 )
 	{
 		CAI_BaseNPC *pBlocker = pMoveGoal->directTrace.pObstruction->MyNPCPointer();
-		if ( pBlocker && pBlocker->IsPlayerAlly() && !pBlocker->IsMoving() && !pBlocker->IsInAScript() &&
+		if ( pBlocker && pBlocker->IsInTeam(GetTeam()) && !pBlocker->IsMoving() && !pBlocker->IsInAScript() &&
 			 ( IsCurSchedule( SCHED_NEW_WEAPON ) ||
 			   IsCurSchedule( SCHED_GET_HEALTHKIT ) ||
 			   pBlocker->IsCurSchedule( SCHED_FAIL ) ||
