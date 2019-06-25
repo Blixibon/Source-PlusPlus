@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$basetexture"	"models\half-life\hgrunt\Gasmask_glass"
+	"$additive"	"1"
+}

@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$envmap" "models\half-life\hgrunt\DGF_chrome"
+	$envmapsphere 1
+	"$additive" "1"
+}
