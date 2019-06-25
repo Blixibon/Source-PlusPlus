@@ -527,6 +527,8 @@ public:
 	virtual void		CleanupOnDeath( CBaseEntity *pCulprit = NULL, bool bFireDeathOutput = true );
 	virtual void		UpdateOnRemove( void );
 
+	virtual bool		IsFirmlyOnGround(void);
+
 	virtual int			UpdateTransmitState();
 
 	virtual CBasePlayer *GetBestPlayer()

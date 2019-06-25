@@ -366,6 +366,7 @@ void CAI_PlayerAlly::DisplayDeathMessage( void )
 {
 	if ( m_bGameEndAlly == false )
 		return;
+
 	if (!g_pGameRules->IsMultiplayer())
 	{
 		if (npc_ally_deathmessage.GetBool() == 0)

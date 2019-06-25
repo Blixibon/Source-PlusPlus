@@ -13098,6 +13098,46 @@ bool CAI_BaseNPC::IsAllowedToDodge( void )
 	return ( m_flNextDodgeTime <= gpGlobals->curtime );
 }
 
+bool CAI_BaseNPC::IsFirmlyOnGround(void)
+{
+	if (!(GetFlags()&FL_ONGROUND))
+		return false;
+
+	trace_t tr;
+
+	float flHeight = fabs(GetHullMaxs().z - GetHullMins().z);
+	float flPctOffGround = 0.0f;
+
+	Vector vOrigin = GetAbsOrigin() + Vector(WorldAlignMins().x, WorldAlignMins().y, 0);
+	//	NDebugOverlay::Line( vOrigin, vOrigin - Vector( 0, 0, flHeight * 0.5  ), 255, 0, 0, true, 5 );
+	UTIL_TraceLine(vOrigin, vOrigin - Vector(0, 0, flHeight * 0.5), PhysicsSolidMaskForEntity(), this, GetCollisionGroup(), &tr);
+
+	flPctOffGround += tr.fraction * 0.25f;
+
+	vOrigin = GetAbsOrigin() - Vector(WorldAlignMins().x, WorldAlignMins().y, 0);
+	//	NDebugOverlay::Line( vOrigin, vOrigin - Vector( 0, 0, flHeight * 0.5  ), 255, 0, 0, true, 5 );
+	UTIL_TraceLine(vOrigin, vOrigin - Vector(0, 0, flHeight * 0.5), PhysicsSolidMaskForEntity(), this, GetCollisionGroup(), &tr);
+
+	flPctOffGround += tr.fraction * 0.25f;
+
+	vOrigin = GetAbsOrigin() + Vector(WorldAlignMins().x, -WorldAlignMins().y, 0);
+	//	NDebugOverlay::Line( vOrigin, vOrigin - Vector( 0, 0, flHeight * 0.5  ), 255, 0, 0, true, 5 );
+	UTIL_TraceLine(vOrigin, vOrigin - Vector(0, 0, flHeight * 0.5), PhysicsSolidMaskForEntity(), this, GetCollisionGroup(), &tr);
+
+	flPctOffGround += tr.fraction * 0.25f;
+
+	vOrigin = GetAbsOrigin() + Vector(-WorldAlignMins().x, WorldAlignMins().y, 0);
+	//	NDebugOverlay::Line( vOrigin, vOrigin - Vector( 0, 0, flHeight * 0.5  ), 255, 0, 0, true, 5 );
+	UTIL_TraceLine(vOrigin, vOrigin - Vector(0, 0, flHeight * 0.5), PhysicsSolidMaskForEntity(), this, GetCollisionGroup(), &tr);
+
+	flPctOffGround += tr.fraction * 0.25f;
+
+	if (flPctOffGround >= 0.4f)
+		return false;
+
+	return true;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

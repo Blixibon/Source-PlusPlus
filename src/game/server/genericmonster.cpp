@@ -296,6 +296,11 @@ void CNPC_Furniture::Spawn( )
 //-----------------------------------------------------------------------------
 void CNPC_Furniture::Precache( void )
 {
+	if (Q_strcmp("models/ministrider.mdl", STRING(GetModelName())) == 0)
+	{
+		SetModelName(AllocPooledString("models/hybrid_hunter.mdl"));
+	}
+
 	PrecacheModel( STRING( GetModelName() ) );
 }
 
