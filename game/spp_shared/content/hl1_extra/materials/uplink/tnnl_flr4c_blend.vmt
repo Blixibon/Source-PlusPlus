@@ -1,0 +1,7 @@
+"WorldVertexTransition"
+{
+	"$basetexture" "halflife/tnnl_flr4c"
+	"$basetexture2" "halflife/tnnl_flr4"
+	"%keywords" "wasteland"
+	"$surfaceprop" "concrete"
+}

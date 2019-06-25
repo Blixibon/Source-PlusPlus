@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/chair/chair"
+	"$surfaceprop" "Metal"
+}
