@@ -46,6 +46,7 @@
 #include "gamestats.h"
 #include "filters.h"
 #include "tier0/icommandline.h"
+#include "peter/gametypes.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -168,6 +169,7 @@ bool g_bCacheLegacyFlashlightStatus = true;
 bool g_bUseLegacyFlashlight;
 bool Flashlight_UseLegacyVersion( void )
 {
+#ifndef HL2_LAZUL
 	// If this is the first run through, cache off what the answer should be (cannot change during a session)
 	if ( g_bCacheLegacyFlashlightStatus )
 	{
@@ -184,6 +186,9 @@ bool Flashlight_UseLegacyVersion( void )
 
 	// Return the results
 	return g_bUseLegacyFlashlight;
+#else
+	return !hl2_episodic.GetBool() || g_pGameTypeSystem->GetCurrentGameType() == GAME_EP1;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -939,7 +944,7 @@ void CHL2_Player::StartAdmireGlovesAnimation( void )
 
 	if ( vm && !GetActiveWeapon() )
 	{
-		vm->SetWeaponModel( "models/weapons/c_hands.mdl", NULL );
+		vm->SetWeaponModel( "models/weapons/c_arms.mdl", NULL );
 		ShowViewModel( true );
 						
 		int	idealSequence = vm->SelectWeightedSequence( ACT_VM_IDLE );
