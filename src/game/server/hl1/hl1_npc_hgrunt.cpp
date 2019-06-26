@@ -833,7 +833,7 @@ void CNPC_HGrunt::TraceAttack(const CTakeDamageInfo &info, const Vector &vecDir,
 	if (ptr->hitgroup == 11)
 	{
 		// make sure we're wearing one
-		if (GetBodygroup(1) == HEAD_GRUNT && (inputinfo.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
+		if (GetBodygroup(HEAD_GROUP) == HEAD_GRUNT && (inputinfo.GetDamageType() & (DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB)))
 		{
 			// absorb damage
 			inputinfo.SetDamage(inputinfo.GetDamage() - 20);

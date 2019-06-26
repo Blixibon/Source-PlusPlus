@@ -218,6 +218,6 @@ void CHL1BaseNPC::PopulatePoseParameters()
 {
 	BaseClass::PopulatePoseParameters();
 
-	if (m_poseAim_Pitch == -1)
-		m_poseAim_Pitch = LookupPoseParameter("XR");
+	//if (m_poseAim_Pitch == -1)
+		//m_poseAim_Pitch = LookupPoseParameter("XR");
 }

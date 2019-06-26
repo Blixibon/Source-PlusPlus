@@ -57,6 +57,7 @@ $Project
 			$File	"hl1\hl1_npc_gargantua.h"
 			$File	"hl1\hl1_npc_gman.cpp"
 			$File	"hl1\hl1_npc_hassassin.cpp"
+			$File	"hl1\hl1_npc_hassault.cpp"
 			$File	"hl1\hl1_npc_headcrab.cpp"
 			$File	"hl1\hl1_npc_headcrab.h"
 			$File	"hl1\hl1_npc_hgrunt.cpp"

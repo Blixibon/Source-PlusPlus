@@ -55,6 +55,7 @@
 #include "studio_stats.h"
 #include "tier1/callqueue.h"
 #include "peter/shelleject_new.h"
+#include "fmtstr.h"
 
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
@@ -3714,6 +3715,28 @@ bool C_BaseAnimating::DispatchMuzzleEffect( const char *options, bool isFirstPer
 	// Find the attachment name
 	if ( token[0] ) 
 	{
+		KeyValues *pKV = GetSequenceKeyValues(GetSequence());
+		if (pKV)
+		{
+			KeyValues *pkvOptions = pKV->FindKey("muzzleflashadv");
+			if (pkvOptions)
+			{
+				const char *pszBodyGroup = pkvOptions->GetString("bodygroup", nullptr);
+				if (pszBodyGroup)
+				{
+					int iGroup = FindBodygroupByName(pszBodyGroup);
+					if (iGroup >= 0)
+					{
+						int iValue = GetBodygroup(iGroup);
+						CFmtStr str(token, iValue);
+						Q_strncpy(token, str.Access(), 128);
+					}
+				}
+			}
+
+			pKV->deleteThis();
+		}
+
 		attachmentIndex = LookupAttachment( token );
 
 		// Found an invalid attachment

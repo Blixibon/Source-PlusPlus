@@ -1962,6 +1962,37 @@
 	}
 }
 
+"HWGrunt.Minigun"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"		"PITCH_NORM"
+	"rndwave"
+	{
+		"wave"		"hassault/hw_shoot2.wav"
+		"wave"		"hassault/hw_shoot3.wav"
+	}
+}
+
+"HWGrunt.SpinUp"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_140db"
+	"pitch"		"PITCH_NORM"
+	"wave"		"hassault/hw_spinuploop.wav"
+}
+
+"HWGrunt.SpinDown"
+{
+	"channel"	"CHAN_ITEM"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_140db"
+	"pitch"		"PITCH_NORM"
+	"wave"		"hassault/hw_spindown.wav"
+}
+
 "Hornet.Die"
 {
 	"channel"	"CHAN_VOICE"

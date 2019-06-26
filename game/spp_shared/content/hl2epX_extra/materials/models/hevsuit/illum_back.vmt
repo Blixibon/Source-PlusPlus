@@ -1,0 +1,22 @@
+"vertexlitgeneric"
+{
+	"$baseTexture" "Models/HEVSuit/illum_back"
+	
+	"$bumpmap" "Models/HEVSuit/illum_back_normal"
+	
+	"$nodecal"	"1"
+	
+	"$selfillum" "1"
+	"$selfillummask" "Models/HEVSuit/illum_back_illum"
+	
+	"$halflambert" "0"
+	
+	"$ambientocclusion" "1"
+	
+	"$phong" "1"
+	"$phongboost" "6"
+	"$phongexponent" "6"
+	"$phongfresnelranges" "[.5 2 8]"
+	"$PhongAlbedoTint" "1"
+	"$phongtint" "[.6 .7 .65]"
+}

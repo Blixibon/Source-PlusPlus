@@ -675,7 +675,7 @@ float CAI_BlendedMotor::OverrideMaxYawSpeed( Activity activity )
 		{
 			return 15;
 		}
-		return 45; // too fast?
+		return -1; // too fast?
 		break;
 	}
 	return -1;
