@@ -206,6 +206,9 @@ $Project
 		$File	"object_motion_blur_effect.cpp"
 
 		$File	"tmessage.cpp"
+
+		$File	"$SRCDIR\game\shared\CHackedSoundEmitter.h"
+		$File	"$SRCDIR\game\shared\CHackedSoundEmitter.cpp"
 		
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
 

@@ -99,6 +99,9 @@ $Project
 		$File	"in\in_utils.cpp"
 		$File	"in\players_system.cpp"
 
+		$File	"$SRCDIR\game\shared\CHackedSoundEmitter.h"
+		$File	"$SRCDIR\game\shared\CHackedSoundEmitter.cpp"
+
 		$Folder	"Peter"
 		{
 			$File	"peter\gametypes.cpp"

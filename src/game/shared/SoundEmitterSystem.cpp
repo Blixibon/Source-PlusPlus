@@ -15,6 +15,7 @@
 #include "tier0/vprof.h"
 #include "checksum_crc.h"
 #include "tier0/icommandline.h"
+#include "CHackedSoundEmitter.h"
 
 #if defined( TF_CLIENT_DLL ) || defined( TF_DLL )
 #include "tf_shareddefs.h"
@@ -223,7 +224,39 @@ public:
 		Assert( soundemitterbase );
 #if !defined( CLIENT_DLL )
 		m_bLogPrecache = CommandLine()->CheckParm( "-makereslists" ) != NULL;
+		
+		{
+			KeyValues *manifest = new KeyValues(SHARED_MANIFEST_FILE);
+			if (manifest->LoadFromFile(filesystem, SHARED_MANIFEST_FILE, "SHARED"))
+			{
+				for (KeyValues *sub = manifest->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey())
+				{
+					if (!Q_stricmp(sub->GetName(), "precache_file"))
+					{
+						// Add and always precache
+						CSoundEmitterSystemBase::AddSoundsFromFile(sub->GetString(), false);
+						continue;
+					}
+					else if (!Q_stricmp(sub->GetName(), "preload_file"))
+					{
+						// Add and always precache
+						CSoundEmitterSystemBase::AddSoundsFromFile(sub->GetString(), true);
+						continue;
+					}
+
+					Warning("CSoundEmitterSystem::LevelInitPreEntity:  Manifest '%s' with bogus file type '%s', expecting 'preload_file' or 'precache_file'\n",
+						SHARED_MANIFEST_FILE, sub->GetName());
+				}
+			}
+			else
+			{
+				Error("Unable to load manifest file '%s'\n", SHARED_MANIFEST_FILE);
+			}
+
+			manifest->deleteThis();
+		}
 #endif
+
 		g_pClosecaption = cvar->FindVar("closecaption");
 		Assert(g_pClosecaption);
 		return soundemitterbase->ModInit();
@@ -314,7 +347,7 @@ public:
 			soundemitterbase->AddSoundOverrides( scriptfile );
 		}
 #endif
-
+#if 0
 		{
 			KeyValues *manifest = new KeyValues(SHARED_MANIFEST_FILE);
 			if (manifest->LoadFromFile(filesystem, SHARED_MANIFEST_FILE, "SHARED"))
@@ -346,7 +379,7 @@ public:
 
 			manifest->deleteThis();
 		}
-
+#endif
 #if !defined( CLIENT_DLL )
 		for ( int i=soundemitterbase->First(); i != soundemitterbase->InvalidIndex(); i=soundemitterbase->Next( i ) )
 		{

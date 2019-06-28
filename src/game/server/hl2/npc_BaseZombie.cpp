@@ -360,6 +360,9 @@ bool CNPC_BaseZombie::FindNearestPhysicsObject( int iMaxMass )
 			continue;
 
 		vcollide_t *pCollide = modelinfo->GetVCollide( pList[i]->GetModelIndex() );
+
+		if (!pCollide)
+			continue;
 		
 		Vector objMins, objMaxs;
 		physcollision->CollideGetAABB( &objMins, &objMaxs, pCollide->solids[0], pList[i]->GetAbsOrigin(), pList[i]->GetAbsAngles() );

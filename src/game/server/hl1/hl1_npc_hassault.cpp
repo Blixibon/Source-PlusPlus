@@ -3,6 +3,10 @@
 #include "hl1_shareddefs.h"
 #include "ammodef.h"
 #include "npcevent.h"
+#include "shot_manipulator.h"
+#include "ai_memory.h"
+#include "utlvector.h"
+#include "saverestore_utlvector.h"
 
 #define AE_GRUNT_FIRE_PISTOL 1
 #define AE_GRUNT_RELOAD 2
@@ -50,10 +54,20 @@ public:
 	void	StartTask(const Task_t *pTask);
 	void	RunTask(const Task_t *pTask);
 
+	// Called to gather up all relevant conditons
+	virtual void		GatherConditions(void);
+
+	// This function implements a decision tree for the NPC.  It is responsible for choosing the next behavior (schedule)
+	// based on the current conditions and state.
+	virtual int			SelectSchedule(void);
+
 	void	PainSound(const CTakeDamageInfo &info);
 	void	DeathSound(const CTakeDamageInfo &info);
 
+	virtual Vector		GetActualShootPosition(const Vector &shootOrigin);
+	virtual	Vector		GetAttackSpread(CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget = NULL);
 	void	FireGun();
+	virtual void		AimGun();
 
 	int		TranslateSchedule(int scheduleType);
 	Activity NPC_TranslateActivity(Activity eNewActivity);
@@ -61,6 +75,8 @@ public:
 	void	CheckAmmo(void);
 
 	void	Event_Killed(const CTakeDamageInfo &info);
+
+	void	UpdateSweepTargets();
 
 	void	SetWeapon(int iWeapon)
 	{
@@ -75,6 +91,12 @@ public:
 	enum {
 		SCHED_HWGRUNT_RELOAD = BaseClass::NEXT_SCHEDULE,
 		SCHED_HWGRUNT_FIRE_MINIGUN,
+		SCHED_HWGRUNT_FIRE_SWEEP_MINIGUN,
+
+		COND_HWGRUNT_NO_ENEMIES = BaseClass::NEXT_CONDITION,
+		COND_HWGRUNT_ENEMY_GROUP,
+
+		TASK_HWGRUNT_SWEEP_ENEMIES = BaseClass::NEXT_TASK,
 	};
 
 protected:
@@ -82,6 +104,10 @@ protected:
 	int		m_iAmmoTypes[NUM_HWEAPONS];
 	int		m_iClipSize;
 	float m_flNextPainTime;
+	Vector	m_vecNextAimTarget;
+	Vector	m_vecLastAimTarget;
+	CUtlVector<EHANDLE> m_vSweepEnemies;
+	EHANDLE		m_hClosestEnemy;
 };
 
 LINK_ENTITY_TO_CLASS(monster_human_assault, CNPC_HWGrunt);
@@ -89,6 +115,10 @@ LINK_ENTITY_TO_CLASS(monster_human_assault, CNPC_HWGrunt);
 BEGIN_DATADESC(CNPC_HWGrunt)
 DEFINE_KEYFIELD(m_iWeapon, FIELD_INTEGER, "weapon"),
 DEFINE_FIELD(m_iClipSize, FIELD_INTEGER),
+DEFINE_FIELD(m_vecNextAimTarget, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vecLastAimTarget, FIELD_POSITION_VECTOR),
+DEFINE_UTLVECTOR(m_vSweepEnemies, FIELD_EHANDLE),
+DEFINE_FIELD(m_hClosestEnemy, FIELD_EHANDLE),
 END_DATADESC();
 
 void CNPC_HWGrunt::Precache(void)
@@ -195,6 +225,69 @@ void CNPC_HWGrunt::Event_Killed(const CTakeDamageInfo & info)
 	BaseClass::Event_Killed(info);
 }
 
+void CNPC_HWGrunt::UpdateSweepTargets()
+{
+	if (m_vSweepEnemies.Count() < 1)
+	{
+		TaskComplete();
+		return;
+	}
+
+	if (!m_hClosestEnemy.IsValid())
+	{
+		TaskFail(FAIL_NO_ENEMY);
+		return;
+	}
+
+	Assert(m_hClosestEnemy.IsValid());
+	const float flMaxYawDelta = 45.f*0.5f;
+	Vector vecToClosest = m_hClosestEnemy->GetAbsOrigin() - GetAbsOrigin();
+	VectorNormalize(vecToClosest);
+	float flClosestYaw = UTIL_VecToYaw(vecToClosest);
+	int iLeftBound = -1;
+	int iRightBound = -1;
+	float flLeftLastDelta = 0.0f;
+	float flRightLastDelta = 0.0f;
+	for (int i = 0; i < m_vSweepEnemies.Count(); i++)
+	{
+		Vector vecToEnemy = m_vSweepEnemies[i]->GetAbsOrigin() - GetAbsOrigin();
+		VectorNormalize(vecToEnemy);
+		float flEnemyYaw = UTIL_VecToYaw(vecToEnemy);
+		float flYawDiff = AngleDiff(flEnemyYaw, flClosestYaw);
+		if (fabsf(flYawDiff) <= flMaxYawDelta)
+		{
+			if (iLeftBound < 0)
+				iLeftBound = i;
+
+			if (iRightBound < 0)
+				iRightBound = i;
+
+			if (flYawDiff > 0.0f)
+			{
+				if (fabsf(flYawDiff) > flLeftLastDelta)
+				{
+					iLeftBound = i;
+					flLeftLastDelta = fabsf(flYawDiff);
+				}
+			}
+			else
+			{
+				if (fabsf(flYawDiff) > flRightLastDelta)
+				{
+					iRightBound = i;
+					flRightLastDelta = fabsf(flYawDiff);
+				}
+			}
+		}
+	}
+
+	m_vecLastAimTarget = m_vSweepEnemies[iLeftBound]->BodyTarget(Weapon_ShootPosition(), false);
+	m_vecNextAimTarget = m_vSweepEnemies[iRightBound]->BodyTarget(Weapon_ShootPosition(), false);
+
+	GetMotor()->SetIdealYawToTargetAndUpdate(GetActualShootPosition(Weapon_ShootPosition()));
+}
+
+
 Class_T CNPC_HWGrunt::Classify(void)
 {
 	return CLASS_HUMAN_MILITARY;
@@ -280,6 +373,9 @@ void CNPC_HWGrunt::HandleAnimEvent(animevent_t * pEvent)
 		break;
 	case AE_GRUNT_RELOAD:
 		m_cAmmoLoaded = m_iClipSize;
+		ClearCondition(COND_LOW_PRIMARY_AMMO);
+		ClearCondition(COND_NO_PRIMARY_AMMO);
+		ClearCondition(COND_NO_SECONDARY_AMMO);
 		break;
 	default:
 		BaseClass::HandleAnimEvent(pEvent);
@@ -289,12 +385,137 @@ void CNPC_HWGrunt::HandleAnimEvent(animevent_t * pEvent)
 
 void CNPC_HWGrunt::StartTask(const Task_t * pTask)
 {
-	BaseClass::StartTask(pTask);
+	if (pTask->iTask == TASK_HWGRUNT_SWEEP_ENEMIES)
+	{
+		UpdateSweepTargets();
+	}
+	else
+		BaseClass::StartTask(pTask);
 }
 
 void CNPC_HWGrunt::RunTask(const Task_t * pTask)
 {
-	BaseClass::RunTask(pTask);
+	if (pTask->iTask == TASK_HWGRUNT_SWEEP_ENEMIES)
+	{
+		UpdateSweepTargets();
+	}
+	else
+		BaseClass::RunTask(pTask);
+}
+
+void CNPC_HWGrunt::GatherConditions(void)
+{
+	BaseClass::GatherConditions();
+
+	if (m_iWeapon == WEAP_MINIGUN)
+	{
+		int iEnemyCount = 0;
+		m_vSweepEnemies.Purge();
+		AIEnemiesIter_t iter;
+		float flClosestDist = FLT_MAX;
+		m_hClosestEnemy.Term();
+		for (AI_EnemyInfo_t *pEMemory = GetEnemies()->GetFirst(&iter); pEMemory != NULL; pEMemory = GetEnemies()->GetNext(&iter))
+		{
+			CBaseEntity *pEnemy = pEMemory->hEnemy;
+
+			if (!pEnemy || !pEnemy->IsAlive() || pEnemy->IsPlayer())
+			{
+				continue;
+			}
+
+			if ((pEnemy->GetFlags() & FL_NOTARGET))
+			{
+				continue;
+			}
+
+			if (m_bIgnoreUnseenEnemies)
+			{
+				const float TIME_CONSIDER_ENEMY_UNSEEN = .4;
+				if (pEMemory->timeLastSeen < gpGlobals->curtime - TIME_CONSIDER_ENEMY_UNSEEN)
+				{
+					continue;
+				}
+			}
+
+			// UNDONE: Move relationship checks into IsValidEnemy?
+			Disposition_t relation = IRelationType(pEnemy);
+			if ((relation != D_HT && relation != D_FR))
+			{
+				continue;
+			}
+
+			if (GetAcceptableTimeSeenEnemy() > 0.0 && pEMemory->timeLastSeen < GetAcceptableTimeSeenEnemy())
+			{
+				continue;
+			}
+
+			if (pEMemory->timeValidEnemy > gpGlobals->curtime)
+			{
+				continue;
+			}
+
+			// Skip enemies that have eluded me to prevent infinite loops
+			if (pEMemory->bEludedMe)
+			{
+				continue;
+			}
+
+			// Skip enemies I fear that I've never seen. (usually seen through an enemy finder)
+			if (relation == D_FR && !pEMemory->bUnforgettable && pEMemory->timeFirstSeen == AI_INVALID_TIME)
+			{
+				continue;
+			}
+
+			if (!IsValidEnemy(pEnemy))
+			{
+				continue;
+			}
+
+			if (!FVisible(pEnemy))
+				continue;
+
+			iEnemyCount++;
+			m_vSweepEnemies.AddToTail(pEnemy);
+
+			if (pEnemy->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) < flClosestDist)
+			{
+				flClosestDist = pEnemy->WorldSpaceCenter().DistToSqr(WorldSpaceCenter());
+				m_hClosestEnemy = pEnemy;
+			}
+		}
+
+		if (iEnemyCount <= 0)
+		{
+			SetCondition(COND_HWGRUNT_NO_ENEMIES);
+			ClearCondition(COND_HWGRUNT_ENEMY_GROUP);
+		}
+		else
+		{
+			//m_vSweepEnemies.Sort()
+
+			ClearCondition(COND_HWGRUNT_NO_ENEMIES);
+
+			if (iEnemyCount > 2)
+			{
+				SetCondition(COND_HWGRUNT_ENEMY_GROUP);
+			}
+			else
+				ClearCondition(COND_HWGRUNT_ENEMY_GROUP);
+		}
+	}
+}
+
+int CNPC_HWGrunt::SelectSchedule(void)
+{
+	if (m_NPCState == NPC_STATE_COMBAT)
+	{
+		if (HasCondition(COND_HWGRUNT_ENEMY_GROUP))
+		{
+			return SCHED_HWGRUNT_FIRE_SWEEP_MINIGUN;
+		}
+	}
+
+	return BaseClass::SelectSchedule();
 }
 
 void CNPC_HWGrunt::PainSound(const CTakeDamageInfo & info)
@@ -314,6 +535,68 @@ void CNPC_HWGrunt::DeathSound(const CTakeDamageInfo & info)
 	EmitSound(filter, entindex(), "HGrunt.Die");
 }
 
+//-----------------------------------------------------------------------------
+void CNPC_HWGrunt::AimGun()
+{
+	if (IsCurSchedule(SCHED_HWGRUNT_FIRE_SWEEP_MINIGUN, false))
+	{
+		Vector vecShootOrigin;
+
+		vecShootOrigin = Weapon_ShootPosition();
+		Vector vecShootDir = GetActualShootPosition(vecShootOrigin) - vecShootOrigin;
+		VectorNormalize(vecShootDir);
+
+		SetAim(vecShootDir);
+	}
+	else if (GetEnemy())
+	{
+		Vector vecShootOrigin;
+
+		vecShootOrigin = Weapon_ShootPosition();
+		Vector vecShootDir = GetShootEnemyDir(vecShootOrigin, false);
+
+		SetAim(vecShootDir);
+	}
+	else
+	{
+		RelaxAim();
+	}
+}
+
+ConVar npc_hassault_sweep_speed("npc_hassault_sweep_speed", "1.0");
+
+Vector CNPC_HWGrunt::GetActualShootPosition(const Vector & shootOrigin)
+{
+	if (GetTask() && GetTask()->iTask == TASK_HWGRUNT_SWEEP_ENEMIES)
+	{
+		float flPct = (sinf(gpGlobals->curtime*npc_hassault_sweep_speed.GetFloat())*0.5f) + 0.5f;
+
+		return VectorLerp(m_vecLastAimTarget, m_vecNextAimTarget, flPct);
+	}
+	else
+		return BaseClass::GetActualShootPosition(shootOrigin);
+}
+
+Vector CNPC_HWGrunt::GetAttackSpread(CBaseCombatWeapon * pWeapon, CBaseEntity * pTarget)
+{
+	switch (m_iWeapon)
+	{
+	case WEAP_MINIGUN:
+	default:
+		return VECTOR_CONE_15DEGREES;
+		break;
+	case WEAP_PISTOL:
+		return VECTOR_CONE_8DEGREES;
+		break;
+	case WEAP_DEAGLE:
+		return VECTOR_CONE_5DEGREES;
+		break;
+	case WEAP_357:
+		return VECTOR_CONE_2DEGREES;
+		break;
+	}
+}
+
 void CNPC_HWGrunt::FireGun()
 {
 	Vector vecShootOrigin;
@@ -322,7 +605,7 @@ void CNPC_HWGrunt::FireGun()
 	if (GetEnemy())
 	{
 		vecShootOrigin = Weapon_ShootPosition();
-		vecShootDir = GetShootEnemyDir(vecShootOrigin);
+		vecShootDir = GetActualShootTrajectory(vecShootOrigin);
 	}
 	else
 	{
@@ -336,7 +619,10 @@ void CNPC_HWGrunt::FireGun()
 			iAttachment = LookupAttachment("muzzle");
 		}
 
-		GetAttachment(iAttachment, vecShootOrigin, &vecShootDir);
+		Vector vecTmp;
+		GetAttachment(iAttachment, vecShootOrigin, &vecTmp);
+		CShotManipulator shot(vecTmp);
+		vecShootDir = shot.ApplySpread(GetAttackSpread(GetActiveWeapon()));
 	}
 
 	Vector forward, right, up;
@@ -344,7 +630,7 @@ void CNPC_HWGrunt::FireGun()
 
 	Vector	vecShellVelocity = right * random->RandomFloat(40, 90) + up * random->RandomFloat(75, 200) + forward * random->RandomFloat(-40, 40);
 	EjectShell(vecShootOrigin, vecShellVelocity, GetAbsAngles().y, 0);
-	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_10DEGREES, 2048, m_iAmmoTypes[m_iWeapon]); // shoot +-5 degrees
+	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, 2048, m_iAmmoTypes[m_iWeapon]); // shoot +-5 degrees
 
 	CPASAttenuationFilter filter(vecShootOrigin, g_pszHWFireSounds[m_iWeapon]);
 	EmitSound(filter, entindex(), g_pszHWFireSounds[m_iWeapon], &vecShootOrigin);
@@ -360,6 +646,7 @@ int CNPC_HWGrunt::TranslateSchedule(int scheduleType)
 	switch (scheduleType)
 	{
 	case SCHED_RELOAD:
+	case SCHED_HIDE_AND_RELOAD:
 		return SCHED_HWGRUNT_RELOAD;
 		break;
 	case SCHED_RANGE_ATTACK1:
@@ -413,6 +700,11 @@ Activity CNPC_HWGrunt::NPC_TranslateActivity(Activity eNewActivity)
 //------------------------------------------------------------------------------
 AI_BEGIN_CUSTOM_NPC(monster_human_assault, CNPC_HWGrunt)
 
+DECLARE_CONDITION(COND_HWGRUNT_NO_ENEMIES);
+DECLARE_CONDITION(COND_HWGRUNT_ENEMY_GROUP);
+
+DECLARE_TASK(TASK_HWGRUNT_SWEEP_ENEMIES);
+
 DEFINE_SCHEDULE(
 	SCHED_HWGRUNT_RELOAD,
 
@@ -442,6 +734,21 @@ DEFINE_SCHEDULE(
 	"		COND_HEAR_DANGER"
 	"		COND_ENEMY_DEAD"
 	"		COND_ENEMY_OCCLUDED"
+)
+
+DEFINE_SCHEDULE(
+	SCHED_HWGRUNT_FIRE_SWEEP_MINIGUN,
+
+	"	Tasks"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_FACE_ENEMY				0"
+	"		TASK_SET_ACTIVITY			ACTIVITY:ACT_RANGE_ATTACK1"
+	"		TASK_HWGRUNT_SWEEP_ENEMIES	0"
+	"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
+	"	"
+	"	Interrupts"
+	"		COND_HEAVY_DAMAGE"
+	"		COND_HWGRUNT_NO_ENEMIES"
 )
 
 AI_END_CUSTOM_NPC()
