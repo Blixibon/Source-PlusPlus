@@ -592,7 +592,7 @@ Vector CNPC_HWGrunt::GetAttackSpread(CBaseCombatWeapon * pWeapon, CBaseEntity * 
 		return VECTOR_CONE_5DEGREES;
 		break;
 	case WEAP_357:
-		return VECTOR_CONE_2DEGREES;
+		return VECTOR_CONE_1DEGREES;
 		break;
 	}
 }
