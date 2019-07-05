@@ -20,6 +20,7 @@
 		hl2_downfall	1	// Half-Life 2: Downfall
 		hl2_yla			1	// Half-Life 2: Year Long Alarm
 		metastasis		1	// MINERVA: Metastasis
+		missinginfo		1	// Missing Information
 		depot			1	// Depot Mod
 		hl2mp_low		1	// Half-Life 2: Deathmatch
 		hl1mp_low		1	// Half-Life Deathmatch Source

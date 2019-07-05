@@ -140,9 +140,6 @@ $Project
 
 		$Folder	"Base AI"
 		{
-			$File	"ScheduleObject.h"
-			$File	"ScheduleObject.cpp"
-
 			$File	"ai_baseactor.cpp"
 			$File	"ai_baseactor.h"
 			$File	"ai_basehumanoid.cpp"

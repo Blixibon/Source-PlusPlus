@@ -243,7 +243,7 @@ size(choices) : "Hull Size" : 0 =
 	]
 ]
 
-@NPCClass base(BaseNPC) studio("models/zombie.mdl") = monster_zombie : "Zombie" []
+@NPCClass base(BaseNPC) studio("models/half-life/zombie.mdl") = monster_zombie : "Zombie" []
 
 @NPCClass base(BaseNPC) studio("models/aflock.mdl") = monster_flyer_flock : "Flock of Flyers" 
 [
@@ -265,10 +265,10 @@ size(choices) : "Hull Size" : 0 =
 @NPCClass base(BaseNPC) studio("models/bullsquid.mdl") = monster_bullchicken : "BullChicken" []
 @NPCClass base(BaseNPC) studio("models/baby_headcrab.mdl") = monster_babycrab : "Baby Headcrab" []
 @NPCClass base(BaseNPC) studio("models/garg.mdl") = monster_gargantua : "Gargantua" []
-@NPCClass base(BaseNPC) studio("models/gman.mdl") = monster_gman : "G-Man" []
+@NPCClass base(BaseNPC) studio("models/half-life/gman.mdl") = monster_gman : "G-Man" []
 @NPCClass base(BaseNPC) studio("models/hassassin.mdl") = monster_human_assassin : "Human Assassin" []
-@NPCClass base(BaseNPC) studio("models/hgrunt.mdl") = monster_human_grunt : "Human Grunt" []
-@PointClass base(Targetname,RenderFields,Angles) studio("models/hgrunt.mdl") = monster_hgrunt_dead : "Dead Human Grunt"
+@NPCClass base(BaseNPC) studio("models/half-life/hgrunt.mdl") = monster_human_grunt : "Human Grunt" []
+@PointClass base(Targetname,RenderFields,Angles) studio("models/half-life/hgrunt.mdl") = monster_hgrunt_dead : "Dead Human Grunt"
 [
 	sequence(integer) : "Sequence" : 44
 	pose(Choices) : "Pose" : 0 =
@@ -283,6 +283,16 @@ size(choices) : "Hull Size" : 0 =
 		1 : "Commander with Gun"
 		2 : "Grunt no Gun"
 		3 : "Commander no Gun"
+	]
+]
+@NPCClass base(BaseNPC) studio("models/half-life/hwgrunt.mdl") = monster_human_assault : "Human Assault"
+[
+	weapon(Choices) : "Weapon" : 0 =
+	[
+		0 : "Minigun"
+		1 : "9mm Pistol"
+		2 : "Desert Eagle"
+		3 : "357 Magnum"
 	]
 ]
 @NPCClass base(BaseNPC) studio("models/miniturret.mdl") = monster_miniturret : "Mini Auto Turret"

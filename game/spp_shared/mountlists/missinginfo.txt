@@ -1,0 +1,15 @@
+"Mount"
+{
+	sourcemods
+	{
+		"head"	"0"
+		
+		"MissingInfo"
+		{
+			path_id
+			{
+				scenes 1
+			}
+		}
+	}
+}

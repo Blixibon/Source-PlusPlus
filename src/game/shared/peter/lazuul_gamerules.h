@@ -68,6 +68,8 @@ public:
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
+	virtual bool	IsConnectedUserInfoChangeAllowed(CBasePlayer *pPlayer) { return (pPlayer && pPlayer->GetTeamNumber() < FIRST_GAME_TEAM); };
+
 	// Weapon spawn/respawn control
 	virtual int WeaponShouldRespawn(CBaseCombatWeapon* pWeapon);
 	//virtual float FlWeaponRespawnTime(CBaseCombatWeapon* pWeapon);

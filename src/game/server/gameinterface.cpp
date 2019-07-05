@@ -1181,6 +1181,7 @@ void CServerGameDLL::GameServerSteamAPIActivated( void )
 	if ( steamgameserverapicontext->SteamGameServer() && engine->IsDedicatedServer() )
 	{
 		steamgameserverapicontext->SteamGameServer()->GetGameplayStats();
+		steamgameserverapicontext->SteamGameServer()->SetGameDescription(GetGameDescription());
 	}
 #endif
 

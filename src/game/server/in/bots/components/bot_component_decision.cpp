@@ -6,11 +6,11 @@
 #include "bots\bot.h"
 
 #include "bots\bot_manager.h"
+#include "players_system.h"
 
 #ifdef INSOURCE_DLL
 #include "in_gamerules.h"
 #include "in_utils.h"
-#include "players_system.h"
 #else
 #include "ai_senses.h"
 #include "gamerules.h"
@@ -182,32 +182,32 @@ bool CBotDecision::ShouldTeleport(const Vector &vecGoal) const
 {
 	// Only if nobody is watching
 	if (bot_locomotion_hiddden_teleport.GetBool()) {
-#ifdef INSOURCE_DLL
+//#ifdef INSOURCE_DLL
 		if (ThePlayersSystem->IsVisible(GetHost()))
 			return false;
 
 		if (ThePlayersSystem->IsVisible(vecGoal))
 			return false;
-#else
-		for (int i = 0; i <= gpGlobals->maxClients; ++i) {
-			CBasePlayer *pPlayer = ToInPlayer(UTIL_PlayerByIndex(i));
-
-			if (!pPlayer)
-				continue;
-
-			if (!pPlayer->IsAlive())
-				continue;
-
-			if (pPlayer->IsBot())
-				continue;
-
-			if (pPlayer == GetHost())
-				continue;
-
-			if (pPlayer->FVisible(vecGoal) && pPlayer->IsInFieldOfView(vecGoal))
-				return false;
-		}
-#endif
+//#else
+//		for (int i = 0; i <= gpGlobals->maxClients; ++i) {
+//			CBasePlayer *pPlayer = ToInPlayer(UTIL_PlayerByIndex(i));
+//
+//			if (!pPlayer)
+//				continue;
+//
+//			if (!pPlayer->IsAlive())
+//				continue;
+//
+//			if (pPlayer->IsBot())
+//				continue;
+//
+//			if (pPlayer == GetHost())
+//				continue;
+//
+//			if (pPlayer->FVisible(vecGoal) && pPlayer->IsInFieldOfView(vecGoal))
+//				return false;
+//		}
+//#endif
 	}
 
 	Vector vUpBit = GetHost()->GetAbsOrigin();
