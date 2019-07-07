@@ -1,6 +1,6 @@
 "EyeRefract"
 {
-	"$Iris"               "models/breen/eyeball_l" //"models/bloo_ltcom_zel/l4d/riot/eyeball_l_blue"			  // Iris color in RGB with cornea noise in A
+	"$Iris"               "models/odessa/eyeball_l" //"models/bloo_ltcom_zel/l4d/riot/eyeball_l_blue"			  // Iris color in RGB with cornea noise in A
 	"$AmbientOcclTexture" "Engine/eyeball_l_ambient"		// Ambient occlusion in RGB, A unused
 	"$Envmap"             "Engine/eye-reflection-cubemap-"		// Reflection environment map
 	"$CorneaTexture"      "Engine/eye-cornea"			// Special texture that has 2D cornea normal in RG and other data in BA
