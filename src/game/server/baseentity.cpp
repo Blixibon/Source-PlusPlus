@@ -62,6 +62,7 @@
 #include "env_debughistory.h"
 #include "tier1/utlstring.h"
 #include "utlhashtable.h"
+#include "ent_create_completion.h"
 
 #if defined( TF_DLL ) || defined ( TF_CLASSIC )
 #include "tf_gamerules.h"
@@ -7459,39 +7460,67 @@ void CC_Ent_Create( const CCommand& args )
 	CBaseEntity::SetAllowPrecache( allowPrecache );
 }
 
-static int EntCreateCompletion(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+//static int EntCreateCompletion(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH])
+//{
+//	int current = 0;
+//
+//	const char *cmdname = "ent_create";
+//	char *substring = NULL;
+//	int substringLen = 0;
+//	if (Q_strstr(partial, cmdname) && strlen(partial) > strlen(cmdname) + 1)
+//	{
+//		substring = (char *)partial + strlen(cmdname) + 1;
+//		substringLen = strlen(substring);
+//	}
+//
+//	for (int i = EntityFactoryDictionary()->CountFactories() - 1; i >= 0 && current < COMMAND_COMPLETION_MAXITEMS; i--)
+//	{
+//		const char *pSoundName = EntityFactoryDictionary()->GetFactoryName(i);
+//		if (pSoundName)
+//		{
+//			if (!Q_strncasecmp("npc_", pSoundName, 4) || !Q_strncasecmp("monster_", pSoundName, 8) || !Q_strncasecmp("item_", pSoundName, 5) || !Q_strncasecmp("weapon_", pSoundName, 7))
+//			{
+//				if (!substring || !Q_strncasecmp(pSoundName, substring, substringLen))
+//				{
+//					Q_snprintf(commands[current], sizeof(commands[current]), "%s %s", cmdname, pSoundName);
+//					current++;
+//				}
+//			}
+//		}
+//	}
+//
+//	return current;
+//}
+namespace EntCreate_Internal
 {
-	int current = 0;
-
-	const char *cmdname = "ent_create";
-	char *substring = NULL;
-	int substringLen = 0;
-	if (Q_strstr(partial, cmdname) && strlen(partial) > strlen(cmdname) + 1)
+	class CEntCreateCommandFunctor : public ICommandCallback
 	{
-		substring = (char *)partial + strlen(cmdname) + 1;
-		substringLen = strlen(substring);
-	}
-
-	for (int i = EntityFactoryDictionary()->CountFactories() - 1; i >= 0 && current < COMMAND_COMPLETION_MAXITEMS; i--)
-	{
-		const char *pSoundName = EntityFactoryDictionary()->GetFactoryName(i);
-		if (pSoundName)
+	public:
+		virtual void CommandCallback(const CCommand &command)
 		{
-			if (!Q_strncasecmp("npc_", pSoundName, 4) || !Q_strncasecmp("monster_", pSoundName, 8) || !Q_strncasecmp("item_", pSoundName, 5) || !Q_strncasecmp("weapon_", pSoundName, 7))
-			{
-				if (!substring || !Q_strncasecmp(pSoundName, substring, substringLen))
-				{
-					Q_snprintf(commands[current], sizeof(commands[current]), "%s %s", cmdname, pSoundName);
-					current++;
-				}
-			}
+			CC_Ent_Create(command);
 		}
-	}
+	} ent_create_command_functor;
 
-	return current;
+	class CEntCreateClassFilter : public IMapEntityFilter
+	{
+	public:
+		virtual CBaseEntity* CreateNextEntity(const char *pClassname) { return nullptr; }
+		virtual bool ShouldCreateEntity(const char *pClassname)
+		{
+			if (!Q_strncasecmp("npc_", pClassname, 4) || !Q_strncasecmp("monster_", pClassname, 8) || !Q_strncasecmp("item_", pClassname, 5) || !Q_strncasecmp("weapon_", pClassname, 7))
+			{
+				return true;
+			}
+
+			return false;
+		}
+	} ent_create_completion_filter;
+
+	CEntCreateCompletionFunctor ent_create_completion_functor("ent_create", &ent_create_completion_filter);
 }
 
-static ConCommand ent_create("ent_create", CC_Ent_Create, "Creates an entity of the given type where the player is looking.  Additional parameters can be passed in in the form: ent_create <entity name> <param 1 name> <param 1> <param 2 name> <param 2>...<param N name> <param N>", FCVAR_GAMEDLL | FCVAR_CHEAT, EntCreateCompletion);
+static ConCommand ent_create("ent_create", &EntCreate_Internal::ent_create_command_functor, "Creates an entity of the given type where the player is looking.  Additional parameters can be passed in in the form: ent_create <entity name> <param 1 name> <param 1> <param 2 name> <param 2>...<param N name> <param N>", FCVAR_GAMEDLL | FCVAR_CHEAT, &EntCreate_Internal::ent_create_completion_functor);
 
 //------------------------------------------------------------------------------
 // Purpose: Teleport a specified entity to where the player is looking

@@ -102,6 +102,8 @@ $Project
 		$File	"$SRCDIR\game\shared\CHackedSoundEmitter.h"
 		$File	"$SRCDIR\game\shared\CHackedSoundEmitter.cpp"
 
+		$File	"ent_create_completion.cpp"
+
 		$Folder	"Peter"
 		{
 			$File	"peter\gametypes.cpp"
@@ -1092,6 +1094,7 @@ $Project
 		$Lib	particles
 		$Lib	tier2
 		$Lib	tier3
+		$Lib	fgdlib
 		$ImpLibexternal steam_api
 	}
 }
