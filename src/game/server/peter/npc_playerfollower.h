@@ -76,7 +76,7 @@ public:
 
 	bool			SpeakCommandResponse(AIConcept_t concept, const char *modifiers = NULL);
 
-	CAI_BaseNPC *	GetSquadCommandRepresentative();
+	virtual CAI_BaseNPC *	GetSquadCommandRepresentative();
 	virtual bool IsCommandable() { return IsInPlayerSquad(); }
 
 	bool HaveCommandGoal() const
@@ -122,6 +122,9 @@ protected:
 	COutputEvent		m_OnStationOrder;
 	COutputEvent		m_OnPlayerUse;
 	//COutputEvent		m_OnNavFailBlocked;
+
+	AIHANDLE m_hCurrentSquadRep;
+	float m_flLastSquadRepTime;
 
 protected:
 	bool			m_bAutoSquadPreventDoubleAdd;

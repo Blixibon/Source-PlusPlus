@@ -106,9 +106,9 @@ void CNPC_PlayerFollower::OnRestore()
 //-----------------------------------------------------------------------------
 bool CNPC_PlayerFollower::IsCommandMoving()
 {
-	if (AI_IsSinglePlayer() && IsInPlayerSquad())
+	if (/*AI_IsSinglePlayer() &&*/ IsInPlayerSquad())
 	{
-		if (m_FollowBehavior.GetFollowTarget() == UTIL_GetLocalPlayer() ||
+		if (m_FollowBehavior.GetFollowTarget() == GetBestPlayer() ||
 			IsFollowingCommandPoint())
 		{
 			return (m_FollowBehavior.IsMovingToFollowTarget());
@@ -243,7 +243,7 @@ bool CNPC_PlayerFollower::ShouldAutoSummon()
 //-----------------------------------------------------------------------------
 bool CNPC_PlayerFollower::TargetOrder(CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies)
 {
-	if (pTarget->IsPlayer())
+	if (pTarget == GetBestPlayer())
 	{
 		// I'm the target! Toggle follow!
 		if (m_FollowBehavior.GetFollowTarget() != pTarget)
@@ -267,6 +267,21 @@ bool CNPC_PlayerFollower::TargetOrder(CBaseEntity *pTarget, CAI_BaseNPC **Allies
 		//	SpeakCommandResponse(TLK_STOPFOLLOW);
 		//}
 	}
+	else if (pTarget->IsBaseCombatWeapon() && IsAllowedToPickupWeapons() && m_flNextWeaponSearchTime <= gpGlobals->curtime)
+	{
+		CBaseCombatWeapon *pWeapon = pTarget->MyCombatWeaponPointer();
+
+		if (pWeapon->CanBePickedUpByNPCs() && Weapon_CanUse(pWeapon) && !pWeapon->IsLocked(this))
+		{
+			ClearSchedule("Recieved order to pick up weapon.");
+			m_flNextWeaponSearchTime = gpGlobals->curtime + 10.0;
+			// Now lock the weapon for several seconds while we go to pick it up.
+			pWeapon->Lock(10.0, this);
+			SetTarget(pWeapon);
+			SetSchedule(SCHED_NEW_WEAPON);
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -285,7 +300,7 @@ void CNPC_PlayerFollower::MoveOrder(const Vector &vecDest, CAI_BaseNPC **Allies,
 		return;
 	}
 
-	CHL2_Player *pPlayer = (CHL2_Player *)UTIL_GetLocalPlayer();
+	CBasePlayer *pPlayer = GetBestPlayer();
 
 	m_AutoSummonTimer.Set(player_squad_autosummon_time.GetFloat());
 	m_vAutoSummonAnchor = pPlayer->GetAbsOrigin();
@@ -449,7 +464,7 @@ struct FollowerSquadCandidate_t
 
 bool CNPC_PlayerFollower::IsInThisPlayerSquad(CBasePlayer* pPlayer) const
 {
-	if (!pPlayer)
+	if (!pPlayer || !IsInPlayerSquad())
 		return false;
 
 	return (m_pSquad == pPlayer->GetPlayerSquad());
@@ -844,18 +859,18 @@ bool CNPC_PlayerFollower::IsFollowingCommandPoint()
 
 CAI_BaseNPC *CNPC_PlayerFollower::GetSquadCommandRepresentative()
 {
-	if (!AI_IsSinglePlayer())
-		return NULL;
+	/*if (!AI_IsSinglePlayer())
+		return NULL;*/
 
 	if (IsInPlayerSquad())
 	{
-		static float lastTime;
-		static AIHANDLE hCurrent;
+		//static float lastTime;
+		//static AIHANDLE hCurrent;
 
-		if (gpGlobals->curtime - lastTime > 2.0 || !hCurrent || !hCurrent->IsInPlayerSquad()) // hCurrent will be NULL after level change
+		if (gpGlobals->curtime - m_flLastSquadRepTime > 2.0 || !m_hCurrentSquadRep || !m_hCurrentSquadRep->IsInPlayerSquad()) // hCurrent will be NULL after level change
 		{
-			lastTime = gpGlobals->curtime;
-			hCurrent = NULL;
+			m_flLastSquadRepTime = gpGlobals->curtime;
+			m_hCurrentSquadRep = NULL;
 
 			CUtlVectorFixed<BMSSquadMemberInfo_t, MAX_SQUAD_MEMBERS> candidates;
 			CBasePlayer* pPlayer = m_pSquad->GetPlayerCommander();
@@ -877,15 +892,15 @@ CAI_BaseNPC *CNPC_PlayerFollower::GetSquadCommandRepresentative()
 				if (candidates.Count() > 0)
 				{
 					candidates.Sort(BMSSquadSortFunc);
-					hCurrent = candidates[0].pMember;
+					m_hCurrentSquadRep = candidates[0].pMember;
 				}
 			}
 		}
 
-		if (hCurrent != NULL)
+		if (m_hCurrentSquadRep != NULL)
 		{
-			Assert(dynamic_cast<CAI_PlayerAlly *>(hCurrent.Get()) && hCurrent->IsInPlayerSquad());
-			return hCurrent;
+			Assert(dynamic_cast<CAI_PlayerAlly *>(m_hCurrentSquadRep.Get()) && m_hCurrentSquadRep->IsInPlayerSquad());
+			return m_hCurrentSquadRep;
 		}
 	}
 	return NULL;

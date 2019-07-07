@@ -423,6 +423,8 @@ void CNPC_Combine::Spawn( void )
 	m_flNextAltFireTime = gpGlobals->curtime;
 
 	NPCInit();
+
+	SetUse(&CNPC_Combine::CommanderUse);
 }
 
 //-----------------------------------------------------------------------------
