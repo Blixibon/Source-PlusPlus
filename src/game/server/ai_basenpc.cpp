@@ -610,7 +610,23 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 		SetTouch( NULL );
 	}
 
-	g_pGameRules->NPCKilled(this, info);
+	CTakeDamageInfo info_modified = info;
+	CBaseEntity *pAttacker = info.GetAttacker();
+	if ((!pAttacker || pAttacker == this || pAttacker->IsBSPModel()))
+	{
+		// Recalculate attacker if player killed himself or this was environmental death.
+		CBaseEntity* pDamager = LazuulRules()->GetRecentDamager(this, 0, TF_TIME_ENV_DEATH_KILL_CREDIT);
+		if (pDamager)
+		{
+			info_modified.SetAttacker(pDamager);
+			info_modified.SetInflictor(NULL);
+			info_modified.SetWeapon(NULL);
+			info_modified.SetDamageType(DMG_GENERIC);
+			info_modified.SetDamageCustom(TF_DMG_CUSTOM_SUICIDE);
+		}
+	}
+
+	g_pGameRules->NPCKilled(this, info_modified);
 
 	BaseClass::Event_Killed( info );
 
@@ -9980,7 +9996,7 @@ CBaseEntity *CAI_BaseNPC::FindNamedEntity( const char *name, IEntityFindFilter *
 {
 	if ( !stricmp( name, "!player" ))
 	{
-		return ( CBaseEntity * )UTIL_GetNearestPlayer(GetAbsOrigin());
+		return ( CBaseEntity * )GetBestPlayer();
 	}
 	else if ( !stricmp( name, "!enemy" ) )
 	{
@@ -12722,8 +12738,12 @@ void CAI_BaseNPC::ClearCommandGoal()
 //-----------------------------------------------------------------------------
 
 bool CAI_BaseNPC::IsInPlayerSquad() const
-{ 
+{
+#if 0
 	return ( m_pSquad && MAKE_STRING(m_pSquad->GetName()) == GetPlayerSquadName() && !CAI_Squad::IsSilentMember(this) ); 
+#else
+	return (m_pSquad && m_pSquad->GetPlayerCommander() != nullptr) && !CAI_Squad::IsSilentMember(this);
+#endif
 }
 
 
