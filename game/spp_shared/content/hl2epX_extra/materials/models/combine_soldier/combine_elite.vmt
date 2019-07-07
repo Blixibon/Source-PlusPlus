@@ -11,9 +11,9 @@
 	"$phongalbedotint" "1"										
 	"$phongfresnelranges"	"[.1 .5  1]"
 	
-	$detail	"models/combine_soldier/combine_elite_dirtmap"
+	//$detail	"models/combine_soldier/combine_elite_dirtmap"
 	$detailscale 1.0
-	$detailblendmode 8
+	//$detailblendmode 8
 	$detailblendfactor 0
 	
 		// Use separate self-illum mask on Pre DX9 hardware
