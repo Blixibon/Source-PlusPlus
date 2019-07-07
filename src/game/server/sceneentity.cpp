@@ -3793,7 +3793,29 @@ CBaseEntity *CSceneEntity::FindNamedEntity( const char *name, CBaseEntity *pActo
 
 	if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
 	{
-		entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+		//entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+		if (pActor)
+		{
+			if (pActor->IsNPC())
+			{
+				entity = pActor->MyNPCPointer()->GetBestPlayer();
+			}
+			else
+			{
+				findPlayerParams_t params;
+				params.pLooker = pActor;
+				params.life = GETPLAYER_LIFE_ALIVE;
+				params.selector = GETPLAYER_NEAREST;
+				params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
+				params.nRelation = D_LI;
+				params.pIgnoredPlayer = ToBasePlayer(pActor);
+				entity = UTIL_GetIdealPlayer(params);
+			}
+		}
+		else
+		{
+			entity = UTIL_GetMainPlayer();
+		}
 	}
 	else if ( !stricmp( name, "!target1" ) )
 	{
@@ -3920,7 +3942,40 @@ CBaseEntity *CSceneEntity::FindNamedEntityClosest( const char *name, CBaseEntity
 	} 
 	else if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
 	{
-		entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+		if (pActor)
+		{
+			if (pszSecondary && strlen(pszSecondary) > 0)
+			{
+				CBaseEntity *pActor2 = FindNamedEntityClosest(pszSecondary, pActor, false, false, NULL);
+
+				if (pActor2)
+				{
+					findPlayerParams_t params;
+					params.pLooker = pActor;
+					params.life = GETPLAYER_LIFE_ALIVE;
+					params.selector = GETPLAYER_NEAREST;
+					params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
+					params.nRelation = D_LI;
+					params.pIgnoredPlayer = ToBasePlayer(pActor);
+					params.pOrigin = &pActor2->GetAbsOrigin();
+					entity = UTIL_GetIdealPlayer(params);
+				}
+			}
+			if (!entity)
+			{
+				findPlayerParams_t params;
+				params.pLooker = pActor;
+				params.life = GETPLAYER_LIFE_ALIVE;
+				params.selector = GETPLAYER_NEAREST;
+				params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
+				params.nRelation = D_LI;
+				params.pIgnoredPlayer = ToBasePlayer(pActor);
+				entity = UTIL_GetIdealPlayer(params);
+			}
+		}
+		else
+			entity = UTIL_GetMainPlayer();
+
 		return entity;
 	}
 	else if ( !stricmp( name, "!target1" ) )
