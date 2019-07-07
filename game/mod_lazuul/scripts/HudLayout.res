@@ -370,8 +370,8 @@
 		"fieldName" "HudMessage"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	 "p100"
+		"tall"	 "p100"
 	}
 
 	HudMenu
