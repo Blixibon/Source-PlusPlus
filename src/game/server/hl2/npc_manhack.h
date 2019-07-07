@@ -87,6 +87,8 @@ public:
 		return const_cast<CNPC_Manhack *>(this)->GetBestPlayer();
 	}
 
+	virtual CAI_BaseNPC *	GetSquadCommandRepresentative();
+
 	bool			CorpseGib( const CTakeDamageInfo &info );
 	void			Event_Dying(void);
 	void			Event_Killed( const CTakeDamageInfo &info );

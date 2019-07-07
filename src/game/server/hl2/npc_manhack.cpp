@@ -816,6 +816,19 @@ int	CNPC_Manhack::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 }
 
 
+CAI_BaseNPC * CNPC_Manhack::GetSquadCommandRepresentative()
+{
+	AISquadIter_t iter;
+	for (CAI_BaseNPC *pAllyNpc = m_pSquad->GetFirstMember(&iter); pAllyNpc; pAllyNpc = m_pSquad->GetNextMember(&iter))
+	{
+		// Defer this to a squadmate that is not a manhack
+		if (!pAllyNpc->ClassMatchesExact(m_iClassname))
+			return pAllyNpc->GetSquadCommandRepresentative();
+	}
+
+	return nullptr;
+}
+
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
