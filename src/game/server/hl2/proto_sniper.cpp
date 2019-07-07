@@ -208,6 +208,8 @@ public:
 
 	void UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
 
+	// Print death notices involving this npc?
+	virtual bool		ShowInDeathnotice() { return true; }
 	virtual const char *GetDeathNoticeNameOverride() { return IsPlayerAllySniper() ? "npc_alyx" : nullptr; }
 
 	bool IsLaserOn( void ) { return m_pBeam != NULL; }
@@ -235,6 +237,10 @@ public:
 
 	virtual int SelectSchedule( void );
 	virtual int TranslateSchedule( int scheduleType );
+
+#ifdef HL2_LAZUL
+	virtual void			UpdateTeam();
+#endif
 
 	bool KeyValue( const char *szKeyName, const char *szValue );
 
@@ -846,7 +852,7 @@ bool CProtoSniper::IsPlayerAllySniper()
 
 	return IRelationType( pPlayer ) == D_LI;
 #else
-	return FindClassRelationship(CLASS_PLAYER)->disposition == D_LI;
+	return FindClassRelationship(CLASS_PLAYER)->disposition != D_HT;
 #endif
 }
 			
@@ -1355,6 +1361,8 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	m_OnDeath.FireOutput( info.GetAttacker(), this );
+
+	g_pGameRules->NPCKilled(this, info);
 
 	// Tell my killer that he got me!
 	if( info.GetAttacker() )
@@ -1868,7 +1876,15 @@ int CProtoSniper::TranslateSchedule( int scheduleType )
 	}
 	return BaseClass::TranslateSchedule( scheduleType );
 }
-
+#ifdef HL2_LAZUL
+void CProtoSniper::UpdateTeam()
+{
+	if (IsPlayerAllySniper())
+		ChangeTeam(TEAM_REBELS);
+	else
+		ChangeTeam(TEAM_COMBINE);
+}
+#endif
 //---------------------------------------------------------
 //---------------------------------------------------------
 void CProtoSniper::ScopeGlint()
@@ -2653,6 +2669,7 @@ void CProtoSniper::InputEnableSniper( inputdata_t &inputdata )
 	SetCondition( COND_SNIPER_ENABLED );
 
 	m_fEnabled = true;
+	UpdateTeam();
 }
 
 

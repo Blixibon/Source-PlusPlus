@@ -544,7 +544,7 @@ public:
 	virtual Disposition_t	IRelationType(CBaseEntity* pTarget);
 	virtual int				IRelationPriority(CBaseEntity* pTarget);
 
-	void				UpdateTeam();
+	virtual void			UpdateTeam();
 
 	virtual bool		IsVitalAlly() { return (Classify() == CLASS_PLAYER_ALLY_VITAL || Classify() == CLASS_COMBINE_VITAL); }
 
