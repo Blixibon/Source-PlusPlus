@@ -22,7 +22,7 @@
 	{
 		"needs_suit"	"1"
 		"team"			"Rebels"
-		//"maxplayers"	"1"
+		"maxplayers"	"1"
 		"models"
 		{
 			"0"
@@ -33,6 +33,15 @@
 				"body"	"1"
 			}
 			"skin"		"2"
+			}
+			"1"
+			{
+			"name"		"models/sirgibs/ragdolls/gordon_survivor_player.mdl"
+			"bodygroups"
+			{
+				"body"	"1"
+			}
+			"skin"		"3"
 			}
 		}
 		
@@ -195,7 +204,7 @@
 	"rebel"
 	{
 		"needs_suit"	"1"
-		//"team"			"Rebels"
+		"team"			"Rebels"
 		"maxplayers"	"0"
 		"games"
 		{
@@ -205,12 +214,78 @@
 		{
 			"0"
 			{
-			"name"		"models/player/rebel/male_07.mdl"
-			"bodygroups"
-			{
-				//"body"	"0"
+				"name"		"models/player/rebel/male_07.mdl"
+				"skin"		"0"
 			}
-			"skin"		"0"
+			"1"
+			{
+				"name"		"models/player/rebel/female_01.mdl"
+				"skin"		"0"
+			}
+			"2"
+			{
+				"name"		"models/player/rebel/female_02.mdl"
+				"skin"		"0"
+			}
+			"3"
+			{
+				"name"		"models/player/rebel/female_03.mdl"
+				"skin"		"0"
+			}
+			"4"
+			{
+				"name"		"models/player/rebel/female_04.mdl"
+				"skin"		"0"
+			}
+			"5"
+			{
+				"name"		"models/player/rebel/female_06.mdl"
+				"skin"		"0"
+			}
+			"6"
+			{
+				"name"		"models/player/rebel/female_07.mdl"
+				"skin"		"0"
+			}
+			"7"
+			{
+				"name"		"models/player/rebel/male_01.mdl"
+				"skin"		"0"
+			}
+			"8"
+			{
+				"name"		"models/player/rebel/male_02.mdl"
+				"skin"		"0"
+			}
+			"9"
+			{
+				"name"		"models/player/rebel/male_03.mdl"
+				"skin"		"0"
+			}
+			"10"
+			{
+				"name"		"models/player/rebel/male_04.mdl"
+				"skin"		"0"
+			}
+			"11"
+			{
+				"name"		"models/player/rebel/male_05.mdl"
+				"skin"		"0"
+			}
+			"12"
+			{
+				"name"		"models/player/rebel/male_06.mdl"
+				"skin"		"0"
+			}
+			"13"
+			{
+				"name"		"models/player/rebel/male_08.mdl"
+				"skin"		"0"
+			}
+			"14"
+			{
+				"name"		"models/player/rebel/male_09.mdl"
+				"skin"		"0"
 			}
 		}
 		
