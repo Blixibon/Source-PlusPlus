@@ -1869,7 +1869,16 @@ void CNPC_CombineGunship::Event_Killed( const CTakeDamageInfo &info )
 	controller.Play( m_pRotorSound, 1.0, 100 );
 
 	m_OnDeath.FireOutput( info.GetAttacker(), this );
+
+	// Tell my killer that he got me!
+	if (info.GetAttacker())
+	{
+		info.GetAttacker()->Event_KilledOther(this, info);
+		g_EventQueue.AddEvent(info.GetAttacker(), "KilledNPC", 0.3, this, this);
+	}
 	SendOnKilledGameEvent( info );
+
+	g_pGameRules->NPCKilled(this, info);
 
 	BeginCrash();
 

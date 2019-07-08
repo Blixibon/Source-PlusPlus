@@ -218,19 +218,19 @@ int CBoneFollowerManager::GetBoneFollowerIndex( CBoneFollower *pFollower )
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CBoneFollower )
+BEGIN_DATADESC(CBoneFollower)
 
-	DEFINE_FIELD( m_modelIndex,	FIELD_MODELINDEX ),
-	DEFINE_FIELD( m_solidIndex,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_physicsBone,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_hitGroup,	FIELD_INTEGER ),
+DEFINE_FIELD(m_modelIndex, FIELD_MODELINDEX),
+DEFINE_FIELD(m_solidIndex, FIELD_INTEGER),
+DEFINE_FIELD(m_physicsBone, FIELD_INTEGER),
+DEFINE_FIELD(m_hitGroup, FIELD_INTEGER),
 
-END_DATADESC()
+END_DATADESC();
 
-IMPLEMENT_SERVERCLASS_ST( CBoneFollower, DT_BoneFollower )
-	SendPropModelIndex(SENDINFO(m_modelIndex)),
-	SendPropInt(SENDINFO(m_solidIndex), 6, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST(CBoneFollower, DT_BoneFollower)
+SendPropModelIndex(SENDINFO(m_modelIndex)),
+SendPropInt(SENDINFO(m_solidIndex), 6, SPROP_UNSIGNED),
+END_SEND_TABLE();
 
 
 bool CBoneFollower::Init( CBaseEntity *pOwner, const char *pModelName, solid_t &solid, const Vector &position, const QAngle &orientation )

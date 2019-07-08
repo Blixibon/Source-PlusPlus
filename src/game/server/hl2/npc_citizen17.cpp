@@ -953,6 +953,10 @@ const char * CNPC_Citizen::GetDeathNoticeNameOverride()
 		return "Griggs";
 	else if (NameMatches("sheckley"))
 		return "Sheckley";
+	else if (NameMatches("larry") || NameMatches("larry2") || NameMatches("rebel_larry") || NameMatches("rebels_larry"))
+		return "Larry";
+	else if (NameMatches("sarah") || NameMatches("rebel_sarah"))
+		return "Sarah";
 
 	return nullptr;
 }
@@ -1020,7 +1024,7 @@ void CNPC_Citizen::GatherConditions()
 	if( IsInPlayerSquad() && hl2_episodic.GetBool() )
 	{
 		// Leave the player squad if someone has made me neutral to player.
-		if( IRelationType(UTIL_GetLocalPlayer()) == D_NU )
+		if( IRelationType(GetBestPlayer()) == D_NU )
 		{
 			RemoveFromPlayerSquad();
 		}

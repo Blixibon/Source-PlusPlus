@@ -483,7 +483,7 @@ void CNPC_Tentacle::Cycle( void )
 	//NDebugOverlay::Cross3D( EarPosition(), 32, 255, 0, 0, false, 0.1 );
 
 	// ALERT( at_console, "%s %.2f %d %d\n", STRING( pev->targetname ), pev->origin.z, m_MonsterState, m_IdealMonsterState );
-	SetNextThink( gpGlobals->curtime + 0.1 );
+	SetNextThink( gpGlobals->curtime + TICKS_TO_TIME(2) );
 
 	// ALERT( at_console, "%s %d %d %d %f %f\n", STRING( pev->targetname ), pev->sequence, m_iGoalAnim, m_iDir, pev->framerate, pev->health );
 

@@ -941,7 +941,7 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 
 					if (GetActiveWeapon())
 					{
-						SpeakIfAllowed(TLK_ATTACKING, UTIL_VarArgs("attacking_with_weapon:%s", GetActiveWeapon()->GetClassname()));
+						SpeakIfAllowed(TLK_ATTACKING, CFmtStr("attacking_with_weapon:%s", GetActiveWeapon()->GetClassname()));
 					}
 
 					// Wait two seconds

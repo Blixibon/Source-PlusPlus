@@ -23,7 +23,7 @@
 #define SF_FLOOR_TURRET_STARTINACTIVE		0x00000040
 #define SF_FLOOR_TURRET_OUT_OF_AMMO			0x00000100
 
-#define	FLOOR_TURRET_PORTAL_MODEL	"models/props/Turret_01.mdl"
+#define	FLOOR_TURRET_PORTAL_MODEL	"models/npcs/turret/turret.mdl"
 #define FLOOR_TURRET_GLOW_SPRITE	"sprites/glow1.vmt"
 #define FLOOR_TURRET_BC_YAW			"aim_yaw"
 #define FLOOR_TURRET_BC_PITCH		"aim_pitch"
@@ -361,7 +361,7 @@ Vector CNPC_Portal_FloorTurret::GetAutoAimCenter()
 //-----------------------------------------------------------------------------
 void CNPC_Portal_FloorTurret::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
-	if ( m_lifeState == LIFE_ALIVE && m_bEnabled )
+	if ( m_lifeState == LIFE_ALIVE && m_bEnabled && !IsPlayerAlly(pPhysGunUser))
 	{
 		m_bActive = true;
 		SetThink( &CNPC_Portal_FloorTurret::HeldThink );

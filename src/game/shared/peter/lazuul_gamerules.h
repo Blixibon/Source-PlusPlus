@@ -57,6 +57,8 @@ public:
 
 	virtual bool			ShouldCollide(int collisionGroup0, int collisionGroup1);
 	virtual bool			ShouldUseRobustRadiusDamage(CBaseEntity* pEntity);
+
+	virtual bool	IsConnectedUserInfoChangeAllowed(CBasePlayer *pPlayer) { return true; }
 #ifndef CLIENT_DLL
 	virtual bool			ShouldAutoAim(CBasePlayer* pPlayer, edict_t* target);
 	virtual float			GetAutoAimScale(CBasePlayer* pPlayer);
@@ -67,8 +69,6 @@ public:
 
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
-
-	virtual bool	IsConnectedUserInfoChangeAllowed(CBasePlayer *pPlayer) { return (pPlayer && pPlayer->GetTeamNumber() < FIRST_GAME_TEAM); };
 
 	// Weapon spawn/respawn control
 	virtual int WeaponShouldRespawn(CBaseCombatWeapon* pWeapon);
