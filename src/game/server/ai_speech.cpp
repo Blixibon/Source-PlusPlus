@@ -284,7 +284,7 @@ bool CAI_Expresser::SpeakFindResponse( AI_Response &outResponse, AIConcept_t con
 	AI_CriteriaSet set;
 	// Always include the concept name
 	set.AppendCriteria( "concept", concept, CONCEPT_WEIGHT );
-
+#ifndef HL2_LAZUL
 	// Always include any optional modifiers
 	if ( modifiers )
 	{
@@ -306,7 +306,7 @@ bool CAI_Expresser::SpeakFindResponse( AI_Response &outResponse, AIConcept_t con
 			}
 		}
 	}
-
+#endif
 	// Let our outer fill in most match criteria
 	GetOuter()->ModifyOrAppendCriteria( set );
 
@@ -317,6 +317,30 @@ bool CAI_Expresser::SpeakFindResponse( AI_Response &outResponse, AIConcept_t con
 		if( pPlayer )
 			pPlayer->ModifyOrAppendPlayerCriteria( set );
 	}
+
+#ifdef HL2_LAZUL
+	// Always include any optional modifiers
+	if (modifiers)
+	{
+		char copy_modifiers[255];
+		const char *pCopy;
+		char key[128] = { 0 };
+		char value[128] = { 0 };
+
+		Q_strncpy(copy_modifiers, modifiers, sizeof(copy_modifiers));
+		pCopy = copy_modifiers;
+
+		while (pCopy)
+		{
+			pCopy = SplitContext(pCopy, key, sizeof(key), value, sizeof(value), NULL);
+
+			if (*key && *value)
+			{
+				set.AppendCriteria(key, value, CONCEPT_WEIGHT);
+			}
+		}
+	}
+#endif
 
 	// Now that we have a criteria set, ask for a suitable response
 	bool found = rs->FindBestResponse( set, outResponse, this );

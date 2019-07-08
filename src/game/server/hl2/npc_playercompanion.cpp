@@ -1093,7 +1093,7 @@ void CNPC_PlayerCompanion::StartTask( const Task_t *pTask )
 		{
 			if ( GetActiveWeapon() && m_AnnounceAttackTimer.Expired() )
 			{
-				if ( SpeakIfAllowed( TLK_ATTACKING, UTIL_VarArgs("attacking_with_weapon:%s", GetActiveWeapon()->GetClassname()) ) )
+				if ( SpeakIfAllowed( TLK_ATTACKING, CFmtStr("attacking_with_weapon:%s", GetActiveWeapon()->GetClassname()) ) )
 				{
 					m_AnnounceAttackTimer.Set( 10, 30 );
 				}

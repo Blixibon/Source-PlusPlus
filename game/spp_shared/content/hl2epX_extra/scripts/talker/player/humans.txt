@@ -124,29 +124,24 @@ rule PlayerGiveHealth
 
 // TLK_PLAYER_TAUNT
 
-response PlayerResponseTauntMale
-{
-	scene "scenes/npc/$gender01/nice.vcd"
-	scene "scenes/npc/$gender01/oneforme.vcd"
-	scene "scenes/npc/$gender01/evenodds.vcd"
-}
-
-response PlayerResponseTaunt
-{
-	scene "scenes/npc/$gender01/gotone01.vcd"
-	scene "scenes/npc/$gender01/gotone02.vcd"
-	scene "scenes/npc/$gender01/likethat.vcd"
-
-	scene "scenes/npc/$gender01/fantastic01.vcd"
-	scene "scenes/npc/$gender01/fantastic02.vcd"
-
-	scene "scenes/npc/$gender01/goodgod.vcd"
-}
-
 rule PlayerTaunt
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceCitizen
-	response	PlayerResponseTaunt
+	response	CitizenEnemyDead
+}
+
+response "PlayerKillStrider"
+{
+	scene "scenes/outland_12/citizen_celebrate2.vcd"
+	scene "scenes/outland_12/citizen_celebrate4.vcd"
+	scene "scenes/outland_12/citizen_celebrate5.vcd"
+	scene "scenes/outland_12/citizen_celebrate7.vcd"
+}
+
+rule PlayerKillStrider
+{ 
+	criteria		ConceptPlayerKill IsPlayer IsPlayerVoiceCitizen PlayerEnemyIsStrider IsPlayerModelMale
+	response		PlayerKillStrider
 }
 
 // TLK_PLAYER_DEAD
@@ -277,6 +272,18 @@ rule PlayerThanks
 	response	PlayerResponseThanks
 }
 
+rule PlayerCitizenAntLionDanger
+{
+	criteria		IsPlayer IsPlayerVoiceCitizen ConceptPlayerAttacking PlayerEnemyIsAntLion
+	response		CitizenAntLionDanger
+}
+
+rule PlayerCitizenFiringRPG
+{
+	criteria		IsPlayer IsPlayerVoiceCitizen IsRPGUser ConceptPlayerAttacking
+	response		CitizenFiringRPG
+}
+
 // TLK_PLAYER_INCOMING
 
 response PlayerResponseIncoming
@@ -402,13 +409,34 @@ rule PlayerEnemyMetro
 rule PlayerEnemyZombine
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCitizen PlayerEnemyIsZombine
-	response	CitizenZombieGroup
+	response	CitizenZombine
 }
 
 rule PlayerEnemyHunter
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceCitizen PlayerEnemyIsHunter
 	response	CitizenCombineGroup
+}
+
+rule PlayerCitizenStartCombatTurretFloor
+{
+	criteria    ConceptPlayerEnemy IsPlayer IsPlayerVoiceCitizen
+	playerenemy npc_turret_floor required
+	response    CitizenTurret
+}
+
+rule PlayerCitizenStartCombatTurretGround
+{
+	criteria    ConceptPlayerEnemy IsPlayer IsPlayerVoiceCitizen
+	playerenemy npc_turret_gound required
+	response    CitizenTurretGround
+}
+
+rule PlayerCitizenStartCombatTurretCeiling
+{
+	criteria    ConceptPlayerEnemy IsPlayer IsPlayerVoiceCitizen
+	playerenemy npc_turret_ceiling required
+	response    CitizenTurret
 }
 
 // TLK_PLAYER_FOLLOW

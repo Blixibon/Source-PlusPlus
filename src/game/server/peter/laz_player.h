@@ -57,6 +57,8 @@ public:
 	virtual void			InitialSpawn(void);
 	virtual void UpdateOnRemove();
 
+	virtual void DoMuzzleFlash();
+
 	virtual bool	IsReadyToPlay(void)
 	{
 		if (m_iPlayerState == STATE_WELCOME)
@@ -118,8 +120,13 @@ public:
 
 	//virtual CStudioHdr *OnNewModel(void);
 
+	bool				ChooseEnemy();
+
 	// Starts a special attack.
 	void					Special();
+
+	CBaseEntity*		GetEnemy() { return m_hEnemy.Get(); }
+	CBaseEntity*		GetEnemy() const { return m_hEnemy.Get(); }
 
 	virtual void			CheckSuitUpdate();
 	virtual void			SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
@@ -153,6 +160,9 @@ protected:
 
 	LAZPlayerState m_iPlayerState;
 	CLAZPlayerStateInfo *m_pCurStateInfo;
+
+	CSimpleSimTimer m_AnnounceAttackTimer;
+	EHANDLE			m_hEnemy;
 
 	// Anim event handlers
 	void OnAnimEventDeployManhack(animevent_t *pEvent);

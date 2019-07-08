@@ -1596,6 +1596,8 @@ void CWeaponRPG::PrimaryAttack( void )
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	WeaponSound( SINGLE );
 
+	pPlayer->DoMuzzleFlash();
+
 	// player "shoot" animation
 	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 }

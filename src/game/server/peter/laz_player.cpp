@@ -30,6 +30,8 @@
 
 #define HL2MP_COMMAND_MAX_RATE 0.3
 
+extern ISoundEmitterSystemBase *soundemitterbase;
+
 extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
 
 ConVar sv_forcedspecialattack("sv_laz_forcedspecial", "-1", FCVAR_CHEAT);
@@ -49,6 +51,8 @@ DEFINE_FIELD(m_bHasLongJump, FIELD_BOOLEAN),
 DEFINE_FIELD(m_flNextPainSoundTime, FIELD_TIME),
 DEFINE_FIELD(m_iszVoiceType, FIELD_STRING),
 DEFINE_FIELD(m_iszSuitVoice, FIELD_STRING),
+
+DEFINE_EMBEDDED(m_AnnounceAttackTimer),
 
 DEFINE_CUSTOM_FIELD(m_iPlayerSoundType, &g_FootStepStringOps),
 END_DATADESC();
@@ -179,6 +183,8 @@ void CLaz_Player::InitialSpawn(void)
 
 	if (gpGlobals->maxClients > 1)
 		State_Transition(STATE_WELCOME);
+	else
+		State_Transition(STATE_ACTIVE);
 }
 
 void CLaz_Player::UpdateOnRemove()
@@ -189,6 +195,22 @@ void CLaz_Player::UpdateOnRemove()
 	{
 		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.szSectionID);
 		m_MPModel = { 0 };
+	}
+}
+
+void CLaz_Player::DoMuzzleFlash()
+{
+	BaseClass::DoMuzzleFlash();
+
+	if (GetEnemy())
+	{
+		if (GetActiveWeapon() && m_AnnounceAttackTimer.Expired())
+		{
+			if (SpeakConceptIfAllowed(MP_CONCEPT_FIREWEAPON, CFmtStr("attacking_with_weapon:%s", GetActiveWeapon()->GetClassname())))
+			{
+				m_AnnounceAttackTimer.Set(10, 30);
+			}
+		}
 	}
 }
 
@@ -224,6 +246,7 @@ void CLaz_Player::Event_Killed(const CTakeDamageInfo & info)
 	BaseClass::Event_Killed(info);
 
 	State_Transition(STATE_DYING);	// Transition into the dying state.
+	m_hEnemy.Term();
 }
 
 void CLaz_Player::HandleAnimEvent(animevent_t * pEvent)
@@ -570,7 +593,7 @@ void CLaz_Player::ReleaseManhack(void)
 	
 	trace_t tr;
 	CTraceFilterWorldAndPropsOnly filter;
-	UTIL_TraceEntity(pManhack, pManhack->GetAbsOrigin(), pManhack->GetAbsOrigin() + Vector(0, 0, 1), pManhack->PhysicsSolidMaskForEntity(), &filter, &tr);
+	UTIL_TraceEntity(pManhack, WorldSpaceCenter(), pManhack->GetAbsOrigin(), pManhack->PhysicsSolidMaskForEntity(), &filter, &tr);
 	if (tr.startsolid || tr.DidHit())
 	{
 		CTakeDamageInfo info(GetWorldEntity(), GetWorldEntity(), 100.f, DMG_CRUSH);
@@ -762,6 +785,61 @@ void CLaz_Player::PainSound(const CTakeDamageInfo & info)
 	pExpresser->DisallowMultipleScenes();
 
 	m_flNextPainSoundTime = gpGlobals->curtime + flPainLength;
+}
+
+bool CLaz_Player::ChooseEnemy()
+{
+	trace_t tr;
+	CTraceFilterNoNPCsOrPlayer filter1(this, COLLISION_GROUP_NONE);
+	CTraceFilterLOS filter2(this, COLLISION_GROUP_NONE);
+	CTraceFilterChain filter(&filter1, &filter2);
+	Vector vecEyes, vecForward;
+	EyePositionAndVectors(&vecEyes, &vecForward, nullptr, nullptr);
+	UTIL_TraceLine(vecEyes, vecEyes + vecForward * MAX_TRACE_LENGTH, MASK_OPAQUE, &filter, &tr);
+
+	Ray_t ray;
+	ray.Init(vecEyes, tr.endpos, -Vector(64), Vector(64));
+
+	CBaseEntity *list[256];
+	float flNearestDist = MAX_TRACE_LENGTH;
+	CBaseEntity *pNearest = NULL;
+
+	if (m_hEnemy.Get() && m_hEnemy->IsAlive())
+	{
+		pNearest = m_hEnemy;
+		Vector los = (m_hEnemy->WorldSpaceCenter() - vecEyes);
+		flNearestDist = VectorNormalize(los);
+	}
+
+	int count = UTIL_EntitiesAlongRay(list, 256, ray, FL_CLIENT | FL_NPC);
+	for (int i = 0; i < count; i++)
+	{
+		if (!list[i]->IsAlive() || list[i] == this)
+			continue;
+
+		if (IRelationType(list[i]) > D_FR)
+			continue;
+		
+		// Closer than other objects
+		Vector los = (list[i]->WorldSpaceCenter() - vecEyes);
+		float flDist = VectorNormalize(los);
+		if (flDist >= flNearestDist)
+			continue;
+
+		if (IsAbleToSee(list[i], CBaseCombatCharacter::USE_FOV))
+		{
+			flNearestDist = flDist;
+			pNearest = list[i];
+		}
+	}
+
+	if (pNearest)
+	{
+		m_hEnemy.Set(pNearest);
+		return true;
+	}
+
+	return false;
 }
 
 void CLaz_Player::Special()
@@ -1134,8 +1212,26 @@ void CLaz_Player::PlayFlinch(const CTakeDamageInfo & info)
 void CLaz_Player::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 {
 	BaseClass::ModifyOrAppendCriteria(set);
+
 	set.AppendCriteria("voice", STRING(m_iszVoiceType));
 	set.AppendCriteria("suitvoice", STRING(m_iszSuitVoice));
+
+	gender_t gender = soundemitterbase->GetActorGender(STRING(GetModelName()));
+	set.AppendCriteria("femalemodel", (gender == GENDER_FEMALE) ? "1" : "0");
+
+	if (GetEnemy())
+	{
+		CBaseEntity* pEnemy = GetEnemy();
+		set.AppendCriteria("playerenemy", pEnemy->GetClassname());
+		set.AppendCriteria("playerenemyclass", g_pGameRules->AIClassText(pEnemy->Classify()));
+		float healthfrac = 0.0f;
+		if (pEnemy->GetMaxHealth() > 0)
+		{
+			healthfrac = (float)pEnemy->GetHealth() / (float)pEnemy->GetMaxHealth();
+		}
+
+		set.AppendCriteria("playerenemyhealthfrac", UTIL_VarArgs("%.3f", healthfrac));
+	}
 }
 
 void CLaz_Player::DeathNotice(CBaseEntity * pVictim)
@@ -1417,4 +1513,31 @@ void CLaz_Player::State_PreThink_ACTIVE()
 {
 	//we don't really need to do anything here. 
 	//This state_prethink structure came over from CS:S and was doing an assert check that fails the way hl2dm handles death
+
+	CBaseEntity *pOldEnemy = GetEnemy();
+	if (ChooseEnemy() && !pOldEnemy)
+	{
+		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_BATTLECRY);
+		if (m_AnnounceAttackTimer.Expired())
+		{
+			// Always delay when an encounter begins
+			m_AnnounceAttackTimer.Set(4, 8);
+		}
+	}
+}
+
+CON_COMMAND_F(laz_player_set_voice, "Set the voicetype of the player", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT)
+{
+	if (args.ArgC() < 2)
+		return;
+
+	CBasePlayer *pPlayer = UTIL_GetCommandClient();
+	if (!pPlayer)
+		return;
+
+	CLaz_Player *pLaz = ToLazuulPlayer(pPlayer);
+	if (!pLaz)
+		return;
+
+	pLaz->SetVoiceType(args[1], args[2]);
 }
