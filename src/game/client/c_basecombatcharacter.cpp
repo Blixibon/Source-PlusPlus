@@ -290,7 +290,8 @@ void C_BaseCombatCharacter::EmitColdBreathParticles(void)
 	if (pParticle)
 	{
 		pParticle->m_flLifetime = 0.0f;
-		pParticle->m_flDieTime = LerpMouthScalar(RandomFloat(COLDBREATH_PARTICLE_LIFE_MIN, COLDBREATH_PARTICLE_LIFE_MAX), (float)COLDBREATH_PARTICLE_LIFE_SCALE);
+		float flLife = RandomFloat(COLDBREATH_PARTICLE_LIFE_MIN, COLDBREATH_PARTICLE_LIFE_MAX);
+		pParticle->m_flDieTime = LerpMouthScalar(flLife, (float)COLDBREATH_PARTICLE_LIFE_SCALE);
 		Vector vecBaseVelocity;
 		Quaternion qVelocity;
 		GetAttachmentVelocity(m_iMouthAttachment, vecBaseVelocity, qVelocity);
@@ -322,7 +323,8 @@ void C_BaseCombatCharacter::EmitColdBreathParticles(void)
 		pParticle->m_uchColor[1] = 200;
 		pParticle->m_uchColor[2] = 210;
 
-		float flParticleSize = LerpMouthScalar(RandomFloat(COLDBREATH_PARTICLE_SIZE_MIN, COLDBREATH_PARTICLE_SIZE_MAX), COLDBREATH_PARTICLE_SIZE_SCALE);
+		float flSizePreScale = RandomFloat(COLDBREATH_PARTICLE_SIZE_MIN, COLDBREATH_PARTICLE_SIZE_MAX);
+		float flParticleSize = LerpMouthScalar(flSizePreScale, COLDBREATH_PARTICLE_SIZE_SCALE);
 		float flParticleScale = RandomFloat(COLDBREATH_ENDSCALE_MIN, COLDBREATH_ENDSCALE_MAX);
 		/*if (m_Shared.m_flStamina < LOW_STAMINA_THRESHOLD || cl_coldbreath_forcestamina.GetBool())
 		{
