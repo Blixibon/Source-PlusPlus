@@ -417,7 +417,7 @@ inline bool IsEntityWalkable( CBaseEntity *entity, unsigned int flags )
 	// if we hit a door, assume its walkable because it will open when we touch it
 	if (FClassnameIs( entity, "func_door*" ))
 	{
-#ifdef PROBLEMATIC	// cp_dustbowl doors dont open by touch - they use surrounding triggers
+#ifdef HL2_LAZUL	// cp_dustbowl doors dont open by touch - they use surrounding triggers
 		if ( !entity->HasSpawnFlags( SF_DOOR_PTOUCH ) )
 		{
 			// this door is not opened by touching it, if it is closed, the area is blocked

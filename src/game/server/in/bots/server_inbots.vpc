@@ -56,8 +56,6 @@ $Project
 			$Folder "Navigation"
 			{
 				$File	"in\bots\interfaces\improv_locomotor.h"
-				$File	"in\bots\nav_path.cpp"
-				$File	"in\bots\nav_path.h"
 			}
 
 			$Folder "Schedules"

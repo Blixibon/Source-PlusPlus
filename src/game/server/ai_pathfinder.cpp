@@ -38,6 +38,8 @@
 
 #define NUM_NPC_DEBUG_OVERLAYS	  50
 
+extern ConVar nav_area_max_size;
+
 const float MAX_LOCAL_NAV_DIST_GROUND[2] = { (50*12), (25*12) };
 const float MAX_LOCAL_NAV_DIST_FLY[2] = { (750*12), (750*12) };
 
@@ -1753,8 +1755,31 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 		return BuildLocalRoute(vStart, pathEndPosition, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 	}
 
+	class CWayPointScopeDelete
+	{
+	public:
+		CWayPointScopeDelete(CAI_WaypointList *pList)
+		{
+			m_pList = pList;
+			m_bActive = true;
+		}
+		~CWayPointScopeDelete()
+		{
+			if (m_bActive && m_pList && !m_pList->IsEmpty())
+				m_pList->RemoveAll();
+		}
+
+		bool m_bActive;
+
+	private:
+		CAI_WaypointList *m_pList;
+	};
+
 	// build path
-	AI_Waypoint_t *pWaypoint = NULL;
+	//AI_Waypoint_t *pWaypoint = NULL;
+	float flMaxLocalDist = GenerationStepSize * nav_area_max_size.GetInt();
+	CAI_WaypointList WayPoints;
+	CWayPointScopeDelete autoDelete(&WayPoints);
 	CNavArea *pLastArea = NULL;
 	for (area = effectiveGoalArea; count && area; area = area->GetParent())
 	{
@@ -1828,11 +1853,11 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 				}
 				else
 				{
-					newway = BuildLocalRoute(fromclosestpoint, closestpoint, nullptr, endFlags, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
+					newway = BuildComplexRoute(NAV_GROUND, from->GetCenter(), closestpoint, nullptr, endFlags, NO_NODE, buildFlags | bits_BUILD_TRIANG, 0.f, goalTolerance, flMaxLocalDist);
 					if (!newway)
 						return nullptr;
 
-					AI_Waypoint_t *pToCenter = BuildLocalRoute(closestpoint, center, nullptr, endFlags, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
+					AI_Waypoint_t *pToCenter = BuildComplexRoute(NAV_GROUND, closestpoint, center, nullptr, endFlags, NO_NODE, buildFlags | bits_BUILD_TRIANG, 0.f, goalTolerance, flMaxLocalDist);
 					if (pToCenter != nullptr)
 						AddWaypointLists(newway, pToCenter);
 				}
@@ -1939,18 +1964,23 @@ AI_Waypoint_t *CAI_Pathfinder::BuildNavRoute(const Vector &vStart, const Vector 
 		if (!newway)
 			return nullptr;
 
-		if (pWaypoint)
-			AddWaypointLists(newway, pWaypoint);
+		if (WayPoints.IsEmpty())
+			WayPoints.Set(newway);
+		else
+			WayPoints.PrependWaypoints(newway);
 
-		pWaypoint = newway;
 		pLastArea = area;
 	}
 
+	autoDelete.m_bActive = false;
+	AI_Waypoint_t *pWaypoint = WayPoints.GetFirst();
+
 	if (pWaypoint/* && pWaypoint->GetLast()->GetPos().DistToSqr(vEnd) > Sqr(goalTolerance)*/)
 	{
-		AI_Waypoint_t *pToGoal = BuildLocalRoute(pWaypoint->GetLast()->GetPos(), vEnd, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags, goalTolerance);
+		AI_Waypoint_t *pToGoal = BuildLocalRoute(pWaypoint->GetLast()->GetPos(), vEnd, NULL, bits_WP_TO_GOAL, NO_NODE, buildFlags | bits_BUILD_TRIANG, goalTolerance);
 
-		AddWaypointLists(pWaypoint, pToGoal);
+		if (pToGoal)
+			AddWaypointLists(pWaypoint, pToGoal);
 	}
 
 	return pWaypoint;

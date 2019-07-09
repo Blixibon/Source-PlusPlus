@@ -37,6 +37,8 @@ $Project
 			$File	"nav_node.cpp"
 			$File	"nav_node.h"
 			$File	"nav_pathfind.h"
+			$File	"nav_path.cpp"
+			$File	"nav_path.h"
 			$File	"nav_simplify.cpp"
 		}
 	}
