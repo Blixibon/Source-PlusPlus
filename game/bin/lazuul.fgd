@@ -32,13 +32,15 @@
 	]
 ]
 
-@PointClass base(Targetname, TeamNum, EnableDisable, Angles) studio("models/player.mdl") = info_player_teamspawn :
+@PointClass base(Targetname, TeamNum, EnableDisable, Angles) studio("models/editor/playerstart.mdl") = info_player_teamspawn :
 	"This entity marks the spawn point for Team Fortress players."
 [
 	controlpoint(target_destination) : "Associated Control Point" : : "The team_control_point associated with this spawn. Ownership of control points will control this spawn point's enabled state."
 
  	round_bluespawn(target_destination) : "Combine spawn for round" : : "Combine spawn point when the associated round is being played."
 	round_redspawn(target_destination) : "Rebel spawn for round" : : "Rebel spawn point when the associated round is being played."
+
+	output OnPlayerSpawn(string) : "Fires when a player spawns at this point."
 ]
 
 @PointClass base(Targetname, TeamNum) color(150 150 150) = info_player_equip : "Entity that will give the player any equipment specified by it's key values (in the form of 'entity_classname' 'number_of_items').  This entity replaces the functionality of the game_player_equip."
@@ -243,4 +245,306 @@
 	ammo_Snark(integer) : "HL1 Ammo: Snark" : 0 : "Give amount of named ammo"
 	ammo_Tripmine(integer) : "HL1 Ammo: Tripmine" : 0 : "Give amount of named ammo"
 	ammo_Satchel(integer) : "HL1 Ammo: Satchel Charge" : 0 : "Give amount of named ammo"
+]
+
+//====================================================================================================================
+// CAPTURE POINT HANDLING
+//====================================================================================================================
+@PointClass base(Targetname, EnableDisable, Angles, Parentname) studio("models/effects/cappoint_hologram.mdl") = team_control_point :
+	"Control Point"
+[
+	spawnflags(flags) =
+	[
+		1: "Hide Control Point on HUD" : 0
+		2: "Start with model hidden" : 0
+		4: "Disable shadow" : 0
+		8: "Disable sounds" : 0
+	]
+
+	point_start_locked(choices) : "Start locked" : 0 : "Locked means the point will not be available for capture until it is unlocked via its input."  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	point_printname(string) : "Print Name" : "TODO: Set Name" : "LOCALIZED name to print on the HUD." 
+	point_group(integer) : "Group Index" : 0 : "Used for grouping points together under a team_control_point_master (not using control point rounds)."
+	point_default_owner(choices) : "Default Owner" : 0 : "Default Owner of the control point."  =
+	[
+		0 : "Neither"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+	point_index(integer) : "Index" : 0 : "Index of this point (must be unique)."
+
+	point_warn_on_cap(choices) : "Warning Type" : 0 : "Type of warning to issue to the team that owns the control point when the opposing team starts to capture it."  =
+	[
+		0 : "Normal Announcements"
+		1 : "Final Capture Point Warning"
+		2 : "No Announcements"
+	]
+
+	point_warn_sound(string) : "Warning sound" : "ControlPoint.CaptureWarn" : "Sound to be played when this point is being captured (if warn on capture is set)." 
+	
+	random_owner_on_restart(choices) : "Randomly set the owner on restart" : 0 : "Randomly set the owner of this point during a full restart of the map. The ratio of default owners among the points with this flag will be kept when selecting random owners."  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// Per team data
+	team_timedpoints_2(integer) : "Time-based point value for Combine." : 0
+	team_timedpoints_3(integer) : "Time-based point value for BLUE." : 0
+
+	team_capsound_0(sound) : "Reset Sound" : "" : "Sound made when point resets."
+	team_capsound_2(sound) : "Combine Capture Sound" : "" : "Sound made when RED captures."
+	team_capsound_3(sound) : "Rebels Capture Sound" : "" : "Sound made when BLUE captures."
+
+	team_model_0(studio) 	: "Reset Model" : "models/effects/cappoint_hologram.mdl" : "Model when point reset."
+	team_model_2(studio) 	: "Combine Model" : "models/effects/cappoint_hologram.mdl" : "Model when Combine owns the point."
+	team_model_3(studio) 	: "Rebels Model" : "models/effects/cappoint_hologram.mdl" : "Model when BLUE owns the point."
+
+	team_bodygroup_0(integer) : "Reset model bodygroup" : 3
+	team_bodygroup_2(integer) : "Combine model bodygroup" : 1
+	team_bodygroup_3(integer) : "Rebels model bodygroup" : 1
+
+	team_icon_0(material)	: "HUD icon neutral" : "sprites/obj_icons/icon_obj_neutral" : "HUD icon material when no one owns the point."
+	team_icon_2(material)	: "HUD icon Combine" : "sprites/obj_icons/icon_obj_blu" : "HUD icon material when Combine owns the point."
+	team_icon_3(material)	: "HUD icon Rebels" : "sprites/obj_icons/icon_obj_red" : "HUD icon material when Rebels owns the point."
+
+	team_overlay_0(material) : "HUD overlay neutral" : "" : "HUD material that will overlay the icon when no one owns the point."
+	team_overlay_2(material) : "HUD overlay Combine" : "" : "HUD material that will overlay the icon when Combine owns the point."
+	team_overlay_3(material) : "HUD overlay Rebels" : "" : "HUD material that will overlay the icon when Rebels owns the point."
+
+ 	team_previouspoint_2_0(target_source) : "Combine Previous Required Point 1" : "" : "The name of a previous capture point that Combine must own to be able to capture this point. If empty, the team must own all points preceding this one."
+	team_previouspoint_2_1(target_source) : "Combine Previous Required Point 2" : "" : "The name of a second previous capture point that Combine must own to be able to capture this point."
+	team_previouspoint_2_2(target_source) : "Combine Previous Required Point 3" : "" : "The name of a third previous capture point that Combine must own to be able to capture this point."
+	team_previouspoint_3_0(target_source) : "Rebels Previous Required Point 1" : "" : "The name of a previous capture point that Rebels must own to be able to capture this point. If empty, the team must own all points preceding this one."
+	team_previouspoint_3_1(target_source) : "Rebels Previous Required Point 2" : "" : "The name of a second previous capture point that Rebels must own to be able to capture this point."
+	team_previouspoint_3_2(target_source) : "Rebels Previous Required Point 3" : "" : "The name of a third previous capture point that Rebels must own to be able to capture this point."
+
+	// Outputs
+	output OnOwnerChangedToTeam1(void) : "Sent when owner is changed to Combine."
+	output OnOwnerChangedToTeam2(void) : "Sent when owner is changed to Rebels."
+
+	output OnCapReset(void) : "Sent when owner is changed to neutral."
+
+	output OnRoundStartOwnedByTeam1(void) : "Sent when a round is starting and the point is owned by Combine."
+	output OnRoundStartOwnedByTeam2(void) : "Sent when a round is starting and the point is owned by Rebels."
+
+	output OnCapTeam1(void) : "Sent when Combine capture this point."
+	output OnCapTeam2(void) : "Sent when Rebels capture this point."
+
+	output OnUnlocked(void) : "Sent when point is unlocked via the SetLocked(0) or SetUnlockTime inputs."
+	
+	input SetOwner(integer) : "Set the owner of the point."
+	input HideModel(void) : "Hide the control point model."
+	input ShowModel(void) : "Show the control point model again."
+
+	input SetLocked(integer) : "Lock the control point. 0 = unlocked, 1 = locked"
+	input SetUnlockTime(integer) : "This will automatically unlock the control point in the specified amound of time (seconds)."
+]
+
+@PointClass base(Targetname, EnableDisable) = team_control_point_round :
+	"Control Point Round (you may have as many of these in the map as you would like)."
+[
+	cpr_printname(string) : "Print Name" : "" : "LOCALIZED name to print on the RoundInfo panel"
+
+	cpr_priority(integer) : "Priority" : 0 : "The priority value for this round (must be >= 0). Higher priority rounds will be picked first. If multiple rounds have the same priority value, a random selection will be used."
+
+	cpr_cp_names(string) : "Control points in this round" : "" : "Names of the control points included in this round (space delimited). Control points may belong to more than one control point round.  The names of the control points (and the rounds) should all be unique."
+
+	cpr_restrict_team_cap_win(choices) : "Restrict team from winning" : 0 : "Prevent this team from winning by capping all the points" =
+	[
+		0 : "Neither"
+		1 : "Both"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+
+	output OnStart(void) : "Sent when this round is selected to be played."
+	output OnEnd(void) : "Sent when this round is finished."
+	output OnWonByTeam1(void) : "Sent when Combine wins this round."
+	output OnWonByTeam2(void) : "Sent when Rebels wins this round."
+]
+
+@PointClass base(Targetname, EnableDisable) = team_control_point_master : "Control Point Master"
+[
+	team_base_icon_2(material) : "Material for the Combine Base icon" : "sprites/obj_icons/icon_base_blu"
+	team_base_icon_3(material) : "Material for the Rebels Base icon" : "sprites/obj_icons/icon_base_red"
+	caplayout(string) : "Cap Layout" : "" : "A string that tells the HUD how to lay out the cap points. It should be a string with indexes of cap points seperated by commas to denote a new line. So <2,0 1> would create a pyramid, with cap point 2 on the top and cap points 0 & 1 on the bottom."
+	custom_position_x(float) : "Custom cap position X" : -1 : "Set the cap layout custom X position [0,1]"
+	custom_position_y(float) : "Custom cap position Y" : -1 : "Set the cap layout custom Y position [0,1]"
+	
+	cpm_restrict_team_cap_win(choices) : "Restrict team from winning" : 0 : "Prevent this team from winning by capping all the points. This field is ignored if you're using control_point_rounds in your map (set this field inside the rounds)." =
+	[
+		0 : "Neither"
+		1 : "Both"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+
+	switch_teams(choices) : "Switch teams on map win?" : 0 : "Switch the teams when one team has won the map and the game is going to be reset." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	score_style(choices) : "Scoring style" : 0 : "Sets the style of scoring used for capture point maps." = 
+	[
+		0 : "Add team score for each round won"
+		1 : "Add team score for each captured point"
+	]
+	
+	play_all_rounds(choices) : "Play all rounds before changelevel" : 0 : "Determines whether the server may changelevel when mp_timelimit is up before all mini-rounds have been completed (for maps like Dustbowl)." = 
+	[
+		0 : "Changelevel normally"
+		1 : "Only changelevel after all mini-rounds have been played to completion"
+	]	
+	
+	partial_cap_points_rate(float) : "Partial cap rate" : 0 : "Rate at which to give partial cap points for area captures."
+	
+	output OnWonByTeam1(void) : "Sent when Combine wins the game."
+	output OnWonByTeam2(void) : "Sent when Rebels wins the game."
+
+	input SetWinner(integer) : "Set the winner of the round to this team (0 for a stalemate)."
+	input SetCapLayout(string) : "Set the cap layout string."
+	input SetCapLayoutCustomPositionX(float) : "Set the cap layout custom X position [0,1]"
+	input SetCapLayoutCustomPositionY(float) : "Set the cap layout custom Y position [0,1]"
+]
+
+@SolidClass base(Targetname, EnableDisable, Parentname) = trigger_capture_area : "Capture Area"
+[
+	area_cap_point(target_source) : "Control point" : "" : "Name of the control point this area is linked to."
+
+	team_cancap_2(choices) : "Can Combine Cap?" : 1 =
+	[
+		1 : "Yes"
+		0 : "No"
+	]
+	team_cancap_3(choices) : "Can Rebels Cap?" : 1 =
+	[
+		1 : "Yes"
+		0 : "No"
+	]
+	
+	team_startcap_2(integer) : "Number of Combine players to start capping" : 1 
+	team_startcap_3(integer) : "Number of Rebels players to start capping" : 1
+
+	team_numcap_2(integer) : "Number of Combine players to cap" : 1
+	team_numcap_3(integer) : "Number of Rebels players to cap" : 1
+
+	team_spawn_2(integer) : "Combine Spawn Adjust" : 0 : "Adjust the minimum respawn time for the blue team by this amount (in seconds) when red captures this point. If the blue team owns this point when red captures it, this adjustment is reversed."
+	team_spawn_3(integer) : "Rebels Spawn Adjust" : 0 : "Adjust the minimum respawn time for the red team by this amount (in seconds) when red captures this point. If the red team owns this point when blue captures it, this adjustment is reversed."
+
+	area_time_to_cap(integer) : "Time to cap (sec)" : 5
+
+	// Outputs
+	output OnStartTeam1(void) : "Sent when Combine start capture."
+	output OnBreakTeam1(void) : "Sent when a Combine capture is broken."
+	output OnCapTeam1(void) : "Sent when Combine end capture."
+
+	output OnStartTeam2(void) : "Sent when Rebels start capture."
+	output OnBreakTeam2(void) : "Sent when a Rebels capture is broken."
+	output OnCapTeam2(void) : "Sent when Rebels end capture."
+
+	output OnStartCap(void) : "Sent when either team starts capture."
+	output OnBreakCap(void) : "Sent when either team break capture."
+	output OnEndCap(void) : "Sent when either team end capture."
+
+	output OnNumCappersChanged(integer) : "Sent when the number of cappers changes, passes the value in int."
+	output OnNumCappersChanged2(integer) : "Sent when the number of cappers changes, passes the value in int (-1 for capture blocked)."
+	
+	// Inputs
+	input SetTeamCanCap(string) : "Set whether a specific team is allowed to capture this point. Format is: <team number> <(0/1)>. i.e. '2 0' would prevent RED from capturing this point, whereas '3 1' would allow BLUE to cap it."
+
+	input SetControlPoint(string) : "Assign area capture to the passed control point."
+	input CaptureCurrentCP(string) : "If we're being capped, forces the current point to capture."	
+]
+
+@SolidClass base(Targetname) = func_nav_blocker : "A brush entity that can block nav areas touching its AABB." 
+[
+	input BlockNav(string) : "Starts blocking nav areas."
+	input UnblockNav(void) : "Stops blocking nav areas."
+
+	teamToBlock(choices) : "Team(s) to block" : -1 : "Block the nav for bots on this team" =
+	[
+		-1 : "Everyone"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+	
+	affectsFlow(choices) : "Affects Flow?" : 0 : "Does this func_nav_blocker block flow in the level? Only func_nav_blockers with this enabled will cause flow recomputation on blocking/unblocking." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@SolidClass base(Targetname) = func_nav_avoid : "Influence bots to avoid this region by increasing the pathfinding cost within it."
+[
+	tags(string) : "Tags" : "" : "A space delimited list of tags. A tag is a label with no spaces. If a TFBot has at least one matching tag, it will pay attention to this entity. Tags that are automatically set on TFBots include bomb_carrier, common, mission_sniper, mission_spy, mission_sentry_buster, or any class name." 
+
+	team(choices) : "Team" : -2 : "Which team will avoid this region" =
+	[
+		-2 : "Everyone"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+
+	start_disabled(choices) : "Start Disabled" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// Inputs
+	input Enable(void) : "Enable"
+	input Disable(void) : "Disable"
+]
+
+@SolidClass base(Targetname) = func_nav_prefer : "Influence bots to prefer this region by decreasing the pathfinding cost within it."
+[
+	tags(string) : "Tags" : "" : "A space delimited list of tags. A tag is a label with no spaces. If a TFBot has at least one matching tag, it will pay attention to this entity. Tags that are automatically set on TFBots include bomb_carrier, common, mission_sniper, mission_spy, mission_sentry_buster, or any class name." 
+
+	team(choices) : "Team" : -2 : "Which team will prefer this region" =
+	[
+		-2 : "Everyone"
+		2 : "Combine"
+		3 : "Rebels"
+	]
+
+	start_disabled(choices) : "Start Disabled" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// Inputs
+	input Enable(void) : "Enable"
+	input Disable(void) : "Disable"
+]
+
+@SolidClass base(Trigger, Targetname) = func_nav_prerequisite : "A trigger volume that requires bots to do perform a task before they can move through it."
+[
+	Task(choices) : "Task" : 1 : "What must be done to move through this volume" =
+	[
+		1 : "Destroy Entity (Value = max range to attack from. -1 for no range restriction)"
+		2 : "Move to Entity"
+		3 : "Wait (Value = seconds to wait)"
+	]
+
+	Entity(target_destination) : "Task Entity" : : "The subject entity of the Task"
+
+	Value(float) : "Task Value" : 0 : "A Task-specific value"
+
+	start_disabled(choices) : "Start Disabled" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// Inputs
+	input Enable(void) : "Enable"
+	input Disable(void) : "Disable"
 ]
