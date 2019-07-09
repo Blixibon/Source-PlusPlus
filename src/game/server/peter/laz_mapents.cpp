@@ -2,6 +2,8 @@
 #include "laz_mapents.h"
 #include "team_control_point.h"
 #include "team_control_point_round.h"
+#include "team_control_point_master.h"
+
 #pragma region EQUIP
 LINK_ENTITY_TO_CLASS(info_player_equip, CLazPlayerEquip);
 
@@ -149,19 +151,16 @@ void CLazPlayerEquip::EquipPlayer(CBaseEntity* pEntity)
 //
 BEGIN_DATADESC(CLazTeamSpawn)
 
-DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "StartDisabled"),
 DEFINE_KEYFIELD(m_iszControlPointName, FIELD_STRING, "controlpoint"),
 DEFINE_KEYFIELD(m_iszRoundBlueSpawn, FIELD_STRING, "round_bluespawn"),
 DEFINE_KEYFIELD(m_iszRoundRedSpawn, FIELD_STRING, "round_redspawn"),
 
 // Inputs.
-DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
-DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
 DEFINE_INPUTFUNC(FIELD_VOID, "RoundSpawn", InputRoundSpawn),
 
 // Outputs.
 
-END_DATADESC()
+END_DATADESC();
 
 LINK_ENTITY_TO_CLASS(info_player_teamspawn, CLazTeamSpawn);
 
@@ -170,7 +169,28 @@ LINK_ENTITY_TO_CLASS(info_player_teamspawn, CLazTeamSpawn);
 //-----------------------------------------------------------------------------
 CLazTeamSpawn::CLazTeamSpawn()
 {
-	m_bDisabled = false;
+	gameeventmanager->AddListener(this, "teamplay_point_captured", true);
+}
+
+CLazTeamSpawn::~CLazTeamSpawn()
+{
+	gameeventmanager->RemoveListener(this);
+}
+
+void CLazTeamSpawn::FireGameEvent(IGameEvent * event)
+{
+	if (FStrEq(event->GetName(), "teamplay_point_captured"))
+	{
+		int iCP = event->GetInt("cp");
+		if (m_hControlPoint && m_hControlPoint->GetPointIndex() == iCP)
+		{
+			if (GetTeam())
+				GetTeam()->RemoveSpawnpoint(this);
+
+			ChangeTeam(m_hControlPoint->GetTeamNumber());
+			UpdateTeam();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -193,20 +213,13 @@ void CLazTeamSpawn::Activate(void)
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CLazTeamSpawn::InputEnable(inputdata_t& inputdata)
+void CLazTeamSpawn::UpdateTeam()
 {
-	m_bDisabled = false;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CLazTeamSpawn::InputDisable(inputdata_t& inputdata)
-{
-	m_bDisabled = true;
+	CTeam* team = GetGlobalTeam(GetTeamNumber());
+	if (team && GetTeamNumber() > LAST_SHARED_TEAM && GetTeamNumber() < TF_TEAM_COUNT)
+	{
+		team->AddSpawnpoint(this);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -228,7 +241,7 @@ int CLazTeamSpawn::DrawDebugTextOverlays(void)
 		color32 teamcolor = g_aTeamColors[GetTeamNumber()];
 		teamcolor.a = 0;
 
-		if (m_bDisabled)
+		if (m_iDisabled)
 		{
 			Q_snprintf(tempstr, sizeof(tempstr), "DISABLED");
 			EntityText(text_offset, tempstr, 0);
@@ -267,6 +280,8 @@ int CLazTeamSpawn::DrawDebugTextOverlays(void)
 //-----------------------------------------------------------------------------
 void CLazTeamSpawn::InputRoundSpawn(inputdata_t& input)
 {
+	CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
+
 	if (m_iszControlPointName != NULL_STRING)
 	{
 		// We need to re-find our control point, because they're recreated over round restarts
@@ -296,5 +311,41 @@ void CLazTeamSpawn::InputRoundSpawn(inputdata_t& input)
 			Warning("%s failed to find control point round named '%s'\n", GetClassname(), STRING(m_iszRoundRedSpawn));
 		}
 	}
+
+	if (GetTeam())
+		GetTeam()->RemoveSpawnpoint(this);
+
+	int iNewTeam = TEAM_UNASSIGNED;
+
+	if (pMaster)
+	{
+		if (m_hControlPoint)
+		{
+			iNewTeam = m_hControlPoint->GetTeamNumber();
+		}
+		else if (m_hRoundBlueSpawn || m_hRoundRedSpawn)
+		{
+			if (m_hRoundBlueSpawn && pMaster->GetCurrentRound() == m_hRoundBlueSpawn)
+			{
+				iNewTeam = TF_TEAM_BLUE;
+			}
+			else if (m_hRoundRedSpawn && pMaster->GetCurrentRound() == m_hRoundRedSpawn)
+			{
+				iNewTeam = TF_TEAM_RED;
+			}
+		}
+	}
+
+	if (iNewTeam > LAST_SHARED_TEAM && iNewTeam < TF_TEAM_COUNT)
+	{
+		ChangeTeam(iNewTeam);
+		UpdateTeam();
+	}
+}
+void CLazTeamSpawn::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	gameeventmanager->RemoveListener(this);
 }
 #pragma endregion

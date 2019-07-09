@@ -3,6 +3,8 @@
 #pragma once
 
 //#define MAX_EQUIP		32
+#include "team_spawnpoint.h"
+#include "GameEventListener.h"
 
 class CLazPlayerEquip : public CServerOnlyPointEntity
 {
@@ -45,22 +47,23 @@ class CTeamControlPointRound;
 // TF team spawning entity.
 //
 
-class CLazTeamSpawn : public CPointEntity
+class CLazTeamSpawn : public CTeamSpawnPoint, public IGameEventListener2
 {
 public:
-	DECLARE_CLASS(CLazTeamSpawn, CPointEntity);
+	DECLARE_CLASS(CLazTeamSpawn, CTeamSpawnPoint);
 
 	CLazTeamSpawn();
+	~CLazTeamSpawn();
+
+	// FireEvent is called by EventManager if event just occured
+	// KeyValue memory will be freed by manager if not needed anymore
+	virtual void FireGameEvent(IGameEvent *event);
 
 	void Activate(void);
+	virtual void	UpdateTeam();
 
-	bool IsDisabled(void) { return m_bDisabled; }
-	void SetDisabled(bool bDisabled) { m_bDisabled = bDisabled; }
-
-	// Inputs/Outputs.
-	void InputEnable(inputdata_t& inputdata);
-	void InputDisable(inputdata_t& inputdata);
 	void InputRoundSpawn(inputdata_t& inputdata);
+	void UpdateOnRemove();
 
 	int DrawDebugTextOverlays(void);
 
@@ -69,7 +72,6 @@ public:
 	CHandle<CTeamControlPointRound> GetRoundRebelSpawn(void) { return m_hRoundRedSpawn; }
 
 private:
-	bool	m_bDisabled;		// Enabled/Disabled?
 
 	string_t						m_iszControlPointName;
 	string_t						m_iszRoundBlueSpawn;

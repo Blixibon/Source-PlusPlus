@@ -16,21 +16,23 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifndef HL2_LAZUL
 LINK_ENTITY_TO_CLASS( info_player_teamspawn, CTeamSpawnPoint );
+#endif
 
-BEGIN_DATADESC( CTeamSpawnPoint )
+BEGIN_DATADESC(CTeamSpawnPoint)
 
-	// keys
-	DEFINE_KEYFIELD( m_iDisabled, FIELD_INTEGER, "StartDisabled" ),
+// keys
+DEFINE_KEYFIELD(m_iDisabled, FIELD_INTEGER, "StartDisabled"),
 
-	// input functions
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+// input functions
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
 
-	// outputs
-	DEFINE_OUTPUT( m_OnPlayerSpawn, "OnPlayerSpawn" ),
+// outputs
+DEFINE_OUTPUT(m_OnPlayerSpawn, "OnPlayerSpawn"),
 
-END_DATADESC()
+END_DATADESC();
 
 
 //-----------------------------------------------------------------------------
@@ -39,16 +41,7 @@ END_DATADESC()
 void CTeamSpawnPoint::Activate( void )
 {
 	BaseClass::Activate();
-	CTeam* team = GetGlobalTeam(GetTeamNumber());
-	if ( team && GetTeamNumber() > 0 && GetTeamNumber() <= MAX_TEAMS )
-	{
-		team->AddSpawnpoint( this );
-	}
-	else
-	{
-		Warning( "info_player_teamspawn with invalid team number: %d\n", GetTeamNumber() );
-		UTIL_Remove( this );
-	}
+	UpdateTeam();
 }
 
 //-----------------------------------------------------------------------------
@@ -66,6 +59,20 @@ bool CTeamSpawnPoint::IsValid( CBasePlayer *pPlayer )
 	}
 
 	return true;
+}
+
+void CTeamSpawnPoint::UpdateTeam()
+{
+	CTeam* team = GetGlobalTeam(GetTeamNumber());
+	if (team && GetTeamNumber() > 0 && GetTeamNumber() <= MAX_TEAMS)
+	{
+		team->AddSpawnpoint(this);
+	}
+	else
+	{
+		Warning("info_player_teamspawn with invalid team number: %d\n", GetTeamNumber());
+		UTIL_Remove(this);
+	}
 }
 
 //-----------------------------------------------------------------------------
