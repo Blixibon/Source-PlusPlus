@@ -3,6 +3,7 @@
 #include "KeyValues.h"
 #include "gametypes.h"
 #include "filesystem.h"
+#include "props.h"
 
 bool CPlayerModels::Init()
 {
@@ -133,6 +134,7 @@ void CPlayerModels::LevelInitPreEntity()
 		FOR_EACH_VEC(m_Models[i].models, j)
 		{
 			CBaseEntity::PrecacheModel(m_Models[i].models[j].szModelName);
+			PropBreakablePrecacheAll(AllocPooledString(m_Models[i].models[j].szModelName));
 		}
 		CBaseEntity::PrecacheModel(m_Models[i].szArmModel);
 		m_Models[i].iRefCount = 0;

@@ -1,6 +1,9 @@
 #include "cbase.h"
 #include "multiplayer/multiplayer_animstate.h"
 #include "c_basetempentity.h"
+#include "props_shared.h"
+
+class C_BaseNetworkedRagdoll;
 
 #define CBaseNetworkedPlayer C_BaseNetworkedPlayer
 
@@ -28,6 +31,14 @@ public:
 	virtual const QAngle& EyeAngles();
 	virtual const QAngle& GetRenderAngles();
 
+	virtual Vector GetObserverCamOrigin(void);
+	virtual CStudioHdr *OnNewModel(void);
+
+	// Gibs.
+	void InitPlayerGibs(void);
+	bool CreatePlayerGibs(const Vector &vecOrigin, const Vector &vecVelocity, float flImpactScale, bool bBurning);
+	CUtlVector<EHANDLE>		*GetSpawnedGibs(void) { return &m_hSpawnedGibs; }
+
 	virtual void SetAnimation(PLAYER_ANIM playerAnim);
 
 	static void RecvProxy_CycleLatch(const CRecvProxyData* pData, void* pStruct, void* pOut);
@@ -46,6 +57,13 @@ protected:
 
 	int m_cycleLatch; // The animation cycle goes out of sync very easily. Mostly from the player entering/exiting PVS. Server will frequently update us with a new one.
 	float m_flServerCycle;
+
+	// Gibs.
+	CUtlVector<breakmodel_t>	m_aGibs;
+	EHANDLE					m_hFirstGib;
+	CUtlVector<EHANDLE>		m_hSpawnedGibs;
+
+	friend class C_BaseNetworkedRagdoll;
 };
 
 // -------------------------------------------------------------------------------- //

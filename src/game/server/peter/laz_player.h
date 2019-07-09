@@ -56,6 +56,7 @@ public:
 	virtual void Spawn(void);
 	virtual void			InitialSpawn(void);
 	virtual void UpdateOnRemove();
+	virtual CBaseEntity		*EntSelectSpawnPoint(void);
 
 	virtual void DoMuzzleFlash();
 
@@ -90,6 +91,8 @@ public:
 	//void DeathSound(const CTakeDamageInfo &info);
 
 	virtual	bool			TestHitboxes(const Ray_t &ray, unsigned int fContentsMask, trace_t& tr);
+
+	virtual bool ShouldGib(const CTakeDamageInfo & info);
 
 	virtual	void		Event_KilledOther(CBaseEntity *pVictim, const CTakeDamageInfo &info);
 
@@ -131,6 +134,8 @@ public:
 	virtual void			CheckSuitUpdate();
 	virtual void			SetSuitUpdate(const char *name, int fgroup, int iNoRepeat);
 
+	virtual void SetAnimation(PLAYER_ANIM playerAnim);
+
 	void State_Transition(LAZPlayerState newState);
 	void State_Enter(LAZPlayerState newState);
 	void State_Leave();
@@ -148,6 +153,8 @@ public:
 
 	virtual bool		SetObserverMode(int mode);
 
+public:
+	static EHANDLE gm_hLastRandomSpawn;
 protected:
 	//CSoundPatch		*m_pWooshSound;
 

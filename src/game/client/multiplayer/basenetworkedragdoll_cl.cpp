@@ -1,5 +1,7 @@
 #include "cbase.h"
 #include "basenetworkedragdoll_cl.h"
+#include "props_shared.h"
+#include "basenetworkedplayer_cl.h"
 
 ConVar cl_ragdoll_physics_enable("cl_ragdoll_physics_enable", "1", 0, "Enable/disable ragdoll physics.");
 ConVar cl_ragdoll_fade_time("cl_ragdoll_fade_time", "15", FCVAR_CLIENTDLL);
@@ -261,12 +263,35 @@ void C_BaseNetworkedRagdoll::CreateHL2MPRagdoll(void)
 	if (m_bBurning)
 	{
 		//m_flBurnEffectStartTime = gpGlobals->curtime;
-		//ParticleProp()->Create("burningplayer_corpse", PATTACH_ABSORIGIN_FOLLOW);
+		ParticleProp()->Create("burning_character", PATTACH_ABSORIGIN_FOLLOW);
 	}
 
 	// Fade out the ragdoll in a while
 	StartFadeOut(cl_ragdoll_fade_time.GetFloat());
 	SetNextClientThink(gpGlobals->curtime + cl_ragdoll_fade_time.GetFloat() * 0.33f);
+}
+
+void C_BaseNetworkedRagdoll::CreateTFGibs(void)
+{
+	bool bCreatedGibs = false;
+
+	C_BaseNetworkedPlayer *pPlayer = NULL;
+	if (m_hPlayer)
+	{
+		pPlayer = dynamic_cast<C_BaseNetworkedPlayer*>(m_hPlayer.Get());
+	}
+
+	if (pPlayer && (pPlayer->m_hFirstGib == NULL))
+	{
+		Vector vecVelocity = m_vecForce + m_vecRagdollVelocity;
+		VectorNormalize(vecVelocity);
+		bCreatedGibs = pPlayer->CreatePlayerGibs(m_vecRagdollOrigin, vecVelocity, m_vecForce.Length(), m_bBurning);
+	}
+
+	if (bCreatedGibs)
+		EndFadeOut();
+	else
+		CreateHL2MPRagdoll();
 }
 
 
@@ -276,7 +301,40 @@ void C_BaseNetworkedRagdoll::OnDataChanged(DataUpdateType_t type)
 
 	if (type == DATA_UPDATE_CREATED)
 	{
-		CreateHL2MPRagdoll();
+		bool bCreateRagdoll = true;
+
+		// Get the player.
+		EHANDLE hPlayer = m_hPlayer;
+		if (hPlayer)
+		{
+			// If we're getting the initial update for this player (e.g., after resetting entities after
+			//  lots of packet loss, then don't create gibs, ragdolls if the player and it's gib/ragdoll
+			//  both show up on same frame.
+			if (abs(hPlayer->GetCreationTick() - gpGlobals->tickcount) < TIME_TO_TICKS(1.0f))
+			{
+				bCreateRagdoll = false;
+			}
+		}
+		else if (C_BasePlayer::GetLocalPlayer())
+		{
+			// Ditto for recreation of the local player
+			if (abs(C_BasePlayer::GetLocalPlayer()->GetCreationTick() - gpGlobals->tickcount) < TIME_TO_TICKS(1.0f))
+			{
+				bCreateRagdoll = false;
+			}
+		}
+
+		if (bCreateRagdoll)
+		{
+			if (m_bGib)
+			{
+				CreateTFGibs();
+			}
+			else
+			{
+				CreateHL2MPRagdoll();
+			}
+		}
 	}
 }
 

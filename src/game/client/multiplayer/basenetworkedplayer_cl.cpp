@@ -6,6 +6,10 @@
 
 #undef CBaseNetworkedPlayer
 
+ConVar base_playergib_forceup("playergib_forceup", "1.0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Upward added velocity for gibs.");
+ConVar base_playergib_force("playergib_force", "500.0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Gibs force.");
+ConVar base_playergib_maxspeed("playergib_maxspeed", "400", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY, "Max gib speed.");
+
 #define CYCLELATCH_TOLERANCE		0.15f
 
 // ***************** C_TEPlayerAnimEvent **********************
@@ -97,6 +101,43 @@ const QAngle& C_BaseNetworkedPlayer::GetRenderAngles()
 		return GetAnimState()->GetRenderAngles();
 }
 
+void C_BaseNetworkedPlayer::InitPlayerGibs(void)
+{
+	// Clear out the gib list and create a new one.
+	m_aGibs.Purge();
+	BuildGibList(m_aGibs, GetModelIndex(), 1.0f, COLLISION_GROUP_NONE);
+}
+
+bool C_BaseNetworkedPlayer::CreatePlayerGibs(const Vector & vecOrigin, const Vector & vecVelocity, float flImpactScale, bool bBurning)
+{
+	// Make sure we have Gibs to create.
+	if (m_aGibs.Count() == 0)
+		return false;
+
+	AngularImpulse angularImpulse(RandomFloat(0.0f, 120.0f), RandomFloat(0.0f, 120.0f), 0.0);
+
+	Vector vecBreakVelocity = vecVelocity;
+	vecBreakVelocity.z += base_playergib_forceup.GetFloat();
+	VectorNormalize(vecBreakVelocity);
+	vecBreakVelocity *= base_playergib_force.GetFloat();
+
+	// Cap the impulse.
+	float flSpeed = vecBreakVelocity.Length();
+	if (flSpeed > base_playergib_maxspeed.GetFloat())
+	{
+		VectorScale(vecBreakVelocity, base_playergib_maxspeed.GetFloat() / flSpeed, vecBreakVelocity);
+	}
+
+	breakablepropparams_t breakParams(vecOrigin, GetRenderAngles(), vecBreakVelocity, angularImpulse);
+	breakParams.impactEnergyScale = 1.0f;//
+
+	// Break up the player.
+	m_hSpawnedGibs.Purge();
+	m_hFirstGib = CreateGibsFromList(m_aGibs, GetModelIndex(), NULL, breakParams, this, -1, false, true, &m_hSpawnedGibs, bBurning);
+
+	return true;
+}
+
 void C_BaseNetworkedPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 {
 	if ( IsLocalPlayer() && prediction->InPrediction() && !prediction->IsFirstTimePredicted() )
@@ -105,6 +146,45 @@ void C_BaseNetworkedPlayer::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 	MDLCACHE_CRITICAL_SECTION();
 	if (GetAnimState())
 		GetAnimState()->DoAnimationEvent( event, nData );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+Vector C_BaseNetworkedPlayer::GetObserverCamOrigin(void)
+{
+	if (!IsAlive())
+	{
+		if (m_hFirstGib)
+		{
+			IPhysicsObject *pPhysicsObject = m_hFirstGib->VPhysicsGetObject();
+			if (pPhysicsObject)
+			{
+				Vector vecMassCenter = pPhysicsObject->GetMassCenterLocalSpace();
+				Vector vecWorld;
+				m_hFirstGib->CollisionProp()->CollisionToWorldSpace(vecMassCenter, &vecWorld);
+				return (vecWorld);
+			}
+			return m_hFirstGib->GetRenderOrigin();
+		}
+
+		IRagdoll *pRagdoll = GetRepresentativeRagdoll();
+		if (pRagdoll)
+			return pRagdoll->GetRagdollOrigin();
+	}
+
+	return BaseClass::GetObserverCamOrigin();
+}
+
+CStudioHdr * C_BaseNetworkedPlayer::OnNewModel(void)
+{
+	CStudioHdr *pHdr = BaseClass::OnNewModel();
+	if (pHdr)
+	{
+		InitPlayerGibs();
+	}
+
+	return pHdr;
 }
 
 void C_BaseNetworkedPlayer::UpdateClientSideAnimation()
@@ -168,7 +248,8 @@ void C_BaseNetworkedPlayer::Respawn()
 	if ( IsLocalPlayer() )
 		ResetToneMapping(1.0);
 
-	
+	m_hFirstGib = NULL;
+	m_hSpawnedGibs.Purge();
 }
 
 IRagdoll* C_BaseNetworkedPlayer::GetRepresentativeRagdoll() const

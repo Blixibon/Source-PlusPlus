@@ -18,6 +18,7 @@ public:
 	virtual void Spawn();
 	virtual void UpdateOnRemove();
 	
+	virtual bool		Event_Gibbed(const CTakeDamageInfo &info) { return false; }
 	virtual bool BecomeRagdollOnClient(const Vector& force);
 
 	// Death & Ragdolls.

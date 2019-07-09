@@ -31,7 +31,7 @@
 #define HL2MP_COMMAND_MAX_RATE 0.3
 
 extern ISoundEmitterSystemBase *soundemitterbase;
-
+extern CBaseEntity *FindPlayerStart(const char *pszClassName);
 extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
 
 ConVar sv_forcedspecialattack("sv_laz_forcedspecial", "-1", FCVAR_CHEAT);
@@ -41,6 +41,13 @@ CStringTableSaveRestoreOps g_FootStepStringOps;
 const char *g_pszSpecialAttacks[SPECIAL_ATTACK_COUNT] = {
 	"manhack"
 };
+
+LINK_ENTITY_TO_CLASS(info_player_combine, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_rebel, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_terrorist, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_counterterrorist, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_allies, CPointEntity);
+LINK_ENTITY_TO_CLASS(info_player_axis, CPointEntity);
 
 LINK_ENTITY_TO_CLASS(player, CLaz_Player);
 
@@ -66,6 +73,8 @@ END_SEND_TABLE();
 #define TEAM_CHANGE_INTERVAL 5.0f
 
 #define HL2MPPLAYER_PHYSDAMAGE_SCALE 4.0f
+
+EHANDLE CLaz_Player::gm_hLastRandomSpawn = nullptr;
 
 CLaz_Player::CLaz_Player()
 {
@@ -198,6 +207,184 @@ void CLaz_Player::UpdateOnRemove()
 	}
 }
 
+//--------------------------------------------------------
+//	EntSelectSpawnPoint()
+//	In singleplayer, looks for info_player_start.
+//	In multiplayer, looks for info_player_teamspawn.
+//	If no such entities exist, looks for HL2:DM, CS:S,
+//	and DoD:S spawnpoints, in that order.
+//	If still unable to find the spawnpoints, looks for
+//	info_player_deathmatch and info_player_start.
+//--------------------------------------------------------
+CBaseEntity * CLaz_Player::EntSelectSpawnPoint(void)
+{
+	CBaseEntity *pSpot;
+	CBaseEntity *pSpotFinder;
+	edict_t		*player;
+
+	player = edict();
+
+	pSpot = gm_hLastRandomSpawn.Get();
+	pSpotFinder = NULL;
+
+	int iTeamSpawnTeam = RandomInt(TEAM_COMBINE, TEAM_REBELS);
+
+	if (!g_pGameRules->IsMultiplayer())
+	{
+		// If startspot is set, (re)spawn there.
+		if (!gpGlobals->startspot || !strlen(STRING(gpGlobals->startspot)))
+		{
+			pSpot = FindPlayerStart("info_player_start");
+			if (pSpot)
+				goto ReturnSpot;
+		}
+		else
+		{
+			pSpot = gEntList.FindEntityByName(NULL, gpGlobals->startspot);
+			if (pSpot)
+				goto ReturnSpot;
+		}
+	}
+	else
+	{
+		if (GetTeam() && GetTeamNumber() > LAST_SHARED_TEAM)
+		{
+			pSpot = GetTeam()->SpawnPlayer(this);
+			if (pSpot)
+				goto ReturnSpot;
+
+			iTeamSpawnTeam = GetTeamNumber();
+		}
+	}
+
+
+	if (iTeamSpawnTeam == TEAM_REBELS)
+	{
+		pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_rebel");
+	}
+	else if (iTeamSpawnTeam == TEAM_COMBINE)
+	{
+		pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_combine");
+	}
+
+	if (pSpotFinder)
+	{
+		goto SelectRandomSpot;
+	}
+	else
+	{
+		if (iTeamSpawnTeam == TF_TEAM_RED)
+		{
+			pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_terrorist");
+		}
+		else if (iTeamSpawnTeam == TF_TEAM_BLUE)
+		{
+			pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_counterterrorist");
+		}
+
+		if (pSpotFinder)
+		{
+			goto SelectRandomSpot;
+		}
+		else
+		{
+			if (iTeamSpawnTeam == TF_TEAM_BLUE)
+			{
+				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_axis");
+			}
+			else if (iTeamSpawnTeam == TF_TEAM_RED)
+			{
+				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_allies");
+			}
+
+			if (pSpotFinder)
+			{
+				goto SelectRandomSpot;
+			}
+			else
+			{
+				pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_deathmatch");
+
+				if (pSpotFinder)
+				{
+					goto SelectRandomSpot;
+				}
+				else
+				{
+					pSpotFinder = gEntList.FindEntityByClassname(pSpot, "info_player_start");
+
+					if (pSpotFinder)
+					{
+						goto SelectRandomSpot;
+					}
+					else
+					{
+						pSpot = gEntList.FindEntityByName(NULL, gpGlobals->startspot);
+						if (pSpot)
+							goto ReturnSpot;
+					}
+				}
+			}
+		}
+	}
+
+SelectRandomSpot:
+	if (!pSpotFinder)
+		goto ReturnSpot;
+
+	// Randomize the start spot
+	for (int i = random->RandomInt(1, 5); i > 0; i--)
+		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+	if (!pSpot)  // skip over the null point
+		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+
+	CBaseEntity *pFirstSpot = pSpot;
+
+	do
+	{
+		if (pSpot)
+		{
+			// check if pSpot is valid
+			if (g_pGameRules->IsSpawnPointValid(pSpot, this))
+			{
+				if (pSpot->GetLocalOrigin() == vec3_origin)
+				{
+					pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+					continue;
+				}
+
+				// if so, go to pSpot
+				goto ReturnSpot;
+			}
+		}
+		// increment pSpot
+		pSpot = gEntList.FindEntityByClassname(pSpot, pSpotFinder->GetClassname());
+	} while (pSpot != pFirstSpot); // loop if we're not back to the start
+
+								   // we haven't found a place to spawn yet,  so kill any guy at the first spawn point and spawn there
+	if (pSpot)
+	{
+		CBaseEntity *ent = NULL;
+		for (CEntitySphereQuery sphere(pSpot->GetAbsOrigin(), 128); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+		{
+			// if ent is a client, kill em (unless they are ourselves)
+			if (ent->IsPlayer() && !(ent->edict() == player))
+				ent->TakeDamage(CTakeDamageInfo(GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC));
+		}
+		goto ReturnSpot;
+	}
+
+ReturnSpot:
+	if (!pSpot)
+	{
+		Warning("PutClientInServer: no player spawn on level. Navigation mesh generation will not work!\n");
+		return CBaseEntity::Instance(INDEXENT(0));
+	}
+
+	gm_hLastRandomSpawn = pSpot;
+	return pSpot;
+}
+
 void CLaz_Player::DoMuzzleFlash()
 {
 	BaseClass::DoMuzzleFlash();
@@ -218,6 +405,31 @@ void CLaz_Player::PreThink(void)
 {
 	BaseClass::PreThink();
 	State_PreThink();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &info - 
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CLaz_Player::ShouldGib(const CTakeDamageInfo &info)
+{
+	if (info.GetDamageType() & DMG_NEVERGIB)
+		return false;
+
+	if (info.GetDamageType() & DMG_ALWAYSGIB)
+		return true;
+
+	if (info.GetDamageCustom() == TF_DMG_CUSTOM_TELEFRAG)
+		return true;
+
+	if (g_pGameRules->Damage_ShouldGibCorpse(info.GetDamageType()))
+	{
+		if (m_iHealth < -2)
+			return true;
+	}
+
+	return false;
 }
 
 void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo & info)
@@ -476,7 +688,7 @@ bool CLaz_Player::ClientCommand(const CCommand &args)
 	{
 		if (args.ArgC() < 2)
 		{
-			Warning("Player sent bad jointeam syntax\n");
+			ClientPrint(this, HUD_PRINTCONSOLE, "Player sent bad jointeam syntax\n");
 		}
 
 		if (ShouldRunRateLimitedCommand(args))
@@ -726,24 +938,25 @@ void CLaz_Player::PainSound(const CTakeDamageInfo & info)
 		return;
 	}
 
-	float flPainLength = 0;
-
-	//bool bAttackerIsPlayer = (info.GetAttacker() && info.GetAttacker()->IsPlayer());
-
 	CMultiplayer_Expresser *pExpresser = GetMultiplayerExpresser();
 	Assert(pExpresser);
+
+	if (!pExpresser->CanSpeakAfterMyself())
+		return;
+
+	float flPainLength = 0;
+	AI_Response dummy;
+	bool bAttackerIsPlayer = (info.GetAttacker() && info.GetAttacker()->IsPlayer() && SpeakConcept(dummy, MP_CONCEPT_PLAYER_ATTACKER_PAIN));
 
 	pExpresser->AllowMultipleScenes();
 
 	// speak a pain concept here, send to everyone but the attacker
 	CPASFilter filter(GetAbsOrigin());
 
-	/*if (bAttackerIsPlayer)
+	if (bAttackerIsPlayer)
 	{
 		filter.RemoveRecipient(ToBasePlayer(info.GetAttacker()));
-	}*/
-
-
+	}
 
 	const char *pszHitLocCriterion = "shotloc:none";
 
@@ -768,19 +981,12 @@ void CLaz_Player::PainSound(const CTakeDamageInfo & info)
 		flPainLength = max(pExpresser->GetTimeSpeechComplete() - gpGlobals->curtime, flPainLength);
 	}
 
-	/*AI_Response *pResp = SpeakConcept(MP_CONCEPT_PLAYER_PAIN);
-	if (pResp)
-	{
-		pExpresser->SpeakDispatchResponse(g_pszMPConcepts[MP_CONCEPT_PLAYER_PAIN], pResp, &filter);
-		flPainLength = max(pExpresser->GetTimeSpeechComplete() - gpGlobals->curtime, flPainLength);
-	}*/
-
-	// speak a louder pain concept to just the attacker
-	/*if (bAttackerIsPlayer)
+	//speak a louder pain concept to just the attacker
+	if (bAttackerIsPlayer)
 	{
 		CSingleUserRecipientFilter attackerFilter(ToBasePlayer(info.GetAttacker()));
-		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_ATTACKER_PAIN, "damagecritical:1", szResponse, AI_Response::MAX_RESPONSE_NAME, &attackerFilter);
-	}*/
+		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_ATTACKER_PAIN, CFmtStr("damagecritical:1,%s", modifiers.Access()), nullptr, 0U, &attackerFilter);
+	}
 
 	pExpresser->DisallowMultipleScenes();
 
@@ -837,6 +1043,10 @@ bool CLaz_Player::ChooseEnemy()
 	{
 		m_hEnemy.Set(pNearest);
 		return true;
+	}
+	else
+	{
+		m_hEnemy.Term();
 	}
 
 	return false;
@@ -1100,6 +1310,16 @@ void CLaz_Player::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 			m_flSuitUpdate = gpGlobals->curtime + SUITUPDATETIME;
 	}
 
+}
+
+void CLaz_Player::SetAnimation(PLAYER_ANIM playerAnim)
+{
+	BaseClass::SetAnimation(playerAnim);
+
+	if (playerAnim == PLAYER_RELOAD && GetEnemy())
+	{
+		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_RELOAD);
+	}
 }
 
 void CLaz_Player::PlayerDeathThink(void)

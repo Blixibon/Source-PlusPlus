@@ -19,8 +19,8 @@ public:
 	//C_Laz_Player();
 
 
-	//virtual void			OnDataChanged(DataUpdateType_t updateType);
-	//virtual void			ClientThink();
+	virtual void			OnDataChanged(DataUpdateType_t updateType);
+	virtual void			ClientThink();
 
 	//bool	IsInReload();
 	//int		GetHideBits();

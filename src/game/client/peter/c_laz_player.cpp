@@ -48,6 +48,33 @@ void C_Laz_Player::PreThink(void)
 	}
 }
 
+void C_Laz_Player::ClientThink()
+{
+	BaseClass::ClientThink();
+
+	if (IsLocalPlayer())
+	{
+		
+	}
+	else
+	{
+		// Cold breath.
+		UpdateColdBreath();
+	}
+}
+
+void C_Laz_Player::OnDataChanged(DataUpdateType_t type)
+{
+	BaseClass::OnDataChanged(type);
+
+	if (type == DATA_UPDATE_CREATED)
+	{
+		SetNextClientThink(CLIENT_THINK_ALWAYS);
+	}
+
+	UpdateVisibility();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

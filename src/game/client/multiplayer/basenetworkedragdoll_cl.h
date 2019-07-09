@@ -30,6 +30,7 @@ private:
 
 	void Interp_Copy(C_BaseAnimatingOverlay* pDestinationEntity);
 	void CreateHL2MPRagdoll(void);
+	void CreateTFGibs(void);
 
 private:
 

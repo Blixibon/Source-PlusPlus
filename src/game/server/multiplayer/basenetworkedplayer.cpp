@@ -196,11 +196,12 @@ void CBaseNetworkedPlayer::Event_Killed( const CTakeDamageInfo &info )
 	else
 		m_hObserverTarget.Set( NULL );
 
-	bool bBurning = (info.GetAmmoType() & (DMG_BURN|DMG_BLAST));
+	bool bBurning = (info.GetAmmoType() & (DMG_BURN | DMG_BLAST | DMG_ENERGYBEAM | DMG_PLASMA));
+	bool bGib = ShouldGib(info);
 
 	// Note: since we're dead, it won't draw us on the client, but we don't set EF_NODRAW
 	// because we still want to transmit to the clients in our PVS.
-	CreateRagdollEntity(false, bBurning);
+	CreateRagdollEntity(bGib, bBurning);
 
 	// ...and employ a minor hack to stop CBaseCombatCharacter creating its own
 	const_cast<CTakeDamageInfo*>(&info)->AddDamageType(DMG_REMOVENORAGDOLL);
@@ -246,7 +247,7 @@ void CBaseNetworkedPlayer::CreateRagdollEntity(bool bGib, bool bBurning)
 		pRagdoll->m_vecRagdollVelocity = GetAbsVelocity();
 		pRagdoll->m_nModelIndex = m_nModelIndex;
 		pRagdoll->m_nForceBone = m_nForceBone;
-		//pRagdoll->m_vecForce = m_vecTotalBulletForce;
+		pRagdoll->m_vecForce = m_vecForce;
 		pRagdoll->m_bGib = bGib;
 		pRagdoll->m_bBurning = bBurning;
 		pRagdoll->SetAbsOrigin(GetAbsOrigin());

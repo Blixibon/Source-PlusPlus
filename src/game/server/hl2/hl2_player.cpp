@@ -1200,7 +1200,7 @@ void CHL2_Player::Spawn(void)
 
 	m_Local.m_iHideHUD = 0;
 
-	const char *pchSquadName = (gpGlobals->maxClients > 1) ? UTIL_VarArgs("%s_%i", PLAYER_SQUADNAME, GetClientIndex()) : PLAYER_SQUADNAME;
+	const char *pchSquadName = (gpGlobals->maxClients > 1) ? UTIL_VarArgs("%s_%i", PLAYER_SQUADNAME, GetUserID()) : PLAYER_SQUADNAME;
 
 	m_pPlayerAISquad = g_AI_SquadManager.FindCreateSquad(AllocPooledString(pchSquadName));
 
