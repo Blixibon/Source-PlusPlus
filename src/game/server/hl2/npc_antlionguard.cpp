@@ -1606,40 +1606,28 @@ public:
 //-----------------------------------------------------------------------------
 void CNPC_AntlionGuard::Footstep( bool bHeavy )
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	Assert( pPlayer != NULL );
-	if ( pPlayer == NULL )
-		return;
+	const char *pszFarSound = bHeavy ? "NPC_AntlionGuard.FarStepHeavy" : "NPC_AntlionGuard.FarStepLight";
+	const char *pszNearSound = bHeavy ? "NPC_AntlionGuard.NearStepHeavy" : "NPC_AntlionGuard.NearStepLight";
 
-	float flDistanceToPlayerSqr = ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
-	float flNearVolume = RemapValClamped( flDistanceToPlayerSqr, Square(10*12.0f), MIN_FOOTSTEP_NEAR_DIST, VOL_NORM, 0.0f );
+	CPASAttenuationFilter filter(this, pszFarSound);
+	EmitSound(filter, entindex(), pszFarSound);
 
-	EmitSound_t soundParams;
-	CPASAttenuationFilter filter( this );
-
-	if ( bHeavy )
+	for (int i = 0; i < filter.GetRecipientCount(); i++)
 	{
-		if ( flNearVolume > 0.0f )
-		{
-			soundParams.m_pSoundName = "NPC_AntlionGuard.NearStepHeavy";
-			soundParams.m_flVolume = flNearVolume;
-			soundParams.m_nFlags = SND_CHANGE_VOL;
-			EmitSound( filter, entindex(), soundParams );
-		}
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex(filter.GetRecipientIndex(i));
 
-		EmitSound( "NPC_AntlionGuard.FarStepHeavy" );
-	}
-	else
-	{
-		if ( flNearVolume > 0.0f )
-		{
-			soundParams.m_pSoundName = "NPC_AntlionGuard.NearStepLight";
-			soundParams.m_flVolume = flNearVolume;
-			soundParams.m_nFlags = SND_CHANGE_VOL;
-			EmitSound( filter, entindex(), soundParams );
-		}
+		float flDistanceToPlayerSqr = (pPlayer->GetAbsOrigin() - GetAbsOrigin()).LengthSqr();
+		float flNearVolume = RemapValClamped(flDistanceToPlayerSqr, Square(10 * 12.0f), MIN_FOOTSTEP_NEAR_DIST, VOL_NORM, 0.0f);
 
-		EmitSound( "NPC_AntlionGuard.FarStepLight" );
+		CSoundParameters params;
+		if (flNearVolume > 0.0f && GetParametersForSound(pszNearSound, params, STRING(GetModelName())))
+		{
+			EmitSound_t ep(params);
+			ep.m_flVolume = flNearVolume;
+
+			CSingleUserRecipientFilter filterNear(pPlayer);
+			EmitSound(filterNear, entindex(), ep);
+		}
 	}
 }
 
@@ -3225,6 +3213,10 @@ void CNPC_AntlionGuard::SummonAntlions( void )
 
 		pAntlion->AddSpawnFlags( SF_NPC_FALL_TO_GROUND );
 		pAntlion->AddSpawnFlags( SF_NPC_FADE_CORPSE );
+#ifdef HL2_EPISODIC
+		if (m_bCavernBreed && RandomInt(0, 3) == 3)
+			pAntlion->AddSpawnFlags(SF_ANTLION_WORKER);
+#endif
 
 		// Make the antlion fire my input when he dies
 		pAntlion->KeyValue( "OnDeath", UTIL_VarArgs("%s,SummonedAntlionDied,,0,-1", STRING(GetEntityName())) );

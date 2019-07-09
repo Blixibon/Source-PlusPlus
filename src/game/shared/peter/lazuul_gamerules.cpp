@@ -872,6 +872,17 @@ bool CLazuul::ClientCommand(CBaseEntity * pEdict, const CCommand & args)
 	return false;
 }
 
+bool CLazuul::FAllowNPCs(void)
+{
+	if (!IsMultiplayer())
+		return true;
+
+	if (IsInWaitingForPlayers() || m_iRoundState == GR_STATE_PREGAME)
+		return false;
+
+	return BaseClass::FAllowNPCs();
+}
+
 //------------------------------------------------------------------------------
 	// Purpose : Initialize all default class relationships
 	// Input   :

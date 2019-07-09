@@ -70,6 +70,9 @@ public:
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
+	// NPCs
+	virtual bool FAllowNPCs(void);
+
 	// Weapon spawn/respawn control
 	virtual int WeaponShouldRespawn(CBaseCombatWeapon* pWeapon);
 	//virtual float FlWeaponRespawnTime(CBaseCombatWeapon* pWeapon);

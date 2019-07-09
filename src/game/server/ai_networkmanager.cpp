@@ -218,12 +218,12 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 	//{
 	//	return;
 	//}
-
+#ifndef HL2_LAZUL
 	if ( !g_pGameRules->FAllowNPCs() )
 	{
 		return;
 	}
-
+#endif
 	// -----------------------------
 	// Make sure directories have been made
 	// -----------------------------
@@ -483,13 +483,13 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 		DevMsg( "Not loading AI due to edit mode\n" );
 		return;
 	}
-
+#ifndef HL2_LAZUL
 	if ( !g_pGameRules->FAllowNPCs() )
 	{
 		DevMsg( "Not loading AI due to games rules\n" );
 		return;
 	}
-
+#endif
 	DevMsg( "Step 1 loading\n" );
 
 	// -----------------------------
@@ -966,10 +966,13 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 	char		szBspFilename[MAX_PATH];
 	char		szGraphFilename[MAX_PATH];
 
-	if ( !g_pGameRules->FAllowNPCs() )
+#ifndef HL2_LAZUL
+	if (!g_pGameRules->FAllowNPCs())
 	{
 		return false;
 	}
+#endif // !HL2_LAZUL
+
 
 	if ( IsX360() && ( filesystem->GetDVDMode() == DVDMODE_STRICT ) )
 	{
@@ -1038,12 +1041,13 @@ void CAI_NetworkManager::Spawn ( void )
 
 void CAI_NetworkManager::DelayedInit( void )
 {
+#ifndef HL2_LAZUL
 	if ( !g_pGameRules->FAllowNPCs() )
 	{
 		SetThink ( NULL );
 		return;
 	}
-
+#endif
 	if ( !g_ai_norebuildgraph.GetInt() )
 	{
 		// ----------------------------------------------------------

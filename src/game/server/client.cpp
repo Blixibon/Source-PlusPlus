@@ -1251,8 +1251,11 @@ void CC_God_f (void)
 	   if ( gpGlobals->deathmatch )
 		   return;
    }
+#elif defined(HL2_LAZUL)
+	if (gpGlobals->deathmatch && !UTIL_IsCommandIssuedByServerAdmin())
+		return;
 #else
-	if ( gpGlobals->deathmatch )
+	if (gpGlobals->deathmatch)
 		return;
 #endif
 
