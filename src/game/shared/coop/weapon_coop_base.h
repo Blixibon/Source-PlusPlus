@@ -38,6 +38,10 @@ public:
 
 	virtual int GetWeaponID(void) const;
 
+	virtual bool			IsPistol() { return (GetSlot() == TF_LOADOUT_SLOT_PISTOL); }
+	virtual bool			IsSniper() { return false; }
+	virtual bool			IsShotgun() { return false; }
+
     //
     virtual void Spawn();
     virtual void WeaponSound( WeaponSound_t sound_type, float soundtime = 0.0f );

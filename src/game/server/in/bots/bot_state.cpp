@@ -35,7 +35,9 @@ void CBot::SetSkill(int level)
 
 	// Same game difficulty
 	if (level == 99) {
-		level = TheGameRules->GetSkillLevel();
+		int iGameSkill = TheGameRules->GetSkillLevel();
+		int iMinSkill = (1 + (2 * (iGameSkill - 1)));
+		level = RandomInt(iMinSkill, iMinSkill + 1);
 	}
 
 	GetProfile()->SetSkill(level);

@@ -339,7 +339,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		SetTouch( NULL );
 		SetThink( NULL );
 
-		if ( !g_pGameRules->IsMultiplayer() )
+		//if ( !g_pGameRules->IsMultiplayer() )
 		{
 			UTIL_Remove( this );
 		}
@@ -471,6 +471,8 @@ public:
 	CWeaponCrossbow( void );
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_CROSSBOW; }
+
+	virtual bool			IsSniper() { return true; }
 	
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );

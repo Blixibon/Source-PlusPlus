@@ -196,7 +196,7 @@ void CBaseNetworkedPlayer::Event_Killed( const CTakeDamageInfo &info )
 	else
 		m_hObserverTarget.Set( NULL );
 
-	bool bBurning = (info.GetAmmoType() & (DMG_BURN | DMG_BLAST | DMG_ENERGYBEAM | DMG_PLASMA));
+	bool bBurning = ((info.GetDamageType() & (DMG_BURN | DMG_BLAST | DMG_PLASMA | DMG_ENERGYBEAM)) != 0);
 	bool bGib = ShouldGib(info);
 
 	// Note: since we're dead, it won't draw us on the client, but we don't set EF_NODRAW

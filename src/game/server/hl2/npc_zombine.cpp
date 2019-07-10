@@ -530,10 +530,10 @@ bool CNPC_Zombine::HandleInteraction( int interactionType, void *data, CBaseComb
 //-----------------------------------------------------------------------------
 Vector CNPC_Zombine::BodyTarget(const Vector &posSrc, bool bNoisy)
 {
-	if (HasGrenade())
+	/*if (HasGrenade())
 	{
 		return m_hGrenade.Get()->GetAbsOrigin();
-	}
+	}*/
 
 	return BaseClass::BodyTarget(posSrc, bNoisy);
 }

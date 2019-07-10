@@ -11,6 +11,7 @@
 
 #include "KeyValues.h"
 #include "utlbuffer.h"
+#include "convar.h"
 
 #ifdef _WIN32
 #include "winlite.h"
@@ -648,4 +649,17 @@ namespace Mounter
 
 		//scenefilecache->Reload();
 	}
+
+	void CC_WhereIs(const CCommand &command)
+	{
+		if (command.ArgC() < 2)
+			return;
+
+		char fullPath[MAX_PATH];
+		filesystem->RelativePathToFullPath_safe(command.Arg(1), "game", fullPath);
+
+		Msg( "Path : %s\n", fullPath);
+	}
+
+	ConCommand whereis_file("whereis", CC_WhereIs, "Given a file path, prints the full path to the console.");
 }

@@ -2815,7 +2815,11 @@ void CNPC_CombineGunship::MakeTracer( const Vector &vecTracerSrc, const trace_t 
 	{
 	case TRACER_LINE:
 		{
-			UTIL_Tracer( vecTracerSrc, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 8000, true, "GunshipTracer" );
+		int iAttachment = LookupAttachment("muzzle");
+		if (iAttachment < 1)
+			iAttachment = TRACER_DONT_USE_ATTACHMENT;
+
+			UTIL_Tracer( vecTracerSrc, tr.endpos, entindex(), iAttachment, 8000, true, "GunshipTracer" );
 		}
 		break;
 

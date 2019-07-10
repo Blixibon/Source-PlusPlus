@@ -49,6 +49,8 @@ public:
 	void	PrimaryAttack( void );
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 
+	virtual bool			IsSniper() { return true; }
+
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_357; }

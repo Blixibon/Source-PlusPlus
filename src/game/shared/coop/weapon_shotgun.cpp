@@ -46,6 +46,7 @@ public:
     //DECLARE_ACTTABLE();
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_SHOTGUN; }
+	virtual bool			IsShotgun() { return false; }
 
 private:
 	CNetworkVar( bool,	m_bNeedPump );		// When emptied completely

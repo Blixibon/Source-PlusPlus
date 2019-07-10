@@ -906,6 +906,53 @@ void CAI_NetworkManager::BuildNetworkGraph( void )
 	if ( m_bDontSaveGraph )
 		return;
 
+	char szNodeTextFilename[MAX_PATH];// text node coordinate filename
+	Q_snprintf(szNodeTextFilename, sizeof(szNodeTextFilename),
+		"maps/graphs/%s%s.txt", STRING(gpGlobals->mapname), GetPlatformExt());
+
+	CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+	if (filesystem->ReadFile(szNodeTextFilename, "game", buf))
+	{
+		Msg("Parsing .txt node file!\n");
+		if (!buf.Size())
+			return;
+
+		const int maxLen = 256;
+		char line[maxLen];
+		CUtlVector<char*> floats;
+		int num = 0;
+
+		// loop through every line of the file, read it in
+		while (true)
+		{
+			buf.GetLine(line, maxLen);
+			if (Q_strlen(line) <= 0)
+				break; // reached the end of the file
+
+			// we've read in a string containing 3 tab separated floats
+			// we need to split this into 3 floats, which we put in a vector
+			V_SplitString(line, "	", floats);
+			Vector origin(atof(floats[0]), atof(floats[1]), atof(floats[2]));
+			//Msg("Parsed Vector(%.2f, %.2f, %.2f)\n",origin.x,origin.y,origin.z);
+
+			floats.PurgeAndDeleteElements();
+
+			// now we want to create a CNodeEnt (info_node) at the location these coordinates describe
+			CNodeEnt *pNode = (CNodeEnt*)CreateNoSpawn("info_node", origin, vec3_angle, NULL);
+			if (pNode)
+			{//	setting this index stops it moaning, doesn't seem to affect anything else though
+				pNode->m_NodeData.nWCNodeID = g_pAINetworkManager->GetEditOps()->m_nNextWCIndex;
+				pNode->Spawn(); // spawning it adds it into the node graph
+				num++;
+			}
+
+			if (!buf.IsValid())
+				break;
+		}
+
+		Msg("Created %i nodes from text file\n", num);
+	}
+
 	CAI_DynamicLink::gm_bInitialized = false;
 	g_AINetworkBuilder.Build( m_pNetwork );
 
@@ -965,6 +1012,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 {
 	char		szBspFilename[MAX_PATH];
 	char		szGraphFilename[MAX_PATH];
+	char		szTextFilename[MAX_PATH];
 
 #ifndef HL2_LAZUL
 	if (!g_pGameRules->FAllowNPCs())
@@ -995,6 +1043,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 	
 	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s%s.bsp" ,szMapName, GetPlatformExt() );
 	Q_snprintf( szGraphFilename, sizeof( szGraphFilename ), "maps/graphs/%s%s.ain", szMapName, GetPlatformExt() );
+	Q_snprintf(szTextFilename, sizeof(szTextFilename), "maps/graphs/%s%s.txt", szMapName, GetPlatformExt());
 	
 	int iCompare;
 	if ( engine->CompareFileTime( szBspFilename, szGraphFilename, &iCompare ) )
@@ -1022,6 +1071,37 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 				// Graph is out of date. Rebuild at usual.
 				DevMsg( 2, ".AIN File will be updated\n\n" );
 				return false;
+			}
+		}
+		else if (filesystem->FileExists(szTextFilename))
+		{
+			if (engine->CompareFileTime(szTextFilename, szGraphFilename, &iCompare))
+			{
+				if (iCompare > 0)
+				{
+					// Text file is newer.
+					if (g_ai_norebuildgraph.GetInt())
+					{
+						// The user has specified that they wish to override the 
+						// rebuilding of outdated nodegraphs (see top of this file)
+						if (filesystem->FileExists(szGraphFilename))
+						{
+							// Display these messages only if the graph exists, and the 
+							// user is asking to override the rebuilding. If the graph does
+							// not exist, we're going to build it whether the user wants to or 
+							// not. 
+							DevMsg(2, ".AIN File will *NOT* be updated. User Override.\n\n");
+							DevMsg("\n*****Node Graph Rebuild OVERRIDDEN by user*****\n\n");
+						}
+						return true;
+					}
+					else
+					{
+						// Graph is out of date. Rebuild at usual.
+						DevMsg(2, ".AIN File will be updated\n\n");
+						return false;
+					}
+				}
 			}
 		}
 		return true;

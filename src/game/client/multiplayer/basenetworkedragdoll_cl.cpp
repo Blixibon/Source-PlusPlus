@@ -2,6 +2,9 @@
 #include "basenetworkedragdoll_cl.h"
 #include "props_shared.h"
 #include "basenetworkedplayer_cl.h"
+#include "c_fire_smoke.h"
+
+C_EntityFlame *FireEffect(C_BaseAnimating *pTarget, C_BaseEntity *pServerFire, float *flScaleEnd, float *flTimeStart, float *flTimeEnd);
 
 ConVar cl_ragdoll_physics_enable("cl_ragdoll_physics_enable", "1", 0, "Enable/disable ragdoll physics.");
 ConVar cl_ragdoll_fade_time("cl_ragdoll_fade_time", "15", FCVAR_CLIENTDLL);
@@ -263,7 +266,8 @@ void C_BaseNetworkedRagdoll::CreateHL2MPRagdoll(void)
 	if (m_bBurning)
 	{
 		//m_flBurnEffectStartTime = gpGlobals->curtime;
-		ParticleProp()->Create("burning_character", PATTACH_ABSORIGIN_FOLLOW);
+		//ParticleProp()->Create("burning_character", PATTACH_ROOTBONE_FOLLOW);
+		FireEffect(this, nullptr, nullptr, nullptr, nullptr);
 	}
 
 	// Fade out the ragdoll in a while

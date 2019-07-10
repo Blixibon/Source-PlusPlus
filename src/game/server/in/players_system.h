@@ -123,6 +123,8 @@ public:
 
     virtual bool IsAbleToSee( CBaseEntity *pEntity, const CRecipientFilter &filter, CBaseCombatCharacter::FieldOfViewCheckType checkFOV = CBaseCombatCharacter::USE_FOV );
     virtual bool IsAbleToSee( const Vector &vecPosition, const CRecipientFilter &filter, CBaseCombatCharacter::FieldOfViewCheckType checkFOV = CBaseCombatCharacter::USE_FOV );
+	virtual bool IsAbleToSee(CBaseEntity *pEntity, CBaseCombatCharacter::FieldOfViewCheckType checkFOV = CBaseCombatCharacter::USE_FOV, bool ignoreBots = true, int team = TEAM_ANY);
+	virtual bool IsAbleToSee(const Vector &vecPosition, CBaseCombatCharacter::FieldOfViewCheckType checkFOV = CBaseCombatCharacter::USE_FOV, bool ignoreBots = true, int team = TEAM_ANY);
 
     virtual bool IsVisible( CBaseEntity *pEntity, bool ignoreBots = true, int team = TEAM_ANY );
     virtual bool IsVisible( const Vector &vecPosition, bool ignoreBots = true, int team = TEAM_ANY );

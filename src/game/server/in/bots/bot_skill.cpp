@@ -27,8 +27,11 @@
 //================================================================================
 CBotProfile::CBotProfile()
 {
-	int minSkill = TheGameRules->GetSkillLevel();
-	SetSkill(RandomInt(minSkill, minSkill + 2));
+	int iGameSkill = TheGameRules->GetSkillLevel();
+	int iMinSkill = (1 + (2 * (iGameSkill - 1)));
+	int iBotSkill = RandomInt(iMinSkill, iMinSkill + 1);
+
+	SetSkill(iBotSkill);
 }
 
 //================================================================================
@@ -112,7 +115,7 @@ void CBotProfile::SetSkill(int skill)
 			break;
 #endif
 
-#ifdef INSOURCE_DLL
+//#ifdef INSOURCE_DLL
 		case SKILL_VERY_HARD:
 			SetMemoryDuration(11.0f);
 			SetReactionDelay(RandomFloat(0.1f, 0.2f));
@@ -133,7 +136,7 @@ void CBotProfile::SetSkill(int skill)
 			SetAggression(RandomInt(80.0f, 90.0f));
 			break;
 
-		case SKILL_IMPOSIBLE:
+		case SKILL_IMPOSSIBLE:
 			SetMemoryDuration(13.0f);
 			SetReactionDelay(RandomFloat(0.0f, 0.01f));
 			SetAlertDuration(RandomFloat(8.0f, 15.0f));
@@ -142,7 +145,7 @@ void CBotProfile::SetSkill(int skill)
 			SetFavoriteHitbox(HEAD);
 			SetAggression(100.0f);
 			break;
-#endif
+//#endif
 	}
 
 	m_iSkillLevel = skill;
@@ -166,7 +169,7 @@ const char *CBotProfile::GeSkillName()
 			return "HARD";
 			break;
 
-#ifdef INSOURCE_DLL
+//#ifdef INSOURCE_DLL
 		case SKILL_VERY_HARD:
 			return "VERY HARD";
 			break;
@@ -175,10 +178,10 @@ const char *CBotProfile::GeSkillName()
 			return "ULTRA HARD";
 			break;
 
-		case SKILL_IMPOSIBLE:
-			return "IMPOSIBLE";
+		case SKILL_IMPOSSIBLE:
+			return "IMPOSSIBLE";
 			break;
-#endif
+//#endif
 	}
 
 	return "UNKNOWN";

@@ -110,6 +110,7 @@ bool BotPlayerClass::QueryHearSound(CSound *pSound)
 //================================================================================
 bool BotPlayerClass::QuerySeeEntity(CBaseEntity *pEntity, bool bOnlyHateOrFear)
 {
+#ifdef BOTBLIND
 	if (bOnlyHateOrFear) {
 		if (g_pGameRules->PlayerRelationship(this, pEntity) == GR_NOTTEAMMATE || g_pGameRules->PlayerRelationship(this, pEntity) == GR_ENEMY)
 			return true;
@@ -117,7 +118,7 @@ bool BotPlayerClass::QuerySeeEntity(CBaseEntity *pEntity, bool bOnlyHateOrFear)
 		Disposition_t disposition = IRelationType(pEntity);
 		return (disposition == D_HT || disposition == D_FR);
 	}
-
+#endif
 	return true;
 }
 

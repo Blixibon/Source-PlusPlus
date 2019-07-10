@@ -475,6 +475,7 @@ static const char* s_LazPreserveEnts[] =
 	"objective_resource",
 	"team_manager",
 	"player_manager",
+	"info_player_teamspawn",
 	"", // END Marker
 };
 
@@ -732,8 +733,22 @@ int CLazuul::PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget)
 	else if (pTarget->IsNPC())
 	{
 		CAI_BaseNPC *pNPC = pTarget->MyNPCPointer();
-		if (pNPC->IRelationType(pPlayer) == D_LI)
+		switch (pNPC->IRelationType(pPlayer))
+		{
+		case D_LI:
 			return GR_TEAMMATE;
+			break;
+		case D_HT:
+		case D_FR:
+			if (pNPC->CanBeAnEnemyOf(pPlayer))
+			{
+				return GR_NOTTEAMMATE;
+				break;
+			}
+		default:
+			return GR_NEUTRAL;
+			break;
+		}
 	}
 
 	return GR_NOTTEAMMATE;
@@ -3432,14 +3447,14 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 	}
 	else if (V_strcmp(killer_weapon_name, "airboat") == 0)
 	{
-		if (info.GetAmmoType() & DMG_BULLET)
+		if (info.GetDamageType() & DMG_BULLET)
 		{
 			killer_weapon_name = "helicopter";
 		}
 	}
 	else if (V_strcmp(killer_weapon_name, "hunter") == 0)
 	{
-		if (info.GetAmmoType() & DMG_SLASH)
+		if (info.GetDamageType() & DMG_SLASH)
 		{
 			killer_weapon_name = "hunter_skewer";
 		}

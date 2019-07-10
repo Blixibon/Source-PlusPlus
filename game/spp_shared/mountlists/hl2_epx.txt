@@ -4,7 +4,7 @@
 	{
 		"head"	"1"
 		
-		"hl2epX_extra/reloaded/reloaded"
+		"hl2_reloaded/reloaded"
 		{
 			
 		}

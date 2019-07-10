@@ -65,7 +65,7 @@ public:
 		if (m_iPlayerState == STATE_WELCOME)
 			return false;
 
-		return true;
+		return (GetTeamNumber() > LAST_SHARED_TEAM);
 	}
 
 	//virtual void PostThink(void);

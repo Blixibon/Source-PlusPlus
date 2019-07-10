@@ -517,9 +517,11 @@ bool CLagCompensationManager::BacktrackEntity(CBaseEntity *entity, float flTarge
 	}
 
 	// Use absolute equality here
-	if ((mins != entity->WorldAlignMins()) ||
-		(maxs != entity->WorldAlignMaxs()))
+	if ((mins != entity->CollisionProp()->OBBMins()) ||
+		(maxs != entity->CollisionProp()->OBBMaxs()))
 	{
+		Assert(entity->GetSolid() != SOLID_VPHYSICS);
+
 		flags |= LC_SIZE_CHANGED;
 		restore->m_vecMins = entity->WorldAlignMins();
 		restore->m_vecMaxs = entity->WorldAlignMaxs();
@@ -769,8 +771,8 @@ void CLagCompensationManager::RecordDataIntoTrack(CBaseEntity *entity, LagRecord
 	record.m_flSimulationTime = entity->GetSimulationTime();
 	record.m_vecAngles = entity->GetAbsAngles();
 	record.m_vecOrigin = entity->GetAbsOrigin();
-	record.m_vecMaxs = entity->WorldAlignMaxs();
-	record.m_vecMins = entity->WorldAlignMins();
+	record.m_vecMaxs = entity->CollisionProp()->OBBMaxs();
+	record.m_vecMins = entity->CollisionProp()->OBBMins();
 
 	CBaseAnimating *pAnimating = entity->GetBaseAnimating();
 

@@ -281,6 +281,7 @@ public:
 
 	virtual bool			IsWeaponZoomed() { return false; }		// Is this weapon in its 'zoomed in' mode?
 
+	virtual bool			IsPistol() { return false; }
 	virtual bool			IsSniper() { return false; }
 	virtual bool			IsShotgun() { return false; }
 

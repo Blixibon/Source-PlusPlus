@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\v_tripmine/tripmine_reference"
+	"$bumpmap" "models\v_tripmine/tripmine_reference_normal"
+}

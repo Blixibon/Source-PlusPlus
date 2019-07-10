@@ -165,7 +165,7 @@ CPlayer *CPlayersSystem::GetRandom( int team )
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // Lo agregamos a la lista
@@ -191,7 +191,7 @@ void CPlayersSystem::RespawnAll( int team )
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // Spawn!
@@ -241,7 +241,7 @@ int CPlayersSystem::GetAliveCount( int team )
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         ++count;
@@ -260,7 +260,7 @@ int CPlayersSystem::GetFireWeaponsCount( int team )
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         CBaseWeapon *pWeapon = pPlayer->GetActiveBaseWeapon();
@@ -290,7 +290,7 @@ int CPlayersSystem::GetHealthTotal( int team )
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // Los jugadores incapacitados tienen una penalización
@@ -420,7 +420,7 @@ StatType CPlayersSystem::GetAmmoStats( int team )
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         CBaseWeapon *pWeapon = pPlayer->GetActiveBaseWeapon();
@@ -563,7 +563,7 @@ CPlayer *CPlayersSystem::GetNear( const Vector &vecPosition, float &distance, CB
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // No queremos este
@@ -619,7 +619,7 @@ bool CPlayersSystem::HasRouteToAnyPlayer( CAI_BaseNPC *pNPC, float tolerance, in
     FOR_EACH_PLAYER_TEAM(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // Tiene una ruta a este jugador!
@@ -638,7 +638,7 @@ bool CPlayersSystem::IsAbleToSee( CBaseEntity *pEntity, const CRecipientFilter &
         if ( !pPlayer ) 
             continue;
 
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         if ( pPlayer->IsAbleToSee( pEntity, checkFOV ) )
@@ -656,7 +656,7 @@ bool CPlayersSystem::IsAbleToSee( const Vector &vecPosition, const CRecipientFil
         if ( !pPlayer ) 
             continue;
 
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         if ( pPlayer->FVisible(vecPosition) && !pPlayer->IsHiddenByFog(vecPosition) )
@@ -664,6 +664,57 @@ bool CPlayersSystem::IsAbleToSee( const Vector &vecPosition, const CRecipientFil
     }
 
     return false;
+}
+
+bool CPlayersSystem::IsAbleToSee(CBaseEntity * pEntity, CBaseCombatCharacter::FieldOfViewCheckType checkFOV, bool ignoreBots, int team)
+{
+	if (!pEntity)
+		return false;
+
+	FOR_EACH_PLAYER(
+		{
+			// No esta vivo
+			if (!pPlayer->IsAlive() || pPlayer->IsObserver())
+				continue;
+
+	// No es del equipo que queremos
+	if (team != TEAM_ANY && pPlayer->GetTeamNumber() != team)
+		continue;
+
+	// Los Bots no cuentan
+	if (ignoreBots && pPlayer->IsBot())
+		continue;
+
+	// Es visible!
+	if (pPlayer->IsAbleToSee(pEntity, checkFOV))
+		return true;
+		});
+
+	return false;
+}
+
+bool CPlayersSystem::IsAbleToSee(const Vector & vecPosition, CBaseCombatCharacter::FieldOfViewCheckType checkFOV, bool ignoreBots, int team)
+{
+	FOR_EACH_PLAYER(
+		{
+			// No esta vivo
+			if (!pPlayer->IsAlive() || pPlayer->IsObserver())
+				continue;
+
+	// No es del equipo que queremos
+	if (team != TEAM_ANY && pPlayer->GetTeamNumber() != team)
+		continue;
+
+	// Los Bots no cuentan
+	if (ignoreBots && pPlayer->IsBot())
+		continue;
+
+	// Es visible!
+	if (pPlayer->IsAbleToSee(vecPosition, checkFOV))
+		return true;
+		});
+
+	return false;
 }
 
 //================================================================================
@@ -678,7 +729,7 @@ bool CPlayersSystem::IsVisible( CBaseEntity *pEntity, bool ignoreBots, int team 
     FOR_EACH_PLAYER(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // No es del equipo que queremos
@@ -706,7 +757,7 @@ bool CPlayersSystem::IsVisible( const Vector &vecPosition, bool ignoreBots, int 
     FOR_EACH_PLAYER(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver() )
             continue;
 
         // No es del equipo que queremos
@@ -736,7 +787,7 @@ bool CPlayersSystem::IsEyesVisible( CBaseEntity *pEntity, bool ignoreBots, int t
     FOR_EACH_PLAYER(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // Tiene NOTARGET activo, lo ignoramos
@@ -766,7 +817,7 @@ bool CPlayersSystem::IsEyesVisible( const Vector &vecPosition, bool ignoreBots, 
 {
     FOR_EACH_PLAYER(
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver() )
             continue;
 
         // No es del equipo que queremos
@@ -796,7 +847,7 @@ bool CPlayersSystem::IsInViewcone( CBaseEntity *pEntity, bool ignoreBots, int te
     FOR_EACH_PLAYER(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // No es del equipo que queremos
@@ -823,7 +874,7 @@ bool CPlayersSystem::IsInViewcone( const Vector &vecPosition, bool ignoreBots, i
     FOR_EACH_PLAYER(
     {
         // No esta vivo
-        if ( !pPlayer->IsAlive() )
+        if ( !pPlayer->IsAlive() || pPlayer->IsObserver())
             continue;
 
         // No es del equipo que queremos

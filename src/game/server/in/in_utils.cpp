@@ -23,10 +23,11 @@
 #include "util_shared.h"
 
 #ifdef INSOURCE_DLL
-#include "players_system.h"
 #include "in_player.h"
 #include "in_attribute_system.h"
 #endif
+
+#include "players_system.h"
 
 #ifdef APOCALYPSE
 #include "ap_player.h"
@@ -446,8 +447,29 @@ bool Utils::GetEntityBones(CBaseEntity *pEntity, HitboxBones &bones)
         bones.chest = 9;
         return true;
     }*/
-#elif HL2MP
-    // TODO
+#elif defined(HL2_DLL)
+	CBaseAnimating *pAnim = pEntity->GetBaseAnimating();
+	if (pAnim)
+	{
+		CStudioHdr *pHdr = pAnim->GetModelPtr();
+		int iSet = pAnim->GetHitboxSet();
+		for (int i = 0; i < pHdr->iHitboxCount(iSet); i++)
+		{
+			mstudiobbox_t* pBox = pHdr->pHitbox(i, iSet);
+
+			if (!pBox)
+				continue;
+
+			if (pBox->group == HITGROUP_HEAD)
+			{
+				bones.head = i;
+			}
+			else if (pBox->group == HITGROUP_CHEST)
+			{
+				bones.chest = i;
+			}
+		}
+	}
 #endif
 
     return false;
@@ -468,8 +490,8 @@ bool Utils::ComputeHitboxPositions(CBaseEntity *pEntity, HitboxPositions &positi
         return false;
 
     // Generic Positions
-    positions.head = pEntity->EyePosition();
-    positions.chest = pEntity->WorldSpaceCenter();
+	positions.head = pEntity->HeadTarget(vec3_origin);
+    positions.chest = pEntity->BodyTarget(vec3_origin, false);
 
     // It doesn't rely on bones
     positions.feet = pEntity->GetAbsOrigin();
@@ -795,14 +817,14 @@ bool Utils::IsValidSpot(const Vector & vecSpot, const CSpotCriteria & criteria)
         }
     }
 
-#ifdef INSOURCE_DLL
+//#ifdef INSOURCE_DLL
     // Only if we can see it
     if ( criteria.HasFlags(FLAG_ONLY_VISIBLE) && criteria.GetPlayer() ) {
         if ( !criteria.GetPlayer()->IsAbleToSee(vecSpot, CBaseCombatCharacter::DISREGARD_FOV) ) {
             return false;
         }
     }
-#endif
+//#endif
 
     // Only if it is out of the line of fire of other players
     if ( criteria.HasFlags(FLAG_OUT_OF_LINE_OF_FIRE) ) {

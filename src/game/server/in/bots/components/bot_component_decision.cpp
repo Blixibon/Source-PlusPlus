@@ -183,10 +183,10 @@ bool CBotDecision::ShouldTeleport(const Vector &vecGoal) const
 	// Only if nobody is watching
 	if (bot_locomotion_hiddden_teleport.GetBool()) {
 //#ifdef INSOURCE_DLL
-		if (ThePlayersSystem->IsVisible(GetHost()))
+		if (ThePlayersSystem->IsAbleToSee(GetHost()))
 			return false;
 
-		if (ThePlayersSystem->IsVisible(vecGoal))
+		if (ThePlayersSystem->IsAbleToSee(vecGoal))
 			return false;
 //#else
 //		for (int i = 0; i <= gpGlobals->maxClients; ++i) {
@@ -210,7 +210,7 @@ bool CBotDecision::ShouldTeleport(const Vector &vecGoal) const
 //#endif
 	}
 
-	Vector vUpBit = GetHost()->GetAbsOrigin();
+	Vector vUpBit = vecGoal;
 	vUpBit.z += 1;
 
 	trace_t tr;
@@ -1045,6 +1045,7 @@ void CBotDecision::SwitchToBestWeapon()
 	CBaseWeapon *pSniper = NULL;
 	CBaseWeapon *pShotgun = NULL;
 	CBaseWeapon *pMachineGun = NULL;
+	CBaseWeapon *pMelee = NULL;
 	CBaseWeapon *pShortRange = NULL;
 
 	// Check to know what weapons I have
@@ -1055,7 +1056,7 @@ void CBotDecision::SwitchToBestWeapon()
 			continue;
 
 		// TODO: Another way to detect a pistol?
-		if (pWeapon->ClassMatches("pistol")) {
+		if (pWeapon->IsPistol()) {
 			if (!pPistol || pWeapon->GetWeight() > pPistol->GetWeight()) {
 				pPistol = pWeapon;
 			}
@@ -1072,6 +1073,13 @@ void CBotDecision::SwitchToBestWeapon()
 		else if (pWeapon->IsShotgun()) {
 			if (!pShotgun || pWeapon->GetWeight() > pShotgun->GetWeight()) {
 				pShotgun = pWeapon;
+			}
+		}
+
+		// The best melee
+		else if (pWeapon->IsMeleeWeapon()) {
+			if (!pMelee || pWeapon->GetWeight() > pMelee->GetWeight()) {
+				pMelee = pWeapon;
 			}
 		}
 
@@ -1093,6 +1101,9 @@ void CBotDecision::SwitchToBestWeapon()
 		}
 		else if (pPistol) {
 			pShortRange = pPistol;
+		}
+		else if (pMelee) {
+			pShortRange = pMelee;
 		}
 		else if (pSniper) {
 			pShortRange = pSniper;

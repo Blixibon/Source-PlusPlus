@@ -370,8 +370,10 @@
 		"fieldName" "HudMessage"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "p100"
-		"tall"	 "p100"
+		"xpos"	"0"
+		"ypos"	"0"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudMenu

@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\v_crowbar/crowbar_01"
+	"$bumpmap" "models/v_crowbar/crowbar_01_normal"
+}

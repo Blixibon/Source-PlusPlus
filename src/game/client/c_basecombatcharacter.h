@@ -43,6 +43,7 @@ public:
 	// Vision
 	// -----------------------
 	enum FieldOfViewCheckType { USE_FOV, DISREGARD_FOV };
+	bool IsAbleToSee(const Vector & vecSpot, FieldOfViewCheckType checkFOV);
 	bool IsAbleToSee( const CBaseEntity *entity, FieldOfViewCheckType checkFOV );	// Visible starts with line of sight, and adds all the extra game checks like fog, smoke, camo...
 	bool IsAbleToSee( C_BaseCombatCharacter *pBCC, FieldOfViewCheckType checkFOV );	// Visible starts with line of sight, and adds all the extra game checks like fog, smoke, camo...
 

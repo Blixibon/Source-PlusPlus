@@ -17,6 +17,7 @@
 #include "mapentities.h"
 #include "IEffects.h"
 #include "props.h"
+#include "players_system.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -632,13 +633,13 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 {
 	CNPCSpawnDestination *pDestinations[ MAX_DESTINATION_ENTS ];
 	CBaseEntity *pEnt = NULL;
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	//CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 	int	count = 0;
 
-	if( !pPlayer )
+	/*if( !pPlayer )
 	{
 		return NULL;
-	}
+	}*/
 
 	// Collect all the qualifiying destination ents
 	pEnt = gEntList.FindEntityByName( NULL, m_iszDestinationGroup );
@@ -666,7 +667,7 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 				Vector vecTopOfHull = NAI_Hull::Maxs( HULL_HUMAN );
 				vecTopOfHull.x = 0;
 				vecTopOfHull.y = 0;
-				bool fVisible = (pPlayer->FVisible( vecTest ) || pPlayer->FVisible( vecTest + vecTopOfHull ) );
+				bool fVisible = (ThePlayersSystem->IsVisible( vecTest ) || ThePlayersSystem->IsVisible( vecTest + vecTopOfHull ) );
 
 				if( m_CriterionVisibility == TS_YN_YES )
 				{
@@ -677,10 +678,7 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 				{
 					if( fVisible )
 					{
-						if ( !(pPlayer->GetFlags() & FL_NOTARGET) )
-							fValid = false;
-						else
-							DevMsg( 2, "Spawner %s spawning even though seen due to notarget\n", STRING( GetEntityName() ) );
+						fValid = false;
 					}
 				}
 			}
@@ -726,7 +724,8 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 			for( int i = 0 ; i < count ; i++ )
 			{
 				Vector vecTest = pDestinations[ i ]->GetAbsOrigin();
-				float flDist = ( vecTest - pPlayer->GetAbsOrigin() ).Length();
+				float flDist;
+				ThePlayersSystem->GetNear(vecTest, flDist);
 
 				if ( m_iMinSpawnDistance != 0 && m_iMinSpawnDistance > flDist )
 					continue;
@@ -748,7 +747,8 @@ CNPCSpawnDestination *CTemplateNPCMaker::FindSpawnDestination()
 			for( int i = 0 ; i < count ; i++ )
 			{
 				Vector vecTest = pDestinations[ i ]->GetAbsOrigin();
-				float flDist = ( vecTest - pPlayer->GetAbsOrigin() ).Length();
+				float flDist;
+				ThePlayersSystem->GetNear(vecTest, flDist);
 
 				if ( m_iMinSpawnDistance != 0 && m_iMinSpawnDistance > flDist )
 					continue;

@@ -247,11 +247,15 @@ CBaseEntity * CLaz_Player::EntSelectSpawnPoint(void)
 	}
 	else
 	{
-		if (GetTeam() && GetTeamNumber() > LAST_SHARED_TEAM)
+		if (GetTeamNumber() > LAST_SHARED_TEAM)
 		{
-			pSpot = GetTeam()->SpawnPlayer(this);
-			if (pSpot)
-				goto ReturnSpot;
+			CTeam *pTeam = GetTeam();
+			if (pTeam)
+			{
+				pSpot = pTeam->SpawnPlayer(this);
+				if (pSpot)
+					goto ReturnSpot;
+			}
 
 			iTeamSpawnTeam = GetTeamNumber();
 		}

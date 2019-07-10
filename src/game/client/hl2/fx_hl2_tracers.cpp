@@ -38,7 +38,8 @@ void GunshipTracerCallback( const CEffectData &data )
 {
 	float flVelocity = data.m_flScale;
 	bool bWhiz = (data.m_fFlags & TRACER_FLAG_WHIZ);
-	FX_GunshipTracer( (Vector&)data.m_vStart, (Vector&)data.m_vOrigin, flVelocity, bWhiz );
+	Vector vecStart = GetTracerOrigin(data);
+	FX_GunshipTracer(vecStart, (Vector&)data.m_vOrigin, flVelocity, bWhiz );
 }
 
 DECLARE_CLIENT_EFFECT( "GunshipTracer", GunshipTracerCallback );

@@ -2232,7 +2232,7 @@ bool CWeaponRPG::WeaponLOSCondition(const Vector &ownerPos, const Vector &target
 			Vector vecShootDir = npcOwner->GetActualShootTrajectory(vecMuzzle);
 
 			// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
-			AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, NULL, &tr);
+			AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, npcOwner, COLLISION_GROUP_NPC, &tr);
 
 			if (tr.fraction != 1.0f)
 				bResult = false;
@@ -2282,7 +2282,7 @@ int CWeaponRPG::WeaponRangeAttack1Condition(float flDot, float flDist)
 		Vector vecShootDir = pOwner->GetActualShootTrajectory(vecMuzzle);
 
 		// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
-		AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, NULL, &tr);
+		AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, pOwner, COLLISION_GROUP_NPC, &tr);
 
 		if (tr.fraction != 1.0)
 		{

@@ -73,7 +73,7 @@ DECLARE_DEBUG_CMD(bot_debug_max_msgs, "10", "")
 DECLARE_DEBUG_CMD(bot_debug_data_memory, "0", "")
 
 DECLARE_DEBUG_CMD(bot_optimize, "0", "")
-DECLARE_SERVER_CMD(bot_far_distance, "2500", "")
+DECLARE_SERVER_CMD(bot_far_distance, "2500", "");
 
 //================================================================================
 // Macros

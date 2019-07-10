@@ -421,6 +421,44 @@ void CCombatCharVisCache::RegisterVisibility( int iCache, bool bEntity1CanSeeEnt
 
 static CCombatCharVisCache s_CombatCharVisCache;
 
+bool CBaseCombatCharacter::IsAbleToSee(const Vector & vecSpot, FieldOfViewCheckType checkFOV)
+{
+	// Test this every time; it's cheap.
+	Vector vecEyePosition = EyePosition();
+	Vector vecTargetPosition = vecSpot;
+
+#ifdef GAME_DLL
+	Vector vecEyeToTarget;
+	VectorSubtract(vecTargetPosition, vecEyePosition, vecEyeToTarget);
+	float flDistToOther = VectorNormalize(vecEyeToTarget);
+
+	// We can't see because they are too far in the fog
+	if (IsHiddenByFog(flDistToOther))
+		return false;
+#endif
+
+	if (!IsLineOfSightClear(vecSpot, IGNORE_ACTORS))
+		return false;
+
+#if defined(GAME_DLL) && defined(USE_NAV_MESH)
+	if (flDistToOther > NavObscureRange.GetFloat())
+	{
+		const float flMaxDistance = 100.0f;
+#ifdef TERROR
+		TerrorNavArea *pTargetArea = static_cast<TerrorNavArea*>(TheNavMesh->GetNearestNavArea(vecTargetPosition, false, flMaxDistance));
+		if (!pTargetArea || pTargetArea->HasSpawnAttributes(TerrorNavArea::SPAWN_OBSCURED))
+			return false;
+#else
+		CNavArea *pTargetArea = TheNavMesh->GetNearestNavArea(vecTargetPosition, false, flMaxDistance);
+#endif
+		if (ComputeTargetIsInDarkness(vecEyePosition, pTargetArea, vecTargetPosition))
+			return false;
+	}
+#endif
+
+	return (checkFOV != USE_FOV || IsInFieldOfView(vecSpot));
+}
+
 bool CBaseCombatCharacter::IsAbleToSee( const CBaseEntity *pEntity, FieldOfViewCheckType checkFOV )
 {
 	CBaseCombatCharacter *pBCC = const_cast<CBaseEntity *>( pEntity )->MyCombatCharacterPointer();

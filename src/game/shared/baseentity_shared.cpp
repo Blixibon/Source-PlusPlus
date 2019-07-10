@@ -2186,7 +2186,7 @@ void CBaseEntity::DoImpactEffect( trace_t &tr, int nDamageType )
 //-----------------------------------------------------------------------------
 void CBaseEntity::ComputeTracerStartPosition( const Vector &vecShotSrc, Vector *pVecTracerStart )
 {
-#ifndef HL2MP
+#if !defined( HL2MP ) && !defined(HL2_LAZUL)
 	if ( g_pGameRules->IsMultiplayer() )
 	{
 		// NOTE: we do this because in MakeTracer, we force it to use the attachment position

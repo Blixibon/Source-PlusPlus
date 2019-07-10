@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\v_satchel/psx_v_satchel2"
+	"$bumpmap" "models\v_satchel/psx_v_satchel2_normal"
+}

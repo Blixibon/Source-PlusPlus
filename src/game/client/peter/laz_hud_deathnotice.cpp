@@ -145,7 +145,7 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		int iLocalPlayerIndex = GetLocalPlayerIndex();
 
 		// if there was an assister, put both the killer's and assister's names in the death message
-		int iAssisterID = bPlayerDeath ? event->GetInt( "assister" ) : event->GetInt( "assister_index" );
+		int iAssisterID = /*bPlayerDeath ? event->GetInt( "assister" ) :*/ event->GetInt( "assister_index" );
 		const char *assister_classname = event->GetString( "assister_name" );
 		int assister_team = event->GetInt( "assister_team" );
 
@@ -171,7 +171,7 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 			// whether or not the assister is on the killers team or not. -danielmm8888
 			if ( iAssisterID > 0 )
 			{
-				m_DeathNotices[iDeathNoticeMsg].Assister.iTeam = iAssisterID <= gpGlobals->maxClients ? g_PR->GetTeam( iAssisterID ) : assister_team;
+				m_DeathNotices[iDeathNoticeMsg].Assister.iTeam = (iAssisterID <= gpGlobals->maxClients ? g_PR->GetTeam( iAssisterID ) : assister_team);
 			}
 
 			char szKillerBuf[MAX_PLAYER_NAME_LENGTH];
