@@ -4,6 +4,7 @@ $IKChain "lhand" "ValveBiped.Bip01_L_Hand" knee 0.707 0.707 0
 $IKChain "rfoot" "ValveBiped.Bip01_R_Foot" knee 0.707 -0.707 0
 $IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
 
+
 $Sequence "melee_gunhit" {
 	"combine_soldier_anim3_anims\melee_gunhit.smd"
 	activity "ACT_MELEE_ATTACK1" 1
@@ -37,6 +38,20 @@ $Sequence "melee_gunhit2" {
 	{ event 3 13 "" }
 	fadein 0.2
 	fadeout 0.2
+	fps 30
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" footstep
+	ikrule "lfoot" footstep
+}
+
+$Sequence "shoot_rpg" {
+	"combine_soldier_anim3_anims\shoot_rpg.smd"
+	activity "ACT_RANGE_ATTACK_RPG" 1
+	fadein 0.2
+	fadeout 0.2
+	node "shootingRPG"
+	snap
 	fps 30
 	ikrule "rhand" release
 	ikrule "lhand" release
