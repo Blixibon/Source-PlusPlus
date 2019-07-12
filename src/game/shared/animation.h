@@ -14,6 +14,7 @@ struct animevent_t;
 struct studiohdr_t;
 class CStudioHdr;
 struct mstudioseqdesc_t;
+class CUtlSymbolTable;
 
 int ExtractBbox( CStudioHdr *pstudiohdr, int sequence, Vector& mins, Vector& maxs );
 
@@ -63,5 +64,7 @@ float SetBlending( CStudioHdr *pstudiohdr, int sequence, int *pblendings, int iB
 int FindHitboxSetByName( CStudioHdr *pstudiohdr, const char *name );
 const char *GetHitboxSetName( CStudioHdr *pstudiohdr, int setnumber );
 int GetHitboxSetCount( CStudioHdr *pstudiohdr );
+
+CUtlSymbolTable *GetActivityModifierTable(void);
 
 #endif	//ANIMATION_H

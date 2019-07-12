@@ -294,8 +294,8 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		case TF_DMG_CUSTOM_BURNING:
 		{
 			// Show a special fire death icon if this was a suicide or environmental death.
-			int victim = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) : event->GetInt( "victim_index" );
-			int killer = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) : event->GetInt( "attacker_index" );
+			int victim = /*bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) :*/ event->GetInt( "victim_index" );
+			int killer = /*bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) :*/ event->GetInt( "attacker_index" );
 			if ( !killer || killer == victim )
 			{
 				Q_strncpy( m_DeathNotices[iDeathNoticeMsg].szIcon, "d_firedeath", ARRAYSIZE( m_DeathNotices[iDeathNoticeMsg].szIcon ) );
@@ -306,7 +306,7 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		case TF_DMG_CUSTOM_SUICIDE:
 			{
 				// display a different message if this was suicide, or assisted suicide (suicide w/recent damage, kill awarded to damager)
-			bool bAssistedSuicide = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) != engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) : event->GetInt( "victim_index" ) != event->GetInt( "attacker_index" );
+			bool bAssistedSuicide = /*bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) != engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) :*/ event->GetInt( "victim_index" ) != event->GetInt( "attacker_index" );
 				pMsg = g_pVGuiLocalize->Find( bAssistedSuicide ? "#DeathMsg_AssistedSuicide" : "#DeathMsg_Suicide" );
 				if ( pMsg )
 				{

@@ -16,6 +16,7 @@
 #include "npcevent.h"
 #include "eventlist.h"
 #include "tier0/vprof.h"
+#include "utlsymbol.h"
 
 #if !defined( CLIENT_DLL ) && !defined( MAKEXVCD )
 #include "util.h"
@@ -1050,4 +1051,11 @@ int GetHitboxSetCount( CStudioHdr *pstudiohdr )
 		return 0;
 
 	return pstudiohdr->numhitboxsets();
+}
+
+extern CUtlSymbolTable g_ActivityModifiersTable;
+
+CUtlSymbolTable * GetActivityModifierTable(void)
+{
+	return &g_ActivityModifiersTable;
 }

@@ -13,6 +13,7 @@
 #include <vcollide_parse.h>
 #include <bone_setup.h>
 #include <tier0/vprof.h>
+#include "fmtstr.h"
 
 #ifdef CLIENT_DLL
 #include "gamestringpool.h"
@@ -420,7 +421,7 @@ int CPropData::ParsePropFromKV( CBaseEntity *pProp, KeyValues *pSection, KeyValu
 			const char *pValue = pContext->GetString();
 			if ( pName && pValue )
 			{
-				pProp->AddContext( UTIL_VarArgs( "%s:%s", pName, pValue ) );
+				pProp->AddContext( CFmtStr( "%s:%s", pName, pValue ) );
 			}
 		}
 	}

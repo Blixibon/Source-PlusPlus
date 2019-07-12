@@ -3602,10 +3602,14 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 	const char* killer_weapon_name = GetKillingWeaponName(info, pTFPlayerVictim, iWeaponID);
 	const char* killer_weapon_log_name = NULL;
 
-	if (iWeaponID && pScorer)
+	if (iWeaponID)
 	{
-		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
-		//CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
+		CBaseCombatWeapon* pWeapon = nullptr;
+		if (pScorer)
+			pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
+		else if (pKiller && pKiller->MyCombatCharacterPointer())
+			pWeapon = pKiller->MyCombatCharacterPointer()->Weapon_OwnsThisID(iWeaponID);
+
 		if (pWeapon)
 		{
 			CEconItemDefinition* pItemDef = pWeapon->GetItem()->GetStaticData();
@@ -3725,10 +3729,14 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 	const char* killer_weapon_name = GetKillingWeaponName(info, pVictim, iWeaponID);
 	const char* killer_weapon_log_name = NULL;
 
-	if (iWeaponID && pScorer)
+	if (iWeaponID)
 	{
-		CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
-		//CBaseCombatWeapon* pWeapon = pScorer->Weapon_OwnsThisType(killer_weapon_name);
+		CBaseCombatWeapon* pWeapon = nullptr;
+		if (pScorer)
+			pWeapon = pScorer->Weapon_OwnsThisID(iWeaponID);
+		else if (pKiller && pKiller->MyCombatCharacterPointer())
+			pWeapon = pKiller->MyCombatCharacterPointer()->Weapon_OwnsThisID(iWeaponID);
+
 		if (pWeapon)
 		{
 			CEconItemDefinition* pItemDef = pWeapon->GetItem()->GetStaticData();
