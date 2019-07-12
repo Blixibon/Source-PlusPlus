@@ -1,7 +1,7 @@
 "GameInfo"
 {
 	game	"Half-Life 2: Lazuul"
-	title	"HALF-LIFE'"
+	title	"H'LF -LIFE2"
 	title2	"== lazuul =="
 	//type singleplayer_only
 	nomodels 1

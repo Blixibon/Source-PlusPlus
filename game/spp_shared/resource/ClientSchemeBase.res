@@ -107,6 +107,8 @@ Scheme
 		"QualityColorStrange"					"205 155 29 255"
 
 		"Chat.TypingText"					"Orange"
+		
+		"Mod.Main.Title1.Color"	"255 255 255 255"
 	}
 	
 	///////////////////// BASE SETTINGS ////////////////////////
@@ -173,16 +175,18 @@ Scheme
 		"Caution"			"255 48 0 255"
 
 		// Top-left corner of the "Half-Life 2" on the main screen
-		"Main.Title1.X"				"32"
-		"Main.Title1.Y"				"280"
+		"Main.Title1.X"				"76"
+		"Main.Title1.Y"				"145"
 		"Main.Title1.Y_hidef"		"130"
 		"Main.Title1.Color"	"255 255 255 0"
+		"Mod.Main.Title1.Color"	"255 255 255 255"
 
 		// Top-left corner of secondary title e.g. "DEMO" on the main screen
 		"Main.Title2.X"				"76"
 		"Main.Title2.Y"				"190"
 		"Main.Title2.Y_hidef"		"174"
 		"Main.Title2.Color"	"255 255 255 0"
+		"Mod.Main.Title2.Color"	"255 255 255 200"
 
 		// Top-left corner of the menu on the main screen
 		"Main.Menu.X"			"32"
@@ -870,12 +874,13 @@ Scheme
 		{
 			"1"
 			{
-				"name"  "Impact" //
+				"name"  "K12HL2" //
 				"tall"			"64"
 				"tall_hidef"	"72"
 				"weight" "0"
 				"additive" "0"
 				"antialias" "1"
+				"custom"	"1"
 			}
 		}
 
@@ -1186,6 +1191,7 @@ Scheme
 		"8"		"resource/cstrike.ttf"
 		"9"		"resource/RealBeta's Weapon Icons.ttf"
 		"10"	"resource/obsidianweaps.ttf"
+		"11"	"resource/K12HL2.ttf"
 	}
 
 }

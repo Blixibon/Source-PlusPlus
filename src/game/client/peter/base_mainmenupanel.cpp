@@ -858,8 +858,8 @@ bool CTFMainMenuPanel::Init()
 	bInMenu = true;
 	bInGame = true;
 
-	//m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton", ModInfo().GetGameTitle()));
-	//m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton2", ModInfo().GetGameTitle2()));
+	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton", ModInfo().GetGameTitle()));
+	m_pGameMenuButtons.AddToTail(CreateMenuButton(this, "GameMenuButton2", ModInfo().GetGameTitle2()));
 #ifdef CS_BETA
 	if (!ModInfo().NoCrosshair()) // hack to not show the BETA for HL2 or HL1Port
 	{
@@ -899,8 +899,8 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 	CUtlVector< Color > buttonColor;
 	if (pClientScheme)
 	{
-		/*m_iGameTitlePos.RemoveAll();
-		for (i = 0; i < m_pGameMenuButtons.Count(); ++i)
+		m_iGameTitlePos.RemoveAll();
+		for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		{
 			m_pGameMenuButtons[i]->SetFont(pClientScheme->GetFont("ClientTitleFont", true));
 			m_iGameTitlePos.AddToTail(coord());
@@ -912,7 +912,7 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 			if (IsConsoleUI())
 				m_iGameTitlePos[i].x += MAIN_MENU_INDENT_X360;
 
-			buttonColor.AddToTail(pClientScheme->GetColor(CFmtStr("Main.Title%d.Color", i + 1), Color(255, 255, 255, 255)));
+			buttonColor.AddToTail(pClientScheme->GetColor(CFmtStr("Mod.Main.Title%d.Color", i + 1), Color(255, 255, 255, 255)));
 		}
 #ifdef CS_BETA
 		if (!ModInfo().NoCrosshair()) // hack to not show the BETA for HL2 or HL1Port
@@ -920,7 +920,7 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 			m_pGameMenuButtons[m_pGameMenuButtons.Count() - 1]->SetFont(pClientScheme->GetFont("BetaFont", true));
 		}
 #endif // CS_BETA
-		*/
+		
 		m_iGameMenuPos.x = atoi(pClientScheme->GetResourceString("Main.Menu.X"));
 		m_iGameMenuPos.x = scheme()->GetProportionalScaledValue(m_iGameMenuPos.x);
 		m_iGameMenuPos.y = atoi(pClientScheme->GetResourceString("Main.Menu.Y"));
@@ -929,21 +929,22 @@ void CTFMainMenuPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 		m_iGameMenuInset = atoi(pClientScheme->GetResourceString("Main.BottomBorder"));
 		m_iGameMenuInset = scheme()->GetProportionalScaledValue(m_iGameMenuInset);
 	}
-	/*else
+	else
 	{
-		for (i = 0; i < m_pGameMenuButtons.Count(); ++i)
+		for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 		{
 			m_pGameMenuButtons[i]->SetFont(pScheme->GetFont("TitleFont"));
 			buttonColor.AddToTail(Color(255, 255, 255, 255));
 		}
 	}
 
-	for (i = 0; i < m_pGameMenuButtons.Count(); ++i)
+	for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 	{
 		m_pGameMenuButtons[i]->SetDefaultColor(buttonColor[i], Color(0, 0, 0, 0));
 		m_pGameMenuButtons[i]->SetArmedColor(buttonColor[i], Color(0, 0, 0, 0));
 		m_pGameMenuButtons[i]->SetDepressedColor(buttonColor[i], Color(0, 0, 0, 0));
-	}*/
+		m_pGameMenuButtons[i]->SetAlpha(buttonColor[i].a());
+	}
 }	
 
 //-----------------------------------------------------------------------------
@@ -978,7 +979,7 @@ void CTFMainMenuPanel::CreateGameMenu()
 //-----------------------------------------------------------------------------
 void CTFMainMenuPanel::CreateGameLogo()
 {
-	/*if (ModInfo().UseGameLogo())
+	if (ModInfo().UseGameLogo())
 	{
 		m_pGameLogo = new CMainMenuGameLogo(this, "GameLogo");
 
@@ -994,7 +995,7 @@ void CTFMainMenuPanel::CreateGameLogo()
 	else
 	{
 		m_pGameLogo = NULL;
-	}*/
+	}
 }
 
 void CTFMainMenuPanel::CheckBonusBlinkState()
@@ -1105,7 +1106,7 @@ void CTFMainMenuPanel::PerformLayout()
 		idealMenuY = tall - menuTall - m_iGameMenuInset;
 	}
 
-	/*int yDiff = idealMenuY - m_iGameMenuPos.y;
+	int yDiff = idealMenuY - m_iGameMenuPos.y;
 
 	for (int i = 0; i < m_pGameMenuButtons.Count(); ++i)
 	{
@@ -1123,7 +1124,7 @@ void CTFMainMenuPanel::PerformLayout()
 	{
 		// move the logo to sit right on top of the menu
 		m_pGameLogo->SetPos(m_iGameMenuPos.x + m_pGameLogo->GetOffsetX(), idealMenuY - m_pGameLogo->GetTall() + m_pGameLogo->GetOffsetY());
-	}*/
+	}
 
 	// position self along middle of screen
 	if (IsConsoleUI())
