@@ -902,6 +902,8 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 				if ( ( info.GetDamageType() & DMG_BLAST) && random->RandomInt( 0, 1 ) == 0 )
 				{
 					Ignite( 5.0 + random->RandomFloat( 0.0, 5.0 ) );
+					if (GetEffectEntity())
+						GetEffectEntity()->SetOwnerEntity(info.GetAttacker());
 				}
 
 				// For Combine cannon impacts
@@ -911,6 +913,8 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 					{
 						// Catch on fire.
 						Ignite( 5.0f + random->RandomFloat( 0.0f, 5.0f ) );
+						if (GetEffectEntity())
+							GetEffectEntity()->SetOwnerEntity(info.GetAttacker());
 					}
 				}
 

@@ -1031,6 +1031,9 @@ void CBreakableProp::BreakablePropTouch( CBaseEntity *pOther )
 		if ( pNPC && pNPC->AllowedToIgnite() && pNPC->IsOnFire() == false )
 		{
 			pNPC->Ignite( 25.0f );
+			if (pNPC->GetEffectEntity() && HasPhysicsAttacker(PROP_FLARE_LIFETIME))
+				pNPC->GetEffectEntity()->SetOwnerEntity(m_hPhysicsAttacker);
+
 			KillFlare( this, m_hFlareEnt, PROP_FLARE_IGNITE_SUBSTRACT );
 			IGameEvent *event = gameeventmanager->CreateEvent( "flare_ignite_npc" );
 			if ( event )

@@ -308,7 +308,7 @@ void CEntityFlame::FlameThink( void )
 #ifndef HL2_LAZUL
 		m_hEntAttached->TakeDamage( CTakeDamageInfo( this, this, FLAME_DIRECT_DAMAGE, DMG_BURN | DMG_DIRECT ) );
 #else
-		m_hEntAttached->TakeDamage(CTakeDamageInfo(this, this, FLAME_DIRECT_DAMAGE, DMG_BURN | DMG_DIRECT, TF_DMG_CUSTOM_BURNING));
+		m_hEntAttached->TakeDamage(CTakeDamageInfo(this, GetOwnerEntity() ? GetOwnerEntity() : this, FLAME_DIRECT_DAMAGE, DMG_BURN | DMG_DIRECT, TF_DMG_CUSTOM_BURNING));
 #endif
 
 		if( !m_hEntAttached->IsNPC() && hl2_episodic.GetBool() )
