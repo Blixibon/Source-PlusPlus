@@ -3221,6 +3221,7 @@ void CNavMesh::BeginVisibilityComputations( void )
 	}
 }
 
+ConVar vis_optimize("nav_optimize_large_mesh", "0", FCVAR_CHEAT, "If set to 0, nav meshes with more than 1000 areas will not have their visibility optimized.");
 
 //--------------------------------------------------------------------------------------------------------
 /**
@@ -3229,6 +3230,13 @@ void CNavMesh::BeginVisibilityComputations( void )
 void CNavMesh::EndVisibilityComputations( void )
 {
 	g_pNavVisPairHash->RemoveAll();
+
+	if (TheNavAreas.Count() > 1000 && !vis_optimize.GetBool())
+	{
+		Warning("NavMesh: Visiblity not optimized, too many areas: %i\n", TheNavAreas.Count());
+		Warning("NavMesh: Set \"nav_optimize_large_mesh\" to 1 if you want optimization.\n");
+		return;
+	}
 
 	int avgVisLength = 0;
 	int maxVisLength = 0;

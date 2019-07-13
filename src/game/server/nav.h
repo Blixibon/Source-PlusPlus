@@ -405,6 +405,7 @@ inline float RoundToUnits( float val, float unit )
 #define WALK_THRU_BREAKABLES		0x04
 #define WALK_THRU_TOGGLE_BRUSHES	0x08
 #define WALK_THRU_EVERYTHING		(WALK_THRU_DOORS | WALK_THRU_BREAKABLES | WALK_THRU_TOGGLE_BRUSHES)
+#define WALK_THRU_TRACE_PLAYER		0x10 // Clips to playersolid rather than npcsolid
 extern ConVar nav_solid_props;
 inline bool IsEntityWalkable( CBaseEntity *entity, unsigned int flags )
 {

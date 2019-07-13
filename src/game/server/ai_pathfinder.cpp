@@ -31,6 +31,9 @@
 #include "nav_pathfind.h"
 #include "nav_area.h"
 #include "movevars_shared.h"
+#ifdef HL2_LAZUL
+#include "peter/laz_nav_mesh.h"
+#endif
 #endif // USE_NAV_MESH
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -87,7 +90,14 @@ public:
 			// cannot actually walk in jump areas - disallow moving from jump area to jump area
 			return -1.0f;
 		}
-
+#ifdef HL2_LAZUL
+		CLazNavArea *pLazArea = static_cast<CLazNavArea *> (area);
+		if ((pLazArea->GetAreaContents() & m_bot->PhysicsSolidMaskForEntity()) != 0)
+		{
+			// This area is solid to this npc.
+			return -1.0f;
+		}
+#endif
 		if (ladder && (m_bot->CapabilitiesGet() & bits_CAP_MOVE_CLIMB) != bits_CAP_MOVE_CLIMB)
 			return -1.0f;
 

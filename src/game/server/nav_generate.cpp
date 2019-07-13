@@ -4675,6 +4675,7 @@ bool IsWalkableTraceLineClear( const Vector &from, const Vector &to, unsigned in
 	trace_t result;
 	CBaseEntity *ignore = NULL;
 	Vector useFrom = from;
+	bool bPlayerTrace = (flags & WALK_THRU_TRACE_PLAYER);
 
 	CTraceFilterWalkableEntities traceFilter( NULL, COLLISION_GROUP_NONE, flags );
 
@@ -4683,7 +4684,7 @@ bool IsWalkableTraceLineClear( const Vector &from, const Vector &to, unsigned in
 	const int maxTries = 50;
 	for( int t=0; t<maxTries; ++t )
 	{
-		UTIL_TraceLine( useFrom, to, MASK_NPCSOLID, &traceFilter, &result );
+		UTIL_TraceLine( useFrom, to, bPlayerTrace ? MASK_PLAYERSOLID : MASK_NPCSOLID, &traceFilter, &result );
 
 		// if we hit a walkable entity, try again
 		if (result.fraction != 1.0f && IsEntityWalkable( result.m_pEnt, flags ))
