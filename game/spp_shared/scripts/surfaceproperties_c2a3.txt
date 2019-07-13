@@ -1,0 +1,54 @@
+// Surface Properties C2a3
+"floating_metal_barrel_bms"
+{
+	"base"		"metal_barrel"
+	"density"	"650"
+}
+
+"floating_plastic_barrel_bms"
+{
+	"base"		"plastic_barrel"
+	"density"	"650"
+}
+
+"friction_metal_00"
+{
+	"base"		"metal"
+	"friction"	"0.0"
+	"density"	"917"
+}
+
+"friction_metal_10"
+{
+	"base"		"metal"
+	"friction"	"0.10"
+	"density"	"917"
+}
+
+"friction_metal_15"
+{
+	"base"		"metal"
+	"friction"	"0.15"
+	"density"	"917"
+}
+
+"friction_metal_25"
+{
+	"base"		"metal"
+	"friction"	"0.25"
+	"density"	"917"
+}
+
+"friction_metal_35"
+{
+	"base"		"metal"
+	"friction"	"0.35"
+	"density"	"917"
+}
+
+"friction_metal_45"
+{
+	"base"		"metal"
+	"friction"	"0.45"
+	"density"	"917"
+}

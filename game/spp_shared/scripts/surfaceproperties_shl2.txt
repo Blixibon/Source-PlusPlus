@@ -1,0 +1,63 @@
+"carpet"
+{
+	"base"		"dirt"
+	"density"	"500"
+	"thickness"	"0.1"
+	"elasticity"	"0.01"
+	"friction"	"0.8"
+	
+	"impacthard"	"Carpet.Impact"
+	"bulletimpact"	"Carpet.BulletImpact"
+	"scraperough"	"Carpet.Scrape" 
+	"stepleft"		"Carpet.StepLeft"
+	"stepright"		"Carpet.StepRight"
+	"jump"			"Carpet.Jump"
+	"land"			"Carpet.Land"
+	
+	"audioreflectivity" "0.03"
+	"audiohardnessfactor" "0.25"
+	"audioroughnessfactor" "0.1"
+}
+
+"Turret_Gib"
+{
+	"base"			"Metal"
+
+	"impacthard"	"TurretGibs.ImpactHard"
+	"impactsoft"	"TurretGibs.ImpactSoft"
+}
+
+"solidenergy"
+{
+	"base"		"default"
+
+	"gamematerial"	"Z"
+
+	"stepleft"		"Lightbridge.StepLeft"
+	"stepright"		"Lightbridge.StepRight"
+	"bulletimpact"		"Lightbridge.ElectricStep"
+
+
+	"audiohardnessfactor" "1"
+	"audioroughnessfactor" "0"
+}
+
+"shell"
+{
+	"base"			"metal"
+
+	"elasticity"	"1000"
+	"friction"	"0.8"
+	//"density"	"10000"
+
+	"impacthard"		"Bounce.Shell"
+	"impactsoft"		"Bounce.Shell"
+}
+
+"shotgun_shell"
+{
+	"base"			"shell"
+
+	"impacthard"		"Bounce.ShotgunShell"
+	"impactsoft"		"Bounce.ShotgunShell"
+}

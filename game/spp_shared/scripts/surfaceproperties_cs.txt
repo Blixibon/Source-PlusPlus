@@ -1,0 +1,27 @@
+
+"brass_bell_large"
+{
+	"bulletimpact"	"BrassBell.C"
+}
+
+"brass_bell_medium"
+{
+	"bulletimpact"	"BrassBell.D"
+}
+
+"brass_bell_small"
+{
+	"bulletimpact"	"BrassBell.E"
+}
+
+"brass_bell_smallest"
+{
+	"bulletimpact"	"BrassBell.F"
+}
+
+"hay"
+{
+	"base"		"wood"
+	"stepleft"	"Grass.StepLeft"
+	"stepright"	"Grass.StepRight"
+}
