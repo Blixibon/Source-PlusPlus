@@ -55,6 +55,11 @@ public:
 	// TEMP:
 	virtual int				Damage_GetTimeBased(void);
 
+	int				GetFarthestOwnedControlPoint(int iTeam, bool bWithSpawnpoints);
+	virtual bool	TeamMayCapturePoint(int iTeam, int iPointIndex);
+	virtual bool	PlayerMayCapturePoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason = NULL, int iMaxReasonLength = 0);
+	virtual bool	PlayerMayBlockPoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason = NULL, int iMaxReasonLength = 0);
+
 	virtual bool			ShouldCollide(int collisionGroup0, int collisionGroup1);
 	virtual bool			ShouldUseRobustRadiusDamage(CBaseEntity* pEntity);
 

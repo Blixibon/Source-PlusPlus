@@ -12,6 +12,9 @@
 #include "trigger_area_capture.h"
 #include "iscorer.h"
 #include "peter/laz_player.h"
+#else
+#include "c_team_objectiveresource.h"
+#include "peter/c_laz_player.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
@@ -314,6 +317,123 @@ bool CLazuul::Damage_IsTimeBased(int iDmgType)
 	else
 		return BaseClass::Damage_IsTimeBased(iDmgType);
 
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+int CLazuul::GetFarthestOwnedControlPoint(int iTeam, bool bWithSpawnpoints)
+{
+	int iOwnedEnd = ObjectiveResource()->GetBaseControlPointForTeam(iTeam);
+	if (iOwnedEnd == -1)
+		return -1;
+
+	int iNumControlPoints = ObjectiveResource()->GetNumControlPoints();
+	int iWalk = 1;
+	int iEnemyEnd = iNumControlPoints - 1;
+	if (iOwnedEnd != 0)
+	{
+		iWalk = -1;
+		iEnemyEnd = 0;
+	}
+
+	// Walk towards the other side, and find the farthest owned point that has spawn points
+	int iFarthestPoint = iOwnedEnd;
+	for (int iPoint = iOwnedEnd; iPoint != iEnemyEnd; iPoint += iWalk)
+	{
+		// If we've hit a point we don't own, we're done
+		if (ObjectiveResource()->GetOwningTeam(iPoint) != iTeam)
+			break;
+
+		/*if (bWithSpawnpoints && !m_bControlSpawnsPerTeam[iTeam][iPoint])
+			continue;*/
+
+		iFarthestPoint = iPoint;
+	}
+
+	return iFarthestPoint;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CLazuul::TeamMayCapturePoint(int iTeam, int iPointIndex)
+{
+	// Is point capturing allowed at all?
+	if (!PointsMayBeCaptured())
+		return false;
+
+	// If the point is explicitly locked it can't be capped.
+	if (ObjectiveResource()->GetCPLocked(iPointIndex))
+		return false;
+
+	/*if (!tf_caplinear.GetBool())
+		return true;*/
+
+	// Any previous points necessary?
+	int iPointNeeded = ObjectiveResource()->GetPreviousPointForPoint(iPointIndex, iTeam, 0);
+
+	// Points set to require themselves are always cappable 
+	if (iPointNeeded == iPointIndex)
+		return true;
+
+	// No required points specified? Require all previous points.
+	if (iPointNeeded == -1)
+	{
+		if (!ObjectiveResource()->PlayingMiniRounds())
+		{
+			// No custom previous point, team must own all previous points
+			int iFarthestPoint = GetFarthestOwnedControlPoint(iTeam, false);
+			return (abs(iFarthestPoint - iPointIndex) <= 1);
+		}
+		else
+		{
+			// No custom previous point, team must own all previous points in the current mini-round
+			//tagES TFTODO: need to figure out a good algorithm for this
+			return true;
+		}
+	}
+
+	// Loop through each previous point and see if the team owns it
+	for (int iPrevPoint = 0; iPrevPoint < MAX_PREVIOUS_POINTS; iPrevPoint++)
+	{
+		int iPointNeeded = ObjectiveResource()->GetPreviousPointForPoint(iPointIndex, iTeam, iPrevPoint);
+		if (iPointNeeded != -1)
+		{
+			if (ObjectiveResource()->GetOwningTeam(iPointNeeded) != iTeam)
+				return false;
+		}
+	}
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CLazuul::PlayerMayCapturePoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason /* = NULL */, int iMaxReasonLength /* = 0 */)
+{
+	CLaz_Player *pTFPlayer = ToLazuulPlayer(pPlayer);
+
+	if (!pTFPlayer)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CLazuul::PlayerMayBlockPoint(CBasePlayer *pPlayer, int iPointIndex, char *pszReason, int iMaxReasonLength)
+{
+	CLaz_Player *pTFPlayer = ToLazuulPlayer(pPlayer);
+	if (!pTFPlayer)
+		return false;
+
+	
+
+	return false;
 }
 
 // ------------------------------------------------------------------------------------ //

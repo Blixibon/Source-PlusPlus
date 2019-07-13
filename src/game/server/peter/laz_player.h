@@ -151,6 +151,15 @@ public:
 	void				StateEnterDYING(void);
 	void				StateThinkDYING(void);
 
+	int					BuildObservableEntityList(void);
+	virtual int			GetNextObserverSearchStartPoint(bool bReverse); // Where we should start looping the player list in a FindNextObserverTarget call
+	virtual CBaseEntity *FindNextObserverTarget(bool bReverse);
+	virtual bool		IsValidObserverTarget(CBaseEntity * target); // true, if player is allowed to see this target
+	virtual bool		SetObserverTarget(CBaseEntity * target);
+	virtual bool		ModeWantsSpectatorGUI(int iMode) { return (iMode != OBS_MODE_FREEZECAM && iMode != OBS_MODE_DEATHCAM); }
+	void				FindInitialObserverTarget(void);
+	CBaseEntity		    *FindNearestObservableTarget(Vector vecOrigin, float flMaxDist);
+	virtual void		ValidateCurrentObserverTarget(void);
 	virtual bool		SetObserverMode(int mode);
 
 public:
@@ -180,6 +189,7 @@ protected:
 
 	// This lets us rate limit the commands the players can execute so they don't overflow things like reliable buffers.
 	CUtlDict<float, int>	m_RateLimitLastCommandTimes;
+	CUtlVector<EHANDLE>	m_hObservableEntities;
 
 	int					GetAutoTeam(void);
 

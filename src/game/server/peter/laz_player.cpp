@@ -23,6 +23,8 @@
 #include "npc_manhack.h"
 #include "ai_squad.h"
 #include "world.h"
+#include "team_objectiveresource.h"
+#include "team_control_point_master.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -458,6 +460,15 @@ void CLaz_Player::Event_Killed(const CTakeDamageInfo & info)
 	{
 		ReleaseManhack();
 	}
+
+	// show killer in death cam mode
+	if (info.GetAttacker() && (info.GetAttacker()->IsPlayer() || info.GetAttacker()->IsNPC()) && info.GetAttacker() != (CBaseEntity*)this)
+	{
+		m_hObserverTarget.Set(info.GetAttacker());
+		SetFOV(this, 0); // reset
+	}
+	else
+		m_hObserverTarget.Set(NULL);
 
 	BaseClass::Event_Killed(info);
 
@@ -1748,6 +1759,426 @@ void CLaz_Player::State_PreThink_ACTIVE()
 			m_AnnounceAttackTimer.Set(4, 8);
 		}
 	}
+}
+
+class CObserverPoint : public CPointEntity
+{
+	DECLARE_CLASS(CObserverPoint, CPointEntity);
+public:
+	DECLARE_DATADESC();
+
+	virtual void Activate(void)
+	{
+		BaseClass::Activate();
+
+		if (m_iszAssociateTeamEntityName != NULL_STRING)
+		{
+			m_hAssociatedTeamEntity = gEntList.FindEntityByName(NULL, m_iszAssociateTeamEntityName);
+			if (!m_hAssociatedTeamEntity)
+			{
+				Warning("info_observer_point (%s) couldn't find associated team entity named '%s'\n", GetDebugName(), STRING(m_iszAssociateTeamEntityName));
+			}
+		}
+	}
+
+	bool CanUseObserverPoint(CLaz_Player *pPlayer)
+	{
+		if (m_bDisabled)
+			return false;
+
+		if (m_hAssociatedTeamEntity && (mp_forcecamera.GetInt() == OBS_ALLOW_TEAM))
+		{
+			// If we don't own the associated team entity, we can't use this point
+			if (m_hAssociatedTeamEntity->GetTeamNumber() != pPlayer->GetTeamNumber() && pPlayer->GetTeamNumber() >= FIRST_GAME_TEAM)
+				return false;
+		}
+
+		// Only spectate observer points on control points in the current miniround
+		if (g_pObjectiveResource->PlayingMiniRounds() && m_hAssociatedTeamEntity)
+		{
+			CTeamControlPoint *pPoint = dynamic_cast<CTeamControlPoint*>(m_hAssociatedTeamEntity.Get());
+			if (pPoint)
+			{
+				bool bInRound = g_pObjectiveResource->IsInMiniRound(pPoint->GetPointIndex());
+				if (!bInRound)
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	virtual int UpdateTransmitState()
+	{
+		return SetTransmitState(FL_EDICT_ALWAYS);
+	}
+
+	void InputEnable(inputdata_t &inputdata)
+	{
+		m_bDisabled = false;
+	}
+	void InputDisable(inputdata_t &inputdata)
+	{
+		m_bDisabled = true;
+	}
+	bool IsDefaultWelcome(void) { return m_bDefaultWelcome; }
+
+public:
+	bool		m_bDisabled;
+	bool		m_bDefaultWelcome;
+	EHANDLE		m_hAssociatedTeamEntity;
+	string_t	m_iszAssociateTeamEntityName;
+	float		m_flFOV;
+};
+
+BEGIN_DATADESC(CObserverPoint)
+DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "StartDisabled"),
+DEFINE_KEYFIELD(m_bDefaultWelcome, FIELD_BOOLEAN, "defaultwelcome"),
+DEFINE_KEYFIELD(m_iszAssociateTeamEntityName, FIELD_STRING, "associated_team_entity"),
+DEFINE_KEYFIELD(m_flFOV, FIELD_FLOAT, "fov"),
+
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS(info_observer_point, CObserverPoint);
+
+//-----------------------------------------------------------------------------
+// Purpose: Builds a list of entities that this player can observe.
+//			Returns the index into the list of the player's current observer target.
+//-----------------------------------------------------------------------------
+int CLaz_Player::BuildObservableEntityList(void)
+{
+	m_hObservableEntities.Purge();
+	int iCurrentIndex = -1;
+
+	// Add all the map-placed observer points
+	CBaseEntity *pObserverPoint = gEntList.FindEntityByClassname(NULL, "info_observer_point");
+	while (pObserverPoint)
+	{
+		m_hObservableEntities.AddToTail(pObserverPoint);
+
+		if (m_hObserverTarget.Get() == pObserverPoint)
+		{
+			iCurrentIndex = (m_hObservableEntities.Count() - 1);
+		}
+
+		pObserverPoint = gEntList.FindEntityByClassname(pObserverPoint, "info_observer_point");
+	}
+
+	// Add all the players
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CBaseEntity *pPlayer = UTIL_PlayerByIndex(i);
+		if (pPlayer)
+		{
+			m_hObservableEntities.AddToTail(pPlayer);
+
+			if (m_hObserverTarget.Get() == pPlayer)
+			{
+				iCurrentIndex = (m_hObservableEntities.Count() - 1);
+			}
+		}
+	}
+
+	// Add all npcs
+	int iNumNPCs = g_AI_Manager.NumAIs();
+	for (int i = 0; i < iNumNPCs; i++)
+	{
+		CAI_BaseNPC *pNPC = g_AI_Manager.AccessAIs()[i];
+		if (pNPC)
+		{
+			m_hObservableEntities.AddToTail(pNPC);
+
+			if (m_hObserverTarget.Get() == pNPC)
+			{
+				iCurrentIndex = (m_hObservableEntities.Count() - 1);
+			}
+		}
+	}
+
+	return iCurrentIndex;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+int CLaz_Player::GetNextObserverSearchStartPoint(bool bReverse)
+{
+	int iDir = bReverse ? -1 : 1;
+	int startIndex = BuildObservableEntityList();
+	int iMax = m_hObservableEntities.Count() - 1;
+
+	startIndex += iDir;
+	if (startIndex > iMax)
+		startIndex = 0;
+	else if (startIndex < 0)
+		startIndex = iMax;
+
+	return startIndex;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CBaseEntity *CLaz_Player::FindNextObserverTarget(bool bReverse)
+{
+	int startIndex = GetNextObserverSearchStartPoint(bReverse);
+
+	int	currentIndex = startIndex;
+	int iDir = bReverse ? -1 : 1;
+
+	int iMax = m_hObservableEntities.Count() - 1;
+
+	// Make sure the current index is within the max. Can happen if we were previously
+	// spectating an object which has been destroyed.
+	if (startIndex > iMax)
+	{
+		currentIndex = startIndex = 1;
+	}
+
+	do
+	{
+		CBaseEntity *nextTarget = m_hObservableEntities[currentIndex];
+
+		if (IsValidObserverTarget(nextTarget))
+			return nextTarget;
+
+		currentIndex += iDir;
+
+		// Loop through the entities
+		if (currentIndex > iMax)
+		{
+			currentIndex = 0;
+		}
+		else if (currentIndex < 0)
+		{
+			currentIndex = iMax;
+		}
+	} while (currentIndex != startIndex);
+
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CLaz_Player::IsValidObserverTarget(CBaseEntity * target)
+{
+	if (target && !target->IsPlayer())
+	{
+		CObserverPoint *pObsPoint = dynamic_cast<CObserverPoint *>(target);
+		if (pObsPoint && !pObsPoint->CanUseObserverPoint(this))
+			return false;
+
+		if (target->IsNPC())
+		{
+			CAI_BaseNPC *pAI = target->MyNPCPointer();
+			// Only spectate important npcs
+			if (!pAI->ShowInDeathnotice())
+				return false;
+		}
+
+		if (GetTeamNumber() == TEAM_SPECTATOR)
+			return true;
+
+		switch (mp_forcecamera.GetInt())
+		{
+		case OBS_ALLOW_ALL:	break;
+		case OBS_ALLOW_TEAM:	if (target->GetTeamNumber() != TEAM_UNASSIGNED && GetTeamNumber() != target->GetTeamNumber())
+			return false;
+			break;
+		case OBS_ALLOW_NONE:	return false;
+		}
+
+		return true;
+	}
+
+	return BaseClass::IsValidObserverTarget(target);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CLaz_Player::SetObserverTarget(CBaseEntity *target)
+{
+	ClearZoomOwner();
+	SetFOV(this, 0);
+
+	if (!BaseClass::SetObserverTarget(target))
+		return false;
+
+	CObserverPoint *pObsPoint = dynamic_cast<CObserverPoint *>(target);
+	if (pObsPoint)
+	{
+		SetViewOffset(vec3_origin);
+		JumptoPosition(target->GetAbsOrigin(), target->EyeAngles());
+		SetFOV(pObsPoint, pObsPoint->m_flFOV);
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Find the nearest team member within the distance of the origin.
+//			Favor players who are the same class.
+//-----------------------------------------------------------------------------
+CBaseEntity *CLaz_Player::FindNearestObservableTarget(Vector vecOrigin, float flMaxDist)
+{
+	CTeam *pTeam = GetTeam();
+	CBaseEntity *pReturnTarget = NULL;
+	bool bFoundClass = false;
+	float flCurDistSqr = (flMaxDist * flMaxDist);
+	int iNumPlayers = pTeam->GetNumPlayers();
+
+	if (pTeam->GetTeamNumber() == TEAM_SPECTATOR)
+	{
+		iNumPlayers = gpGlobals->maxClients;
+	}
+
+
+	for (int i = 0; i < iNumPlayers; i++)
+	{
+		CLaz_Player *pPlayer = NULL;
+
+		if (pTeam->GetTeamNumber() == TEAM_SPECTATOR)
+		{
+			pPlayer = ToLazuulPlayer(UTIL_PlayerByIndex(i));
+		}
+		else
+		{
+			pPlayer = ToLazuulPlayer(pTeam->GetPlayer(i));
+		}
+
+		if (!pPlayer)
+			continue;
+
+		if (!IsValidObserverTarget(pPlayer))
+			continue;
+
+		float flDistSqr = (pPlayer->GetAbsOrigin() - vecOrigin).LengthSqr();
+
+		if (flDistSqr < flCurDistSqr)
+		{
+			// If we've found a player matching our class already, this guy needs
+			// to be a matching class and closer to boot.
+			//if (!bFoundClass || pPlayer->IsPlayerClass(GetPlayerClass()->GetClassIndex()))
+			{
+				pReturnTarget = pPlayer;
+				flCurDistSqr = flDistSqr;
+				bFoundClass = true;
+			}
+		}
+	}
+
+	return pReturnTarget;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CLaz_Player::FindInitialObserverTarget(void)
+{
+	// If we're on a team (i.e. not a pure observer), try and find
+	// a target that'll give the player the most useful information.
+	if (GetTeamNumber() >= FIRST_GAME_TEAM)
+	{
+		CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
+		if (pMaster)
+		{
+			// Has our forward cap point been contested recently?
+			int iFarthestPoint = LazuulRules()->GetFarthestOwnedControlPoint(GetTeamNumber(), false);
+			if (iFarthestPoint != -1)
+			{
+				float flTime = pMaster->PointLastContestedAt(iFarthestPoint);
+				if (flTime != -1 && flTime > (gpGlobals->curtime - 30))
+				{
+					// Does it have an associated viewpoint?
+					CBaseEntity *pObserverPoint = gEntList.FindEntityByClassname(NULL, "info_observer_point");
+					while (pObserverPoint)
+					{
+						CObserverPoint *pObsPoint = assert_cast<CObserverPoint *>(pObserverPoint);
+						if (pObsPoint && pObsPoint->m_hAssociatedTeamEntity == pMaster->GetControlPoint(iFarthestPoint))
+						{
+							if (IsValidObserverTarget(pObsPoint))
+							{
+								m_hObserverTarget.Set(pObsPoint);
+								return;
+							}
+						}
+
+						pObserverPoint = gEntList.FindEntityByClassname(pObserverPoint, "info_observer_point");
+					}
+				}
+			}
+
+			// Has the point beyond our farthest been contested lately?
+			iFarthestPoint += (ObjectiveResource()->GetBaseControlPointForTeam(GetTeamNumber()) == 0 ? 1 : -1);
+			if (iFarthestPoint >= 0 && iFarthestPoint < MAX_CONTROL_POINTS)
+			{
+				float flTime = pMaster->PointLastContestedAt(iFarthestPoint);
+				if (flTime != -1 && flTime > (gpGlobals->curtime - 30))
+				{
+					// Try and find a player near that cap point
+					CBaseEntity *pCapPoint = pMaster->GetControlPoint(iFarthestPoint);
+					if (pCapPoint)
+					{
+						CBaseEntity *pTarget = FindNearestObservableTarget(pCapPoint->GetAbsOrigin(), 1500);
+						if (pTarget)
+						{
+							m_hObserverTarget.Set(pTarget);
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Find the nearest guy near myself
+	CBaseEntity *pTarget = FindNearestObservableTarget(GetAbsOrigin(), FLT_MAX);
+	if (pTarget)
+	{
+		m_hObserverTarget.Set(pTarget);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CLaz_Player::ValidateCurrentObserverTarget(void)
+{
+	// If our current target is a dead player who's gibbed / died, refind as if 
+	// we were finding our initial target, so we end up somewhere useful.
+	if (m_hObserverTarget && m_hObserverTarget->IsPlayer())
+	{
+		CBasePlayer *player = ToBasePlayer(m_hObserverTarget);
+
+		if (player->m_lifeState == LIFE_DEAD || player->m_lifeState == LIFE_DYING)
+		{
+			// Once we're past the pause after death, find a new target
+			if ((player->GetDeathTime() + DEATH_ANIMATION_TIME) < gpGlobals->curtime)
+			{
+				FindInitialObserverTarget();
+			}
+
+			return;
+		}
+	}
+
+	if (m_hObserverTarget && (m_hObserverTarget->IsBaseObject() || m_hObserverTarget->IsNPC()))
+	{
+		if (m_iObserverMode == OBS_MODE_IN_EYE)
+		{
+			m_iObserverMode = OBS_MODE_CHASE;
+			SetObserverTarget(m_hObserverTarget);
+			SetMoveType(MOVETYPE_OBSERVER);
+			CheckObserverSettings();
+			//ForceObserverMode( OBS_MODE_CHASE ); // We'll leave this in in case something screws up
+		}
+	}
+
+	BaseClass::ValidateCurrentObserverTarget();
 }
 
 CON_COMMAND_F(laz_player_set_voice, "Set the voicetype of the player", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT)

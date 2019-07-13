@@ -187,15 +187,6 @@ void CBaseNetworkedPlayer::FireBullets ( const FireBulletsInfo_t &info )
 
 void CBaseNetworkedPlayer::Event_Killed( const CTakeDamageInfo &info )
 {
-	// show killer in death cam mode
-	if( info.GetAttacker() && info.GetAttacker()->IsPlayer() && info.GetAttacker() != (CBaseEntity*)this )
-	{
-		m_hObserverTarget.Set( info.GetAttacker() ); 
-		SetFOV( this, 0 ); // reset
-	}
-	else
-		m_hObserverTarget.Set( NULL );
-
 	bool bBurning = ((info.GetDamageType() & (DMG_BURN | DMG_BLAST | DMG_PLASMA | DMG_ENERGYBEAM)) != 0);
 	bool bGib = ShouldGib(info);
 

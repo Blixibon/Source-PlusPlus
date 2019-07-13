@@ -82,4 +82,12 @@ protected:
 	bool m_fIsWalking;
 };
 
+inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)
+{
+	if (!pEntity || !pEntity->IsPlayer())
+		return NULL;
+
+	return dynamic_cast<C_Laz_Player*>(pEntity);
+}
+
 #endif
