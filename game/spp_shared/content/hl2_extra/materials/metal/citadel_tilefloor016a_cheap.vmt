@@ -10,6 +10,6 @@
 	"%keywords" "combine"
 
 	"$reflectivity" "[.23 .31 .31 ]" //this is a artificial radiosity boost
-	"$phong" "1"
+	//"$phong" "1"
 
 }

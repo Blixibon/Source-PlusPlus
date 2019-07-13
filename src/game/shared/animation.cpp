@@ -394,11 +394,25 @@ int CStudioHdr::CActivityToSequenceMapping::SelectWeightedSequenceFromModifiers(
 				}
 			}
 		}
+		if (score < top_score)
+			continue;
+
 		if ( score > top_score )
 		{
 			topScoring.RemoveAll();
-			topScoring.AddToTail( sequenceInfo->seqnum );
 			top_score = score;
+		}
+		
+		if (sequenceInfo->weight > 1)
+		{
+			for (int w = 0; w <= sequenceInfo->weight; w++)
+			{
+				topScoring.AddToTail(sequenceInfo->seqnum);
+			}
+		}
+		else if (sequenceInfo->weight != 0)
+		{
+			topScoring.AddToTail(sequenceInfo->seqnum);
 		}
 	}
 

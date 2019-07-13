@@ -3377,7 +3377,7 @@
 			"height"	"32"
 		}
 
-		"rpg"
+		"rpg_missile"
 		{
 			"dfile"	"HUD/d_images_hl2"
 			"dnegfile"	"HUD/dneg_images_hl2"

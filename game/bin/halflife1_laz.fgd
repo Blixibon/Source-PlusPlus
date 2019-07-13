@@ -267,7 +267,22 @@ size(choices) : "Hull Size" : 0 =
 @NPCClass base(BaseNPC) studio("models/garg.mdl") = monster_gargantua : "Gargantua" []
 @NPCClass base(BaseNPC) studio("models/half-life/gman.mdl") = monster_gman : "G-Man" []
 @NPCClass base(BaseNPC) studio("models/hassassin.mdl") = monster_human_assassin : "Human Assassin" []
-@NPCClass base(BaseNPC) studio("models/half-life/hgrunt.mdl") = monster_human_grunt : "Human Grunt" []
+@NPCClass base(BaseNPC) studio("models/half-life/hgrunt.mdl") = monster_human_grunt : "Human Grunt"
+[
+	spawnflags(Flags) =
+	[
+		32 : "SquadLeader" : 0
+	]
+	
+	weapons(Choices) : "Weapons" : 1 =
+	[
+		1 : "9mmAR"
+		3 : "9mmAR + HG"
+		5 : "9mmAR + GL"
+		8 : "Shotgun"
+		10 : "Shotgun + HG"
+	]
+]
 @PointClass base(Targetname,RenderFields,Angles) studio("models/half-life/hgrunt.mdl") = monster_hgrunt_dead : "Dead Human Grunt"
 [
 	sequence(integer) : "Sequence" : 44

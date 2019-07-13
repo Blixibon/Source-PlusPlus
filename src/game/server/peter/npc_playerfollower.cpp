@@ -34,7 +34,6 @@ int __cdecl BMSSquadSortFunc(const BMSSquadMemberInfo_t *pLeft, const BMSSquadMe
 }
 
 BEGIN_DATADESC(CNPC_PlayerFollower)
-DEFINE_OUTPUT(m_OnPlayerUse, "OnPlayerUse"),
 DEFINE_OUTPUT(m_OnJoinedPlayerSquad, "OnJoinedPlayerSquad"),
 DEFINE_OUTPUT(m_OnLeftPlayerSquad, "OnLeftPlayerSquad"),
 DEFINE_OUTPUT(m_OnFollowOrder, "OnFollowOrder"),
