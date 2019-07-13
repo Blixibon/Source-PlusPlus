@@ -16,6 +16,7 @@
 #include "ai_behavior_lead.h"
 #include "ai_behavior_actbusy.h"
 #include "ai_behavior_fear.h"
+#include "ai_squadslot.h"
 
 #ifdef HL2_EPISODIC
 #include "ai_behavior_operator.h"
@@ -109,7 +110,8 @@ public:
 	int 			ObjectCaps();
 	bool 			ShouldAlwaysThink();
 
-	Disposition_t	IRelationType( CBaseEntity *pTarget );
+	virtual Disposition_t	IRelationType( CBaseEntity *pTarget );
+	virtual int				IRelationPriority(CBaseEntity* pTarget);
 
 	bool			IsSilentSquadMember() const;
 
@@ -326,11 +328,22 @@ protected:
 		SCHED_PC_FAIL_TAKE_COVER_TURRET,
 		SCHED_PC_FAKEOUT_MORTAR,
 		SCHED_PC_GET_OFF_COMPANION,
+		SCHED_CITIZEN_RANGE_ATTACK1_RPG,
+		SCHED_CITIZEN_STRIDER_RANGE_ATTACK1_RPG,
 		NEXT_SCHEDULE,
 
 		TASK_PC_WAITOUT_MORTAR = BaseClass::NEXT_TASK,
 		TASK_PC_GET_PATH_OFF_COMPANION,
+		TASK_CIT_RPG_AUGER,
 		NEXT_TASK,
+	};
+
+	enum
+	{
+		SQUAD_SLOT_CITIZEN_RPG1 = LAST_SHARED_SQUADSLOT,
+		SQUAD_SLOT_CITIZEN_RPG2,
+
+		NEXT_SQUADSLOT
 	};
 
 private:
@@ -375,6 +388,8 @@ protected:
 	//-----------------------------------------------------
 
 	bool	ShouldAlwaysTransition( void );
+
+	bool			m_bRPGAvoidPlayer;
 
 	// Readiness is a value that's fed by various events in the NPC's AI. It is used
 	// to make decisions about what type of posture the NPC should be in (relaxed, agitated).

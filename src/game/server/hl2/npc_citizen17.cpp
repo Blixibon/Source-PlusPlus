@@ -96,12 +96,6 @@ ConVar player_squad_autosummon_debug( "player_squad_autosummon_debug", "0" );
 
 //#define ShouldAutosquad() (npc_citizen_auto_player_squad.GetBool())
 
-enum SquadSlot_T
-{
-	SQUAD_SLOT_CITIZEN_RPG1	= LAST_SHARED_SQUADSLOT,
-	SQUAD_SLOT_CITIZEN_RPG2,
-};
-
 const float HEAL_MOVE_RANGE = 30*12;
 const float HEAL_TARGET_RANGE = 120; // 10 feet
 #ifdef HL2_EPISODIC
@@ -109,11 +103,7 @@ const float HEAL_TOSS_TARGET_RANGE = 480; // 40 feet when we are throwing medkit
 const float HEAL_TARGET_RANGE_Z = 72; // a second check that Gordon isn't too far above us -- 6 feet
 #endif
 
-// player must be at least this distance away from an enemy before we fire an RPG at him
-const float RPG_SAFE_DISTANCE = CMissile::EXPLOSION_RADIUS + 64.0;
-
 // Animation events
-int AE_CITIZEN_GET_PACKAGE;
 int AE_CITIZEN_HEAL;
 
 //-------------------------------------
@@ -321,7 +311,6 @@ BEGIN_DATADESC( CNPC_Citizen )
 	DEFINE_FIELD( 		m_flPlayerGiveAmmoTime, 	FIELD_TIME ),
 	DEFINE_KEYFIELD(	m_iszAmmoSupply, 			FIELD_STRING,	"ammosupply" ),
 	DEFINE_KEYFIELD(	m_iAmmoAmount, 				FIELD_INTEGER,	"ammoamount" ),
-	DEFINE_FIELD( 		m_bRPGAvoidPlayer, 			FIELD_BOOLEAN ),
 	DEFINE_FIELD( 		m_bShouldPatrol, 			FIELD_BOOLEAN ),
 	//DEFINE_FIELD( 		m_iszOriginalSquad, 		FIELD_STRING ),
 	//DEFINE_FIELD( 		m_flTimeJoinedPlayerSquad,	FIELD_TIME ),
@@ -564,8 +553,6 @@ void CNPC_Citizen::Spawn()
 			}
 		}
 	}
-	
-	m_bRPGAvoidPlayer = false;
 
 	m_bShouldPatrol = false;
 	m_iHealth = (m_Type == CT_REBEL || m_Type == CT_GASMASK) ? (sk_citizen_health.GetFloat() * 1.5f) : sk_citizen_health.GetFloat();
@@ -1300,13 +1287,6 @@ int CNPC_Citizen::SelectSchedule()
 		Assert( GetMoveParent() && FClassnameIs( GetMoveParent(), "func_tracktrain" ) );
 		return SCHED_CITIZEN_SIT_ON_TRAIN;
 	}
-
-	CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
-	if ( pRPG && pRPG->IsGuiding() )
-	{
-		DevMsg( "Citizen in select schedule but RPG is guiding?\n");
-		pRPG->StopGuiding();
-	}
 	
 	return BaseClass::SelectSchedule();
 }
@@ -1603,38 +1583,6 @@ int CNPC_Citizen::TranslateSchedule( int scheduleType )
 			return SCHED_STANDOFF;
 		}
 		break;
-
-	case SCHED_RANGE_ATTACK1:
-		// If we have an RPG, we use a custom schedule for it
-		if ( !IsMortar( GetEnemy() ) && GetActiveWeapon() && FClassnameIs( GetActiveWeapon(), "weapon_rpg" ) )
-		{
-			if ( GetEnemy() && GetEnemy()->ClassMatches( "npc_strider" ) )
-			{
-				if (OccupyStrategySlotRange( SQUAD_SLOT_CITIZEN_RPG1, SQUAD_SLOT_CITIZEN_RPG2 ) )
-				{
-					return SCHED_CITIZEN_STRIDER_RANGE_ATTACK1_RPG;
-				}
-				else
-				{
-					return SCHED_STANDOFF;
-				}
-			}
-			else
-			{
-				CBasePlayer *pPlayer = AI_GetSinglePlayer();
-				if ( pPlayer && GetEnemy() && ( ( GetEnemy()->GetAbsOrigin() - 
-					pPlayer->GetAbsOrigin() ).LengthSqr() < RPG_SAFE_DISTANCE * RPG_SAFE_DISTANCE ) )
-				{
-					// Don't fire our RPG at an enemy too close to the player
-					return SCHED_STANDOFF;
-				}
-				else
-				{
-					return SCHED_CITIZEN_RANGE_ATTACK1_RPG;
-				}
-			}
-		}
-		break;
 	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
@@ -1725,11 +1673,6 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 			Speak( TLK_GIVEAMMO );
 		}
 		SetIdealActivity( (Activity)ACT_CIT_HEAL );
-		break;
-	
-	case TASK_CIT_RPG_AUGER:
-		m_bRPGAvoidPlayer = false;
-		SetWait( 15.0 ); // maximum time auger before giving up
 		break;
 
 	case TASK_CIT_SPEAK_MOURNING:
@@ -1851,87 +1794,6 @@ void CNPC_Citizen::RunTask( const Task_t *pTask )
 
 #endif
 
-		case TASK_CIT_RPG_AUGER:
-			{
-				// Keep augering until the RPG has been destroyed
-				CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
-				if ( !pRPG )
-				{
-					TaskFail( FAIL_ITEM_NO_FIND );
-					return;
-				}
-
-				// Has the RPG detonated?
-				if ( !pRPG->GetMissile() )
-				{
-					pRPG->StopGuiding();
-					TaskComplete();
-					return;
-				}
-
-				Vector vecLaserPos = pRPG->GetNPCLaserPosition();
-
-				if ( !m_bRPGAvoidPlayer )
-				{
-					// Abort if we've lost our enemy
-					if ( !GetEnemy() )
-					{
-						pRPG->StopGuiding();
-						TaskFail( FAIL_NO_ENEMY );
-						return;
-					}
-
-					// Is our enemy occluded?
-					if ( HasCondition( COND_ENEMY_OCCLUDED ) )
-					{
-						// Turn off the laserdot, but don't stop augering
-						pRPG->StopGuiding();
-						return;
-					}
-					else if ( pRPG->IsGuiding() == false )
-					{
-						pRPG->StartGuiding();
-					}
-
-					Vector vecEnemyPos = GetEnemy()->BodyTarget(GetAbsOrigin(), false);
-					CBasePlayer *pPlayer = AI_GetSinglePlayer();
-					if ( pPlayer && ( ( vecEnemyPos - pPlayer->GetAbsOrigin() ).LengthSqr() < RPG_SAFE_DISTANCE * RPG_SAFE_DISTANCE ) )
-					{
-						m_bRPGAvoidPlayer = true;
-						Speak( TLK_WATCHOUT );
-					}
-					else
-					{
-						// Pull the laserdot towards the target
-						Vector vecToTarget = (vecEnemyPos - vecLaserPos);
-						float distToMove = VectorNormalize( vecToTarget );
-						if ( distToMove > 90 )
-							distToMove = 90;
-						vecLaserPos += vecToTarget * distToMove;
-					}
-				}
-
-				if ( m_bRPGAvoidPlayer )
-				{
-					// Pull the laserdot up
-					vecLaserPos.z += 90;
-				}
-
-				if ( IsWaitFinished() )
-				{
-					pRPG->StopGuiding();
-					TaskFail( FAIL_NO_SHOOT );
-					return;
-				}
-				// Add imprecision to avoid obvious robotic perfection stationary targets
-				float imprecision = 18*sin(gpGlobals->curtime);
-				vecLaserPos.x += imprecision;
-				vecLaserPos.y += imprecision;
-				vecLaserPos.z += imprecision;
-				pRPG->UpdateNPCLaserPosition( vecLaserPos );
-			}
-			break;
-
 		default:
 			BaseClass::RunTask( pTask );
 			break;
@@ -1986,22 +1848,8 @@ Activity CNPC_Citizen::NPC_TranslateActivity( Activity activity )
 //------------------------------------------------------------------------------
 void CNPC_Citizen::HandleAnimEvent( animevent_t *pEvent )
 {
-	if ( pEvent->event == AE_CITIZEN_GET_PACKAGE )
-	{
-		// Give the citizen a package
-		CBaseCombatWeapon *pWeapon = Weapon_Create( "weapon_citizenpackage" );
-		if ( pWeapon )
-		{
-			// If I have a name, make my weapon match it with "_weapon" appended
-			if ( GetEntityName() != NULL_STRING )
-			{
-				pWeapon->SetName( AllocPooledString(UTIL_VarArgs("%s_weapon", STRING(GetEntityName()) )) );
-			}
-			Weapon_Equip( pWeapon );
-		}
-		return;
-	}
-	else if ( pEvent->event == AE_CITIZEN_HEAL )
+	
+	if ( pEvent->event == AE_CITIZEN_HEAL )
 	{
 		// Heal my target (if within range)
 #if HL2_EPISODIC
@@ -2228,51 +2076,7 @@ bool CNPC_Citizen::IsManhackMeleeCombatant()
 //-----------------------------------------------------------------------------
 Vector CNPC_Citizen::GetActualShootPosition( const Vector &shootOrigin )
 {
-	Vector vecTarget = BaseClass::GetActualShootPosition( shootOrigin );
-
-	CWeaponRPG *pRPG = dynamic_cast<CWeaponRPG*>(GetActiveWeapon());
-	// If we're firing an RPG at a gunship, aim off to it's side, because we'll auger towards it.
-	if ( pRPG && GetEnemy() )
-	{
-		if ( FClassnameIs( GetEnemy(), "npc_combinegunship" ) )
-		{
-			Vector vecRight;
-			GetVectors( NULL, &vecRight, NULL );
-			// Random height
-			vecRight.z = 0;
-
-			// Find a clear shot by checking for clear shots around it
-			float flShotOffsets[] =
-			{
-				512,
-				-512,
-				128,
-				-128
-			};
-			for ( int i = 0; i < ARRAYSIZE(flShotOffsets); i++ )
-			{
-				Vector vecTest = vecTarget + (vecRight * flShotOffsets[i]);
-				// Add some random height to it
-				vecTest.z += RandomFloat( -512, 512 );
-				trace_t tr;
-				AI_TraceLine( shootOrigin, vecTest, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
-
-				// If we can see the point, it's a clear shot
-				if ( tr.fraction == 1.0 && tr.m_pEnt != GetEnemy() )
-				{
-					pRPG->SetNPCLaserPosition( vecTest );
-					return vecTest;
-				}
-			}
-		}
-		else
-		{
-			pRPG->SetNPCLaserPosition( vecTarget );
-		}
-
-	}
-
-	return vecTarget;
+	return BaseClass::GetActualShootPosition(shootOrigin);
 }
 
 //-----------------------------------------------------------------------------
@@ -3985,7 +3789,6 @@ bool CNPC_Citizen::UseSemaphore( void )
 AI_BEGIN_CUSTOM_NPC( npc_citizen, CNPC_Citizen )
 
 	DECLARE_TASK( TASK_CIT_HEAL )
-	DECLARE_TASK( TASK_CIT_RPG_AUGER )
 	DECLARE_TASK( TASK_CIT_PLAY_INSPECT_SEQUENCE )
 	DECLARE_TASK( TASK_CIT_SIT_ON_TRAIN )
 	DECLARE_TASK( TASK_CIT_LEAVE_TRAIN )
@@ -4005,7 +3808,6 @@ AI_BEGIN_CUSTOM_NPC( npc_citizen, CNPC_Citizen )
 	DECLARE_CONDITION( COND_CIT_START_INSPECTION )
 
 	//Events
-	DECLARE_ANIMEVENT( AE_CITIZEN_GET_PACKAGE )
 	DECLARE_ANIMEVENT( AE_CITIZEN_HEAL )
 
 	//=========================================================
@@ -4051,41 +3853,7 @@ AI_BEGIN_CUSTOM_NPC( npc_citizen, CNPC_Citizen )
 	)
 #endif
 
-	//=========================================================
-	// > SCHED_CITIZEN_RANGE_ATTACK1_RPG
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CITIZEN_RANGE_ATTACK1_RPG,
-
-		"	Tasks"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_ENEMY				0"
-		"		TASK_ANNOUNCE_ATTACK		1"	// 1 = primary attack
-		"		TASK_RANGE_ATTACK1			0"
-		"		TASK_CIT_RPG_AUGER			1"
-		""
-		"	Interrupts"
-	)
-
-	//=========================================================
-	// > SCHED_CITIZEN_RANGE_ATTACK1_RPG
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CITIZEN_STRIDER_RANGE_ATTACK1_RPG,
-
-		"	Tasks"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_ENEMY				0"
-		"		TASK_ANNOUNCE_ATTACK		1"	// 1 = primary attack
-		"		TASK_WAIT					1"
-		"		TASK_RANGE_ATTACK1			0"
-		"		TASK_CIT_RPG_AUGER			1"
-		"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
-		""
-		"	Interrupts"
-	)
+	
 
 
 	//=========================================================
