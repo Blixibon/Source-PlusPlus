@@ -29,6 +29,8 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Activate( void );
+	virtual int UpdateTransmitState();
+	virtual bool		ShowInDeathnotice() { return true; }
 	
 	virtual bool FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntity **ppBlocker );
 	virtual bool WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
@@ -102,6 +104,11 @@ void CNPC_APCDriver::Activate( void )
 
 	m_flDistTooFar = m_hAPC->MaxAttackRange();
 	SetDistLook( m_hAPC->MaxAttackRange() );
+}
+
+int CNPC_APCDriver::UpdateTransmitState()
+{
+	return SetTransmitState(FL_EDICT_PVSCHECK);
 }
 
 

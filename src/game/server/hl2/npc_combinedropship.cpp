@@ -216,6 +216,11 @@ public:
 
 	void	Activate( void );
 
+	virtual bool		ShowInDeathnotice()
+	{ 
+		return (m_iCrateType == CRATE_SOLDIER);
+	}
+
 	// Thinking/init
 	void	InitializeRotorSound( void );
 	void	StopLoopingSounds();
@@ -2457,19 +2462,27 @@ void CNPC_CombineDropship::SpawnTroop( void )
 	pNPC->m_NPCState = NPC_STATE_IDLE;
 	pNPC->Activate();
 
+#if 0
+	pNPC->m_debugOverlays |= OVERLAY_TEXT_BIT;
+#endif
+
 	// Spawn a scripted sequence entity to make the NPC run out of the dropship
 	CAI_ScriptedSequence *pSequence = (CAI_ScriptedSequence*)CreateEntityByName( "scripted_sequence" );
 	pSequence->KeyValue( "m_iszEntity", STRING(pNPC->GetEntityName()) );
 	pSequence->KeyValue( "m_iszPlay", "Dropship_Deploy" );
 	pSequence->KeyValue( "m_fMoveTo", "4" );	// CINE_MOVETO_TELEPORT
-	pSequence->KeyValue( "OnEndSequence", UTIL_VarArgs("%s,NPCFinishDustoff,%s,0,-1", STRING(GetEntityName()), STRING(pNPC->GetEntityName())) );
+	pSequence->KeyValue( "OnEndSequence", CFmtStr("%s,NPCFinishDustoff,%s,0,-1", STRING(GetEntityName()), STRING(pNPC->GetEntityName())) );
 	pSequence->SetAbsOrigin( vecSpawnOrigin );
 	pSequence->SetAbsAngles( vecSpawnAngles );
 	pSequence->AddSpawnFlags( SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE );
+	pSequence->ForceSetTargetEntity(pNPC, true);
 	pSequence->Spawn();
 	pSequence->Activate();
 	variant_t emptyVariant;
 	pSequence->AcceptInput( "BeginSequence", this, this, emptyVariant, 0 );
+#if 0
+	pSequence->m_debugOverlays |= OVERLAY_TEXT_BIT;
+#endif
 
 	m_hLastTroopToLeave = pNPC;
 }

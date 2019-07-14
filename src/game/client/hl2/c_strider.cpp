@@ -115,6 +115,9 @@ public:
 					C_Strider();
 	virtual			~C_Strider();
 
+	virtual Vector	GetObserverCamOrigin(void); // Return the origin for player observers tracking this target
+	virtual Vector			GetObserverViewOffset(void) { return VEC_DUCK_VIEW_SCALED(this); }
+
 	// model specific
 	virtual void	ReceiveMessage( int classID, bf_read &msg );
 	virtual void	CalculateIKLocks( float currentTime )
@@ -636,6 +639,23 @@ C_Strider::C_Strider() :
 
 C_Strider::~C_Strider()
 {
+}
+
+Vector C_Strider::GetObserverCamOrigin(void)
+{
+	Vector vecBack, vecFront, vecInterp;
+	vecInterp.Init();
+	GetAttachment("vehicle_driver_eyes", vecBack);
+	GetAttachment("MinigunBase", vecFront);
+#if 0
+	vecInterp.x = Lerp(0.5f, vecBack.x, vecFront.x);
+	vecInterp.y = Lerp(0.5f, vecBack.y, vecFront.y);
+	vecInterp.z = Lerp(0.1f, vecBack.z, vecFront.z);
+#else
+	VectorLerp(vecBack, vecFront, 0.5f, vecInterp);
+#endif
+
+	return vecInterp;
 }
 
 void C_Strider::ReceiveMessage( int classID, bf_read &msg )

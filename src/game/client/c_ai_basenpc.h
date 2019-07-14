@@ -33,6 +33,8 @@ public:
 
 	int						GetDeathPose( void ) { return m_iDeathPose; }
 
+	virtual Vector			GetObserverViewOffset(void);
+
 	bool					ShouldModifyPlayerSpeed( void ) { return m_bSpeedModActive;	}
 	int						GetSpeedModifyRadius( void ) { return m_iSpeedModRadius; }
 	int						GetSpeedModifySpeed( void ) { return m_iSpeedModSpeed;	}

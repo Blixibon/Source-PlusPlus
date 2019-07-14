@@ -419,6 +419,11 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 {
 	m_OnDeath.FireOutput( info.GetAttacker(), this );
 
+	if (GetDriver() && GetDriver()->IsNPC())
+	{
+		g_pGameRules->NPCKilled(GetDriver()->MyNPCPointer(), info);
+	}
+
 	Vector vecAbsMins, vecAbsMaxs;
 	CollisionProp()->WorldSpaceAABB( &vecAbsMins, &vecAbsMaxs );
 
@@ -842,8 +847,16 @@ void CPropAPC::FireMachineGun( void )
 	GetAttachment( m_nMachineGunMuzzleAttachment, vecMachineGunShootPos, &vecMachineGunDir );
 	
 	// Fire the round
-	int	bulletType = GetAmmoDef()->Index("AR2");
-	FireBullets( 1, vecMachineGunShootPos, vecMachineGunDir, VECTOR_CONE_8DEGREES, MAX_TRACE_LENGTH, bulletType, 1 );
+	FireBulletsInfo_t info;
+	info.m_iShots = 1;
+	info.m_vecSrc = vecMachineGunShootPos;
+	info.m_vecDirShooting = vecMachineGunDir;
+	info.m_vecSpread = VECTOR_CONE_8DEGREES;
+	info.m_flDistance = MAX_TRACE_LENGTH;
+	info.m_iAmmoType = GetAmmoDef()->Index("AR2");
+	info.m_iTracerFreq = 1;
+	info.m_pAttacker = GetDriver() ? GetDriver() : this;
+	FireBullets( info );
 	DoMuzzleFlash();
 
 	EmitSound( "Weapon_AR2.Single" );

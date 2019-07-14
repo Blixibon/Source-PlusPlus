@@ -77,6 +77,8 @@ public:
 
 	CBaseHelicopter( void );
 
+	virtual bool		ShowInDeathnotice() { return true; }
+
 	void Spawn( void );
 	void Precache( void );
 	virtual void UpdateOnRemove();

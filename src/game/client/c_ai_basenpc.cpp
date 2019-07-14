@@ -67,6 +67,16 @@ unsigned int C_AI_BaseNPC::PhysicsSolidMaskForEntity( void ) const
 }
 
 
+Vector C_AI_BaseNPC::GetObserverViewOffset(void)
+{
+	Vector vecOffset = CollisionProp()->OBBMaxs();
+	vecOffset.x = 0;
+	vecOffset.y = 0;
+	vecOffset -= VEC_DEAD_VIEWHEIGHT;
+
+	return vecOffset;
+}
+
 void C_AI_BaseNPC::ClientThink( void )
 {
 	BaseClass::ClientThink();

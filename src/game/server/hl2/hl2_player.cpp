@@ -448,8 +448,8 @@ void CHL2_Player::Precache( void )
 {
 	BaseClass::Precache();
 
-	PrecacheScriptSound( "HL2Player.SprintNoPower" );
-	PrecacheScriptSound( "HL2Player.SprintStart" );
+	PrecacheScriptSound( "SynergyPlayer.SprintNoPower" );
+	PrecacheScriptSound( "SynergyPlayer.SprintStart" );
 	PrecacheScriptSound( "HL2Player.UseDeny" );
 	PrecacheScriptSound( "HL2Player.FlashLightOn" );
 	PrecacheScriptSound( "HL2Player.FlashLightOff" );
@@ -709,6 +709,11 @@ void CHL2_Player::PreThink(void)
 	}
 
 	VPROF_SCOPE_END();
+
+	if (GetObserverMode() > OBS_MODE_FREEZECAM)
+	{
+		CheckObserverSettings();	// do this each frame
+	}
 
 	if ( g_fGameOver || IsPlayerLockedInPlace() )
 		return;         // finale
@@ -1277,7 +1282,7 @@ void CHL2_Player::StartSprinting( void )
 		{
 			CPASAttenuationFilter filter( this );
 			filter.UsePredictionRules();
-			EmitSound( filter, entindex(), "HL2Player.SprintNoPower" );
+			EmitSound( filter, entindex(), "SynergyPlayer.SprintNoPower" );
 		}
 		return;
 	}
@@ -1287,7 +1292,7 @@ void CHL2_Player::StartSprinting( void )
 
 	CPASAttenuationFilter filter( this );
 	filter.UsePredictionRules();
-	EmitSound( filter, entindex(), "HL2Player.SprintStart" );
+	EmitSound( filter, entindex(), "SynergyPlayer.SprintStart" );
 
 	SetMaxSpeed( HL2_SPRINT_SPEED );
 	m_fIsSprinting = true;

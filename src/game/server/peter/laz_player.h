@@ -160,6 +160,7 @@ public:
 	void				FindInitialObserverTarget(void);
 	CBaseEntity		    *FindNearestObservableTarget(Vector vecOrigin, float flMaxDist);
 	virtual void		ValidateCurrentObserverTarget(void);
+	virtual void			CheckObserverSettings(); // checks, if target still valid (didn't die etc)
 	virtual bool		SetObserverMode(int mode);
 
 public:

@@ -1548,7 +1548,7 @@ CLAZPlayerStateInfo *CLaz_Player::State_LookupInfo(LAZPlayerState state)
 void CLaz_Player::State_Enter_OBSERVER_MODE()
 {
 	int observerMode = m_iObserverLastMode;
-	if (IsNetClient())
+	if (!IsFakeClient())
 	{
 		const char *pIdealMode = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_spec_mode");
 		if (pIdealMode)
@@ -1562,6 +1562,7 @@ void CLaz_Player::State_Enter_OBSERVER_MODE()
 	}
 	//m_bEnterObserver = true;
 	StartObserverMode(observerMode);
+	AddFlag(FL_NOTARGET);
 }
 
 void CLaz_Player::State_PreThink_OBSERVER_MODE()
@@ -1977,6 +1978,18 @@ bool CLaz_Player::IsValidObserverTarget(CBaseEntity * target)
 			// Only spectate important npcs
 			if (!pAI->ShowInDeathnotice())
 				return false;
+
+			// Don't spectate sleeping npcs
+			if (pAI->GetSleepState() != AISS_AWAKE)
+				return false;
+
+			// Don't spectate burrowed npcs
+			if (pAI->GetFlags() & FL_NOTARGET)
+				return false;
+
+			// Don't spectate npcs waiting for a script
+			if (pAI->IsCurSchedule(SCHED_WAIT_FOR_SCRIPT, false))
+				return false;
 		}
 
 		if (GetTeamNumber() == TEAM_SPECTATOR)
@@ -2015,6 +2028,13 @@ bool CLaz_Player::SetObserverTarget(CBaseEntity *target)
 		JumptoPosition(target->GetAbsOrigin(), target->EyeAngles());
 		SetFOV(pObsPoint, pObsPoint->m_flFOV);
 	}
+	/*else if (target->IsBaseObject() || target->IsNPC())
+	{
+		if (m_iObserverMode == OBS_MODE_IN_EYE)
+		{
+			m_iObserverMode = OBS_MODE_CHASE;
+		}
+	}*/
 
 	return true;
 }
@@ -2025,38 +2045,23 @@ bool CLaz_Player::SetObserverTarget(CBaseEntity *target)
 //-----------------------------------------------------------------------------
 CBaseEntity *CLaz_Player::FindNearestObservableTarget(Vector vecOrigin, float flMaxDist)
 {
-	CTeam *pTeam = GetTeam();
+	BuildObservableEntityList();
 	CBaseEntity *pReturnTarget = NULL;
 	bool bFoundClass = false;
 	float flCurDistSqr = (flMaxDist * flMaxDist);
-	int iNumPlayers = pTeam->GetNumPlayers();
-
-	if (pTeam->GetTeamNumber() == TEAM_SPECTATOR)
-	{
-		iNumPlayers = gpGlobals->maxClients;
-	}
-
+	int iNumPlayers = m_hObservableEntities.Count();
 
 	for (int i = 0; i < iNumPlayers; i++)
 	{
-		CLaz_Player *pPlayer = NULL;
+		CBaseEntity *pTarget = m_hObservableEntities.Element(i);
 
-		if (pTeam->GetTeamNumber() == TEAM_SPECTATOR)
-		{
-			pPlayer = ToLazuulPlayer(UTIL_PlayerByIndex(i));
-		}
-		else
-		{
-			pPlayer = ToLazuulPlayer(pTeam->GetPlayer(i));
-		}
-
-		if (!pPlayer)
+		if (!pTarget)
 			continue;
 
-		if (!IsValidObserverTarget(pPlayer))
+		if (!IsValidObserverTarget(pTarget))
 			continue;
 
-		float flDistSqr = (pPlayer->GetAbsOrigin() - vecOrigin).LengthSqr();
+		float flDistSqr = (pTarget->GetAbsOrigin() - vecOrigin).LengthSqr();
 
 		if (flDistSqr < flCurDistSqr)
 		{
@@ -2064,7 +2069,7 @@ CBaseEntity *CLaz_Player::FindNearestObservableTarget(Vector vecOrigin, float fl
 			// to be a matching class and closer to boot.
 			//if (!bFoundClass || pPlayer->IsPlayerClass(GetPlayerClass()->GetClassIndex()))
 			{
-				pReturnTarget = pPlayer;
+				pReturnTarget = pTarget;
 				flCurDistSqr = flDistSqr;
 				bFoundClass = true;
 			}
@@ -2179,6 +2184,11 @@ void CLaz_Player::ValidateCurrentObserverTarget(void)
 	}
 
 	BaseClass::ValidateCurrentObserverTarget();
+}
+
+void CLaz_Player::CheckObserverSettings()
+{
+	BaseClass::CheckObserverSettings();
 }
 
 CON_COMMAND_F(laz_player_set_voice, "Set the voicetype of the player", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT)

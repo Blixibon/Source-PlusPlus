@@ -41,6 +41,7 @@
 #include "fx.h"
 #include "dt_utlvector_recv.h"
 #include "cam_thirdperson.h"
+#include "c_ai_basenpc.h"
 #if defined( REPLAY_ENABLED )
 #include "replay/replaycamera.h"
 #include "replay/ireplaysystem.h"
@@ -1456,6 +1457,11 @@ Vector C_BasePlayer::GetChaseCamViewOffset( CBaseEntity *target )
 			return VEC_DEAD_VIEWHEIGHT_SCALED( player );
 		}
 	}
+	else if (target->IsNPC())
+	{
+		C_AI_BaseNPC *pAI = target->MyNPCPointer();
+		return pAI->GetObserverViewOffset();
+	}
 
 	// assume it's the players ragdoll
 	return VEC_DEAD_VIEWHEIGHT;
@@ -1539,6 +1545,18 @@ void C_BasePlayer::CalcChaseCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 	{
 		// if this is a train, we want to be back a little further so we can see more of it
 		flMaxDistance *= 2.5f;
+	}
+
+	if (target && target->IsNPC() && !target->IsPointSized())
+	{
+		ICollideable *pCollide = target->CollisionProp();
+		Vector vecPlayerSize, vecSize;
+		VectorSubtract(VEC_HULL_MAX, VEC_HULL_MIN, vecPlayerSize);
+		VectorSubtract(pCollide->OBBMaxsPreScaled(), pCollide->OBBMinsPreScaled(), vecSize);
+		float flScaleFactor = vecSize.x / vecPlayerSize.x;
+		flScaleFactor = Clamp(flScaleFactor, 0.4f, 3.6f);
+		flMinDistance *= flScaleFactor;
+		flMaxDistance *= flScaleFactor;
 	}
 
 	if ( target )
@@ -1754,7 +1772,7 @@ void C_BasePlayer::CalcInEyeCamView(Vector& eyeOrigin, QAngle& eyeAngles, float&
 	else
 	{
 		Vector offset = GetViewOffset();
-#ifdef HL2MP
+#if defined( HL2MP ) || defined(HL2_LAZUL)
 		offset = target->GetViewOffset();
 #endif
 		eyeOrigin += offset; // hack hack

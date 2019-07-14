@@ -1307,6 +1307,8 @@ void CBaseHelicopter::Startup( void )
 
 	m_flRotorWashEntitySearchTime = gpGlobals->curtime;
 	SetContextThink( &CBaseHelicopter::RotorWashThink, gpGlobals->curtime, s_pRotorWashThinkContext );
+
+	UpdateTeam();
 }
 
 void CBaseHelicopter::StopLoopingSounds()
