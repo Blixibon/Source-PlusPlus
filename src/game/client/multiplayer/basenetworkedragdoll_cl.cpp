@@ -54,6 +54,19 @@ void C_BaseNetworkedRagdoll::Interp_Copy(C_BaseAnimatingOverlay* pSourceEntity)
 	}
 }
 
+ShadowType_t C_BaseNetworkedRagdoll::ShadowCastType(void)
+{
+	static ConVarRef blobby("cl_blobbyshadows");
+
+	if (m_bGib)
+		return SHADOWS_NONE;
+
+	if (blobby.GetBool())
+		return SHADOWS_SIMPLE;
+
+	return BaseClass::ShadowCastType();
+}
+
 void C_BaseNetworkedRagdoll::ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName)
 {
 	IPhysicsObject* pPhysicsObject = VPhysicsGetObject();
@@ -293,7 +306,9 @@ void C_BaseNetworkedRagdoll::CreateTFGibs(void)
 	}
 
 	if (bCreatedGibs)
+	{
 		EndFadeOut();
+	}
 	else
 		CreateHL2MPRagdoll();
 }
@@ -301,7 +316,18 @@ void C_BaseNetworkedRagdoll::CreateTFGibs(void)
 
 void C_BaseNetworkedRagdoll::OnDataChanged(DataUpdateType_t type)
 {
-	BaseClass::OnDataChanged(type);
+	bool modelchanged = false;
+
+	// UNDONE: The base class does this as well.  So this is kind of ugly
+	// but getting a model by index is pretty cheap...
+	const model_t *pModel = modelinfo->GetModel(GetModelIndex());
+
+	if (pModel != GetModel())
+	{
+		modelchanged = true;
+	}
+
+	C_BaseEntity::OnDataChanged(type);
 
 	if (type == DATA_UPDATE_CREATED)
 	{
@@ -338,6 +364,14 @@ void C_BaseNetworkedRagdoll::OnDataChanged(DataUpdateType_t type)
 			{
 				CreateHL2MPRagdoll();
 			}
+		}
+	}
+	else
+	{
+		if (m_pRagdoll)
+		{
+			// Make us a ragdoll..
+			m_nRenderFX = kRenderFxRagdoll;
 		}
 	}
 }

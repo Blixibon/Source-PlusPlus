@@ -18,6 +18,9 @@ public:
 	void StartFadeOut(float fDelay);
 	void EndFadeOut();
 
+	// Shadows
+	virtual ShadowType_t ShadowCastType(void);
+
 	void ImpactTrace(trace_t* pTrace, int iDamageType, const char* pCustomImpactName);
 	void UpdateOnRemove(void);
 
