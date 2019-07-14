@@ -3386,6 +3386,16 @@
 			"width"	"96"
 			"height"	"32"
 		}
+		
+		"apc_missile"
+		{
+			"dfile"	"HUD/d_images_hl2"
+			"dnegfile"	"HUD/dneg_images_hl2"
+			"x"	"0"
+			"y"	"352"
+			"width"	"96"
+			"height"	"32"
+		}
 
 		"grenade_ar2"
 		{

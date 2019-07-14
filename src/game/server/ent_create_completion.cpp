@@ -11,9 +11,20 @@ public:
 	CGameDataLoader() : CAutoGameSystem("FGDLoader")
 	{}
 
+	static void FGDPrintFunc(int level, PRINTF_FORMAT_STRING const char *fmt, ...)
+	{
+		va_list ap;
+		va_start(ap, fmt);
+		char szTempMsgBuf[512];
+		V_vsprintf_safe(szTempMsgBuf, fmt, ap);
+
+		DevWarning("%s\n", szTempMsgBuf);
+		va_end(ap);
+	}
+
 	bool Init()
 	{
-		GDSetMessageFunc(DevWarning);
+		GDSetMessageFunc(FGDPrintFunc);
 
 		KeyValuesAD kvGameInfo("GameInfo");
 		if (kvGameInfo->LoadFromFile(filesystem, "gameinfo.txt", "MOD"))

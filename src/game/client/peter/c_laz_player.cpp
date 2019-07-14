@@ -369,13 +369,13 @@ void C_Laz_Player::StartSprinting(void)
 		// amount of suit power.
 		CPASAttenuationFilter filter(this);
 		filter.UsePredictionRules();
-		EmitSound(filter, entindex(), "HL2Player.SprintNoPower");
+		EmitSound(filter, entindex(), "SynergyPlayer.SprintNoPower");
 		return;
 	}
 
 	CPASAttenuationFilter filter(this);
 	filter.UsePredictionRules();
-	EmitSound(filter, entindex(), "HL2Player.SprintStart");
+	EmitSound(filter, entindex(), "SynergyPlayer.SprintStart");
 
 	SetMaxSpeed(HL2_SPRINT_SPEED);
 	m_fIsSprinting = true;
