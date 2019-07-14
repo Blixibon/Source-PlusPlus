@@ -25,6 +25,8 @@
 	#include "team_control_point_master.h"
 	#include "team_train_watcher.h"
 	#include "serverbenchmark_base.h"
+	#include "ai_networkmanager.h"
+	#include "ai_dynamiclink.h"
 
 #if defined( REPLAY_ENABLED )	
 	#include "replay/ireplaysystem.h"
@@ -2927,6 +2929,11 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 		Msg( "  Entities: %d (%d edicts)\n", gEntList.NumberOfEntities(), gEntList.NumberOfEdicts() );
 	}
 
+	if (CAI_NetworkManager::NetworksLoaded())
+	{
+		CAI_DynamicLink::DestroyDynamicLinks();
+	}
+
 	// Get rid of all entities except players.
 	CBaseEntity *pCur = gEntList.FirstEnt();
 	while ( pCur )
@@ -3027,6 +3034,11 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 	// DO NOT CALL SPAWN ON info_node ENTITIES!
 
 	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
+
+	if (CAI_NetworkManager::NetworksLoaded())
+	{
+		CAI_DynamicLink::InitDynamicLinks();
+	}
 }
 
 //-----------------------------------------------------------------------------

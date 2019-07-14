@@ -36,6 +36,7 @@ public:
 	static void					InitDynamicLinks(void);
 	static void					ResetDynamicLinks(void);
 	static void					PurgeDynamicLinks(void);
+	static void					DestroyDynamicLinks(void);
 	static void 				GenerateControllerLinks();
 
 	static bool					gm_bInitialized;

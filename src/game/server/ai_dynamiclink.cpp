@@ -377,6 +377,25 @@ void CAI_DynamicLink::PurgeDynamicLinks(void)
 	}
 }
 
+void CAI_DynamicLink::DestroyDynamicLinks(void)
+{
+	if (!gm_bInitialized)
+		return;
+
+	CAI_DynamicLink* pDynamicLink = CAI_DynamicLink::m_pAllDynamicLinks;
+
+	while (pDynamicLink)
+	{
+		// Safe to remove it here as this happens only after I leave this function
+		UTIL_Remove(pDynamicLink);
+
+		// Go on to the next dynamic link
+		pDynamicLink = pDynamicLink->m_pNextDynamicLink;
+	}
+
+	gm_bInitialized = false;
+}
+
 //------------------------------------------------------------------------------
 // Purpose : Returns false if the dynamic link doesn't have a corresponding
 //			 node link
