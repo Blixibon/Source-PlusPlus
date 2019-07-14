@@ -1454,6 +1454,9 @@ void CAI_ScriptedSequence::CancelScript( void )
 void CAI_ScriptedSequence::DelayStart( bool bDelay )
 {
 	//Msg("SSEQ: %.2f \"%s\" (%d) DelayStart( %d ). Current m_iDelay is: %d\n", gpGlobals->curtime, GetDebugName(), entindex(), bDelay, m_iDelay );
+#if 1
+	StopThink();
+#endif
 	
 	if ( ai_task_pre_script.GetBool() )
 	{

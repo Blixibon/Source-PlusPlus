@@ -100,7 +100,7 @@ public:
 	bool		IsPlayerEnemy()
 	{
 		//return GetDefaultRelationshipDisposition(CLASS_PLAYER) == D_HT;
-		return !IsPlayerAlly();
+		return FindClassRelationship(CLASS_PLAYER)->disposition == D_HT;
 	}
 
 	// Various start tasks

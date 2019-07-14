@@ -197,71 +197,71 @@ LINK_ENTITY_TO_CLASS( npc_antlion, CNPC_Antlion );
 // CNPC_Antlion::m_DataDesc
 //==================================================
 
-BEGIN_DATADESC( CNPC_Antlion )
+BEGIN_DATADESC(CNPC_Antlion)
 
-	DEFINE_KEYFIELD( m_bStartBurrowed,		FIELD_BOOLEAN,	"startburrowed" ),
-	DEFINE_KEYFIELD( m_bIgnoreBugbait,		FIELD_BOOLEAN,	"ignorebugbait" ),
-	DEFINE_KEYFIELD( m_flAlertRadius,		FIELD_FLOAT,	"radius" ),
-	DEFINE_KEYFIELD( m_flEludeDistance,		FIELD_FLOAT,	"eludedist" ),
-	DEFINE_KEYFIELD( m_bSuppressUnburrowEffects,	FIELD_BOOLEAN,	"unburroweffects" ),
+DEFINE_KEYFIELD(m_bStartBurrowed, FIELD_BOOLEAN, "startburrowed"),
+DEFINE_KEYFIELD(m_bIgnoreBugbait, FIELD_BOOLEAN, "ignorebugbait"),
+DEFINE_KEYFIELD(m_flAlertRadius, FIELD_FLOAT, "radius"),
+DEFINE_KEYFIELD(m_flEludeDistance, FIELD_FLOAT, "eludedist"),
+DEFINE_KEYFIELD(m_bSuppressUnburrowEffects, FIELD_BOOLEAN, "unburroweffects"),
 
-	DEFINE_FIELD( m_vecSaveSpitVelocity,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_flIdleDelay,			FIELD_TIME ),
-	DEFINE_FIELD( m_flBurrowTime,			FIELD_TIME ),
-	DEFINE_FIELD( m_flJumpTime,				FIELD_TIME ),
-	DEFINE_FIELD( m_flPounceTime,			FIELD_TIME ),
-	DEFINE_FIELD( m_iUnBurrowAttempts,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_iContext,				FIELD_INTEGER ),
-	DEFINE_FIELD( m_vecSavedJump,			FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecLastJumpAttempt,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_flIgnoreSoundTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_vecHeardSound,			FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_bHasHeardSound,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bAgitatedSound,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bWingsOpen,				FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flNextAcknowledgeTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_hFollowTarget,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hFightGoalTarget,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_strParentSpawner,		FIELD_STRING ),
-	DEFINE_FIELD( m_flSuppressFollowTime,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_MoveState,				FIELD_INTEGER ),
-	DEFINE_FIELD( m_flObeyFollowTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_bLeapAttack,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bDisableJump,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeDrown,			FIELD_TIME ),
-	DEFINE_FIELD( m_flTimeDrownSplash,		FIELD_TIME ),
-	DEFINE_FIELD( m_bDontExplode,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flNextJumpPushTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_bForcedStuckJump,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flZapDuration,			FIELD_TIME ),
+DEFINE_FIELD(m_vecSaveSpitVelocity, FIELD_VECTOR),
+DEFINE_FIELD(m_flIdleDelay, FIELD_TIME),
+DEFINE_FIELD(m_flBurrowTime, FIELD_TIME),
+DEFINE_FIELD(m_flJumpTime, FIELD_TIME),
+DEFINE_FIELD(m_flPounceTime, FIELD_TIME),
+DEFINE_FIELD(m_iUnBurrowAttempts, FIELD_INTEGER),
+DEFINE_FIELD(m_iContext, FIELD_INTEGER),
+DEFINE_FIELD(m_vecSavedJump, FIELD_VECTOR),
+DEFINE_FIELD(m_vecLastJumpAttempt, FIELD_VECTOR),
+DEFINE_FIELD(m_flIgnoreSoundTime, FIELD_TIME),
+DEFINE_FIELD(m_vecHeardSound, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_bHasHeardSound, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bAgitatedSound, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bWingsOpen, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flNextAcknowledgeTime, FIELD_TIME),
+DEFINE_FIELD(m_hFollowTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_hFightGoalTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_strParentSpawner, FIELD_STRING),
+DEFINE_FIELD(m_flSuppressFollowTime, FIELD_FLOAT),
+DEFINE_FIELD(m_MoveState, FIELD_INTEGER),
+DEFINE_FIELD(m_flObeyFollowTime, FIELD_TIME),
+DEFINE_FIELD(m_bLeapAttack, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bDisableJump, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flTimeDrown, FIELD_TIME),
+DEFINE_FIELD(m_flTimeDrownSplash, FIELD_TIME),
+DEFINE_FIELD(m_bDontExplode, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flNextJumpPushTime, FIELD_TIME),
+DEFINE_FIELD(m_bForcedStuckJump, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flZapDuration, FIELD_TIME),
 #if HL2_EPISODIC
-	DEFINE_FIELD( m_bHasDoneAirAttack,		FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bHasDoneAirAttack, FIELD_BOOLEAN),
 #endif	
-	// DEFINE_FIELD( m_bLoopingStarted, FIELD_BOOLEAN ),
-	//			  m_FollowBehavior
-	//			  m_AssaultBehavior
-	
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Unburrow", InputUnburrow ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Burrow",	InputBurrow ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"BurrowAway",	InputBurrowAway ),
-	DEFINE_INPUTFUNC( FIELD_STRING,	"FightToPosition", InputFightToPosition ),
-	DEFINE_INPUTFUNC( FIELD_STRING,	"StopFightToPosition", InputStopFightToPosition ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"EnableJump", InputEnableJump ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"DisableJump", InputDisableJump ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"IgnoreBugbait", InputIgnoreBugbait ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"HearBugbait", InputHearBugbait ),
-	DEFINE_INPUTFUNC( FIELD_STRING,	"JumpAtTarget", InputJumpAtTarget ),
+// DEFINE_FIELD( m_bLoopingStarted, FIELD_BOOLEAN ),
+//			  m_FollowBehavior
+//			  m_AssaultBehavior
 
-	DEFINE_OUTPUT( m_OnReachFightGoal, "OnReachedFightGoal" ),
-	DEFINE_OUTPUT( m_OnUnBurrowed, "OnUnBurrowed" ),
+DEFINE_INPUTFUNC(FIELD_VOID, "Unburrow", InputUnburrow),
+DEFINE_INPUTFUNC(FIELD_VOID, "Burrow", InputBurrow),
+DEFINE_INPUTFUNC(FIELD_VOID, "BurrowAway", InputBurrowAway),
+DEFINE_INPUTFUNC(FIELD_STRING, "FightToPosition", InputFightToPosition),
+DEFINE_INPUTFUNC(FIELD_STRING, "StopFightToPosition", InputStopFightToPosition),
+DEFINE_INPUTFUNC(FIELD_VOID, "EnableJump", InputEnableJump),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableJump", InputDisableJump),
+DEFINE_INPUTFUNC(FIELD_VOID, "IgnoreBugbait", InputIgnoreBugbait),
+DEFINE_INPUTFUNC(FIELD_VOID, "HearBugbait", InputHearBugbait),
+DEFINE_INPUTFUNC(FIELD_STRING, "JumpAtTarget", InputJumpAtTarget),
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( Touch ),
-	DEFINE_USEFUNC( BurrowUse ),
-	DEFINE_THINKFUNC( ZapThink ),
+DEFINE_OUTPUT(m_OnReachFightGoal, "OnReachedFightGoal"),
+DEFINE_OUTPUT(m_OnUnBurrowed, "OnUnBurrowed"),
 
-	// DEFINE_FIELD( FIELD_SHORT, m_hFootstep ),
-END_DATADESC()
+// Function Pointers
+DEFINE_ENTITYFUNC(Touch),
+DEFINE_USEFUNC(BurrowUse),
+DEFINE_THINKFUNC(ZapThink),
+
+// DEFINE_FIELD( FIELD_SHORT, m_hFootstep ),
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 

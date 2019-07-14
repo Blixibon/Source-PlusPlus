@@ -33,6 +33,7 @@
 	#include "collisionutils.h"
 	#include "hl2_shareddefs.h"
 	#include "ai_basenpc.h"
+	#include "iservervehicle.h"
 #endif
 
 #include "hl2_player_shared.h"
@@ -389,7 +390,7 @@ void CMissile::DoExplosion( void )
 {
 	// Explode
 	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), GetDamage(), GetDamage() * 2, 
-		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
+		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
 }
 
 
@@ -1144,8 +1145,16 @@ void CAPCMissile::DoExplosion( void )
 	}
 	else
 	{
-		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), 
-			APC_MISSILE_DAMAGE, 100, true, 20000 );
+		CBaseEntity *pAttacker = GetOwnerEntity();
+		if (pAttacker && pAttacker->GetServerVehicle())
+		{
+			IServerVehicle *pVehicle = GetOwnerEntity()->GetServerVehicle();
+			if (pVehicle->GetPassenger())
+				pAttacker = pVehicle->GetPassenger();
+		}
+
+		ExplosionCreate(GetAbsOrigin(), GetAbsAngles(), pAttacker, APC_MISSILE_DAMAGE, 100,
+			SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 20000.0f, this);
 	}
 }
 
@@ -2232,7 +2241,7 @@ bool CWeaponRPG::WeaponLOSCondition(const Vector &ownerPos, const Vector &target
 			Vector vecShootDir = npcOwner->GetActualShootTrajectory(vecMuzzle);
 
 			// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
-			AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_NPCSOLID, npcOwner, COLLISION_GROUP_NPC, &tr);
+			AI_TraceHull(vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector(-24, -24, -24), Vector(24, 24, 24), MASK_SHOT_HULL, npcOwner, COLLISION_GROUP_NONE, &tr);
 
 			if (tr.fraction != 1.0f)
 				bResult = false;

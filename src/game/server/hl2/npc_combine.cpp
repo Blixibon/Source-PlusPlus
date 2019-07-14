@@ -1830,6 +1830,9 @@ int CNPC_Combine::SelectSchedule( void )
 		return BaseClass::SelectSchedule();
 	}
 
+	if (m_NPCState == NPC_STATE_SCRIPT)
+		return CAI_BaseActor::SelectSchedule();
+
 	if ( HasCondition(COND_COMBINE_ON_FIRE) )
 		return SCHED_COMBINE_BURNING_STAND;
 
