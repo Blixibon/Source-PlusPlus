@@ -1438,11 +1438,11 @@ BCOND CBotDecision::ShouldMeleeAttack1()
 	float flDistance = GetMemory()->GetPrimaryThreatDistance();
 
 	// TODO: Criteria to attack with a melee weapon
-	if (flDistance > 120.0f)
+	if (flDistance > 70.0f)
 		return BCOND_TOO_FAR_TO_ATTACK;
 
 	// TODO
-	return BCOND_NONE;
+	return BCOND_CAN_MELEE_ATTACK1;
 }
 
 //================================================================================
@@ -1505,11 +1505,7 @@ bool CBotDecision::IsAbleToSee(const Vector & pos, FieldOfViewCheckType checkFOV
 //================================================================================
 bool CBotDecision::IsInFieldOfView(CBaseEntity * entity)
 {
-	if (IsInFieldOfView(entity->WorldSpaceCenter())) {
-		return true;
-	}
-
-	return IsInFieldOfView(entity->EyePosition());
+	return GetHost()->IsInFieldOfView(entity);
 }
 
 //================================================================================
@@ -1526,7 +1522,7 @@ bool CBotDecision::IsInFieldOfView(const Vector & pos)
 //================================================================================
 bool CBotDecision::IsLineOfSightClear(CBaseEntity *entity) const
 {
-	return IsLineOfSightClear(entity->WorldSpaceCenter(), entity);
+	return GetHost()->IsLineOfSightClear(entity);
 }
 
 //================================================================================
