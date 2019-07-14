@@ -17,12 +17,12 @@
 
 		"rndwave"
 		{
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.wav"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.mp3"
 		}
 	}
 }
@@ -1566,12 +1566,12 @@
 
 		"rndwave"
 		{
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.wav"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.mp3"
 			"wave"	"ambient/Random_Amb_SFX/RUR5b_DistFoghorn.wav"
 		}
 	}
@@ -1663,12 +1663,12 @@
 
 		"rndwave"
 		{
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.wav"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.mp3"
 			"wave"	"ambient/Random_Amb_SFX/RUR5b_DistFoghorn.wav"
 		}
 	}
@@ -1747,12 +1747,12 @@
 
 		"rndwave"
 		{
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.wav"
-			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.wav"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull01.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull02.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull03.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull04.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull05.mp3"
+			"wave"	"ambient/Random_Amb_SFX/RUR5b_Seagull06.mp3"
 		}
 	}
 	//foghorn
