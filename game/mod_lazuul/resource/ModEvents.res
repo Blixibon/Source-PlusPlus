@@ -82,6 +82,7 @@
 		"assister_name"		"string"	// classname of assister
 		"assister_team"		"byte"		// team of assister
 		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
+		"weapon_index"	"short"	// Entindex of weapon
 		"stun_flags"	"short"	// victim's stun flags at the moment of death
 		"death_flags"	"short" //death flags.
 		"silent_kill"	"bool"
@@ -525,6 +526,7 @@
 		"attacker_name"		"string"	// classname of attacker
 		"attacker_team"		"byte"		// team of attacker
 		"weapon"	"string" 	// weapon name killer used
+		"weapon_index"	"short"	// Entindex of weapon
 		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
 		"damagebits"	"long"	// bits of type of damage
 		"customkill"	"short"	// type of custom kill
@@ -1591,6 +1593,14 @@
 	}
 
 	"strider_killed"
+	{
+	}
+	
+	"turret_hit_turret"
+	{
+	}
+	
+	"security_camera_detached"
 	{
 	}
 }

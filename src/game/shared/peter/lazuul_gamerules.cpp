@@ -12,6 +12,8 @@
 #include "trigger_area_capture.h"
 #include "iscorer.h"
 #include "peter/laz_player.h"
+#include "gamestats.h"
+#include "usermessages.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -1005,6 +1007,15 @@ bool CLazuul::ClientCommand(CBaseEntity * pEdict, const CCommand & args)
 		return true;
 
 	return false;
+}
+
+void CLazuul::MarkAchievement(IRecipientFilter & filter, char const * pchAchievementName)
+{
+	gamestats->Event_IncrementCountedStatistic(vec3_origin, pchAchievementName, 1.0f);
+
+	UserMessageBegin(filter, "AchievementMapEvent");
+	WRITE_STRING(pchAchievementName);
+	MessageEnd();
 }
 
 bool CLazuul::FAllowNPCs(void)
@@ -3769,6 +3780,7 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 		event->SetString("assister_name", pAssister ? assister_Name : NULL);
 		event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
 		event->SetString("weapon", killer_weapon_name);
+		event->SetInt("weapon_index", pInflictor ? pInflictor->entindex() : -1);
 		event->SetString("weapon_logclassname", killer_weapon_log_name);
 		event->SetInt("playerpenetratecount", info.GetPlayerPenetrationCount());
 		event->SetInt("damagebits", info.GetDamageType());
@@ -3911,6 +3923,7 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 			event->SetString("assister_name", pAssister ? assister_Name : NULL);
 			event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
 			event->SetString("weapon", killer_weapon_name);
+			event->SetInt("weapon_index", pInflictor ? pInflictor->entindex() : -1);
 			event->SetString("weapon_logclassname", killer_weapon_log_name);
 			event->SetInt("damagebits", info.GetDamageType());
 			event->SetInt("customkill", info.GetDamageCustom());

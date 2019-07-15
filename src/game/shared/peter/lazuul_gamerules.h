@@ -75,6 +75,9 @@ public:
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
+	// Game Achievements (server version)
+	virtual void MarkAchievement(IRecipientFilter& filter, char const *pchAchievementName);
+
 	// NPCs
 	virtual bool FAllowNPCs(void);
 

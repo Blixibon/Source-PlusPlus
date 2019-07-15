@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:
+// Purpose: 
 //
 // $NoKeywords: $
 //=============================================================================
@@ -21,6 +21,9 @@
 #include "steam/steam_api.h"
 #include "iachievementmgr.h"
 #include "fmtstr.h"
+#include "baseachievement.h"
+#include "clientmode_shared.h"
+#include "vgui_controls/AnimationController.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -30,13 +33,13 @@ using namespace vgui;
 #define ACHIEVEMENT_NOTIFICATION_DURATION 10.0f
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 
 DECLARE_HUDELEMENT_DEPTH( CAchievementNotificationPanel, 100 );
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 CAchievementNotificationPanel::CAchievementNotificationPanel( const char *pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "AchievementNotificationPanel" )
 {
@@ -51,45 +54,48 @@ CAchievementNotificationPanel::CAchievementNotificationPanel( const char *pEleme
 
 	m_pIcon->SetShouldScaleImage( true );
 
+	//SetAlpha(0);
+
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::Init()
 {
 	ListenForGameEvent( "achievement_event" );
+	ListenForGameEvent("achievement_earned_local");
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::ApplySchemeSettings( IScheme *pScheme )
 {
 	// load control settings...
 	LoadControlSettings( "resource/UI/AchievementNotification.res" );
-
+	
 	BaseClass::ApplySchemeSettings( pScheme );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
-
+	
 	// Set background color of various elements.  Need to do this in code, if we do it in res file it gets slammed by the
 	// scheme.  (Incl. label background: some products don't have label background colors set in their scheme and helpfully slam it to white.)
 	SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLabelHeading->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLabelTitle->SetBgColor( Color( 0, 0, 0, 0 ) );
-	m_pPanelBackground->SetBgColor( Color( 62,70,55, 200 ) );
+	//m_pPanelBackground->SetBgColor( Color( 62,70,55, 200 ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 {
@@ -105,16 +111,16 @@ void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 		{
 			// shouldn't ever get achievement progress if steam not running and user logged in, but check just in case
 			if ( !steamapicontext->SteamUserStats() )
-			{
+			{				
 				Msg( "Steam not running, achievement progress notification not displayed\n" );
 			}
-			else
+			else 
 			{
 				// use Steam to show achievement progress UI
 				steamapicontext->SteamUserStats()->IndicateAchievementProgress( pchName, iCur, iMax );
 			}
 		}
-		else
+		//else 
 		{
 			// on X360 we need to show our own achievement progress UI
 
@@ -141,6 +147,22 @@ void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 			AddNotification( pchName, g_pVGuiLocalize->Find( "#GameUI_Achievement_Progress" ), szText );
 		}
 	}
+	else if (0 == Q_strcmp(name, "achievement_earned_local"))
+	{
+		int id = event->GetInt("achievement");
+		CBaseAchievement *pAch = engine->GetAchievementMgr()->GetAchievementByID(id);
+
+		const char *pchName = pAch->GetName();
+		wchar_t szLocalizedName[256] = L"";
+
+		const wchar_t *pchLocalizedName = ACHIEVEMENT_LOCALIZED_NAME_FROM_STR(pchName);
+		Assert(pchLocalizedName);
+		if (!pchLocalizedName || !pchLocalizedName[0])
+			return;
+		Q_wcsncpy(szLocalizedName, pchLocalizedName, sizeof(szLocalizedName));
+
+		AddNotification(pchName, g_pVGuiLocalize->Find("#GameUI_Achievement_Awarded"), szLocalizedName);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -152,19 +174,21 @@ void CAchievementNotificationPanel::OnTick( void )
 	{
 		m_flHideTime = 0;
 		ShowNextNotification();
+		/*if (m_flHideTime == 0)
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("AchievmentNotifyHide");*/
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 bool CAchievementNotificationPanel::ShouldDraw( void )
 {
-	return ( ( m_flHideTime > 0 ) && ( m_flHideTime > gpGlobals->curtime ) && CHudElement::ShouldDraw() );
+	return ((m_flHideTime > 0) && (m_flHideTime > gpGlobals->curtime) && CHudElement::ShouldDraw());
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::AddNotification( const char *szIconBaseName, const wchar_t *pHeading, const wchar_t *pTitle )
 {
@@ -227,15 +251,18 @@ void CAchievementNotificationPanel::ShowNextNotification()
 	int iTextX = iIconX + iIconWidth + iSpacing;
 	// resize all the elements
 	SetXAndWide( m_pPanelBackground, iPanelX, iPanelWidth );
+	//SetXAndWide(this, iPanelX, iPanelWidth);
 	SetXAndWide( m_pIcon, iIconX, iIconWidth );
 	SetXAndWide( m_pLabelHeading, iTextX, iTextWidth );
 	SetXAndWide( m_pLabelTitle, iTextX, iTextWidth );
 
+	//g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("AchievmentNotifyShow");
+	
 	m_queueNotification.Remove( m_queueNotification.Head() );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::SetXAndWide( Panel *pPanel, int x, int wide )
 {
@@ -245,27 +272,28 @@ void CAchievementNotificationPanel::SetXAndWide( Panel *pPanel, int x, int wide 
 	pPanel->SetWide( wide );
 }
 
-CON_COMMAND_F( achievement_notification_test, "Test the hud notification UI", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY )
+CON_COMMAND_F( achievement_notification_test, "Test the hud notification UI", 0 )
 {
 	static int iCount=0;
-
+#if 0
 	CAchievementNotificationPanel *pPanel = GET_HUDELEMENT( CAchievementNotificationPanel );
 	if ( pPanel )
-	{
+	{		
 		pPanel->AddNotification( "HL2_KILL_ODESSAGUNSHIP", L"Achievement Progress", ( 0 == ( iCount % 2 ) ? L"Test Notification Message A (1/10)" :
 			L"Test Message B" ) );
 	}
 
-#if 0
+#else
+
 	IGameEvent *event = gameeventmanager->CreateEvent( "achievement_event" );
 	if ( event )
 	{
-		const char *szTestStr[] = { "TF_GET_HEADSHOTS", "TF_PLAY_GAME_EVERYMAP", "TF_PLAY_GAME_EVERYCLASS", "TF_GET_HEALPOINTS" };
+		const char *szTestStr[] = { "TF_GET_HEADSHOTS", "PORTAL_DETACH_ALL_CAMERAS", "EP1_KILL_ANTLIONS_WITHCARS", "HLX_KILL_ENEMIES_WITHPHYSICS" };
 		event->SetString( "achievement_name", szTestStr[iCount%ARRAYSIZE(szTestStr)] );
 		event->SetInt( "cur_val", ( iCount%9 ) + 1 );
 		event->SetInt( "max_val", 10 );
-		gameeventmanager->FireEvent( event );
-	}
+		gameeventmanager->FireEventClientSide( event );
+	}	
 #endif
 
 	iCount++;

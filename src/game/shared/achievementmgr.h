@@ -117,9 +117,9 @@ public:
 
 	void SetAchievementThink( CBaseAchievement *pAchievement, float flThinkTime );
 
-private:
-	void FireGameEvent( IGameEvent *event );
-	void OnKillEvent( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event );
+protected:
+	virtual void FireGameEvent( IGameEvent *event );
+	virtual void OnKillEvent( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event );
 	void ResetAchievement_Internal( CBaseAchievement *pAchievement );
 	void UpdateStateFromSteam_Internal();
 

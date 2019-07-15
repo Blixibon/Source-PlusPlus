@@ -552,6 +552,8 @@ void CWeaponSMG1::SecondaryAttack( void )
 	// Can blow up after a short delay (so have time to release mouse button)
 	m_flNextSecondaryAttack = gpGlobals->curtime + 1.0f;
 
+	m_iSecondaryAttacks++;
+
 #ifndef CLIENT_DLL
 	// Register a muzzleflash for the AI.
 	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );	

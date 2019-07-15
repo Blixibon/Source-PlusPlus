@@ -270,6 +270,8 @@ void CWeaponBugBait::PrimaryAttack( void )
 	m_flTimeWeaponIdle		= FLT_MAX;
 	m_flNextPrimaryAttack	= FLT_MAX;
 
+	m_iPrimaryAttacks++;
+
 #ifndef CLIENT_DLL
 	//m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
@@ -295,6 +297,8 @@ void CWeaponBugBait::SecondaryAttack( void )
 
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
 	m_flNextSecondaryAttack = gpGlobals->curtime + SequenceDuration();
+
+	m_iSecondaryAttacks++;
 
 #ifndef CLIENT_DLL
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );

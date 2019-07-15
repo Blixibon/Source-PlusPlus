@@ -627,6 +627,8 @@ void CWeaponCrossbow::PrimaryAttack( void )
 
 	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration( ACT_VM_PRIMARYATTACK ) );
 
+	m_iPrimaryAttacks++;
+
 #ifndef CLIENT_DLL
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
 	if ( pPlayer )

@@ -32,13 +32,37 @@ extern IVModelInfo* modelinfo;
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCoopBase, DT_WeaponCoopBase );
 
-BEGIN_NETWORK_TABLE( CWeaponCoopBase, DT_WeaponCoopBase )
+//-----------------------------------------------------------------------------
+// Purpose: Propagation data for weapons. Only sent when a player's holding it.
+//-----------------------------------------------------------------------------
+BEGIN_NETWORK_TABLE_NOBASE(CWeaponCoopBase, DT_WeaponCoopLocalData)
+#if !defined( CLIENT_DLL )
+SendPropInt(SENDINFO(m_iPrimaryAttacks)),
+SendPropInt(SENDINFO(m_iSecondaryAttacks)),
+#else
+RecvPropInt(RECVINFO(m_iPrimaryAttacks)),
+RecvPropInt(RECVINFO(m_iSecondaryAttacks)),
+#endif
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponCoopBase ) 
+BEGIN_NETWORK_TABLE( CWeaponCoopBase, DT_WeaponCoopBase )
+#ifndef CLIENT_DLL
+SendPropDataTable("CoopLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_WeaponCoopLocalData), SendProxy_SendLocalWeaponDataTable),
+#else
+RecvPropDataTable("CoopLocalWeaponData", 0, 0, &REFERENCE_RECV_TABLE(DT_WeaponCoopLocalData)),
+#endif
+END_NETWORK_TABLE()
+
+BEGIN_PREDICTION_DATA( CWeaponCoopBase )
+#ifdef CLIENT_DLL
+DEFINE_PRED_FIELD(m_iPrimaryAttacks, FIELD_INTEGER, FTYPEDESC_INSENDTABLE),
+DEFINE_PRED_FIELD(m_iSecondaryAttacks, FIELD_INTEGER, FTYPEDESC_INSENDTABLE),
+#endif
 END_PREDICTION_DATA()
 
 BEGIN_DATADESC( CWeaponCoopBase )
+DEFINE_FIELD(m_iPrimaryAttacks, FIELD_INTEGER),
+DEFINE_FIELD(m_iSecondaryAttacks, FIELD_INTEGER),
 END_DATADESC()
 
 //================================================================================
@@ -189,7 +213,7 @@ void CWeaponCoopBase::PrimaryAttack()
 
 	pPlayer->FireBullets( info );
 
-
+	m_iPrimaryAttacks++;
 
 	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{

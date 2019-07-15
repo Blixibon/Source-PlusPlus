@@ -34,6 +34,7 @@ $Project "Server (Lazuul)"
 		{
 			-$File "hl2\hl2_client.cpp"
 			-$File	"$SRCDIR\game\shared\hl2\achievements_hl2.cpp"
+			-$File	"$SRCDIR\game\shared\hl2\hl2_usermessages.cpp"
 
 			$Folder "Episodic"
 			{
@@ -64,6 +65,7 @@ $Project "Server (Lazuul)"
 			$File "peter\laz_player.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_player_shared.cpp"
 			$File "peter\laz_nav_mesh.cpp"
+			$File "peter\laz_usermessages.cpp"
 		}
 	}
 }

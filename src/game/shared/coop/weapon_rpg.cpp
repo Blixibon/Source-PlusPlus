@@ -1607,6 +1607,8 @@ void CWeaponRPG::PrimaryAttack( void )
 
 	pPlayer->DoMuzzleFlash();
 
+	m_iPrimaryAttacks++;
+
 	// player "shoot" animation
 	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 }

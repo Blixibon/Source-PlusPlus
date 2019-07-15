@@ -15,6 +15,7 @@
 #include "iachievementmgr.h"
 
 class CAchievementMgr;
+class CLazAchievementMgr;
 
 //
 // Base class for achievements
@@ -157,6 +158,9 @@ protected:
 	bool		m_bShowOnHUD;							// if set, the player wants this achievement pinned to the HUD
 
 	friend class CAchievementMgr;
+#ifdef HL2_LAZUL
+	friend class CLazAchievementMgr;
+#endif
 public:
 	DECLARE_DATADESC();
 };

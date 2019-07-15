@@ -1,0 +1,5 @@
+"unlitgeneric"
+{
+	"$baseTexture" "vgui\achievements/portal_hit_turret_with_turret"
+	 $ignorez 1
+}

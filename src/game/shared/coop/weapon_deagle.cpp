@@ -162,6 +162,8 @@ void CWeaponDeagle::PrimaryAttack( void )
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
 #endif
 
+	m_iPrimaryAttacks++;
+
 	WeaponSound( SINGLE );
 	pPlayer->DoMuzzleFlash();
 

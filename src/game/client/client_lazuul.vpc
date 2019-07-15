@@ -45,6 +45,7 @@ $Project "Client (Lazuul)"
 			$File "hud_basedeathnotice.cpp"
 			$File "peter\c_laz_player.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_player_shared.cpp"
+			$File "peter\achievements_lazul.cpp"
 		}
 
 		$Folder	"HL1 DLL"

@@ -561,6 +561,8 @@ void CWeaponShotgun::PrimaryAttack( void )
 		m_bNeedPump = true;
 	}
 
+	m_iPrimaryAttacks++;
+
 #ifndef CLIENT_DLL
 	//m_iPrimaryAttacks++;
 	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
@@ -631,7 +633,7 @@ void CWeaponShotgun::SecondaryAttack( void )
 		m_bNeedPump = true;
 	}
 
-	//m_iSecondaryAttacks++;
+	m_iPrimaryAttacks++;
 #ifndef CLIENT_DLL
 	gamestats->Event_WeaponFired( pPlayer, false, GetClassname() );
 #endif

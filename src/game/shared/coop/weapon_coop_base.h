@@ -78,6 +78,9 @@ public:
 
 	// Lazul
 	static acttable_t s_acttableDeagle[];
+	
+	CNetworkVar(int, m_iPrimaryAttacks);
+	CNetworkVar(int, m_iSecondaryAttacks);
 };
 
 #endif // WEAPON_COOP_BASE_H

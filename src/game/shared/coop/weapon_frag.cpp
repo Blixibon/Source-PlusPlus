@@ -282,6 +282,8 @@ void CWeaponFrag::SecondaryAttack( void )
 	m_flTimeWeaponIdle = FLT_MAX;
 	m_flNextSecondaryAttack	= FLT_MAX;
 
+	m_iPrimaryAttacks++;
+
 	// If I'm now out of ammo, switch away
 	if ( !HasPrimaryAmmo() )
 	{
@@ -317,6 +319,8 @@ void CWeaponFrag::PrimaryAttack( void )
 	// the player will hold the grenade.
 	m_flTimeWeaponIdle = FLT_MAX;
 	m_flNextPrimaryAttack = FLT_MAX;
+
+	m_iPrimaryAttacks++;
 
 	// If I'm now out of ammo, switch away
 	if ( !HasPrimaryAmmo() )

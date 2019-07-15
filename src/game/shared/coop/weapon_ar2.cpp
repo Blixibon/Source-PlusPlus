@@ -324,7 +324,7 @@ void CWeaponAR2::SecondaryAttack( void )
 	SendWeaponAnim( ACT_VM_FIDGET );
 	WeaponSound( SPECIAL1 );
 
-	//m_iSecondaryAttacks++;
+	m_iSecondaryAttacks++;
 	
 }
 

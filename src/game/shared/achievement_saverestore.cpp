@@ -7,7 +7,7 @@
 
 #include "cbase.h"
 
-#ifdef GAME_DLL 
+#if defined( GAME_DLL ) /*|| defined(HL2_LAZUL)*/
 
 #include "isaverestore.h"
 #include "saverestore_utlvector.h"
