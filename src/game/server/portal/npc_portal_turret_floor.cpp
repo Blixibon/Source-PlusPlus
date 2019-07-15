@@ -62,6 +62,8 @@ extern int ACT_FLOOR_TURRET_OPEN_IDLE;
 extern int ACT_FLOOR_TURRET_CLOSED_IDLE;
 extern int ACT_FLOOR_TURRET_FIRE;
 int ACT_FLOOR_TURRET_FIRE2;
+Activity ACT_FLOOR_TURRET_DIE;
+Activity ACT_FLOOR_TURRET_DIE_IDLE;
 
 
 const char *g_TalkNames[] = 
@@ -139,6 +141,7 @@ public:
 	virtual void	InactiveThink( void );
 	virtual void	SuppressThink( void );
 	virtual void	DisabledThink( void );
+	virtual void	PortalDieThink(void);
 	virtual void	HackFindEnemy( void );
 
 	virtual void	StartTouch( CBaseEntity *pOther );
@@ -209,6 +212,7 @@ BEGIN_DATADESC( CNPC_Portal_FloorTurret )
 	DEFINE_THINKFUNC( InactiveThink ),
 	DEFINE_THINKFUNC( SuppressThink ),
 	DEFINE_THINKFUNC( DisabledThink ),
+	DEFINE_THINKFUNC(PortalDieThink),
 
 	// Inputs
 	DEFINE_INPUTFUNC( FIELD_STRING, "FireBullet", InputFireBullet ),
@@ -239,6 +243,8 @@ void CNPC_Portal_FloorTurret::Precache( void )
 	BaseClass::Precache();
 
 	ADD_CUSTOM_ACTIVITY( CNPC_FloorTurret, ACT_FLOOR_TURRET_FIRE2 );
+	ADD_CUSTOM_ACTIVITY(CNPC_FloorTurret, ACT_FLOOR_TURRET_DIE);
+	ADD_CUSTOM_ACTIVITY(CNPC_FloorTurret, ACT_FLOOR_TURRET_DIE_IDLE);
 
 	m_sLaserHaloSprite = PrecacheModel( "sprites/redlaserglow.vmt" );
 	PrecacheModel("effects/redlaser1.vmt");
@@ -328,7 +334,7 @@ void CNPC_Portal_FloorTurret::UpdateOnRemove( void )
 //-----------------------------------------------------------------------------
 int CNPC_Portal_FloorTurret::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	if ( m_lifeState == LIFE_ALIVE && ( info.GetDamageType() & DMG_BULLET ) && !info.GetAttacker()->IsPlayer() )
+	if ( m_lifeState == LIFE_ALIVE && ( info.GetDamageType() & DMG_BULLET ) && IRelationType(info.GetAttacker()) == D_LI )
 	{
 		if ( gpGlobals->curtime > m_fNextTalk )
 		{
@@ -584,7 +590,7 @@ void CNPC_Portal_FloorTurret::SetEyeState( eyeState_t state )
 		m_hEyeGlow->SetAttachment( this, m_iEyeAttachment );
 	}
 
-	bool bNewState = ( m_iEyeState != state );
+	//bool bNewState = ( m_iEyeState != state );
 
 	m_iEyeState = state;
 
@@ -629,9 +635,6 @@ void CNPC_Portal_FloorTurret::SetEyeState( eyeState_t state )
 		m_hEyeGlow->SetColor( 255, 0, 0 );
 		m_hEyeGlow->SetScale( 0.1f, 3.0f );
 		m_hEyeGlow->SetBrightness( 0, 3.0f );
-
-		if ( bNewState )
-			m_nSkin = 1;
 		break;
 
 	case TURRET_EYE_DISABLED:
@@ -1151,7 +1154,7 @@ void CNPC_Portal_FloorTurret::TippedThink( void )
 			m_bActive		= false;
 			m_flLastSight	= 0;
 
-			SetActivity( (Activity) ACT_FLOOR_TURRET_CLOSED_IDLE );
+			SetActivity( (Activity) ACT_FLOOR_TURRET_DIE );
 
 			// Don't need to store last NPC anymore, because I've been knocked over
 			if ( m_hLastNPCToKickMe )
@@ -1168,8 +1171,8 @@ void CNPC_Portal_FloorTurret::TippedThink( void )
 				//SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER );
 
 				// Start thinking slowly to see if we're ever set upright somehow
-				SetThink( &CNPC_FloorTurret::InactiveThink );
-				SetNextThink( gpGlobals->curtime + 1.0f );
+				SetThink( &CNPC_Portal_FloorTurret::PortalDieThink );
+				SetNextThink( gpGlobals->curtime + 0.1f );
 				RopesOff();
 			}
 		}
@@ -1277,6 +1280,23 @@ void CNPC_Portal_FloorTurret::DisabledThink( void )
 		SetThink( NULL );
 	}
 
+}
+
+void CNPC_Portal_FloorTurret::PortalDieThink(void)
+{
+	if (IsActivityFinished())
+	{
+		SetActivity(ACT_FLOOR_TURRET_DIE_IDLE);
+
+		// Start thinking slowly to see if we're ever set upright somehow
+		SetThink(&CNPC_Portal_FloorTurret::InactiveThink);
+		SetNextThink(gpGlobals->curtime + 1.0f);
+	}
+	else
+	{
+		StudioFrameAdvance();
+		SetNextThink(gpGlobals->curtime + 0.2);
+	}
 }
 
 //-----------------------------------------------------------------------------

@@ -452,7 +452,12 @@ void CNPC_SecurityCamera::PlayerPenetratingVPhysics( void )
 
 bool CNPC_SecurityCamera::OnAttemptPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 {
-	return !m_bActive;
+	// Make it move
+	IPhysicsObject *pPhysics = VPhysicsGetObject();
+	if (pPhysics && pPhysics->IsMotionEnabled())
+		return true;
+
+	return false;
 }
 
 //-----------------------------------------------------------------------------
@@ -1156,7 +1161,7 @@ void PlayDismountSounds()
 	{
 		InstancedScriptedScene( pGlaDOS, CAMERA_DESTROYED_SCENE_1 );
 	}
-	else // iNumCamerasDetatched < SECURITY_CAMERA_TOTAL_TO_KNOCK_DOWN
+	else if ( iNumCamerasDetatched < SECURITY_CAMERA_TOTAL_TO_KNOCK_DOWN )
 	{
 		// Play different sounds based on progress towards security camera knockdown total.
 		switch ( iNumCamerasDetatched )
@@ -1176,6 +1181,27 @@ void PlayDismountSounds()
 			default:
 				InstancedScriptedScene( pGlaDOS, CAMERA_DESTROYED_SCENE_5 );
 				break;
+		}
+	}
+	else
+	{
+		switch (RandomInt(1, 4))
+		{
+		case 1:
+			InstancedScriptedScene(pGlaDOS, CAMERA_DESTROYED_SCENE_2);
+			break;
+
+		case 2:
+			InstancedScriptedScene(pGlaDOS, CAMERA_DESTROYED_SCENE_3);
+			break;
+
+		case 3:
+			InstancedScriptedScene(pGlaDOS, CAMERA_DESTROYED_SCENE_4);
+			break;
+
+		default:
+			InstancedScriptedScene(pGlaDOS, CAMERA_DESTROYED_SCENE_5);
+			break;
 		}
 	}
 }

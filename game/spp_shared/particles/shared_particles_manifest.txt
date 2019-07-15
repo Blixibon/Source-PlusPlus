@@ -17,4 +17,24 @@ particles_manifest
 	
 	"file"		"particles/hl2mmod_weaponeffects.pcf"
 	"file"		"!particles/hl2mmod_muzzleflashes.pcf"
+	
+	// HL2 Update
+	"file"		"particles/dd2.pcf"
+	"file" 		"particles/aux_fx.pcf"
+	"file"		"particles/iwojima.pcf"
+	"file"		"particles/mortar_fx.pcf"
+	"file"		"particles/waterdrips.pcf"
+     "file"		"particles/environmentals_smoke.pcf"
+	"file"		"particles/environmentals_dust.pcf"
+	"file"		"particles/environmentals_fog.pcf"
+	"file"		"particles/environmentals_fire.pcf"
+	"file"		"particles/environmentals_water.pcf"
+	"file"		"particles/environmentals_light.pcf"
+	"file"		"particles/gui.pcf"
+	"file"		"particles/npc_fx.pcf"
+	"file"		"particles/impact_debris.pcf"
+	"file"		"particles/explosions.pcf"
+	"file"		"particles/explosion.pcf"
+	"file"		"particles/first_person_fx.pcf"
+	"file"		"particles/misc.pcf"	
 }
