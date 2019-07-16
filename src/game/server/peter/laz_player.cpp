@@ -1743,6 +1743,19 @@ void CLaz_Player::State_Enter_ACTIVE()
 	RemoveFlag(FL_NOTARGET);
 	m_Local.m_iHideHUD = 0;
 	//PhysObjectWake();
+	if (GetPlayerSquad())
+	{
+		CAI_Squad *pSquad = GetPlayerSquad();
+		for (int i = 0; i < pSquad->NumMembers(); i++)
+		{
+			CNPC_PlayerFollower *pNPC = dynamic_cast<CNPC_PlayerFollower *> (pSquad->GetMember(i));
+			if (pNPC)
+			{
+				CAI_BaseNPC *pAlly[1] = { pNPC };
+				pNPC->TargetOrder(this, pAlly, 1);
+			}
+		}
+	}
 }
 
 
@@ -1989,7 +2002,7 @@ bool CLaz_Player::IsValidObserverTarget(CBaseEntity * target)
 			}
 
 			// Only spectate important npcs
-			if (bImportant)
+			if (!bImportant)
 				return false;
 
 			// Don't spectate sleeping npcs

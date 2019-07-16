@@ -575,7 +575,7 @@ void CNPC_PlayerCompanion::DoCustomSpeechAI( void )
 //-----------------------------------------------------------------------------
 void CNPC_PlayerCompanion::PredictPlayerPush()
 {
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer *pPlayer = GetBestPlayer();
 	if ( pPlayer && pPlayer->GetSmoothedVelocity().LengthSqr() >= Square(140))
 	{
 		Vector predictedPosition = pPlayer->WorldSpaceCenter() + pPlayer->GetSmoothedVelocity() * .4;

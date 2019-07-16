@@ -1185,7 +1185,7 @@ int CNPC_PlayerFollower::SelectScheduleRetrieveItem()
 		}
 		else
 		{
-			CBaseEntity *pBase = FindHealthItem(m_FollowBehavior.GetFollowTarget()->GetAbsOrigin(), Vector(120, 120, 120));
+			CBaseEntity *pBase = FindHealthItem(m_FollowBehavior.GetFollowTarget() ? m_FollowBehavior.GetFollowTarget()->GetAbsOrigin() : GetAbsOrigin(), Vector(120, 120, 120));
 			CItem *pItem = dynamic_cast<CItem *>(pBase);
 
 			if (pItem)
