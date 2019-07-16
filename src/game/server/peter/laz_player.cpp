@@ -25,6 +25,7 @@
 #include "world.h"
 #include "team_objectiveresource.h"
 #include "team_control_point_master.h"
+#include "npc_playerfollower.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1975,8 +1976,20 @@ bool CLaz_Player::IsValidObserverTarget(CBaseEntity * target)
 		if (target->IsNPC())
 		{
 			CAI_BaseNPC *pAI = target->MyNPCPointer();
+			bool bImportant = false;
+			if (pAI == m_hMinion.Get())
+				bImportant = true;
+			else if (pAI->ShowInDeathnotice())
+				bImportant = true;
+			else if (pAI->IsInPlayerSquad())
+			{
+				CNPC_PlayerFollower *pFollower = dynamic_cast<CNPC_PlayerFollower *> (pAI);
+				if (pFollower && pFollower->IsInThisPlayerSquad(this))
+					bImportant = true;
+			}
+
 			// Only spectate important npcs
-			if (!pAI->ShowInDeathnotice())
+			if (bImportant)
 				return false;
 
 			// Don't spectate sleeping npcs
@@ -2138,6 +2151,12 @@ void CLaz_Player::FindInitialObserverTarget(void)
 				}
 			}
 		}
+	}
+
+	if (m_hMinion.Get())
+	{
+		m_hObserverTarget = m_hMinion;
+		return;
 	}
 
 	// Find the nearest guy near myself
