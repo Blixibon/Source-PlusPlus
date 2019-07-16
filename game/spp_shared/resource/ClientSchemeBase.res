@@ -213,6 +213,11 @@ Scheme
 		ScrollBarSlider.NobFocusColor		"White"
 		ScrollBarSlider.NobDragColor		"White"
 		ScrollBarSlider.Inset				"3"
+		
+		// CHudMenu
+		"ItemColor"		"255 167 42 200"	// default 255 167 42 255
+		"MenuColor"		"233 208 173 255"
+		"MenuBoxBg"		"0 0 0 100"
 	}
 
 	//////////////////////// BITMAP FONT FILES /////////////////////////////

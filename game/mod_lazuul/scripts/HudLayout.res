@@ -383,6 +383,16 @@
 		"enabled" "1"
 		"wide"	 "640"
 		"tall"	 "480"
+		// SYNERGY
+		"OpenCloseTime"	"1"
+		"Blur"			"0"
+		"TextScane"		"1"
+		"TextFont"			"Default"	//	"MenuTextFont"
+		"ItemFont"			"Default"	//	"MenuItemFont"
+		"ItemFontPulsing"	"Default"	//	"MenuItemFontPulsing"
+		"MenuColor"		"MenuColor"
+		"MenuItemColor"	"ItemColor"
+		"MenuBoxColor"	"MenuBoxBg"
 	}
 
 	HudCloseCaption
