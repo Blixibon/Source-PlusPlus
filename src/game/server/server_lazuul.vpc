@@ -65,7 +65,9 @@ $Project "Server (Lazuul)"
 			$File "peter\laz_player.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_player_shared.cpp"
 			$File "peter\laz_nav_mesh.cpp"
-			$File "peter\laz_usermessages.cpp"
+			$File "$SRCDIR\game\shared\peter\laz_usermessages.cpp"
+			$File "$SRCDIR\game\shared\peter\laz_gamemovement.cpp"
+			$File "$SRCDIR\game\shared\peter\laz_gamemovement.h"
 		}
 	}
 }
