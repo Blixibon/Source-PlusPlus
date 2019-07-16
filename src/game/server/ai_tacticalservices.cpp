@@ -95,7 +95,7 @@ namespace AI_NAV
 	class CollectHidingSpotsFunctor
 	{
 	public:
-		CollectHidingSpotsFunctor(CBaseEntity *me, const Vector &origin, float range, int flags, Place place = UNDEFINED_PLACE) : m_origin(origin)
+		CollectHidingSpotsFunctor(CBaseEntity *me, const Vector &origin, const Vector &vThreat, float range, int flags, Place place = UNDEFINED_PLACE) : m_origin(origin), m_threat(vThreat)
 		{
 			m_me = me;
 			m_count = 0;
@@ -132,6 +132,24 @@ namespace AI_NAV
 					if ((spot->GetPosition() - m_origin).IsLengthGreaterThan(m_range))
 					{
 						continue;
+					}
+				}
+
+				if (m_threat != vec3_invalid)
+				{
+					trace_t tr;
+					Vector vecStart = spot->GetPosition() + m_me->GetViewOffset();
+					AI_TraceLOS(vecStart, m_threat, m_me, &tr);
+
+					if ((m_flags & HidingSpot::IN_COVER))
+					{
+						if (tr.fraction == 1.0)
+							continue;
+					}
+					else if (m_flags & (HidingSpot::GOOD_SNIPER_SPOT | HidingSpot::IDEAL_SNIPER_SPOT))
+					{
+						if (tr.fraction != 1.0)
+							continue;
 					}
 				}
 
@@ -205,6 +223,7 @@ namespace AI_NAV
 
 		CBaseEntity *m_me;
 		const Vector &m_origin;
+		const Vector &m_threat;
 		float m_range;
 
 		const Vector *m_hidingSpot[MAX_SPOTS];
@@ -222,7 +241,7 @@ namespace AI_NAV
 	* Don't pick a hiding spot that a Player is currently occupying.
 	* @todo Clean up this mess
 	*/
-	const Vector *FindNearbyHidingSpot(CBaseEntity *me, const Vector &pos, float maxRange, bool isSniper, bool useNearest)
+	const Vector *FindNearbyHidingSpot(CBaseEntity *me, const Vector &pos, const Vector &vThreat, float maxRange, bool isSniper, bool useNearest)
 	{
 		CNavArea *startArea = TheNavMesh->GetNearestNavArea(pos);
 		if (startArea == NULL)
@@ -231,7 +250,7 @@ namespace AI_NAV
 		// collect set of nearby hiding spots
 		if (isSniper)
 		{
-			CollectHidingSpotsFunctor collector(me, pos, maxRange, HidingSpot::IDEAL_SNIPER_SPOT);
+			CollectHidingSpotsFunctor collector(me, pos, vThreat, maxRange, HidingSpot::IDEAL_SNIPER_SPOT);
 			SearchSurroundingAreas(startArea, pos, collector, maxRange);
 
 			if (collector.m_count)
@@ -242,7 +261,7 @@ namespace AI_NAV
 			else
 			{
 				// no ideal sniping spots, look for "good" sniping spots
-				CollectHidingSpotsFunctor collector(me, pos, maxRange, HidingSpot::GOOD_SNIPER_SPOT);
+				CollectHidingSpotsFunctor collector(me, pos, vThreat, maxRange, HidingSpot::GOOD_SNIPER_SPOT);
 				SearchSurroundingAreas(startArea, pos, collector, maxRange);
 
 				if (collector.m_count)
@@ -256,7 +275,7 @@ namespace AI_NAV
 		}
 
 		// collect hiding spots with decent "cover"
-		CollectHidingSpotsFunctor collector(me, pos, maxRange, HidingSpot::IN_COVER);
+		CollectHidingSpotsFunctor collector(me, pos, vThreat, maxRange, HidingSpot::IN_COVER);
 		SearchSurroundingAreas(startArea, pos, collector, maxRange);
 
 		if (collector.m_count == 0)
@@ -264,7 +283,7 @@ namespace AI_NAV
 			// no hiding spots at all - if we're not a sniper, try to find a sniper spot to use instead
 			if (!isSniper)
 			{
-				return FindNearbyHidingSpot(me, pos, maxRange, true, useNearest);
+				return FindNearbyHidingSpot(me, pos, vThreat, maxRange, true, useNearest);
 			}
 
 			return NULL;
@@ -303,7 +322,7 @@ namespace AI_NAV
 		// collect set of nearby hiding spots
 		if (isSniper)
 		{
-			CollectHidingSpotsFunctor collector(me, me->GetAbsOrigin(), -1.0f, HidingSpot::IDEAL_SNIPER_SPOT, place);
+			CollectHidingSpotsFunctor collector(me, me->GetAbsOrigin(), vec3_invalid, -1.0f, HidingSpot::IDEAL_SNIPER_SPOT, place);
 			TheNavMesh->ForAllAreas(collector);
 
 			if (collector.m_count)
@@ -314,7 +333,7 @@ namespace AI_NAV
 			else
 			{
 				// no ideal sniping spots, look for "good" sniping spots
-				CollectHidingSpotsFunctor collector(me, me->GetAbsOrigin(), -1.0f, HidingSpot::GOOD_SNIPER_SPOT, place);
+				CollectHidingSpotsFunctor collector(me, me->GetAbsOrigin(), vec3_invalid, -1.0f, HidingSpot::GOOD_SNIPER_SPOT, place);
 				TheNavMesh->ForAllAreas(collector);
 
 				if (collector.m_count)
@@ -328,7 +347,7 @@ namespace AI_NAV
 		}
 
 		// collect hiding spots with decent "cover"
-		CollectHidingSpotsFunctor collector(me, me->GetAbsOrigin(), -1.0f, HidingSpot::IN_COVER, place);
+		CollectHidingSpotsFunctor collector(me, me->GetAbsOrigin(), vec3_invalid, -1.0f, HidingSpot::IN_COVER, place);
 		TheNavMesh->ForAllAreas(collector);
 
 		if (collector.m_count == 0)
@@ -338,6 +357,99 @@ namespace AI_NAV
 		int which = RandomInt(0, collector.m_count - 1);
 		return collector.m_hidingSpot[which];
 	}
+
+	const Vector *FindShootSpot(CAI_BaseNPC *pOuter, const Vector &threatPos, const Vector &threatEyePos, float minThreatDist, float maxThreatDist, float blockTime, FlankType_t eFlankType, const Vector &vecFlankRefPos, float flFlankParam)
+	{
+		if (!pOuter)
+			return nullptr;
+
+		CNavArea *startArea = pOuter->GetLastKnownArea();
+		if (startArea == NULL)
+			return NULL;
+
+		const unsigned int options = EXCLUDE_ELEVATORS;
+		const float flRange = 2048.f;
+
+		// collect set of nearby hiding spots
+		CollectHidingSpotsFunctor collector(pOuter, threatPos, threatEyePos, maxThreatDist, HidingSpot::IDEAL_SNIPER_SPOT);
+		SearchSurroundingAreas(startArea, pOuter->GetAbsOrigin(), collector, flRange, options, pOuter->GetTeamNumber());
+
+		if (collector.m_count)
+		{
+
+		}
+		else
+		{
+			// no ideal sniping spots, look for "good" sniping spots
+			CollectHidingSpotsFunctor collector(pOuter, threatPos, threatEyePos, maxThreatDist, HidingSpot::GOOD_SNIPER_SPOT);
+			SearchSurroundingAreas(startArea, pOuter->GetAbsOrigin(), collector, flRange, options, pOuter->GetTeamNumber());
+
+			if (!collector.m_count)
+			{
+				return nullptr;
+			}
+
+			// no sniping spots at all.. fall through and pick a normal hiding spot
+		}
+
+		for (int i = 0; i < collector.m_count; i++)
+		{
+			bool skip = false;
+			Vector nodeorigin = *collector.m_hidingSpot[i];
+
+			// See if the node satisfies the flanking criteria.
+			switch (eFlankType)
+			{
+			case FLANKTYPE_NONE:
+				break;
+
+			case FLANKTYPE_RADIUS:
+			{
+				Vector vecDist = nodeorigin - vecFlankRefPos;
+				if (vecDist.Length() < flFlankParam)
+				{
+					skip = true;
+				}
+
+				break;
+			}
+
+			case FLANKTYPE_ARC:
+			{
+				Vector vecEnemyToRef = vecFlankRefPos - threatPos;
+				VectorNormalize(vecEnemyToRef);
+
+				Vector vecEnemyToNode = nodeorigin - threatPos;
+				VectorNormalize(vecEnemyToNode);
+
+				float flDot = DotProduct(vecEnemyToRef, vecEnemyToNode);
+
+				if (RAD2DEG(acos(flDot)) < flFlankParam)
+				{
+					skip = true;
+				}
+
+				break;
+			}
+			}
+
+			// Don't accept climb nodes, and assume my nearest node isn't valid because
+			// we decided to make this check in the first place.  Keep moving
+			if (!skip)
+			{
+				if (pOuter->IsValidShootPosition(nodeorigin, nullptr, nullptr))
+				{
+					if (pOuter->TestShootPosition(nodeorigin, threatEyePos))
+					{
+						return collector.m_hidingSpot[i];
+					}
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
 
 
 	//--------------------------------------------------------------------------------------------------------------------
@@ -437,7 +549,18 @@ bool CAI_TacticalServices::FindLos(const Vector &threatPos, const Vector &threat
 											 blockTime, eFlankType, vecFlankRefPos, flFlankParam );
 	
 	if (node == NO_NODE)
+	{
+#ifdef USE_NAV_MESH
+		const Vector *pCover = AI_NAV::FindShootSpot(GetOuter(), threatPos, threatEyePos, minThreatDist, maxThreatDist, blockTime, eFlankType, vecFlankRefPos, flFlankParam);
+		if (pCover == nullptr)
+			return false;
+
+		*pResult = *pCover;
+		return true;
+#else
 		return false;
+#endif // USE_NAV_MESH
+	}
 
 	*pResult = GetNodePos( node );
 	return true;
@@ -496,7 +619,7 @@ bool CAI_TacticalServices::FindCoverPos( const Vector &vNearPos, const Vector &v
 	if (node == NO_NODE)
 	{
 #ifdef USE_NAV_MESH
-		const Vector *pCover = AI_NAV::FindNearbyHidingSpot(GetOuter(), vNearPos, flMaxDist, false, false);
+		const Vector *pCover = AI_NAV::FindNearbyHidingSpot(GetOuter(), vNearPos, vThreatEyePos, flMaxDist, false, true);
 		if (pCover == nullptr)
 			return false;
 
