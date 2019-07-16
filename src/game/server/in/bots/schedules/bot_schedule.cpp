@@ -326,9 +326,13 @@ void IBotSchedule::TaskStart()
 		case BTASK_MOVE_DESTINATION:
 		case BTASK_AIM:
 		case BTASK_CALL_FOR_BACKUP:
-		case BTASK_HUNT_ENEMY:
 		{
 			// We place them to not generate an assert
+			break;
+		}
+
+		case BTASK_HUNT_ENEMY:
+		{
 			break;
 		}
 
@@ -862,6 +866,8 @@ void IBotSchedule::TaskRun()
 				GetLocomotion()->DriveTo("Hunt Threat - Informer", memory->GetInformer(), PRIORITY_HIGH, tolerance);
 			}
 			else {
+				
+
 				GetLocomotion()->DriveTo("Hunt Threat", memory->GetEntity(), PRIORITY_HIGH, tolerance);
 			}
 

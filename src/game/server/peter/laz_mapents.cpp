@@ -316,6 +316,9 @@ void CLazTeamSpawn::InputRoundSpawn(inputdata_t& input)
 		GetTeam()->RemoveSpawnpoint(this);
 
 	int iNewTeam = TEAM_UNASSIGNED;
+	char cValue[8];
+	if (GetKeyValue("TeamNum", cValue, 8))
+		iNewTeam = atoi(cValue);
 
 	if (pMaster)
 	{

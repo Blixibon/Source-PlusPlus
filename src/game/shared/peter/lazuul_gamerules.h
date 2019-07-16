@@ -134,6 +134,9 @@ public:
 	virtual bool	RoundCleanupShouldIgnore(CBaseEntity* pEnt);
 	virtual bool	ShouldCreateEntity(const char* pszClassName);
 
+	// Setup spawn points for the current round before it starts
+	virtual void	SetupSpawnPointsForRound(void);
+
 	// Sets up g_pPlayerResource.
 	virtual void CreateStandardEntities();
 

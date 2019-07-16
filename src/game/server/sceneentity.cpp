@@ -3794,6 +3794,11 @@ CBaseEntity *CSceneEntity::FindNamedEntity( const char *name, CBaseEntity *pActo
 	if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
 	{
 		//entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+		if (gpGlobals->maxClients == 1)
+		{
+			entity = UTIL_GetLocalPlayer();
+		}
+		else
 		if (pActor)
 		{
 			if (pActor->IsNPC())

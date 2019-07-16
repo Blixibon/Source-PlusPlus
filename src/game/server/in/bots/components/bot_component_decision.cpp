@@ -551,6 +551,9 @@ bool CBotDecision::ShouldGrabWeapon(CBaseWeapon *pWeapon) const
 			return false;
 	}
 
+	if (!GetHost()->Weapon_CanUse(pWeapon))
+		return false;
+
 	if (!pWeapon->IsMeleeWeapon()) {
 		// We have little ammunition
 		// The weapon may not be better, but at least it has ammunition.
@@ -560,9 +563,6 @@ bool CBotDecision::ShouldGrabWeapon(CBaseWeapon *pWeapon) const
 		}
 	}
 
-	if (TheGameRules->FShouldSwitchWeapon(GetHost(), pWeapon))
-		return true;
-
 	// We are an player ally, we try not to take the weapons close to a human player
 	// TODO: Apply this even if we are on the enemy team with enemy human players. (Teamplay)
 	if (GetHost()->Classify() == CLASS_PLAYER_ALLY || GetHost()->Classify() == CLASS_PLAYER_ALLY_VITAL) {
@@ -570,7 +570,7 @@ bool CBotDecision::ShouldGrabWeapon(CBaseWeapon *pWeapon) const
 			return false;
 	}
 
-	return false;
+	return true;
 }
 
 //================================================================================
@@ -580,6 +580,9 @@ bool CBotDecision::ShouldSwitchToWeapon(CBaseWeapon *pWeapon) const
 {
 	if (pWeapon == NULL)
 		return false;
+
+	/*if (TheGameRules->FShouldSwitchWeapon(GetHost(), pWeapon))
+		return true;*/
 
 	return GetHost()->Weapon_CanSwitchTo(pWeapon);
 }

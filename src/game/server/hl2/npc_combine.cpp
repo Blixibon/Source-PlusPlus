@@ -1961,34 +1961,36 @@ int CNPC_Combine::SelectSchedule( void )
 		}
 	}
 
-	switch	( m_NPCState )
+	if (!ShouldDeferToFollowBehavior())
 	{
-	case NPC_STATE_IDLE:
+		switch (m_NPCState)
 		{
-			if ( m_bShouldPatrol )
+		case NPC_STATE_IDLE:
+		{
+			if (m_bShouldPatrol)
 				return SCHED_COMBINE_PATROL;
 		}
 		// NOTE: Fall through!
 
-	case NPC_STATE_ALERT:
+		case NPC_STATE_ALERT:
 		{
-			if( HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE) )
+			if (HasCondition(COND_LIGHT_DAMAGE) || HasCondition(COND_HEAVY_DAMAGE))
 			{
 				AI_EnemyInfo_t *pDanger = GetEnemies()->GetDangerMemory();
-				if( pDanger && FInViewCone(pDanger->vLastKnownLocation) && !BaseClass::FVisible(pDanger->vLastKnownLocation) )
+				if (pDanger && FInViewCone(pDanger->vLastKnownLocation) && !BaseClass::FVisible(pDanger->vLastKnownLocation))
 				{
 					// I've been hurt, I'm facing the danger, but I don't see it, so move from this position.
 					return SCHED_TAKE_COVER_FROM_ORIGIN;
 				}
 			}
 
-			if( HasCondition( COND_HEAR_COMBAT ) )
+			if (HasCondition(COND_HEAR_COMBAT))
 			{
 				CSound *pSound = GetBestSound();
 
-				if( pSound && pSound->IsSoundType( SOUND_COMBAT ) )
+				if (pSound && pSound->IsSoundType(SOUND_COMBAT))
 				{
-					if( m_pSquad && m_pSquad->GetSquadMemberNearestTo( pSound->GetSoundReactOrigin() ) == this && OccupyStrategySlot( SQUAD_SLOT_INVESTIGATE_SOUND ) )
+					if (m_pSquad && m_pSquad->GetSquadMemberNearestTo(pSound->GetSoundReactOrigin()) == this && OccupyStrategySlot(SQUAD_SLOT_INVESTIGATE_SOUND))
 					{
 						return SCHED_INVESTIGATE_SOUND;
 					}
@@ -1996,21 +1998,22 @@ int CNPC_Combine::SelectSchedule( void )
 			}
 
 			// Don't patrol if I'm in the middle of an assault, because I'll never return to the assault.
-			if ( !m_AssaultBehavior.HasAssaultCue() )
+			if (!m_AssaultBehavior.HasAssaultCue())
 			{
-				if( m_bShouldPatrol || HasCondition( COND_COMBINE_SHOULD_PATROL ) )
+				if (m_bShouldPatrol || HasCondition(COND_COMBINE_SHOULD_PATROL))
 					return SCHED_COMBINE_PATROL;
 			}
 		}
 		break;
 
-	case NPC_STATE_COMBAT:
+		case NPC_STATE_COMBAT:
 		{
 			int nSched = SelectCombatSchedule();
-			if ( nSched != SCHED_NONE )
+			if (nSched != SCHED_NONE)
 				return nSched;
 		}
 		break;
+		}
 	}
 
 	// no special cases here, call the base class

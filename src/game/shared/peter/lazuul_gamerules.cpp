@@ -3578,7 +3578,7 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 	}
 	else if (V_strcmp(killer_weapon_name, "airboat") == 0)
 	{
-		if (info.GetDamageType() & DMG_BULLET)
+		if (info.GetDamageType() & DMG_AIRBOAT)
 		{
 			killer_weapon_name = "helicopter";
 		}
@@ -3980,6 +3980,17 @@ bool CLazuul::ShouldCreateEntity(const char* pszClassName)
 		return false;
 
 	return BaseClass::ShouldCreateEntity(pszClassName);
+}
+
+void CLazuul::SetupSpawnPointsForRound(void)
+{
+	CBaseEntity *pLaz = gEntList.FindEntityByClassname(nullptr, "laz_gamerules");
+	CBaseEntity *pEnt = nullptr;
+	while ((pEnt = gEntList.FindEntityByClassname(pEnt, "info_player_teamspawn")) != nullptr)
+	{
+		variant_t var;
+		pEnt->AcceptInput("RoundSpawn", pLaz, pLaz, var, 0);
+	}
 }
 #endif
 
