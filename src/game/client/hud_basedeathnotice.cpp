@@ -416,7 +416,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent *event )
 		}
 	}
 
-	if ( bNPCDeath && !hud_deathnotice_npc.GetBool() )
+	if ( bNPCDeath && (!hud_deathnotice_npc.GetBool() || !event->GetBool("show_notice")))
 	{
 		// Ignore NPC deaths if the ConVar is set to false.
 		return;
@@ -572,7 +572,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent *event )
 			}
 		}
 
-		m_DeathNotices[iMsg].iKillerID = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) : event->GetInt( "attacker_index" );
+		m_DeathNotices[iMsg].iKillerID = /*bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "attacker" ) ) :*/ event->GetInt( "attacker_index" );
 		m_DeathNotices[iMsg].iWeaponID = event->GetInt( "weaponid" );
 		m_DeathNotices[iMsg].iVictimID = bPlayerDeath ? engine->GetPlayerForUserID( event->GetInt( "userid" ) ) : event->GetInt( "victim_index" );
 

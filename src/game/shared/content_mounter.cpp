@@ -626,6 +626,16 @@ namespace Mounter
 		if (pkvMounts)
 			MountSection(steamApps, filesystem, pkvMounts);
 
+		{
+			char chDownloads[MAX_PATH];
+			V_ComposeFileName(GetGameDir(), "downloads", chDownloads, MAX_PATH);
+			CUtlStringList paths;
+			paths.CopyAndAddToTail("game");
+			paths.CopyAndAddToTail("download");
+
+			AddSearchPaths(filesystem, chDownloads, PATH_ADD_TO_TAIL, paths);
+		}
+
 		filesystem->MarkPathIDByRequestOnly(PATHID_SHARED, true);
 		filesystem->MarkPathIDByRequestOnly("SCENES", true);
 

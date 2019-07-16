@@ -152,7 +152,7 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		const char *assister_name = NULL;
 		if ( iAssisterID > 0 )
 		{
-			if ( iAssisterID <= gpGlobals->maxClients )
+			if (IsPlayerIndex(iAssisterID))
 			{
 				assister_name = g_PR->GetPlayerName( iAssisterID );
 			}
@@ -171,7 +171,7 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 			// whether or not the assister is on the killers team or not. -danielmm8888
 			if ( iAssisterID > 0 )
 			{
-				m_DeathNotices[iDeathNoticeMsg].Assister.iTeam = (iAssisterID <= gpGlobals->maxClients ? g_PR->GetTeam( iAssisterID ) : assister_team);
+				m_DeathNotices[iDeathNoticeMsg].Assister.iTeam = (IsPlayerIndex(iAssisterID) ? g_PR->GetTeam( iAssisterID ) : assister_team);
 			}
 
 			char szKillerBuf[MAX_PLAYER_NAME_LENGTH];
@@ -324,8 +324,8 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		bool bDefense = ( FStrEq( "teamplay_capture_blocked", pszEventName ) || ( FStrEq( "teamplay_flag_event", pszEventName ) &&
 			TF_FLAGEVENT_DEFEND == event->GetInt( "eventtype" ) ) );
 
-		const char *szCaptureIcons[] = { "d_redcapture", "d_bluecapture", "d_greencapture", "d_yellowcapture" };
-		const char *szDefenseIcons[] = { "d_reddefend", "d_bluedefend", "d_greendefend", "d_yellowdefend" };
+		const char *szCaptureIcons[] = { "d_bluecapture", "d_redcapture" };
+		const char *szDefenseIcons[] = { "d_bluedefend", "d_reddefend" };
 		
 		int iTeam = m_DeathNotices[iDeathNoticeMsg].Killer.iTeam;
 		Assert( iTeam >= FIRST_GAME_TEAM );

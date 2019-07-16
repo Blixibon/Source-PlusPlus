@@ -533,6 +533,7 @@
 		"assister_index"	"short"		// entindex of assister
 		"assister_name"		"string"	// classname of assister
 		"assister_team"		"byte"		// team of assister
+		"show_notice"		"bool"	// show in deathnotice
 	}
 
 	"object_detonated"

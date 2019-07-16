@@ -3907,31 +3907,28 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 			bShowDeathNotice = true;
 	}
 
-	// are we allowed to make deathnotice on THIS npc?
-	if (bShowDeathNotice)
+	IGameEvent* event = gameeventmanager->CreateEvent("npc_death");
+
+	if (event)
 	{
-		IGameEvent* event = gameeventmanager->CreateEvent("npc_death");
+		event->SetInt("victim_index", pVictim->entindex());
+		event->SetString("victim_name", victim_Name);
+		event->SetInt("victim_team", pVictim->GetTeamNumber());
+		event->SetInt("attacker_index", killer_index);
+		event->SetString("attacker_name", pKiller ? killer_Name : NULL);
+		event->SetInt("attacker_team", pKiller ? pKiller->GetTeamNumber() : 0);
+		event->SetInt("assister_index", pAssister ? pAssister->entindex() : -1);
+		event->SetString("assister_name", pAssister ? assister_Name : NULL);
+		event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
+		event->SetString("weapon", killer_weapon_name);
+		event->SetInt("weapon_index", pInflictor ? pInflictor->entindex() : -1);
+		event->SetString("weapon_logclassname", killer_weapon_log_name);
+		event->SetInt("damagebits", info.GetDamageType());
+		event->SetInt("customkill", info.GetDamageCustom());
+		event->SetBool("show_notice", bShowDeathNotice); // are we allowed to make deathnotice on THIS npc?
+		event->SetInt("priority", 7);	// HLTV event priority, not transmitted
 
-		if (event)
-		{
-			event->SetInt("victim_index", pVictim->entindex());
-			event->SetString("victim_name", victim_Name);
-			event->SetInt("victim_team", pVictim->GetTeamNumber());
-			event->SetInt("attacker_index", killer_index);
-			event->SetString("attacker_name", pKiller ? killer_Name : NULL);
-			event->SetInt("attacker_team", pKiller ? pKiller->GetTeamNumber() : 0);
-			event->SetInt("assister_index", pAssister ? pAssister->entindex() : -1);
-			event->SetString("assister_name", pAssister ? assister_Name : NULL);
-			event->SetInt("assister_team", pAssister ? pAssister->GetTeamNumber() : 0);
-			event->SetString("weapon", killer_weapon_name);
-			event->SetInt("weapon_index", pInflictor ? pInflictor->entindex() : -1);
-			event->SetString("weapon_logclassname", killer_weapon_log_name);
-			event->SetInt("damagebits", info.GetDamageType());
-			event->SetInt("customkill", info.GetDamageCustom());
-			event->SetInt("priority", 7);	// HLTV event priority, not transmitted
-
-			gameeventmanager->FireEvent(event);
-		}
+		gameeventmanager->FireEvent(event);
 	}
 }
 
