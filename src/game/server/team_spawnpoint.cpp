@@ -75,6 +75,16 @@ void CTeamSpawnPoint::UpdateTeam()
 	}
 }
 
+void CTeamSpawnPoint::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	if (GetTeam())
+	{
+		GetTeam()->RemoveSpawnpoint(this);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

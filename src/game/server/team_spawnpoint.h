@@ -25,6 +25,7 @@ public:
 	void	Activate( void );
 	virtual bool	IsValid( CBasePlayer *pPlayer );
 	virtual void	UpdateTeam();
+	virtual void	UpdateOnRemove();
 
 	COutputEvent m_OnPlayerSpawn;
 
