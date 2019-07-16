@@ -420,8 +420,7 @@ bool CAI_BaseNPC::Event_Gibbed( const CTakeDamageInfo &info )
 	if ( gibbed )
 	{
 		// don't remove players!
-		UTIL_Remove( this );
-		SetThink( NULL ); //We're going away, so don't think anymore.
+		RemoveDeferred();
 	}
 	else
 	{

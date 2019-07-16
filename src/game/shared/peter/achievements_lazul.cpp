@@ -433,7 +433,7 @@ class CAchievementTFGetConsecutiveKillsNoDeaths : public CBaseAchievement
 
 	virtual bool IsActive()
 	{
-		if (!gpGlobals->maxClients <= 1)
+		if (gpGlobals->maxClients <= 1)
 			return false;
 
 		return CBaseAchievement::IsActive();
