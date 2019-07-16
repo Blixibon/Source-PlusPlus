@@ -7,6 +7,8 @@
 
 #include "bots\bot_manager.h"
 #include "players_system.h"
+#include "ai_basenpc.h"
+#include "ai_memory.h"
 
 #ifdef INSOURCE_DLL
 #include "in_gamerules.h"
@@ -983,6 +985,19 @@ bool CBotDecision::IsDangerousEnemy(CBaseEntity *pEnemy) const
 
 		return true;
 	}
+	else if (pEnemy->IsNPC())
+	{
+		CAI_BaseNPC *pAI = pEnemy->MyNPCPointer();
+		if (pAI->GetEnemies())
+		{
+			CAI_Enemies *pMem = pAI->GetEnemies();
+			AI_EnemyInfo_t *pInfo = pMem->Find(GetHost());
+			if (pInfo && !pInfo->bEludedMe)
+			{
+				return true;
+			}
+		}
+	}
 
 	// Each bot must implement its own criteria.
 	return false;
@@ -1287,6 +1302,9 @@ float CBotDecision::GetWeaponIdealRange(CBaseWeapon *pWeapon) const
 
 	if (pWeapon == NULL)
 		return -1.0f;
+
+	if (pWeapon->IsMeleeWeapon())
+		return 60.0f;
 
 #ifdef INSOURCE_DLL
 	return pWeapon->GetWeaponInfo().m_flIdealDistance;
