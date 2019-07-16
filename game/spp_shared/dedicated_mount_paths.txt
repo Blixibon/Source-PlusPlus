@@ -19,4 +19,5 @@
 	"587650"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Downfall"
 	"747250"		"C:\Program Files (x86)\Steam\steamapps\common\Half-Life 2 Year Long Alarm"
 	"235780"		"C:\Program Files (x86)\Steam\steamapps\common\MINERVA"
+	"290930"		"C:\Program Files (x86)\Steam\steamapps\common\half-life 2 update"
 }
