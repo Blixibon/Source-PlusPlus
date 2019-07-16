@@ -170,6 +170,7 @@ LINK_ENTITY_TO_CLASS(info_player_teamspawn, CLazTeamSpawn);
 CLazTeamSpawn::CLazTeamSpawn()
 {
 	gameeventmanager->AddListener(this, "teamplay_point_captured", true);
+	m_iDisabled = 0;
 }
 
 CLazTeamSpawn::~CLazTeamSpawn()
@@ -220,6 +221,32 @@ void CLazTeamSpawn::UpdateTeam()
 	{
 		team->AddSpawnpoint(this);
 	}
+}
+
+bool CLazTeamSpawn::IsValid(CBasePlayer * pPlayer)
+{
+	CBaseEntity *ent = NULL;
+	for (CEntitySphereQuery sphere(GetAbsOrigin(), 128); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+	{
+		// if ent is a client, don't spawn on 'em
+		CBaseEntity *plent = ent;
+		if (plent)
+		{
+			if (plent->IsPlayer())
+			{
+				CBasePlayer *pOther = ToBasePlayer(plent);
+				if (pOther->IsObserver())
+					continue;
+			}
+
+			if (plent->GetTeamNumber() == pPlayer->GetTeamNumber())
+				continue;
+
+			return false;
+		}
+	}
+
+	return m_iDisabled == 0;
 }
 
 //-----------------------------------------------------------------------------

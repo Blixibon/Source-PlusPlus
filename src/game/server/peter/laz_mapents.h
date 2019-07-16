@@ -61,6 +61,7 @@ public:
 
 	void Activate(void);
 	virtual void	UpdateTeam();
+	virtual bool	IsValid(CBasePlayer *pPlayer);
 
 	void InputRoundSpawn(inputdata_t& inputdata);
 	void UpdateOnRemove();
