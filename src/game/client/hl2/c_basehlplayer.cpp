@@ -342,12 +342,12 @@ void C_BaseHLPlayer::PerformClientSideObstacleAvoidance( float flFrameTime, CUse
 		//Don't run this code if the NPC is not moving UNLESS we are in stuck inside of them.
 		if ( !obj->IsMoving() && flDist > objectradius )
 			  continue;
-
+#ifndef HL2_LAZUL
 		if ( flDist > objectradius && obj->IsEffectActive( EF_NODRAW ) )
 		{
 			obj->RemoveEffects( EF_NODRAW );
 		}
-
+#endif
 		Vector vecNPCVelocity;
 		obj->EstimateAbsVelocity( vecNPCVelocity );
 		float flNPCSpeed = VectorNormalize( vecNPCVelocity );
@@ -424,10 +424,13 @@ void C_BaseHLPlayer::PerformClientSideObstacleAvoidance( float flFrameTime, CUse
 				fwd = currentdir.Dot( -vecNPCForward );
 				rt = rightdir.Dot( -vecNPCForward );
 
-				if ( flDist < objectradius )
+#ifndef HL2_LAZUL
+				if (flDist < objectradius)
 				{
-					obj->AddEffects( EF_NODRAW );
+					obj->AddEffects(EF_NODRAW);
 				}
+#endif // !HL2_LAZUL
+
 
 				//Msg( "PUSH AWAY FACE fwd=%f, rt=%f\n", fwd, rt );
 
@@ -444,10 +447,13 @@ void C_BaseHLPlayer::PerformClientSideObstacleAvoidance( float flFrameTime, CUse
 				fwd = currentdir.Dot( vMoveDir );
 				rt = rightdir.Dot( vMoveDir );
 
-				if ( flDist < objectradius )
+#ifndef HL2_LAZUL
+				if (flDist < objectradius)
 				{
-					obj->AddEffects( EF_NODRAW );
+					obj->AddEffects(EF_NODRAW);
 				}
+#endif // !HL2_LAZUL
+
 
 				//Msg( "PUSH ALONG fwd=%f, rt=%f\n", fwd, rt );
 
@@ -475,10 +481,13 @@ void C_BaseHLPlayer::PerformClientSideObstacleAvoidance( float flFrameTime, CUse
 			fwd = currentdir.Dot( -vMoveDir );
 			rt = rightdir.Dot( -vMoveDir );
 
-			if ( flDist < objectradius )
+#ifndef HL2_LAZUL
+			if (flDist < objectradius)
 			{
-				obj->AddEffects( EF_NODRAW );
+				obj->AddEffects(EF_NODRAW);
 			}
+#endif // !HL2_LAZUL
+
 
 			//Msg( "PUSH THROUGH fwd=%f, rt=%f\n", fwd, rt );
 
