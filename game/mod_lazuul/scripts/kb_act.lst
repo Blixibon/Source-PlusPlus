@@ -34,6 +34,7 @@
 "+voicerecord"			"#Valve_Use_Voice_Communication"
 "messagemode"			"#Valve_Chat_Message"
 "messagemode2"			"#Valve_Team_Message"
+"voice_menu_1"			"#Synergy_VoiceMenu_0"
 "blank"			"=========================="
 "blank"			"#Valve_Miscellaneous_Title"
 "blank"			"=========================="

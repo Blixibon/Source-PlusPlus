@@ -23,6 +23,7 @@ $Project "Client (Lazuul)"
 	$Folder "Source Files"
 	{
 		-$File	"$SRCDIR\game\shared\achievements_hlx.cpp"
+		$File	"voice_menu.cpp"
 
 		$Folder "HL2 DLL"
 		{
