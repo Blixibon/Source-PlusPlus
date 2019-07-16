@@ -415,6 +415,9 @@ void CPropCombineBall::Spawn( void )
 	m_bStruckEntity = false;
 	m_bWeaponLaunched = false;
 
+	if (GetOwnerEntity())
+		ChangeTeam(GetOwnerEntity()->GetTeamNumber());
+
 	m_flNextDamageTime = gpGlobals->curtime;
 }
 
@@ -869,6 +872,7 @@ void CPropCombineBall::SetPlayerLaunched( CBasePlayer *pOwner )
 	// Now we own this ball
 	SetOwnerEntity( pOwner );
 	SetWeaponLaunched( false );
+	ChangeTeam(pOwner->GetTeamNumber());
 
 	if( VPhysicsGetObject() )
 	{
@@ -948,6 +952,27 @@ void CPropCombineBall::StopLoopingSounds()
 		controller.SoundDestroy( m_pHoldingSound );
 		m_pHoldingSound = NULL;
 	}
+}
+
+unsigned int CPropCombineBall::PhysicsSolidMaskForEntity(void) const
+{
+	unsigned int uMask = BaseClass::PhysicsSolidMaskForEntity();
+#ifdef HL2_LAZUL
+	switch (GetTeamNumber())
+	{
+	case TF_TEAM_RED:
+		uMask |= CONTENTS_COMBINETEAM;
+		break;
+
+	case TF_TEAM_BLUE:
+		uMask |= CONTENTS_REDTEAM;
+		break;
+	default:
+		uMask |= CONTENTS_COMBINETEAM | CONTENTS_REBELTEAM;
+		break;
+	}
+#endif
+	return uMask;
 }
 
 

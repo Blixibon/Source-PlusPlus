@@ -10,6 +10,7 @@
 #endif
 
 #include "shareddefs.h"
+#include "hl2_shareddefs.h"
 #include "mp_shareddefs.h"
 
 // Using MAP_DEBUG mode?
@@ -45,6 +46,9 @@ const char *ConstructTeamParticle( const char *pszFormat, int iTeam, bool bDeath
 
 #define CONTENTS_COMBINETEAM	CONTENTS_TEAM1
 #define CONTENTS_REBELTEAM	CONTENTS_TEAM2
+
+#define CONTENTS_REDTEAM	CONTENTS_REBELTEAM
+#define CONTENTS_BLUETEAM	CONTENTS_COMBINETEAM
 			
 // Team roles
 enum 
@@ -951,7 +955,7 @@ enum
 
 enum
 {
-	TF_COLLISIONGROUP_GRENADES = LAST_SHARED_COLLISION_GROUP,
+	TF_COLLISIONGROUP_GRENADES = HL2COLLISION_GROUP_COMBINE_BALL_NPC + 1,
 	TFCOLLISION_GROUP_OBJECT,
 	TFCOLLISION_GROUP_OBJECT_SOLIDTOPLAYERMOVEMENT,
 	TFCOLLISION_GROUP_COMBATOBJECT,

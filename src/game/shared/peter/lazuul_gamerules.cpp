@@ -979,7 +979,8 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 		pPlayer->GiveNamedItem("weapon_pistol");
 		pPlayer->GiveNamedItem("weapon_smg1");
 		pPlayer->GiveNamedItem("weapon_frag");
-		pPlayer->GiveNamedItem("weapon_physcannon");
+		if (!pPlayer->IsBot())
+			pPlayer->GiveNamedItem("weapon_physcannon");
 
 		const char* szDefaultWeaponName = engine->GetClientConVarValue(engine->IndexOfEdict(pPlayer->edict()), "cl_defaultweapon");
 
@@ -991,7 +992,7 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 		}
 		else
 		{
-			pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_physcannon"));
+			pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_smg1"));
 		}
 	}
 }

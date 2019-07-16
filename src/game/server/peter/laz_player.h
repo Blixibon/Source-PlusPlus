@@ -113,6 +113,8 @@ public:
 		m_iszSuitVoice = AllocPooledString(pchSuit);
 	}
 
+	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
+
 	void		SetFootsteps(const char *);
 
 	virtual void PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);

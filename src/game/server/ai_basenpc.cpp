@@ -1077,8 +1077,25 @@ void CAI_BaseNPC::DoRadiusDamage( const CTakeDamageInfo &info, const Vector &vec
 // Set the contents types that are solid by default to all NPCs
 //-----------------------------------------------------------------------------
 unsigned int CAI_BaseNPC::PhysicsSolidMaskForEntity( void ) const 
-{ 
-	return MASK_NPCSOLID;
+{
+	unsigned int uMask = 0;
+#ifdef HL2_LAZUL
+	switch (GetTeamNumber())
+	{
+	case TF_TEAM_RED:
+		uMask = CONTENTS_COMBINETEAM;
+		break;
+
+	case TF_TEAM_BLUE:
+		uMask = CONTENTS_REDTEAM;
+		break;
+	default:
+		uMask = CONTENTS_COMBINETEAM | CONTENTS_REBELTEAM;
+		break;
+	}
+#endif
+
+	return MASK_NPCSOLID | uMask;
 }
 
 
@@ -13155,6 +13172,32 @@ bool CAI_BaseNPC::IsFirmlyOnGround(void)
 		return false;
 
 	return true;
+}
+
+bool CAI_BaseNPC::ShouldCollide(int collisionGroup, int contentsMask) const
+{
+	if (g_pGameRules->IsMultiplayer())
+	{
+		if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
+			collisionGroup == HL2COLLISION_GROUP_COMBINE_BALL ||
+			collisionGroup == HL2COLLISION_GROUP_COMBINE_BALL_NPC)
+		{
+			switch (GetTeamNumber())
+			{
+			case TF_TEAM_RED:
+				if (!(contentsMask & CONTENTS_REBELTEAM))
+					return false;
+				break;
+
+			case TF_TEAM_BLUE:
+				if (!(contentsMask & CONTENTS_COMBINETEAM))
+					return false;
+				break;
+			}
+		}
+	}
+
+	return BaseClass::ShouldCollide(collisionGroup, contentsMask);
 }
 
 //-----------------------------------------------------------------------------

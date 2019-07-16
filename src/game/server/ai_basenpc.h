@@ -528,6 +528,7 @@ public:
 	virtual void		UpdateOnRemove( void );
 
 	virtual bool		IsFirmlyOnGround(void);
+	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
 
 	virtual int			UpdateTransmitState();
 

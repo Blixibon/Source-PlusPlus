@@ -3,6 +3,9 @@
 #include "choreoevent.h"
 #include "cam_thirdperson.h"
 #include "in_buttons.h"
+#include "c_ai_basenpc.h"
+#include "c_team.h"
+#include "collisionutils.h"
 
 static Vector TF_TAUNTCAM_HULL_MIN(-9.0f, -9.0f, -9.0f);
 static Vector TF_TAUNTCAM_HULL_MAX(9.0f, 9.0f, 9.0f);
@@ -231,6 +234,264 @@ void C_Laz_Player::UpdateOnRemove()
 	BaseClass::UpdateOnRemove();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Try to steer away from any players and objects we might interpenetrate
+//-----------------------------------------------------------------------------
+#define TF_AVOID_MAX_RADIUS_SQR		5184.0f			// Based on player extents and max buildable extents.
+#define TF_OO_AVOID_MAX_RADIUS_SQR	0.00019f
+
+ConVar tf_max_separation_force("tf_max_separation_force", "256", FCVAR_DEVELOPMENTONLY);
+
+extern ConVar cl_forwardspeed;
+extern ConVar cl_backspeed;
+extern ConVar cl_sidespeed;
+
+void C_Laz_Player::AvoidPlayers(CUserCmd *pCmd)
+{
+	// Don't test if the player doesn't exist or is dead.
+	if (IsAlive() == false)
+		return;
+
+	C_Team *pTeam = (C_Team *)GetTeam();
+	if (!pTeam)
+		return;
+
+	// Up vector.
+	static Vector vecUp(0.0f, 0.0f, 1.0f);
+
+	Vector vecTFPlayerCenter = GetAbsOrigin();
+	Vector vecTFPlayerMin = GetPlayerMins();
+	Vector vecTFPlayerMax = GetPlayerMaxs();
+	float flZHeight = vecTFPlayerMax.z - vecTFPlayerMin.z;
+	vecTFPlayerCenter.z += 0.5f * flZHeight;
+	VectorAdd(vecTFPlayerMin, vecTFPlayerCenter, vecTFPlayerMin);
+	VectorAdd(vecTFPlayerMax, vecTFPlayerCenter, vecTFPlayerMax);
+
+	// Find an intersecting player or object.
+	int nAvoidPlayerCount = 0;
+	C_Laz_Player *pAvoidPlayerList[MAX_PLAYERS];
+
+	C_Laz_Player *pIntersectPlayer = NULL;
+	//C_AI_BaseNPC *pIntersectObject = NULL;
+	float flAvoidRadius = 0.0f;
+
+	Vector vecAvoidCenter, vecAvoidMin, vecAvoidMax;
+	for (int i = 0; i < pTeam->GetNumPlayers(); ++i)
+	{
+		C_Laz_Player *pAvoidPlayer = static_cast<C_Laz_Player *>(pTeam->GetPlayer(i));
+		if (pAvoidPlayer == NULL)
+			continue;
+		// Is the avoid player me?
+		if (pAvoidPlayer == this)
+			continue;
+
+		// Save as list to check against for objects.
+		pAvoidPlayerList[nAvoidPlayerCount] = pAvoidPlayer;
+		++nAvoidPlayerCount;
+
+		// Check to see if the avoid player is dormant.
+		if (pAvoidPlayer->IsDormant())
+			continue;
+
+		// Is the avoid player solid?
+		if (pAvoidPlayer->IsSolidFlagSet(FSOLID_NOT_SOLID))
+			continue;
+
+		vecAvoidCenter = pAvoidPlayer->GetAbsOrigin();
+		vecAvoidMin = pAvoidPlayer->GetPlayerMins();
+		vecAvoidMax = pAvoidPlayer->GetPlayerMaxs();
+		flZHeight = vecAvoidMax.z - vecAvoidMin.z;
+		vecAvoidCenter.z += 0.5f * flZHeight;
+		VectorAdd(vecAvoidMin, vecAvoidCenter, vecAvoidMin);
+		VectorAdd(vecAvoidMax, vecAvoidCenter, vecAvoidMax);
+
+		if (IsBoxIntersectingBox(vecTFPlayerMin, vecTFPlayerMax, vecAvoidMin, vecAvoidMax))
+		{
+			// Need to avoid this player.
+			if (!pIntersectPlayer)
+			{
+				pIntersectPlayer = pAvoidPlayer;
+				break;
+			}
+		}
+	}
+#if 0
+	// We didn't find a player - look for objects to avoid.
+	if (!pIntersectPlayer)
+	{
+		for (int iPlayer = 0; iPlayer < nAvoidPlayerCount; ++iPlayer)
+		{
+			// Stop when we found an intersecting object.
+			if (pIntersectObject)
+				break;
+
+
+			for (int iObject = 0; iObject < pTeam->GetNumNPCs(); ++iObject)
+			{
+				C_AI_BaseNPC *pAvoidObject = pTeam->GetNPC(iObject);
+				if (!pAvoidObject)
+					continue;
+
+				// Check to see if the object is dormant.
+				if (pAvoidObject->IsDormant())
+					continue;
+
+				// Is the object solid.
+				if (pAvoidObject->IsSolidFlagSet(FSOLID_NOT_SOLID))
+					continue;
+
+				// If we shouldn't avoid it, see if we intersect it.
+				//if (pAvoidObject->ShouldPlayersAvoid())
+				{
+					vecAvoidCenter = pAvoidObject->WorldSpaceCenter();
+					vecAvoidMin = pAvoidObject->WorldAlignMins();
+					vecAvoidMax = pAvoidObject->WorldAlignMaxs();
+					VectorAdd(vecAvoidMin, vecAvoidCenter, vecAvoidMin);
+					VectorAdd(vecAvoidMax, vecAvoidCenter, vecAvoidMax);
+
+					if (IsBoxIntersectingBox(vecTFPlayerMin, vecTFPlayerMax, vecAvoidMin, vecAvoidMax))
+					{
+						// Need to avoid this object.
+						pIntersectObject = pAvoidObject;
+						break;
+					}
+				}
+			}
+		}
+	}
+#endif
+	// Anything to avoid?
+	if (!pIntersectPlayer /*&& !pIntersectObject*/)
+	{
+		return;
+	}
+
+	// Calculate the push strength and direction.
+	Vector vecDelta;
+
+	// Avoid a player - they have precedence.
+	if (pIntersectPlayer)
+	{
+		VectorSubtract(pIntersectPlayer->WorldSpaceCenter(), vecTFPlayerCenter, vecDelta);
+
+		Vector vRad = pIntersectPlayer->WorldAlignMaxs() - pIntersectPlayer->WorldAlignMins();
+		vRad.z = 0;
+
+		flAvoidRadius = vRad.Length();
+	}
+	// Avoid a object.
+	/*else
+	{
+		VectorSubtract(pIntersectObject->WorldSpaceCenter(), vecTFPlayerCenter, vecDelta);
+
+		Vector vRad = pIntersectObject->WorldAlignMaxs() - pIntersectObject->WorldAlignMins();
+		vRad.z = 0;
+
+		flAvoidRadius = vRad.Length();
+	}*/
+
+	float flPushStrength = RemapValClamped(vecDelta.Length(), flAvoidRadius, 0, 0, tf_max_separation_force.GetInt()); //flPushScale;
+
+	//Msg( "PushScale = %f\n", flPushStrength );
+
+	// Check to see if we have enough push strength to make a difference.
+	if (flPushStrength < 0.01f)
+		return;
+
+	Vector vecPush;
+	if (GetAbsVelocity().Length2DSqr() > 0.1f)
+	{
+		Vector vecVelocity = GetAbsVelocity();
+		vecVelocity.z = 0.0f;
+		CrossProduct(vecUp, vecVelocity, vecPush);
+		VectorNormalize(vecPush);
+	}
+	else
+	{
+		// We are not moving, but we're still intersecting.
+		QAngle angView = pCmd->viewangles;
+		angView.x = 0.0f;
+		AngleVectors(angView, NULL, &vecPush, NULL);
+	}
+
+	// Move away from the other player/object.
+	Vector vecSeparationVelocity;
+	if (vecDelta.Dot(vecPush) < 0)
+	{
+		vecSeparationVelocity = vecPush * flPushStrength;
+	}
+	else
+	{
+		vecSeparationVelocity = vecPush * -flPushStrength;
+	}
+
+	// Don't allow the max push speed to be greater than the max player speed.
+	float flMaxPlayerSpeed = MaxSpeed();
+	float flCropFraction = 1.33333333f;
+
+	if ((GetFlags() & FL_DUCKING) && (GetGroundEntity() != NULL))
+	{
+		flMaxPlayerSpeed *= flCropFraction;
+	}
+
+	float flMaxPlayerSpeedSqr = flMaxPlayerSpeed * flMaxPlayerSpeed;
+
+	if (vecSeparationVelocity.LengthSqr() > flMaxPlayerSpeedSqr)
+	{
+		vecSeparationVelocity.NormalizeInPlace();
+		VectorScale(vecSeparationVelocity, flMaxPlayerSpeed, vecSeparationVelocity);
+	}
+
+	QAngle vAngles = pCmd->viewangles;
+	vAngles.x = 0;
+	Vector currentdir;
+	Vector rightdir;
+
+	AngleVectors(vAngles, &currentdir, &rightdir, NULL);
+
+	Vector vDirection = vecSeparationVelocity;
+
+	VectorNormalize(vDirection);
+
+	float fwd = currentdir.Dot(vDirection);
+	float rt = rightdir.Dot(vDirection);
+
+	float forward = fwd * flPushStrength;
+	float side = rt * flPushStrength;
+
+	//Msg( "fwd: %f - rt: %f - forward: %f - side: %f\n", fwd, rt, forward, side );
+
+	pCmd->forwardmove += forward;
+	pCmd->sidemove += side;
+
+	// Clamp the move to within legal limits, preserving direction. This is a little
+	// complicated because we have different limits for forward, back, and side
+
+	//Msg( "PRECLAMP: forwardmove=%f, sidemove=%f\n", pCmd->forwardmove, pCmd->sidemove );
+
+	float flForwardScale = 1.0f;
+	if (pCmd->forwardmove > fabs(cl_forwardspeed.GetFloat()))
+	{
+		flForwardScale = fabs(cl_forwardspeed.GetFloat()) / pCmd->forwardmove;
+	}
+	else if (pCmd->forwardmove < -fabs(cl_backspeed.GetFloat()))
+	{
+		flForwardScale = fabs(cl_backspeed.GetFloat()) / fabs(pCmd->forwardmove);
+	}
+
+	float flSideScale = 1.0f;
+	if (fabs(pCmd->sidemove) > fabs(cl_sidespeed.GetFloat()))
+	{
+		flSideScale = fabs(cl_sidespeed.GetFloat()) / fabs(pCmd->sidemove);
+	}
+
+	float flScale = min(flForwardScale, flSideScale);
+	pCmd->forwardmove *= flScale;
+	pCmd->sidemove *= flScale;
+
+	//Msg( "Pforwardmove=%f, sidemove=%f\n", pCmd->forwardmove, pCmd->sidemove );
+}
+
 bool C_Laz_Player::CreateMove(float flInputSampleTime, CUserCmd * pCmd)
 {
 	static QAngle angMoveAngle(0.0f, 0.0f, 0.0f);
@@ -256,7 +517,9 @@ bool C_Laz_Player::CreateMove(float flInputSampleTime, CUserCmd * pCmd)
 
 	BaseClass::CreateMove(flInputSampleTime, pCmd);
 
-	//AvoidPlayers(pCmd);
+	Vector2D vMove(pCmd->forwardmove, pCmd->sidemove);
+	if (vMove.IsLengthLessThan(HL2_WALK_SPEED))
+		AvoidPlayers(pCmd);
 
 	return bNoTaunt;
 }

@@ -320,4 +320,29 @@ void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface
 	EmitSound(filter, entindex(), ep);
 }
 
+bool CLaz_Player::ShouldCollide(int collisionGroup, int contentsMask) const
+{
+	if (g_pGameRules->IsMultiplayer())
+	{
+		if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
+			/*collisionGroup == COLLISION_GROUP_NPC ||*/
+			collisionGroup == HL2COLLISION_GROUP_COMBINE_BALL ||
+			collisionGroup == HL2COLLISION_GROUP_COMBINE_BALL_NPC)
+		{
+			switch (GetTeamNumber())
+			{
+			case TF_TEAM_RED:
+				if (!(contentsMask & CONTENTS_REBELTEAM))
+					return false;
+				break;
 
+			case TF_TEAM_BLUE:
+				if (!(contentsMask & CONTENTS_COMBINETEAM))
+					return false;
+				break;
+			}
+		}
+	}
+
+	return BaseClass::ShouldCollide(collisionGroup, contentsMask);
+}

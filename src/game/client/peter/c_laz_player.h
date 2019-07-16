@@ -26,6 +26,8 @@ public:
 	//int		GetHideBits();
 	void		UpdateOnRemove();
 
+	void AvoidPlayers(CUserCmd * pCmd);
+
 	virtual bool CreateMove(float flInputSampleTime, CUserCmd *pCmd);
 
 	// Shadows
@@ -34,6 +36,8 @@ public:
 	virtual void GetRenderBounds(Vector& theMins, Vector& theMaxs);
 	virtual bool GetShadowCastDirection(Vector *pDirection, ShadowType_t shadowType) const;
 	virtual bool ShouldReceiveProjectedTextures(int flags);
+
+	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
 
 	virtual void PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
 	void	PrecacheFootStepSounds(void);

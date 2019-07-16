@@ -61,9 +61,51 @@ unsigned int C_AI_BaseNPC::PhysicsSolidMaskForEntity( void ) const
 	// This allows ragdolls to move through npcclip brushes
 	if ( !IsRagdoll() )
 	{
-		return MASK_NPCSOLID; 
+		unsigned int uMask = 0;
+#ifdef HL2_LAZUL
+		switch (GetTeamNumber())
+		{
+		case TF_TEAM_RED:
+			uMask = CONTENTS_COMBINETEAM;
+			break;
+		case TF_TEAM_BLUE:
+			uMask = CONTENTS_REDTEAM;
+			break;
+		default:
+			uMask = CONTENTS_COMBINETEAM | CONTENTS_REBELTEAM;
+			break;
+		}
+#endif
+
+		return MASK_NPCSOLID | uMask;
 	}
 	return MASK_SOLID;
+}
+
+bool C_AI_BaseNPC::ShouldCollide(int collisionGroup, int contentsMask) const
+{
+	if (g_pGameRules->IsMultiplayer())
+	{
+		if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
+			collisionGroup == HL2COLLISION_GROUP_COMBINE_BALL ||
+			collisionGroup == HL2COLLISION_GROUP_COMBINE_BALL_NPC)
+		{
+			switch (GetTeamNumber())
+			{
+			case TF_TEAM_RED:
+				if (!(contentsMask & CONTENTS_REBELTEAM))
+					return false;
+				break;
+
+			case TF_TEAM_BLUE:
+				if (!(contentsMask & CONTENTS_COMBINETEAM))
+					return false;
+				break;
+			}
+		}
+	}
+
+	return BaseClass::ShouldCollide(collisionGroup, contentsMask);
 }
 
 

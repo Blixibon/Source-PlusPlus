@@ -24,6 +24,7 @@ public:
 
 	C_AI_BaseNPC();
 	virtual unsigned int	PhysicsSolidMaskForEntity( void ) const;
+	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
 	virtual bool			IsNPC( void ) { return true; }
 	bool					IsMoving( void ){ return m_bIsMoving; }
 	bool					ShouldAvoidObstacle( void ){ return m_bPerformAvoidance; }
