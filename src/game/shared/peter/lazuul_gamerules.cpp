@@ -14,6 +14,7 @@
 #include "peter/laz_player.h"
 #include "gamestats.h"
 #include "usermessages.h"
+#include "voice_gamemgr.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -245,6 +246,31 @@ void CLazuulProxy::Activate()
 
 	LazuulRules()->SetAllowedModes(m_bModeAllowed);
 }
+
+class CVoiceGameMgrHelper : public IVoiceGameMgrHelper
+{
+public:
+	virtual bool		CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker, bool &bProximity)
+	{
+		// Dead players can only be heard by other dead team mates but only if a match is in progress
+		if (LazuulRules()->State_Get() != GR_STATE_TEAM_WIN && LazuulRules()->State_Get() != GR_STATE_GAME_OVER)
+		{
+			if (pTalker->IsAlive() == false)
+			{
+				if (pListener->IsAlive() == false)
+					return (pListener->InSameTeam(pTalker));
+
+				return false;
+			}
+
+			bProximity = true;
+		}
+
+		return true;
+	}
+};
+CVoiceGameMgrHelper g_VoiceGameMgrHelper;
+IVoiceGameMgrHelper *g_pVoiceGameMgrHelper = &g_VoiceGameMgrHelper;
 #endif
 
 // NOTE: the indices here must match TEAM_TERRORIST, TEAM_CT, TEAM_SPECTATOR, etc.
@@ -1008,6 +1034,84 @@ bool CLazuul::ClientCommand(CBaseEntity * pEdict, const CCommand & args)
 		return true;
 
 	return false;
+}
+
+const char * CLazuul::GetChatFormat(bool bTeamOnly, CBasePlayer * pPlayer)
+{
+	if (!pPlayer)  // dedicated server output
+	{
+		return NULL;
+	}
+
+	CLaz_Player *pLazPlayer = ToLazuulPlayer(pPlayer);
+
+	const char *pszFormat = NULL;
+
+	// team only
+	if (bTeamOnly == true)
+	{
+		if (pLazPlayer->GetTeamNumber() == TEAM_SPECTATOR)
+		{
+			pszFormat = "LAZ_Chat_Spec";
+		}
+		else
+		{
+			if (pLazPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN)
+			{
+				pszFormat = "LAZ_Chat_Team_Dead";
+			}
+			else
+			{
+				const char *chatLocation = GetChatLocation(bTeamOnly, pPlayer);
+				if (chatLocation && *chatLocation)
+				{
+					pszFormat = "LAZ_Chat_Team_Loc";
+				}
+				else
+				{
+					pszFormat = "LAZ_Chat_Team";
+				}
+			}
+		}
+	}
+	/*else if ( pTFPlayer->m_bIsPlayerADev )
+	{
+		if ( pTFPlayer->GetTeamNumber() == TEAM_SPECTATOR )
+		{
+			pszFormat = "LAZ_Chat_DevSpec";
+		}
+		else
+		{
+			if (pTFPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN)
+			{
+				pszFormat = "LAZ_Chat_DevDead";
+			}
+			else
+			{
+				pszFormat = "LAZ_Chat_Dev";
+			}
+		}
+	}*/
+	else
+	{
+		if (pLazPlayer->GetTeamNumber() == TEAM_SPECTATOR)
+		{
+			pszFormat = "LAZ_Chat_AllSpec";
+		}
+		else
+		{
+			if (pLazPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN)
+			{
+				pszFormat = "LAZ_Chat_AllDead";
+			}
+			else
+			{
+				pszFormat = "LAZ_Chat_All";
+			}
+		}
+	}
+
+	return pszFormat;
 }
 
 void CLazuul::MarkAchievement(IRecipientFilter & filter, char const * pchAchievementName)

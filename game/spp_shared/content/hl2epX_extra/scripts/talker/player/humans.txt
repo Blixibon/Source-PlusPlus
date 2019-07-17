@@ -246,17 +246,17 @@ rule PlayerDeadPlayerAnswer
 
 // TLK_PLAYER_HELP
 
-response PlayerResponseHelp
+response CitizenPlayerResponseHelp
 {
-	scene		"scenes/player/$gender01/help01.vcd"		delay 0 weight 3
-	scene		"scenes/player/$gender01/help02.vcd"		delay 0
-	scene		"scenes/player/$gender01/help03.vcd"		delay 0
+	scene	"scenes/player/$gender01/help01.vcd"
+	scene	"scenes/player/$gender01/help02.vcd"
+	scene	"scenes/player/$gender01/help03.vcd"
 }
 
 rule PlayerHelp
 {
 	criteria	ConceptPlayerHelp IsPlayer IsPlayerVoiceCitizen
-	response	PlayerResponseHelp
+	response	CitizenPlayerResponseHelp
 }
 
 // TLK_PLAYER_THANKS

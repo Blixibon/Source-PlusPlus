@@ -23,6 +23,7 @@ $Project "Client (Lazuul)"
 	$Folder "Source Files"
 	{
 		-$File	"$SRCDIR\game\shared\achievements_hlx.cpp"
+		-$File	"hud_chat.cpp"
 		$File	"voice_menu.cpp"
 
 		$Folder "HL2 DLL"
@@ -51,6 +52,8 @@ $Project "Client (Lazuul)"
 			$File "$SRCDIR\game\shared\peter\laz_usermessages.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.h"
+			$File "peter\laz_hud_chat.cpp"
+			$File "peter\laz_hud_chat.h"
 		}
 
 		$Folder	"HL1 DLL"

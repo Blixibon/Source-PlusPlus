@@ -241,7 +241,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 
 	extern bool		g_fGameOver;
 
-#if !(defined( HL2MP ) || defined( PORTAL_MP ))
+#if !(defined( HL2MP ) || defined( PORTAL_MP ) || defined(HL2_LAZUL))
 	class CVoiceGameMgrHelper : public IVoiceGameMgrHelper
 	{
 	public:

@@ -75,6 +75,8 @@ public:
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
+	virtual const char *GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer);
+
 	// Game Achievements (server version)
 	virtual void MarkAchievement(IRecipientFilter& filter, char const *pchAchievementName);
 

@@ -11,6 +11,11 @@
 		
 		"hl2epX_extra"
 		{
+			"path_id"
+			{
+				"scenes"	"1"
+			}
+		
 			vpk		"Enhanced Upscaled Eyes"
 			vpk		mod_soldier_neworange
 		}
