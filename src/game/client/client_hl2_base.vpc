@@ -65,6 +65,7 @@ $Project
 			$File	"hl2\c_info_teleporter_countdown.cpp"
 			$File	"hl2\c_npc_antlionguard.cpp"
 			$File	"hl2\c_npc_combinegunship.cpp"
+			$File	"hl2\c_npc_hydra.cpp"
 			$File	"hl2\c_npc_manhack.cpp"
 			$File	"hl2\c_npc_rollermine.cpp"
 			$File	"hl2\c_plasma_beam_node.cpp"

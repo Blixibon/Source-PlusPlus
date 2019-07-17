@@ -1,0 +1,14 @@
+"VertexLitGeneric"
+{
+	$basetexture "models/hydra/bodysplit"
+	$model 1
+	$phong 1
+	$lightwarptexture "models/hydra/gradient"
+	$translucent 1
+	$additive 1
+	$color 7 4 9
+	$allowdiffusemodulation 1
+$DiffuseExp"1.0"
+$phongboost 6
+$phongfresnelranges "[.1 5 10]"
+}

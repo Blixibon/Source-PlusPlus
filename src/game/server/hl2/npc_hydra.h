@@ -65,6 +65,8 @@ class CNPC_Hydra : public CAI_BaseNPC
 public:
 	CNPC_Hydra()
 	{
+		m_numHydraBones = 0;
+		m_maxPossibleLength = 1;
 	}
 
 	void		Spawn( void );
@@ -74,10 +76,15 @@ public:
 	Class_T		Classify( void );
 
 	void		RunAI( void );
+	virtual void		NPCThink(void);
 
 	float		MaxYawSpeed( void );
 	int			TranslateSchedule( int scheduleType );
 	int			SelectSchedule( void );
+
+	void		AlertSound(void);
+	void		IdleSound();
+	void		PainSound(const CTakeDamageInfo &info);
 
 	void		PrescheduleThink( void );
 
@@ -85,6 +92,11 @@ public:
 
 	void		StartTask( const Task_t *pTask );
 	void		RunTask( const Task_t *pTask );
+
+	virtual	void GetSkeleton(CStudioHdr *pStudioHdr, Vector pos[], Quaternion q[], int boneMask);
+
+	void			CalcBoneChain(Vector pos[], const Vector chain[]);
+	void			CalcBoneAngles(const Vector pos[], Quaternion q[]);
 
 #define			CHAIN_LINKS 32
 
@@ -107,6 +119,15 @@ public:
 	float		m_idealLength;
 	float		m_idealSegmentLength;
 
+	CUtlVector<Vector> m_vecPos;	// current animation
+
+	int				m_numHydraBones;
+	CUtlVector<float> m_boneLength;
+
+	float			m_maxPossibleLength;
+
+	bool			m_bNewChain;
+
 	Vector		TestPosition( float t );
 
 	void		CalcGoalForces( void );
@@ -122,6 +143,8 @@ public:
 	void		Stab( CBaseEntity *pHitEntity, const Vector &vecSpeed, trace_t &ptr );
 	void		Kick( CBaseEntity *pHitEntity, const Vector &vecContact, const Vector &vecSpeed );
 	void		Splash( const Vector &vecSplashPos );
+
+	void		NotifyImpaleDetach(void);
 
 	// float		FreeNeckLength( void );
 
@@ -172,6 +195,8 @@ public:
 	DEFINE_CUSTOM_AI;
 
 private:
+
+	bool m_bSpike;
 };
 
 //-----------------------------------------------------------------------------

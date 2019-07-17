@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	// Original shader: addtexture
+	"$basetexture" "models/hydra/brain"
+	"$additive" 1
+	"$model" 1
+	$selfillum 1
+}

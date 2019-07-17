@@ -27,10 +27,40 @@ public:
 					C_NPC_Hydra();
 	virtual			~C_NPC_Hydra();
 
+	virtual void GetRenderBounds(Vector &theMins, Vector &theMaxs)
+	{
+		BaseClass::GetRenderBounds(theMins, theMaxs);
+		Vector VecWorldMins, VecWorldMaxs;
+
+		// We really care about the tongue tip. The altitude is not really relevant.
+		VectorMin(theMins, m_vecTentacleMins, VecWorldMins);
+		VectorMax(theMaxs, m_vecTentacleMaxs, VecWorldMaxs);
+
+		// Extend our bounding box downwards the length of the tongue
+		//theMins -= Vector(0, 0, m_flAltitude);
+
+		theMins = VecWorldMins;
+		theMaxs = VecWorldMaxs;
+	}
+
+	// Purpose: Initialize absmin & absmax to the appropriate box
+	virtual void ComputeWorldSpaceSurroundingBox(Vector *pVecWorldMins, Vector *pVecWorldMaxs)
+	{
+		// Extend our bounding box downwards the length of the tongue
+		CollisionProp()->WorldSpaceAABB(pVecWorldMins, pVecWorldMaxs);
+
+		// We really care about the tongue tip. The altitude is not really relevant.
+		VectorMin(*pVecWorldMins, m_vecTentacleMins, *pVecWorldMins);
+		VectorMax(*pVecWorldMaxs, m_vecTentacleMaxs, *pVecWorldMaxs);
+
+		//		pVecWorldMins->z -= m_flAltitude;
+	}
+
 	// model specific
 	virtual	void	OnLatchInterpolatedVariables( int flags );
 	virtual bool	SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime );
 	virtual	void	StandardBlendingRules( Vector pos[], Quaternion q[], float currentTime, int boneMask );
+	void			StandardBlendingRules(CStudioHdr *pStudioHdr, Vector pos[], Quaternion q[], float currentTime, int boneMask);
 
 	void			CalcBoneChain( Vector pos[], const Vector chain[] );
 	void			CalcBoneAngles( const Vector pos[], Quaternion q[] );
@@ -62,6 +92,9 @@ public:
 
 private:
 	C_NPC_Hydra( const C_NPC_Hydra & ); // not defined, not accessible
+
+	Vector m_vecTentacleMins;
+	Vector m_vecTentacleMaxs;
 };
 
 IMPLEMENT_CLIENTCLASS_DT(C_NPC_Hydra, DT_NPC_Hydra, CNPC_Hydra)
@@ -142,63 +175,71 @@ void C_NPC_Hydra::ResetLatched()
 bool C_NPC_Hydra::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime )
 {
 	return BaseClass::SetupBones( pBoneToWorldOut, nMaxBones, boneMask, currentTime );
+	
 }
 
 
 void  C_NPC_Hydra::StandardBlendingRules( Vector pos[], Quaternion q[], float currentTime, int boneMask )
 {
-	VPROF( "C_NPC_Hydra::StandardBlendingRules" );
+	StandardBlendingRules(GetModelPtr(), pos, q, currentTime, boneMask);
+}
 
-	studiohdr_t *hdr = GetModelPtr();
-	if ( !hdr )
+void C_NPC_Hydra::StandardBlendingRules(CStudioHdr *hdr, Vector pos[], Quaternion q[], float currentTime, int boneMask)
+{
+	VPROF("C_NPC_Hydra::StandardBlendingRules");
+
+	const studiohdr_t *rhdr = hdr->GetRenderHdr();
+	if (!rhdr)
 	{
 		return;
 	}
+
+	BaseClass::StandardBlendingRules(hdr, pos, q, currentTime, boneMask);
 
 	int i;
 
 	// check for changing model memory requirements
 	bool bNewlyInited = false;
-	if (m_numHydraBones != hdr->numbones)
+	if (m_numHydraBones != rhdr->numbones)
 	{
-		m_numHydraBones = hdr->numbones;
+		m_numHydraBones = rhdr->numbones;
 
 		// build root animation
-		float	poseparam[MAXSTUDIOPOSEPARAM];
+		/*float	poseparam[MAXSTUDIOPOSEPARAM];
 		for (i = 0; i < hdr->GetNumPoseParameters(); i++)
 		{
 			poseparam[i] = 0;
 		}
-		CalcPose( hdr, NULL, pos, q, 0.0f, 0.0f, poseparam, BONE_USED_BY_ANYTHING );
+		CalcPose(hdr, NULL, pos, q, 0.0f, 0.0f, poseparam, BONE_USED_BY_ANYTHING, 1.0f, currentTime);*/
 
 		// allocate arrays
 		if (m_boneLength)
 		{
 			delete[] m_boneLength;
 		}
-		m_boneLength = new float [m_numHydraBones];
+		m_boneLength = new float[m_numHydraBones];
 
 		if (m_vecPos)
 		{
 			delete[] m_vecPos;
 		}
-		m_vecPos = new Vector [m_numHydraBones];
-		
+		m_vecPos = new Vector[m_numHydraBones];
+
 		if (m_iv_vecPos)
 		{
 			delete m_iv_vecPos;
 		}
 		m_iv_vecPos = new CInterpolatedVar< Vector >[m_numHydraBones];
-		for ( i = 0; i < m_numHydraBones; i++ )
+		for (i = 0; i < m_numHydraBones; i++)
 		{
-			m_iv_vecPos[ i ].Setup( &m_vecPos[ i ], LATCH_SIMULATION_VAR | EXCLUDE_AUTO_LATCH | EXCLUDE_AUTO_INTERPOLATE );
+			m_iv_vecPos[i].Setup(&m_vecPos[i], LATCH_SIMULATION_VAR | EXCLUDE_AUTO_LATCH | EXCLUDE_AUTO_INTERPOLATE);
 		}
 
 		// calc models bone lengths
 		m_maxPossibleLength = 0;
-		for (i = 0; i < m_numHydraBones-1; i++)
+		for (i = 0; i < m_numHydraBones - 1; i++)
 		{
-			m_boneLength[i] = (pos[i+1] - pos[i]).Length();
+			m_boneLength[i] = (pos[i + 1] - pos[i]).Length();
 			m_maxPossibleLength += m_boneLength[i];
 		}
 		m_boneLength[i] = 0.0f;
@@ -209,15 +250,15 @@ void  C_NPC_Hydra::StandardBlendingRules( Vector pos[], Quaternion q[], float cu
 	// calc new bone setup if networked.
 	if (m_bNewChain)
 	{
-		CalcBoneChain( m_vecPos, m_vecChain );
+		CalcBoneChain(m_vecPos, m_vecChain);
 		for (i = 0; i < m_numHydraBones; i++)
 		{
-		//	debugoverlay->AddLineOverlay( m_vecPos[i], m_vecPos[i<m_numHydraBones-1?i+1:m_numHydraBones-1], 0, 255, 0, false, 0.1 );
+			//	debugoverlay->AddLineOverlay( m_vecPos[i], m_vecPos[i<m_numHydraBones-1?i+1:m_numHydraBones-1], 0, 255, 0, false, 0.1 );
 			m_vecPos[i] = m_vecPos[i] - GetAbsOrigin();
 
-			if ( m_fLatchFlags & LATCH_SIMULATION_VAR )
+			if (m_fLatchFlags & LATCH_SIMULATION_VAR)
 			{
-				m_iv_vecPos[i].NoteChanged( currentTime, true );
+				m_iv_vecPos[i].NoteChanged(currentTime, true);
 			}
 		}
 		m_bNewChain = false;
@@ -233,21 +274,30 @@ void  C_NPC_Hydra::StandardBlendingRules( Vector pos[], Quaternion q[], float cu
 		}
 	}
 
+	m_vecTentacleMaxs = m_vecTentacleMins = vec3_origin;
+	Vector theMins, theMaxs;
+
 	for (i = 0; i < m_numHydraBones; i++)
 	{
-		m_iv_vecPos[i].Interpolate( currentTime );
-		pos[ i ] = m_vecPos[ i ]; 
+		m_iv_vecPos[i].Interpolate(currentTime);
+		pos[i] = m_vecPos[i];
+		theMins = theMaxs = m_vecPos[i];
+		// We really care about the tongue tip. The altitude is not really relevant.
+		VectorMin(theMins, m_vecTentacleMins, m_vecTentacleMins);
+		VectorMax(theMaxs, m_vecTentacleMaxs, m_vecTentacleMaxs);
 	}
 
+	
+
 	// calculate bone angles
-	CalcBoneAngles( pos, q );
+	CalcBoneAngles(pos, q);
 
 	// rotate the last bone of the hydra 90 degrees since it's oriented differently than the others
 	Quaternion qTmp;
-	AngleQuaternion( QAngle( 0, -90, 0) , qTmp );
-	QuaternionMult( q[m_numHydraBones - 1], qTmp, q[m_numHydraBones - 1] );
-}
+	AngleQuaternion(QAngle(0, -90, 0), qTmp);
+	QuaternionMult(q[m_numHydraBones - 1], qTmp, q[m_numHydraBones - 1]);
 
+}
 
 
 //-----------------------------------------------------------------------------

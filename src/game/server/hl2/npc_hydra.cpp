@@ -16,6 +16,8 @@
 #include "vcollide_parse.h"
 #include "ragdoll_shared.h"
 #include "physics_prop_ragdoll.h"
+#include "ai_sentence.h"
+#include "bone_setup.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -154,6 +156,12 @@ BEGIN_DATADESC( CNPC_Hydra )
 	DEFINE_FIELD( m_flTaskEndTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_flLengthTime,			FIELD_TIME ),
 	DEFINE_FIELD( m_bStabbedEntity,		FIELD_BOOLEAN ),
+	DEFINE_FIELD(m_bNewChain, FIELD_BOOLEAN),
+	DEFINE_FIELD(m_numHydraBones, FIELD_INTEGER),
+	DEFINE_FIELD(m_maxPossibleLength, FIELD_FLOAT),
+	DEFINE_UTLVECTOR(m_vecPos, FIELD_VECTOR),
+	DEFINE_UTLVECTOR(m_boneLength, FIELD_FLOAT),
+
 
 END_DATADESC()
 
@@ -173,22 +181,22 @@ END_DATADESC()
 
 //-------------------------------------
 
-static ConVar	sv_hydraLength( "hydra_length", "100", FCVAR_ARCHIVE, "Hydra Length" );
-static ConVar	sv_hydraSlack( "hydra_slack", "200", FCVAR_ARCHIVE, "Hydra Slack" );
+static ConVar	sv_hydraLength( "hydra_length", "100", FCVAR_CHEAT, "Hydra Length" );
+static ConVar	sv_hydraSlack( "hydra_slack", "200", FCVAR_CHEAT, "Hydra Slack" );
 
-static ConVar	sv_hydraSegmentLength( "hydra_segment_length", "30", FCVAR_ARCHIVE, "Hydra Slack" );
+static ConVar	sv_hydraSegmentLength( "hydra_segment_length", "30", FCVAR_CHEAT, "Hydra Slack" );
 
-static ConVar	sv_hydraTest( "hydra_test", "1", FCVAR_ARCHIVE, "Hydra Slack" );
+static ConVar	sv_hydraTest( "hydra_test", "1", FCVAR_CHEAT, "Hydra Slack" );
 
-static ConVar	sv_hydraBendTension( "hydra_bend_tension", "0.4", FCVAR_ARCHIVE, "Hydra Slack" );
-static ConVar	sv_hydraBendDelta( "hydra_bend_delta", "50", FCVAR_ARCHIVE, "Hydra Slack" );
+static ConVar	sv_hydraBendTension( "hydra_bend_tension", "1", FCVAR_CHEAT, "Hydra Slack" );
+static ConVar	sv_hydraBendDelta( "hydra_bend_delta", "50", FCVAR_CHEAT, "Hydra Slack" );
 
-static ConVar	sv_hydraGoalTension( "hydra_goal_tension", "0.5", FCVAR_ARCHIVE, "Hydra Slack" );
-static ConVar	sv_hydraGoalDelta( "hydra_goal_delta", "400", FCVAR_ARCHIVE, "Hydra Slack" );
+static ConVar	sv_hydraGoalTension( "hydra_goal_tension", "5", FCVAR_CHEAT, "Hydra Slack" );
+static ConVar	sv_hydraGoalDelta( "hydra_goal_delta", "400", FCVAR_CHEAT, "Hydra Slack" );
 
-static ConVar	sv_hydraMomentum( "hydra_momentum", "0.5", FCVAR_ARCHIVE, "Hydra Slack" );
+static ConVar	sv_hydraMomentum( "hydra_momentum", "0.1", FCVAR_CHEAT, "Hydra Slack" );
 
-static ConVar	sv_hydraTestSpike( "sv_hydraTestSpike", "1", 0, "Hydra Test impaling code" );
+static ConVar	sv_hydraTestSpike( "sv_hydraTestSpike", "0", 0, "Hydra Test impaling code" );
 
 //-------------------------------------
 // Purpose: Initialize the custom schedules
@@ -203,8 +211,55 @@ void CNPC_Hydra::Precache()
 	UTIL_PrecacheOther( "hydra_impale" );
 
 	PrecacheScriptSound( "NPC_Hydra.ExtendTentacle" );
-
+	PrecacheScriptSound("NPC_Hydra.Alert");
+	PrecacheScriptSound("NPC_Hydra.Pain");
+	PrecacheScriptSound("NPC_Hydra.Search");
+	PrecacheScriptSound("NPC_Hydra.Attack");
+	PrecacheScriptSound("npc_hydra.bump");
+	
 	BaseClass::Precache();
+}
+
+void CNPC_Hydra::AlertSound()
+{
+	if (FOkToMakeSound(SENTENCE_PRIORITY_MEDIUM))
+	{
+		CPASAttenuationFilter filter(this, "NPC_Hydra.Alert");
+		Vector vecHead = EyePosition();
+		EmitSound(filter, entindex(), "NPC_Hydra.Alert", &vecHead);
+		JustMadeSound(SENTENCE_PRIORITY_MEDIUM, 2.0f);
+	}
+
+}
+
+void CNPC_Hydra::IdleSound()
+{
+	if (FOkToMakeSound(SENTENCE_PRIORITY_NORMAL))
+	{
+		CPASAttenuationFilter filter(this, "NPC_Hydra.Search");
+		Vector vecHead = EyePosition();
+		EmitSound(filter, entindex(), "NPC_Hydra.Search", &vecHead);
+		JustMadeSound(SENTENCE_PRIORITY_NORMAL, 1.0f);
+	}
+
+}
+
+void CNPC_Hydra::PainSound(const CTakeDamageInfo &info)
+{
+	bool bSound = false;
+
+	if (info.GetDamageType() & DMG_BLAST || info.GetDamageType() & DMG_SHOCK)
+		bSound = true;
+	
+
+	if (bSound && FOkToMakeSound(SENTENCE_PRIORITY_HIGH))
+	{
+		CPASAttenuationFilter filter(this, "NPC_Hydra.Pain");
+		Vector vecHead = EyePosition();
+		EmitSound(filter, entindex(), "NPC_Hydra.Pain", &vecHead);
+		JustMadeSound(SENTENCE_PRIORITY_HIGH, 1.5f);
+	}
+
 }
  
 
@@ -215,16 +270,20 @@ void CNPC_Hydra::Activate( void )
 	m_pExtendTentacleSound = controller.SoundCreate( filter, entindex(), "NPC_Hydra.ExtendTentacle" );
 	
 	controller.Play( m_pExtendTentacleSound, 1.0, 100 );
+	
 
 	BaseClass::Activate();
 }
 
-
+ConVar hydra_ally("sv_hydra_ally", "0");
 //-----------------------------------------------------------------------------
 // Purpose: Returns this monster's place in the relationship table.
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Hydra::Classify( void )
 {
+	if (hydra_ally.GetBool())
+		return CLASS_PLAYER_ALLY;
+
 	return CLASS_BARNACLE; 
 }
 
@@ -243,6 +302,8 @@ void CNPC_Hydra::Spawn()
 
 	SetHullType(HULL_HUMAN);
 	SetHullSizeNormal();
+
+	
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -285,12 +346,17 @@ void CNPC_Hydra::Spawn()
 
 	NPCInit();
 
-	m_takedamage = DAMAGE_NO;
+
+	m_takedamage = DAMAGE_EVENTS_ONLY;
+
+	m_bSpike = sv_hydraTestSpike.GetBool();
+
+	CollisionProp()->SetSurroundingBoundsType(USE_HITBOXES);
 }
 
 
 //-------------------------------------
-
+ConVar hydra_debug("g_debug_hydra", "0");
 
 void CNPC_Hydra::RunAI( void )
 {
@@ -299,50 +365,67 @@ void CNPC_Hydra::RunAI( void )
 	AdjustLength( );
 
 	BaseClass::RunAI();
+}
 
-	CalcGoalForces( );
-	MoveBody( );
+void CNPC_Hydra::NPCThink(void)
+{
+	BaseClass::NPCThink();
+
+	SetNextThink(gpGlobals->curtime + .05);
+
+	m_vecChain.Set(0, GetAbsOrigin() - m_vecOutward * 32);
+	m_vecChain.Set(1, GetAbsOrigin() + m_vecOutward * 16);
+
+	m_body[0].vecPos = m_vecChain[0];
+	m_body[1].vecPos = m_vecChain[1];
+
+	CalcGoalForces();
+	MoveBody();
+
+
 
 	int i;
 	for (i = 1; i < CHAIN_LINKS && i < m_body.Count(); i++)
 	{
-		m_vecChain.Set( i, m_body[i].vecPos );
+		m_vecChain.Set(i, m_body[i].vecPos);
 
-#if 0
-		if (m_body[i].bStuck)
+#if 1
+		if (hydra_debug.GetBool())
 		{
-			NDebugOverlay::Box(m_body[i].vecPos, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 255, 0, 0, 20, .1);
-		}
-		else
-		{
-			NDebugOverlay::Box(m_body[i].vecPos, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 0, 255, 0, 20, .1);
-		}
-		NDebugOverlay::Line( m_body[i].vecPos, m_body[i].vecPos + m_body[i].vecDelta, 0, 255, 0, true, .1);
-		NDebugOverlay::Line( m_body[i-1].vecPos, m_body[i].vecPos, 255, 255, 255, true, .1);
+			if (m_body[i].bStuck)
+			{
+				NDebugOverlay::Box(m_body[i].vecPos, Vector(-2, -2, -2), Vector(2, 2, 2), 255, 0, 0, 20, .1);
+			}
+			else
+			{
+				NDebugOverlay::Box(m_body[i].vecPos, Vector(-2, -2, -2), Vector(2, 2, 2), 0, 255, 0, 20, .1);
+			}
+			NDebugOverlay::Line(m_body[i].vecPos, m_body[i].vecPos + m_body[i].vecDelta, 0, 255, 0, true, .1);
+			NDebugOverlay::Line(m_body[i - 1].vecPos, m_body[i].vecPos, 255, 255, 255, true, .1);
 #endif
 
-#if 0
-		char text[128];
-		Q_snprintf( text, sizeof( text ), "%d", i );
-		NDebugOverlay::Text( m_body[i].vecPos, text, false, 0.1 );
+#if 1
+			char text[128];
+			Q_snprintf(text, sizeof(text), "%d", i);
+			NDebugOverlay::Text(m_body[i].vecPos, text, false, 0.1);
 #endif
 
-#if 0
-		char text[128];
-		Q_snprintf( text, sizeof( text ), "%4.0f", (m_body[i].vecPos - m_body[i-1].vecPos).Length() * 100 / m_idealSegmentLength - 100);
-		NDebugOverlay::Text( 0.5*(m_body[i-1].vecPos + m_body[i].vecPos), text, false, 0.1 );
+#if 1
+			//char text[128];
+			Q_snprintf(text, sizeof(text), "%4.0f", (m_body[i].vecPos - m_body[i - 1].vecPos).Length() * 100 / m_idealSegmentLength - 100);
+			NDebugOverlay::Text(0.5*(m_body[i - 1].vecPos + m_body[i].vecPos), text, false, 0.1);
+		}
 #endif
 	}
 	//NDebugOverlay::Box(m_body[i].vecPos, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 0, 255, 0, 20, .1);
 	//NDebugOverlay::Box( m_vecHeadGoal, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 255, 255, 0, 20, .1);
 	for (; i < CHAIN_LINKS; i++)
 	{
-		m_vecChain.Set( i, m_vecChain[i-1] );
+		m_vecChain.Set(i, m_vecChain[i - 1]);
 	}
+
+	m_bNewChain = true;
 }
-
-
-
 
 Vector CNPC_Hydra::TestPosition( float t )
 {
@@ -388,6 +471,8 @@ Vector CNPC_Hydra::TestPosition( float t )
 
 void CNPC_Hydra::CalcGoalForces( )
 {
+	float flInterval = GetNextThink() - gpGlobals->curtime;
+
 	int i;
 
 	int iFirst = 2;
@@ -404,7 +489,7 @@ void CNPC_Hydra::CalcGoalForces( )
 	// momentum?
 	for (i = iFirst; i <= iLast; i++)
 	{
-		m_body[i].vecDelta = m_body[i].vecDelta * sv_hydraMomentum.GetFloat();
+		m_body[i].vecDelta = m_body[i].vecDelta * (sv_hydraMomentum.GetFloat() /** flInterval*/);
 	}
 
 	//Vector right, up;
@@ -429,7 +514,7 @@ void CNPC_Hydra::CalcGoalForces( )
 			{
 				v0 = v0 * sv_hydraGoalDelta.GetFloat() / length;
 			}
-			m_body[i].vecDelta += v0 * flInfluence * sv_hydraGoalTension.GetFloat(); 
+			m_body[i].vecDelta += v0 * flInfluence * sv_hydraGoalTension.GetFloat() * flInterval;
 			// NDebugOverlay::Box(m_body[i].vecGoalPos, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 255, 255, 0, flInfluence * 255, .1);
 		}
 	}
@@ -456,7 +541,7 @@ void CNPC_Hydra::CalcGoalForces( )
 			{
 				delta = delta * (sv_hydraBendDelta.GetFloat() / length);
 			}
-			m_body[i+1].vecDelta += delta;
+			m_body[i+1].vecDelta += delta * flInterval;
 			//NDebugOverlay::Line( m_body[i+1].vecPos, m_body[i+1].vecPos + delta, 255, 0, 0, true, .1);
 		}
 
@@ -469,7 +554,7 @@ void CNPC_Hydra::CalcGoalForces( )
 			{
 				delta = delta * (sv_hydraBendDelta.GetFloat() / length);
 			}
-			m_body[i-1].vecDelta += delta * 0.8;
+			m_body[i-1].vecDelta += delta * 0.8 * flInterval;
 			//NDebugOverlay::Line( m_body[i-1].vecPos, m_body[i-1].vecPos + delta, 255, 0, 0, true, .1);
 		}
 	}
@@ -482,7 +567,7 @@ void CNPC_Hydra::CalcGoalForces( )
 	{
 		if (!m_body[i].bStuck)
 		{
-			m_body[i].vecDelta.z -= 3.84 * 0.2;
+			m_body[i].vecDelta.z -= 3.84 * flInterval/* * 0.2*/;
 		}
 	}
 
@@ -596,7 +681,8 @@ void CNPC_Hydra::MoveBody( )
 				Vector( -2, -2, -2 ), Vector( 2, 2, 2 ), 
 				MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr);
 
-			// NDebugOverlay::Line( m_body[i].vecPos, tr.endpos, 255, 255, 0, true, 1);
+			if (hydra_debug.GetBool())
+				NDebugOverlay::Line( m_body[i].vecPos, tr.endpos, 255, 255, 0, true, 1);
 
 			direct = tr.endpos;
 
@@ -658,6 +744,8 @@ void CNPC_Hydra::Nudge( CBaseEntity *pOther, const Vector &vecContact, const Vec
 		return;
 	}
 
+	CPASAttenuationFilter filter(this, "NPC_Hydra.Bump");
+
 	IPhysicsObject *pOtherPhysics = pOther->VPhysicsGetObject();
 
 	// Put the force on the line between the "contact point" and hit object origin
@@ -665,7 +753,8 @@ void CNPC_Hydra::Nudge( CBaseEntity *pOther, const Vector &vecContact, const Vec
 	//pOtherPhysics->GetPosition( &posOther, NULL );
 
 	// force is a 30kg object going 100 in/s
-	pOtherPhysics->ApplyForceOffset( vecSpeed * 30, vecContact );
+	pOtherPhysics->ApplyForceOffset( vecSpeed * 1000, vecContact );
+	EmitSound(filter, entindex(), "NPC_Hydra.Bump", &vecContact);
 
 }
 
@@ -678,27 +767,28 @@ void CNPC_Hydra::Nudge( CBaseEntity *pOther, const Vector &vecContact, const Vec
 
 void CNPC_Hydra::Stab( CBaseEntity *pOther, const Vector &vecSpeed, trace_t &tr )
 {
-	if (pOther->m_takedamage == DAMAGE_YES && !pOther->IsPlayer())
+	if (pOther->m_takedamage == DAMAGE_YES)
 	{
 		Vector dir = vecSpeed;
 		VectorNormalize( dir );
 
-		if ( !sv_hydraTestSpike.GetInt() )
+		if ( m_bSpike && (pOther->GetBaseAnimating() && pOther->GetBaseAnimating()->CanBecomeRagdoll()) )
 		{
-			ClearMultiDamage();
-			// FIXME: this is bogus
-			CTakeDamageInfo info( this, this, pOther->m_iHealth+25, DMG_SLASH );
-			CalculateMeleeDamageForce( &info, dir, tr.endpos );
-			pOther->DispatchTraceAttack( info, dir, &tr );
-			ApplyMultiDamage();
+			CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating *>(pOther);
+			if (pAnimating)
+			{
+				AttachStabbedEntity(pAnimating, vecSpeed * 30, tr);
+				m_bSpike = false;
+			}			
 		}
 		else
 		{
-			CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating *>(pOther);
-			if ( pAnimating )
-			{
-				AttachStabbedEntity( pAnimating, vecSpeed * 30, tr );
-			}
+			ClearMultiDamage();
+			// FIXME: this is bogus
+			CTakeDamageInfo info(this, this, pOther->m_iHealth + 25, DMG_SLASH);
+			CalculateMeleeDamageForce(&info, dir, tr.endpos);
+			pOther->DispatchTraceAttack(info, dir, &tr);
+			ApplyMultiDamage();
 		}
 	}
 	else
@@ -955,7 +1045,7 @@ bool CNPC_Hydra::ContractBetweenStuckSegments( )
 			}
 		}
 	}
-	if (iShortest = -1)
+	if (iShortest == -1)
 		return false;
 
 	// FIXME: check for tunneling
@@ -1182,14 +1272,19 @@ int CNPC_Hydra::SelectSchedule ()
 		}
 		break;
 
-	case NPC_STATE_ALERT:
+	/*case NPC_STATE_ALERT:
 		{
 			return SCHED_HYDRA_STAB;
 		}
-		break;
+		break;*/
 
 	case NPC_STATE_COMBAT:
 		{
+			if (HasCondition(COND_NEW_ENEMY))
+			{
+				AlertSound();
+			}
+
 			if (HasCondition( COND_HYDRA_SNAGGED ))
 			{
 				return SCHED_HYDRA_PULLBACK;
@@ -1210,6 +1305,10 @@ int CNPC_Hydra::SelectSchedule ()
 
 void CNPC_Hydra::StartTask( const Task_t *pTask )
 {
+
+	//CPASAttenuationFilter filter(this);
+	Vector vecHead = EyePosition();
+
 	switch( pTask->iTask )
 	{
 	case TASK_HYDRA_DEPLOY:
@@ -1229,26 +1328,30 @@ void CNPC_Hydra::StartTask( const Task_t *pTask )
 				SetTarget( GetEnemy() );
 			}
 
-			//CPASAttenuationFilter filter( this, "NPC_Hydra.Alert" );
-			//Vector vecHead = EyePosition();
+			/*CPASAttenuationFilter filter( this, "NPC_Hydra.Alert" );
+			Vector vecHead = EyePosition();*/
 			//EmitSound( filter, entindex(), "NPC_Hydra.Alert", &vecHead );
 		}
 		return;
 
 	case TASK_HYDRA_STAB:
 		{
-			//CPASAttenuationFilter filter( this, "NPC_Hydra.Attack" );
-			//Vector vecHead = EyePosition();
-			//EmitSound( filter, entindex(), "NPC_Hydra.Attack", &vecHead );
+			CPASAttenuationFilter filter( this, "NPC_Hydra.Attack" );
+			/*Vector vecHead = EyePosition();*/
+			EmitSound( filter, entindex(), "NPC_Hydra.Attack", &vecHead );
 
 			m_flTaskEndTime = gpGlobals->curtime + 0.5;
 		}
 		return;
 
 	case TASK_HYDRA_PULLBACK:
-		m_vecHeadGoal = GetAbsOrigin( ) + m_vecOutward * pTask->flTaskData;
+	{
+		m_vecHeadGoal = GetAbsOrigin() + m_vecOutward * pTask->flTaskData;
 		m_idealLength = pTask->flTaskData * 1.1;
+		/*CPASAttenuationFilter filter(this, "NPC_Hydra.Search");
+		EmitSound(filter, entindex(), "NPC_Hydra.Search", &vecHead);*/
 		return;
+	}
 
 	default:
 		BaseClass::StartTask( pTask );
@@ -1291,6 +1394,7 @@ void CNPC_Hydra::RunTask( const Task_t *pTask )
 			if (pTarget == NULL)
 			{
 				TaskFail( FAIL_NO_TARGET );
+				return;
 			}
 
 			if (pTarget->IsPlayer())
@@ -1585,6 +1689,214 @@ void CNPC_Hydra::AimHeadInTravelDirection( float flInfluence )
 	VectorNormalize( m_vecHeadDir.GetForModify() );
 }
 
+
+void CNPC_Hydra::GetSkeleton(CStudioHdr *hdr, Vector pos[], Quaternion q[], int boneMask)
+{
+	VPROF_BUDGET("CNPC_Hydra::GetSkeleton", VPROF_BUDGETGROUP_SERVER_ANIM);
+
+	const studiohdr_t *rhdr = hdr->GetRenderHdr();
+	if (!rhdr)
+	{
+		return;
+	}
+
+	BaseClass::GetSkeleton(hdr, pos, q, boneMask);
+
+	int i;
+
+	// check for changing model memory requirements
+	bool bNewlyInited = false;
+	if (m_numHydraBones != rhdr->numbones)
+	{
+		m_numHydraBones = rhdr->numbones;
+
+		// build root animation
+		/*float	poseparam[MAXSTUDIOPOSEPARAM];
+		for (i = 0; i < hdr->GetNumPoseParameters(); i++)
+		{
+			poseparam[i] = 0;
+		}
+		CalcPose(hdr, NULL, pos, q, 0.0f, 0.0f, poseparam, BONE_USED_BY_ANYTHING, 1.0f, gpGlobals->curtime);*/
+
+		// allocate arrays
+		m_boneLength.SetCount(m_numHydraBones);
+
+		
+		m_vecPos.SetCount(m_numHydraBones);
+
+		
+
+		// calc models bone lengths
+		m_maxPossibleLength = 0;
+		for (i = 0; i < m_numHydraBones - 1; i++)
+		{
+			m_boneLength[i] = (pos[i + 1] - pos[i]).Length();
+			m_maxPossibleLength += m_boneLength[i];
+		}
+		m_boneLength[i] = 0.0f;
+
+		bNewlyInited = true;
+	}
+
+	// calc new bone setup if networked.
+	if (m_bNewChain)
+	{
+		CalcBoneChain(m_vecPos.Base(), m_vecChain.Base());
+		for (i = 0; i < m_numHydraBones; i++)
+		{
+			//	debugoverlay->AddLineOverlay( m_vecPos[i], m_vecPos[i<m_numHydraBones-1?i+1:m_numHydraBones-1], 0, 255, 0, false, 0.1 );
+			m_vecPos[i] = m_vecPos[i] - GetAbsOrigin();
+
+			
+		}
+		m_bNewChain = false;
+	}
+
+	// if just allocated, initialize bones
+	/*if (bNewlyInited)
+	{
+
+		for (i = 0; i < m_numHydraBones; i++)
+		{
+			m_iv_vecPos[i].Reset();
+		}
+	}*/
+
+	for (i = 0; i < m_numHydraBones; i++)
+	{
+		pos[i] = m_vecPos[i];
+	}
+
+	// calculate bone angles
+	CalcBoneAngles(pos, q);
+
+	// rotate the last bone of the hydra 90 degrees since it's oriented differently than the others
+	Quaternion qTmp;
+	AngleQuaternion(QAngle(0, -90, 0), qTmp);
+	QuaternionMult(q[m_numHydraBones - 1], qTmp, q[m_numHydraBones - 1]);
+
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: Fits skeleton of hydra to the variable segment length "chain" array
+//			Adjusts overall hydra so that "m_flRelaxedLength" of texture fits over 
+//			the actual length of the chain
+//-----------------------------------------------------------------------------
+
+void  CNPC_Hydra::CalcBoneChain(Vector pos[], const Vector chain[])
+{
+	int i, j;
+
+	// Find the dist chain link that's not zero length
+	i = CHAIN_LINKS - 1;
+	while (i > 0)
+	{
+		if ((chain[i] - chain[i - 1]).LengthSqr() > 0.0)
+		{
+			break;
+		}
+		i--;
+	}
+
+	// initialize the last bone to the last bone
+	j = m_numHydraBones - 1;
+
+	// clamp length
+	float totalLength = 0;
+	for (int k = i; k > 0; k--)
+	{
+		// debugoverlay->AddLineOverlay( chain[k], chain[k-1], 255, 255, 255, false, 0 );
+		totalLength += (chain[k] - chain[k - 1]).Length();
+	}
+	totalLength = clamp(totalLength, 1.0, m_maxPossibleLength);
+	float scale = m_flRelaxedLength / totalLength;
+
+	// starting from the head, fit the hydra skeleton onto the chain spline
+	float dist = -16;
+	while (j >= 0 && i > 0)
+	{
+		// debugoverlay->AddLineOverlay( chain[i], chain[i-1], 255, 255, 255, false, 0 );
+		float dt = (chain[i] - chain[i - 1]).Length() * scale;
+		float dx = dt;
+		while (j >= 0 && dist + dt >= m_boneLength[j])
+		{
+			float s = (dx - (dt - (m_boneLength[j] - dist))) / dx;
+
+			if (s < 0 || s > 1.)
+				s = 0;
+			// pos[j] = chain[i] * (1 - s) + chain[i-1] * s;
+			Catmull_Rom_Spline(chain[(i<CHAIN_LINKS - 1) ? i + 1 : CHAIN_LINKS - 1], chain[i], chain[(i>0) ? i - 1 : 0], chain[(i>1) ? i - 2 : 0], s, pos[j]);
+			// debugoverlay->AddLineOverlay( pos[j], chain[i], 0, 255, 0, false, 0 );
+			// debugoverlay->AddLineOverlay( pos[j], chain[i-1], 0, 255, 0, false, 0 );
+
+			dt = dt - (m_boneLength[j] - dist);
+			j--;
+			dist = 0;
+		}
+		dist += dt;
+		i--;
+	}
+
+	while (j >= 0)
+	{
+		pos[j] = chain[0];
+		j--;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Minimize the amount of twist between bone segments
+//-----------------------------------------------------------------------------
+
+void CNPC_Hydra::CalcBoneAngles(const Vector pos[], Quaternion q[])
+{
+	int i;
+	matrix3x4_t bonematrix;
+
+	for (i = m_numHydraBones - 1; i >= 0; i--)
+	{
+		Vector forward;
+		Vector left2;
+
+		if (i != m_numHydraBones - 1)
+		{
+			QuaternionMatrix(q[i + 1], bonematrix);
+			MatrixGetColumn(bonematrix, 1, left2);
+
+			forward = (pos[i + 1] - pos[i]) /* + (pos[i] - pos[i-1])*/;
+			float length = VectorNormalize(forward);
+			if (length == 0.0)
+			{
+				q[i] = q[i + 1];
+				continue;
+			}
+		}
+		else
+		{
+			forward = m_vecHeadDir;
+			VectorNormalize(forward);
+
+			VectorMatrix(forward, bonematrix);
+			MatrixGetColumn(bonematrix, 1, left2);
+		}
+
+		Vector up = CrossProduct(forward, left2);
+		VectorNormalize(up);
+
+		Vector left = CrossProduct(up, forward);
+
+		MatrixSetColumn(forward, 0, bonematrix);
+		MatrixSetColumn(left, 1, bonematrix);
+		MatrixSetColumn(up, 2, bonematrix);
+
+		// MatrixQuaternion( bonematrix, q[i] );
+		QAngle angles;
+		MatrixAngles(bonematrix, angles);
+		AngleQuaternion(angles, q[i]);
+	}
+}
+
 //-------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -1612,11 +1924,14 @@ public:
 public:
 	IPhysicsConstraint		*m_pConstraint;
 	CHandle<CNPC_Hydra>		m_hHydra;
+private:
+	float m_flLifeTime;
 };
 
 BEGIN_DATADESC( CHydraImpale )
 	DEFINE_PHYSPTR( m_pConstraint ),
 	DEFINE_FIELD( m_hHydra,			FIELD_EHANDLE ),
+	DEFINE_FIELD( m_flLifeTime,	FIELD_FLOAT),
 
 	DEFINE_THINKFUNC( ImpaleThink ),
 END_DATADESC()
@@ -1659,9 +1974,13 @@ void CHydraImpale::Precache( void )
 //-----------------------------------------------------------------------------
 void CHydraImpale::ImpaleThink( void )
 {
-	if ( !m_hHydra )
+	if ( !m_hHydra || m_flLifeTime <= 0)
 	{
+		if (m_hHydra)
+			m_hHydra->NotifyImpaleDetach();
+
 		// Remove ourselves.
+		
 		m_pConstraint->Deactivate();
 		UTIL_Remove( this );
 		return;
@@ -1675,7 +1994,7 @@ void CHydraImpale::ImpaleThink( void )
 	SetAbsAngles( vecAngles );
 
 	//NDebugOverlay::Cross3D( vecOrigin, Vector( -5, -5, -5 ), Vector( 5, 5, 5 ), 255, 0, 0, 20, .1);
-
+	m_flLifeTime -= 0.1f;
 	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 
@@ -1700,7 +2019,9 @@ IPhysicsConstraint *CHydraImpale::CreateConstraint( CNPC_Hydra *pHydra, IPhysics
 		m_pConstraint->SetGameData( (void *)this );
 	}
 
-	SetThink( ImpaleThink );
+	m_flLifeTime = RandomFloat(6.5f,15.2f);
+
+	SetThink( &CHydraImpale::ImpaleThink );
 	SetNextThink( gpGlobals->curtime );
 	return m_pConstraint;
 }
@@ -1740,39 +2061,50 @@ CHydraImpale *CHydraImpale::Create( CNPC_Hydra *pHydra, CBaseEntity *pTarget )
 	return pImpale;
 }
 
+void CNPC_Hydra::NotifyImpaleDetach(void)
+{
+	if (sv_hydraTestSpike.GetBool())
+		m_bSpike = true;
+
+	m_bStabbedEntity = false;
+}
+
 void CNPC_Hydra::AttachStabbedEntity( CBaseAnimating *pAnimating, Vector vecForce, trace_t &tr )
 {
-	CTakeDamageInfo info( this, this, pAnimating->m_iHealth+25, DMG_SLASH );
+	CTakeDamageInfo info(this, this, pAnimating->m_iHealth + 25, DMG_SLASH | DMG_REMOVENORAGDOLL);
 	info.SetDamageForce( vecForce );
 	info.SetDamagePosition( tr.endpos );
 
 	CBaseEntity *pRagdoll = CreateServerRagdoll( pAnimating, 0, info, COLLISION_GROUP_INTERACTIVE_DEBRIS );
+	pRagdoll->SetOwnerEntity(this);
 
 	// Create our impale entity
 	CHydraImpale::Create( this, pRagdoll );
 
 	m_bStabbedEntity = true;
 
-	UTIL_Remove( pAnimating );
+	//UTIL_Remove( pAnimating );
+
+	pAnimating->TakeDamage(info);
 }
 
 void CNPC_Hydra::UpdateStabbedEntity( void )
 {
-	/*
-	CBaseEntity *pEntity = m_grabController.GetAttached();
-	if ( !pEntity )
-	{
-		DetachStabbedEntity( false );
-		return;
-	}
+	
+	//CBaseEntity *pEntity = m_grabController.GetAttached();
+	//if ( !pEntity )
+	//{
+	//	DetachStabbedEntity( false );
+	//	return;
+	//}
 
-	QAngle vecAngles(0,0,1);
-	Vector vecOrigin = m_body[m_body.Count()-2].vecPos;
+	//QAngle vecAngles(0,0,1);
+	//Vector vecOrigin = m_body[m_body.Count()-2].vecPos;
 
-	//NDebugOverlay::Cross3D( vecOrigin, Vector( -5, -5, -5 ), Vector( 5, 5, 5 ), 255, 0, 0, 20, .1);
+	////NDebugOverlay::Cross3D( vecOrigin, Vector( -5, -5, -5 ), Vector( 5, 5, 5 ), 255, 0, 0, 20, .1);
 
-	m_grabController.SetTargetPosition( vecOrigin, vecAngles );
-	*/
+	//m_grabController.SetTargetPosition( vecOrigin, vecAngles );
+	
 }
 
 void CNPC_Hydra::DetachStabbedEntity( bool playSound )

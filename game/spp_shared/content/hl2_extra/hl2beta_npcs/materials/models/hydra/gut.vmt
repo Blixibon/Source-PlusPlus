@@ -1,0 +1,16 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/hydra/gut"
+	"$lightwarptexture" "models/hydra/gutgradient"
+	$model 1
+	$phong 1
+	$translucent 1
+	$alpha 0.7
+	$additive 1
+	$color 10 14 19
+	$rimlight 1
+	$rimlightboost 10
+	$rimlightexponent 2
+	$rimlightmask 1
+	$phongfresnelranges "[.1 5 10]"
+}
