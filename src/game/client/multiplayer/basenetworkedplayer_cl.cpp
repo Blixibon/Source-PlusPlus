@@ -182,6 +182,14 @@ CStudioHdr * C_BaseNetworkedPlayer::OnNewModel(void)
 	if (pHdr)
 	{
 		InitPlayerGibs();
+		if (GetAnimState())
+			GetAnimState()->OnNewModel();
+
+		int i;
+		for (i = 0; i < pHdr->GetNumPoseParameters(); i++)
+		{
+			SetPoseParameter(pHdr, i, 0.0);
+		}
 	}
 
 	return pHdr;

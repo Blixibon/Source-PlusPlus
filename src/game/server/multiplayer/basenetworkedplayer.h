@@ -26,6 +26,8 @@ public:
 	void CreateRagdollEntity(bool bGib, bool bBurning);
 	virtual void RemoveRagdollEntity();
 	virtual void Event_Killed( const CTakeDamageInfo &info );
+
+	virtual CStudioHdr *OnNewModel(void);
 		
 	// Create a predicted viewmodel
 	virtual void CreateViewModel( int index );

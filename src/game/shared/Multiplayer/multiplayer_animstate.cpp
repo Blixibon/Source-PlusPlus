@@ -1671,6 +1671,7 @@ void CMultiPlayerAnimState::ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr )
 	// Get the movement velocity.
 	Vector vecVelocity;
 	GetOuterAbsVelocity( vecVelocity );
+	//vecVelocity += GetBasePlayer()->GetBaseVelocity();
 
 	// Check to see if we are moving.
 	bool bMoving = ( vecVelocity.Length() > 1.0f ) ? true : false;
@@ -1820,6 +1821,8 @@ void CMultiPlayerAnimState::GetOuterAbsVelocity( Vector& vel )
 #else
 	vel = GetBasePlayer()->GetAbsVelocity();
 #endif
+
+	//vel -= GetBasePlayer()->GetBaseVelocity();
 }
 
 //-----------------------------------------------------------------------------

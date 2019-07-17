@@ -3,6 +3,7 @@
 #include "predicted_viewmodel.h"
 #include "ilagcompensationmanager.h"
 #include "basenetworkedragdoll.h"
+#include "studio.h"
 
 #define CYCLELATCH_UPDATE_INTERVAL	0.2f
 
@@ -208,6 +209,24 @@ void CBaseNetworkedPlayer::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	//RemoveEffects(EF_NODRAW);	// still draw player body
+}
+
+CStudioHdr * CBaseNetworkedPlayer::OnNewModel(void)
+{
+	CStudioHdr *pHdr = BaseClass::OnNewModel();
+	if (pHdr)
+	{
+		if (GetAnimState())
+			GetAnimState()->OnNewModel();
+
+		int i;
+		for (i = 0; i < pHdr->GetNumPoseParameters(); i++)
+		{
+			SetPoseParameter(pHdr, i, 0.0);
+		}
+	}
+
+	return pHdr;
 }
 
 //-----------------------------------------------------------------------------
