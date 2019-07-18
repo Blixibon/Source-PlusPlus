@@ -229,6 +229,7 @@ private:
 		SCHED_COMBINE_MOVE_TO_FORCED_GREN_LOS,
 		SCHED_COMBINE_FACE_IDEAL_YAW,
 		SCHED_COMBINE_MOVE_TO_MELEE,
+		SCHED_COMBINE_FLANK_ENEMY,
 		NEXT_SCHEDULE,
 	};
 
@@ -262,6 +263,18 @@ private:
 		COND_COMBINE_ON_FIRE,
 		COND_COMBINE_ATTACK_SLOT_AVAILABLE,
 		NEXT_CONDITION
+	};
+
+	// -----------------------------------------------
+//	> Squad slots
+// -----------------------------------------------
+	enum SquadSlot_T
+	{
+		SQUAD_SLOT_GRENADE1 = BaseClass::NEXT_SQUADSLOT,
+		SQUAD_SLOT_GRENADE2,
+		SQUAD_SLOT_ATTACK_OCCLUDER,
+		SQUAD_SLOT_OVERWATCH,
+		SQUAD_SLOT_FLANK_ENEMY,
 	};
 
 private:

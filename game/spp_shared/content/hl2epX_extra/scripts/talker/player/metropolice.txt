@@ -152,133 +152,116 @@ rule PoliceKillParasite
 
 
 // TLK_PLAYER_ENEMY
+response PoliceEnemy
+{
+	sentence "METROPOLICE_MONST"
+}
 
 rule PoliceEnemy
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice
 
 //	response	PoliceResponseEnemy
-	response	PoliceResponseIncoming	// TODO: find sounds that are more like "I see an enemy"
+	response	PoliceEnemy	// TODO: find sounds that are more like "I see an enemy"
 }
 
-// TODO: at some point, move away from using these npc_citizen responses
-
-// using CitizenCombineGroup
-rule PoliceEnemyCombine
+response PoliceEnemyHeadcrab
 {
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsCombine
-	response	CitizenCombineGroup
+	sentence "METROPOLICE_MONST_PARASITES"
 }
 
 // using CitizenHeadcrabGroup
 rule PoliceEnemyHeadcrab
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrab
-	response	CitizenHeadcrabGroup
+	response	PoliceEnemyHeadcrab
 }
 
 rule PoliceEnemyHeadcrabBlack
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabBlack
-	response	CitizenHeadcrabGroup
+	response	PoliceEnemyHeadcrab
 }
 
 rule PoliceEnemyHeadcrabPoison
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabPoison
-	response	CitizenHeadcrabGroup
+	response	PoliceEnemyHeadcrab
 }
 
 rule PoliceEnemyHeadcrabFast
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabFast
-	response	CitizenHeadcrabGroup
+	response	PoliceEnemyHeadcrab
+}
+
+response PoliceEnemyZombie
+{
+	sentence "METROPOLICE_MONST_ZOMBIES"
 }
 
 rule PoliceEnemyZombie
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombie
-	response	CitizenZombieGroup
+	response	PoliceEnemyZombie
 }
 
 rule PoliceEnemyZombieTorso
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieTorso
-	response	CitizenZombieGroup
+	response	PoliceEnemyZombie
 }
 
 rule PoliceEnemyZombieBlack
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieBlack
-	response	CitizenZombieGroup
+	response	PoliceEnemyZombie
 }
 
 rule PoliceEnemyZombieFast
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieFast
-	response	CitizenZombieGroup
-}
-
-rule PoliceEnemyScanner
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsScanner
-	response	CitizenScannersGroup
-}
-
-response PoliceEnemyStriderGroup
-{
-	scene "scenes/npc/$gender01/strider.vcd"
-}
-
-rule PoliceEnemyStrider
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsStrider
-	response	PoliceEnemyStriderGroup
-}
-
-rule PoliceEnemyManhack
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsManhack
-	response	CitizenManhacksGroup
-}
-
-rule PoliceEnemyMetro
-{
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsMetro
-	response	CitizenMetroGroup
+	response	PoliceEnemyZombie
 }
 
 rule PoliceEnemyZombine
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombine
-	response	CitizenZombieGroup
+	response	PoliceEnemyZombie
 }
 
-rule PoliceEnemyHunter
+response PoliceCallHelp
 {
-	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHunter
-	response	CitizenCombineGroup
+	sentence "METROPOLICE_CALL_HELP"
 }
 
-// TLK_PLAYER_FOLLOW
-
-response PoliceResponseFollow
+rule PoliceCallHelp
 {
-	scene		"scenes/npc/$gender01/squad_away03.vcd"		weight 4
-	scene		"scenes/npc/$gender01/squad_follow02.vcd"
-	scene		"scenes/npc/$gender01/squad_follow03.vcd"
-	scene		"scenes/npc/$gender01/squad_away01.vcd"		weight 3
-	scene		"scenes/npc/$gender01/squad_away02.vcd"
-//Trav|Edt - add more Follow scenes
-	scene	"scenes/npc/$gender01/overhere01.vcd"
+	criteria	ConceptPlayerHelp IsPlayer IsPlayerVoiceMetroPolice
+	response	PoliceCallHelp
 }
 
-rule PoliceFollow
+response PolicePlayerGO
 {
-	criteria	ConceptPlayerFollow IsPlayer IsPlayerVoiceMetroPolice
-	response	PoliceResponseFollow
+	sentence "METROPOLICE_OVER_HERE" weight 3
+	sentence "METROPOLICE_AS_ADV_RALLY" weight 3
 }
 
+rule PolicePlayerGO
+{
+	criteria	ConceptPlayerGo IsPlayer IsPlayerVoiceMetroPolice
+	response	PolicePlayerGO
+}
 
+response PolicePlayerIncoming
+{
+	sentence "METROPOLICE_DANGER" weight 2
+	sentence "METROPOLICE_DANGER_VEHICLE" weight 3
+}
 
+rule PolicePlayerIncoming
+{
+	criteria	ConceptPlayerIncoming IsPlayer IsPlayerVoiceMetroPolice
+	response	PolicePlayerIncoming
+}
 

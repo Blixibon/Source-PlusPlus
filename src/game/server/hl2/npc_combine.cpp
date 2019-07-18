@@ -166,17 +166,6 @@ Activity ACT_COMBINE_AR2_ALTFIRE;
 Activity ACT_WALK_EASY;
 Activity ACT_WALK_MARCH;
 
-// -----------------------------------------------
-//	> Squad slots
-// -----------------------------------------------
-enum SquadSlot_T
-{
-	SQUAD_SLOT_GRENADE1 = LAST_SHARED_SQUADSLOT,
-	SQUAD_SLOT_GRENADE2,
-	SQUAD_SLOT_ATTACK_OCCLUDER,
-	SQUAD_SLOT_OVERWATCH,
-};
-
 enum TacticalVariant_T
 {
 	TACTICAL_VARIANT_DEFAULT = 0,
@@ -2156,6 +2145,11 @@ int CNPC_Combine::SelectScheduleAttack()
 			}
 		}
 
+		if (IsInSquad() && RandomInt(1, 100) > 33 && OccupyStrategySlot(SQUAD_SLOT_FLANK_ENEMY))
+		{
+			return SCHED_COMBINE_FLANK_ENEMY;
+		}
+
 		DesireCrouch();
 		return SCHED_TAKE_COVER_FROM_ENEMY;
 	}
@@ -2177,6 +2171,11 @@ int CNPC_Combine::SelectScheduleAttack()
 		{
 			return SCHED_RANGE_ATTACK2;
 		}
+	}
+
+	if (IsInSquad() && RandomInt(1, 100) > 66 && OccupyStrategySlot(SQUAD_SLOT_FLANK_ENEMY))
+	{
+		return SCHED_COMBINE_FLANK_ENEMY;
 	}
 
 	if (HasCondition(COND_WEAPON_SIGHT_OCCLUDED))
@@ -3498,6 +3497,7 @@ DECLARE_ANIMEVENT( COMBINE_AE_ALTFIRE )
 
 DECLARE_SQUADSLOT( SQUAD_SLOT_GRENADE1 )
 DECLARE_SQUADSLOT( SQUAD_SLOT_GRENADE2 )
+DECLARE_SQUADSLOT( SQUAD_SLOT_FLANK_ENEMY )
 
 DECLARE_CONDITION( COND_COMBINE_NO_FIRE )
 DECLARE_CONDITION( COND_COMBINE_DEAD_FRIEND )
@@ -4227,5 +4227,27 @@ DEFINE_SCHEDULE
  "		COND_ENEMY_DEAD"
  "		COND_CAN_MELEE_ATTACK1"
  )
+
+	 DEFINE_SCHEDULE(
+		 SCHED_COMBINE_FLANK_ENEMY,
+
+		 "	Tasks"
+		 "		TASK_STORE_POSITION_IN_SAVEPOSITION		0"
+		 "		TASK_GET_FLANK_ARC_PATH_TO_ENEMY_LOS	45"
+		 "		TASK_SPEAK_SENTENCE						1"
+		 "		TASK_RUN_PATH							0"
+		 "		TASK_WAIT_FOR_MOVEMENT					0"
+		 "		TASK_STOP_MOVING						0"
+		 "		TASK_FACE_ENEMY							0"
+		 ""
+		 "	Interrupts"
+		 "		COND_NEW_ENEMY"
+		 "		COND_ENEMY_DEAD"
+		 "		COND_HEAVY_DAMAGE"
+		 "		COND_TOO_CLOSE_TO_ATTACK"
+		 "		COND_GIVE_WAY"
+		 "		COND_HEAR_DANGER"
+		 "		COND_HEAR_MOVE_AWAY"
+)
 
  AI_END_CUSTOM_NPC()

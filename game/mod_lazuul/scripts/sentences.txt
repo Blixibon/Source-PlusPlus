@@ -1533,6 +1533,12 @@ METROPOLICE_ON_FIRE0 npc/metropolice/vo/(v100) on1 officerneedshelp V_IDIEDS {Le
 METROPOLICE_ON_FIRE1 npc/metropolice/vo/(v100) on1 help V_IDIEDS {Len 1.5 closecaption NPC_Combine.Pain}
 METROPOLICE_ON_FIRE2 npc/metropolice/pain1 V_IDIEDS {Len 1.5 closecaption NPC_Combine.Pain}
 
+// Player: Call for help.
+METROPOLICE_CALL_HELP0 npc/metropolice/vo/(v100) on1 officerneedshelp off2 {Len 1.5}
+METROPOLICE_CALL_HELP1 npc/metropolice/vo/(v100) on2 help off1 {Len 1.5}
+METROPOLICE_CALL_HELP2 npc/metropolice/vo/(v90) on1 11-99officerneedsassistance off1 {Len 1.5}
+METROPOLICE_CALL_HELP3 npc/metropolice/vo/(v90) on1 dispatchIneed10-78 off4 {Len 1.5}
+METROPOLICE_CALL_HELP4 npc/metropolice/vo/(v90) on1 officerneedsassistance off4 {Len 1.5}
 
 //
 // Misc
