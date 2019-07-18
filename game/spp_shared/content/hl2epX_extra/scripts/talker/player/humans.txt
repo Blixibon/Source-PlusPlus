@@ -42,7 +42,18 @@ rule PlayerReloading
 
 // TLK_PLAYER_PAIN
 
-response PlayerResponsePain
+response PlayerDiedDefault
+{
+	speak		"Player.Death" noscene
+}
+
+rule PlayerDied
+{
+	criteria	ConceptPlayerDied IsPlayer IsPlayerVoiceDefault
+	response	PlayerDiedDefault
+}
+
+response CitizenPlayerResponsePain
 {
 	// TODO: look at this
 	speak		"NPC_Citizen.Pain01"
@@ -64,10 +75,16 @@ response PlayerResponsePain
 	// speak		"NPC_Citizen.myleg02"
 }
 
-rule PlayerPain
+rule CitizenPlayerDie
+{
+	criteria	ConceptPlayerDied IsPlayer IsPlayerVoiceCitizen
+	response	CitizenPlayerResponsePain
+}
+
+rule CitizenPlayerPain
 {
 	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceCitizen
-	response	PlayerResponsePain
+	response	CitizenPlayerResponsePain
 }
 
 rule PlayerShotArm

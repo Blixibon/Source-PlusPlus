@@ -36,6 +36,7 @@
 extern ISoundEmitterSystemBase *soundemitterbase;
 extern CBaseEntity *FindPlayerStart(const char *pszClassName);
 extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
+int UTIL_LazEmitGroupnameSuit(CBasePlayer *entity, const char *groupname);
 
 ConVar sv_forcedspecialattack("sv_laz_forcedspecial", "-1", FCVAR_CHEAT);
 
@@ -1009,6 +1010,47 @@ void CLaz_Player::PainSound(const CTakeDamageInfo & info)
 	m_flNextPainSoundTime = gpGlobals->curtime + flPainLength;
 }
 
+void CLaz_Player::DeathSound(const CTakeDamageInfo & info)
+{
+	// Did we die from falling?
+	if (m_bitsDamageType & DMG_FALL)
+	{
+		// They died in the fall. Play a splat sound.
+		EmitSound("Player.FallGib");
+	}
+	else
+	{
+		AI_Response resp;
+		SpeakConcept(resp, MP_CONCEPT_DIED);
+		const char *szResponse = resp.GetResponsePtr();
+		soundlevel_t soundlevel = resp.GetSoundLevel();
+		switch (resp.GetType())
+		{
+		default:
+		case RESPONSE_NONE:
+			break;
+
+		case RESPONSE_SPEAK:
+			{
+				EmitSound(szResponse);
+			}
+			break;
+
+		case RESPONSE_SENTENCE:
+			GetExpresser()->SpeakRawSentence(szResponse, 0, VOL_NORM, soundlevel);
+			break;
+		}
+	}
+
+	// play one of the suit death alarms
+	if (IsSuitEquipped() && !(m_iszSuitVoice == AllocPooledString(DEFAULT_VOICE)))
+	{
+		UTIL_LazEmitGroupnameSuit(this, CFmtStr("%s_DEAD", STRING(m_iszSuitVoice)));
+	}
+
+	GetExpresser()->ForceNotSpeaking();
+}
+
 bool CLaz_Player::ChooseEnemy()
 {
 	trace_t tr;
@@ -1101,12 +1143,57 @@ void CLaz_Player::Special()
 #define SUITUPDATETIME	3.5
 #define SUITFIRSTUPDATETIME 0.1
 
+int UTIL_LazEmitGroupnameSuit(CBasePlayer *entity, const char *groupname)
+{
+	float fvol;
+	int pitch = PITCH_NORM;
+	int sentenceIndex = -1;
+
+	fvol = 0.7f;
+	if (random->RandomInt(0, 1))
+		pitch = random->RandomInt(0, 6) + 98;
+
+	CAI_TimedSemaphore *pSemaphore = (entity->GetTeamNumber() == LazuulRules()->GetProtaganistTeam()) ? &g_AIFriendliesTalkSemaphore : &g_AIFoesTalkSemaphore;
+
+	// If friendlies are talking, reduce the volume of the suit
+	if (!pSemaphore->IsAvailable(nullptr))
+	{
+		fvol *= 0.3;
+	}
+
+	if (fvol > 0.05)
+	{
+		char name[64];
+		int ipick;
+		int isentenceg;
+
+		name[0] = 0;
+
+		isentenceg = engine->SentenceGroupIndexFromName(groupname);
+		if (isentenceg < 0)
+		{
+			Warning("No such sentence group %s\n", groupname);
+			return -1;
+		}
+
+		ipick = engine->SentenceGroupPick(isentenceg, name, sizeof(name));
+		if (ipick >= 0 && name[0])
+		{
+			sentenceIndex = SENTENCEG_Lookup(name);
+			CSingleUserRecipientFilter filter(entity);
+			CBaseEntity::EmitSentenceByIndex(filter, ENTINDEX(entity), CHAN_STATIC, sentenceIndex, fvol, SNDLVL_NORM, 0, pitch);
+		}
+	}
+
+	return sentenceIndex;
+}
+
 void UTIL_LazEmitSoundSuit(CBasePlayer *entity, const char *sample)
 {
 	float fvol;
 	int pitch = PITCH_NORM;
 
-	fvol = 0.25f;
+	fvol = 0.7f;
 	if (random->RandomInt(0, 1))
 		pitch = random->RandomInt(0, 6) + 98;
 

@@ -31,6 +31,16 @@ rule PoliceReloading
 }
 
 // TLK_PLAYER_PAIN
+response PolicePlayerDie
+{
+	sentence "METROPOLICE_DIE"
+}
+
+rule PolicePlayerDie
+{
+	criteria	ConceptPlayerDied IsPlayer IsPlayerVoiceMetroPolice
+	response	PolicePlayerDie
+}
 
 response PoliceResponsePain
 {

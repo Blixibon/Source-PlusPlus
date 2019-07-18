@@ -88,7 +88,7 @@ public:
 	void PlayFlinch(const CTakeDamageInfo &info);
 
 	void PainSound(const CTakeDamageInfo &info);
-	//void DeathSound(const CTakeDamageInfo &info);
+	virtual void			DeathSound(const CTakeDamageInfo &info);
 
 	virtual	bool			TestHitboxes(const Ray_t &ray, unsigned int fContentsMask, trace_t& tr);
 
