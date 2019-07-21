@@ -3,6 +3,7 @@
 #include "igamesystem.h"
 #include "utlvector.h"
 #include "bitvec.h"
+#include "utlsymbol.h"
 
 enum GameType
 {
@@ -58,10 +59,10 @@ typedef struct AreaName_s
 	int iArea;
 } AreaName_t;
 
-class CGameTypeManager : public CBaseGameSystem
+class CGameTypeManager /*: public CBaseGameSystem*/
 {
 public:
-	CGameTypeManager() : CBaseGameSystem()
+	CGameTypeManager() /*: CBaseGameSystem()*/
 	{
 	}
 
@@ -76,6 +77,9 @@ public:
 	}
 
 	void LevelInitPreEntity();
+	void LevelShutdown();
+
+	const char *RemapEntityClass(const char *pchClass);
 
 	GameType GetCurrentGameType();
 	
@@ -106,6 +110,8 @@ protected:
 		m_bitAreas.Set(iArea);
 	}
 
+	void SelectGameType();
+
 	//static char *m_pchAreaNames[MAX_CODE_AREAS];
 	CUtlVectorFixed<char *, MAX_CODE_AREAS> m_vecAreaNames;
 
@@ -117,6 +123,9 @@ private:
 
 	CBitVec<MAX_CODE_AREAS> m_bitAreas;
 	int						m_iFirstArea;
+
+	CUtlSymbolTable			m_CRSymTable;
+	CUtlDict<CUtlSymbol>	m_ClassRemap;
 
 	friend static void gametype_print(const CCommand &args);
 

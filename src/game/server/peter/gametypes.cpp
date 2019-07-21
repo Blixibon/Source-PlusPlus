@@ -2,6 +2,7 @@
 #include "gametypes.h"
 #include "KeyValues.h"
 #include "filesystem.h"
+#include "fmtstr.h"
 
 
 
@@ -235,9 +236,7 @@ void CGameTypeManager::RegisterPrefix(KeyValues *pkvNode)
 	m_PrefixVector.AddToTail(pPrefix);
 }
 
-
-
-void CGameTypeManager::LevelInitPreEntity()
+void CGameTypeManager::SelectGameType()
 {
 	m_bitAreas.ClearAll();
 	m_iFirstArea = AREA_NONE;
@@ -305,6 +304,42 @@ void CGameTypeManager::LevelInitPreEntity()
 
 		m_iGameType = BestType;
 	}
+}
+
+
+
+void CGameTypeManager::LevelInitPreEntity()
+{
+	SelectGameType();
+
+	CFmtStrN<MAX_PATH> path("scripts/classremaps/%s.vdf", m_vecGames.Element(GetCurrentGameType()));
+	KeyValuesAD pKV("classremaps");
+	if (pKV->LoadFromFile(filesystem, path.Access()))
+	{
+		for (KeyValues *pkvClass = pKV->GetFirstValue(); pkvClass != nullptr; pkvClass = pkvClass->GetNextValue())
+		{
+			CUtlSymbol &str = m_CRSymTable.AddString(pkvClass->GetString());
+			m_ClassRemap.Insert(pkvClass->GetName(), str);
+		}
+	}
+}
+
+void CGameTypeManager::LevelShutdown()
+{
+	m_ClassRemap.Purge();
+	m_CRSymTable.RemoveAll();
+}
+
+const char * CGameTypeManager::RemapEntityClass(const char * pchClass)
+{
+	int iClass = m_ClassRemap.Find(pchClass);
+	if (!m_ClassRemap.IsValidIndex(iClass))
+	{
+		return nullptr;
+	}
+
+	CUtlSymbol sym = m_ClassRemap.Element(iClass);
+	return m_CRSymTable.String(sym);
 }
 
 ConVar sv_gametype("sv_force_gametype", "-1", FCVAR_CHEAT);

@@ -118,11 +118,6 @@
 		"dmg.club"		"2.0"
 		"dmg.explosive" 	"1.5"
 		
-		"fire_interactions"
-		{
-			"flammable"		"yes"
-		}
-		
 		"breakable_model"	"WoodChunks"
 		"breakable_skin"	"0"
 	}
@@ -153,6 +148,11 @@
 	{
 		"base"			"Wooden.Base"
 		"health"		"30"
+		
+		"fire_interactions"
+		{
+			"flammable"		"yes"
+		}
 
 		"breakable_count"	"4"
 	}
@@ -163,6 +163,11 @@
 	{
 		"base"			"Wooden.Base"
 		"health"		"50"
+		
+		"fire_interactions"
+		{
+			"flammable"		"yes"
+		}
 
 		"breakable_count"	"6"
 	}
@@ -173,6 +178,11 @@
 	{
 		"base"			"Wooden.Base"
 		"health"		"100"
+		
+		"fire_interactions"
+		{
+			"flammable"		"yes"
+		}
 
 		"breakable_count"	"8"
 	}
@@ -183,6 +193,11 @@
 	{
 		"base"			"Wooden.Base"
 		"health"		"130"
+		
+		"fire_interactions"
+		{
+			"flammable"		"yes"
+		}
 
 		"breakable_count"	"10"
 	}

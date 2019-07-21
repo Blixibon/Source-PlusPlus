@@ -65,7 +65,27 @@ void CHealthKit::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 
 	if (pPlayer)
 	{
-		if (!MyTouch(pPlayer))
+		if (MyTouch(pPlayer))
+		{
+			SetTouch(NULL);
+			SetThink(NULL);
+
+			// player grabbed the item. 
+			g_pGameRules->PlayerGotItem(pPlayer, this);
+			if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_YES)
+			{
+				Respawn();
+			}
+			else
+			{
+				UTIL_Remove(this);
+
+#ifdef HL2MP
+				HL2MPRules()->RemoveLevelDesignerPlacedObject(this);
+#endif
+			}
+		}
+		else
 		{
 			if (pPlayer->GiveNamedItem("weapon_medkit"))
 			{
@@ -76,6 +96,10 @@ void CHealthKit::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 				else
 				{
 					UTIL_Remove(this);
+
+#ifdef HL2MP
+					HL2MPRules()->RemoveLevelDesignerPlacedObject(this);
+#endif
 				}
 				return;
 			}

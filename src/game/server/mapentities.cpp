@@ -18,9 +18,15 @@
 #include "datacache/imdlcache.h"
 #include "world.h"
 #include "toolframework/iserverenginetools.h"
+#include "peter/gametypes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+const char *RemapEntityClass(const char *pchClass)
+{
+	return g_pGameTypeSystem->RemapEntityClass(pchClass);
+}
 
 
 struct HierarchicalSpawnMapData_t
@@ -526,6 +532,10 @@ void MapEntity_PrecacheEntity( const char *pEntData, int &nStringSize )
 		Error( "classname missing from entity!\n" );
 	}
 
+	const char *pchNewClass = RemapEntityClass(className);
+	if (pchNewClass)
+		V_strncpy(className, pchNewClass, MAPKEY_MAXLENGTH);
+
 	// Construct via the LINK_ENTITY_TO_CLASS factory.
 	CBaseEntity *pEntity = CreateEntityByName(className);
 
@@ -535,6 +545,7 @@ void MapEntity_PrecacheEntity( const char *pEntData, int &nStringSize )
 	if ( pEntity != NULL )
 	{
 		pEntity->ParseMapData(&entData);
+		pEntity->SetClassname(className);
 		pEntity->Precache();
 		UTIL_RemoveImmediate( pEntity );
 	}
@@ -556,6 +567,10 @@ const char *MapEntity_ParseEntity(CBaseEntity *&pEntity, const char *pEntData, I
 		Error( "classname missing from entity!\n" );
 	}
 
+	const char *pchNewClass = RemapEntityClass(className);
+	if (pchNewClass)
+		V_strncpy(className, pchNewClass, MAPKEY_MAXLENGTH);
+
 	pEntity = NULL;
 	if ( !pFilter || pFilter->ShouldCreateEntity( className ) )
 	{
@@ -573,6 +588,7 @@ const char *MapEntity_ParseEntity(CBaseEntity *&pEntity, const char *pEntData, I
 		if (pEntity != NULL)
 		{
 			pEntity->ParseMapData(&entData);
+			pEntity->SetClassname(className);
 		}
 		else
 		{

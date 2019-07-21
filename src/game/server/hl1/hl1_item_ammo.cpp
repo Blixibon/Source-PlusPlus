@@ -11,6 +11,13 @@
 #include "items.h"
 #include "hl1_items.h"
 
+#ifndef HL1_DLL
+#define XBOW_AMMO "XBowBoltHL1"
+#define SHOTGUN_AMMO "BuckshotHL1"
+#else
+#define XBOW_AMMO "XBowBolt"
+#define SHOTGUN_AMMO "Buckshot"
+#endif
 
 // ========================================================================
 //	>> Crossbow bolts
@@ -35,7 +42,7 @@ public:
 	}
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
-		if (pPlayer->GiveAmmo( AMMO_CROSSBOW_GIVE, "XBowBolt" ) )
+		if (pPlayer->GiveAmmo( AMMO_CROSSBOW_GIVE, XBOW_AMMO) )
 		{
 			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
@@ -395,7 +402,7 @@ public:
 	}
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
-		if (pPlayer->GiveAmmo( AMMO_SHOTGUN_GIVE, "Buckshot" ) )
+		if (pPlayer->GiveAmmo( AMMO_SHOTGUN_GIVE, SHOTGUN_AMMO) )
 		{
 			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{

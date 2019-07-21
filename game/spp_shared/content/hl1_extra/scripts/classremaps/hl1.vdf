@@ -1,0 +1,11 @@
+"ClassRemaps"
+{
+    "weapon_357"            "weapon_357_hl1"
+    "weapon_crossbow"       "weapon_crossbow_hl1"
+    "weapon_crowbar"        "weapon_crowbar_hl1"
+    "weapon_glock"          "weapon_glock_hl1"
+    "weapon_mp5"            "weapon_mp5_hl1"
+    "weapon_rpg"            "weapon_rpg_hl1"
+    "weapon_shotgun"        "weapon_shotgun_hl1"
+    "monster_barnacle"      "npc_barnacle" // This one is temp until hl1 barnacles are working.
+}

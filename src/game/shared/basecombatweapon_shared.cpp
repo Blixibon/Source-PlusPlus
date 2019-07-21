@@ -896,14 +896,6 @@ void CBaseCombatWeapon::DisplayAltFireHudHint()
 	hint.sprintf("#valve_hint_alt_%s", GetClassname());
 #if !defined( CLIENT_DLL )
 	UTIL_HudHintText( GetOwner(), hint.Access() );
-#else
-	IGameEvent *pEvent = gameeventmanager->CreateEvent("instructor_altfire");
-	if (pEvent)
-	{
-		pEvent->SetInt("userid", ToBasePlayer(GetOwner())->GetUserID());
-		pEvent->SetString("hinttext", hint.Access());
-		gameeventmanager->FireEventClientSide(pEvent);
-	}
 #endif//CLIENT_DLL
 	m_iAltFireHudHintCount++;
 	m_bAltFireHudHintDisplayed = true;
@@ -2077,6 +2069,14 @@ bool CBaseCombatWeapon::DefaultReload( int iClipSize1, int iClipSize2, int iActi
 	if ( pOwner->IsPlayer() )
 	{
 		( ( CBasePlayer * )pOwner)->SetAnimation( PLAYER_RELOAD );
+#ifdef CLIENT_DLL
+		IGameEvent *pEvent = gameeventmanager->CreateEvent("use_reload");
+		if (pEvent)
+		{
+			pEvent->SetInt("userid", ToBasePlayer(GetOwner())->GetUserID());
+			gameeventmanager->FireEventClientSide(pEvent);
+		}
+#endif
 	}
 
 	MDLCACHE_CRITICAL_SECTION();

@@ -701,6 +701,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetEventQueueSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetAchievementSaveRestoreBlockHandler() );
 
+	g_pGameTypeSystem->Init();
 
 	// The string system must init first + shutdown last
 	IGameSystem::Add( GameStringSystem() );
@@ -719,8 +720,6 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 #endif
 	// Add sound emitter
 	IGameSystem::Add( SoundEmitterSystem() );
-
-	IGameSystem::Add(g_pGameTypeSystem);
 
 #ifdef HL2_DLL
 	IGameSystem::Add(g_pPlayerModels);
@@ -801,6 +800,8 @@ void CServerGameDLL::DLLShutdown( void )
 	g_TextStatsMgr.WriteFile( filesystem );
 
 	IGameSystem::ShutdownAllSystems();
+
+	g_pGameTypeSystem->Shutdown();
 
 #ifdef CSTRIKE_DLL // BOTPORT: TODO: move these ifdefs out
 	RemoveBotControl();
@@ -997,6 +998,8 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		// Single player games tell xbox live what game & chapter the user is playing
 		UpdateRichPresence();
 	}
+
+	g_pGameTypeSystem->LevelInitPreEntity();
 
 	//Tony; parse custom manifest if exists!
 	ParseParticleEffectsMap( pMapName, false );
@@ -1418,6 +1421,8 @@ void CServerGameDLL::LevelShutdown( void )
 
 	// In case we quit out during initial load
 	CBaseEntity::SetAllowPrecache( false );
+
+	g_pGameTypeSystem->LevelShutdown();
 
 	g_nCurrentChapterIndex = -1;
 
