@@ -1,0 +1,45 @@
+// -------------------------------------------------------------------
+//                          BLACK MESA
+//                      COPYRIGHT US LOL 2014
+// Purpose: Glock brass ejection effect data.
+// -------------------------------------------------------------------
+"weapon_glock"
+{
+    // Primary attack settings.
+    "glock-primary-attack"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "100"
+        "forward_speed_max"     "150"
+        "right_speed_min"       "-80"
+        "right_speed_max"       "-100"
+        "up_speed_min"          "80"
+        "up_speed_max"          "100"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "eject_model"       "models\weapons\shells\9mm_brass_shell.mdl"
+    }
+    
+    // Third-person primary attack.
+    "glock-primary-attack-thirdperson"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "0"
+        "forward_speed_max"     "15"
+        "right_speed_min"       "-200"
+        "right_speed_max"       "-250"
+        "up_speed_min"          "150"
+        "up_speed_max"          "200"
+        "lifetime"              "5"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "eject_model"       "models\weapons\shells\9mm_brass_shell_thirdperson.mdl"
+    }
+}

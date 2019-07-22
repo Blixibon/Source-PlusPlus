@@ -1,0 +1,45 @@
+// -------------------------------------------------------------------
+//                          BLACK MESA
+//                      COPYRIGHT US LOL 2014
+// Purpose: Shotgun brass ejection effect data.
+// -------------------------------------------------------------------
+"weapon_mp5"
+{
+    // Primary attack settings.
+    "mp5-primary-attack"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "100"
+        "forward_speed_max"     "150"
+        "right_speed_min"       "-80"
+        "right_speed_max"       "-100"
+        "up_speed_min"          "-25"
+        "up_speed_max"          "-35"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "eject_model"       "models\weapons\shells\9mm_brass_shell.mdl"
+    }
+    
+    // Third-person attack settings
+    "mp5-primary-attack-thirdperson"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "0"
+        "forward_speed_max"     "10"
+        "right_speed_min"       "-150"
+        "right_speed_max"       "-150"
+        "up_speed_min"          "-45"
+        "up_speed_max"          "-45"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "eject_model"       "models\weapons\shells\9mm_brass_shell_thirdperson.mdl"
+    }
+}

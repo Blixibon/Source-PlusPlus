@@ -11,6 +11,7 @@ WeaponData
 	viewmodel	"models/weapons/tfa_bms/c_bms_grenade.mdl"
 	weight		"0"
 	anim_prefix	"frag"
+	ViewModelFOV		"70"
 
 	SoundData
 	{

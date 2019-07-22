@@ -10,6 +10,7 @@ WeaponData
 	viewmodel	"models/weapons/tfa_bms/c_bms_357.mdl"
 	weight		"6"
 	anim_prefix	"glock"//fixme
+	ViewModelFOV		"70"
 
 	SoundData
 	{

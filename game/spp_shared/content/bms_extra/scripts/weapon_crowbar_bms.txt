@@ -8,11 +8,12 @@ WeaponData
 	viewmodel	"models/weapons/tfa_bms/c_bms_crowbar.mdl"
 	weight		"0"
 	anim_prefix	"crowbar"
+	ViewModelFOV		"70"
 
 	SoundData
 	{
 		melee_hit	"weapon_crowbar_bms.Melee_Hit"
-		melee_miss	"weapon_crowbar_bms.Melee_Miss"
+		single_shot	"weapon_crowbar_bms.Melee_Miss"
 	}
 
 }

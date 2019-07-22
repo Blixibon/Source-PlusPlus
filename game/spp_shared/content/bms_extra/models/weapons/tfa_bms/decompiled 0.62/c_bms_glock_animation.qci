@@ -1,0 +1,166 @@
+
+$SectionFrames 30 120
+
+$Sequence "idle1" {
+	"c_bms_glock_anims\idle1.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "idle2" {
+	"c_bms_glock_anims\idle2.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "idle_fidget" {
+	"c_bms_glock_anims\idle_fidget.smd"
+	activity "ACT_VM_FIDGET" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_glock_bms.Fidget" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "fire1" {
+	"c_bms_glock_anims\fire1.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "PISTOL 1" }
+	{ event AE_CLIENT_EJECT_CUSTOM 0 "weapon_glock_bms glock-primary-attack 2" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	snap
+	fps 35
+}
+
+$Sequence "fire2" {
+	"c_bms_glock_anims\fire2.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "PISTOL 1" }
+	{ event AE_CLIENT_EJECT_CUSTOM 0 "weapon_glock_bms glock-primary-attack 2" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	snap
+	fps 35
+}
+
+$Sequence "fire_empty" {
+	"c_bms_glock_anims\fire_empty.smd"
+	activity "ACT_VM_DRYFIRE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "gun_reload" {
+	"c_bms_glock_anims\gun_reload.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_glock_bms.Reload.chambered" }
+	{ event 3110 47 "" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "gun_reload_empty" {
+	"c_bms_glock_anims\gun_reload_empty.smd"
+	activity "ACT_VM_RELOAD_EMPTY" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_glock_bms.Reload" }
+	{ event 3110 47 "" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "draw1" {
+	"c_bms_glock_anims\draw1.smd"
+	activity "ACT_VM_DRAW" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "holster" {
+	"c_bms_glock_anims\holster.smd"
+	activity "ACT_VM_HOLSTER" 1
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "idletolow" {
+	"c_bms_glock_anims\idletolow.smd"
+	activity "ACT_VM_LOWERED_TO_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "0" "1"
+	fps 30
+}
+
+$Sequence "lowtoidle" {
+	"c_bms_glock_anims\lowtoidle.smd"
+	activity "ACT_VM_IDLE_TO_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "1" "0"
+	fps 30
+}
+
+$Sequence "lowidle1" {
+	"c_bms_glock_anims\lowidle1.smd"
+	activity "ACT_VM_IDLE_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "1"
+	fps 30
+	loop
+}
+
+$Sequence "idletosprint" {
+	"c_bms_glock_anims\idletosprint.smd"
+	activity "ACT_VM_SPRINT_ENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "0" "1"
+	fps 30
+}
+
+$Sequence "sprinttoidle" {
+	"c_bms_glock_anims\sprinttoidle.smd"
+	activity "ACT_VM_SPRINT_LEAVE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "1" "0"
+	fps 30
+}
+
+$Sequence "sprintidle1" {
+	"c_bms_glock_anims\sprintidle1.smd"
+	activity "ACT_VM_SPRINT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "1"
+	fps 30
+	loop
+}
+
+$Sequence "draw_admire" {
+	"c_bms_glock_anims\draw_admire.smd"
+	activity "ACT_VM_DRAW_DEPLOYED" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_glock_bms.Admire" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

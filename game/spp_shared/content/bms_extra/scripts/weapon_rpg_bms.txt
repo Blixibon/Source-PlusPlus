@@ -10,6 +10,7 @@ WeaponData
 	weight		"0"
 	default_clip	"1"
 	anim_prefix	"rpg"
+	ViewModelFOV		"70"
 
 	SoundData
 	{

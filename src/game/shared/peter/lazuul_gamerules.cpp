@@ -4205,6 +4205,10 @@ CAmmoDef* GetAmmoDef()
 		def.AddAmmoType("Satchel", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_satchel", NULL, "sk_max_satchel", 0, 0);
 
 		def.AddAmmoType("12mmRound", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE_AND_WHIZ, NULL, "sk_npc_dmg_12mm_bullet", NULL, BULLET_IMPULSE(300, 1200), 0);
+
+		// BMS
+		def.AddAmmoType("9mm", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_9mm_bullet", "sk_npc_dmg_9mm_bullet", "sk_max_9mm_bullet", BULLET_IMPULSE(500, 1325), 0);
+		def.AddAmmoType("grenade_mp5", DMG_BURN, TRACER_NONE, "sk_plr_dmg_smg1_grenade", "sk_npc_dmg_smg1_grenade", "sk_max_smg1_grenade", 0, 0);
 	}
 
 	return &def;
@@ -4219,6 +4223,12 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void Spawn(void);
+
+	// capabilities
+	virtual int	ObjectCaps(void)
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 };
 
 BEGIN_DATADESC(CTeamObjectiveResource)

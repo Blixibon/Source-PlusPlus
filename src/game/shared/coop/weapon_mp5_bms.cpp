@@ -266,9 +266,29 @@ void CBMSWeaponMP5::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool
 //-----------------------------------------------------------------------------
 void CBMSWeaponMP5::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
 {
-	switch( pEvent->event )
+	if ((pEvent->type & AE_TYPE_NEWEVENTSYSTEM) && (pEvent->type & AE_TYPE_SERVER) && pEvent->event == AE_NPC_WEAPON_FIRE && pEvent->pSource == this)
 	{
-	case EVENT_WEAPON_SMG1:
+		Vector vecShootOrigin, vecShootDir;
+		QAngle angDiscard;
+
+		// Support old style attachment point firing
+		if ((pEvent->options == NULL) || (pEvent->options[0] == '\0') || (!pOperator->GetAttachment(pEvent->options, vecShootOrigin, angDiscard)))
+		{
+			vecShootOrigin = pOperator->Weapon_ShootPosition();
+		}
+
+		CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+		ASSERT(npc != NULL);
+		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
+
+		FireNPCPrimaryAttack(pOperator, vecShootOrigin, vecShootDir);
+		return;
+	}
+	else
+	{
+		switch (pEvent->event)
+		{
+		case EVENT_WEAPON_SMG1:
 		{
 			Vector vecShootOrigin, vecShootDir;
 			QAngle angDiscard;
@@ -280,10 +300,10 @@ void CBMSWeaponMP5::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 			}
 
 			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-			ASSERT( npc != NULL );
-			vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
+			ASSERT(npc != NULL);
+			vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 
-			FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
+			FireNPCPrimaryAttack(pOperator, vecShootOrigin, vecShootDir);
 		}
 		break;
 
@@ -301,7 +321,7 @@ void CBMSWeaponMP5::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 		CGrenadeAR2 *pGrenade = (CGrenadeAR2*)Create( "grenade_ar2", vecShootOrigin, vec3_angle, npc );
 		pGrenade->SetAbsVelocity( vecThrow );
 		pGrenade->SetLocalAngularVelocity( QAngle( 0, 400, 0 ) );
-		pGrenade->SetMoveType( MOVETYPE_FLYGRAVITY ); 
+		pGrenade->SetMoveType( MOVETYPE_FLYGRAVITY );
 		pGrenade->m_hOwner			= npc;
 		pGrenade->m_pMyWeaponAR2	= this;
 		pGrenade->SetDamage(sk_npc_dmg_ar2_grenade.GetFloat());
@@ -314,9 +334,10 @@ void CBMSWeaponMP5::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 		break;
 		*/
 
-	default:
-		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
-		break;
+		default:
+			BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
+			break;
+		}
 	}
 }
 

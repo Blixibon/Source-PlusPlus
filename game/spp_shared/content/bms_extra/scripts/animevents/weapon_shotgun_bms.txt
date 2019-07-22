@@ -1,0 +1,64 @@
+// -------------------------------------------------------------------
+//                          BLACK MESA
+//                      COPYRIGHT US LOL 2014
+// Purpose: Shotgun brass ejection effect data.
+// -------------------------------------------------------------------
+"weapon_shotgun"
+{
+    // Primary attack settings.
+    "shotgun-primary-attack"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "20"
+        "forward_speed_max"     "50"
+        "right_speed_min"       "-50"
+        "right_speed_max"       "-80"
+        "up_speed_min"          "10"
+        "up_speed_max"          "30"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "fps_eject_model"       "models/weapons/shells/shotgun_shell.mdl"
+    }
+    
+    // Primary attack thirdperson settings.
+    "shotgun-primary-attack-thirdperson"
+    {
+        // Generic variables.
+        "casing_count"          "1"
+        "forward_speed_min"     "0"
+        "forward_speed_max"     "10"
+        "right_speed_min"       "-100"
+        "right_speed_max"       "-100"
+        "up_speed_min"          "150"
+        "up_speed_max"          "150"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "fps_eject_model"       "models/weapons/shells/shotgun_shell_thirdperson.mdl"
+    }
+    
+    // Secondary attack settings.
+    "shotgun-secondary-attack"
+    {
+        // Generic variables.
+        "casing_count"          "2"
+        "forward_speed_min"     "20"
+        "forward_speed_max"     "50"
+        "right_speed_min"       "-50"
+        "right_speed_max"       "-80"
+        "up_speed_min"          "10"
+        "up_speed_max"          "30"
+        "lifetime"              "10"
+        "skin"                  "0"
+        "gravity"               "0.1"
+        
+        // FPS specific variables.
+        "fps_eject_model"       "models/weapons/shells/shotgun_shell.mdl"
+    }
+}
