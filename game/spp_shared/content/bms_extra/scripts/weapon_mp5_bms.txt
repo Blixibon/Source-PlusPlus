@@ -1,0 +1,23 @@
+WeaponData
+{
+	printname	"Mp5"
+	bucket		"2"
+	bucket_position	"0"
+	clip_size	"30"
+	item_flags	"0"
+	playermodel	"models/weapons/tfa_bms/w_mp5_bms.mdl"
+	primary_ammo	"9mm"
+	secondary_ammo	"grenade_mp5"
+	viewmodel	"models/weapons/tfa_bms/c_bms_mp5.mdl"
+	weight		"3"
+	anim_prefix	"mp5"
+
+	SoundData
+	{
+		double_shot	"weapon_mp5_bms.Double"
+		reload_npc	"weapon_mp5_bms.Reload_NPC"
+		empty		"weapon_mp5_bms.Empty"
+		single_shot	"weapon_mp5_bms.Single"
+		single_shot_npc	"weapon_mp5_bms.Single_NPC"
+	}
+}

@@ -1,0 +1,10 @@
+"ClassRemaps"
+{
+    "weapon_357"           	"weapon_357_bms"
+    "weapon_crowbar"       	"weapon_crowbar_bms"
+	"weapon_frag"				"weapon_frag_bms"
+    "weapon_glock"         	"weapon_glock_bms"
+    "weapon_mp5"           	"weapon_mp5_bms"
+    "weapon_rpg"           	"weapon_rpg_bms"
+    "weapon_shotgun"       	"weapon_shotgun_bms"
+}

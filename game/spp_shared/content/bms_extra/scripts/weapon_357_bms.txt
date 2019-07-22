@@ -1,0 +1,22 @@
+WeaponData
+{
+	printname	"357"
+	bucket		"1"
+	bucket_position	"9"
+	clip_size	"6"
+	item_flags	"0"
+	playermodel	"models/weapons/tfa_bms/w_357_bms.mdl"
+	primary_ammo	"357"
+	viewmodel	"models/weapons/tfa_bms/c_bms_357.mdl"
+	weight		"6"
+	anim_prefix	"glock"//fixme
+
+	SoundData
+	{
+		double_shot	"weapon_357_bms.Double"
+		reload_npc	"weapon_357_bms.Reload_NPC"
+		empty		"weapon_357_bms.Empty"
+		single_shot	"weapon_357_bms.Single"
+		single_shot_npc	"weapon_357_bms.Single"
+	}
+}

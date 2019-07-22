@@ -1,0 +1,26 @@
+WeaponData
+{
+	printname	"Shotgun"
+	bucket		"2"
+	bucket_position	"1"
+	clip_size	"8"
+	item_flags	"0"
+	playermodel	"models/weapons/tfa_bms/w_shotgun_bms.mdl"
+	primary_ammo	"buckshot"
+	viewmodel	"models/weapons/tfa_bms/c_bms_shotgun.mdl"
+	weight		"4"
+	anim_prefix	"shotgun"
+	ViewModelFOV		"50"
+
+	SoundData
+	{
+		double_shot	"weapon_shotgun_bms.Double"
+		double_shot_npc	"weapon_shotgun_bms.Double_NPC"
+		reload		"weapon_shotgun_bms.Reload"
+		reload_npc	"weapon_shotgun_bms.Reload_NPC"
+		empty		"weapon_shotgun_bms.Empty"
+		single_shot	"weapon_shotgun_bms.Single"
+		single_shot_npc	"weapon_shotgun_bms.Single_NPC"
+		special1	"weapon_shotgun_bms.Special1"
+	}
+}
