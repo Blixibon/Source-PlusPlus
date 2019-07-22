@@ -266,6 +266,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_AR2:
 	case HLSS_WEAPON_ID_MG1:
 	case HLSS_WEAPON_ID_SHOTGUN:
+	case HLSS_WEAPON_ID_MP5_BMS:
 	default:
 		iWeaponRole = TF_WPN_TYPE_PRIMARY;
 		break;
@@ -273,6 +274,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_357:
 	case HLSS_WEAPON_ID_ALYXGUN:
 	case HLSS_WEAPON_ID_DEAGLE:
+	case HLSS_WEAPON_ID_GLOCK_BMS:
 		iWeaponRole = TF_WPN_TYPE_SECONDARY;
 		break;
 	case HLSS_WEAPON_ID_CROSSBOW:
@@ -305,6 +307,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_CROWBAR:
 	case HLSS_WEAPON_ID_STUNSTICK:
 	case HLSS_WEAPON_ID_LEADPIPE:
+	case HLSS_WEAPON_ID_CROWBAR_BMS:
 		iWeaponRole = TF_WPN_TYPE_MELEE;
 		break;
 	}
@@ -363,9 +366,12 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_CROSSBOW:
 	case HLSS_WEAPON_ID_SATCHEL:
 	case HLSS_WEAPON_ID_DEAGLE:
+	case HLSS_WEAPON_ID_CROWBAR_BMS:
 		iWeaponVariant = 2;
 		break;
 	case HLSS_WEAPON_ID_EGON:
+	case HLSS_WEAPON_ID_MP5_BMS:
+	case HLSS_WEAPON_ID_GLOCK_BMS:
 		iWeaponVariant = 3;
 		break;
 	case HLSS_WEAPON_ID_GAUSS:
@@ -1274,11 +1280,21 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 			pTable = s_acttableDeagle;
 			iActivityCount = ARRAYSIZE(s_acttableDeagle);
 			break;
+		case 3:
+			pTable = s_acttableGlock;
+			iActivityCount = ARRAYSIZE(s_acttableGlock);
+			break;
 		}
 		break;
 	case TF_WPN_TYPE_MELEE:
-		pTable = s_acttableMelee;
-		iActivityCount = ARRAYSIZE(s_acttableMelee);
+		switch (iWeaponVariant)
+		{
+		case 0:
+		default:
+			pTable = s_acttableMelee;
+			iActivityCount = ARRAYSIZE(s_acttableMelee);
+			break;
+		}
 		break;
 	case TF_WPN_TYPE_GRENADE:
 		switch (iWeaponVariant)
