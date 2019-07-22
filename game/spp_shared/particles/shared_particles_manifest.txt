@@ -36,5 +36,7 @@ particles_manifest
 	"file"		"particles/explosions.pcf"
 	"file"		"particles/explosion.pcf"
 	"file"		"particles/first_person_fx.pcf"
-	"file"		"particles/misc.pcf"	
+	"file"		"particles/misc.pcf"
+	
+	"file"		"!particles/spp_tracers.pcf"
 }

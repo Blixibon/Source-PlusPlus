@@ -38,6 +38,8 @@ public:
 
 	virtual int GetWeaponID(void) const;
 
+	virtual const char	*GetTracerType(void) { return "TracerNew"; }
+
 	virtual bool			IsPistol() { return (GetSlot() == TF_LOADOUT_SLOT_PISTOL); }
 	virtual bool			IsSniper() { return false; }
 	virtual bool			IsShotgun() { return false; }

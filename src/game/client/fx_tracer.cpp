@@ -200,6 +200,56 @@ void TracerSoundCallback( const CEffectData &data )
 
 DECLARE_CLIENT_EFFECT( "TracerSound", TracerSoundCallback );
 
+void TracerNewCallback(const CEffectData &data)
+{
+	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
+	if (!player)
+		return;
+
+	if (!r_drawtracers.GetBool())
+		return;
+
+	if (!r_drawtracers_firstperson.GetBool())
+	{
+		C_BasePlayer *pPlayer = dynamic_cast<C_BasePlayer*>(data.GetEntity());
+
+		if (pPlayer && !pPlayer->ShouldDrawThisPlayer())
+			return;
+	}
+
+	// Grab the data
+	Vector vecStart = GetTracerOrigin(data);
+	const Vector& vecEnd = data.m_vOrigin;
+
+	// Adjust view model tracers
+	C_BaseEntity *pEntity = data.GetEntity();
+	if (data.entindex() && data.entindex() == player->index)
+	{
+		QAngle	vangles;
+		Vector	vforward, vright, vup;
+
+		engine->GetViewAngles(vangles);
+		AngleVectors(vangles, &vforward, &vright, &vup);
+
+		VectorMA(data.m_vStart, 4, vright, vecStart);
+		vecStart[2] -= 0.5f;
+	}
+
+	// Create the particle effect
+	QAngle vecAngles;
+	Vector vecToEnd = vecEnd - vecStart;
+	VectorNormalize(vecToEnd);
+	VectorAngles(vecToEnd, vecAngles);
+	DispatchParticleEffect("p_tracer_normal", vecStart, vecEnd, vecAngles, pEntity);
+
+	if (data.m_fFlags & TRACER_FLAG_WHIZ)
+	{
+		FX_TracerSound(vecStart, vecEnd, TRACER_TYPE_DEFAULT);
+	}
+}
+
+DECLARE_CLIENT_EFFECT("TracerNew", TracerNewCallback);
+
 // Model Tracers
 #define TRACER_MODEL_LENGTH 24.2f
 #define TRACER_MODEL_TIP_OFFSET 10.0f
