@@ -55,7 +55,7 @@ public:
 
 	virtual void Equip( CBaseCombatCharacter *pOwner );
 	bool	Reload( void );
-	float	GetFireRate( void ) { return 0.075f; }	// 13.3hz
+	float	GetFireRate( void ) { return 0.1f; }	// 13.3hz
 
 	Activity	GetPrimaryAttackActivity( void );
 
@@ -452,18 +452,9 @@ int CBMSWeaponMP5::WeaponRangeAttack2Condition( float flDot, float flDist )
 // Purpose: 
 // Output : Activity
 //-----------------------------------------------------------------------------
-Activity CBMSWeaponMP5::GetPrimaryAttackActivity( void )
+Activity CBMSWeaponMP5::GetPrimaryAttackActivity(void)
 {
-	if ( m_nShotsFired < 2 )
-		return ACT_VM_PRIMARYATTACK;
-
-	if ( m_nShotsFired < 3 )
-		return ACT_VM_RECOIL1;
-	
-	if ( m_nShotsFired < 4 )
-		return ACT_VM_RECOIL2;
-
-	return ACT_VM_RECOIL3;
+	return ACT_VM_PRIMARYATTACK;
 }
 
 //-----------------------------------------------------------------------------
