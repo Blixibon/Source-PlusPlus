@@ -36,7 +36,7 @@
 #define	PISTOL_ACCURACY_SHOT_PENALTY_TIME		0.2f	// Applied amount of time each shot adds to the time we must recover from
 #define	PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME	1.5f	// Maximum penalty to deal out
 
-ConVar	pistol_use_new_accuracy( "pistol_use_new_accuracy", "1" );
+extern ConVar	pistol_use_new_accuracy;
 
 //-----------------------------------------------------------------------------
 // CBMSWeaponGlock

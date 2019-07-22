@@ -14,7 +14,7 @@
 #endif
 
 #ifdef CLIENT_DLL
-#define CBMSWeaponCrowbar C_WeaponCrowbar
+#define CBMSWeaponCrowbar C_BMSWeaponCrowbar
 #endif
 
 #define	CROWBAR_RANGE	75.0f
