@@ -1,0 +1,33 @@
+//"EDITOR_SHADER"
+"VertexLitGeneric"
+{
+"$SHADERNAME" "model_standard"
+
+	"$baseTexture" "bms\models\world_models\w_rpg_ammo"
+	"$bumpmap" "bms\models\world_models\w_rpg_ammo_norm"
+
+	"$envmap" "env_cubemap"
+        "$normalmapalphaenvmapmask" 1
+	"$envmaptint" "[.44 .55 .3]"
+
+//	"$selfillum" 1
+//	"$selfillumtint" "[16 4.8 1.6]"
+
+        "$detail" "detail\bm_metal_detail_01"
+	"$detailscale" "2"
+	"$detailblendfactor" 1
+	"$detailblendmode" 0
+
+// Phong Schtuff
+"$phong" "1"
+"$phongexponent" "10"
+"$phongboost" "10"
+"$phongfresnelranges"	"[0.2 .5 1.6]"
+"$phongalbedotint" "1"
+
+
+// Rim lighting parameters
+"$rimlight" "1"
+"$rimlightexponent" "25"
+"$rimlightboost" "0.5"
+}

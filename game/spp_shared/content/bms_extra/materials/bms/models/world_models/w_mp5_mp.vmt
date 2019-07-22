@@ -1,0 +1,37 @@
+//"EDITOR_SHADER"
+"VertexLitGeneric"
+{
+	//"$SHADERNAME" "model_standard"
+
+	"$baseTexture" "bms\models\world_models/w_mp5"
+	"$bumpmap" "bms\models\world_models/w_mp5_n"
+//       	"$envmap" "env_cubemap"
+    	"$normalmapalphaenvmapmask" "1"
+	"$envmaptint" "[1 1 1]"
+//	"$envmapsaturation" ".5"
+	"$phong" "1"
+	"$phongboost" "0.5"
+	"$phongexponent" "15"
+	"$phongfresnelranges" "[0.1 5 1]"
+
+	"$rimlight" "1"
+	"$rimlightexponent" "5"
+	"$rimlightboost" ".5"
+
+	"$sheenPassEnabled" "1"
+	"$sheenmap" 		"cubemaps\cubemap_sheen001"
+	"$sheenmapmask" 		"Effects\AnimatedSheen\animatedsheen0"
+	"$sheenmaptint" 		"[ 1 1 1 ]"
+	"$sheenmapmaskframe" 	"0"
+	"$sheenindex" 		"0"
+	
+	"Proxies"
+	{
+		"AnimatedWeaponSheen"
+		{
+			"animatedtexturevar" 		"$sheenmapmask"
+			"animatedtextureframenumvar" 	"$sheenmapmaskframe"
+			"animatedtextureframerate" 		"160"
+		}
+	}
+}

@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "bms\vgui\icons\weapon_frag"
+	"$vertexcolor"	"1"
+	"$vertexalpha"	"1"
+	"$translucent"	"1"
+	"$additive"		"1"
+}

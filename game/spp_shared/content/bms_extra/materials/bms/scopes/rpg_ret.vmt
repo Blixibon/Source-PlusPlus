@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	$baseTexture  "bms\scopes\rpg_ret"
+	$translucent  1
+	$alpha  1
+	$no_fullbright  "1"
+}

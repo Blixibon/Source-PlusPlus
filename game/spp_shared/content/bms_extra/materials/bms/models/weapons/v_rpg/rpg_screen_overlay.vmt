@@ -1,0 +1,15 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "bms\models\weapons\v_rpg/v_rpg_screen"
+	"$texture2" "bms/Effects/FilmScan256"
+	"$selfillum" 1
+
+    "$jumpchance" 0.025
+    "$jumpchancethreshold" 0.99
+    "$nojump" 0.0
+    "$jumpdistance" 0.25
+    "$translate1" "[0.0 0.0]"
+    "$translate2" "[0.0 0.0]"
+    "$scale2" "[0 0]"
+
+}

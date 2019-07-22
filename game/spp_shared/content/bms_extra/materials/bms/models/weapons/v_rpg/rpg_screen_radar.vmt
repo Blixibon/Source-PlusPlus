@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$baseTexture" "bms\models\weapons\v_rpg/rpg_screen"
+	"$selfillum" 1
+}

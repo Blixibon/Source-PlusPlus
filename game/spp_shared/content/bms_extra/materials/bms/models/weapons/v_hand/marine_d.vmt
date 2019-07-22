@@ -1,0 +1,34 @@
+"VertexLitGeneric"
+{	
+	"$baseTexture" "models\weapons\v_hand\marine_d"
+	"$bumpmap" "models\weapons\v_hand\marine_n"
+
+	"$nodecal" "1"
+	"$multipass" 0
+
+	"$phong" "1"
+	"$phongexponent" "5"
+	"$phongboost" "2"
+	"$phongfresnelranges"	"[0.05 0.5 1]"
+	"$phongalbedotint" "1"
+	"$BasemapAlphaPhongMask" "1"
+
+//  Rim lighting parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "25"
+	"$rimlightboost" "0.05"
+
+//	$detail "effects/models/model_blood_red.vtf"
+	$detailscale 5
+	$detailblendfactor 0.0
+	$detailblendmode 0
+
+	$viewmodelhands 1
+
+	Proxies
+	{
+		ModelDetailFx
+		{
+		}
+	}
+}

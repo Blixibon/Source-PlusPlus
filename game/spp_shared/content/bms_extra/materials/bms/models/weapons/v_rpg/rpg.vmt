@@ -1,0 +1,33 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "bms\models\weapons\v_rpg\rpg"
+	"$bumpmap" "bms\models\weapons\v_rpg\rpg_normals"
+
+	//metal
+	"$normalmapalphaenvmapmask" "1"
+	"$envmap" "env_cubemap"
+	"$envmaptint" "[.80 .80 .80]"
+
+	"$phong" "1"
+	"$phongexponent" "30"
+	"$phongboost" "8"
+	"$phongfresnelranges"	"[0.4 0.9 2.6]"
+	"$phongalbedotint" "1"
+	
+	// Rim lighting parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "35"
+	"$rimlightboost" ".225"
+
+	// Emissive parameters.
+	$emissiveBlendEnabled 1
+	$emissiveBlendTexture vgui\white
+	$emissiveBlendBaseTexture bms\models\weapons\v_rpg\rpg_glow
+	$emissiveBlendFlowTexture vgui\white
+	$emissiveBlendTint "{105 156 84}"
+	$emissiveBlendStrength .3
+	$emissiveBlendScrollVector "[0 0]"
+
+	"$tintA" "[5 3 1]"
+	"$tintB" "[.15 .15 .15]"
+}

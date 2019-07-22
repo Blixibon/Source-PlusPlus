@@ -1,0 +1,37 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\v_hand\zombie_guard_hands_d" 
+	"$bumpmap" "models\weapons\v_hand\zombie_hands_normal"
+
+	"$envmap" "env_cubemap"
+	"$normalmapalphaenvmapmask" "1"
+	"$envmaptint" "[.001 .001 .001]"
+	
+	"$nodecal" "1"
+	"$multipass" 0
+
+	"$phong" "1"
+	"$phongexponent" "7"
+	"$phongboost" "1"
+	"$phongfresnelranges"	"[.4 .8 30]"
+	"$phongalbedotint" "1"
+
+//  Rim lighting parameters
+	"$rimlight" "1"
+	"$rimlightexponent" "25"
+	"$rimlightboost" "0.05"
+	
+//	$detail "effects/models/model_blood_red.vtf"
+	$detailscale 5
+	$detailblendfactor 0.0
+	$detailblendmode 0
+
+	$viewmodelhands 1
+
+	Proxies
+	{
+		ModelDetailFx
+		{
+		}
+	}
+}

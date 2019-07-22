@@ -18,6 +18,7 @@
 	"precache_file"		"scripts/game_sounds_weapons_hl2mmod.txt"
 	"precache_file"		"scripts/game_sounds_weapons_new.txt"
 	"precache_file"		"scripts/game_sounds_weapons_c17.txt"
+	"precache_file"		"scripts/game_sounds_weapons_bms.txt"
 	
 	// Lambda Wars
 	"precache_file"		"scripts/unit_sounds.txt"
