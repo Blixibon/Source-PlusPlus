@@ -89,6 +89,7 @@ $Project
 		
 		$File	"hl2ce\env_instructor_hint.cpp"
 		$File	"hl2ce\logic_difficultytest.cpp"
+		$File	"hl2ce\prop_glow.cpp"
 		
 		$File	"env_dof_controller.cpp"
 		$File	"env_dof_controller.h"

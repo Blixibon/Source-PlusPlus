@@ -1871,6 +1871,11 @@ void CHL2_Player::SuitPower_Update( void )
 	}
 	else if( m_HL2Local.m_bitsActiveDevices )
 	{
+		if (!Flashlight_UseLegacyVersion() && SuitPower_IsDeviceActive(SuitDeviceFlashlight))
+		{
+			SuitPower_RemoveDevice(SuitDeviceFlashlight);
+		}
+
 		float flPowerLoad = m_flSuitPowerLoad;
 
 		//Since stickysprint quickly shuts off sprint if it isn't being used, this isn't an issue.
@@ -2088,7 +2093,7 @@ bool CHL2_Player::ApplyBattery( float powerMultiplier )
 		Q_snprintf( szcharge,sizeof(szcharge),"!HEV_%1dP", pct );
 		
 		//UTIL_EmitSoundSuit(edict(), szcharge);
-		//SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
+		SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
 		return true;		
 	}
 	return false;
@@ -2132,11 +2137,13 @@ void CHL2_Player::FlashlightTurnOn( void )
 //-----------------------------------------------------------------------------
 void CHL2_Player::FlashlightTurnOff( void )
 {
-	if ( Flashlight_UseLegacyVersion() )
+	if (Flashlight_UseLegacyVersion())
 	{
-		if( !SuitPower_RemoveDevice( SuitDeviceFlashlight ) )
+		if (!SuitPower_RemoveDevice(SuitDeviceFlashlight))
 			return;
 	}
+	else
+		SuitPower_RemoveDevice(SuitDeviceFlashlight);
 
 	RemoveEffects( EF_DIMLIGHT );
 	EmitSound( "HL2Player.FlashLightOff" );

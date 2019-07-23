@@ -5435,6 +5435,22 @@
 [
 ]
 
+@PointClass base(prop_dynamic_base,EnableDisable) sphere(fademindist) sphere(fademaxdist) studioprop() = prop_dynamic_glow :
+	"A prop_dynamic that can glow with an outline."
+[
+	glowenabled(choices) : "Start Glowing" : 0 : "Does the prop start glowing?" =
+	[
+		0: "No"
+		1: "Yes"
+	]
+
+	glowcolor(color255) : "Glow Color" : "255 255 255"
+
+	input SetGlowEnabled(void) : "Enable the glow effect."
+	input SetGlowDisabled(void) : "Disable the glow effect."
+	input SetGlowColor(color255) : "Set the color of the glow effect."
+]
+
 @PointClass base(prop_dynamic_base) studioprop() = prop_dynamic_override :
 	"A prop that can be placed in hierarchy and can play animations. It can also be configured to break when it takes enough damage.\n"+
 	"prop_dynamic_override is a prototyping entity only. It will allow the use of models designed to be used as prop_physics."
@@ -5490,7 +5506,7 @@
 	input DisableMotion(void) : "Disable physics motion/collision response."
 	input DisableFloating(void) : "Disable fluid/floating simulation to reduce cost."
 	input SetBodyGroup(integer) : "Set this prop's body group (from 0 - n)."
-	input physdamagescale(float) : "Set the Physics Impact Damage Scale for this character. NOTE: 0 means this feature is disabled for backwards compatibility."
+	input PhysDamageScale(float) : "Set the Physics Impact Damage Scale for this character. NOTE: 0 means this feature is disabled for backwards compatibility."
 	input EnableDamageForces(void) : "Damaging the entity applies physics forces to it."
 	input DisableDamageForces(void) : "Damaging the entity does *not* apply physics forces to it."
 	input EnablePuntSound(void) : "Allow this prop to play its own sound when punted"
@@ -5998,7 +6014,7 @@
 
 	// Outputs
 	output OnPass(void) : "Fired when any entity following this path passes this path_track node."
-	output OnTeleport(void)  : "Fired when any entity following this path teleports directly to this path_track node."
+	output OnTeleport(void) : "Fired when any entity following this path teleports directly to this path_track node."
 ]
 
 

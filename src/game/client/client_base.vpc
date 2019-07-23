@@ -639,6 +639,8 @@ $Project
 			$File	"hl2ce\hud_locator_target.cpp"
 			$File	"hl2ce\hud_locator_target.h"
 		}
+
+		$File	"hl2ce\c_prop_glow.cpp"
 		
 		// Files not using precompiled header cbase.h
 
