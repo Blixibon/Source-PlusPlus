@@ -9,7 +9,6 @@
 #include "view.h"
 #include "engine\IStaticPropMgr.h"
 #include "cdll_client_int.h"
-#include "..\thirdparty\subhook\subhook.h"
 
 #include "tier0/memdbgon.h"
 
@@ -329,56 +328,74 @@ CON_COMMAND( csm_tweak, "" )
 		new CCSMTweakPanel(enginevgui->GetPanel(PANEL_CLIENTDLL));
 	}
 }
+#if 0
+#if IsWindows()
+#define INDEXOF_BAKEDLIGHINGDISABLED 15
+#elif IsLinux()
+#define INDEXOF_BAKEDLIGHINGDISABLED 13
+#endif
 
-//static subhook::Hook* PropHasBakedLightingDisabledHook = NULL;
-//bool(*PropHasBakedLightingDisabledOriginal)(IHandleEntity *pHandleEntity);
-//
-//
-//	bool PropHasBakedLightingDisabled(IHandleEntity *pHandleEntity)
-//	{
-//		if (g_pCSMEnvLight && g_pCSMEnvLight->IsCascadedShadowMappingEnabled())
-//			return true;
-//
-//		return PropHasBakedLightingDisabledOriginal(pHandleEntity);
-//	}
-//
-//
-//
-//static class AutoHook : public CAutoGameSystem
-//{
-//public:
-//	bool Init() OVERRIDE
-//	{
-//#ifdef WIN32
-//		int iOffset = 11;
-//#elif __linux__
-//		int iOffset = 13;
-//#else
-//#error	"Not supported platform!"
-//#endif
-//		//void **this_ptr = *(void ***)&staticpropmgr;
-//		void **vtable = *(void ***)staticpropmgr;
-//		void *func = vtable[iOffset];
-//
-//		//CStaticPropManagerDummy *pDummy = static_cast<CStaticPropManagerDummy *> (staticpropmgr);
-//
-////#define HOOK_FUNC( funcAddr, funcRepl ) 
-//
-//		{
-//			PropHasBakedLightingDisabledHook = new subhook::Hook(func, (void*)(&PropHasBakedLightingDisabled));
-//			Msg("Hooking " V_STRINGIFY(PropHasBakedLightingDisabled) " %ssuccessful\n", PropHasBakedLightingDisabledHook->Install() ? "" : "un");
-//			*reinterpret_cast<void**>(&PropHasBakedLightingDisabledOriginal) = PropHasBakedLightingDisabledHook->GetTrampoline();
-//		}
-//
-//#undef HOOK_FUNC
-//
-//		//g_WorldStaticMeshes = reinterpret_cast<CUtlVector<IMesh*>*>(reinterpret_cast<byte*>( engineDll ) + 0x5AD2A8);
-//
-//		return true;
-//	}
-//
-//	void Shutdown() OVERRIDE
-//	{
-//		delete PropHasBakedLightingDisabledHook;
-//	}
-//} autoHook;
+typedef bool(*BakedLighingDisabledProto) (void*, IHandleEntity *);
+
+BakedLighingDisabledProto oPropHasBakedLighingDisabled;
+
+bool hPropHasBakedLightingDisabled(void *thisptr, IHandleEntity *pProp)
+{
+	if (g_pCSMEnvLight && g_pCSMEnvLight->IsCascadedShadowMappingEnabled())
+		return true;
+	else
+		return oPropHasBakedLighingDisabled(thisptr, pProp);
+}
+
+uintptr_t** staticpropmgr_VT = nullptr;
+uintptr_t* original_spm_vt = nullptr;
+uintptr_t* new_spm_vt = nullptr;
+
+class CAutoLightHack : public CAutoGameSystem
+{
+public:
+	CAutoLightHack() : CAutoGameSystem("CAutoLightHack")
+	{}
+
+	bool Init()
+	{
+		if (staticpropmgr_VT != nullptr)
+			return false;
+
+		staticpropmgr_VT = reinterpret_cast<uintptr_t**>(staticpropmgr);
+		original_spm_vt = *staticpropmgr_VT;
+
+		size_t total_functions = 0;
+
+		while ((uintptr_t*)(*staticpropmgr_VT)[total_functions]) {
+			total_functions++;
+		}
+		
+		oPropHasBakedLighingDisabled = reinterpret_cast<BakedLighingDisabledProto>(original_spm_vt[INDEXOF_BAKEDLIGHINGDISABLED]);
+
+		new_spm_vt = new uintptr_t[total_functions];
+		memcpy(new_spm_vt, original_spm_vt, (sizeof(uintptr_t) * total_functions));
+
+		new_spm_vt[INDEXOF_BAKEDLIGHINGDISABLED] = reinterpret_cast<uintptr_t>(hPropHasBakedLightingDisabled);
+
+		*staticpropmgr_VT = new_spm_vt;
+
+		return true;
+	}
+
+	void Shutdown()
+	{
+		if (staticpropmgr_VT == nullptr)
+			return;
+
+		*staticpropmgr_VT = original_spm_vt;
+		delete[] new_spm_vt;
+
+		staticpropmgr_VT = nullptr;
+		new_spm_vt = nullptr;
+		original_spm_vt = nullptr;
+	}
+};
+
+CAutoLightHack g_LightHacker;
+#endif

@@ -59,7 +59,7 @@ namespace SIGNON_BUFFER_HACK
 			total_functions++;
 		}
 
-		Assert(total_functions == MAX_INDEX + 1);
+		Assert(total_functions >= MAX_INDEX + 1);
 
 		oIsMultiplayer = reinterpret_cast<IsMultiplayerProto>(original_gs_vt[INDEXOF_ISMULTIPLAYER]);
 		oClear = reinterpret_cast<ClearProto>(original_gs_vt[INDEXOF_CLEAR]);
