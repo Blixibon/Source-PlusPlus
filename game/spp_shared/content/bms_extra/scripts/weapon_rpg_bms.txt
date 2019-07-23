@@ -5,7 +5,7 @@ WeaponData
 	bucket_position	"6"
 	item_flags	"0"
 	playermodel	"models/weapons/tfa_bms/w_rpg_bms.mdl"
-	primary_ammo	"grenade_rpg"
+	primary_ammo	"RPG_Round"
 	viewmodel	"models/weapons/tfa_bms/c_bms_rpg.mdl"
 	weight		"0"
 	default_clip	"1"
