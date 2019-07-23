@@ -110,6 +110,8 @@ $Project
 			$File	"peter\gametypes.h"
 			$File	"peter\population_manager.h"
 			$File	"peter\population_manager.cpp"
+			$File	"peter\signon_buffer_hack.cpp"
+			$File	"peter\signon_buffer_hack.h"
 			$File	"shelleject_precache.cpp"
 		}
 		

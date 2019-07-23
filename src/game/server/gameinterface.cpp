@@ -134,6 +134,7 @@ extern ConVar tf_mm_servermode;
 #endif
 
 #include "peter/gametypes.h"
+#include "peter/signon_buffer_hack.h"
 
 #if HL2_DLL
 #include "peter/player_models.h"
@@ -751,6 +752,9 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	}
 
+	// Calling as soon as DLLInit cannot possibly return false.
+	SIGNON_BUFFER_HACK::InitBufferHack();
+
 	InvalidateQueryCache();
 
 	// Parse the particle manifest file & register the effects within it
@@ -779,6 +783,7 @@ void CServerGameDLL::PostInit()
 
 void CServerGameDLL::DLLShutdown( void )
 {
+	SIGNON_BUFFER_HACK::ShutdownBufferHack();
 
 	// Due to dependencies, these are not autogamesystems
 	ModelSoundsCacheShutdown();
