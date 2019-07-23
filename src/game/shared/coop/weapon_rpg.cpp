@@ -2523,7 +2523,7 @@ void CLaserDot::TurnOn( void )
 	m_bIsOn = true;
 	if ( m_bVisibleLaserDot )
 	{
-		//BaseClass::TurnOn();
+		RemoveEffects(EF_NODRAW);
 	}
 }
 
@@ -2536,7 +2536,7 @@ void CLaserDot::TurnOff( void )
 	m_bIsOn = false;
 	if ( m_bVisibleLaserDot )
 	{
-		//BaseClass::TurnOff();
+		AddEffects(EF_NODRAW);
 	}
 }
 
@@ -2546,6 +2546,7 @@ void CLaserDot::TurnOff( void )
 //-----------------------------------------------------------------------------
 void CLaserDot::MakeInvisible( void )
 {
+	AddEffects(EF_NODRAW);
 }
 
 #ifdef CLIENT_DLL

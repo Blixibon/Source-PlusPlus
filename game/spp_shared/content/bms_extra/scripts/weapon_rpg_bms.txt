@@ -2,7 +2,7 @@ WeaponData
 {
 	printname	"RPG"
 	bucket		"3"
-	bucket_position	"0"
+	bucket_position	"6"
 	item_flags	"0"
 	playermodel	"models/weapons/tfa_bms/w_rpg_bms.mdl"
 	primary_ammo	"grenade_rpg"

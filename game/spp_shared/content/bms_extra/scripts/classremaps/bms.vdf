@@ -7,4 +7,12 @@
     "weapon_mp5"           	"weapon_mp5_bms"
     "weapon_rpg"           	"weapon_rpg_bms"
     "weapon_shotgun"       	"weapon_shotgun_bms"
+	
+	"item_weapon_357"           	"weapon_357_bms"
+    "item_weapon_crowbar"       	"weapon_crowbar_bms"
+	"item_weapon_frag"			"weapon_frag_bms"
+    "item_weapon_glock"         	"weapon_glock_bms"
+    "item_weapon_mp5"           	"weapon_mp5_bms"
+    "item_weapon_rpg"           	"weapon_rpg_bms"
+    "item_weapon_shotgun"       	"weapon_shotgun_bms"
 }
