@@ -45,7 +45,7 @@ void C_GlowProp::UpdateGlowEffect( void )
 
 	if ( m_bGlowEnabled )
 	{
-		m_pGlowEffect = new CGlowObject( this, Vector( 0, 0, 0 ), 1.0, true );
+		m_pGlowEffect = new CGlowObject( this, Vector( 0, 0, 0 ), 1.0, true, true );
 	}
 }
 
