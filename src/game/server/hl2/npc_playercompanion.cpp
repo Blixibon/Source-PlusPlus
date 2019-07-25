@@ -57,6 +57,17 @@ int AE_COMPANION_LIGHT_FLARE;
 int AE_COMPANION_RELEASE_FLARE;
 int AE_CITIZEN_GET_PACKAGE;
 
+bool IsRPG(CBaseCombatWeapon *pWeapon)
+{
+	if (!pWeapon)
+		return false;
+#ifdef HL2_LAZUL
+	if (pWeapon->GetWeaponID() == HLSS_WEAPON_ID_RPG || pWeapon->GetWeaponID() == HLSS_WEAPON_ID_RPG_BMS)
+		return true;
+#endif
+	return FClassnameIs(pWeapon, "weapon_rpg");
+}
+
 #define MAX_TIME_BETWEEN_BARRELS_EXPLODING			5.0f
 #define MAX_TIME_BETWEEN_CONSECUTIVE_PLAYER_KILLS	3.0f
 
@@ -347,7 +358,7 @@ int CNPC_PlayerCompanion::IRelationPriority(CBaseEntity * pTarget)
 {
 	int iPriority = BaseClass::IRelationPriority(pTarget);
 
-	if (GetActiveWeapon() && FClassnameIs(GetActiveWeapon(), "weapon_rpg"))
+	if (GetActiveWeapon() && IsRPG(GetActiveWeapon()))
 	{
 		if (pTarget && (pTarget->ClassMatches("npc_strider") || pTarget->ClassMatches("npc_combinegunship")))
 		{
@@ -362,7 +373,7 @@ int CNPC_PlayerCompanion::IRelationPriority(CBaseEntity * pTarget)
 //-----------------------------------------------------------------------------
 bool CNPC_PlayerCompanion::IsSilentSquadMember() const
 {
-	if ( (const_cast<CNPC_PlayerCompanion *>(this))->IsVitalAlly() && m_pSquad && MAKE_STRING(m_pSquad->GetName()) == GetPlayerSquadName() )
+	if ( (const_cast<CNPC_PlayerCompanion *>(this))->IsVitalAlly() && (m_pSquad && m_pSquad->GetPlayerCommander() != nullptr))
 	{
 		return true;
 	}
@@ -1083,7 +1094,7 @@ int CNPC_PlayerCompanion::TranslateSchedule( int scheduleType )
 			return SCHED_TAKE_COVER_FROM_ENEMY;
 
 		// If we have an RPG, we use a custom schedule for it
-		if (GetActiveWeapon() && FClassnameIs(GetActiveWeapon(), "weapon_rpg"))
+		if (GetActiveWeapon() && IsRPG(GetActiveWeapon()))
 		{
 			if (GetEnemy() && GetEnemy()->ClassMatches("npc_strider"))
 			{
@@ -1770,7 +1781,7 @@ bool CNPC_PlayerCompanion::IsReadinessCapable()
 	if( GetActiveWeapon() && LookupActivity("ACT_IDLE_AIM_RIFLE_STIMULATED") == ACT_INVALID )
 		return false;
 
-	if( GetActiveWeapon() && FClassnameIs( GetActiveWeapon(), "weapon_rpg" ) )
+	if( GetActiveWeapon() && IsRPG(GetActiveWeapon()) )
 		return false;
 
 	return true;

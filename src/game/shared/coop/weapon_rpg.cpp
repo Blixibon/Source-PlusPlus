@@ -15,6 +15,7 @@
 	#include "beamdraw.h"
 	#include "fx_line.h"
 	#include "view.h"
+#include "multiplayer/multiplayer_animstate.h"
 #else
 	#include "basecombatcharacter.h"
 	#include "movie_explosion.h"
@@ -1845,13 +1846,20 @@ void CWeaponRPG::StopGuiding( void )
 		m_hLaserDot = NULL;
 	}
 #else
-	if ( m_pBeam )
+	if ( m_pBeam[0] )
 	{
 		//Tell it to die right away and let the beam code free it.
-		m_pBeam->brightness = 0.0f;
-		m_pBeam->flags &= ~FBEAM_FOREVER;
-		m_pBeam->die = gpGlobals->curtime - 0.1;
-		m_pBeam = NULL;
+		m_pBeam[0]->brightness = 0.0f;
+		m_pBeam[0]->flags &= ~FBEAM_FOREVER;
+		m_pBeam[0]->die = gpGlobals->curtime - 0.1;
+		m_pBeam[0] = NULL;
+	}
+	if (m_pBeam[1])
+	{
+		m_pBeam[1]->brightness = 0.0f;
+		m_pBeam[1]->flags &= ~FBEAM_FOREVER;
+		m_pBeam[1]->die = gpGlobals->curtime - 0.1;
+		m_pBeam[1] = NULL;
 	}
 #endif
 
@@ -2008,11 +2016,11 @@ extern void FormatViewModelAttachment( Vector &vOrigin, bool bInverse );
 // Purpose: Returns the attachment point on either the world or viewmodel
 //			This should really be worked into the CBaseCombatWeapon class!
 //-----------------------------------------------------------------------------
-void CWeaponRPG::GetWeaponAttachment( int attachmentId, Vector &outVector, Vector *dir /*= NULL*/ )
+void CWeaponRPG::GetWeaponAttachment(bool bViewModel, int attachmentId, Vector &outVector, Vector *dir /*= NULL*/ )
 {
 	QAngle	angles;
 
-	if ( ShouldDrawUsingViewModel() )
+	if (bViewModel)
 	{
 		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 		
@@ -2038,9 +2046,9 @@ void CWeaponRPG::GetWeaponAttachment( int attachmentId, Vector &outVector, Vecto
 //-----------------------------------------------------------------------------
 // Purpose: Setup our laser beam
 //-----------------------------------------------------------------------------
-void CWeaponRPG::InitBeam( void )
+void CWeaponRPG::InitBeam(bool bViewModel)
 {
-	if ( m_pBeam != NULL )
+	if ( m_pBeam[0] != NULL )
 		return;
 
 	CBaseCombatCharacter *pOwner = GetOwner();
@@ -2056,7 +2064,7 @@ void CWeaponRPG::InitBeam( void )
 
 	CBaseEntity *pEntity = NULL;
 
-	if ( ShouldDrawUsingViewModel() )
+	if (bViewModel)
 	{
 		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 		
@@ -2076,12 +2084,12 @@ void CWeaponRPG::InitBeam( void )
 	beamInfo.m_vecStart = vec3_origin;
 	beamInfo.m_vecEnd = vec3_origin;
 	
-	beamInfo.m_pszModelName = ( ShouldDrawUsingViewModel() ) ? RPG_BEAM_SPRITE_NOZ : RPG_BEAM_SPRITE;
+	beamInfo.m_pszModelName = /*( ShouldDrawUsingViewModel() ) ? RPG_BEAM_SPRITE_NOZ :*/ RPG_BEAM_SPRITE;
 	
 	beamInfo.m_flHaloScale = 0.0f;
 	beamInfo.m_flLife = 0.0f;
 	
-	if ( ShouldDrawUsingViewModel() )
+	if (bViewModel)
 	{
 		beamInfo.m_flWidth = 2.0f;
 		beamInfo.m_flEndWidth = 2.0f;
@@ -2106,23 +2114,27 @@ void CWeaponRPG::InitBeam( void )
 	beamInfo.m_flGreen = 0.0;
 	beamInfo.m_flBlue = 0.0;
 	beamInfo.m_nSegments = 4;
-	beamInfo.m_bRenderable = true;
+	beamInfo.m_bRenderable = false;
 	beamInfo.m_nFlags = (FBEAM_FOREVER|FBEAM_SHADEOUT);
 
-	m_pBeam = beams->CreateBeamEntPoint( beamInfo );
+	m_pBeam[bViewModel ? 1 : 0] = beams->CreateBeamEntPoint( beamInfo );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw effects for our weapon
 //-----------------------------------------------------------------------------
-void CWeaponRPG::DrawEffects( void )
+void CWeaponRPG::DrawEffects(bool bViewModel)
 {
 	// Must be guiding and not hidden
 	if ( !m_bGuiding || m_bHideGuiding )
 	{
-		if ( m_pBeam != NULL )
+		if ( m_pBeam[0] != NULL )
 		{
-			m_pBeam->brightness = 0;
+			m_pBeam[0]->brightness = 0;
+		}
+		if (m_pBeam[1] != NULL)
+		{
+			m_pBeam[1]->brightness = 0;
 		}
 
 		return;
@@ -2141,14 +2153,15 @@ void CWeaponRPG::DrawEffects( void )
 	}
 
 	color32 color={255,255,255,255};
-	Vector	vecAttachment, vecDir;
+	Vector	vecAttachment, vecEnd;
 	//QAngle	angles;
 
 	float scale = 8.0f + random->RandomFloat( -2.0f, 2.0f );
 
-	int	attachmentID = ( ShouldDrawUsingViewModel() ) ? RPG_GUIDE_ATTACHMENT : RPG_GUIDE_ATTACHMENT_3RD;
+	int	attachmentID = (bViewModel) ? RPG_GUIDE_ATTACHMENT : RPG_GUIDE_ATTACHMENT_3RD;
 
-	GetWeaponAttachment( attachmentID, vecAttachment, &vecDir );
+	GetWeaponAttachment(bViewModel, attachmentID, vecAttachment );
+	GetWeaponAttachment(bViewModel, attachmentID + 1, vecEnd);
 
 	// Draw the sprite
 	CMatRenderContextPtr pRenderContext( materials );
@@ -2157,14 +2170,37 @@ void CWeaponRPG::DrawEffects( void )
 	
 	// Get the beam's run
 	trace_t tr;
-	UTIL_TraceLine( vecAttachment, vecAttachment + ( vecDir * RPG_LASER_BEAM_LENGTH ), MASK_SHOT, GetOwner(), COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( vecAttachment, vecEnd, (MASK_SHOT & ~CONTENTS_MONSTER), GetOwner(), COLLISION_GROUP_NONE, &tr );
 	
-	InitBeam();
+	InitBeam(bViewModel);
 
-	if ( m_pBeam != NULL )
+	int iBeamIdx = (bViewModel ? 1 : 0);
+
+	if ( m_pBeam[iBeamIdx] != NULL )
 	{
-		m_pBeam->fadeLength = RPG_LASER_BEAM_LENGTH * tr.fraction;
-		m_pBeam->brightness = random->RandomInt( 128, 200 );
+		m_pBeam[iBeamIdx]->fadeLength = RPG_LASER_BEAM_LENGTH * tr.fraction;
+		m_pBeam[iBeamIdx]->brightness = random->RandomInt( 128, 200 );
+
+		/*if (bViewModel)
+		{
+			BeamInfo_t beamInfo;
+			beamInfo.m_flFadeLength = 0.0f;
+			beamInfo.m_flAmplitude = 0;
+			beamInfo.m_flBrightness = 255.0;
+			beamInfo.m_flSpeed = 1.0f;
+			beamInfo.m_nStartFrame = 0.0;
+			beamInfo.m_flFrameRate = 30.0;
+			beamInfo.m_flRed = 255.0;
+			beamInfo.m_flGreen = 0.0;
+			beamInfo.m_flBlue = 0.0;
+			beamInfo.m_nSegments = 4;
+
+			beamInfo.m_vecStart = vecAttachment;
+			GetWeaponAttachment(true, RPG_GUIDE_TARGET_ATTACHMENT, beamInfo.m_vecEnd);
+			beams->UpdateBeamInfo(m_pBeam[iBeamIdx], beamInfo);
+		}*/
+
+		beams->DrawBeam(m_pBeam[iBeamIdx]);
 	}
 }
 
@@ -2176,7 +2212,7 @@ int	CWeaponRPG::DrawModel( int flags )
 	// Only render these on the transparent pass
 	if ( flags & STUDIO_TRANSPARENCY )
 	{
-		DrawEffects();
+		DrawEffects(false);
 		return 1;
 	}
 
@@ -2190,7 +2226,7 @@ int	CWeaponRPG::DrawModel( int flags )
 void CWeaponRPG::ViewModelDrawn( C_BaseViewModel *pBaseViewModel )
 {
 	// Draw our laser effects
-	DrawEffects();
+	DrawEffects(true);
 	
 	BaseClass::ViewModelDrawn( pBaseViewModel );
 }
@@ -2216,9 +2252,13 @@ void CWeaponRPG::NotifyShouldTransmit( ShouldTransmitState_t state )
 
 	if ( state == SHOULDTRANSMIT_END )
 	{
-		if ( m_pBeam != NULL )
+		if ( m_pBeam[0] != NULL )
 		{
-			m_pBeam->brightness = 0.0f;
+			m_pBeam[0]->brightness = 0.0f;
+		}
+		if (m_pBeam[1] != NULL)
+		{
+			m_pBeam[1]->brightness = 0.0f;
 		}
 	}
 }
@@ -2563,12 +2603,18 @@ int CLaserDot::DrawModel( int flags )
 	float	scale;
 	Vector	endPos;
 
-	C_BaseHLPlayer *pOwner = ( C_BaseHLPlayer *)( GetOwnerEntity() );
+	C_BaseHLPlayer *pOwner = ToHL2Player( GetOwnerEntity() );
 
 	if ( pOwner != NULL && pOwner->IsDormant() == false )
 	{
-		// Always draw the dot in front of our faces when in first-person
-		if ( pOwner->IsLocalPlayer() )
+		CMultiPlayerAnimState *pState = pOwner->GetAnimState();
+		if (pState && pState->IsPlayingCustomSequence() && pOwner->GetActiveWeapon())
+		{
+			QAngle ang;
+			pOwner->GetActiveWeapon()->GetAttachment(RPG_GUIDE_ATTACHMENT_3RD, vecAttachment, ang);
+			AngleVectors(ang, &vecAttachment);
+		}
+		else if ( pOwner->IsLocalPlayer() ) // Always draw the dot in front of our faces when in first-person
 		{
 			// Take our view position and orientation
 			vecAttachment = CurrentViewOrigin();

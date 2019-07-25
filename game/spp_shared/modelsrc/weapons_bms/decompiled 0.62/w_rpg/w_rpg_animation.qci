@@ -1,0 +1,19 @@
+
+$Sequence "idle" {
+	"w_rpg_anims\idle.smd"
+	activity "ACT_IDLE_RPG" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "attack1" {
+	"w_rpg_anims\attack1.smd"
+	activity "ACT_RANGE_ATTACK_RPG" 1
+	{ event 3002 0 "" }
+	{ event AE_NPC_MUZZLEFLASH 0 "RPG muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

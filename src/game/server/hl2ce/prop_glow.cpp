@@ -84,7 +84,7 @@ void CGlowProp::RemoveGlowEffect( void )
 
 bool CGlowProp::IsGlowEffectActive( void )
 {
-	return m_bGlowEnabled;
+	return m_bGlowEnabled.Get();
 }
 
 void CGlowProp::SetGlowColor(color32 clr)

@@ -491,13 +491,16 @@ CAI_BaseNPC *CAI_Squad::GetMember(int iIndex, bool bIgnoreSilentMembers)
 	{
 		int iCount = 0;
 		int i = 0;
-		for (; iCount < iIndex && i < m_SquadMembers.Count(); i++)
+		for (; i < m_SquadMembers.Count(); i++)
 		{
 			if (!IsSilentMember(m_SquadMembers.Element(i)))
 				iCount++;
+
+			if (iCount > iIndex)
+				break;
 		}
 
-		return iCount == iIndex ? m_SquadMembers.Element(i) : nullptr;
+		return iCount >= iIndex ? m_SquadMembers.Element(i) : nullptr;
 	}
 }
 

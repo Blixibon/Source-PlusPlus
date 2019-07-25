@@ -215,6 +215,8 @@ static void SineNoise( float *noise, int divs )
 	}
 }
 
+extern void FormatViewModelAttachment(Vector &vOrigin, bool bInverse);
+
 bool ComputeBeamEntPosition( C_BaseEntity *pEnt, int nAttachment, bool bInterpretAttachmentIndexAsHitboxIndex, Vector& pt )
 {
 	// NOTE: This will *leave* the pt at its current value, essential for
@@ -225,7 +227,15 @@ bool ComputeBeamEntPosition( C_BaseEntity *pEnt, int nAttachment, bool bInterpre
 	if ( !bInterpretAttachmentIndexAsHitboxIndex )
 	{
 		QAngle angles;
-		if ( pEnt->GetAttachment( nAttachment, pt, angles ) )
+		if (pEnt->GetRenderGroup() == RENDER_GROUP_VIEW_MODEL_OPAQUE)
+		{
+			if (pEnt->GetAttachment(nAttachment, pt, angles))
+			{
+				::FormatViewModelAttachment(pt, true);
+				return true;
+			}
+		}
+		else if ( pEnt->GetAttachment( nAttachment, pt, angles ) )
 			return true;
 	}
 	else

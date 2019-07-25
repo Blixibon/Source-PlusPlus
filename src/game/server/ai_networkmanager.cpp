@@ -931,7 +931,11 @@ void CAI_NetworkManager::BuildNetworkGraph( void )
 
 			// we've read in a string containing 3 tab separated floats
 			// we need to split this into 3 floats, which we put in a vector
-			V_SplitString(line, "	", floats);
+			const char *pchWhiteSpace[] = {
+				"	",
+				" "
+			};
+			V_SplitString2(line, pchWhiteSpace, ARRAYSIZE(pchWhiteSpace), floats);
 			Vector origin(atof(floats[0]), atof(floats[1]), atof(floats[2]));
 			//Msg("Parsed Vector(%.2f, %.2f, %.2f)\n",origin.x,origin.y,origin.z);
 

@@ -93,7 +93,7 @@ void CBaseViewModel::Spawn( void )
 }
 
 
-#if defined ( CSTRIKE_DLL ) && !defined ( CLIENT_DLL )
+#if (defined ( CSTRIKE_DLL ) || defined(HL2_LAZUL)) && !defined ( CLIENT_DLL )
 #define VGUI_CONTROL_PANELS
 #endif
 

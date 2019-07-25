@@ -249,14 +249,14 @@ public:
 	virtual void	ViewModelDrawn( C_BaseViewModel *pBaseViewModel );
 	virtual bool	IsTranslucent( void );
 
-	void			InitBeam( void );
-	void			GetWeaponAttachment( int attachmentId, Vector &outVector, Vector *dir = NULL );
-	void			DrawEffects( void );
+	void			InitBeam(bool bViewModel);
+	void			GetWeaponAttachment(bool bViewModel, int attachmentId, Vector &outVector, Vector *dir = NULL );
+	void			DrawEffects( bool bViewModel );
 //	void			DrawLaserDot( void );
 
 	CMaterialReference	m_hSpriteMaterial;	// Used for the laser glint
 	CMaterialReference	m_hBeamMaterial;	// Used for the laser beam
-	Beam_t				*m_pBeam;			// Laser beam temp entity
+	Beam_t				*m_pBeam[2];			// Laser beam temp entity
 #else
 	bool	WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions);
 	int		WeaponRangeAttack1Condition(float flDot, float flDist);

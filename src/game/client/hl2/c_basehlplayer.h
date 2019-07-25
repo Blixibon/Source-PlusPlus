@@ -59,7 +59,6 @@ public:
 	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
 	virtual void ReapplyProvision(void) { /*Do nothing*/ };
 	
-protected:
 	virtual CMultiPlayerAnimState* GetAnimState() OVERRIDE;
 
 public:

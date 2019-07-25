@@ -33,7 +33,7 @@ void SendProxy_PlayerSquad(const SendProp *pProp, const void *pStruct, const voi
 	CHL2_Player *pPlayer = pData->GetOuter();
 	CAI_Squad *pSquad = pPlayer->GetPlayerSquad();
 
-	CAI_BaseNPC *pAI = pSquad->GetMember(iElement);
+	CAI_BaseNPC *pAI = pSquad->GetMember(iElement, true);
 	const CBaseHandle *pHandle = nullptr;
 	if (pAI)
 		pHandle = &pAI->GetRefEHandle();
@@ -57,7 +57,7 @@ void SendProxy_PlayerSquadMedicBits(const SendProp *pProp, const void *pStruct, 
 	int i = 0;
 	for (; i < iCount; i++)
 	{
-		CAI_BaseNPC *pAI = pSquad->GetMember(i);
+		CAI_BaseNPC *pAI = pSquad->GetMember(i, true);
 		bool bBit = pAI ? pAI->IsMedic() : false;
 		medicBits.Set(i, bBit);
 	}

@@ -579,10 +579,6 @@ int C_BaseViewModel::DrawModel( int flags )
 		ret = BaseClass::DrawModel( flags );
 	}
 
-	// Now draw the arms model
-	if (s_pViewHands[ViewModelIndex()] != nullptr)
-		s_pViewHands[ViewModelIndex()]->DrawHands(this, flags);
-
 	// Now that we've rendered, reset the animation restart flag
 	if ( flags & STUDIO_RENDER )
 	{
@@ -622,6 +618,10 @@ int C_BaseViewModel::InternalDrawModel( int flags )
 	int ret = BaseClass::InternalDrawModel( flags );
 
 	pRenderContext->CullMode( MATERIAL_CULLMODE_CCW );
+
+	// Now draw the arms model
+	if (ret && s_pViewHands[ViewModelIndex()] != nullptr)
+		s_pViewHands[ViewModelIndex()]->DrawHands(this, flags);
 
 	return ret;
 }

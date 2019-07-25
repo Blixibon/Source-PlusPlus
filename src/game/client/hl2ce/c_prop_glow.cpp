@@ -31,6 +31,7 @@ void C_GlowProp::OnDataChanged( DataUpdateType_t updateType )
 
 	if ( m_bOldGlowEnabled != m_bGlowEnabled )
 	{
+		m_bOldGlowEnabled = m_bGlowEnabled;
 		UpdateGlowEffect();
 	}
 	UpdateGlowColor();

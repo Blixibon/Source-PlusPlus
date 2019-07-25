@@ -45,9 +45,9 @@ public:
 
 	virtual float GetServerIntendedCycle() { return m_flServerCycle; }
 	virtual void SetServerIntendedCycle(float cycle) { m_flServerCycle = cycle; }
-protected:
-	//virtual void MakeAnimState();
+
 	virtual CMultiPlayerAnimState* GetAnimState() { return nullptr; }
+protected:
 
 	QAngle	m_angEyeAngles;
 	bool	m_bSpawnInterpCounter;
