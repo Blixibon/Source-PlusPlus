@@ -1,0 +1,20 @@
+"Sprite"
+{
+
+	"$spriteorientation" "vp_parallel"
+
+	"$basetexture" "effects/HL2MMod_CombineEyes/CombineEye_BlueAnamorphic"
+
+	"Proxies"
+	{
+
+
+
+		"AnimatedTexture"
+		{
+			"animatedtexturevar" "$basetexture"
+			"animatedtextureframenumvar" "$frame"
+			"animatedtextureframerate" 12
+		}
+         }
+}

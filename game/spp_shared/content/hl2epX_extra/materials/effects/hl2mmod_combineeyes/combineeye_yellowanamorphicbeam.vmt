@@ -1,0 +1,13 @@
+"Sprite"
+{
+	"$spriteorientation" "vp_parallel"
+	"$spriteorigin" "[ 0.50 0.00 ]"
+	"$basetexture" "effects/HL2MMod_CombineEyes/CombineEye_YellowAnamorphicBeam"
+
+	"Proxies"
+	{
+		"lampbeam"
+		{
+		}
+	}
+}

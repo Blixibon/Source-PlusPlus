@@ -1,0 +1,77 @@
+"oc.intercom_06"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"vox_overhead/c1a2_06.wav"
+	}
+}
+
+"oc.intercom_03"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"vox_overhead/c1a2_03.wav"
+	}
+}
+
+"oc.intercom_00"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"vox_overhead/c1a2_00.wav"
+	}
+}
+
+"oc.intercom_10"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"vox_overhead/c1a2_10.wav"
+	}
+}
+
+"oc.intercom_05"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"vox_overhead/c1a2_05.wav"
+	}
+}
+
+"oc.intercom_04"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_85db"
+
+	"rndwave"
+	{
+		"wave"		"vox_overhead/c1a2_04.wav"
+	}
+}
