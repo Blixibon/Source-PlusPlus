@@ -1,0 +1,307 @@
+
+// The 32 below is a guess until further is known about the format.
+$AnimBlockSize 32
+
+$BoneSaveFrame "HeadcrabClassic.BodyControl" position rotation
+$BoneSaveFrame "HeadcrabClassic.SpineControl" position rotation
+$BoneSaveFrame "HeadcrabClassic.HeadControl" position rotation
+$BoneSaveFrame "HeadcrabClassic.FangL_Bone1" rotation
+$BoneSaveFrame "HeadcrabClassic.FangL_Bone2" rotation
+$BoneSaveFrame "HeadcrabClassic.FangR_Bone1" rotation
+$BoneSaveFrame "HeadcrabClassic.FangR_Bone2" rotation
+$BoneSaveFrame "HeadcrabClassic.HoleControlL" position rotation
+$BoneSaveFrame "HeadcrabClassic.HoleControlR" position rotation
+$BoneSaveFrame "HeadcrabClassic.UpperArmL_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.ForeArmL_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.UpperArmR_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.ForeArmR_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.HipControl" rotation
+$BoneSaveFrame "HeadcrabClassic.ThighR_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.CalfR_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.ThighL_Bone" rotation
+$BoneSaveFrame "HeadcrabClassic.CalfL_Bone" rotation
+
+$SectionFrames 30 127
+
+$Sequence "Idle01" {
+	"lamarr_anims\Idle01.smd"
+	activity "ACT_IDLE" 2
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "IdleB" {
+	"lamarr_anims\IdleB.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "Run1" {
+	"lamarr_anims\Run1.smd"
+	activity "ACT_RUN" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	walkframe 33 LX LY
+}
+
+$Sequence "TurnLeft" {
+	"lamarr_anims\TurnLeft.smd"
+	activity "ACT_TURN_LEFT" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	walkframe 30
+}
+
+$Sequence "TurnRight" {
+	"lamarr_anims\TurnRight.smd"
+	activity "ACT_TURN_RIGHT" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "jumpattack" {
+	"lamarr_anims\jumpattack.smd"
+	activity "ACT_RANGE_ATTACK1" 1
+	{ event 2 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "threat" {
+	"lamarr_anims\threat.smd"
+	activity "ACT_HEADCRAB_THREAT_DISPLAY" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "Drown" {
+	"lamarr_anims\Drown.smd"
+	activity "ACT_HEADCRAB_DROWN" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "SleepLoop" {
+	"lamarr_anims\SleepLoop.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "BarneyPounce" {
+	"lamarr_anims\BarneyPounce.smd"
+	{ event 5004 35 "k_lab.headcrabattack" }
+	{ event 5004 78 "k_lab.headcrabalert" }
+	{ event 5004 136 "Flesh.ImpactSoft" }
+	{ event 5004 138 "k_lab.headcrabpain" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	walkframe 38 LX LY LZ LZR
+	walkframe 45 LX LY LZ LZR
+	walkframe 54 LX LY LZ LZR
+	walkframe 61 LX LY LZ LZR
+	walkframe 69 LX LY LZ LZR
+	walkframe 84 LX LY LZ LZR
+	walkframe 90 LX LY LZ LZR
+	walkframe 95 LX LY LZ LZR
+	walkframe 102 LX LY LZ LZR
+	walkframe 117 LX LY LZ LZR
+	walkframe 125 LX LY LZ LZR
+	walkframe 138 LX LY LZ LZR
+	walkframe 152 LX LY LZ LZR
+	walkframe 188 LX LY LZ LZR
+}
+
+$Sequence "LockerPant_Idle" {
+	"lamarr_anims\LockerPant_Idle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 29
+	loop
+}
+
+$Sequence "BarneyTaunt" {
+	"lamarr_anims\BarneyTaunt.smd"
+	{ event 5004 46 "k_lab.headcrabtalk1" }
+	{ event 5004 82 "k_lab.headcrabhiss" }
+	{ event 5004 204 "k_lab.headcrabalert" }
+	{ event 5004 300 "k_lab.headcrabattack" }
+	{ event 5004 382 "k_lab.headcrabalert" }
+	{ event 1003 233 "1" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	walkframe 80 LX LY
+	walkframe 93 LX LY
+	walkframe 144 LX LY
+	walkframe 174 LX LY
+	walkframe 213 LX LY
+	walkframe 231 LX LY LZ
+	walkframe 268 LX LY LZ
+	walkframe 298 LX LY LZ
+	walkframe 320 LX LY LZ
+	walkframe 347 LX LY LZ
+	walkframe 360 LX LY LZ
+	walkframe 382 LX LY LZ
+	walkframe 400 LX LY LZ
+	walkframe 420 LX LY LZ
+	walkframe 438 LX LY LZ
+}
+
+$Sequence "Lockerjump01" {
+	"lamarr_anims\Lockerjump01.smd"
+	{ event 5004 14 "k_lab.headcrabattack" }
+	{ event 5004 28 "Flesh.ImpactHard" }
+	{ event 1003 27 "1" }
+	{ event 1003 70 "2" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	walkframe 13 LX LY LZ LZR
+	walkframe 27 LX LY LZ LZR
+	walkframe 34 LX LY LZ LZR
+	walkframe 72 LX LY LZ LZR
+	walkframe 100 LX LY LZ LZR
+}
+
+$Sequence "lamarr_crow" {
+	"lamarr_anims\lamarr_crow.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "Tele_Knock" {
+	"lamarr_anims\Tele_Knock.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	walkframe 10 LX LY LZ
+	walkframe 40 LX LY LZ
+	walkframe 49 LX LY LZ
+	walkframe 60 LX LY LZ
+	walkframe 131 LX LY LZ
+	walkframe 139 LX LY LZ
+	walkframe 154 LX LY LZ
+	walkframe 163 LX LY LZ
+	walkframe 177 LX LY LZ
+	walkframe 191 LX LY LZ
+	walkframe 208 LX LY LZ
+}
+
+$Sequence "shotgun_peek" {
+	"lamarr_anims\shotgun_peek.smd"
+	{ event AE_CL_PLAYSOUND 15 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 22 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 29 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 37 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 55 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 59 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 81 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 84 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 86 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 88 "NPC_Headcrab.Footstep" }
+	{ event AE_CL_PLAYSOUND 32 "lamarr.Idle1" }
+	{ event AE_CL_PLAYSOUND 55 "lamarr.Idle2" }
+	{ event AE_CL_PLAYSOUND 74 "lamarr.startle" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "gman_freeze_pose" {
+	"lamarr_anims\gman_freeze_pose.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "ragdoll" {
+	"lamarr_anims\ragdoll.smd"
+	activity "ACT_DIERAGDOLL" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "kleiner_lamar" {
+	"lamarr_anims\kleiner_lamar.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "kleiner_lamar_postidle" {
+	"lamarr_anims\kleiner_lamar_postidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "lamar_2nosecone" {
+	"lamarr_anims\lamar_2nosecone.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "lamar_2nosecone_postidle" {
+	"lamarr_anims\lamar_2nosecone_postidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "lamar_2nosecone_preidle" {
+	"lamarr_anims\lamar_2nosecone_preidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "kleiner_lamar_preidle" {
+	"lamarr_anims\kleiner_lamar_preidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "lamar_hide" {
+	"lamarr_anims\lamar_hide.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "lamar_hide_postidle" {
+	"lamarr_anims\lamar_hide_postidle.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "lamarr_space" {
+	"lamarr_anims\lamarr_space.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	walkframe 991 LX LY
+}

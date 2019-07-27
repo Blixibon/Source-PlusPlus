@@ -1,0 +1,43 @@
+
+$CollisionJoints "lamarr_physics.smd"
+{
+	$mass 5
+	$inertia 5
+	$damping 0.01
+	$rotdamping 1.5
+	$rootbone " "
+
+
+	$jointconstrain "HeadcrabClassic.ThighL_Bone" x limit -37 12 0.2
+	$jointconstrain "HeadcrabClassic.ThighL_Bone" y limit -39 46 0.2
+	$jointconstrain "HeadcrabClassic.ThighL_Bone" z limit -44 46 0.2
+
+	$jointconstrain "HeadcrabClassic.ThighR_Bone" x limit -30 19 0.2
+	$jointconstrain "HeadcrabClassic.ThighR_Bone" y limit -39 47 0.2
+	$jointconstrain "HeadcrabClassic.ThighR_Bone" z limit -44 46 0.2
+
+	$jointconstrain "HeadcrabClassic.CalfR_Bone" x limit 0 0 0
+	$jointconstrain "HeadcrabClassic.CalfR_Bone" y limit 0 0 0
+	$jointconstrain "HeadcrabClassic.CalfR_Bone" z limit -77 57 0.2
+
+	$jointconstrain "HeadcrabClassic.UpperArmR_Bone" x limit -37 64 0.2
+	$jointconstrain "HeadcrabClassic.UpperArmR_Bone" y limit -53 23 0.2
+	$jointconstrain "HeadcrabClassic.UpperArmR_Bone" z limit -61 55 0.2
+
+	$jointconstrain "HeadcrabClassic.ForeArmR_Bone" x limit 0 0 0
+	$jointconstrain "HeadcrabClassic.ForeArmR_Bone" y limit 0 0 0
+	$jointconstrain "HeadcrabClassic.ForeArmR_Bone" z limit -84 39 0.2
+
+	$jointconstrain "HeadcrabClassic.UpperArmL_Bone" x limit -64 35 0.2
+	$jointconstrain "HeadcrabClassic.UpperArmL_Bone" y limit -23 39 0.2
+	$jointconstrain "HeadcrabClassic.UpperArmL_Bone" z limit -44 53 0.2
+
+	$jointconstrain "HeadcrabClassic.ForeArmL_Bone" x limit 0 0 0
+	$jointconstrain "HeadcrabClassic.ForeArmL_Bone" y limit 0 0 0
+	$jointconstrain "HeadcrabClassic.ForeArmL_Bone" z limit -70 48 0.2
+
+	$jointconstrain "HeadcrabClassic.CalfL_Bone" x limit 0 0 0
+	$jointconstrain "HeadcrabClassic.CalfL_Bone" y limit 0 0 0
+	$jointconstrain "HeadcrabClassic.CalfL_Bone" z limit -95 57 0.2
+	$noselfcollisions
+}

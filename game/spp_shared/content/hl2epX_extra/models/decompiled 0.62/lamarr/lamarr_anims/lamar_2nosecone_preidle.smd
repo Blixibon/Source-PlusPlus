@@ -1,0 +1,43 @@
+// Created by Crowbar 0.62
+version 1
+nodes
+  0 "HeadcrabClassic.BodyControl" -1
+  1 "HeadcrabClassic.SpineControl" 0
+  2 "HeadcrabClassic.HeadControl" 1
+  3 "HeadcrabClassic.FangL_Bone1" 2
+  4 "HeadcrabClassic.FangL_Bone2" 3
+  5 "HeadcrabClassic.FangR_Bone1" 2
+  6 "HeadcrabClassic.FangR_Bone2" 5
+  7 "HeadcrabClassic.HoleControlL" 1
+  8 "HeadcrabClassic.HoleControlR" 1
+  9 "HeadcrabClassic.UpperArmL_Bone" 1
+  10 "HeadcrabClassic.ForeArmL_Bone" 9
+  11 "HeadcrabClassic.UpperArmR_Bone" 1
+  12 "HeadcrabClassic.ForeArmR_Bone" 11
+  13 "HeadcrabClassic.HipControl" 0
+  14 "HeadcrabClassic.ThighR_Bone" 13
+  15 "HeadcrabClassic.CalfR_Bone" 14
+  16 "HeadcrabClassic.ThighL_Bone" 13
+  17 "HeadcrabClassic.CalfL_Bone" 16
+end
+skeleton
+  time 0
+    0 -76.125000 -56.343750 -144.000000 1.318715 -1.503836 0.252710
+    1 6.601563 -2.929688 0.011490 0.000000 0.000000 0.000000
+    2 3.707160 -1.779552 -0.001620 0.000000 0.000000 0.748107
+    3 1.884797 0.225918 -3.244098 -0.856219 -0.128452 -1.738723
+    4 3.698876 0.000000 0.000000 0.000000 0.000000 -0.664655
+    5 1.884668 0.225917 3.247675 -2.285333 0.128458 -1.738718
+    6 3.698876 0.000000 0.000000 0.000000 0.000000 0.664655
+    7 -1.562495 -4.663179 -3.756904 0.000000 0.000000 0.000000
+    8 -1.562644 -4.663178 3.756911 0.000000 0.000000 0.000000
+    9 2.630715 -3.155085 -5.016712 -0.702786 0.155513 0.081355
+    10 8.255675 0.000000 0.000000 0.000000 0.000000 -0.799876
+    11 2.630415 -3.155085 5.016869 -2.289161 -0.153694 -0.010973
+    12 8.255673 0.000000 0.000000 0.000000 0.000000 0.675078
+    13 -0.450924 -0.675699 0.000000 0.000000 0.000000 0.000000
+    14 0.000009 0.000000 6.164912 -2.851613 0.435866 -2.240365
+    15 6.098812 0.000000 0.000000 0.000000 0.000000 0.000000
+    16 0.118958 0.310791 -6.070313 2.951316 -0.370758 -2.443646
+    17 6.098812 0.000000 0.000000 0.000000 0.000000 -0.594090
+end

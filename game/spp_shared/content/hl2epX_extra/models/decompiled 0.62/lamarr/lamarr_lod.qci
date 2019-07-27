@@ -1,0 +1,39 @@
+
+$LOD 12
+{
+	replacemodel "Lamarr_reference.smd" "Lamarr_reference_lod1.smd"
+	NoFacial
+}
+$LOD 20
+{
+	replacemodel "Lamarr_reference.smd" "Lamarr_reference_lod2.smd"
+	replacebone "HeadcrabClassic.FangL_Bone1" "HeadcrabClassic.HeadControl"
+	replacebone "HeadcrabClassic.FangL_Bone2" "HeadcrabClassic.FangL_Bone1"
+	replacebone "HeadcrabClassic.FangR_Bone1" "HeadcrabClassic.HeadControl"
+	replacebone "HeadcrabClassic.FangR_Bone2" "HeadcrabClassic.FangR_Bone1"
+	replacebone "HeadcrabClassic.HoleControlL" "HeadcrabClassic.SpineControl"
+	replacebone "HeadcrabClassic.HoleControlR" "HeadcrabClassic.SpineControl"
+	NoFacial
+}
+$LOD 30
+{
+	replacemodel "Lamarr_reference.smd" "Lamarr_reference_lod3.smd"
+	replacebone "HeadcrabClassic.FangL_Bone1" "HeadcrabClassic.HeadControl"
+	replacebone "HeadcrabClassic.FangL_Bone2" "HeadcrabClassic.FangL_Bone1"
+	replacebone "HeadcrabClassic.FangR_Bone1" "HeadcrabClassic.HeadControl"
+	replacebone "HeadcrabClassic.FangR_Bone2" "HeadcrabClassic.FangR_Bone1"
+	replacebone "HeadcrabClassic.HoleControlL" "HeadcrabClassic.SpineControl"
+	replacebone "HeadcrabClassic.HoleControlR" "HeadcrabClassic.SpineControl"
+	NoFacial
+}
+$ShadowLOD
+{
+	replacemodel "Lamarr_reference.smd" "Lamarr_reference_lod4.smd"
+	replacebone "HeadcrabClassic.FangL_Bone1" "HeadcrabClassic.HeadControl"
+	replacebone "HeadcrabClassic.FangL_Bone2" "HeadcrabClassic.FangL_Bone1"
+	replacebone "HeadcrabClassic.FangR_Bone1" "HeadcrabClassic.HeadControl"
+	replacebone "HeadcrabClassic.FangR_Bone2" "HeadcrabClassic.FangR_Bone1"
+	replacebone "HeadcrabClassic.HoleControlL" "HeadcrabClassic.SpineControl"
+	replacebone "HeadcrabClassic.HoleControlR" "HeadcrabClassic.SpineControl"
+	NoFacial
+}

@@ -3476,8 +3476,6 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 			// Randomly arc between the elements and core
 			if (m_EffectState != EFFECT_HOLDING && random->RandomInt(0, 100) == 0 && !engine->IsPaused())
 			{
-				CBeam* pBeam = CBeam::BeamCreate(ShouldDrawUsingViewModel() ? MEGACANNON_BEAM_SPRITE_NOZ : MEGACANNON_BEAM_SPRITE, 1);
-
 				// Create our beams
 				CBaseEntity* pBeamEnt = nullptr;
 				if (ShouldDrawUsingViewModel())
@@ -3490,42 +3488,47 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 					pBeamEnt = this;
 				}
 
-				pBeam->EntsInit(pBeamEnt, pBeamEnt);
-
-				int	startAttachment;
-				int	sprite;
-
-				if (random->RandomInt(0, 1))
+				if (pBeamEnt)
 				{
-					startAttachment = LookupAttachment("fork1t");
-					sprite = PHYSCANNON_ENDCAP1;
-				}
-				else
-				{
-					startAttachment = LookupAttachment("fork2t");
-					sprite = PHYSCANNON_ENDCAP2;
-				}
+					CBeam* pBeam = CBeam::BeamCreate(ShouldDrawUsingViewModel() ? MEGACANNON_BEAM_SPRITE_NOZ : MEGACANNON_BEAM_SPRITE, 1);
 
-				int endAttachment = 1;
+					pBeam->EntsInit(pBeamEnt, pBeamEnt);
 
-				pBeam->SetStartAttachment(startAttachment);
-				pBeam->SetEndAttachment(endAttachment);
-				pBeam->SetNoise(random->RandomFloat(8.0f, 16.0f));
-				pBeam->SetColor(255, 255, 255);
-				pBeam->SetScrollRate(25);
-				pBeam->SetBrightness(128);
-				pBeam->SetWidth(1);
-				pBeam->SetEndWidth(random->RandomFloat(2, 8));
+					int	startAttachment;
+					int	sprite;
 
-				float lifetime = random->RandomFloat(0.2f, 0.4f);
+					if (random->RandomInt(0, 1))
+					{
+						startAttachment = LookupAttachment("fork1t");
+						sprite = PHYSCANNON_ENDCAP1;
+					}
+					else
+					{
+						startAttachment = LookupAttachment("fork2t");
+						sprite = PHYSCANNON_ENDCAP2;
+					}
 
-				pBeam->LiveForTime(lifetime);
+					int endAttachment = 1;
 
-				{
-					// Turn on the sprite for awhile
-					m_Parameters[sprite].ForceVisibleUntil(gpGlobals->curtime + lifetime);
-					//m_flEndSpritesOverride[sprite] = gpGlobals->curtime + lifetime;
-					EmitSound("Weapon_MegaPhysCannon.ChargeZap");
+					pBeam->SetStartAttachment(startAttachment);
+					pBeam->SetEndAttachment(endAttachment);
+					pBeam->SetNoise(random->RandomFloat(8.0f, 16.0f));
+					pBeam->SetColor(255, 255, 255);
+					pBeam->SetScrollRate(25);
+					pBeam->SetBrightness(128);
+					pBeam->SetWidth(1);
+					pBeam->SetEndWidth(random->RandomFloat(2, 8));
+
+					float lifetime = random->RandomFloat(0.2f, 0.4f);
+
+					pBeam->LiveForTime(lifetime);
+
+					{
+						// Turn on the sprite for awhile
+						m_Parameters[sprite].ForceVisibleUntil(gpGlobals->curtime + lifetime);
+						//m_flEndSpritesOverride[sprite] = gpGlobals->curtime + lifetime;
+						EmitSound("Weapon_MegaPhysCannon.ChargeZap");
+					}
 				}
 			}
 

@@ -1,0 +1,13 @@
+
+$CBox 0 0 0 0 0 0
+
+$BBox -14.381 -9.086 -0.492 14.056 8.833 16.117
+
+$HBoxSet "default"
+$HBox 0 "HeadcrabClassic.BodyControl" -3.5 -6 -7.17 13.5 4 7.17 ""
+$HBox 0 "HeadcrabClassic.ForeArmL_Bone" 0 -0.5 -1 8 1.5 1 ""
+$HBox 0 "HeadcrabClassic.UpperArmL_Bone" -0.5 -1 -1 8.5 1 1 ""
+$HBox 0 "HeadcrabClassic.UpperArmR_Bone" -0.5 -1 -1 8.5 1 1 ""
+$HBox 0 "HeadcrabClassic.ForeArmR_Bone" 0 -1.5 -1 8 0.5 1 ""
+$HBox 0 "HeadcrabClassic.CalfR_Bone" -0.25 -0.5 -1 4.25 1.5 1 ""
+$HBox 0 "HeadcrabClassic.CalfL_Bone" -0.25 -1 -1 4.25 1 1 ""
