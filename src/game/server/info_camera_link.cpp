@@ -139,17 +139,30 @@ CBaseEntity *CreateInfoCameraLink( CBaseEntity *pTarget, CPointCamera *pCamera )
 	return pInfoCameraLink;
 }
 
+class CCameraLinkVisibilityResetNew : public CAutoGameSystemPerFrame
+{
+public:
+	CCameraLinkVisibilityResetNew() : CAutoGameSystemPerFrame("NewCameraLinkVisSystem")
+	{}
+
+	virtual void PreClientUpdate();
+};
+
+CCameraLinkVisibilityResetNew g_LinkVisSys;
+
+void CCameraLinkVisibilityResetNew::PreClientUpdate()
+{
+	for (CPointCamera *pCameraEnt = GetPointCameraList(); pCameraEnt != NULL; pCameraEnt = pCameraEnt->m_pNext)
+	{
+		pCameraEnt->SetActive(false);
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Sets up visibility 
 //-----------------------------------------------------------------------------
 void PointCameraSetupVisibility( CBaseEntity *pPlayer, int area, unsigned char *pvs, int pvssize )
 {
-	for ( CPointCamera *pCameraEnt = GetPointCameraList(); pCameraEnt != NULL; pCameraEnt = pCameraEnt->m_pNext )
-	{
-		pCameraEnt->SetActive( false );
-	}
-	
 	int nNext;
 	for ( int i = g_InfoCameraLinkList.Head(); i != g_InfoCameraLinkList.InvalidIndex(); i = nNext )
 	{
