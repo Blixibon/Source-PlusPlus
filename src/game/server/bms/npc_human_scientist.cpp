@@ -330,9 +330,7 @@ bool CNPC_BaseScientist::CanHeal()
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScientist::ShouldHealTarget(CBaseEntity *pTarget, bool bActiveUse)
 {
-	Disposition_t disposition;
-
-	if (!pTarget && ((disposition = IRelationType(pTarget)) != D_LI && disposition != D_NU))
+	if (!pTarget || (IRelationType(pTarget) < D_LI))
 		return false;
 
 	// Don't heal if I'm in the middle of talking
@@ -400,8 +398,8 @@ void CNPC_BaseScientist::UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	if (HasCondition(COND_SCI_PLAYERHEALREQUEST))
 		return;
 
-	CBasePlayer *pPlayer = pActivator->IsPlayer() ? (CBasePlayer *)pActivator : UTIL_GetLocalPlayer();
-	if (pPlayer->FInViewCone(this) && CanHeal())
+	CBasePlayer *pPlayer = pActivator->IsPlayer() ? (CBasePlayer *)pActivator : GetBestPlayer();
+	if (pPlayer && pPlayer->FInViewCone(this) && CanHeal())
 	{
 		if (ShouldHealTarget(pPlayer, true))
 		{
