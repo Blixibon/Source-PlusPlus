@@ -88,6 +88,7 @@
 #include "datacache/imdlcache.h"
 #include "vstdlib/jobthread.h"
 #include "players_system.h"
+#include "items.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -130,6 +131,7 @@ extern ConVar sk_healthkit;
 //#define DEBUG_LOOK
 
 bool RagdollManager_SaveImportant( CAI_BaseNPC *pNPC );
+const char* RemapEntityClass(const char* pchClass);
 
 #define	MIN_PHYSICS_FLINCH_DAMAGE	5.0f
 
@@ -649,6 +651,103 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 	// catch the change of state if we set this to whatever the ideal state is.
 	if ( CanBecomeRagdoll() || IsRagdoll() )
 		 SetState( NPC_STATE_DEAD );
+
+	
+	for (int i = 0; i < m_AttachedEntities.Count(); i++)
+	{
+		if (!m_AttachedEntities[i].Get())
+			continue;
+
+		CBaseEntity* pEnt = m_AttachedEntities[i].Get();
+
+		if (pEnt->GetBaseAnimating() && pEnt->IsEffectActive(EF_BONEMERGE))
+		{
+			int iBIndex = -1;
+			int iWeaponBoneIndex = -1;
+			CBaseAnimating* pAnim = pEnt->GetBaseAnimating();
+
+			CStudioHdr* hdr = pAnim->GetModelPtr();
+			// If I have a hand, set the weapon position to my hand bone position.
+			if (hdr && hdr->numbones() > 0)
+			{
+				// Assume bone zero is the root
+				for (iWeaponBoneIndex = 0; iWeaponBoneIndex < hdr->numbones(); ++iWeaponBoneIndex)
+				{
+					iBIndex = LookupBone(hdr->pBone(iWeaponBoneIndex)->pszName());
+					// Found one!
+					if (iBIndex != -1)
+						break;
+				}
+
+				if (iBIndex == -1)
+				{
+					iBIndex = LookupBone("ValveBiped.Weapon_bone");
+				}
+			}
+			else
+			{
+				iBIndex = LookupBone("ValveBiped.Weapon_bone");
+			}
+
+			if (iBIndex != -1)
+			{
+				Vector origin;
+				QAngle angles;
+				matrix3x4_t transform;
+
+				// Get the transform for the weapon bonetoworldspace in the NPC
+				GetBoneTransform(iBIndex, transform);
+
+				// find offset of root bone from origin in local space
+				// Make sure we're detached from hierarchy before doing this!!!
+				pAnim->StopFollowingEntity();
+				pAnim->SetAbsOrigin(Vector(0, 0, 0));
+				pAnim->SetAbsAngles(QAngle(0, 0, 0));
+				pAnim->InvalidateBoneCache();
+				matrix3x4_t rootLocal;
+				pAnim->GetBoneTransform(iWeaponBoneIndex, rootLocal);
+
+				// invert it
+				matrix3x4_t rootInvLocal;
+				MatrixInvert(rootLocal, rootInvLocal);
+
+				matrix3x4_t weaponMatrix;
+				ConcatTransforms(transform, rootInvLocal, weaponMatrix);
+				MatrixAngles(weaponMatrix, angles, origin);
+
+				pAnim->Teleport(&origin, &angles, NULL);
+			}
+			// Otherwise just set in front of me.
+			else
+			{
+				Vector vFacingDir = BodyDirection2D();
+				vFacingDir = vFacingDir * 10.0;
+				pAnim->StopFollowingEntity();
+				pAnim->SetAbsOrigin(Weapon_ShootPosition() + vFacingDir);
+			}
+
+			if (!pAnim->CreateVPhysics())
+			{
+				CItem* pItem = NULL;
+				if (((pItem = dynamic_cast<CItem*>(pAnim)) != NULL))
+				{
+					pItem->CreateItemVPhysicsObject();
+					pItem->ActivateWhenAtRest();
+				}
+				else
+				{
+					pAnim->SetMoveType(MOVETYPE_FLYGRAVITY);
+					pAnim->SetSolid(SOLID_BBOX);
+				}
+			}
+		}
+		else
+		{
+			UTIL_Remove(pEnt);
+		}
+	}
+
+	m_AttachedEntities.Purge();
 
 	// If the remove-no-ragdoll flag is set in the damage type, we're being
 	// told to remove ourselves immediately on death. This is used when something
@@ -3797,7 +3896,16 @@ bool CAI_BaseNPC::PreNPCThink()
 }
 
 void CAI_BaseNPC::PostNPCThink( void ) 
-{ 
+{
+	int iInitial = m_AttachedEntities.Count();
+	for (int i = iInitial - 1; i >= 0; i--)
+	{
+		if (m_AttachedEntities[i].Get() == nullptr)
+		{
+			m_AttachedEntities.FastRemove(i);
+		}
+	}
+
 	if ( g_StartTimeCurThink != 0.0 && VCRGetMode() == VCR_Disabled )
 	{
 		g_NpcTimeThisFrame += engine->Time() - g_StartTimeCurThink;
@@ -8711,6 +8819,165 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 				DevWarning( "%s received AE_NPC_HURT_INTERACTION_PARTNER anim event, but it's not interacting with anything.\n", GetDebugName() );
 				return;
 			}
+			else if (pEvent->event == AE_NPC_ITEM_ATTACH)
+			{
+				const char* pchItemName = RemapEntityClass(pEvent->options);
+				if (V_strncmp("item_weapon_", pchItemName, 12) == 0)
+				{
+					// Skip past the item_
+					pchItemName += 5;
+				}
+
+				for (int i = 0; i < m_AttachedEntities.Count(); i++)
+				{
+					if (!m_AttachedEntities[i].Get())
+						continue;
+
+					if (m_AttachedEntities[i].Get()->ClassMatches(pchItemName))
+						return;
+				}
+
+			CBaseEntity *pEnt = Create(pchItemName, GetAbsOrigin(), GetAbsAngles(), this);
+
+			if (pEnt)
+			{
+				pEnt->VPhysicsDestroyObject();
+				pEnt->FollowEntity(this, true);
+				pEnt->RemoveSolidFlags(FSOLID_TRIGGER);
+				m_AttachedEntities.AddToTail(pEnt);
+			}
+
+			return;
+			}
+			else if (pEvent->event == AE_NPC_ITEM_REMOVE)
+			{
+			const char* pchItemName = RemapEntityClass(pEvent->options);
+			if (V_strncmp("item_weapon_", pchItemName, 12) == 0)
+			{
+				// Skip past the item_
+				pchItemName += 5;
+			}
+
+			for (int i = 0; i < m_AttachedEntities.Count(); i++)
+			{
+				if (!m_AttachedEntities[i].Get())
+					continue;
+
+				if (m_AttachedEntities[i].Get()->ClassMatches(pchItemName))
+				{
+					UTIL_Remove(m_AttachedEntities[i].Get());
+					m_AttachedEntities[i].Term();
+				}
+			}
+
+			return;
+			}
+			else if (pEvent->event == AE_NPC_ITEM_DROP)
+			{
+			const char* pchItemName = RemapEntityClass(pEvent->options);
+			if (V_strncmp("item_weapon_", pchItemName, 12) == 0)
+			{
+				// Skip past the item_
+				pchItemName += 5;
+			}
+
+			for (int i = 0; i < m_AttachedEntities.Count(); i++)
+			{
+				if (!m_AttachedEntities[i].Get())
+					continue;
+
+				CBaseEntity* pEnt = m_AttachedEntities[i].Get();
+
+				if (pEnt->ClassMatches(pEvent->options) && pEnt->GetBaseAnimating())
+				{
+					m_AttachedEntities[i].Term();
+
+					int iBIndex = -1;
+					int iWeaponBoneIndex = -1;
+					CBaseAnimating* pAnim = pEnt->GetBaseAnimating();
+
+					CStudioHdr* hdr = pAnim->GetModelPtr();
+					// If I have a hand, set the weapon position to my hand bone position.
+					if (hdr && hdr->numbones() > 0)
+					{
+						// Assume bone zero is the root
+						for (iWeaponBoneIndex = 0; iWeaponBoneIndex < hdr->numbones(); ++iWeaponBoneIndex)
+						{
+							iBIndex = LookupBone(hdr->pBone(iWeaponBoneIndex)->pszName());
+							// Found one!
+							if (iBIndex != -1)
+							{
+								break;
+							}
+						}
+
+						if (iBIndex == -1)
+						{
+							iBIndex = LookupBone("ValveBiped.Weapon_bone");
+						}
+					}
+					else
+					{
+						iBIndex = LookupBone("ValveBiped.Weapon_bone");
+					}
+
+					if (iBIndex != -1)
+					{
+						Vector origin;
+						QAngle angles;
+						matrix3x4_t transform;
+
+						// Get the transform for the weapon bonetoworldspace in the NPC
+						GetBoneTransform(iBIndex, transform);
+
+						// find offset of root bone from origin in local space
+						// Make sure we're detached from hierarchy before doing this!!!
+						pAnim->StopFollowingEntity();
+						pAnim->SetAbsOrigin(Vector(0, 0, 0));
+						pAnim->SetAbsAngles(QAngle(0, 0, 0));
+						pAnim->InvalidateBoneCache();
+						matrix3x4_t rootLocal;
+						pAnim->GetBoneTransform(iWeaponBoneIndex, rootLocal);
+
+						// invert it
+						matrix3x4_t rootInvLocal;
+						MatrixInvert(rootLocal, rootInvLocal);
+
+						matrix3x4_t weaponMatrix;
+						ConcatTransforms(transform, rootInvLocal, weaponMatrix);
+						MatrixAngles(weaponMatrix, angles, origin);
+
+						pAnim->Teleport(&origin, &angles, NULL);
+					}
+					// Otherwise just set in front of me.
+					else
+					{
+						Vector vFacingDir = BodyDirection2D();
+						vFacingDir = vFacingDir * 10.0;
+						pAnim->StopFollowingEntity();
+						pAnim->SetAbsOrigin(Weapon_ShootPosition() + vFacingDir);
+					}
+
+
+					if (!pAnim->CreateVPhysics())
+					{
+						CItem* pItem = NULL;
+						if (((pItem = dynamic_cast<CItem*>(pAnim)) != NULL))
+						{
+							pItem->CreateItemVPhysicsObject();
+							pItem->ActivateWhenAtRest();
+						}
+						else
+						{
+							pAnim->SetMoveType(MOVETYPE_FLYGRAVITY);
+							pAnim->SetSolid(SOLID_BBOX);
+						}
+					}
+				}
+			}
+
+			return;
+			}
 		}
 
 		// FIXME: why doesn't this code pass unhandled events down to its parent?
@@ -10735,6 +11002,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_iInteractionPlaying,	FIELD_INTEGER ),
 	DEFINE_UTLVECTOR(m_ScriptedInteractions,FIELD_EMBEDDED),
 	DEFINE_FIELD( m_flInteractionYaw,		FIELD_FLOAT ),
+	DEFINE_UTLVECTOR(m_AttachedEntities,	FIELD_EHANDLE),
 	DEFINE_EMBEDDED( m_CheckOnGroundTimer ),
 	DEFINE_FIELD( m_vDefaultEyeOffset,		FIELD_VECTOR ),
   	DEFINE_FIELD( m_flNextEyeLookTime,		FIELD_TIME ),

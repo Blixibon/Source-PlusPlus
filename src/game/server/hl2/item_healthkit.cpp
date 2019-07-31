@@ -182,6 +182,58 @@ public:
 LINK_ENTITY_TO_CLASS( item_healthvial, CHealthVial );
 PRECACHE_REGISTER( item_healthvial );
 
+class CSyringe : public CItem
+{
+public:
+	DECLARE_CLASS(CSyringe, CItem);
+
+	void Spawn(void)
+	{
+		Precache();
+		SetModel("models/humans/props/scientist_syringe.mdl");
+
+		BaseClass::Spawn();
+	}
+
+	void Precache(void)
+	{
+		PrecacheModel("models/humans/props/scientist_syringe.mdl");
+
+		PrecacheScriptSound("Syringe.Touch");
+	}
+
+	bool MyTouch(CBasePlayer* pPlayer)
+	{
+		if (pPlayer->TakeHealth(sk_healthvial.GetFloat(), DMG_GENERIC))
+		{
+			CSingleUserRecipientFilter user(pPlayer);
+			user.MakeReliable();
+
+			UserMessageBegin(user, "ItemPickup");
+			WRITE_STRING(GetClassname());
+			MessageEnd();
+
+			CPASAttenuationFilter filter(pPlayer, "Syringe.Touch");
+			EmitSound(filter, pPlayer->entindex(), "Syringe.Touch");
+
+			if (g_pGameRules->ItemShouldRespawn(this))
+			{
+				Respawn();
+			}
+			else
+			{
+				UTIL_Remove(this);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+};
+
+LINK_ENTITY_TO_CLASS(item_syringe, CSyringe);
+
 //-----------------------------------------------------------------------------
 // Wall mounted health kit. Heals the player when used.
 //-----------------------------------------------------------------------------

@@ -35,6 +35,7 @@
 #include "tier0/vcrmode.h"
 #include "env_debughistory.h"
 #include "explode.h"
+#include "te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -3132,6 +3133,57 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 		TaskComplete();
 	}
 	break;
+	case TASK_TELEPORT_NEAR_SAVEPOSITION:
+	{
+		if (!GetNavigator()->GetNetwork())
+		{
+			TaskFail(FAIL_NO_AI_NETWORK);
+			return;
+		}
+
+		//Vector vecPort = GetAbsOrigin();
+
+		int iNode = GetNavigator()->GetNetwork()->NearestNodeToPoint(this, m_vSavePosition);
+
+		if (iNode > NO_NODE)
+		{
+			m_vSavePosition = GetNavigator()->GetNetwork()->GetNodePosition(this, iNode);
+		}
+		else
+		{
+			TaskFail(FAIL_NO_REACHABLE_NODE);
+			return;
+		}
+
+		{
+			CEffectData data;
+
+			data.m_vOrigin = WorldSpaceCenter();
+			data.m_flScale = (CollisionProp()->BoundingRadius() * 0.75f) + 10;
+			data.m_nHitBox = RandomInt(3, 5);
+			data.m_flRadius = 5.0f * data.m_flScale;
+
+			CPVSFilter filter(data.m_vOrigin);
+
+			DispatchEffect("XenPortalOut", data, filter);
+
+			AddEffects(EF_NODRAW);
+			AddSolidFlags(FSOLID_NOT_SOLID);
+		}
+		{
+			CEffectData data;
+
+			data.m_vOrigin = m_vSavePosition + CollisionProp()->OBBCenter();
+			data.m_flScale = (CollisionProp()->BoundingRadius() * 0.75f) + 10;
+			data.m_nHitBox = RandomInt(3, 5);
+			data.m_flRadius = 5.0f * data.m_flScale;
+
+			CPVSFilter filter(data.m_vOrigin);
+
+			DispatchEffect("XenPortalIn", data, filter);
+		}
+		break;
+	}
 	default:
 		{
 			DevMsg( "No StartTask entry for %s\n", TaskName( task ) );
@@ -4170,6 +4222,19 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 
 	case TASK_FREEZE:
 		break;
+
+	case TASK_TELEPORT_NEAR_SAVEPOSITION:
+	{
+		if (gpGlobals->curtime - GetTimeTaskStarted() >= 0.6f)
+		{
+			Teleport(&m_vSavePosition, NULL, NULL);
+			RemoveEffects(EF_NODRAW);
+			RemoveSolidFlags(FSOLID_NOT_SOLID);
+			TaskComplete();
+		}
+
+		break;
+	}
 
 	default:
 		{

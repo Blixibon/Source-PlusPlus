@@ -585,6 +585,7 @@ void CAI_BaseNPC::InitDefaultActivitySR(void)
 
 	ADD_ACTIVITY_TO_SR(	ACT_IDLE_CARRY );
 	ADD_ACTIVITY_TO_SR(	ACT_WALK_CARRY );
+	ADD_ACTIVITY_TO_SR(ACT_HEAL);
 
 //===========================
 // TF2 Specific Activities

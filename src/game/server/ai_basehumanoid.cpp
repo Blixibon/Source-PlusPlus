@@ -256,6 +256,45 @@ void CAI_BaseHumanoid::StartTask( const Task_t *pTask )
 		StartTaskRangeAttack1( pTask );
 		break;
 
+	case TASK_WEAPON_HOLSTER:
+	{
+		if (IsWeaponHolstered())
+		{
+			TaskComplete();
+			return;
+		}
+
+		if (!CanHolsterWeapon())
+		{
+			TaskFail("No holster animation!");
+			return;
+		}
+
+		SetDesiredWeaponState((pTask->flTaskData != 0.0f) ? DESIREDWEAPONSTATE_HOLSTERED_DESTROYED : DESIREDWEAPONSTATE_HOLSTERED);
+		break;
+	}
+
+	case TASK_WEAPON_UNHOLSTER:
+	{
+		if (WeaponCount() == 0)
+		{
+			TaskComplete();
+			return;
+		}
+
+		if (!CanHolsterWeapon())
+		{
+			TaskFail("No unholster animation!");
+			return;
+		}
+
+		SetDesiredWeaponState(DESIREDWEAPONSTATE_UNHOLSTERED);
+		if (pTask->flTaskData != 0.0f)
+			TaskComplete();
+
+		break;
+	}
+
 	default:
 		BaseClass::StartTask( pTask );
 	}
@@ -328,6 +367,18 @@ void CAI_BaseHumanoid::RunTask( const Task_t *pTask )
 	case TASK_RANGE_ATTACK1:
 		RunTaskRangeAttack1( pTask );
 		break;
+
+	case TASK_WEAPON_HOLSTER:
+	case TASK_WEAPON_UNHOLSTER:
+	{
+		bool bIsHolster = pTask->iTask == TASK_WEAPON_HOLSTER;
+		if (!IsWeaponStateChanging() && IsWeaponHolstered() == bIsHolster)
+		{
+			TaskComplete();
+			return;
+		}
+	}
+	break;
 
 	default:
 		BaseClass::RunTask( pTask );

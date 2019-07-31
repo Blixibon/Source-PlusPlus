@@ -701,6 +701,8 @@ void ActivityList_RegisterSharedActivities( void )
 	REGISTER_SHARED_ACTIVITY( ACT_IDLE_CARRY );
 	REGISTER_SHARED_ACTIVITY( ACT_WALK_CARRY );
 
+	REGISTER_SHARED_ACTIVITY(ACT_HEAL);
+
 //===========================
 // TF2 Specific Activities
 //===========================

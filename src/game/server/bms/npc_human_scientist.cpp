@@ -81,6 +81,7 @@ public:
 		// Prevents a warning
 		SelectModel();
 		BaseClass::Precache();
+		UTIL_PrecacheOther("item_syringe");
 	}
 
 	void	Spawn(void);
@@ -668,11 +669,9 @@ DEFINE_SCHEDULE
 	"		TASK_MOVE_TO_TARGET_RANGE			50"
 	"		TASK_STOP_MOVING					0"
 	"		TASK_FACE_IDEAL						0"
-	//		"		TASK_SAY_HEAL						0"
-	//		"		TASK_PLAY_SEQUENCE_FACE_TARGET		ACTIVITY:ACT_ARM"
+	"		TASK_WEAPON_HOLSTER					0"
 	"		TASK_HEAL							0"
-	//"		TASK_PLAY_SEQUENCE_FACE_TARGET		ACTIVITY:ACT_HEAL"
-	//		"		TASK_PLAY_SEQUENCE_FACE_TARGET		ACTIVITY:ACT_DISARM"
+	"		TASK_WEAPON_UNHOLSTER				1"
 	"	"
 	"	Interrupts"
 	)

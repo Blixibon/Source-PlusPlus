@@ -499,6 +499,13 @@ enum sharedtasks_e
 
 		TASK_EXPLODE,
 
+		TASK_HEAL,
+
+		TASK_TELEPORT_NEAR_SAVEPOSITION,
+
+		TASK_WEAPON_HOLSTER,	// Taskdata 1 destroys the weapon
+		TASK_WEAPON_UNHOLSTER,	// Taskdata 1 doesn't wait for unholster
+
 		// ======================================
 		// IMPORTANT: This must be the last enum
 		// ======================================

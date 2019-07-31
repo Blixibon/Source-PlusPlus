@@ -532,6 +532,8 @@ typedef enum
 	ACT_IDLE_CARRY,
 	ACT_WALK_CARRY,
 
+	ACT_HEAL,
+
 //===========================
 // TF2 Specific Activities
 //===========================

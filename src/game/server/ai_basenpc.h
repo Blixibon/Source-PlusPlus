@@ -1205,7 +1205,7 @@ protected:
 
 	float								 m_flInteractionYaw;
 
-	
+	CUtlVector<EHANDLE>					m_AttachedEntities;
 public:
 	//-----------------------------------------------------
 	//

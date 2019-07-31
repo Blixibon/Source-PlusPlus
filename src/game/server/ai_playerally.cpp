@@ -1052,16 +1052,56 @@ void CAI_PlayerAlly::StartTask( const Task_t *pTask )
 		}
 		break;
 
+	case TASK_HEAL:
+		if (IsMedic())
+		{
+			if (GetTarget() && GetTarget()->IsPlayer() && GetTarget()->m_iMaxHealth == GetTarget()->m_iHealth)
+			{
+				// Doesn't need us anymore
+				TaskComplete();
+				break;
+			}
+
+			Speak(TLK_HEAL);
+		}
+
+		SetIdealActivity(ACT_HEAL);
+		break;
+
 	default:
 		BaseClass::StartTask( pTask );
 	}
 }
 
+const float HEAL_MOVE_RANGE = 30 * 12;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CAI_PlayerAlly::RunTask( const Task_t *pTask )
 {
-	BaseClass::RunTask( pTask );
+	switch (pTask->iTask)
+	{
+	case TASK_HEAL:
+		if (IsSequenceFinished())
+		{
+			TaskComplete();
+		}
+		else if (!GetTarget())
+		{
+			// Our heal target was killed or deleted somehow.
+			TaskFail(FAIL_NO_TARGET);
+		}
+		else
+		{
+			if ((GetTarget()->GetAbsOrigin() - GetAbsOrigin()).Length2D() > HEAL_MOVE_RANGE / 2)
+				TaskComplete();
+
+			GetMotor()->SetIdealYawToTargetAndUpdate(GetTarget()->GetAbsOrigin());
+		}
+		break;
+	default:
+		BaseClass::RunTask(pTask);
+		break;
+	}
 }
 
 //-----------------------------------------------------------------------------
