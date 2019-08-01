@@ -132,6 +132,12 @@ extern ConVar sk_healthkit;
 
 bool RagdollManager_SaveImportant( CAI_BaseNPC *pNPC );
 const char* RemapEntityClass(const char* pchClass);
+const char* RemapEntityClassForAI(const char* pchClass)
+{
+	const char* pchRemapped = RemapEntityClass(pchClass);
+	
+	return (pchRemapped != nullptr) ? pchRemapped : pchClass;
+}
 
 #define	MIN_PHYSICS_FLINCH_DAMAGE	5.0f
 
@@ -8821,8 +8827,8 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			}
 			else if (pEvent->event == AE_NPC_ITEM_ATTACH)
 			{
-				const char* pchItemName = RemapEntityClass(pEvent->options);
-				if (V_strncmp("item_weapon_", pchItemName, 12) == 0)
+				const char* pchItemName = RemapEntityClassForAI(pEvent->options);
+				if (V_stristr(pchItemName, "item_weapon_") == pchItemName)
 				{
 					// Skip past the item_
 					pchItemName += 5;
@@ -8851,8 +8857,8 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			}
 			else if (pEvent->event == AE_NPC_ITEM_REMOVE)
 			{
-			const char* pchItemName = RemapEntityClass(pEvent->options);
-			if (V_strncmp("item_weapon_", pchItemName, 12) == 0)
+			const char* pchItemName = RemapEntityClassForAI(pEvent->options);
+			if (V_stristr(pchItemName, "item_weapon_") == pchItemName)
 			{
 				// Skip past the item_
 				pchItemName += 5;
@@ -8874,8 +8880,8 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			}
 			else if (pEvent->event == AE_NPC_ITEM_DROP)
 			{
-			const char* pchItemName = RemapEntityClass(pEvent->options);
-			if (V_strncmp("item_weapon_", pchItemName, 12) == 0)
+			const char* pchItemName = RemapEntityClassForAI(pEvent->options);
+			if (V_stristr(pchItemName, "item_weapon_") == pchItemName)
 			{
 				// Skip past the item_
 				pchItemName += 5;

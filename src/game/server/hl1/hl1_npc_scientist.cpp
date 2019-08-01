@@ -386,7 +386,7 @@ void CNPC_Scientist::StartTask( const Task_t *pTask )
 		TaskComplete();
 		break;
 
-	case TASK_HEAL:
+	case TASK_SCI_HEAL:
 		SetIdealActivity( ACT_MELEE_ATTACK1 );
 		break;
 
@@ -463,7 +463,7 @@ void CNPC_Scientist::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_HEAL:
+	case TASK_SCI_HEAL:
 		if ( IsSequenceFinished() )
 		{
 			TaskComplete();
@@ -1221,7 +1221,7 @@ int CNPC_SittingScientist::FIdleSpeak ( void )
 AI_BEGIN_CUSTOM_NPC( monster_scientist, CNPC_Scientist )
 
 	DECLARE_TASK( TASK_SAY_HEAL )
-	DECLARE_TASK( TASK_HEAL )
+	DECLARE_TASK( TASK_SCI_HEAL )
 	DECLARE_TASK( TASK_SAY_FEAR )
 	DECLARE_TASK( TASK_RUN_PATH_SCARED )
 	DECLARE_TASK( TASK_SCREAM )
@@ -1244,7 +1244,7 @@ AI_BEGIN_CUSTOM_NPC( monster_scientist, CNPC_Scientist )
 		"		TASK_FACE_IDEAL						0"
 		"		TASK_SAY_HEAL						0"
 		"		TASK_PLAY_SEQUENCE_FACE_TARGET		ACTIVITY:ACT_ARM"
-		"		TASK_HEAL							0"
+		"		TASK_SCI_HEAL							0"
 		"		TASK_PLAY_SEQUENCE_FACE_TARGET		ACTIVITY:ACT_DISARM"
 		"	"
 		"	Interrupts"

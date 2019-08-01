@@ -91,7 +91,7 @@ public:
 	enum
 	{
 		TASK_SAY_HEAL = BaseClass::NEXT_TASK,
-		TASK_HEAL,
+		TASK_SCI_HEAL,
 		TASK_SAY_FEAR,
 		TASK_RUN_PATH_SCARED,
 		TASK_SCREAM,

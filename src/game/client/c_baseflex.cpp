@@ -240,6 +240,10 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 	// shift pelvis, rotate body
 	if (hdr->GetNumIKChains() != 0 && (m_vecShift.x != 0.0 || m_vecShift.y != 0.0))
 	{
+		short iDX = 0;
+		if (!pos[0].IsValid())
+			iDX = 1;
+
 		//CIKContext auto_ik;
 		//auto_ik.Init( hdr, GetRenderAngles(), GetRenderOrigin(), currentTime, gpGlobals->framecount, boneMask );
 		//auto_ik.AddAllLocks( pos, q );
@@ -252,15 +256,15 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 		Vector localLean;
 		VectorIRotate( m_vecLean, rootxform, localLean );
 
-		Vector p0 = pos[0];
+		Vector p0 = pos[iDX];
 		float length = VectorNormalize( p0 );
 
 		// shift the root bone, but keep the height off the origin the same
-		Vector shiftPos = pos[0] + localShift;
+		Vector shiftPos = pos[iDX] + localShift;
 		VectorNormalize( shiftPos );
-		Vector leanPos = pos[0] + localLean;
+		Vector leanPos = pos[iDX] + localLean;
 		VectorNormalize( leanPos );
-		pos[0] = shiftPos * length;
+		pos[iDX] = shiftPos * length;
 
 		// rotate the root bone based on how much it was "leaned"
 		Vector p1;
@@ -271,8 +275,8 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 		Quaternion q1;
 		angle = clamp( angle, -45, 45 );
 		AxisAngleQuaternion( p1, angle, q1 );
-		QuaternionMult( q1, q[0], q[0] );
-		QuaternionNormalize( q[0] );
+		QuaternionMult( q1, q[iDX], q[iDX] );
+		QuaternionNormalize( q[iDX] );
 
 		// DevMsgRT( "   (%.2f) %.2f %.2f %.2f\n", angle, p1.x, p1.y, p1.z );
 		// auto_ik.SolveAllLocks( pos, q );

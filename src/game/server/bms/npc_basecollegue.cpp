@@ -324,7 +324,7 @@ bool CNPC_BaseColleague::CreateBehaviors(void)
 {
 	AddBehavior(&m_FuncTankBehavior);
 
-	return BaseClass::CreateBehaviors();;
+	return BaseClass::CreateBehaviors();
 }
 
 void CNPC_BaseColleague::OnChangeRunningBehavior(CAI_BehaviorBase *pOldBehavior, CAI_BehaviorBase *pNewBehavior)
@@ -376,7 +376,7 @@ bool CNPC_BaseColleague::SelectIdleSpeech(AISpeechSelection_t *pSelection)
 		if (pTarget->WorldSpaceCenter().DistToSqr(WorldSpaceCenter()) < Square(256))
 		{
 			int chance = (GetTimePlayerStaring() > 3) ? 2 : 10;
-			if (ShouldSpeakRandom(TLK_VITALIDLE, chance) && SelectSpeechResponse(TLK_VITALIDLE, NULL, pTarget, pSelection))
+			if (ShouldSpeakRandom(TLK_VITALIDLE, chance) && SelectSpeechResponse(TLK_VITALIDLE, NULL, pTarget, pSelection) && pSelection->Response.GetType() != RESPONSE_NONE)
 				return true;
 		}
 
