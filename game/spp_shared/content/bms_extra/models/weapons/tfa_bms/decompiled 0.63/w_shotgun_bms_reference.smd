@@ -2,7 +2,7 @@
 version 1
 nodes
   0 "ValveBiped.Bip01_R_Hand" -1
-  1 "muzzle" -1
+  1 "muzzle" 0
 end
 skeleton
   time 0

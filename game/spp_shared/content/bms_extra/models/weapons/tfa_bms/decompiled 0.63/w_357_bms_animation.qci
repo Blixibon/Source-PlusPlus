@@ -1,0 +1,20 @@
+
+$Sequence "idle" {
+	"w_357_bms_anims\idle.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "attack1" {
+	"w_357_bms_anims\attack1.smd"
+	activity "ACT_RANGE_ATTACK_PISTOL" 1
+	{ event AE_NPC_MUZZLEFLASH 0 "357 muzzle" }
+	{ event 3014 0 "" }
+	//{ event 6001 0 "0" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

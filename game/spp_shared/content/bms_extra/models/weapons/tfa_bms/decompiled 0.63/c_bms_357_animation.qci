@@ -1,0 +1,189 @@
+
+$SectionFrames 30 125
+
+$Sequence "idle1" {
+	"c_bms_357_anims\idle1.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 30
+	loop
+}
+
+$Sequence "idle2" {
+	"c_bms_357_anims\idle2.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 30
+	loop
+}
+
+$Sequence "idle_fidget" {
+	"c_bms_357_anims\idle_fidget.smd"
+	activity "ACT_VM_FIDGET" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "fire1" {
+	"c_bms_357_anims\fire1.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "357 muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 35
+}
+
+$Sequence "fire2" {
+	"c_bms_357_anims\fire2.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "357 muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 35
+}
+
+$Sequence "centerfire1" {
+	"c_bms_357_anims\centerfire1.smd"
+	activity "ACT_VM_PRIMARYATTACK_IS" 1
+	{ event AE_MUZZLEFLASH 0 "357 muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "centerfire2" {
+	"c_bms_357_anims\centerfire2.smd"
+	activity "ACT_VM_PRIMARYATTACK_IS" 1
+	{ event AE_MUZZLEFLASH 0 "357 muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 30
+}
+
+$Sequence "draw" {
+	"c_bms_357_anims\draw.smd"
+	activity "ACT_VM_DRAW" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 30
+}
+
+$Sequence "gun_reload1" {
+	"c_bms_357_anims\gun_reload1.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_357_bms.Reload" }
+	{ event AE_CLIENT_EJECT_BRASS 47 "6" }
+	{ event 3110 85 "" }
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 30
+}
+
+$Sequence "holster" {
+	"c_bms_357_anims\holster.smd"
+	activity "ACT_VM_HOLSTER" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Ready"
+	fps 30
+}
+
+$Sequence "idletolow" {
+	"c_bms_357_anims\idletolow.smd"
+	activity "ACT_VM_LOWERED_TO_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "Ready" "Low"
+	fps 30
+}
+
+$Sequence "lowtoidle" {
+	"c_bms_357_anims\lowtoidle.smd"
+	activity "ACT_VM_IDLE_TO_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "Low" "Ready"
+	fps 30
+}
+
+$Sequence "lowidle" {
+	"c_bms_357_anims\lowidle.smd"
+	activity "ACT_VM_IDLE_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "Low"
+	fps 10
+	loop
+}
+
+$Sequence "idletocenter" {
+	"c_bms_357_anims\idletocenter.smd"
+	activity "ACT_VM_IDLE_TO_IS" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "centeridle1" {
+	"c_bms_357_anims\centeridle1.smd"
+	activity "ACT_VM_IDLE_IS" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 3
+}
+
+$Sequence "centertoidle" {
+	"c_bms_357_anims\centertoidle.smd"
+	activity "ACT_VM_IS_TO_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "idletosprint" {
+	"c_bms_357_anims\idletosprint.smd"
+	activity "ACT_VM_SPRINT_ENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "0" "1"
+	fps 30
+}
+
+$Sequence "sprinttoidle" {
+	"c_bms_357_anims\sprinttoidle.smd"
+	activity "ACT_VM_SPRINT_LEAVE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "1" "0"
+	fps 30
+}
+
+$Sequence "sprintidle1" {
+	"c_bms_357_anims\sprintidle1.smd"
+	activity "ACT_VM_SPRINT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "1"
+	fps 30
+	loop
+}
+
+$Sequence "draw_admire" {
+	"c_bms_357_anims\draw_admire.smd"
+	activity "ACT_VM_DRAW_DEPLOYED" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_357_bms.draw_admire01" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
