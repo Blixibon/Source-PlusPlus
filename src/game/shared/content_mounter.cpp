@@ -149,7 +149,7 @@ namespace Mounter
 		}
 		else if (Q_strcmp(pchPathName, "sourcemods") == 0)
 		{
-			steamApps->GetSourceModsDir(pchBuffer, maxLenInChars);
+			return steamApps->GetSourceModsDir(pchBuffer, maxLenInChars);
 		}
 		else
 		{

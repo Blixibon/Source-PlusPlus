@@ -49,6 +49,7 @@ voice_ban.dt
 server_blacklist.txt
 *.ain
 sound.cache
+*.vpk.sound.cache
 user_custom
 
 mathlib.lib

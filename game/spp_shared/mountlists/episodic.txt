@@ -15,11 +15,13 @@
 		"head"	"1"
 		"episodic"
 		{
+			custom	custom
 			"vpk"	"ep1_pak"
 		}
 
 		"ep2"
 		{
+			custom	custom
 			"vpk"	"ep2_pak"
 		}
 	}
