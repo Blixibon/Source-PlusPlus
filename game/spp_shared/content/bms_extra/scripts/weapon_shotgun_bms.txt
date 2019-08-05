@@ -10,7 +10,7 @@ WeaponData
 	viewmodel	"models/weapons/tfa_bms/c_bms_shotgun.mdl"
 	weight		"4"
 	anim_prefix	"shotgun"
-	ViewModelFOV		"70"
+	ViewModelFOV		"60"
 
 	SoundData
 	{

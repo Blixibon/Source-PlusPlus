@@ -32,7 +32,7 @@ $Sequence "fire1" {
 	"c_bms_glock_anims\fire1.smd"
 	activity "ACT_VM_PRIMARYATTACK" 1
 	{ event AE_MUZZLEFLASH 0 "PISTOL 1" }
-	{ event AE_CLIENT_EJECT_CUSTOM 0 "weapon_glock_bms glock-primary-attack 2" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_glock_bms glock-primary-attack 2" }
 	fadein 0.2
 	fadeout 0.2
 	node "2"
@@ -44,7 +44,7 @@ $Sequence "fire2" {
 	"c_bms_glock_anims\fire2.smd"
 	activity "ACT_VM_PRIMARYATTACK" 1
 	{ event AE_MUZZLEFLASH 0 "PISTOL 1" }
-	{ event AE_CLIENT_EJECT_CUSTOM 0 "weapon_glock_bms glock-primary-attack 2" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_glock_bms glock-primary-attack 2" }
 	fadein 0.2
 	fadeout 0.2
 	node "2"

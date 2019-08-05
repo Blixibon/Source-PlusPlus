@@ -1,0 +1,6 @@
+
+$DefineBone "ValveBiped.Bip01_R_Hand" "" 0 0 0 10.40778 -90.090169 -177.594578 0 0 0 0 0 0
+$DefineBone "muzzle" "" 0.270839 -29.859766 3.094883 3.215955 -90.878386 -78.157056 0 0 0 0 0 0
+
+$BoneMerge "ValveBiped.Bip01_R_Hand"
+

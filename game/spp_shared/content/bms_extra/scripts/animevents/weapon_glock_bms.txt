@@ -21,7 +21,7 @@
         "gravity"               "0.1"
         
         // FPS specific variables.
-        "eject_model"       "models\weapons\shells\9mm_brass_shell.mdl"
+        "eject_model"       "models\shells\shell_9mm.mdl"
     }
     
     // Third-person primary attack.
@@ -40,6 +40,6 @@
         "gravity"               "0.1"
         
         // FPS specific variables.
-        "eject_model"       "models\weapons\shells\9mm_brass_shell_thirdperson.mdl"
+        "eject_model"       "models\shells\shell_9mm.mdl"
     }
 }

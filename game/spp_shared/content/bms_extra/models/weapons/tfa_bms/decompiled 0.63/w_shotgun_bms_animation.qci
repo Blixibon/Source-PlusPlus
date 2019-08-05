@@ -1,0 +1,31 @@
+
+$Sequence "idle1" {
+	"w_shotgun_bms_anims\idle1.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "fire" {
+	"w_shotgun_bms_anims\fire.smd"
+	activity "ACT_RANGE_ATTACK_SHOTGUN" 1
+	{ event AE_NPC_MUZZLEFLASH 0 "SHOTGUN MUZZLE" }
+	{ event 6001 0 "2" }
+	{ event 3004 0 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "fire2" {
+	"w_shotgun_bms_anims\fire2.smd"
+	activity "ACT_RANGE_ATTACK2" 1
+	{ event AE_NPC_MUZZLEFLASH 0 "SHOTGUN MUZZLE" }
+	{ event 6001 0 "2" }
+	{ event 3004 1 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

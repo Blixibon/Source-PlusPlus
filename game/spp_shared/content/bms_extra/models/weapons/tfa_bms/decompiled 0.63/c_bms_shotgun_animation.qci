@@ -1,0 +1,240 @@
+
+$Sequence "idle1" {
+	"c_bms_shotgun_anims\idle1.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+	loop
+}
+
+$Sequence "idle2" {
+	"c_bms_shotgun_anims\idle2.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+	loop
+}
+
+$Sequence "idle_fidget" {
+	"c_bms_shotgun_anims\idle_fidget.smd"
+	activity "ACT_VM_FIDGET" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "fire1" {
+	"c_bms_shotgun_anims\fire1.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "SHOTGUN muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	snap
+	fps 30
+}
+
+$Sequence "fire2" {
+	"c_bms_shotgun_anims\fire2.smd"
+	activity "ACT_VM_PRIMARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "SHOTGUN muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	snap
+	fps 30
+}
+
+$Sequence "doublefire1" {
+	"c_bms_shotgun_anims\doublefire1.smd"
+	activity "ACT_VM_SECONDARYATTACK" 5
+	{ event AE_MUZZLEFLASH 0 "SHOTGUN muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	snap
+	fps 30
+}
+
+$Sequence "doublefire2" {
+	"c_bms_shotgun_anims\doublefire2.smd"
+	activity "ACT_VM_SECONDARYATTACK" 1
+	{ event AE_MUZZLEFLASH 0 "SHOTGUN muzzle" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	snap
+	fps 30
+}
+
+$Sequence "draw1" {
+	"c_bms_shotgun_anims\draw1.smd"
+	activity "ACT_VM_DRAW" 1
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+}
+
+$Sequence "draw_admire" {
+	"c_bms_shotgun_anims\draw_admire.smd"
+	activity "ACT_VM_DRAW_DEPLOYED" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_shotgun_bms.draw_admire01" }
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+}
+
+$Sequence "holster" {
+	"c_bms_shotgun_anims\holster.smd"
+	activity "ACT_VM_HOLSTER" 1
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+}
+
+$Sequence "idletoshell" {
+	"c_bms_shotgun_anims\idletoshell.smd"
+	activity "ACT_SHOTGUN_RELOAD_START" 1
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+}
+
+$Sequence "shell_reload1" {
+	"c_bms_shotgun_anims\shell_reload1.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 9 "weapon_shotgun_bms.Reload.1" }
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	snap
+	fps 30
+}
+
+$Sequence "shell_reload2" {
+	"c_bms_shotgun_anims\shell_reload2.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 9 "weapon_shotgun_bms.Reload.2" }
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	snap
+	fps 30
+}
+
+$Sequence "shell_reload3" {
+	"c_bms_shotgun_anims\shell_reload3.smd"
+	activity "ACT_VM_RELOAD" 1
+	{ event AE_CL_PLAYSOUND 9 "weapon_shotgun_bms.Reload.3" }
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	snap
+	fps 30
+}
+
+$Sequence "shelltoidle" {
+	"c_bms_shotgun_anims\shelltoidle.smd"
+	activity "ACT_SHOTGUN_RELOAD_FINISH" 1
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	snap
+	fps 30
+}
+
+$Sequence "pump1" {
+	"c_bms_shotgun_anims\pump1.smd"
+	activity "ACT_SHOTGUN_PUMP" 1
+	{ event AE_CL_PLAYSOUND 0 "weapon_shotgun_bms.Special1" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 3 "weapon_shotgun_bms shotgun-primary-attack ejectbrass" }
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+}
+
+$Sequence "pump2" {
+	"c_bms_shotgun_anims\pump2.smd"
+	activity "ACT_SHOTGUN_PUMP" 1
+	{ event AE_CL_PLAYSOUND 3 "weapon_shotgun_bms.Special1" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 3 "weapon_shotgun_bms shotgun-primary-attack ejectbrass" }
+	fadein 0.2
+	fadeout 0.2
+	node "0"
+	fps 30
+}
+
+$Sequence "dryfire" {
+	"c_bms_shotgun_anims\dryfire.smd"
+	activity "ACT_VM_DRYFIRE" 1
+	{ event AE_CL_PLAYSOUND 3 "weapon_shotgun_bms.Empty" }
+	fadein 0.2
+	fadeout 0.2
+	node "2"
+	fps 30
+}
+
+$Sequence "lowidle1" {
+	"c_bms_shotgun_anims\lowidle1.smd"
+	activity "ACT_VM_IDLE_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	node "1"
+	fps 30
+	loop
+}
+
+$Sequence "lowtoidle" {
+	"c_bms_shotgun_anims\lowtoidle.smd"
+	activity "ACT_VM_LOWERED_TO_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "1" "0"
+	fps 30
+}
+
+$Sequence "idletolow" {
+	"c_bms_shotgun_anims\idletolow.smd"
+	activity "ACT_VM_IDLE_TO_LOWERED" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "0" "1"
+	fps 30
+}
+
+$Sequence "idletosprint" {
+	"c_bms_shotgun_anims\idletosprint.smd"
+	activity "ACT_VM_SPRINT_ENTER" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "0" "1"
+	fps 30
+}
+
+$Sequence "sprinttoidle" {
+	"c_bms_shotgun_anims\sprinttoidle.smd"
+	activity "ACT_VM_SPRINT_LEAVE" 1
+	fadein 0.2
+	fadeout 0.2
+	transition "1" "0"
+	fps 30
+}
+
+$Sequence "sprintidle1" {
+	"c_bms_shotgun_anims\sprintidle1.smd"
+	activity "ACT_VM_SPRINT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	node "1"
+	fps 30
+	loop
+}

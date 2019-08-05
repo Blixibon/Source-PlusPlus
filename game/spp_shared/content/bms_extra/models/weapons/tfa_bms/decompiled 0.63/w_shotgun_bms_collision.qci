@@ -1,0 +1,10 @@
+
+$CollisionModel "w_shotgun_bms_physics.smd"
+{
+	$mass 5
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+	$rootbone " "
+
+}

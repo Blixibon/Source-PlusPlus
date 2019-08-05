@@ -21,7 +21,7 @@
         "gravity"               "0.1"
         
         // FPS specific variables.
-        "fps_eject_model"       "models/weapons/shells/shotgun_shell.mdl"
+        "eject_model"       "models/shells/shell_12gauge.mdl"
     }
     
     // Primary attack thirdperson settings.
@@ -40,7 +40,7 @@
         "gravity"               "0.1"
         
         // FPS specific variables.
-        "fps_eject_model"       "models/weapons/shells/shotgun_shell_thirdperson.mdl"
+        "eject_model"       "models/shells/shell_12gauge.mdl"
     }
     
     // Secondary attack settings.
@@ -59,6 +59,6 @@
         "gravity"               "0.1"
         
         // FPS specific variables.
-        "fps_eject_model"       "models/weapons/shells/shotgun_shell.mdl"
+        "eject_model"       "models/shells/shell_12gauge.mdl"
     }
 }

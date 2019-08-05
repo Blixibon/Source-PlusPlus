@@ -1,0 +1,6 @@
+
+$LOD 28
+{
+	replacemodel "w_shotgun_bms_reference.smd" "w_shotgun_bms_reference_lod1.smd"
+	NoFacial
+}
