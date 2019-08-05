@@ -187,7 +187,7 @@ void CHL1CrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 
         //		if ( !g_pGameRules->IsMultiplayer() )
-        if ( g_pGameRules->IsMultiplayer() && !m_bExplode )
+        if ( !g_pGameRules->IsMultiplayer() || !m_bExplode )
 		{
 			UTIL_Remove( this );
 		}

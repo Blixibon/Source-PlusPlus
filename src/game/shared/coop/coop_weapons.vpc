@@ -86,6 +86,7 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_glock_bms.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_mp5_bms.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_rpg_bms.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_shotgun_bms.cpp"
 			}
 		}
 
