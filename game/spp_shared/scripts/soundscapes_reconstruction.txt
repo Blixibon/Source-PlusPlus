@@ -439,7 +439,7 @@
 	"playlooping"
 	{
 		"volume"	"0.6"
-		"wave"		"(ambient/industrial/amb_industrial_muffled_lp_02.wav"
+		"wave"		")ambient/industrial/amb_industrial_muffled_lp_02.wav"
 		"pitch"		"100"
 
 	}

@@ -329,7 +329,7 @@
 	"playlooping"
 	{
 		"volume"	"1"
-		"wave"		"(test/pink_noise_stereo_loop.wav"
+		"wave"		")test/pink_noise_stereo_loop.wav"
 		"pitch"		"100"
 
 

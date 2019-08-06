@@ -1268,7 +1268,7 @@
 	}
 
 
-	// wind gusts (stronger up here on the roof)
+	// wind gusts )stronger up here on the roof)
 	"playrandom"
 	{
 		"time"		"15,30"

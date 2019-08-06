@@ -19,7 +19,7 @@
 	{
 		"volume"		"0.1"
 		"pitch"		"100"
-		"wave"		"(ambient/nature/boathouse_bird_amb.wav"
+		"wave"		")ambient/nature/boathouse_bird_amb.wav"
 	}
 	
 	"playlooping"
@@ -203,7 +203,7 @@
 	{
 		"volume"		"0.25"
 		"pitch"		"100"
-		"wave"		"(ambient/atmosphere/boathouse_boat_int_amb.wav"
+		"wave"		")ambient/atmosphere/boathouse_boat_int_amb.wav"
 
 	}
 

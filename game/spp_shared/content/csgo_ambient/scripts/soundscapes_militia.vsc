@@ -172,7 +172,7 @@
 
 //------------------------------------------------------------------------------------------
 //
-// Florescent light hum (2nd version because cant play 2 identical at same time)
+// Florescent light hum )2nd version because cant play 2 identical at same time)
 //
 "militia.FluorescentLightHum2"
 {
@@ -742,7 +742,7 @@
 {
 	"dsp"	"4"
 	
-	// no room tone (silence)
+	// no room tone )silence)
 	"playrandom"
 	{
 		"time"			"10,20"
@@ -804,14 +804,14 @@
 		"name"				"militia.FluorescentLightHum2"
 	}
 
-	// 1 = Light fixture #8 (beyond the gate) hum 
+	// 1 = Light fixture #8 )beyond the gate) hum 
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
 		"name"				"militia.FluorescentLightHum"
 	}
 
-	// 2 = A spot near the far wall beyond the locked gate (crickets, burrowing sounds, etc)
+	// 2 = A spot near the far wall beyond the locked gate )crickets, burrowing sounds, etc)
 	"playlooping"
 	{
 		"position"	"2"
@@ -820,7 +820,7 @@
 		"wave"		"ambient/water/drip_loop1.wav"
 	}
 
-	// 3 = A spot in one of the dark corners of the area under the shed (cricket)
+	// 3 = A spot in one of the dark corners of the area under the shed )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
@@ -834,9 +834,9 @@
 {
 	"dsp"	"5"
 	
-	// no room tone (silence)
+	// no room tone )silence)
 
-	// 0 = A spot in the tunnel in the center of the hole (ambient tunnel sound)
+	// 0 = A spot in the tunnel in the center of the hole )ambient tunnel sound)
 	"playsoundscape"
 	{
 		"volume"					"0.3"
@@ -885,21 +885,21 @@
 		"name"				"militia.Cricket"
 	}
 
-	// 1 = In the trees beyond the window above the ladder (birdsong)
+	// 1 = In the trees beyond the window above the ladder )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
 		"name"				"militia.Birds"
 	}
 
-	// 2 = In the trees outside the shed door (birdsong)
+	// 2 = In the trees outside the shed door )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
 		"name"				"militia.Birds"
 	}
 
-	// 3 = In the trees beside the shed on the other side of the fence (birdsong)
+	// 3 = In the trees beside the shed on the other side of the fence )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
@@ -918,14 +918,14 @@
 		"name" "militia.Outside"
 	}
 
-	// 0 = In the trees near the shed (birdsong)
+	// 0 = In the trees near the shed )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
 		"name"				"militia.Birds"
 	}
 
-	// 1 = In the trees around the boulder (birdsong)
+	// 1 = In the trees around the boulder )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
@@ -947,7 +947,7 @@
 		}
 	}
 
-	// 3 = In the tree cards behind the fence and broken down orange car (birdsong)
+	// 3 = In the tree cards behind the fence and broken down orange car )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
@@ -968,7 +968,7 @@
 		}
 	}
 
-	// 4 = In the dark corner by the small wooden table (cricket)
+	// 4 = In the dark corner by the small wooden table )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"4"
@@ -986,14 +986,14 @@
 		"wave"	"ambient\machines\air_conditioner_loop_1.wav"
 	}
 	
-	// 6 = In the dark corner under the deck stairs on the far side of the house (cricket)
+	// 6 = In the dark corner under the deck stairs on the far side of the house )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"6"
 		"name"				"militia.Cricket"
 	}
 
-	// 7 = In the tree on the side of the house against the cliff (birdsong)
+	// 7 = In the tree on the side of the house against the cliff )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"7"
@@ -1012,21 +1012,21 @@
 		"name" "militia.Outside"
 	}
 
-	// 0 = In the tree at the front of the house (birdsong)
+	// 0 = In the tree at the front of the house )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
 		"name"				"militia.Birds"
 	}
 
-	// 1 = In the trees where you jump up on the hill above the side fence gate (birdsong)
+	// 1 = In the trees where you jump up on the hill above the side fence gate )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
 		"name"				"militia.Birds"
 	}
 
-	// 2 = In the stream (water flowing)
+	// 2 = In the stream )water flowing)
 	"playlooping"
 	{
 		"position"	"2"
@@ -1035,28 +1035,28 @@
 		"wave"		"ambient/nature/Water_StreamLoop3.wav"
 	}
 
-	// 3 = In the cab of the blue truck (rodents)
+	// 3 = In the cab of the blue truck )rodents)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
 		"name"				"militia.Rodent"
 	}
 	
-	// 4 = In the trees around the boulder in the back yard (birdsong)
+	// 4 = In the trees around the boulder in the back yard )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"4"
 		"name"				"militia.Birds"
 	}
 
-	// 5 = In the trees beyond the fence to the side (birdsong)
+	// 5 = In the trees beyond the fence to the side )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"5"
 		"name"				"militia.Birds"
 	}
 
-	// 6 = In the tunnel entrance (ambient tunnel sounds)
+	// 6 = In the tunnel entrance )ambient tunnel sounds)
 	"playlooping"
 	{
 		"position"	"6"
@@ -1078,35 +1078,35 @@
 		"name" "militia.Outside"
 	}
 
-	// 0 = In the tree at the front of the house (birdsong)
+	// 0 = In the tree at the front of the house )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
 		"name"				"militia.Birds"
 	}
 
-	// 1 = In the trees on top of the cliff to the left (birdsong)
+	// 1 = In the trees on top of the cliff to the left )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
 		"name"				"militia.Birds"
 	}
 
-	// 2 = In the trees on top of the cliff above the stream (birdsong)
+	// 2 = In the trees on top of the cliff above the stream )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
 		"name"				"militia.Birds"
 	}
 
-	// 3 = In the trees near the silo tunnel entrance (birdsong)
+	// 3 = In the trees near the silo tunnel entrance )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
 		"name"				"militia.Birds"
 	}
 
-	// 4 = Down in the tunnel entrance a bit (tunnel ambience)
+	// 4 = Down in the tunnel entrance a bit )tunnel ambience)
 	"playlooping"
 	{
 		"position"	"4"
@@ -1116,7 +1116,7 @@
 		"wave"		"ambient/tones/tunnel_wind_loop.wav"
 	}
 	
-	// 7 = In the wood pile (cricket, mice)
+	// 7 = In the wood pile )cricket, mice)
 	"playsoundscape"
 	{
 		"positionoverride"	"7"
@@ -1136,7 +1136,7 @@
 		"name" "militia.Inside"
 	}
 
-	// 0 = In the dark corner behind the cardboard boxes at the front door (crickets, mice, etc)
+	// 0 = In the dark corner behind the cardboard boxes at the front door )crickets, mice, etc)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
@@ -1150,7 +1150,7 @@
 		"name"				"militia.LightbulbHum"
 	}
 
-	// 2 = In the ceiling fan (squeaky fan motor)
+	// 2 = In the ceiling fan )squeaky fan motor)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
@@ -1168,7 +1168,7 @@
 		"wave"	"common\null.wav"
 	}
 
-	// 4 = In the dark corner under the stairs (mice, cricket, etc)
+	// 4 = In the dark corner under the stairs )mice, cricket, etc)
 	// TODO
 }
 
@@ -1196,7 +1196,7 @@
 		"name"				"militia.FluorescentLightHum2"
 	}
 
-	// 2 = The refrigerator by the microwave (hum)
+	// 2 = The refrigerator by the microwave )hum)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
@@ -1292,7 +1292,7 @@
 		"name"				"militia.FluorescentLightHum2"
 	}
 
-	// 5 = The dark corner under the stairs (crickets)
+	// 5 = The dark corner under the stairs )crickets)
 	"playsoundscape"
 	{
 		"positionoverride"	"5"
@@ -1311,21 +1311,21 @@
 		"name" "militia.Inside"
 	}
 
-	// 0 = The dark corner by the big stack of boxes (975, 636, 40) (cricket)
+	// 0 = The dark corner by the big stack of boxes )975, 636, 40) )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
 		"name"				"militia.Rodent"
 	}
 
-	// 1 = The dark corner of the room (1295, 322, 26) (mice)
+	// 1 = The dark corner of the room )1295, 322, 26) )mice)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
 		"name"				"militia.Cricket"
 	}
 
-	// 2 = Just outside the vent (outside ambience)
+	// 2 = Just outside the vent )outside ambience)
 	"playsoundscape"
 	{
 		"volume"					"0.5"
@@ -1468,7 +1468,7 @@
 		"name" "militia.Inside"
 	}
 
-	// 0 = In the trees around the shed (birdsong)
+	// 0 = In the trees around the shed )birdsong)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
@@ -1493,7 +1493,7 @@
 		"name" "militia.Inside"
 	}
 
-	// 0 = The floor drain (drips, etc)
+	// 0 = The floor drain )drips, etc)
 	"playlooping"
 	{
 		"position"		"0"
@@ -1503,7 +1503,7 @@
 		"wave"			"ambient/water/drip_loop1.wav"
 	}
 
-	// 1 = The toilet (constantly running)
+	// 1 = The toilet )constantly running)
 	"playlooping"
 	{
 		"position"		"1"
@@ -1554,7 +1554,7 @@
 		"name"				"militia.LightbulbHum"
 	}
 
-	// 4 = Just outside painted over window (outside ambience)
+	// 4 = Just outside painted over window )outside ambience)
 	"playsoundscape"
 	{
 		"volume"					"0.5"
@@ -1563,7 +1563,7 @@
 		"name"						"militia.Outside"
 	}
 
-	// 5 = In the dark corner by the exit to the deck (cricket)
+	// 5 = In the dark corner by the exit to the deck )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"5"
@@ -1589,7 +1589,7 @@
 		"name"				"militia.Birds"
 	}
 
-	// 1 = Just outside the hole in the roof (wind noise)
+	// 1 = Just outside the hole in the roof )wind noise)
 	"playsoundscape"
 	{
 		"volume"					"0.75"
@@ -1624,7 +1624,7 @@
 		"name" "militia.OutsideOnRoof"
 	}
 
-	// 0 = Inside the little roofed “houselet” (bird nest)
+	// 0 = Inside the little roofed “houselet” )bird nest)
 	"playrandom"
 	{
 		"position"		"0"

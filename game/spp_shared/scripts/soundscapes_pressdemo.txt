@@ -295,7 +295,7 @@
 	"playlooping"
 	{
 		"volume"	"0.75"
-		"wave"		"(ambient/tones/Amb_Abstract_air_lp_03.wav"
+		"wave"		")ambient/tones/Amb_Abstract_air_lp_03.wav"
 		"pitch"		"90"
 
 	}
@@ -366,7 +366,7 @@
 	"playlooping"
 	{
 		"volume"	"0.75"
-		"wave"		"(ambient/tones/Amb_Abstract_air_lp_03.wav"
+		"wave"		")ambient/tones/Amb_Abstract_air_lp_03.wav"
 		"pitch"		"90"
 
 	}

@@ -7,7 +7,7 @@
 	"playlooping"
 	{
 		"volume"	".5"	
-		"wave"		"(ambient/fire/incinerator_base_lp_01.wav"
+		"wave"		")ambient/fire/incinerator_base_lp_01.wav"
 		"pitch"		"85"
 
 	}

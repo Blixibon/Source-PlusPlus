@@ -334,7 +334,7 @@ coopcementplant.forest_dawn
 	{
 		"volume"		"0.4"
 		"pitch"		"100"
-		"wave"		"(ambient/nature/boathouse_bird_amb.wav"
+		"wave"		")ambient/nature/boathouse_bird_amb.wav"
 	}
 
 	"playrandom"
@@ -725,7 +725,7 @@ coopcementplant.dock_outside
 	{
 		"volume"		"0.03"
 		"pitch"		"100"
-		"wave"		"(ambient/atmosphere/boathouse_boat_int_amb.wav"
+		"wave"		")ambient/atmosphere/boathouse_boat_int_amb.wav"
 
 	}
 
@@ -733,7 +733,7 @@ coopcementplant.dock_outside
 	{
 		"volume"		"0.03"
 		"pitch"		"100"
-		"wave"		"(ambient/nature/boathouse_bird_amb.wav"
+		"wave"		")ambient/nature/boathouse_bird_amb.wav"
 	}
 
 	"playrandom"
@@ -783,7 +783,7 @@ coopcementplant.dock_under
 	{
 		"volume"		"0.32"
 		"pitch"		"100"
-		"wave"		"(ambient/atmosphere/boathouse_boat_int_amb.wav"
+		"wave"		")ambient/atmosphere/boathouse_boat_int_amb.wav"
 
 	}
 
@@ -1499,7 +1499,7 @@ coopcementplant.pcroom_inside_rain_light
 	{
 		"volume"		"0.03"
 		"pitch"		"100"
-		"wave"		"(ambient/atmosphere/boathouse_boat_int_amb.wav"
+		"wave"		")ambient/atmosphere/boathouse_boat_int_amb.wav"
 
 	}
 
@@ -1507,7 +1507,7 @@ coopcementplant.pcroom_inside_rain_light
 	{
 		"volume"		"0.03"
 		"pitch"		"100"
-		"wave"		"(ambient/nature/boathouse_bird_amb.wav"
+		"wave"		")ambient/nature/boathouse_bird_amb.wav"
 	}
 
 	"playrandom"

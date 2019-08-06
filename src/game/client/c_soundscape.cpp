@@ -235,6 +235,7 @@ private:
 	int							m_loopingSoundId;		// marks when the sound was issued
 	int							m_forcedSoundscapeIndex;// >= 0 if this a "forced" soundscape? i.e. debug mode?
 	float						m_forcedSoundscapeRadius;// distance to spatialized sounds
+	float						m_flFadetime;
 
 	static ConVar *m_pDSPVolumeVar;
 	static ConVar *m_pSoundMixerVar;
@@ -519,7 +520,7 @@ void C_SoundscapeSystem::DevReportSoundscapeName( int index )
 // This makes all currently playing loops fade toward their target volume
 void C_SoundscapeSystem::UpdateLoopingSounds( float frametime )
 {
-	float period = soundscape_fadetime.GetFloat();
+	float period = m_flFadetime;
 	float amount = frametime;
 	if ( period > 0 )
 	{
@@ -622,6 +623,7 @@ void C_SoundscapeSystem::StartNewSoundscape( KeyValues *pSoundscape )
 	// clear all random sounds
 	m_randomSounds.RemoveAll();
 	m_nextRandomTime = gpGlobals->curtime;
+	m_flFadetime = soundscape_fadetime.GetFloat();
 
 	if ( pSoundscape )
 	{
@@ -695,6 +697,13 @@ void C_SoundscapeSystem::StartSubSoundscape( KeyValues *pSoundscape, subsoundsca
 			}
 		}
 		// add new commands here
+		else if (!Q_strcasecmp(pKey->GetName(), "fadetime"))
+		{
+			if (params.allowDSP)
+			{
+				m_flFadetime = pKey->GetFloat();
+			}
+		}
 		else
 		{
 			DevMsg( 1, "Soundscape %s:Unknown command %s\n", pSoundscape->GetName(), pKey->GetName() );
@@ -749,6 +758,7 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 	const char *pSoundName = NULL;
 	int pitch = PITCH_NORM;
 	int positionIndex = -1;
+	Vector vecOriginOverride = vec3_invalid;
 	bool suppress = false;
 	KeyValues *pKey = pAmbient->GetFirstSubKey();
 	while ( pKey )
@@ -788,6 +798,10 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 		{
 			suppress = Q_atoi( pKey->GetString() ) != 0 ? true : false;
 		}
+		else if (!Q_strcasecmp(pKey->GetName(), "origin"))
+		{
+			sscanf(pKey->GetName(), "%f, %f, %f", &vecOriginOverride.x, &vecOriginOverride.y, &vecOriginOverride.z);
+		}
 		else
 		{
 			DevMsg( 1, "Ambient %s:Unknown command %s\n", pAmbient->GetName(), pKey->GetName() );
@@ -814,7 +828,12 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 	{
 		if ( positionIndex < 0 )
 		{
-			AddLoopingAmbient( pSoundName, volume, pitch );
+			if (vecOriginOverride.IsValid())
+			{
+				AddLoopingSound(pSoundName, false, volume, soundlevel, pitch, vecOriginOverride);
+			}
+			else
+				AddLoopingAmbient( pSoundName, volume, pitch );
 		}
 		else
 		{
@@ -932,6 +951,7 @@ void C_SoundscapeSystem::ProcessPlayRandom( KeyValues *pPlayRandom, const subsou
 	int positionIndex = -1;
 	bool suppress = false;
 	bool randomPosition = false;
+	Vector vecOriginOverride = vec3_invalid;
 	KeyValues *pKey = pPlayRandom->GetFirstSubKey();
 	while ( pKey )
 	{
@@ -991,6 +1011,10 @@ void C_SoundscapeSystem::ProcessPlayRandom( KeyValues *pPlayRandom, const subsou
 		{
 			suppress = Q_atoi( pKey->GetString() ) != 0 ? true : false;
 		}
+		else if (!Q_strcasecmp(pKey->GetName(), "origin"))
+		{
+			sscanf(pKey->GetName(), "%f, %f, %f", &vecOriginOverride.x, &vecOriginOverride.y, &vecOriginOverride.z);
+		}
 		else
 		{
 			DevMsg( 1, "Random Sound %s:Unknown command %s\n", pPlayRandom->GetName(), pKey->GetName() );
@@ -1019,8 +1043,18 @@ void C_SoundscapeSystem::ProcessPlayRandom( KeyValues *pPlayRandom, const subsou
 	{
 		if ( positionIndex < 0 && !randomPosition )
 		{
-			sound.isAmbient = true;
-			AddRandomSound( sound );
+			if (vecOriginOverride.IsValid())
+			{
+				sound.isAmbient = false;
+				sound.isRandom = false;
+				sound.position = vecOriginOverride;
+				AddRandomSound(sound);
+			}
+			else
+			{
+				sound.isAmbient = true;
+				AddRandomSound(sound);
+			}
 		}
 		else
 		{

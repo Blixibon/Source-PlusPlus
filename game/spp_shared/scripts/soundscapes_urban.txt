@@ -2,7 +2,7 @@
 // Author: Scott Dalton
 
 // DSP Effects
-// 0 : "Normal (off)"
+// 0 : "Normal )off)"
 // 1 : "Generic"
 // 2 : "Metal Small"
 // 3 : "Metal Medium"
@@ -2294,7 +2294,7 @@
 
 	// "playlooping"
 	// {
-		// "wave"		"(test/stereoTest.wav"
+		// "wave"		")test/stereoTest.wav"
 		// // "attenuation"	"1.5"
 		// "pitch"		"100"
 		// "volume" 	"1.0"

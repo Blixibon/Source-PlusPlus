@@ -981,7 +981,7 @@
 
 //------------------------------------------------------------------------------------------
 //
-// Water (for the canals area called "water" - this isn't a point source right now, just a general soundscape while the player is swimming around in the canals)
+// Water )for the canals area called "water" - this isn't a point source right now, just a general soundscape while the player is swimming around in the canals)
 //
 "canals.Water"
 {

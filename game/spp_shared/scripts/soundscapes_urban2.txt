@@ -2,7 +2,7 @@
 // Author: Scott Dalton
 
 // DSP Effects
-// 0 : "Normal (off)"
+// 0 : "Normal )off)"
 // 1 : "Generic"
 // 2 : "Metal Small"
 // 3 : "Metal Medium"

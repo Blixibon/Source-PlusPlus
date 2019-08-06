@@ -56,15 +56,15 @@
 
 		"rndwave"
 		{
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
-			"wave"	"(ambient/machines/train_horn_1.wav"
-			"wave"	"(ambient/machines/train_horn_2.wav"
-			"wave"	"(ambient/machines/train_horn_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/machines/train_horn_1.wav"
+			"wave"	")ambient/machines/train_horn_2.wav"
+			"wave"	")ambient/machines/train_horn_3.wav"
 		}
 	}
 	
@@ -207,15 +207,15 @@
 
 		"rndwave"
 		{
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
-			"wave"	"(ambient/machines/train_horn_1.wav"
-			"wave"	"(ambient/machines/train_horn_2.wav"
-			"wave"	"(ambient/machines/train_horn_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/machines/train_horn_1.wav"
+			"wave"	")ambient/machines/train_horn_2.wav"
+			"wave"	")ambient/machines/train_horn_3.wav"
 		}
 	}
 	
@@ -375,15 +375,15 @@
 
 		"rndwave"
 		{
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
-			"wave"	"(ambient/machines/train_horn_1.wav"
-			"wave"	"(ambient/machines/train_horn_2.wav"
-			"wave"	"(ambient/machines/train_horn_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/machines/train_horn_1.wav"
+			"wave"	")ambient/machines/train_horn_2.wav"
+			"wave"	")ambient/machines/train_horn_3.wav"
 		}
 	}
 	
@@ -516,9 +516,9 @@
 
 		"rndwave"
 		{
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
 		}
 	}
 	
@@ -553,9 +553,9 @@
 
 		"rndwave"
 		{
-			"wave"	"(ambient/playonce/machines/train_pass_1.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_2.wav"
-			"wave"	"(ambient/playonce/machines/train_pass_3.wav"
+			"wave"	")ambient/playonce/machines/train_pass_1.wav"
+			"wave"	")ambient/playonce/machines/train_pass_2.wav"
+			"wave"	")ambient/playonce/machines/train_pass_3.wav"
 		}
 	}
 	

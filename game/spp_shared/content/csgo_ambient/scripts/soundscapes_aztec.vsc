@@ -91,7 +91,7 @@
 	{
 		"volume"		".2"
 		"pitch"		"100"
-		"wave"		"(ambient/weather/aztec_rain_lp_01.wav"
+		"wave"		")ambient/weather/aztec_rain_lp_01.wav"
 	}
 
 	"playrandom"
@@ -424,7 +424,7 @@
 	{
 		"volume"		".1"
 		"pitch"		"100"
-		"wave"		"(ambient/weather/aztec_rain_lp_01.wav"
+		"wave"		")ambient/weather/aztec_rain_lp_01.wav"
 	}
 
 	"playrandom"
@@ -456,7 +456,7 @@
 	{
 		"volume"		"0.45"
 		"pitch"		"100"
-		"wave"		"(ambient/weather/aztec_rain_lp_01.wav"
+		"wave"		")ambient/weather/aztec_rain_lp_01.wav"
 	}
 }
 
@@ -469,7 +469,7 @@
 	{
 		"volume"		"0.65"
 		"pitch"		"100"
-		"wave"		"(ambient/weather/rumble_rain.wav"
+		"wave"		")ambient/weather/rumble_rain.wav"
 	}
 }
 
@@ -482,6 +482,6 @@
 	{
 		"volume"		"1.0"
 		"pitch"		"100"
-		"wave"		"(ambient/weather/rumble_rain.wav"
+		"wave"		")ambient/weather/rumble_rain.wav"
 	}
 }

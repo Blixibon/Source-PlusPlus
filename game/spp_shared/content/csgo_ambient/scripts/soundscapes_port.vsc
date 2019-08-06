@@ -76,7 +76,7 @@
 
 //------------------------------------------------------------------------------------------
 //
-// Florescent light hum (2nd version because cant play 2 identical at same time)
+// Florescent light hum )2nd version because cant play 2 identical at same time)
 //
 "port.LightHum2"
 {
@@ -130,7 +130,7 @@
 		name "port.Outside"
 	}
 
-	// Position 0: A spot in the trees up on the cliff (birdsong)
+	// Position 0: A spot in the trees up on the cliff )birdsong)
 
 	// Position 1: In the air conditioning units on the side of the building
 	"playrandom"
@@ -147,7 +147,7 @@
 		}
 	}
 
-	// Position 2: In the broken down white van (cricket chirp)
+	// Position 2: In the broken down white van )cricket chirp)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
@@ -209,9 +209,9 @@
 		name "port.Outside"
 	}
 
-	// Position 0: Repeat position #6 from "port.TSpawn" (the window)
+	// Position 0: Repeat position #6 from "port.TSpawn" )the window)
 
-	// Position 1: Repeat position #5 from "port.TSpawn" (the white cylinders)
+	// Position 1: Repeat position #5 from "port.TSpawn" )the white cylinders)
 	"playlooping"
 	{
 		"position"		"1"	
@@ -222,14 +222,14 @@
 		"wave"	"ambient/machines/gas_loop_1.wav"
 	}
 
-	// Position 2: A spot hovering in the middle of the big tanks (metal stress groans)
+	// Position 2: A spot hovering in the middle of the big tanks )metal stress groans)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
 		"name"				"port.MetalStress"
 	}
 
-	// Position 3: The orange drain in front of the tunnel entrance (water drips)
+	// Position 3: The orange drain in front of the tunnel entrance )water drips)
 	"playrandom"
 	{
 		"position"		"3"	
@@ -248,9 +248,9 @@
 	}
 
 	// NOTE: Space 4, 5, and 6 out so they cover the oceanfront by the tank farm
-	// Position 4: A spot out in the ocean a few feet (mild waves and seagulls)
+	// Position 4: A spot out in the ocean a few feet )mild waves and seagulls)
 
-	// Position 5: A spot out in the ocean a few feet (mild waves and seagulls)
+	// Position 5: A spot out in the ocean a few feet )mild waves and seagulls)
 	"playlooping"
 	{
 		"position"		"5"	
@@ -261,7 +261,7 @@
 		"wave"	"ambient/canals/ambience_canals_water_bg.wav"
 	}
 
-	// Position 6: A spot out in the ocean a few feet (mild waves and seagulls)
+	// Position 6: A spot out in the ocean a few feet )mild waves and seagulls)
 
 }
 
@@ -303,7 +303,7 @@
 		"name"				"port.MetalStress"
 	}
 
-	// Position 3: In a grass tuft up against a Tank (crickets)
+	// Position 3: In a grass tuft up against a Tank )crickets)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
@@ -321,7 +321,7 @@
 		"wave"	"ambient/machines/power_transformer_loop_1.wav"
 	}
 
-	// Position 5: A spot on the roof of the big Tank closest to the TSpawn (birds)
+	// Position 5: A spot on the roof of the big Tank closest to the TSpawn )birds)
 	"playsoundscape"
 	{
 		"positionoverride"	"5"
@@ -352,14 +352,14 @@
 	}
 
 
-	// Position 0: Between the garage door and the two big red crates in the back on the ground (cricket)
+	// Position 0: Between the garage door and the two big red crates in the back on the ground )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
 		"name"				"inferno.Cricket"
 	}
 
-	// Position 1: A spot on the roof of the building (birds)
+	// Position 1: A spot on the roof of the building )birds)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
@@ -413,21 +413,21 @@
 		"name"				"port.MetalStress"
 	}
 
-	// Position 3: On top of the Tank clostest to the TSpawn (birds)
+	// Position 3: On top of the Tank clostest to the TSpawn )birds)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
 		"name"				"inferno.Birds"
 	}
 
-	// Position 4: On the ground between the light blue dumpster full of gravel and the blue truck crate next to it (cricket)
+	// Position 4: On the ground between the light blue dumpster full of gravel and the blue truck crate next to it )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"4"
 		"name"				"inferno.Cricket"
 	}
 
-	// Position 5: Out in the ocean a few yards behind the stack of red crates near the pier (ocean sounds)
+	// Position 5: Out in the ocean a few yards behind the stack of red crates near the pier )ocean sounds)
 }
 
 
@@ -458,7 +458,7 @@
 		"wave"	"ambient/machines/power_transformer_loop_1.wav"
 	}
 
-	// Position 1: Inside one of the boxes on the upper shelves (cricket)
+	// Position 1: Inside one of the boxes on the upper shelves )cricket)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
@@ -555,7 +555,7 @@
 		"wave"	"ambient/machines/power_transformer_loop_1.wav"
 	}
 
-	// Position 2: The light near (-608, 665, 407)
+	// Position 2: The light near )-608, 665, 407)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
@@ -563,7 +563,7 @@
 		"name"				"port.LightHum"
 	}
 
-	// Position 3: The light near (-856, 415, 472)
+	// Position 3: The light near )-856, 415, 472)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
@@ -582,7 +582,7 @@
 		"wave"	"ambient/gas/steam_loop1.wav"
 	}
 
-	// Position 5: THe light near (-183, 432, 439)
+	// Position 5: THe light near )-183, 432, 439)
 	"playsoundscape"
 	{
 		"positionoverride"	"5"
@@ -605,7 +605,7 @@
 		"name"	"port.TunnelTone"
 	}
 
-	// Position 0: The big white pipes on the wall (338, 369, 459)
+	// Position 0: The big white pipes on the wall )338, 369, 459)
 	"playlooping"
 	{
 		"position"		"0"	
@@ -616,7 +616,7 @@
 		"wave"	"ambient/gas/steam_loop1.wav"
 	}
 
-	// Position 1: The fan/vent above the stairs near (232, 390, 519)
+	// Position 1: The fan/vent above the stairs near )232, 390, 519)
 	"playlooping"
 	{
 		"position"		"1"	
@@ -627,21 +627,21 @@
 		"wave"	"ambient/machines/air_conditioner_loop_1.wav"
 	}
 
-	// Position 2: The light near (454, 796, 533)
+	// Position 2: The light near )454, 796, 533)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
 		"name"				"port.LightHum"
 	}
 
-	// Position 3: The light near (882, 864, 541)
+	// Position 3: The light near )882, 864, 541)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
 		"name"				"port.LightHum2"
 	}
 
-	// Position 4: Just behind the door at (1028, 908, 525)
+	// Position 4: Just behind the door at )1028, 908, 525)
 }
 
 
@@ -658,7 +658,7 @@
 		"name"	"port.TunnelTone"
 	}
 
-	// Position 0: The thin white pipes near (1726, 800, 535)
+	// Position 0: The thin white pipes near )1726, 800, 535)
 	"playlooping"
 	{
 		"position"		"3"	
@@ -669,14 +669,14 @@
 		"wave"	"ambient/machines/gas_loop_1.wav"
 	}
 
-	// Position 1: The light near (1561, 876, 550)
+	// Position 1: The light near )1561, 876, 550)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
 		"name"				"port.LightHum"
 	}
 
-	// Position 2: The electrical box near (1337, 617, 509)
+	// Position 2: The electrical box near )1337, 617, 509)
 	"playlooping"
 	{
 		"position"		"2"	
@@ -687,14 +687,14 @@
 		"wave"	"ambient/machines/power_transformer_loop_1.wav"
 	}
 
-	// Position 3: The light near (1285, 313, 566)
+	// Position 3: The light near )1285, 313, 566)
 	"playsoundscape"
 	{
 		"positionoverride"	"3"
 		"name"				"port.LightHum2"
 	}
 
-	// Position 4: In the center of the inaccessible room near (1031, 341, 511)
+	// Position 4: In the center of the inaccessible room near )1031, 341, 511)
 	"playlooping"
 	{
 		"position"		"4"	
@@ -705,7 +705,7 @@
 		"wave"	"ambient/machines/turbine_loop_2.wav"
 	}
 
-	// Position 5: In the vents near (1330, 308, 532)
+	// Position 5: In the vents near )1330, 308, 532)
 	"playlooping"
 	{
 		"position"		"5"	
@@ -742,7 +742,7 @@
 		"wave"	"ambient/atmosphere/engine_room.wav"
 	}
 
-	// Position 1: The light near (1280, -471, 525)
+	// Position 1: The light near )1280, -471, 525)
 	"playsoundscape"
 	{
 		"positionoverride"	"1"
@@ -767,7 +767,7 @@
 		}
 	}
 
-	// Position 3: The big grey pipes near (1001, -358, 518)
+	// Position 3: The big grey pipes near )1001, -358, 518)
 	"playlooping"
 	{
 		"position"		"3"	
@@ -811,25 +811,25 @@
 		name "port.Outside"
 	}
 
-	// Position 0: On the ship's deck (metal stress sounds)
+	// Position 0: On the ship's deck )metal stress sounds)
 	"playsoundscape"
 	{
 		"positionoverride"	"0"
 		"name"				"port.MetalStress"
 	}
 
-	// Position 1: Out in the ocean a few yards near (-2177, 2264, 545) (ocean sounds)
+	// Position 1: Out in the ocean a few yards near )-2177, 2264, 545) )ocean sounds)
 
-	// Position 2: In the trees up on the cliff (birds)
+	// Position 2: In the trees up on the cliff )birds)
 	"playsoundscape"
 	{
 		"positionoverride"	"2"
 		"name"				"inferno.Birds"
 	}
 
-	// Position 3: At the water surface between the right gangplank and the crates (water lapping)
+	// Position 3: At the water surface between the right gangplank and the crates )water lapping)
 
-	// Position 4: At the water surface between the left and right gangplanks (water lapping)
+	// Position 4: At the water surface between the left and right gangplanks )water lapping)
 	"playlooping"
 	{
 		"position"		"4"	
@@ -840,7 +840,7 @@
 		"wave"	"ambient/canals/ambience_canals_water_boats.wav"
 	}
 
-	// Position 5: At the water surface between the left gangplank and end of the ship (water lapping)
+	// Position 5: At the water surface between the left gangplank and end of the ship )water lapping)
 }
 
 
@@ -867,9 +867,9 @@
 	}
 
 
-	// Position 0: Behind one of the windows in the "bridge" of the ship (ship's radio, etc)
+	// Position 0: Behind one of the windows in the "bridge" of the ship )ship's radio, etc)
 
-	// Positions 1-4: Various spots in the pipes (gas hiss)
+	// Positions 1-4: Various spots in the pipes )gas hiss)
 	"playlooping"
 	{
 		"position"		"1"	

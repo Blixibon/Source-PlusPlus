@@ -19,7 +19,7 @@
 #define CHAR_DISTVARIANT	'^'		// as one of 1st 2 chars in name, indicates distance variant encoded stereo wav (left is close, right is far)
 #define CHAR_OMNI			'@'		// as one of 1st 2 chars in name, indicates non-directional wav (default mono or stereo)
 #define CHAR_SPATIALSTEREO	')'		// as one of 1st 2 chars in name, indicates spatialized stereo wav
-#define CHAR_NEWENGINESPATIAL	'('
+#define CHAR_NEWENGINESPATIAL	'(' // used for spatialization in new engine versions; if you have this in the sound name it won't play
 #define CHAR_FAST_PITCH		'}'		// as one of 1st 2 chars in name, forces low quality, non-interpolated pitch shift
 
 inline bool IsSoundChar(char c)

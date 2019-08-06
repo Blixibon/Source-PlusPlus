@@ -194,7 +194,7 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/nature/water/amb_sphere_int_water_lp_01.wav"
+		"wave"		")ambient/nature/water/amb_sphere_int_water_lp_01.wav"
 		"pitch"		"80"
 
 	}
@@ -286,7 +286,7 @@
 	"playlooping"
 	{
 		"volume"	"0.66"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_04.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_04.wav"
 		"pitch"		"95"
 
 	}
@@ -332,7 +332,7 @@
 	"playlooping"
 	{
 		"volume"	"0.36"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_04.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_04.wav"
 		"pitch"		"95"
 
 	}
@@ -401,7 +401,7 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/nature/water/amb_sphere_int_water_lp_01.wav"
+		"wave"		")ambient/nature/water/amb_sphere_int_water_lp_01.wav"
 		"pitch"		"80"
 
 	}
@@ -409,7 +409,7 @@
 	"playlooping"
 	{
 		"volume"	"0.56"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_03.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_03.wav"
 		"pitch"		"95"
 
 	}
@@ -667,14 +667,14 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.53"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"100"
 	}
 
@@ -1296,14 +1296,14 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.83"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"100"
 	}
 
@@ -1339,14 +1339,14 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.83"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"100"
 	}
 
@@ -1397,14 +1397,14 @@
 	"playlooping"
 	{
 		"volume"	"0.4"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"90"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.63"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"100"
 	}
 
@@ -1453,14 +1453,14 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.58"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"110"
 	}
 
@@ -1500,14 +1500,14 @@
 	"playlooping"
 	{
 		"volume"	"0.2"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.53"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"100"
 	}
 
@@ -1547,7 +1547,7 @@
 	"playlooping"
 	{
 		"volume"	"0.8"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_01.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_01.wav"
 		"pitch"		"60"
 	}
 
@@ -1587,14 +1587,14 @@
 	"playlooping"
 	{
 		"volume"	"0.4"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_04.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_04.wav"
 		"pitch"		"80"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.33"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"80"
 	}
 
@@ -1634,14 +1634,14 @@
 	"playlooping"
 	{
 		"volume"	"0.8"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_04.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_04.wav"
 		"pitch"		"65"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.58"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"70"
 	}
 
@@ -1682,7 +1682,7 @@
 	"playlooping"
 	{
 		"volume"	".45"
-		"wave"		"(ambient/wind/Underground_wind_lp_01.wav"
+		"wave"		")ambient/wind/Underground_wind_lp_01.wav"
 		"pitch"		"95"
 
 	}
@@ -1690,14 +1690,14 @@
 	"playlooping"
 	{
 		"volume"	"0.25"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_06.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_06.wav"
 		"pitch"		"70"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.3"
-		"wave"		"(ambient/industrial/warehouse_ambience_lp_01.wav"
+		"wave"		")ambient/industrial/warehouse_ambience_lp_01.wav"
 		"pitch"		"100"
 	}
 
@@ -1735,7 +1735,7 @@
 	"playlooping"
 	{
 		"volume"	".45"
-		"wave"		"(ambient/wind/Underground_wind_lp_01.wav"
+		"wave"		")ambient/wind/Underground_wind_lp_01.wav"
 		"pitch"		"95"
 
 	}
@@ -1743,14 +1743,14 @@
 	"playlooping"
 	{
 		"volume"	"0.7"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_03.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_03.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	".7"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"50"
 	}
 
@@ -1758,7 +1758,7 @@
 	"playlooping"
 	{
 		"volume"	".5"
-		"wave"		"(ambient/nature/water/amb_water_pipes_lp_01.wav"
+		"wave"		")ambient/nature/water/amb_water_pipes_lp_01.wav"
 		"pitch"		"50"
 	}
 
@@ -1794,7 +1794,7 @@
 	"playlooping"
 	{
 		"volume"	"0.63"
-		"wave"		"(ambient/industrial/amb_sterile_lp_01.wav"
+		"wave"		")ambient/industrial/amb_sterile_lp_01.wav"
 		"pitch"		"85"
 	}
 
@@ -1802,7 +1802,7 @@
 	"playlooping"
 	{
 		"volume"	".4"
-		"wave"		"(ambient/nature/water/amb_water_pipes_lp_01.wav"
+		"wave"		")ambient/nature/water/amb_water_pipes_lp_01.wav"
 		"pitch"		"80"
 	}
 
@@ -1810,7 +1810,7 @@
 	"playlooping"
 	{
 		"volume"	".4"
-		"wave"		"(ambient/industrial/Delivery_tubes_lp_02.wav"
+		"wave"		")ambient/industrial/Delivery_tubes_lp_02.wav"
 		"pitch"		"100"
 	}
 
@@ -1839,7 +1839,7 @@
 	"playlooping"
 	{
 		"volume"	".6"
-		"wave"		"(ambient/industrial/amb_machinery_factory_lp_01.wav"
+		"wave"		")ambient/industrial/amb_machinery_factory_lp_01.wav"
 		"pitch"		"45"
 
 	}
@@ -1847,14 +1847,14 @@
 	"playlooping"
 	{
 		"volume"	".8"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_08.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_08.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.73"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"50"
 	}
 
@@ -1893,7 +1893,7 @@
 	"playlooping"
 	{
 		"volume"	".3"
-		"wave"		"(ambient/industrial/amb_machinery_factory_lp_01.wav"
+		"wave"		")ambient/industrial/amb_machinery_factory_lp_01.wav"
 		"pitch"		"45"
 
 	}
@@ -1901,14 +1901,14 @@
 	"playlooping"
 	{
 		"volume"	".5"
-		"wave"		"(ambient/Tones/Amb_Abstract_air_lp_08.wav"
+		"wave"		")ambient/Tones/Amb_Abstract_air_lp_08.wav"
 		"pitch"		"100"
 	}
 
 	"playlooping"
 	{
 		"volume"	"0.3"
-		"wave"		"(ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
+		"wave"		")ambient/electrical/amb_hotel_refrigeration_lp_01.wav"
 		"pitch"		"50"
 	}
 

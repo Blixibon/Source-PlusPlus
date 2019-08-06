@@ -692,7 +692,7 @@
 	"playlooping"
 	{
 		"volume"	"0.29"
-		"wave"		"(ambient/nature/water/amb_Indoor_water_sludge_lp_01.wav"
+		"wave"		")ambient/nature/water/amb_Indoor_water_sludge_lp_01.wav"
 		"pitch"		"50"
 
 	}
@@ -862,7 +862,7 @@
 	"playlooping"
 	{
 		"volume"	"0.45"
-		"wave"		"(ambient/industrial/amb_heavy_mach_lp_01.wav"
+		"wave"		")ambient/industrial/amb_heavy_mach_lp_01.wav"
 		"pitch"		"80"
 
 	}
@@ -908,7 +908,7 @@
 	"playlooping"
 	{
 		"volume"	"0.36"
-		"wave"		"(ambient/industrial/amb_heavy_mach_lp_02.wav"
+		"wave"		")ambient/industrial/amb_heavy_mach_lp_02.wav"
 		"pitch"		"50"
 
 	}
@@ -937,7 +937,7 @@
 	"playlooping"
 	{
 		"volume"	"0.29"
-		"wave"		"(ambient/nature/water/amb_Indoor_water_sludge_lp_01.wav"
+		"wave"		")ambient/nature/water/amb_Indoor_water_sludge_lp_01.wav"
 		"pitch"		"50"
 
 	}
