@@ -19,6 +19,11 @@
 		{
 		
 		}
+
+		"csgo_ambient"
+		{
+			
+		}
 		
 		"l4d2_ambient"
 		{
@@ -38,7 +43,7 @@
 				"scenes"	"1"
 			}
 			
-			vpk		csgo_ambient
+			//vpk		csgo_ambient
 			//vpk		l4d2_ambient
 			vpk		asrd_content
 			vpk		hl2wars_content
