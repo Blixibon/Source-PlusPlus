@@ -1748,22 +1748,22 @@ void CLaz_Player::StateThinkDYING(void)
 
 	float flTimeInFreeze = spec_freeze_traveltime.GetFloat() + spec_freeze_time.GetFloat();
 	float flFreezeEnd = (m_flDeathTime + TF_DEATH_ANIMATION_TIME + flTimeInFreeze);
-	//if (!m_bPlayedFreezeCamSound  && GetObserverTarget() && GetObserverTarget() != this)
-	//{
-	//	// Start the sound so that it ends at the freezecam lock on time
-	//	float flFreezeSoundLength = 0.3;
-	//	float flFreezeSoundTime = (m_flDeathTime + TF_DEATH_ANIMATION_TIME) + spec_freeze_traveltime.GetFloat() - flFreezeSoundLength;
-	//	if (gpGlobals->curtime >= flFreezeSoundTime)
-	//	{
-	//		CSingleUserRecipientFilter filter(this);
-	//		EmitSound_t params;
-	//		params.m_flSoundTime = 0;
-	//		params.m_pSoundName = "TFPlayer.FreezeCam";
-	//		EmitSound(filter, entindex(), params);
+	if (!m_bPlayedFreezeCamSound  && GetObserverTarget() && GetObserverTarget() != this)
+	{
+		// Start the sound so that it ends at the freezecam lock on time
+		float flFreezeSoundLength = 0.3;
+		float flFreezeSoundTime = (m_flDeathTime + TF_DEATH_ANIMATION_TIME) + spec_freeze_traveltime.GetFloat() - flFreezeSoundLength;
+		if (gpGlobals->curtime >= flFreezeSoundTime)
+		{
+			CSingleUserRecipientFilter filter(this);
+			EmitSound_t params;
+			params.m_flSoundTime = 0;
+			params.m_pSoundName = "TFPlayer.FreezeCam";
+			EmitSound(filter, entindex(), params);
 
-	//		m_bPlayedFreezeCamSound = true;
-	//	}
-	//}
+			m_bPlayedFreezeCamSound = true;
+		}
+	}
 
 	if (gpGlobals->curtime >= (m_flDeathTime + TF_DEATH_ANIMATION_TIME))	// allow x seconds death animation / death cam
 	{

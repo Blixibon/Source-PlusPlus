@@ -758,7 +758,8 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 	const char *pSoundName = NULL;
 	int pitch = PITCH_NORM;
 	int positionIndex = -1;
-	Vector vecOriginOverride = vec3_invalid;
+	Vector vecOriginOverride;
+	vecOriginOverride.Invalidate();
 	bool suppress = false;
 	KeyValues *pKey = pAmbient->GetFirstSubKey();
 	while ( pKey )
@@ -800,7 +801,7 @@ void C_SoundscapeSystem::ProcessPlayLooping( KeyValues *pAmbient, const subsound
 		}
 		else if (!Q_strcasecmp(pKey->GetName(), "origin"))
 		{
-			sscanf(pKey->GetName(), "%f, %f, %f", &vecOriginOverride.x, &vecOriginOverride.y, &vecOriginOverride.z);
+			sscanf(pKey->GetString(), "%f, %f, %f", &vecOriginOverride.x, &vecOriginOverride.y, &vecOriginOverride.z);
 		}
 		else
 		{
@@ -951,7 +952,8 @@ void C_SoundscapeSystem::ProcessPlayRandom( KeyValues *pPlayRandom, const subsou
 	int positionIndex = -1;
 	bool suppress = false;
 	bool randomPosition = false;
-	Vector vecOriginOverride = vec3_invalid;
+	Vector vecOriginOverride;
+	vecOriginOverride.Invalidate();
 	KeyValues *pKey = pPlayRandom->GetFirstSubKey();
 	while ( pKey )
 	{
@@ -1013,7 +1015,7 @@ void C_SoundscapeSystem::ProcessPlayRandom( KeyValues *pPlayRandom, const subsou
 		}
 		else if (!Q_strcasecmp(pKey->GetName(), "origin"))
 		{
-			sscanf(pKey->GetName(), "%f, %f, %f", &vecOriginOverride.x, &vecOriginOverride.y, &vecOriginOverride.z);
+			sscanf(pKey->GetString(), "%f, %f, %f", &vecOriginOverride.x, &vecOriginOverride.y, &vecOriginOverride.z);
 		}
 		else
 		{

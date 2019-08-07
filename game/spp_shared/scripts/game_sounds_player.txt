@@ -95,6 +95,13 @@
 	}
 }
 
+"TFPlayer.FreezeCam"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	".75"
+	"soundlevel"  	"SNDLVL_75dB"
+	"wave"		"misc/freeze_cam.wav"
+}
 
 // SHARED player sounds
 

@@ -76,6 +76,7 @@ public:
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
 	virtual const char *GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer);
+	virtual void CleanUpMap(void);
 
 	// Game Achievements (server version)
 	virtual void MarkAchievement(IRecipientFilter& filter, char const *pchAchievementName);
@@ -94,6 +95,10 @@ public:
 	//virtual float FlItemRespawnTime(CItem* pItem);
 	//virtual Vector VecItemRespawnSpot(CItem* pItem);
 	//virtual QAngle VecItemRespawnAngles(CItem* pItem);
+
+	virtual void Status(void(*print) (const char *fmt, ...));
+
+	virtual void GetTaggedConVarList(KeyValues *pCvarTagList);
 #endif
 
 	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }

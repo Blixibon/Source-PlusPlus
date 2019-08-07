@@ -246,12 +246,12 @@
 	"volume"		"1.0"
 	"rndwave"
 	{
-		"wave"		"props/explosions/explo_generic_med_01.wav"
-		"wave"		"props/explosions/explo_generic_med_02.wav"
-		"wave"		"props/explosions/explo_generic_med_03.wav"
-		"wave"		"props/explosions/explo_generic_med_04.wav"
-		"wave"		"props/explosions/explo_generic_med_05.wav"
-		"wave"		"props/explosions/explo_generic_med_06.wav"
+		"wave"		"weapons/explosions/explo_generic_med_01.wav"
+		"wave"		"weapons/explosions/explo_generic_med_02.wav"
+		"wave"		"weapons/explosions/explo_generic_med_03.wav"
+		"wave"		"weapons/explosions/explo_generic_med_04.wav"
+		"wave"		"weapons/explosions/explo_generic_med_05.wav"
+		"wave"		"weapons/explosions/explo_generic_med_06.wav"
 	}
 	"soundentry_version" "2"
 

@@ -84,4 +84,5 @@
 	"precache_file"		"scripts/game_sounds_scenes_ENDGAME.txt"
 	
 	"precache_file"		"scripts/npc_sounds_hydra.txt"
+	"precache_file"		"scripts/game_sounds_vox_extra.txt"
 }

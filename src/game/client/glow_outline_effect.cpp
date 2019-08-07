@@ -335,6 +335,9 @@ void CGlowObjectManager::ApplyEntityGlowEffects(const CViewSetup *pSetup, int nS
 #else
 		pRenderContext->SetStencilEnable(false);
 
+		pRenderContext->ClearColor4ub(0, 0, 0, 0);
+		pRenderContext->ClearBuffers(true, false, false);
+
 		IMaterial* const pFullFrameFB1 = materials->FindMaterial("debug/debugfbtexture1", TEXTURE_GROUP_RENDER_TARGET);
 		pFullFrameFB1->AddRef();
 		pRenderContext->Bind(pFullFrameFB1);

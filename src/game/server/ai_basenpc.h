@@ -459,12 +459,11 @@ public:
 
 	bool FindAI( CAI_BaseNPC *pAI )	{ return ( m_AIs.Find( pAI ) != m_AIs.InvalidIndex() ); }
 	
-private:
 	enum
 	{
 		MAX_AIS = 256
 	};
-	
+private:	
 	typedef CUtlVector<CAI_BaseNPC *> CAIArray;
 	
 	CAIArray m_AIs;

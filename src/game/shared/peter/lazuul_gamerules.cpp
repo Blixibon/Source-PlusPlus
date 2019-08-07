@@ -15,6 +15,8 @@
 #include "gamestats.h"
 #include "usermessages.h"
 #include "voice_gamemgr.h"
+#include "NextBotManager.h"
+#include "hltvdirector.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -718,6 +720,21 @@ int CLazuul::ItemShouldRespawn(CItem* pItem)
 	}
 
 	return GR_ITEM_RESPAWN_YES;
+}
+
+void CLazuul::Status(void(*print)(const char *fmt, ...))
+{
+	BaseClass::Status(print);
+
+	if (FAllowNPCs())
+		print("NPC AIs\t: %i of %i\n", g_AI_Manager.NumAIs(), CAI_Manager::MAX_AIS);
+
+	print("NextBot AIs\t: %i\n", TheNextBots().GetNextBotCount());
+}
+
+void CLazuul::GetTaggedConVarList(KeyValues * pCvarTagList)
+{
+	BaseClass::GetTaggedConVarList(pCvarTagList);
 }
 
 //-----------------------------------------------------------------------------
@@ -4030,7 +4047,7 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 		event->SetInt("damagebits", info.GetDamageType());
 		event->SetInt("customkill", info.GetDamageCustom());
 		event->SetBool("show_notice", bShowDeathNotice); // are we allowed to make deathnotice on THIS npc?
-		event->SetInt("priority", 7);	// HLTV event priority, not transmitted
+		event->SetInt("priority", bShowDeathNotice ? 7 : 3);	// HLTV event priority, not transmitted
 
 		gameeventmanager->FireEvent(event);
 	}
@@ -4060,6 +4077,16 @@ void CLazuul::CreateStandardEntities()
 	Assert(pEnt);
 	pEnt->SetName(AllocPooledString("laz_gamerules"));
 	pEnt->KeyValue("allowdeathmatch", "1");
+}
+
+void CLazuul::CleanUpMap(void)
+{
+	BaseClass::CleanUpMap();
+
+	if (HLTVDirector())
+	{
+		HLTVDirector()->BuildCameraList();
+	}
 }
 
 //-----------------------------------------------------------------------------

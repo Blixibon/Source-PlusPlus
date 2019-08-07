@@ -852,6 +852,9 @@ bool CProtoSniper::IsPlayerAllySniper()
 
 	return IRelationType( pPlayer ) == D_LI;
 #else
+	if (AI_IsSinglePlayer())
+		return IsPlayerAlly();
+
 	return FindClassRelationship(CLASS_PLAYER)->disposition != D_HT;
 #endif
 }

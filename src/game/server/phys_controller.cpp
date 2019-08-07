@@ -1058,7 +1058,12 @@ AngularImpulse ComputeRotSpeedToAlignAxes( const Vector &testAxis, const Vector 
 	if (!testAxis.IsValid() || !alignAxis.IsValid())
 		return AngularImpulse(0.f);
 
+	if (testAxis.z == alignAxis.z)
+		return AngularImpulse(0.f);
+
 	Vector rotationAxis = CrossProduct( testAxis, alignAxis );
+	if (!rotationAxis.IsValid())
+		return AngularImpulse(0.f);
 
 	// atan2() is well defined, so do a Dot & Cross instead of asin(Cross)
 	float cosine = DotProduct( testAxis, alignAxis );

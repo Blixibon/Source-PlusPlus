@@ -55,7 +55,7 @@ public:
 
 	virtual const char** GetModEvents(); // returns list of event names forwarded to HLTV clients
 
-	void	BuildCameraList( void );
+	virtual void	BuildCameraList( void );
 		
 
 public: // IGameEventListener Interface

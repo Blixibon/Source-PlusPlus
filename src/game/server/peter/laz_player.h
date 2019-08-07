@@ -212,6 +212,7 @@ protected:
 	playerModel_t m_MPModel;
 	int				m_nSpecialAttack;
 	float				m_flNextSpecialAttackTime;
+	bool				m_bPlayedFreezeCamSound;
 
 	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
 	CNetworkString(m_strMinionClass, 32);
