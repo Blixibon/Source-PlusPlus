@@ -464,7 +464,7 @@ bool CBMSWeaponMP5::Reload( void )
 	bool fRet;
 	float fCacheTime = m_flNextSecondaryAttack;
 
-	fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
+	fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), Clip1() ? ACT_VM_RELOAD : ACT_VM_RELOAD_EMPTY);
 	if ( fRet )
 	{
 		// Undo whatever the reload process has done to our secondary

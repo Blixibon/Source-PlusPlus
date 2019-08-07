@@ -653,6 +653,8 @@ public:
 
 	IPhysicsConstraint		*GetConstraint() { return m_pConstraint; }
 
+	CNetworkVar(bool, m_bHasBeenDeployed);
+
 private:
 	WEAPON_FILE_INFO_HANDLE	m_hWeaponFileInfo;
 	IPhysicsConstraint		*m_pConstraint;
@@ -663,8 +665,6 @@ private:
 	bool					m_bReloadHudHintDisplayed;	// Have we displayed a reload HUD hint since this weapon was deployed?
 	float					m_flHudHintPollTime;	// When to poll the weapon again for whether it should display a hud hint.
 	float					m_flHudHintMinDisplayTime; // if the hint is squelched before this, reset my counter so we'll display it again.
-
-	CNetworkVar(bool,		m_bHasBeenDeployed);
 	
 	// Server only
 #if !defined( CLIENT_DLL )

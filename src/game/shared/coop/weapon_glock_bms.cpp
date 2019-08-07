@@ -385,7 +385,7 @@ Activity CBMSWeaponGlock::GetPrimaryAttackActivity( void )
 //-----------------------------------------------------------------------------
 bool CBMSWeaponGlock::Reload( void )
 {
-	bool fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
+	bool fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), Clip1() ? ACT_VM_RELOAD : ACT_VM_RELOAD_EMPTY);
 	if ( fRet )
 	{
 		WeaponSound( RELOAD );

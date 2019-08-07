@@ -144,7 +144,7 @@ bool CWeaponCoopBaseHLCombat::Deploy( void )
 {
 	// If we should be lowered, deploy in the lowered position
 	// We have to ask the player if the last time it checked, the weapon was lowered
-	if ( GetOwner() && GetOwner()->IsPlayer() )
+	if ( m_bHasBeenDeployed && GetOwner() && GetOwner()->IsPlayer() )
 	{
 		CHL2_Player *pPlayer = ToHL2Player( GetOwner() );
 
@@ -188,6 +188,10 @@ bool CWeaponCoopBaseHLCombat::Holster( CBaseCombatWeapon *pSwitchingTo )
 //================================================================================
 void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 {
+	if (HasWeaponIdleTimeElapsed())
+	{
+		m_bHasBeenDeployed = true;
+	}
 	//See if we should idle high or low
 	if ( WeaponShouldBeLowered() )
 	{
