@@ -1,0 +1,20 @@
+
+$Sequence "idle" {
+	"w_glock_bms_anims\idle.smd"
+	activity "ACT_VM_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+}
+
+$Sequence "attack1" {
+	"w_glock_bms_anims\attack1.smd"
+	activity "ACT_RANGE_ATTACK_PISTOL" 1
+	{ event AE_NPC_MUZZLEFLASH 0 "PISTOL MUZZLE" }
+	{ event 3014 0 "" }
+	{ event AE_CL_EJECTBRASS_SCRIPT 0 "weapon_glock_bms glock-primary-attack-thirdperson 2" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}

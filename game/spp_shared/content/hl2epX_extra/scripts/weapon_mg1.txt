@@ -23,6 +23,7 @@ WeaponData
 
 	"size"				"15"
 	"autoswitchfrom"	"0"
+	firstdraw_act	"ACT_VM_PICKUP"
 
 	SoundData
 	{

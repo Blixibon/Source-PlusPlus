@@ -9,6 +9,7 @@ WeaponData
 	weight		"0"
 	anim_prefix	"crowbar"
 	ViewModelFOV		"70"
+	firstdraw_act	"ACT_VM_DRAW_DEPLOYED"
 
 	SoundData
 	{

@@ -12,6 +12,7 @@ WeaponData
 	weight		"3"
 	anim_prefix	"mp5"
 	ViewModelFOV		"70"
+	firstdraw_act	"ACT_VM_DRAW_DEPLOYED"
 
 	SoundData
 	{

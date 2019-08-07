@@ -17,6 +17,7 @@ WeaponData
 	"weight"			"2"
 	"item_flags"			"0"
 	"damage"			"12"
+	firstdraw_act	"ACT_VM_PICKUP"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
@@ -30,6 +31,15 @@ WeaponData
 		"special1"		"Weapon_Pistol.Special1"
 		"special2"		"Weapon_Pistol.Special2"
 		"burst"			"Weapon_Pistol.Burst"
+	}
+
+	"IronSight"
+	{
+		"forward"		"-5"
+		"right"			"-5"
+		"up"			"2"
+
+		"fov"			"-20"
 	}
 
 	// Weapon Sprite data is loaded by the Client DLL.

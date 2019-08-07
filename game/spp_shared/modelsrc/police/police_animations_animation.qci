@@ -46,6 +46,41 @@ $IKAutoPlayLock "lfoot" 1 0.1
 $IKAutoPlayLock "rfoot" 1 0.1
 $IKAutoPlayLock "lfoot" 1 0.1
 
+$Sequence "Police_Dance" {
+	"police_anims\Police_Dance.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Police_Dance2" {
+	"police_anims\Police_Dance2.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
+
+$Sequence "Police_Dance3" {
+	"police_anims\Police_Dance3.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	loop
+	ikrule "rhand" release
+	ikrule "lhand" release
+	ikrule "rfoot" release
+	ikrule "lfoot" release
+}
 
 $IncludeModel "polhl2_animations.mdl"
 $IncludeModel "humans/animation/di_death_antlion.mdl"

@@ -1,0 +1,12 @@
+
+$CollisionModel "w_glock_bms_physics.smd"
+{
+	$mass 2
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+	$rootbone " "
+	$concave
+	$maxconvexpieces 1
+
+}

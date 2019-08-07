@@ -11,6 +11,7 @@ WeaponData
 	default_clip	"1"
 	anim_prefix	"rpg"
 	ViewModelFOV		"70"
+	firstdraw_act	"ACT_VM_DRAW_DEPLOYED"
 
 	SoundData
 	{

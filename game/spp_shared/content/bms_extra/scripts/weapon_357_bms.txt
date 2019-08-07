@@ -12,6 +12,8 @@ WeaponData
 	anim_prefix	"glock"//fixme
 	ViewModelFOV		"70"
 
+	firstdraw_act	"ACT_VM_DRAW_DEPLOYED"
+
 	SoundData
 	{
 		double_shot	"weapon_357_bms.Double"

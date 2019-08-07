@@ -386,6 +386,39 @@ void CBaseViewModel::SendViewModelMatchingSequence( int sequence )
 #include "ivieweffects.h"
 #endif
 
+void CBaseViewModel::CalcIronsights(Vector &pos, QAngle &ang)
+{
+	CBaseCombatWeapon *pWeapon = GetOwningWeapon();
+
+	if (!pWeapon)
+		return;
+
+	//get delta time for interpolation
+	float delta = (gpGlobals->curtime - pWeapon->m_flIronsightedTime) * 2.5f; //modify this value to adjust how fast the interpolation is
+	float exp = (pWeapon->IsIronsighted()) ?
+		(delta > 1.0f) ? 1.0f : delta : //normal blending
+		(delta > 1.0f) ? 0.0f : 1.0f - delta; //reverse interpolation
+
+	if (exp <= 0.001f) //fully not ironsighted; save performance
+		return;
+
+	Vector newPos = pos;
+	QAngle newAng = ang;
+
+	Vector vForward, vRight, vUp, vOffset;
+	AngleVectors(newAng, &vForward, &vRight, &vUp);
+	vOffset = pWeapon->GetIronsightPositionOffset();
+
+	newPos += vForward * vOffset.x;
+	newPos += vRight * vOffset.y;
+	newPos += vUp * vOffset.z;
+	newAng += pWeapon->GetIronsightAngleOffset();
+	//fov is handled by CBaseCombatWeapon
+
+	pos += (newPos - pos) * exp;
+	ang += (newAng - ang) * exp;
+}
+
 void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePosition, const QAngle& eyeAngles )
 {
 	// UNDONE: Calc this on the server?  Disabled for now as it seems unnecessary to have this info on the server
@@ -393,70 +426,84 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 	QAngle vmangoriginal = eyeAngles;
 	QAngle vmangles = eyeAngles;
 	Vector vmorigin = eyePosition;
+	float exp = 0;
 
 	CBaseCombatWeapon *pWeapon = m_hWeapon.Get();
 	//Allow weapon lagging
-	if ( pWeapon != NULL )
+	//only if not in ironsight-mode
+	//if (pWeapon == NULL || !pWeapon->IsIronsighted())
 	{
-#if defined( CLIENT_DLL )
-		if ( !prediction->InPrediction() )
-#endif
+		if (pWeapon != NULL)
 		{
-			// add weapon-specific bob 
-			pWeapon->AddViewmodelBob( this, vmorigin, vmangles );
-#if defined ( CSTRIKE_DLL )
-			CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
+
+			//get delta time for interpolation
+			float delta = (gpGlobals->curtime - pWeapon->m_flIronsightedTime) * 2.5f; //modify this value to adjust how fast the interpolation is
+			exp = (pWeapon->IsIronsighted()) ?
+				(delta > 1.0f) ? 1.0f : delta : //normal blending
+				(delta > 1.0f) ? 0.0f : 1.0f - delta; //reverse interpolation
+
+			if (exp <= 0.001f) //fully not ironsighted; save performance
+				exp = 0;
+#if defined( CLIENT_DLL )
+			if (
+				!prediction->InPrediction()
+				)
 #endif
+			{
+				// add weapon-specific bob 
+				pWeapon->AddViewmodelBob(this, vmorigin, vmangles);
+			}
 		}
-	}
-	// Add model-specific bob even if no weapon associated (for head bob for off hand models)
-	AddViewModelBob( owner, vmorigin, vmangles );
-#if !defined ( CSTRIKE_DLL )
-	// This was causing weapon jitter when rotating in updated CS:S; original Source had this in above InPrediction block  07/14/10
-	// Add lag
-	CalcViewModelLag( vmorigin, vmangles, vmangoriginal );
-#endif
+
+		// Add model-specific bob even if no weapon associated (for head bob for off hand models)
+		AddViewModelBob(owner, vmorigin, vmangles, exp);
+
+		// Add lag
+		CalcViewModelLag(vmorigin, vmangles, vmangoriginal, exp);
 
 #if defined( CLIENT_DLL )
-	if ( !prediction->InPrediction() )
-	{
-		// Let the viewmodel shake at about 10% of the amplitude of the player's view
-		vieweffects->ApplyShake( vmorigin, vmangles, 0.1 );	
-	}
+		if (!prediction->InPrediction() && exp < 1.0f)
+		{
+			// Let the viewmodel shake at about 10% of the amplitude of the player's view
+			vieweffects->ApplyShake(vmorigin, vmangles, 0.1);
+		}
 #endif
-
-	if( UseVR() )
-	{
-		g_ClientVirtualReality.OverrideViewModelTransform( vmorigin, vmangles, pWeapon && pWeapon->ShouldUseLargeViewModelVROverride() );
 	}
 
-	SetLocalOrigin( vmorigin );
-	SetLocalAngles( vmangles );
+	CalcIronsights(vmorigin, vmangles);
+
+	if (UseVR())
+	{
+		g_ClientVirtualReality.OverrideViewModelTransform(vmorigin, vmangles, pWeapon && pWeapon->ShouldUseLargeViewModelVROverride());
+	}
+
+	SetLocalOrigin(vmorigin);
+	SetLocalAngles(vmangles);
 
 #ifdef SIXENSE
-	if( g_pSixenseInput->IsEnabled() && (owner->GetObserverMode()==OBS_MODE_NONE) && !UseVR() )
+	if (g_pSixenseInput->IsEnabled() && (owner->GetObserverMode() == OBS_MODE_NONE) && !UseVR())
 	{
 		const float max_gun_pitch = 20.0f;
 
-		float viewmodel_fov_ratio = g_pClientMode->GetViewModelFOV()/owner->GetFOV();
+		float viewmodel_fov_ratio = g_pClientMode->GetViewModelFOV() / owner->GetFOV();
 		QAngle gun_angles = g_pSixenseInput->GetViewAngleOffset() * -viewmodel_fov_ratio;
 
 		// Clamp pitch a bit to minimize seeing back of viewmodel
-		if( gun_angles[PITCH] < -max_gun_pitch )
-		{ 
-			gun_angles[PITCH] = -max_gun_pitch; 
-		}
+		if (gun_angles[PITCH] < -max_gun_pitch)
+		{
+			gun_angles[PITCH] = -max_gun_pitch;
+}
 
 #ifdef WIN32 // ShouldFlipViewModel comes up unresolved on osx? Mabye because it's defined inline? fixme
-		if( ShouldFlipViewModel() ) 
+		if (ShouldFlipViewModel())
 		{
 			gun_angles[YAW] *= -1.0f;
 		}
 #endif
 
-		vmangles = EyeAngles() +  gun_angles;
+		vmangles = EyeAngles() + gun_angles;
 
-		SetLocalAngles( vmangles );
+		SetLocalAngles(vmangles);
 	}
 #endif
 #endif
@@ -468,59 +515,65 @@ void CBaseViewModel::CalcViewModelView( CBasePlayer *owner, const Vector& eyePos
 //-----------------------------------------------------------------------------
 float g_fMaxViewModelLag = 1.5f;
 
-void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles )
+void CBaseViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles, float flISightExp )
 {
+	if (flISightExp == 1.0f)
+		return;
+
 	Vector vOriginalOrigin = origin;
 	QAngle vOriginalAngles = angles;
 
 	// Calculate our drift
 	Vector	forward;
-	AngleVectors( angles, &forward, NULL, NULL );
+	AngleVectors(angles, &forward, NULL, NULL);
 
-	if ( gpGlobals->frametime != 0.0f )
+	if (gpGlobals->frametime != 0.0f)
 	{
 		Vector vDifference;
-		VectorSubtract( forward, m_vecLastFacing, vDifference );
+		VectorSubtract(forward, m_vecLastFacing, vDifference);
 
 		float flSpeed = 5.0f;
 
 		// If we start to lag too far behind, we'll increase the "catch up" speed.  Solves the problem with fast cl_yawspeed, m_yaw or joysticks
 		//  rotating quickly.  The old code would slam lastfacing with origin causing the viewmodel to pop to a new position
 		float flDiff = vDifference.Length();
-		if ( (flDiff > g_fMaxViewModelLag) && (g_fMaxViewModelLag > 0.0f) )
+		if ((flDiff > g_fMaxViewModelLag) && (g_fMaxViewModelLag > 0.0f))
 		{
 			float flScale = flDiff / g_fMaxViewModelLag;
 			flSpeed *= flScale;
 		}
 
 		// FIXME:  Needs to be predictable?
-		VectorMA( m_vecLastFacing, flSpeed * gpGlobals->frametime, vDifference, m_vecLastFacing );
+		VectorMA(m_vecLastFacing, flSpeed * gpGlobals->frametime, vDifference, m_vecLastFacing);
 		// Make sure it doesn't grow out of control!!!
-		VectorNormalize( m_vecLastFacing );
-		VectorMA( origin, 5.0f, vDifference * -1.0f, origin );
+		VectorNormalize(m_vecLastFacing);
+		VectorMA(origin, 5.0f, vDifference * -1.0f, origin);
 
-		Assert( m_vecLastFacing.IsValid() );
+		Assert(m_vecLastFacing.IsValid());
 	}
 
 	Vector right, up;
-	AngleVectors( original_angles, &forward, &right, &up );
+	AngleVectors(original_angles, &forward, &right, &up);
 
-	float pitch = original_angles[ PITCH ];
-	if ( pitch > 180.0f )
+	float pitch = original_angles[PITCH];
+	if (pitch > 180.0f)
 		pitch -= 360.0f;
-	else if ( pitch < -180.0f )
+	else if (pitch < -180.0f)
 		pitch += 360.0f;
 
-	if ( g_fMaxViewModelLag == 0.0f )
+	if (g_fMaxViewModelLag == 0.0f)
 	{
 		origin = vOriginalOrigin;
 		angles = vOriginalAngles;
 	}
 
 	//FIXME: These are the old settings that caused too many exposed polys on some models
-	VectorMA( origin, -pitch * 0.035f,	forward,	origin );
-	VectorMA( origin, -pitch * 0.03f,		right,	origin );
-	VectorMA( origin, -pitch * 0.02f,		up,		origin);
+	VectorMA(origin, -pitch * 0.035f, forward, origin);
+	VectorMA(origin, -pitch * 0.03f, right, origin);
+	VectorMA(origin, -pitch * 0.02f, up, origin);
+
+	origin = VectorLerp(origin, vOriginalOrigin, flISightExp);
+	angles = Lerp(flISightExp, angles, vOriginalAngles);
 }
 
 //-----------------------------------------------------------------------------

@@ -236,7 +236,7 @@ bool CTFViewModel::GetAttachmentVelocity( int number, Vector &originVel, Quatern
 
 #endif
 
-void CTFViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles )
+void CTFViewModel::CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles, float flISightExp)
 {
 #ifdef CLIENT_DLL
 	if ( prediction->InPrediction() )

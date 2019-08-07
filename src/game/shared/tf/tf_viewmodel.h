@@ -43,7 +43,7 @@ public:
 	CTFViewModel( void );
 	virtual ~CTFViewModel( void );
 
-	virtual void CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles );
+	virtual void CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles, float flISightExp);
 	virtual void CalcViewModelView( CBasePlayer *owner, const Vector& eyePosition, const QAngle& eyeAngles );
 	virtual void AddViewModelBob( CBasePlayer *owner, Vector& eyePosition, QAngle& eyeAngles );
 

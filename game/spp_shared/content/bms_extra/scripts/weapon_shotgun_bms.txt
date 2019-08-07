@@ -11,6 +11,7 @@ WeaponData
 	weight		"4"
 	anim_prefix	"shotgun"
 	ViewModelFOV		"60"
+	firstdraw_act	"ACT_VM_DRAW_DEPLOYED"
 
 	SoundData
 	{

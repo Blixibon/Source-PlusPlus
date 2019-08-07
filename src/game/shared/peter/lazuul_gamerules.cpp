@@ -727,9 +727,9 @@ void CLazuul::Status(void(*print)(const char *fmt, ...))
 	BaseClass::Status(print);
 
 	if (FAllowNPCs())
-		print("NPC AIs\t: %i of %i\n", g_AI_Manager.NumAIs(), CAI_Manager::MAX_AIS);
+		print("NPC AIs : %i of %i\n", g_AI_Manager.NumAIs(), CAI_Manager::MAX_AIS);
 
-	print("NextBot AIs\t: %i\n", TheNextBots().GetNextBotCount());
+	print("NextBot AIs: %i\n", TheNextBots().GetNextBotCount());
 }
 
 void CLazuul::GetTaggedConVarList(KeyValues * pCvarTagList)

@@ -224,7 +224,7 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 
 	// Dampen the eye positional change as we drive around.
 	*pAbsAngles = pPlayer->EyeAngles();
-	if ( r_VehicleViewDampen.GetInt() && pData->bDampenEyePosition )
+	if ( r_VehicleViewDampen.GetInt() && gpGlobals->maxClients == 1 && pData->bDampenEyePosition )
 	{
 		CPropVehicleDriveable *pDriveable = assert_cast<CPropVehicleDriveable*>(pData->pVehicle);
 		pDriveable->DampenEyePosition( vehicleEyeOrigin, vehicleEyeAngles );
@@ -290,7 +290,8 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 
 				pData->pVehicle->GetAttachmentLocal( eyeAttachmentIndex, localEyeOrigin, localEyeAngles );
 #ifdef CLIENT_DLL
-				engine->SetViewAngles( localEyeAngles );
+				if (pPlayer->IsLocalPlayer())
+					engine->SetViewAngles( localEyeAngles );
 #endif
 			}
 		}

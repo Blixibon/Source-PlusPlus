@@ -298,7 +298,8 @@ public:
 
 	// Weapon firing
 	virtual void			PrimaryAttack( void );						// do "+ATTACK"
-	virtual void			SecondaryAttack( void ) { return; }			// do "+ATTACK2"
+	virtual void			SecondaryAttack(void);		// do "+ATTACK2"
+	virtual void			TertiaryAttack(void);		// do "+ATTACK3"
 
 	// Firing animations
 	virtual Activity		GetPrimaryAttackActivity( void );
@@ -365,6 +366,9 @@ public:
 
 	// Weapon info accessors for data in the weapon's data file
 	const FileWeaponInfo_t	&GetWpnData( void ) const;
+	Vector					GetIronsightPositionOffset(void) const;
+	QAngle					GetIronsightAngleOffset(void) const;
+	float					GetIronsightFOVOffset(void) const;
 	virtual const char		*GetViewModel( int viewmodelindex = 0 ) const;
 	virtual const char		*GetWorldModel( void ) const;
 	virtual const char		*GetAnimPrefix( void ) const;
@@ -386,6 +390,13 @@ public:
 	virtual bool			UsesClipsForAmmo1( void ) const;
 	virtual bool			UsesClipsForAmmo2( void ) const;
 	bool					IsMeleeWeapon() const;
+
+	virtual bool				HasIronsights(void) { return GetWpnData().bAllowIronsight; } //default yes; override and return false for weapons with no ironsights (like weapon_crowbar)
+	bool					IsIronsighted(void);
+	void					ToggleIronsights(void);
+	void					EnableIronsights(void);
+	void					DisableIronsights(void);
+	void					SetIronsightTime(void);
 
 	// derive this function if you mod uses encrypted weapon info files
 	virtual const unsigned char *GetEncryptionKey( void );
@@ -611,6 +622,9 @@ public:
 #endif
 	int						WeaponState() const { return m_iState; }
 
+	CNetworkVar(bool, m_bIsIronsighted);
+	CNetworkVar(float, m_flIronsightedTime);
+
 	// Weapon data
 	CNetworkVar( int, m_iState );				// See WEAPON_* definition
 	string_t				m_iszName;				// Classname of this weapon.
@@ -649,6 +663,8 @@ private:
 	bool					m_bReloadHudHintDisplayed;	// Have we displayed a reload HUD hint since this weapon was deployed?
 	float					m_flHudHintPollTime;	// When to poll the weapon again for whether it should display a hud hint.
 	float					m_flHudHintMinDisplayTime; // if the hint is squelched before this, reset my counter so we'll display it again.
+
+	CNetworkVar(bool,		m_bHasBeenDeployed);
 	
 	// Server only
 #if !defined( CLIENT_DLL )

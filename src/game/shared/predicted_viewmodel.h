@@ -30,7 +30,7 @@ public:
 	CPredictedViewModel( void );
 	virtual ~CPredictedViewModel( void );
 							
-	virtual void CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles );
+	virtual void CalcViewModelLag( Vector& origin, QAngle& angles, QAngle& original_angles, float flISightExp);
 
 #if defined( CLIENT_DLL )
 	virtual bool ShouldPredict( void )
