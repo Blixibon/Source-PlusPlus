@@ -27,7 +27,7 @@
 
 ConVar	sk_zombie_health( "sk_zombie_health","0");
 
-envelopePoint_t envZombieMoanVolumeFast[] =
+envelopePoint_t envZombieMoanVolumeFast[2] =
 {
 	{	7.0f, 7.0f,
 		0.1f, 0.1f,
@@ -37,7 +37,7 @@ envelopePoint_t envZombieMoanVolumeFast[] =
 	},
 };
 
-envelopePoint_t envZombieMoanVolume[] =
+envelopePoint_t envZombieMoanVolume[3] =
 {
 	{	1.0f, 1.0f,
 		0.1f, 0.1f,
@@ -50,7 +50,7 @@ envelopePoint_t envZombieMoanVolume[] =
 	},
 };
 
-envelopePoint_t envZombieMoanVolumeLong[] =
+envelopePoint_t envZombieMoanVolumeLong[3] =
 {
 	{	1.0f, 1.0f,
 		0.3f, 0.5f,
@@ -63,7 +63,7 @@ envelopePoint_t envZombieMoanVolumeLong[] =
 	},
 };
 
-envelopePoint_t envZombieMoanIgnited[] =
+envelopePoint_t envZombieMoanIgnited[3] =
 {
 	{	1.0f, 1.0f,
 		0.5f, 1.0f,

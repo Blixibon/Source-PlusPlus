@@ -156,6 +156,8 @@ void CAI_BaseNPC::InitDefaultScheduleSR(void)
 	ADD_DEF_SCHEDULE( "SCHED_INTERACTION_WAIT_FOR_PARTNER",				SCHED_INTERACTION_WAIT_FOR_PARTNER );
 
 	ADD_DEF_SCHEDULE( "SCHED_SLEEP",					SCHED_SLEEP );
+
+	ADD_DEF_SCHEDULE("SCHED_FALL_FROM_PORTAL", SCHED_FALL_FROM_PORTAL);
 }
 
 bool CAI_BaseNPC::LoadDefaultSchedules(void)
@@ -248,6 +250,7 @@ bool CAI_BaseNPC::LoadDefaultSchedules(void)
 	AI_LOAD_DEF_SCHEDULE( CAI_BaseNPC,					SCHED_INTERACTION_MOVE_TO_PARTNER);
 	AI_LOAD_DEF_SCHEDULE( CAI_BaseNPC,					SCHED_INTERACTION_WAIT_FOR_PARTNER);
 	AI_LOAD_DEF_SCHEDULE( CAI_BaseNPC,					SCHED_SLEEP );
+	AI_LOAD_DEF_SCHEDULE(CAI_BaseNPC, SCHED_FALL_FROM_PORTAL);
 
 	return true;
 }
@@ -371,6 +374,12 @@ int CAI_BaseNPC::TranslateSchedule( int scheduleType )
 			Assert( m_NPCState == NPC_STATE_COMBAT );
 		}
 		break;
+	case SCHED_FALL_TO_GROUND:
+	{
+		if (SelectHeaviestSequence(ACT_LAND) != ACT_INVALID)
+			return SCHED_FALL_FROM_PORTAL;
+	}
+	break;
 	}
 
 	return scheduleType;
@@ -2396,4 +2405,14 @@ AI_DEFINE_SCHEDULE
  ""
  );
 
+AI_DEFINE_SCHEDULE
+(
+	SCHED_FALL_FROM_PORTAL,
 
+	"	Tasks"
+	"		TASK_SET_ACTIVITY				ACTIVITY:ACT_GLIDE"
+	"		TASK_FALL_TO_GROUND				0"
+	"		TASK_PLAY_SEQUENCE				ACTIVITY:ACT_LAND"
+	""
+	"	Interrupts"
+);

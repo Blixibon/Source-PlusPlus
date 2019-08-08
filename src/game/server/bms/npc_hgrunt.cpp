@@ -4606,7 +4606,7 @@ void CNPC_Human_Grunt::Precache()
 
 	if (!GetModelName())
 	{
-		if (m_spawnEquipment == FindPooledString("weapon_mp5_bms"))
+		if (m_spawnEquipment == AllocPooledString("weapon_mp5_bms"))
 			SetModelName(MAKE_STRING("models/humans/marine.mdl"));
 		else
 			SetModelName(MAKE_STRING("models/humans/marine_sg.mdl"));

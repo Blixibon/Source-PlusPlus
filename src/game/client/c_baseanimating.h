@@ -568,6 +568,8 @@ protected:
 	QAngle							m_boneAngles;
 	CHandle<C_BaseAnimating>		m_pAttachedTo;
 
+	C_BaseAnimating					*m_pRagdollEnt;
+
 protected:
 
 	float							m_fadeMinDist;

@@ -113,6 +113,7 @@ void CBMSNPC_AlienController::Precache()
 	BaseClass::Precache();
 
 	PrecacheModel(CONTROLLER_MODEL);
+	PrecacheScriptSound(SOUND_ALIENCONTROLLER_ATTACK);
 }
 
 void CBMSNPC_AlienController::Spawn(void)
@@ -217,6 +218,7 @@ void CBMSNPC_AlienController::StartTask(const Task_t *pTask)
 		{
 			SetLastAttackTime(gpGlobals->curtime);
 			ResetIdealActivity(ACT_CONTROLLER_ATTACK_HANDS);
+			EmitSound(SOUND_ALIENCONTROLLER_ATTACK);
 			break;
 		}
 

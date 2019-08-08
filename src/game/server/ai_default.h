@@ -112,6 +112,8 @@ enum
 
 	SCHED_SLEEP,
 
+	SCHED_FALL_FROM_PORTAL,
+
 	// ======================================
 	// IMPORTANT: This must be the last enum
 	// ======================================

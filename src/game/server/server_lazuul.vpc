@@ -55,6 +55,8 @@ $Project "Server (Lazuul)"
 			$File "bms\npc_hgrunt.cpp"
 			$File "$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
 			$File "peter\npc_human_workers.cpp"
+			$File "bms\npc_zombie_bms.cpp"
+			$File "bms\xenportal.cpp"
 		}
 
 		$Folder	"Lazuul"
@@ -68,6 +70,7 @@ $Project "Server (Lazuul)"
 			$File "$SRCDIR\game\shared\peter\laz_usermessages.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.h"
+			$File "peter\laz_hltvdirector.cpp"
 		}
 	}
 }

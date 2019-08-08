@@ -536,7 +536,7 @@ EXTERN_SEND_TABLE(DT_BaseAnimating);
 
 
 
-#define ANIMATION_SEQUENCE_BITS			12	// 4096 sequences
+#define ANIMATION_SEQUENCE_BITS			13	// ?8192? sequences
 #define ANIMATION_SKIN_BITS				10	// 1024 body skin selections FIXME: this seems way high
 #define ANIMATION_BODY_BITS				32	// body combinations
 #define ANIMATION_HITBOXSET_BITS		2	// hit box sets 

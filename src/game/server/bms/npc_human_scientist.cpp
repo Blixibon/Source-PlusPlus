@@ -330,7 +330,7 @@ bool CNPC_BaseScientist::CanHeal()
 //-----------------------------------------------------------------------------
 bool CNPC_BaseScientist::ShouldHealTarget(CBaseEntity *pTarget, bool bActiveUse)
 {
-	if (!pTarget || (IRelationType(pTarget) < D_LI))
+	if (!pTarget || (IRelationType(pTarget) < D_LI) || pTarget->GetFlags() & FL_NOTARGET)
 		return false;
 
 	// Don't heal if I'm in the middle of talking
@@ -516,7 +516,7 @@ void CNPC_BaseScientist::GatherConditions()
 	// assume the player is 'staring' and wants health.
 	if (CanHeal())
 	{
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
+		CBasePlayer *pPlayer = GetBestPlayer();
 
 		if (!pPlayer)
 		{

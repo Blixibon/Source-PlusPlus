@@ -39,6 +39,8 @@ $Project "Client (Lazuul)"
 		{
 			$File	"bms\c_npc_gargantua.cpp"
 			$File	"$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
+			$File	"bms\c_xenportal.cpp"
+			$File	"bms\c_npc_zombie.cpp"
 		}
 
 		$Folder	"Lazuul"

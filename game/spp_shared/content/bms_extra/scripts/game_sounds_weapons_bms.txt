@@ -371,7 +371,7 @@
 	"channel"		"CHAN_BODY"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			")weapons_bms/hivehand/bug_impact.wav"
+	"wave"			")weapons/hivehand/bug_impact.wav"
 }
 
 "weapon_hivehand_bms.Empty"
@@ -379,7 +379,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			")weapons_bms/hivehand/empty.wav"
+	"wave"			")weapons/hivehand/empty.wav"
 }
 
 "weapon_hivehand_bms.Single"
@@ -387,7 +387,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			")weapons_bms/hivehand/single.wav"
+	"wave"			")weapons/hivehand/single.wav"
 }
 
 "weapon_hivehand_bms.Buzz"
@@ -396,7 +396,7 @@
 	"pitch"		"90,110"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			"^weapons_bms/hivehand/buzz.wav"
+	"wave"			"^weapons/hivehand/buzz.wav"
 }
 
 "weapon_hivehand_bms.Single_NPC"
@@ -404,7 +404,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			"^weapons_bms/hivehand/single.wav"
+	"wave"			"^weapons/hivehand/single.wav"
 }
 
 "weapon_hivehand_bms.Double"
@@ -412,7 +412,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			")weapons_bms/hivehand/single.wav"
+	"wave"			")weapons/hivehand/single.wav"
 }
 
 "weapon_hivehand_bms.Double_NPC"
@@ -420,7 +420,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_GUNFIRE"
-	"wave"			"^weapons_bms/hivehand/double_npc.wav"
+	"wave"			"^weapons/hivehand/double_npc.wav"
 }
 
 "weapon_hivehand_bms.BackgroundLoop"
@@ -428,7 +428,7 @@
 	"channel"		"CHAN_VOICE"
 	"volume"		"0.25"
 	"soundlevel"	"SNDLVL_NORM"
-	"wave"			")weapons_bms/hivehand/background.wav"
+	"wave"			")weapons/hivehand/background.wav"
 }
 
 "weapon_hivehand_bms.Pickup"
@@ -436,7 +436,7 @@
 	"channel"		"CHAN_VOICE"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_NORM"
-	"wave"			")weapons_bms/hivehand/pickup.wav"
+	"wave"			")weapons/hivehand/pickup.wav"
 }
 
 "weapon_mp5_bms.Empty"

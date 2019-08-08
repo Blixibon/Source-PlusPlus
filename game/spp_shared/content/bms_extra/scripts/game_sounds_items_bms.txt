@@ -1,0 +1,8 @@
+"Syringe.Touch"
+{
+	"channel"	"CHAN_STATIC"
+	"volume"	"0.8"
+	"soundlevel"  "SNDLVL_75dB"
+
+	"wave"	"items/medkit_pickup.wav"
+}

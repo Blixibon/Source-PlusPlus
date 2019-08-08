@@ -746,6 +746,8 @@ C_BaseAnimating::C_BaseAnimating() :
 	m_bDynamicModelPending = false;
 	m_bResetSequenceInfoOnLoad = false;
 
+	m_pRagdollEnt = nullptr;
+
 	Q_memset(&m_mouth, 0, sizeof(m_mouth));
 	m_flCycle = 0;
 	m_flOldCycle = 0;
@@ -5148,7 +5150,7 @@ void C_BaseAnimating::OnDataChanged( DataUpdateType_t updateType )
 	// build a ragdoll if necessary
 	if ( m_nRenderFX == kRenderFxRagdoll && !m_builtRagdoll )
 	{
-		BecomeRagdollOnClient();
+		m_pRagdollEnt = BecomeRagdollOnClient();
 	}
 
 	//HACKHACK!!!

@@ -11,9 +11,11 @@ particles_manifest
 	"file"		"!particles/c17_water_explosion.pcf"
 	"file"		"!particles/impact_fx_p2.pcf"
 	"file"		"particles/c17_c_cannon_explosions.pcf"
+	"file"		"particles/xenportal.pcf"
 	
 	"file"		"particles/boom_barrel.pcf"
 	"file"		"particles/npc_garg.pcf"
+	"file"		"particles/npc_zombies.pcf"
 	
 	"file"		"particles/hl2mmod_weaponeffects.pcf"
 	"file"		"!particles/hl2mmod_muzzleflashes.pcf"
