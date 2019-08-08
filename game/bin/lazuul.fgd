@@ -548,3 +548,126 @@
 	input Enable(void) : "Enable"
 	input Disable(void) : "Disable"
 ]
+
+// BMS
+@BaseClass base(PlayerCompanion) = BaseColleague
+[
+	expressiontype(choices) : "Expression Type" : "Random" =
+	[
+		0 : "Random"
+		1 : "Scared"
+		2 : "Normal"
+		3 : "Angry"
+	]
+
+	output OnPlayerUse(void) : "Fired when player instigates +USE."
+
+	input EnableFollow( void ) : ""
+	input DisableFollow( void ) : ""
+	input CeaseFollowing( void ) : ""
+	input ForceFollowUntilToldNotTo( void ) : ""
+
+	input EnableGeneralIdles( void ) : ""
+	input DisableGeneralIdles( void ) : ""
+
+	spawnflags(Flags) =
+	[
+		65536 : "Do not follow player" : 0
+		131072 : "Do not greet the player" : 0
+		1048576 : "Do not use fallback idle and questions" : 0
+	]
+]
+
+@NPCClass base(Parentname, TalkNPC, BaseColleague) studio("models/humans/guard.mdl") = npc_human_security : "Security Guard"
+[
+	input EnableWeaponPickup(void) : "Enable Weapon Pickup"
+	input DisableWeaponPickup(void) : "Disable Weapon Pickup"
+	input GiveWeapon(string) : "Gives the NPC a weapon of the specified entity name."
+	output OnWeaponPickup(void) : "Fires when this NPC picks a weapon off the ground or a gun rack."
+
+	spawnflags(flags) =
+	[
+		32768: "Do not unholster weapon automatically" : 0
+		524288 : "Disable Muzzle DLight" : 0
+	]
+
+	additionalequipment(choices) : "Equipped Weapon" : "Default" =
+	[
+		"0" 				: "Default"
+		"weapon_glock" 		: "weapon_glock"
+		"weapon_357"		: "weapon_357"
+		"weapon_shotgun"	: "weapon_shotgun"
+	]
+]
+
+@NPCClass base(Parentname, TalkNPC, BaseColleague) studio("models/humans/scientist_kliener.mdl") = npc_human_scientist_kleiner : "Kleiner" [ ]
+@NPCClass base(Parentname, TalkNPC, BaseColleague) studio("models/humans/scientist_eli.mdl") = npc_human_scientist_eli : "Eli" [ ]
+@NPCClass base(Parentname, TalkNPC, BaseColleague) studio("models/humans/scientist.mdl") = npc_human_scientist : "Scientist" [ ]
+
+@NPCClass base(Parentname, TalkNPC, BaseColleague) studio("models/humans/scientist_female.mdl") = npc_human_scientist_female : "Female Scientist"
+[
+]
+
+@NPCClass base(BaseColleague) studio("models/humans/cwork.mdl") = npc_human_maintenance : "Maintenance Guy" []
+@NPCClass base(BaseColleague) studio("models/humans/engineer.mdl") = npc_human_engineer : "Maintenance Guy" []
+@NPCClass base(BaseColleague) studio("models/humans/worker_clean.mdl") = npc_human_worker : "Maintenance Guy" []
+
+@NPCClass base(BaseNPC) studio("models/xenians/garg.mdl") = npc_gargantua : "Gargantua"
+[
+	input chaseplayer(void) : "Chase the player."
+	input chaseend(void) : "Like the player so did not call you....so like you should like stop following him...like ok....yep"
+	input GargantuaExplode(void) : "Chase the player."
+	output OnWishToDie(void) : "Empty"
+]
+
+@BaseClass base(BaseNPC, RappelNPC) = BaseMarine
+[
+	input Assault(string) : "Start an assault. Parameter passed in should be the name of the rally point."
+
+	NumGrenades(choices) : "Number of Grenades" : "5" =
+	[
+		"0" : "None"
+		"1" : "1"
+		"2" : "2"
+		"3" : "3"
+		"4" : "4"
+		"5" : "5"
+		"-1" : "Unlimited"
+	]
+
+	additionalequipment(choices) : "Weapons" : "weapon_mp5" =
+	[
+		"weapon_glock" 		: "weapon_glock"
+		"weapon_mp5"		: "weapon_mp5"
+		"weapon_shotgun"	: "weapon_shotgun"
+		"weapon_rpg"		: "weapon_rpg"
+		"0" 				: "Random"
+	]
+
+	spawnflags(Flags) =
+	[
+		32768 : "No Weapon" : 0
+		262144 : "Disable Freeman Lines" : 0
+		524288 : "Disable Muzzle DLight" : 0
+	]
+
+]
+
+@NPCClass base(BaseMarine) studio("models/humans/marine.mdl") = npc_human_commander : "Human Commander" []
+@NPCClass base(BaseMarine) studiO("models/humans/marine.mdl") = npc_human_grenadier : "Human Grenadier" []
+@NPCClass base(BaseMarine) studio("models/humans/marine.mdl") = npc_human_grunt : "Human Grunt" []
+@NPCClass base(BaseMarine) studiO("models/humans/marine.mdl") = npc_human_medic : "Human Medic" []
+
+@NPCClass base(BaseNPC) studio("models/vortigaunt_slave.mdl") = npc_alien_slave : "Vortigaunt"
+[
+    passive(choices) : "Is Initially Passive" : "No" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+    bPlayTeleportAnimOnSpawn(choices) : "PlayTeleportAnimOnSpawn" : 0 =
+	[
+		0 : "NO"
+		1 : "YES"
+	]
+]

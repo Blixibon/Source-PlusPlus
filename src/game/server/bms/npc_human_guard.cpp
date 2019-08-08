@@ -32,6 +32,7 @@
 #include "ai_behavior_functank.h"
 #include "bms_utils.h"
 #include "Sprite.h"
+#include "hlss_weapon_id.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -130,7 +131,7 @@ public:
 	DEFINE_CUSTOM_AI;
 
 	bool HasDefaultWeapon(string_t strWeapon) { return (!strcmp(STRING(strWeapon), "0") || !Q_strnicmp(STRING(strWeapon), "Default", 7) || !Q_strnicmp(STRING(strWeapon), "Random", 6)); }
-	const char *GetDefaultWeapon() { return "weapon_glock"; }
+	const char *GetDefaultWeapon() { return "weapon_glock_bms"; }
 
 protected:
 	
@@ -388,6 +389,23 @@ void CNPC_HumanGuard::HandleAnimEvent(animevent_t *pEvent)
 			SetBodygroup(FindBodygroupByName("holster"), 2);
 		}
 		return;
+	}
+	else if (pEvent->event == AE_NPC_DRAW)
+	{
+		if (GetActiveWeapon() && (GetActiveWeapon()->GetWeaponID() == HLSS_WEAPON_ID_GLOCK_BMS || GetActiveWeapon()->GetWeaponID() == HLSS_WEAPON_ID_PISTOL))
+		{
+			m_fWeaponDrawn = true;
+			SetBodygroup(FindBodygroupByName("holster"), 2);
+		}
+		// Fall through to base
+	}
+	else if (pEvent->event == AE_NPC_HOLSTER)
+	{
+		if (GetActiveWeapon() && (GetActiveWeapon()->GetWeaponID() == HLSS_WEAPON_ID_GLOCK_BMS || GetActiveWeapon()->GetWeaponID() == HLSS_WEAPON_ID_PISTOL))
+		{
+			SetBodygroup(FindBodygroupByName("holster"), 1);
+		}
+		// Fall through to base
 	}
 
 	/*switch (pEvent->event)

@@ -670,6 +670,11 @@ protected:
 	void				EndTaskOverlay();
 
 	virtual void		PostRunStopMoving();
+	virtual const char	*GetDefaultWeapon();
+	virtual bool		HasDefaultWeapon(string_t strWeapon)
+	{
+		return false;
+	}
 
 	bool				CheckPVSCondition();
 

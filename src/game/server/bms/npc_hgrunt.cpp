@@ -4426,8 +4426,8 @@ AI_END_CUSTOM_NPC()
 const char *gm_szRndWeapons[2] =
 {
 	//"weapon_glock",
-	"weapon_mp5",
-	"weapon_shotgun"
+	"weapon_mp5_bms",
+	"weapon_shotgun_bms"
 };
 
 //=========================================================
@@ -4565,6 +4565,16 @@ void CNPC_Human_Grunt::Spawn(void)
 			SetBodygroup(FindBodygroupByName("head"), 3);
 
 		// --Add Baret Here
+		CPhysicsProp *pProp = static_cast<CPhysicsProp *>(CreateEntityByName("prop_physics_override"));
+		if (pProp != NULL)
+		{
+			// Set the model
+			pProp->SetModelName(AllocPooledString("models/humans/props/marine_beret.mdl"));
+			DispatchSpawn(pProp);
+			pProp->VPhysicsDestroyObject();
+			pProp->FollowEntity(this, true);
+			m_AttachedEntities.AddToTail(pProp);
+		}
 	}
 	else if (RandomInt(1, 3) == 1)
 	{
@@ -4592,11 +4602,14 @@ void CNPC_Human_Grunt::Spawn(void)
 //-----------------------------------------------------------------------------
 void CNPC_Human_Grunt::Precache()
 {
-	//const char *pModelName = STRING(GetModelName());
+	BaseClass::Precache();
 
 	if (!GetModelName())
 	{
-		SetModelName(MAKE_STRING("models/humans/marine.mdl"));
+		if (m_spawnEquipment == FindPooledString("weapon_mp5_bms"))
+			SetModelName(MAKE_STRING("models/humans/marine.mdl"));
+		else
+			SetModelName(MAKE_STRING("models/humans/marine_sg.mdl"));
 	}
 
 	if (FClassnameIs(this, "npc_human_commander"))
@@ -4608,15 +4621,12 @@ void CNPC_Human_Grunt::Precache()
 		m_fIsElite = false;
 	}
 
-	
-
 	PrecacheModel(STRING(GetModelName()));
 
 	UTIL_PrecacheOther("item_healthvial");
 	UTIL_PrecacheOther("weapon_frag");
 	UTIL_PrecacheOther("item_ammo_ar2_altfire");
-
-	BaseClass::Precache();
+	UTIL_PrecacheOther("prop_physics_override", "models/humans/props/marine_beret.mdl");
 }
 
 void CNPC_Human_Grunt::ModifyOrAppendCriteria(AI_CriteriaSet& set)

@@ -6932,6 +6932,10 @@ bool CAI_BaseNPC::IsNavHullValid() const
 	return true;
 }
 
+const char *CAI_BaseNPC::GetDefaultWeapon()
+{
+	return "0";
+}
 
 //=========================================================
 // NPCInit - after a npc is spawned, it needs to
@@ -11265,6 +11269,14 @@ void CAI_BaseNPC::Activate( void )
 void CAI_BaseNPC::Precache( void )
 {
 	gm_iszPlayerSquad = AllocPooledString( PLAYER_SQUADNAME ); // cache for fast IsPlayerSquad calls
+
+	const char *pchWeapon = STRING(m_spawnEquipment);
+	if (HasDefaultWeapon(m_spawnEquipment))
+		pchWeapon = GetDefaultWeapon();
+
+	pchWeapon = RemapEntityClassForAI(pchWeapon);
+
+	KeyValue("additionalequipment", pchWeapon);
 
 	if ( m_spawnEquipment != NULL_STRING && strcmp(STRING(m_spawnEquipment), "0") )
 	{
