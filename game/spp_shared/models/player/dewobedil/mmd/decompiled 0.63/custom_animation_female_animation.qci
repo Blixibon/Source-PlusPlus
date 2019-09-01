@@ -1,0 +1,8 @@
+
+$Include "standardikchains.qci"
+
+$IncludeModel "player/custom_taunt/fortnite1.mdl"
+$IncludeModel "player/custom_taunt/fortnite2.mdl"
+$IncludeModel "player/custom_taunt/fulldance1.mdl"
+$IncludeModel "player/custom_taunt/fulldance2.mdl"
+$IncludeModel "player/custom_taunt/mmd1.mdl"
