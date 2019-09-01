@@ -148,7 +148,7 @@ protected:
 	// Internal copy routine ( uses new operator from correct module )
 	char						*CopyString( const char *from );
 
-private:
+public:
 	// Next ConVar in chain
 	// Prior to register, it points to the next convar in the DLL.
 	// Once registered, though, m_pNext is reset to point to the next
@@ -262,6 +262,8 @@ inline const char *CCommand::operator[]( int nIndex ) const
 class ConCommand : public ConCommandBase
 {
 friend class CCvar;
+friend struct ConCommandInfo_t;
+friend class CConCommandReplace;
 
 public:
 	typedef ConCommandBase BaseClass;
@@ -284,7 +286,7 @@ public:
 	// Invoke the function
 	virtual void Dispatch( const CCommand &command );
 
-private:
+public:
 	// NOTE: To maintain backward compat, we have to be very careful:
 	// All public virtual methods must appear in the same order always
 	// since engine code will be calling into this code, which *does not match*

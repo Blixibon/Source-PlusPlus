@@ -181,6 +181,7 @@ extern vgui::IInputInternal *g_InputInternal;
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern void SEC_Console_Replace();
 extern IClientMode *GetClientModeNormal();
 
 // IF YOU ADD AN INTERFACE, EXTERN IT IN THE HEADER FILE.
@@ -995,6 +996,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 
 	// Initialize the console variables.
 	ConVar_Register( FCVAR_CLIENTDLL );
+	SEC_Console_Replace();
 
 	g_pcv_ThreadMode = g_pCVar->FindVar( "host_thread_mode" );
 

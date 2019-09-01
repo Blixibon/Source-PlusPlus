@@ -199,6 +199,10 @@ $Project
 		$File	"$SRCDIR\game\shared\vis_tester.cpp"
 		$File	"replmats.cpp"
 
+		$File	"sec_cvartools.cpp"
+		$File	"$SRCDIR\game\shared\ConCommandReplace.cpp"
+		$File	"$SRCDIR\game\shared\ConCommandReplace.h"
+
 		$File	"materialproxy_lightedmouth.cpp"
 		$File	"materialproxy_modelwind.cpp"
 		
