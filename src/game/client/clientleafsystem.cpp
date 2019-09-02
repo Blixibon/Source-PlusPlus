@@ -933,7 +933,7 @@ inline bool CClientLeafSystem::ShouldRenderableReceiveShadow( ClientRenderHandle
 	if( !( renderable.m_Flags & ( RENDER_FLAGS_BRUSH_MODEL | RENDER_FLAGS_STATIC_PROP | RENDER_FLAGS_STUDIO_MODEL ) ) )
 		return false;
 
-	return renderable.m_pRenderable->ShouldReceiveProjectedTextures( nShadowFlags );
+	return renderable.m_pRenderable->ShouldReceiveProjectedTextures( nShadowFlags ) /*|| (renderable.m_Flags & RENDER_FLAGS_STATIC_PROP)*/;
 }
 
 

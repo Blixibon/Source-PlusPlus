@@ -526,9 +526,9 @@ int CSpotlightLODSystem::SpotlightSort(const SpotPtr *p1, const SpotPtr *p2)
 
 bool CSpotlightLODSystem::IsSpotlightHighLOD(CSpotlightEffect *pLight)
 {
-	float flDistSqr = pLight->GetPosition().DistToSqr(MainViewOrigin());
+	/*float flDistSqr = pLight->GetPosition().DistToSqr(MainViewOrigin());
 	if (flDistSqr > Sqr(r_flashlightfar.GetInt()*1.2f))
-		return false;
+		return false;*/
 
 	int iMaxSpotlights = Floor2Int(g_pClientShadowMgr->GetMaxShadowDepthtextures() * 0.25f);
 	iMaxSpotlights = Max(iMaxSpotlights, 1);
