@@ -41,6 +41,7 @@ private:
 	bool  m_bFadingOut;
 
 	EHANDLE	m_hPlayer;
+	CUtlVector<C_BaseEntity*> m_vecWearables;
 	CNetworkVector(m_vecRagdollVelocity);
 	CNetworkVector(m_vecRagdollOrigin);
 	bool  m_bGib;

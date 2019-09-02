@@ -88,6 +88,15 @@ bool DoPortalBeamFx(Vector origin, int iBeams = 3, float flRadius = 250.0f, floa
 
 	}
 
+	dlight_t *pLight = effects->CL_AllocDlight(0);
+	pLight->origin = origin;
+	pLight->color.r = 64;
+	pLight->color.g = 255;
+	pLight->color.b = 64;
+	pLight->color.exponent = 3;
+	pLight->radius = flRadius;
+	pLight->die = gpGlobals->curtime + 3.6f;
+
 	return true;
 }
 

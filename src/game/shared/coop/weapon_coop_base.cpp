@@ -1388,3 +1388,55 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 
 	return pTable;
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponCoopBase::Equip(CBaseCombatCharacter *pOwner)
+{
+	BaseClass::Equip(pOwner);
+
+	// Add it to attribute providers list.
+	ReapplyProvision();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponCoopBase::ReapplyProvision(void)
+{
+	int iProvideOnActive = 0;
+	CALL_ATTRIB_HOOK_INT(iProvideOnActive, provide_on_active);
+	if (!iProvideOnActive || m_iState == WEAPON_IS_ACTIVE)
+	{
+		BaseClass::ReapplyProvision();
+	}
+	else
+	{
+		// Weapon not active, remove it from providers list.
+		GetAttributeContainer()->StopProvidingTo(GetOwner());
+		m_hOldOwner = NULL;
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponCoopBase::OnActiveStateChanged(int iOldState)
+{
+	CBaseCombatCharacter *pOwner = GetOwner();
+
+	if (pOwner)
+	{
+		int iProvideOnActive = 0;
+		CALL_ATTRIB_HOOK_INT(iProvideOnActive, provide_on_active);
+
+		// If set to only provide attributes while active, update the status now.
+		if (iProvideOnActive)
+		{
+			ReapplyProvision();
+		}
+	}
+
+	BaseClass::OnActiveStateChanged(iOldState);
+}

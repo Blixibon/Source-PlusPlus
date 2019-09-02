@@ -1903,6 +1903,14 @@ void C_BasePlayer::ThirdPersonSwitch( bool bThirdperson )
 				}
 			}
 		}
+
+		for (int i = 0; i < GetNumWearables(); i++)
+		{
+			CEconWearable* pEnt = GetWearable(i);
+			if (!pEnt)
+				continue;
+			pEnt->UpdateVisibility();
+		}
 	}
 }
 

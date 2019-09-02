@@ -70,6 +70,8 @@ public:
 	virtual float			GetAmmoQuantityScale(int iAmmoIndex);
 	virtual void			LevelInitPreEntity();
 
+	virtual float FlPlayerFallDamage(CBasePlayer* pPlayer);
+
 	virtual int PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget);
 
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);

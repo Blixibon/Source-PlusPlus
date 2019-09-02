@@ -154,7 +154,7 @@ void C_NPC_AntlionGuard::ClientThink()
 	}
 
 	m_dlight->origin	= GetAbsOrigin();
-	// dl->die = gpGlobals->curtime + 0.1f;
+	m_dlight->die = gpGlobals->curtime + 0.1f;
 
 	BaseClass::ClientThink();
 }

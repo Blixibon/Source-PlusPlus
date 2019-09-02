@@ -17,6 +17,7 @@
 #include "voice_gamemgr.h"
 #include "NextBotManager.h"
 #include "hltvdirector.h"
+#include "game.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -25,6 +26,7 @@
 #include "weapon_physcannon.h"
 #include "hl2_player_shared.h"
 #include "weapon_coop_base.h"
+#include "econ_item_system.h"
 
 // Controls the application of the robus radius damage model.
 extern ConVar sv_robust_explosions;
@@ -176,6 +178,27 @@ ConVar sk_max_satchel("sk_max_satchel", "0", FCVAR_REPLICATED);
 ConVar sk_npc_dmg_12mm_bullet("sk_npc_dmg_12mm_bullet", "0", FCVAR_REPLICATED);
 
 ConVar	sk_max_slam("sk_max_slam", "15", FCVAR_REPLICATED);
+
+class CEconItemInitializerSystem : public CAutoGameSystem
+{
+public:
+	CEconItemInitializerSystem() : CAutoGameSystem("CEconItemInitializerSystem")
+	{}
+
+	bool Init()
+	{
+		GetItemSchema()->Init();
+
+		return true;
+	}
+
+	void LevelInitPreEntity()
+	{
+		GetItemSchema()->Precache();
+	}
+};
+
+CEconItemInitializerSystem g_EconInitializer;
 
 #ifndef CLIENT_DLL
 static bool s_bInModeChangedScope = false;
@@ -613,8 +636,6 @@ bool CLazuul::ShouldUseRobustRadiusDamage(CBaseEntity* pEntity)
 	return true;
 }
 
-
-
 #ifndef CLIENT_DLL
 
 // Classnames of entities that are preserved across round restarts
@@ -666,6 +687,21 @@ void CLazuul::SetAllowedModes(bool bModes[])
 	s_bInModeChangedScope = true;
 	SetGameMode(gamemode.GetInt());
 	s_bInModeChangedScope = false;
+}
+
+float CLazuul::FlPlayerFallDamage(CBasePlayer* pPlayer)
+{
+	int iCancelDamage = 0;
+	CALL_ATTRIB_HOOK_INT_ON_OTHER(pPlayer, iCancelDamage, cancel_falling_damage);
+	if (iCancelDamage > 0)
+		return 0.0f;
+
+	float flDamage = BaseClass::FlPlayerFallDamage(pPlayer);
+
+	float flScale = 1.0f;
+	CALL_ATTRIB_HOOK_FLOAT_ON_OTHER(pPlayer, flScale, mult_falling_damage);
+
+	return flDamage * flScale;
 }
 
 //-----------------------------------------------------------------------------

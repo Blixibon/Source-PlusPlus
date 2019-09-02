@@ -3,6 +3,9 @@
 #include "props_shared.h"
 #include "basenetworkedplayer_cl.h"
 #include "c_fire_smoke.h"
+#include "econ_wearable.h"
+
+#include "memdbgon.h"
 
 C_EntityFlame *FireEffect(C_BaseAnimating *pTarget, C_BaseEntity *pServerFire, float *flScaleEnd, float *flTimeStart, float *flTimeEnd);
 
@@ -276,6 +279,27 @@ void C_BaseNetworkedRagdoll::CreateHL2MPRagdoll(void)
 
 	InitAsClientRagdoll(boneDelta0, boneDelta1, currentBones, boneDt);
 
+	for (int i = 0; i < pPlayer->GetNumWearables(); i++)
+	{
+		CBaseAnimating* pWearable = pPlayer->GetWearable(i);
+		if (!pWearable)
+			continue;
+
+		CBaseAnimating* pAnim = new CBaseAnimating;
+		if (!pAnim->InitializeAsClientEntityByIndex(pWearable->GetModelIndex(), GetRenderGroup()))
+		{
+			pAnim->Release();
+			continue;
+		}
+
+		pAnim->m_nBody = pWearable->m_nBody;
+		pAnim->m_nSkin = pWearable->m_nSkin;
+		pWearable->SnatchModelInstance(pAnim);
+
+		pAnim->FollowEntity(this);
+		m_vecWearables.AddToTail(pAnim);
+	}
+
 	if (m_bBurning)
 	{
 		//m_flBurnEffectStartTime = gpGlobals->curtime;
@@ -384,6 +408,13 @@ IRagdoll* C_BaseNetworkedRagdoll::GetIRagdoll() const
 void C_BaseNetworkedRagdoll::UpdateOnRemove(void)
 {
 	VPhysicsSetObject(NULL);
+
+	for (int i = 0; i < m_vecWearables.Count(); i++)
+	{
+		m_vecWearables.Element(i)->Release();
+	}
+
+	m_vecWearables.Purge();
 
 	BaseClass::UpdateOnRemove();
 }

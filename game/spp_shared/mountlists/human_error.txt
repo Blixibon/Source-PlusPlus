@@ -1,0 +1,25 @@
+"Mount"
+{
+    "|content_path|"
+	{
+		"head"	"0"
+		"hlss_extra"
+		{
+			
+		}
+	}
+
+	sourcemods
+	{
+		"head"	"0"
+		"Human_Error"
+		{
+		
+		}
+
+        "he_coop_beta"
+        {
+
+        }
+	}
+}

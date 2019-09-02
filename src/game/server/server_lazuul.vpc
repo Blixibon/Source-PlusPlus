@@ -72,5 +72,11 @@ $Project "Server (Lazuul)"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.h"
 			$File "peter\laz_hltvdirector.cpp"
 		}
+
+		$Folder "TF"
+		{
+			$File	"$SRCDIR\game\shared\tf\tf_wearable.cpp"
+			$File	"$SRCDIR\game\shared\tf\tf_wearable.h"
+		}
 	}
 }

@@ -3,6 +3,9 @@
 #include "team_control_point.h"
 #include "team_control_point_round.h"
 #include "team_control_point_master.h"
+#include "items.h"
+#include "laz_player.h"
+#include "econ_item_system.h"
 
 #pragma region EQUIP
 LINK_ENTITY_TO_CLASS(info_player_equip, CLazPlayerEquip);
@@ -379,3 +382,83 @@ void CLazTeamSpawn::UpdateOnRemove()
 	gameeventmanager->RemoveListener(this);
 }
 #pragma endregion
+
+class CEconPickup : public CItem
+{
+public:
+	DECLARE_CLASS(CEconPickup, CItem);
+
+	void Spawn(void);
+	void Precache(void);
+
+	virtual bool MyTouch(CBasePlayer* pPlayer);
+
+protected:
+	virtual int GetItemId() { return -1; }
+	CEconItemView m_Item;
+};
+
+void CEconPickup::Spawn(void)
+{
+	CEconItemDefinition* pItem = GetItemSchema()->GetItemDefinition(GetItemId());
+	if (!pItem)
+	{
+		UTIL_Remove(this);
+		return;
+	}
+
+	m_Item.Init(GetItemId());
+
+	Precache();
+	SetModel(m_Item.GetWorldDisplayModel());
+
+	BaseClass::Spawn();
+}
+
+void CEconPickup::Precache(void)
+{
+	PrecacheModel(m_Item.GetWorldDisplayModel());
+}
+
+bool CEconPickup::MyTouch(CBasePlayer* pPlayer)
+{
+	CLaz_Player* pLaz = ToLazuulPlayer(pPlayer);
+	return pLaz->GiveItemById(GetItemId()) != nullptr;
+}
+
+class CItemExoJump : public CEconPickup
+{
+public:
+	DECLARE_CLASS(CItemExoJump, CEconPickup);
+
+	void Precache(void);
+	virtual int GetItemId() { return 3; }
+};
+
+LINK_ENTITY_TO_CLASS(item_exojump, CItemExoJump);
+
+void CItemExoJump::Precache(void)
+{
+	BaseClass::Precache();
+	PrecacheScriptSound("ExoLegs.JumpLand");
+}
+
+class CItemKevlar : public CEconPickup
+{
+public:
+	DECLARE_CLASS(CItemKevlar, CEconPickup);
+
+	virtual int GetItemId() { return 2; }
+};
+
+LINK_ENTITY_TO_CLASS(item_kevlar, CItemKevlar);
+
+class CItemLongJump : public CEconPickup
+{
+public:
+	DECLARE_CLASS(CItemLongJump, CEconPickup);
+
+	virtual int GetItemId() { return 1; }
+};
+
+LINK_ENTITY_TO_CLASS(item_longjump, CItemLongJump);

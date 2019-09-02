@@ -66,5 +66,11 @@ $Project "Client (Lazuul)"
 			//$File	"hl1\hl1_fx_impacts.cpp"
 			$File	"hl1\hl1_fx_shelleject.cpp"
 		}
+
+		$Folder "TF"
+		{
+			$File	"$SRCDIR\game\shared\tf\tf_wearable.cpp"
+			$File	"$SRCDIR\game\shared\tf\tf_wearable.h"
+		}
 	}
 }

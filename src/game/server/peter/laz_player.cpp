@@ -26,6 +26,8 @@
 #include "team_objectiveresource.h"
 #include "team_control_point_master.h"
 #include "npc_playerfollower.h"
+#include "econ_item_system.h"
+#include "econ_wearable.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1437,10 +1439,55 @@ Class_T CLaz_Player::Classify()
 	return CLASS_PLAYER;
 }
 
+CEconEntity* CLaz_Player::GiveItemById(int iItem)
+{
+	for (int i = 0; i < m_hMyWearables.Count(); i++)
+	{
+		if (m_hMyWearables[i]->GetItemID() == iItem)
+			return nullptr;
+	}
+
+	CEconItemDefinition* pItem = GetItemSchema()->GetItemDefinition(iItem);
+	if (!pItem)
+		return nullptr;
+
+	CBaseEntity* pEnt = CreateNoSpawn(pItem->item_class, GetAbsOrigin(), vec3_angle);
+	if (!pEnt)
+		return nullptr;
+
+	CEconEntity* pEcon = assert_cast<CEconEntity*> (pEnt);
+	CEconItemView eItem(iItem);
+	pEcon->SetItem(eItem);
+	pEcon->Spawn();
+	pEcon->GiveTo(this);
+
+	return pEcon;
+}
+
 int CLaz_Player::OnTakeDamage(const CTakeDamageInfo & inputInfo)
 {
 	CTakeDamageInfo inputInfoCopy(inputInfo);
 
+	if (inputInfoCopy.GetDamageType() & DMG_BULLET)
+	{
+		float flScale = 1.0f;
+		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_bullets);
+		inputInfoCopy.ScaleDamage(flScale);
+	}
+
+	if (inputInfoCopy.GetDamageType() & DMG_BLAST)
+	{
+		float flScale = 1.0f;
+		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_explosions);
+		inputInfoCopy.ScaleDamage(flScale);
+	}
+
+	if (inputInfoCopy.GetDamageType() & DMG_BURN)
+	{
+		float flScale = 1.0f;
+		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_fire);
+		inputInfoCopy.ScaleDamage(flScale);
+	}
 
 	CBaseEntity *pAttacker = inputInfoCopy.GetAttacker();
 	CBaseEntity *pInflictor = inputInfoCopy.GetInflictor();
@@ -1651,6 +1698,14 @@ void CLaz_Player::State_Enter_OBSERVER_MODE()
 	//m_bEnterObserver = true;
 	StartObserverMode(observerMode);
 	AddFlag(FL_NOTARGET);
+
+	CUtlVector<CHandle<CEconWearable > > vecWearables;
+	vecWearables.AddVectorToTail(m_hMyWearables);
+	for (int i = 0; i < vecWearables.Count(); i++)
+	{
+		RemoveWearable(vecWearables[i]);
+		UTIL_Remove(vecWearables[i].Get());
+	}
 }
 
 void CLaz_Player::State_PreThink_OBSERVER_MODE()

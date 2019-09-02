@@ -1,0 +1,98 @@
+"Models"
+{	
+	"hlss_eloise"
+	{
+		"team"			"Combine"
+		"maxplayers"	"1"
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/police_eloise.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+				"manhack"	"1"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/dpfilms/weapons/v_arms_metropolice.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_MetroPolice"
+			"voice"			"eloise"
+			"suit"			"pcv_hev"
+			"special"		"manhack"
+		}
+	}
+
+	"hlss_noah"
+	{
+		"team"			"Combine"
+		"maxplayers"	"1"
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/police_noah.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+				"manhack"	"1"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/dpfilms/weapons/v_arms_metropolice.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_MetroPolice"
+			"voice"			"noah"
+			"suit"			"pcv_hev"
+			"special"		"manhack"
+		}
+	}
+
+	"hlss_larson"
+	{
+		"team"			"Combine"
+		"maxplayers"	"1"
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/police_larson.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+				"manhack"	"1"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/dpfilms/weapons/v_arms_metropolice.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_MetroPolice"
+			"voice"			"larson"
+			"suit"			"pcv_hev"
+			"special"		"manhack"
+		}
+	}
+}

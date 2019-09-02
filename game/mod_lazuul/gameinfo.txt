@@ -15,6 +15,7 @@
 		"bms_low"		1	// Black Mesa: Source mod and retail
 		citizen2		1	// The Citizen Returns
 		citizen			1	// The Citizen
+		human_error		1	// Human Error + Human Error: Coop
 		"portal_low"	1	// Portal 1
 		cstrike_low		1	// Counter-Strike: Source
 		hl2_downfall	1	// Half-Life 2: Downfall
@@ -24,7 +25,7 @@
 		depot			1	// Depot Mod
 		hl2mp_low		1	// Half-Life 2: Deathmatch
 		hl1mp_low		1	// Half-Life Deathmatch Source
-		episodic		1	// Half-Life 2 + Episodes 1 & 2
+		episodic		1	// Half-Life 2 + Episodes 1 & 2 + Lostcoast
 	}
 	
 	mount

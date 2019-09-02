@@ -24,6 +24,8 @@ public:
 	virtual Activity TranslateActivity(Activity actDesired) OVERRIDE;
 	virtual Activity CalcMainActivity();
 
+	virtual void DoAnimationEvent(PlayerAnimEvent_t event, int nData = 0);
+
 	static MultiPlayerMovementData_t s_MoveParams;
 
 protected:

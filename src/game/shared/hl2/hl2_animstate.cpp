@@ -272,6 +272,27 @@ Activity CHL2PlayerAnimState::CalcMainActivity()
 	return idealActivity;
 }
 
+void CHL2PlayerAnimState::DoAnimationEvent(PlayerAnimEvent_t event, int nData)
+{
+	switch (event)
+	{
+	case PLAYERANIMEVENT_DOUBLEJUMP:
+	{
+		// Jump.
+		m_bJumping = true;
+		m_bFirstJumpFrame = true;
+		m_flJumpStartTime = gpGlobals->curtime;
+
+		RestartMainSequence();
+
+		break;
+	}
+	default:
+		BaseClass::DoAnimationEvent(event, nData);
+		break;
+	}
+}
+
 CMultiPlayerAnimState *CHL2_Player::GetAnimState()
 {
 	return &m_AnimState;

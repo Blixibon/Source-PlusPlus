@@ -297,6 +297,12 @@ bool CAI_BaseNPC::CanStandOn( CBaseEntity *pSurface ) const
 bool CAI_BaseNPC::IsJumpLegal( const Vector &startPos, const Vector &apex, const Vector &endPos, 
 							   float maxUp, float maxDown, float maxDist ) const
 {
+	float flJumpScale = 1.0f;
+	CALL_ATTRIB_HOOK_FLOAT(flJumpScale, scale_npc_jump_height);
+	maxUp *= flJumpScale;
+	maxDown *= flJumpScale;
+	maxDist *= flJumpScale;
+
 	if ((endPos.z - startPos.z) > maxUp + 0.1) 
 		return false;
 	if ((startPos.z - endPos.z) > maxDown + 0.1) 

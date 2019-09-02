@@ -53,6 +53,10 @@ public:
 	virtual int GetActivityWeaponRole(void);
 	virtual int GetActivityWeaponVariant(void);
 
+	virtual void ReapplyProvision(void);
+	virtual void OnActiveStateChanged(int iOldState);
+	virtual void Equip(CBaseCombatCharacter *pOwner);
+
 	virtual acttable_t *ActivityList(int &iActivityCount);
 	// HL2
 	static acttable_t s_acttableSMG1[];

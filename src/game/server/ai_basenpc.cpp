@@ -843,7 +843,30 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	Forget( bits_MEMORY_INCOVER );
 
-	if ( !BaseClass::OnTakeDamage_Alive( info ) )
+	CTakeDamageInfo subInfo(info);
+
+	if (subInfo.GetDamageType() & DMG_BULLET)
+	{
+		float flScale = 1.0f;
+		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_bullets);
+		subInfo.ScaleDamage(flScale);
+	}
+
+	if (subInfo.GetDamageType() & DMG_BLAST)
+	{
+		float flScale = 1.0f;
+		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_explosions);
+		subInfo.ScaleDamage(flScale);
+	}
+
+	if (subInfo.GetDamageType() & DMG_BURN)
+	{
+		float flScale = 1.0f;
+		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_fire);
+		subInfo.ScaleDamage(flScale);
+	}
+
+	if ( !BaseClass::OnTakeDamage_Alive(subInfo) )
 		return 0;
 
 	if ( GetSleepState() == AISS_WAITING_FOR_THREAT )
@@ -855,9 +878,9 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// REVISIT: Combine soldiers shoot each other a lot and then talk about it
 	// this improves that case a bunch, but it seems kind of harsh.
-	if ( !m_pSquad || !m_pSquad->SquadIsMember( info.GetAttacker() ) )
+	if ( !m_pSquad || !m_pSquad->SquadIsMember(subInfo.GetAttacker() ) )
 	{
-		PainSound( info );// "Ouch!"
+		PainSound(subInfo);// "Ouch!"
 	}
 
 	// See if we're running a dynamic interaction that should break when I am damaged.
@@ -876,7 +899,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// If we're not allowed to die, refuse to die
 	// Allow my interaction partner to kill me though
-	if ( m_iHealth <= 0 && HasInteractionCantDie() && info.GetAttacker() != m_hInteractionPartner )
+	if ( m_iHealth <= 0 && HasInteractionCantDie() && subInfo.GetAttacker() != m_hInteractionPartner )
 	{
 		m_iHealth = 1;
 	}
@@ -897,53 +920,53 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( m_flLastDamageTime != gpGlobals->curtime )
 	{
 		// only fire once per frame
-		m_OnDamaged.FireOutput( info.GetAttacker(), this);
+		m_OnDamaged.FireOutput(subInfo.GetAttacker(), this);
 
-		if( info.GetAttacker()->IsPlayer() )
+		if(subInfo.GetAttacker()->IsPlayer() )
 		{
-			m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), this );
+			m_OnDamagedByPlayer.FireOutput(subInfo.GetAttacker(), this );
 			
 			// This also counts as being harmed by player's squad.
-			m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
+			m_OnDamagedByPlayerSquad.FireOutput(subInfo.GetAttacker(), this );
 		}
 		else
 		{
 			// See if the person that injured me is an NPC.
-			CAI_BaseNPC *pAttacker = dynamic_cast<CAI_BaseNPC *>( info.GetAttacker() );
+			CAI_BaseNPC *pAttacker = dynamic_cast<CAI_BaseNPC *>(subInfo.GetAttacker() );
 			CBasePlayer *pPlayer = AI_GetSinglePlayer();
 
 			if( pAttacker && pAttacker->IsAlive() && pPlayer )
 			{
 				if( pAttacker->GetSquad() != NULL && pAttacker->IsInPlayerSquad() )
 				{
-					m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
+					m_OnDamagedByPlayerSquad.FireOutput(subInfo.GetAttacker(), this );
 				}
 			}
 		}
 	}
 
-	if( (info.GetDamageType() & DMG_CRUSH) && !(info.GetDamageType() & DMG_PHYSGUN) && info.GetDamage() >= MIN_PHYSICS_FLINCH_DAMAGE )
+	if( (subInfo.GetDamageType() & DMG_CRUSH) && !(subInfo.GetDamageType() & DMG_PHYSGUN) && subInfo.GetDamage() >= MIN_PHYSICS_FLINCH_DAMAGE )
 	{
 		SetCondition( COND_PHYSICS_DAMAGE );
 	}
 
 	if ( m_iHealth <= ( m_iMaxHealth / 2 ) )
 	{
-		m_OnHalfHealth.FireOutput( info.GetAttacker(), this );
+		m_OnHalfHealth.FireOutput(subInfo.GetAttacker(), this );
 	}
 
 	// react to the damage (get mad)
-	if ( ( (GetFlags() & FL_NPC) == 0 ) || !info.GetAttacker() )
+	if ( ( (GetFlags() & FL_NPC) == 0 ) || !subInfo.GetAttacker() )
 		return 1;
 
 	// If the attacker was an NPC or client update my position memory
-	if ( info.GetAttacker()->GetFlags() & (FL_NPC | FL_CLIENT) )
+	if (subInfo.GetAttacker()->GetFlags() & (FL_NPC | FL_CLIENT) )
 	{
 		// ------------------------------------------------------------------
 		//				DO NOT CHANGE THIS CODE W/O CONSULTING
 		// Only update information about my attacker I don't see my attacker
 		// ------------------------------------------------------------------
-		if ( !FInViewCone( info.GetAttacker() ) || !FVisible( info.GetAttacker() ) )
+		if ( !FInViewCone(subInfo.GetAttacker() ) || !FVisible(subInfo.GetAttacker() ) )
 		{
 			// -------------------------------------------------------------
 			//  If I have an inflictor (enemy / grenade) update memory with
@@ -951,9 +974,9 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			//  estimate for where the attack came from
 			// ------------------------------------------------------
 			Vector vAttackPos;
-			if (info.GetInflictor())
+			if (subInfo.GetInflictor())
 			{
-				vAttackPos = info.GetInflictor()->GetAbsOrigin();
+				vAttackPos = subInfo.GetInflictor()->GetAbsOrigin();
 			}
 			else
 			{
@@ -967,7 +990,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			//  unless I already know about the attacker or I can see my enemy
 			// ----------------------------------------------------------------
 			if ( GetEnemy() != NULL							&&
-				!GetEnemies()->HasMemory( info.GetAttacker() )			&&
+				!GetEnemies()->HasMemory(subInfo.GetAttacker() )			&&
 				!HasCondition(COND_SEE_ENEMY)	)
 			{
 				UpdateEnemyMemory(GetEnemy(), vAttackPos, GetEnemy());
@@ -975,9 +998,9 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			// ----------------------------------------------------------------
 			//  If I already know about this enemy, update his position
 			// ----------------------------------------------------------------
-			else if (GetEnemies()->HasMemory( info.GetAttacker() ))
+			else if (GetEnemies()->HasMemory(subInfo.GetAttacker() ))
 			{
-				UpdateEnemyMemory(info.GetAttacker(), vAttackPos);
+				UpdateEnemyMemory(subInfo.GetAttacker(), vAttackPos);
 			}
 			// -----------------------------------------------------------------
 			//  Otherwise just note the position, but don't add enemy to my list
@@ -989,11 +1012,11 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		}
 
 		// add pain to the conditions
-		if ( IsLightDamage( info ) )
+		if ( IsLightDamage(subInfo) )
 		{
 			SetCondition( COND_LIGHT_DAMAGE );
 		}
-		if ( IsHeavyDamage( info ) )
+		if ( IsHeavyDamage(subInfo) )
 		{
 			SetCondition( COND_HEAVY_DAMAGE );
 		}
@@ -1003,23 +1026,23 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		// Keep track of how much consecutive damage I have recieved
 		if ((gpGlobals->curtime - m_flLastDamageTime) < 1.0)
 		{
-			m_flSumDamage += info.GetDamage();
+			m_flSumDamage += subInfo.GetDamage();
 		}
 		else
 		{
-			m_flSumDamage = info.GetDamage();
+			m_flSumDamage = subInfo.GetDamage();
 		}
 		m_flLastDamageTime = gpGlobals->curtime;
-		if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
+		if (subInfo.GetAttacker() && subInfo.GetAttacker()->IsPlayer() )
 			m_flLastPlayerDamageTime = gpGlobals->curtime;
-		GetEnemies()->OnTookDamageFrom( info.GetAttacker() );
+		GetEnemies()->OnTookDamageFrom(subInfo.GetAttacker() );
 
 		if (m_flSumDamage > m_iMaxHealth*0.3)
 		{
 			SetCondition(COND_REPEATED_DAMAGE);
 		}
 	
-		NotifyFriendsOfDamage( info.GetAttacker() );
+		NotifyFriendsOfDamage(subInfo.GetAttacker() );
 	}
 
 	// ---------------------------------------------------------------

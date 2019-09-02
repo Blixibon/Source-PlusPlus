@@ -77,6 +77,8 @@ public:
 
 	Class_T Classify();
 
+	CEconEntity* GiveItemById(int iItem);
+
 	//void UpdateWooshSounds(void);
 
 	virtual void ChangeTeam(int iTeam);
