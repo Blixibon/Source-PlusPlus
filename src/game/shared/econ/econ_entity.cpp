@@ -18,23 +18,27 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_NETWORKCLASS_ALIASED( EconEntity, DT_EconEntity )
+IMPLEMENT_NETWORKCLASS_ALIASED(EconEntity, DT_EconEntity)
 
-BEGIN_NETWORK_TABLE( CEconEntity, DT_EconEntity )
+BEGIN_NETWORK_TABLE(CEconEntity, DT_EconEntity)
 #ifdef CLIENT_DLL
-	RecvPropDataTable( RECVINFO_DT( m_Item ), 0, &REFERENCE_RECV_TABLE( DT_ScriptCreatedItem ) ),
-	RecvPropDataTable( RECVINFO_DT( m_AttributeManager ), 0, &REFERENCE_RECV_TABLE( DT_AttributeContainer ) ),
+RecvPropDataTable(RECVINFO_DT(m_Item), 0, &REFERENCE_RECV_TABLE(DT_ScriptCreatedItem)),
+RecvPropDataTable(RECVINFO_DT(m_AttributeManager), 0, &REFERENCE_RECV_TABLE(DT_AttributeContainer)),
 #else
-	SendPropDataTable( SENDINFO_DT( m_Item ), &REFERENCE_SEND_TABLE( DT_ScriptCreatedItem ) ),
-	SendPropDataTable( SENDINFO_DT( m_AttributeManager ), &REFERENCE_SEND_TABLE( DT_AttributeContainer ) ),
+SendPropDataTable(SENDINFO_DT(m_Item), &REFERENCE_SEND_TABLE(DT_ScriptCreatedItem)),
+SendPropDataTable(SENDINFO_DT(m_AttributeManager), &REFERENCE_SEND_TABLE(DT_AttributeContainer)),
 #endif
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( C_EconEntity )
-	DEFINE_PRED_TYPEDESCRIPTION( m_AttributeManager, CAttributeContainer ),
+BEGIN_PREDICTION_DATA(C_EconEntity)
+DEFINE_PRED_TYPEDESCRIPTION(m_AttributeManager, CAttributeContainer),
 END_PREDICTION_DATA()
 #endif
+
+BEGIN_DATADESC(CEconEntity)
+DEFINE_EMBEDDED(m_AttributeManager),
+END_DATADESC();
 
 CEconEntity::CEconEntity()
 {
@@ -117,11 +121,11 @@ void CEconEntity::ViewModelAttachmentBlending( CStudioHdr *hdr, Vector pos[], Qu
 //-----------------------------------------------------------------------------
 int CEconEntity::Save(ISave& save)
 {
-	save.StartBlock("EconItemView");
+	//save.StartBlock("EconItemView");
 	int nItemIdx = m_Item.GetItemDefIndex();
 	save.WriteInt(&nItemIdx);
 	m_Item.SaveAttributeList(&save);
-	save.EndBlock();
+	//save.EndBlock();
 
 	return BaseClass::Save(save);
 }
@@ -135,11 +139,11 @@ int CEconEntity::Save(ISave& save)
 //-----------------------------------------------------------------------------
 int CEconEntity::Restore(IRestore& restore)
 {
-	restore.StartBlock();
+	//restore.StartBlock();
 	int nItemIdx = restore.ReadInt();
 	m_Item.Init(nItemIdx);
 	m_Item.RestoreAttributeList(&restore);
-	restore.EndBlock();
+	//restore.EndBlock();
 
 	return BaseClass::Restore(restore);
 }

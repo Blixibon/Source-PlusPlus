@@ -4,6 +4,10 @@
 	{
 		"team"			"Combine"
 		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"none"
+		}
 		"models"
 		{
 			"0"
@@ -36,6 +40,10 @@
 	{
 		"team"			"Combine"
 		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"none"
+		}
 		"models"
 		{
 			"0"
@@ -68,6 +76,10 @@
 	{
 		"team"			"Combine"
 		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"none"
+		}
 		"models"
 		{
 			"0"

@@ -58,6 +58,15 @@
 		1 : "Yes"	
 	]
 
+	flare(choices) : "Miner's Hat (HLSS)" : 0 =
+	[
+		0 : "No"	 
+		1 : "Yes"
+	]
+
+	input StartFlare(float) : "Start flare on NPC's chest and set its lifetime. Zero means infinite."
+	input StopFlare(float) : "Stop the flare."
+
 	input MakeGameEndAlly(void) : "Make this NPC a game end ally."
 	input MakeRegularAlly(void) : "Make this NPC a regular ally."
 

@@ -35,6 +35,7 @@ class CEconEntity : public CBaseAnimating, public IHasAttributes
 {
 	DECLARE_CLASS( CEconEntity, CBaseAnimating );
 	DECLARE_NETWORKCLASS();
+	DECLARE_DATADESC();
 
 #ifdef CLIENT_DLL
 	DECLARE_PREDICTABLE();

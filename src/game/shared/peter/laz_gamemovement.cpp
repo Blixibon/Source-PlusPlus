@@ -193,7 +193,7 @@ bool CLazGameMovement::CheckJumpButton(void)
 
 	// Add a little forward velocity based on your current forward velocity - if you are not sprinting.
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
-	if (gpGlobals->maxClients == 1)
+	if (!bLongJump && gpGlobals->maxClients == 1)
 	{
 		CHLMoveData* pMoveData = (CHLMoveData*)mv;
 		Vector vecForward;

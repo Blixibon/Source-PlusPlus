@@ -64,20 +64,20 @@ END_DATADESC();
 
 void CEconItemAttribute::Save(ISave* pSave)
 {
-	pSave->StartBlock();
+	//pSave->StartBlock();
 	pSave->WriteAll(this);
 	pSave->WriteData(value_string.Get(), 128);
 	pSave->WriteData(attribute_class.Get(), 128);
-	pSave->EndBlock();
+	//pSave->EndBlock();
 }
 
 void CEconItemAttribute::Restore(IRestore* pRestore)
 {
-	pRestore->StartBlock();
+	//pRestore->StartBlock();
 	pRestore->ReadAll(this);
 	pRestore->ReadData(value_string.GetForModify(), 128, 0);
 	pRestore->ReadData(attribute_class.GetForModify(), 128, 0);
-	pRestore->EndBlock();
+	//pRestore->EndBlock();
 }
 
 //-----------------------------------------------------------------------------

@@ -280,13 +280,7 @@ void DrawLightmappedAdvFlashlight_DX9_Internal( CBaseVSShader *pShader, IMateria
 
 		if ( pFlashlightDepthTexture == NULL )
 		{
-			const int iFlashlightShadowIndex = ( flashlightState.m_nShadowQuality >> 16 ) & 0xFF;
-
-			if ( iFlashlightShadowIndex >= 0
-				 && iFlashlightShadowIndex <= ( INT_FLASHLIGHT_DEPTHTEXTURE_FALLBACK_LAST - INT_FLASHLIGHT_DEPTHTEXTURE_FALLBACK_FIRST ) )
-			{
-				pFlashlightDepthTexture = ( ITexture* )pShaderAPI->GetIntRenderingParameter( INT_FLASHLIGHT_DEPTHTEXTURE_FALLBACK_FIRST + iFlashlightShadowIndex );
-			}
+			pFlashlightDepthTexture = GetDepthTextureFromState(flashlightState);
 		}
 
 		SetFlashLightColorFromState( flashlightState, pShaderAPI );

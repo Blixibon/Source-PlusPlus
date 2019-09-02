@@ -403,6 +403,7 @@ FORCEINLINE float ShadowFilterFromState( FlashlightState_t const &state )
 
 typedef void( *UberlightUploadFunc )( int, const float*, int );
 bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const &state );
+ITexture* GetDepthTextureFromState(FlashlightState_t const& state);
 
 // convenient material variable access functions for helpers to use.
 FORCEINLINE bool IsTextureSet( int nVar, IMaterialVar **params )

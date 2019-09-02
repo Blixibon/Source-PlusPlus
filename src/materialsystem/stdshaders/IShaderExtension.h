@@ -40,16 +40,25 @@ struct UberlightState_t
 	IMPLEMENT_OPERATOR_EQUAL( UberlightState_t );
 };
 
-class IShaderExtension
+class IShaderExtensionV1
 {
 public:
 	virtual void SetUberlightParamsForFlashlightState( FlashlightState_t&, const UberlightState_t & ) = 0;
 	virtual void OnFlashlightStateDestroyed( const FlashlightState_t& ) = 0;
 
 protected:
+	virtual ~IShaderExtensionV1() {};
+};
+
+class IShaderExtension : public IShaderExtensionV1
+{
+public:
+	virtual void SetDepthTextureFallbackForFlashlightState(FlashlightState_t&, ITexture*) = 0;
+
+protected:
 	virtual ~IShaderExtension() {};
 };
 
-#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension001"
+#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension002"
 
 #endif // ISHADEREXTENSION_H
