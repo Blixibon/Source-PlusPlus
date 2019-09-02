@@ -5,7 +5,7 @@
 //=============================================================================//
 
 #include "cbase.h"
-#include "ai_behavior_recharge.h"
+#include "Human_Error\ai_behavior_recharge.h"
 #include "ai_navigator.h"
 #include "ai_memory.h"
 #include "ai_squad.h"

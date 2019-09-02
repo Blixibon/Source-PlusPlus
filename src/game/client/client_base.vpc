@@ -282,6 +282,9 @@ $Project
 			$File	"peter\shelleject_new.cpp"
 			$File	"peter\shelleject_new.h"
 		}
+
+		$File	"estranged_system_caps.cpp"
+		$File	"estranged_system_caps.h"
 		
 		$File	"hl2\C_Func_Monitor.cpp"
 		$File	"geiger.cpp"

@@ -78,5 +78,10 @@ $Project "Server (Lazuul)"
 			$File	"$SRCDIR\game\shared\tf\tf_wearable.cpp"
 			$File	"$SRCDIR\game\shared\tf\tf_wearable.h"
 		}
+
+		$Folder "Human Error"
+		{
+			$File	"Human_Error\hlss_minershat.cpp"
+		}
 	}
 }

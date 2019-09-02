@@ -17,6 +17,7 @@
 #include "ai_behavior_actbusy.h"
 #include "ai_behavior_fear.h"
 #include "ai_squadslot.h"
+#include "Human_Error\hlss_minershat.h"
 
 #ifdef HL2_EPISODIC
 #include "ai_behavior_operator.h"
@@ -192,6 +193,8 @@ public:
 	virtual			void ReadinessLevelChanged( int iPriorLevel ) { 	}
 
 	void			InputGiveWeapon( inputdata_t &inputdata );
+	void			InputGiveHat(inputdata_t& inputdata);
+	void			InputTakeHat(inputdata_t& inputdata);
 
 #ifdef HL2_EPISODIC
 	//---------------------------------
@@ -369,6 +372,17 @@ private:
 
 	// Derived classes should not use the expresser directly
 	virtual CAI_Expresser *GetExpresser()	{ return BaseClass::GetExpresser(); }
+
+	public:
+		bool						m_bMinersHat;
+		CHandle<CHLSS_MinersHat>	m_hMinersHat;
+
+		void					AddHat();
+		void					RemoveHat();
+
+		//virtual void			OnRestore();
+		virtual void			UpdateOnRemove();
+		virtual void			Event_Killed(const CTakeDamageInfo& info);
 
 protected:
 	//-----------------------------------------------------

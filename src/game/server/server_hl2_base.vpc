@@ -54,11 +54,6 @@ $Project
 			$File	"peter\ai_behavior_shield.cpp"
 			$File	"peter\player_models.cpp"
 		}
-		
-		$Folder "HLSS"
-		{
-			$File	"hlss\ai_behavior_recharge.cpp"
-		}
 
 		$Folder	"HL2 DLL"
 		{

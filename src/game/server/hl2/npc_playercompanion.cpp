@@ -152,6 +152,11 @@ BEGIN_DATADESC( CNPC_PlayerCompanion )
 
 	DEFINE_OUTPUT( m_OnWeaponPickup, "OnWeaponPickup" ),
 
+	DEFINE_KEYFIELD(m_bMinersHat, FIELD_BOOLEAN, "flare"),
+	DEFINE_FIELD(m_hMinersHat, FIELD_EHANDLE),
+	DEFINE_INPUTFUNC(FIELD_VOID, "StartFlare", InputGiveHat),
+	DEFINE_INPUTFUNC(FIELD_VOID, "StopFlare", InputTakeHat),
+
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -270,6 +275,12 @@ void CNPC_PlayerCompanion::Spawn()
 #endif // HL2_EPISODIC
 
 	BaseClass::Spawn();
+
+	m_hMinersHat = NULL;
+	if (m_bMinersHat)
+	{
+		AddHat();
+	}
 }
 
 
@@ -3309,6 +3320,71 @@ bool CNPC_PlayerCompanion::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, 
 	return BaseClass::OnObstructionPreSteer( pMoveGoal, distClear, pResult );
 }
 
+void CNPC_PlayerCompanion::UpdateOnRemove()
+{
+	RemoveHat();
+
+	BaseClass::UpdateOnRemove();
+}
+
+void CNPC_PlayerCompanion::Event_Killed(const CTakeDamageInfo& info)
+{
+	if (m_hMinersHat)
+	{
+		Vector vecSpeed = info.GetDamageForce();
+
+		m_hMinersHat->SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
+		m_hMinersHat->SetAbsVelocity(vecSpeed);
+		m_hMinersHat->SetGravity(1.0f);
+		m_hMinersHat->SetParent(NULL);
+		m_hMinersHat->Die(10.0f);
+		m_hMinersHat = NULL;
+	}
+
+	m_bMinersHat = false;
+
+	BaseClass::Event_Killed(info);
+}
+
+
+
+void CNPC_PlayerCompanion::RemoveHat() //, bool bRemoveOwner)
+{
+	if (m_hMinersHat)
+	{
+		m_hMinersHat->SetOwnerEntity(NULL);
+
+		UTIL_Remove(m_hMinersHat);
+		m_hMinersHat = NULL;
+	}
+
+	m_bMinersHat = false;
+}
+
+void CNPC_PlayerCompanion::AddHat()
+{
+	if (!m_hMinersHat)
+	{
+		int iHead = LookupAttachment("eyes");
+		Vector vecOrigin;
+		QAngle angAngles;
+		GetAttachment(iHead, vecOrigin, angAngles);
+
+		CHLSS_MinersHat* pHat = CHLSS_MinersHat::Create(vecOrigin, angAngles, NULL);
+
+		if (pHat)
+		{
+			//pFlare->SetAbsOrigin( vecOrigin - (vecForward * 6.0f) );
+			pHat->SetParent(this, iHead);
+			pHat->m_bLight = true;
+
+			DispatchSpawn(pHat);
+
+			m_hMinersHat = pHat;
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Whether or not we should always transition with the player
 // Output : Returns true on success, false on failure.
@@ -3771,6 +3847,28 @@ void CNPC_PlayerCompanion::InputGiveWeapon( inputdata_t &inputdata )
 			GiveWeapon( iszWeaponName );
 		}
 	}
+}
+
+//------------------------------------------------------------------------------
+// Purpose: Give the NPC in question the weapon specified
+//------------------------------------------------------------------------------
+void CNPC_PlayerCompanion::InputGiveHat(inputdata_t& inputdata)
+{
+	if (!m_bMinersHat)
+	{
+		AddHat();
+
+		m_bMinersHat = true;
+	}
+}
+
+void CNPC_PlayerCompanion::InputTakeHat(inputdata_t& inputdata)
+{
+
+	RemoveHat();
+
+	m_bMinersHat = false;
+
 }
 
 #if HL2_EPISODIC
