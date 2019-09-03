@@ -104,9 +104,6 @@ game/*/screenshots/*
 # shader files
 *.tmp
 
-# Game bin directories
-game/*/bin/*
-
 # Windows
 AlbumArtSmall.jpg
 Folder.jpg
