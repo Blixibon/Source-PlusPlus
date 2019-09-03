@@ -238,7 +238,7 @@ foreach $shader ( @srcfiles )
 	}
 	if( $compilevcs )
 	{
-		my $vcsFileName = "..\\..\\..\\game\\hl2\\shaders\\$shadertype\\$shaderbase" . $g_vcsext;
+		my $vcsFileName = "shaders\\$shadertype\\$shaderbase" . $g_vcsext;
 		# We want to check for perforce operations even if the crc matches in the event that a file has been manually reverted and needs to be checked out again.
 		&output_vcslist_line( "$vcsFileName\n" );  
 		$shadercrcpass{$shader} = &CheckCRCAgainstTarget( $shadersrc, $vcsFileName, 0 );

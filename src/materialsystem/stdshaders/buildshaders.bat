@@ -21,13 +21,13 @@ REM ****************
 
 setlocal
 set arg_filename=%1
-set shadercompilecommand=shadercompile.exe
+set shadercompilecommand=ShaderCompile.exe
 set targetdir=shaders
 set SrcDirBase=..\..
 set shaderDir=shaders
 set SDKArgs=
 set SHADERINCPATH=vshtmp9/... fxctmp9/...
-
+set VALVE_VERBOSE_COMBO_ERRORS=1
 
 if "%1" == "" goto usage
 set inputbase=%1
@@ -70,15 +70,15 @@ REM MOD ARGS - look for -game or the vproject environment variable
 REM ****************
 :set_mod_args
 
-if not exist "%SDKBINDIR%\shadercompile.exe" goto NoShaderCompile
-set ChangeToDir=%SDKBINDIR%
+if not exist "..\..\devtools\bin\ShaderCompile.exe" goto NoShaderCompile
+set ChangeToDir=%SrcDirBase%\devtools\bin\
 
 if /i "%4" NEQ "-source" goto NoSourceDirSpecified
 set SrcDirBase=%~5
 
 REM ** use the -game parameter to tell us where to put the files
-set targetdir=%~3\..\spp_shared\shaders
-set SDKArgs=-nompi -nop4 -game "%~3"
+set targetdir=%~3\shaders
+set SDKArgs=
 
 if not exist "%~3\gameinfo.txt" goto InvalidGameDirectory
 goto build_shaders
@@ -87,10 +87,8 @@ REM ****************
 REM ERRORS
 REM ****************
 :InvalidGameDirectory
-echo -
 echo Error: "%~3" is not a valid game directory.
 echo (The -game directory must have a gameinfo.txt file)
-echo -
 goto end
 
 :NoSourceDirSpecified
@@ -99,9 +97,7 @@ goto usage
 goto end
 
 :NoShaderCompile
-echo -
-echo - ERROR: shadercompile.exe doesn't exist in %SDKBINDIR%
-echo -
+echo - ERROR: shadercompile.exe doesn't exist in devtools\bin
 goto end
 
 REM ****************
@@ -125,6 +121,14 @@ if exist filelistgen.txt del /f /q filelistgen.txt
 if exist inclist.txt del /f /q inclist.txt
 if exist vcslist.txt del /f /q vcslist.txt
 
+set SHVER=20x
+
+if /i "%DIRECTX_SDK_VER%" == "pc09.30" (
+	set SHVER=30
+)
+
+title %1 %SHVER%
+
 REM ****************
 REM Generate a makefile for the shader project
 REM ****************
@@ -147,23 +151,6 @@ if exist "inclist.txt" (
 )
 
 REM ****************
-REM Add the executables to the worklist.
-REM ****************
-if /i "%DIRECTX_SDK_VER%" == "pc09.00" (
-	rem echo "Copy extra files for dx 9 std
-)
-if /i "%DIRECTX_SDK_VER%" == "pc09.30" (
-	echo %SrcDirBase%\devtools\bin\d3dx9_33.dll >> filestocopy.txt
-)
-
-echo %SrcDirBase%\%DIRECTX_SDK_BIN_DIR%\dx_proxy.dll >> filestocopy.txt
-
-echo %SDKBINDIR%\shadercompile.exe >> filestocopy.txt
-echo %SDKBINDIR%\shadercompile_dll.dll >> filestocopy.txt
-echo %SDKBINDIR%\vstdlib.dll >> filestocopy.txt
-echo %SDKBINDIR%\tier0.dll >> filestocopy.txt
-
-REM ****************
 REM Cull duplicate entries in work/build list
 REM ****************
 if exist filestocopy.txt type filestocopy.txt | perl "%SrcDirBase%\devtools\bin\uniqifylist.pl" > uniquefilestocopy.txt
@@ -181,8 +168,8 @@ if exist "filelist.txt" if exist "uniquefilestocopy.txt" if not "%dynamic_shader
 	echo Running distributed shader compilation...
 
 	cd /D %ChangeToDir%
-	echo %shadercompilecommand% %SDKArgs% -shaderpath "%shader_path_cd:/=\%" -allowdebug
-	%shadercompilecommand% %SDKArgs% -shaderpath "%shader_path_cd:/=\%" -allowdebug
+	echo %shadercompilecommand% %SDKArgs% -shaderpath "%shader_path_cd:/=\%"
+	%shadercompilecommand% %SDKArgs% -shaderpath "%shader_path_cd:/=\%"
 	cd /D %shader_path_cd%
 )
 
@@ -206,4 +193,3 @@ REM ****************
 
 %TTEXE% -diff %tt_start%
 echo.
-

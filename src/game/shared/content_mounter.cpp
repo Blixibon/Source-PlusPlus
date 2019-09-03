@@ -638,6 +638,7 @@ namespace Mounter
 
 		filesystem->MarkPathIDByRequestOnly(PATHID_SHARED, true);
 		filesystem->MarkPathIDByRequestOnly("SCENES", true);
+		filesystem->MarkPathIDByRequestOnly("SHAREDBIN", true);
 
 		if (g_pWritePathsToHere != nullptr)
 			g_pWritePathsToHere = nullptr;

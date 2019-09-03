@@ -55,7 +55,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	".\;$BASE;$SRCDIR\vgui2\include;$SRCDIR\vgui2\controls;$SRCDIR\game\shared;.\game_controls;$SRCDIR\thirdparty\sixensesdk\include"
-		$PreprocessorDefinitions		"$BASE;NO_STRING_T;CLIENT_DLL;GLOWS_ENABLE;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead" 
+		$PreprocessorDefinitions		"$BASE;NO_STRING_T;CLIENT_DLL;GLOWS_ENABLE;VECTOR;VERSION_SAFE_STEAM_API_INTERFACES;PROTECTED_THINGS_ENABLE;strncpy=use_Q_strncpy_instead;_snprintf=use_Q_snprintf_instead;SOURCE_2013" 
 		$PreprocessorDefinitions		"$BASE;fopen=dont_use_fopen" [$WIN32]
 		$PreprocessorDefinitions		"$BASE;USE_WEBM_FOR_REPLAY;" [$LINUXALL]
 		$PreprocessorDefinitions		"$BASE;CURL_STATICLIB" [$WIN32 && $BUILD_REPLAY]
@@ -216,10 +216,20 @@ $Project
 		
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
 
-		$Folder "Grass Clusters"
+		$Folder "Shader Editor"
 		{
-			$File	"ShaderEditor\Grass\CGrassCluster.cpp"
-			$File	"ShaderEditor\Grass\CGrassCluster.h"
+			$Folder "Grass Clusters"
+			{
+				$File	"ShaderEditor\Grass\CGrassCluster.cpp"
+				$File	"ShaderEditor\Grass\CGrassCluster.h"
+			}
+			
+			$File	"ShaderEditor\isedit_modelrender.h"
+			$File	"ShaderEditor\ivshadereditor.h"
+			$File	"ShaderEditor\sedit_modelrender.cpp"
+			$File	"ShaderEditor\sedit_modelrender.h"
+			$File	"ShaderEditor\shadereditorsystem.cpp"
+			$File	"ShaderEditor\shadereditorsystem.h"
 		}
 		
 		$Folder	"Multiplayer"

@@ -438,7 +438,8 @@ float3 SpecularLight( const float3 vWorldNormal, const float3 vLightDir, const f
 {
 	float3 result = float3(0.0f, 0.0f, 0.0f);
 
-	float3 vReflect = reflect( -vEyeDir, vWorldNormal );			// Reflect view through normal
+	//float3 vReflect = reflect( -vEyeDir, vWorldNormal );
+	float3 vReflect = 2 * vWorldNormal * dot(vWorldNormal, vEyeDir) - vEyeDir; // Reflect view through normal
 	float3 vSpecular = saturate(dot( vReflect, vLightDir ));		// L.R	(use half-angle instead?)
 	vSpecular = pow( vSpecular.x, fSpecularExponent );				// Raise to specular power
 

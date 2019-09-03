@@ -5,18 +5,17 @@
 // STATIC: "REFLECT"						"0..1"
 // STATIC: "REFRACT"						"0..1"
 // STATIC: "ABOVEWATER"						"0..1"
-// STATIC: "CHROMATIC"						"0..1"
-// STATIC: "FLOWMAP"						"0..1"  [ps20b] [ps30]
+// STATIC: "FLOWMAP"						"0..1"  [ps20b]
 // STATIC: "FLOWMAP"						"0..0"  [ps20] [ = 0; ]
 // STATIC: "FLOW_DEBUG"						"0..2"
-// STATIC: "FLASHLIGHT"                     "0..1"	[ps20b] [ps30]
+// STATIC: "FLASHLIGHT"                     "0..1"	[ps20b]
 // STATIC: "FLASHLIGHT"                     "0..0"  [ps20] [ = 0; ]
-// STATIC: "LIGHTMAPWATERFOG"               "0..1"  [ps20b] [ps30]
+// STATIC: "LIGHTMAPWATERFOG"               "0..1"  [ps20b]
 // STATIC: "LIGHTMAPWATERFOG"               "0..0"  [ps20] [ = 0; ]
 // STATIC: "FORCEFRESNEL"					"0..1"
-// STATIC: "CONVERT_TO_SRGB"				"0..1"	[ps30] [= g_pHardwareConfig->NeedsShaderSRGBConversion()] [PC]
+// STATIC: "CONVERT_TO_SRGB"				"0..1"	[ps20b] [= g_pHardwareConfig->NeedsShaderSRGBConversion()] [PC]
 
-// DYNAMIC: "FLASHLIGHTSHADOWS"             "0..1"  [ps20b] [ps30]
+// DYNAMIC: "FLASHLIGHTSHADOWS"             "0..1"  [ps20b]
 // DYNAMIC: "FLASHLIGHTSHADOWS"             "0..0"  [ps20] [ = 0; ]
 
 // Multitexture and basetexture are mutually exclusive.
@@ -27,8 +26,6 @@
 
 // Have to have the flashlight on to get flashlightshadows.
 // SKIP: ( $FLASHLIGHT == 0 ) && ( $FLASHLIGHTSHADOWS == 1 )
-
-// SKIP: ($CHROMATIC) && (!$REFRACT)
 
 // basetexture doesn't work with flashlight or lightmapwaterfog.  multitexture doesn't either.  We don't use basetexture or multitexture in newer code and instead use flowmap and flashlight.
 // SKIP: ( $FLASHLIGHT || $LIGHTMAPWATERFOG ) && ( ( $BASETEXTURE && !$FLOWMAP ) || $MULTITEXTURE )
@@ -118,10 +115,6 @@ const float3 g_vWorldToViewWater1 : register(c23);
 
 float4 g_vInvViewportTransform : register(c24);
 const float g_flForcedFresnelValue : register(c25);
-
-#if CHROMATIC
-const HALF focusoffset				: register( PSREG_CONSTANT_27 );
-#endif
 
 struct PS_INPUT
 {
@@ -424,12 +417,6 @@ float4 main(PS_INPUT i) : COLOR
 #else
 		{
 			vRefractColor = tex2D( RefractSampler, vRefractTexCoord );
-            #if CHROMATIC
-	        float offset = focusoffset/1000;
-	        vRefractColor.r = tex2D(RefractSampler, vRefractTexCoord+float2(offset,0)).r;
-	        vRefractColor.g = tex2D(RefractSampler, vRefractTexCoord-float2(offset,0)).g;
-	        //vRefractColor.b = tex2D(RefractSampler, vRefractTexCoord-float2(offset,0)).b;
-             #endif
 		}
 #endif
 		float warpedAlpha = vRefractColor.a;
