@@ -149,7 +149,7 @@ void ShaderEditorHandler::InitialPreRender()
 		m_Lock.Lock();
 
 		// make sure the class matches
-		const CViewSetup *v = view->GetPlayerViewSetup();
+		const CNewViewSetup *v = view->GetPlayerViewSetup();
 		CViewSetup_SEdit_Shared stableVSetup( *v );
 		shaderEdit->OnPreRender( &stableVSetup );
 
@@ -1055,7 +1055,7 @@ public:
 
 	EditorViewSettings settings;
 
-	void Setup( const CViewSetup &view, CSimpleVCallbackView::EditorViewSettings settings,
+	void Setup( const CNewViewSetup &view, CSimpleVCallbackView::EditorViewSettings settings,
 		const VisibleFogVolumeInfo_t &fogInfo, const WaterRenderInfo_t& info )
 	{
 		this->settings = settings;
@@ -1406,7 +1406,7 @@ pFnVrCallback_Declare( VrCallback_General )
 	CViewRender *pCView = assert_cast< CViewRender* >( view );
 	Assert( pCView->GetViewSetup() != NULL );
 
-	const CViewSetup *setup = pCView->GetViewSetup();
+	const CNewViewSetup *setup = pCView->GetViewSetup();
 
 	CSimpleVCallbackView::EditorViewSettings settings;
 
@@ -1491,8 +1491,8 @@ pFnVrCallback_Declare( VrCallback_ViewModel )
 	pRenderContext->PushMatrix();
 
 	ITexture *pTex = pRenderContext->GetRenderTarget();
-	const CViewSetup &view = *pCView->GetViewSetup();
-	CViewSetup viewModelSetup( view );
+	const CNewViewSetup &view = *pCView->GetViewSetup();
+	CNewViewSetup viewModelSetup( view );
 	viewModelSetup.zNear = view.zNearViewmodel;
 	viewModelSetup.zFar = view.zFarViewmodel;
 	viewModelSetup.fov = view.fovViewmodel;

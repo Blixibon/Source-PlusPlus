@@ -504,6 +504,7 @@ protected:
 	void			CleanupMain3DView( const CNewViewSetup &view );
 
 	void			UpdateCascadedShadow( const CNewViewSetup &view );
+	void			UpdateSSAODepth(const CNewViewSetup& view);
 
 	// This stores the current view
  	CNewViewSetup		m_CurrentView;

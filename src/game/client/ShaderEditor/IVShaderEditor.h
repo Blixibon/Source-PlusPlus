@@ -47,7 +47,7 @@ public:
 	{
 		Q_memset( this, 0, sizeof( CViewSetup_SEdit_Shared ) );
 	};
-	CViewSetup_SEdit_Shared( const CViewSetup &o )
+	CViewSetup_SEdit_Shared( const CNewViewSetup &o )
 	{
 		x = o.x;
 		y = o.y;

@@ -54,6 +54,7 @@
 #include "sourcevr/isourcevirtualreality.h"
 #include "client_virtualreality.h"
 #include "ShaderEditor/Grass/CGrassCluster.h"
+#include "ShaderEditor/ShaderEditorSystem.h"
 
 #ifdef PORTAL
 //#include "C_Portal_Player.h"
@@ -472,6 +473,22 @@ public:
 private:
 	ITexture *m_pRenderTarget;
 	ITexture *m_pDepthTexture;
+};
+
+//-----------------------------------------------------------------------------
+// Shadow depth texture
+//-----------------------------------------------------------------------------
+class CSSAODepthView : public CRendering3dView
+{
+	DECLARE_CLASS(CSSAODepthView, CRendering3dView);
+public:
+	CSSAODepthView(CViewRender* pMainView) : CRendering3dView(pMainView) {}
+
+	void Setup(const CNewViewSetup& shadowViewIn, ITexture* pDepthTexture);
+	void Draw();
+
+private:
+	ITexture* m_pDepthTexture;
 };
 
 //-----------------------------------------------------------------------------
@@ -1378,7 +1395,6 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 		}
 	}
 
-	
 
 	m_BaseDrawFlags = baseDrawFlags;
 
@@ -1409,6 +1425,12 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 	ParticleMgr()->IncrementFrameCode();
 
 	DrawWorldAndEntities( drawSkybox, view, nClearFlags, pCustomVisibility );
+
+	VisibleFogVolumeInfo_t fogVolumeInfo;
+	render->GetVisibleFogVolume(view.origin, &fogVolumeInfo);
+	WaterRenderInfo_t info;
+	DetermineWaterRenderInfo(fogVolumeInfo, info);
+	g_ShaderEditorSystem->CustomViewRender(&g_CurrentViewID, fogVolumeInfo, info);
 
 	// Disable fog for the rest of the stuff
 	DisableFog();
@@ -2161,6 +2183,20 @@ void CViewRender::UpdateCascadedShadow( const CNewViewSetup &view )
 	frustrumcull.SetValue(bFrustrumCulling);
 }
 
+void CViewRender::UpdateSSAODepth(const CNewViewSetup& view)
+{
+	if (!IsDepthOfFieldEnabled(&view))
+	{
+		return;
+	}
+
+	ITexture* pSSAO = materials->FindTexture("_rt_ResolvedFullFrameDepth", TEXTURE_GROUP_RENDER_TARGET);
+
+	CRefPtr<CSSAODepthView> pShadowDepthView = new CSSAODepthView(this);
+	pShadowDepthView->Setup(view, pSSAO);
+	AddViewToScene(pShadowDepthView);
+}
+
 //-----------------------------------------------------------------------------
 // Queues up an overlay rendering
 //-----------------------------------------------------------------------------
@@ -2277,6 +2313,7 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 		if ( ( bDrew3dSkybox = pSkyView->Setup( view, &nClearFlags, &nSkyboxVisible ) ) != false )
 		{
 			AddViewToScene( pSkyView );
+			g_ShaderEditorSystem->UpdateSkymask(false, view.x, view.y, view.width, view.height);
 		}
 		SafeRelease( pSkyView );
 
@@ -2302,6 +2339,7 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 		// We can still use the 'current view' stuff set up in ViewDrawScene
 		s_bCanAccessCurrentView = true;
 
+		UpdateSSAODepth(view);
 
 		engine->DrawPortals();
 
@@ -2343,6 +2381,8 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 
 		// Now actually draw the viewmodel
 		DrawViewModels( view, whatToDraw & RENDERVIEW_DRAWVIEWMODEL );
+
+		g_ShaderEditorSystem->UpdateSkymask(bDrew3dSkybox, view.x, view.y, view.width, view.height);
 
 		DrawUnderwaterOverlay();
 
@@ -2387,6 +2427,8 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			}
 			pRenderContext.SafeRelease();
 		}
+
+		g_ShaderEditorSystem->CustomPostRender();
 
 		// And here are the screen-space effects
 
@@ -5615,14 +5657,10 @@ void CBaseWorldView::DrawSetup( float waterHeight, int nSetupFlags, float waterZ
 		render->PopView( GetFrustum() );
 	}
 
-#ifdef TF_CLIENT_DLL
-	bool bVisionOverride = ( localplayer_visionflags.GetInt() & ( 0x01 ) ); // Pyro-vision Goggles
-
-	if ( savedViewID == VIEW_MAIN && bVisionOverride && pyro_dof.GetBool() )
-	{
-		SSAO_DepthPass();
-	}
-#endif
+	//if ( savedViewID == VIEW_MAIN /*&& bVisionOverride && pyro_dof.GetBool()*/ )
+	//{
+	//	//SSAO_DepthPass();
+	//}
 
 	g_CurrentViewID = savedViewID;
 }
@@ -6565,4 +6603,88 @@ void CRefractiveGlassView::Draw()
 
 	pRenderContext->ClearColor4ub( 0, 0, 0, 255 );
 	pRenderContext->Flush();
+}
+
+void CSSAODepthView::Setup(const CNewViewSetup& shadowViewIn, ITexture* pDepthTexture)
+{
+	BaseClass::Setup(shadowViewIn);
+	m_pDepthTexture = pDepthTexture;
+}
+
+void CSSAODepthView::Draw()
+{
+	if (!g_pMaterialSystemHardwareConfig->SupportsPixelShaders_2_0())
+	{
+		return;
+	}
+
+#if 1
+	VPROF_BUDGET("CSimpleWorldView::SSAO_DepthPass", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+
+	int savedViewID = g_CurrentViewID;
+	g_CurrentViewID = VIEW_SSAO;
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	pRenderContext->ClearColor4ub(255, 255, 255, 255);
+
+#if defined( _X360 )
+	Assert(0); // rebalance this if we ever use this on 360
+	pRenderContext->PushVertexShaderGPRAllocation(112); //almost all work is done in vertex shaders for depth rendering, max out their threads
+#endif
+
+	pRenderContext.SafeRelease();
+
+	render->Push3DView(*this, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, m_pDepthTexture, GetFrustum());
+
+	MDLCACHE_CRITICAL_SECTION();
+
+	engine->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
+
+	m_DrawFlags |= DF_SSAO_DEPTH_PASS;
+
+	{
+		VPROF_BUDGET("DrawWorld", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+		DrawWorld(0.0f);
+	}
+
+	// Draw opaque and translucent renderables with appropriate override materials
+	// OVERRIDE_SSAO_DEPTH_WRITE is OK with a NULL material pointer
+	modelrender->ForcedMaterialOverride(NULL, OVERRIDE_SSAO_DEPTH_WRITE);
+
+	{
+		VPROF_BUDGET("DrawOpaqueRenderables", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+		DrawOpaqueRenderables(DEPTH_MODE_SSA0);
+	}
+
+#if 0
+	if (m_bRenderFlashlightDepthTranslucents || r_flashlightdepth_drawtranslucents.GetBool())
+	{
+		VPROF_BUDGET("DrawTranslucentRenderables", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+		DrawTranslucentRenderables(false, true);
+	}
+#endif
+
+	modelrender->ForcedMaterialOverride(0);
+
+	m_DrawFlags &= ~DF_SSAO_DEPTH_PASS;
+
+	pRenderContext.GetFrom(materials);
+
+	if (IsX360())
+	{
+		//Resolve() the depth texture here. Before the pop so the copy will recognize that the resolutions are the same
+		pRenderContext->CopyRenderTargetToTextureEx(NULL, -1, NULL, NULL);
+	}
+
+	render->PopView(GetFrustum());
+
+#if defined( _X360 )
+	pRenderContext->PopVertexShaderGPRAllocation();
+#endif
+
+	pRenderContext.SafeRelease();
+
+	g_CurrentViewID = savedViewID;
+#endif
 }

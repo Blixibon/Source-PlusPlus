@@ -59,9 +59,9 @@
 #include "c_prop_portal.h" //portal surface rendering functions
 #endif
 
-#ifdef DEFERRED
+//#ifdef DEFERRED
 #include "ShaderEditor/ShaderEditorSystem.h"
-#endif
+//#endif
 	
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1079,9 +1079,9 @@ void CViewRender::Render( vrect_t *rect )
     // Set for console commands, etc.
     render->SetMainView ( m_View.origin, m_View.angles );
 
-#ifdef DEFERRED
+//#ifdef DEFERRED
 	g_ShaderEditorSystem->InitialPreRender();
-#endif
+//#endif
     for( StereoEye_t eEye = GetFirstEye(); eEye <= GetLastEye(); eEye = (StereoEye_t)(eEye+1) )
 	{
 		CNewViewSetup &view = GetView( eEye );
