@@ -672,6 +672,6 @@
 	]
 ]
 
-@PointClass base(BasePickup) studio("models/weapons/w_longjump.mdl") = item_longjump : "Longjump Module" []
-@PointClass base(BasePickup) studio("models/minic23/csgo/dz_kevlar.mdl") = item_kevlar : "Longjump Module" []
-@PointClass base(BasePickup) studio("models/minic23/csgo/exojump_dropped.mdl") = item_exojump : "Longjump Module" []
+@PointClass base(Item) studio("models/weapons/w_longjump.mdl") = item_longjump : "Longjump Module" []
+@PointClass base(Item) studio("models/minic23/csgo/dz_kevlar.mdl") = item_kevlar : "Longjump Module" []
+@PointClass base(Item) studio("models/minic23/csgo/exojump_dropped.mdl") = item_exojump : "Longjump Module" []

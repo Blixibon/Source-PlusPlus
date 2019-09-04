@@ -1060,19 +1060,52 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 		pPlayer->GiveNamedItem("weapon_frag");
 		if (!pPlayer->IsBot())
 			pPlayer->GiveNamedItem("weapon_physcannon");
+	}
 
-		const char* szDefaultWeaponName = engine->GetClientConVarValue(engine->IndexOfEdict(pPlayer->edict()), "cl_defaultweapon");
-
-		CBaseCombatWeapon* pDefaultWeapon = pPlayer->Weapon_OwnsThisType(szDefaultWeaponName);
-
-		if (pDefaultWeapon)
+	CLaz_Player* pLaz = assert_cast<CLaz_Player*> (pPlayer);
+	if (pLaz->HasMPModel())
+	{
+		const playerModel_t* pModel = pLaz->GetMPModel();
+		KeyValues* pkvAbillites = pModel->kvAbilities;
+		if (pkvAbillites != nullptr)
 		{
-			pPlayer->Weapon_Switch(pDefaultWeapon);
+			KeyValues* pItems = pkvAbillites->FindKey("spawnitems");
+			if (pItems)
+			{
+				for (KeyValues* kvValue = pItems->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+				{
+					const char* pchValue = kvValue->GetName();
+
+					if (Q_stristr(pchValue, "weapon_") == pchValue)
+					{
+						pLaz->GiveNamedItem(pchValue);
+					}
+					else if (FStrEq(pchValue, "econ_item"))
+					{
+						pLaz->GiveItemById(kvValue->GetInt());
+					}
+					else if (!V_strncmp(pchValue, "ammo_", 5))
+					{
+						const char* pszAmmo = pchValue + 5;
+
+						pPlayer->GiveAmmo(kvValue->GetInt(), pszAmmo, true);
+					}
+				}
+			}
 		}
-		else
-		{
-			pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_smg1"));
-		}
+	}
+
+	const char* szDefaultWeaponName = engine->GetClientConVarValue(engine->IndexOfEdict(pPlayer->edict()), "cl_defaultweapon");
+
+	CBaseCombatWeapon* pDefaultWeapon = pPlayer->Weapon_OwnsThisType(szDefaultWeaponName);
+
+	if (pDefaultWeapon)
+	{
+		pPlayer->Weapon_Switch(pDefaultWeapon);
+	}
+	else
+	{
+		pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_smg1"));
 	}
 }
 

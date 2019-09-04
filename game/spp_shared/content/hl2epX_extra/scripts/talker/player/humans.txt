@@ -507,4 +507,10 @@ rule PlayerLetsGo
 	response	PlayerResponseLetsGo
 }
 
+rule PlayerLetsGo
+{
+	criteria	ConceptPlayerAnswer IsPlayer IsPlayerVoiceCitizen
+	response	CitizenAnswer
+}
+
 

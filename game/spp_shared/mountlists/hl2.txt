@@ -24,7 +24,7 @@
 		"head"	"0"
 		"hl2"
 		{
-		
+			custom custom
 		}
 	}
 	

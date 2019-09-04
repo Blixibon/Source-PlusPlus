@@ -16,7 +16,7 @@
 			"bodygroups"
 			{
 				//"body"	"0"
-				"manhack"	"1"
+				"manhack"	"0"
 			}
 			"skin"		"0"
 			}
@@ -32,7 +32,10 @@
 			"footsteps"		"NPC_MetroPolice"
 			"voice"			"eloise"
 			"suit"			"pcv_hev"
-			"special"		"manhack"
+			"spawnitems"
+			{
+				"weapon_357"	"1"
+			}
 		}
 	}
 
@@ -104,7 +107,10 @@
 			"footsteps"		"NPC_MetroPolice"
 			"voice"			"larson"
 			"suit"			"pcv_hev"
-			"special"		"manhack"
+			"spawnitems"
+			{
+				"weapon_medkit"	"1"
+			}
 		}
 	}
 }

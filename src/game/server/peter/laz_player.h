@@ -167,6 +167,22 @@ public:
 	virtual void			CheckObserverSettings(); // checks, if target still valid (didn't die etc)
 	virtual bool		SetObserverMode(int mode);
 
+	void			InputAnswerQuestion(inputdata_t& inputdata);
+	void			AnswerQuestion(CBaseCombatCharacter* pQuestioner, int iQARandomNum, bool bAnsweringHello);
+
+	bool		HasMPModel()
+	{
+		return m_MPModel.szSectionID[0] != '\0';
+	}
+
+	const playerModel_t* GetMPModel()
+	{
+		if (!HasMPModel())
+			return nullptr;
+
+		return &m_MPModel;
+	}
+
 public:
 	static EHANDLE gm_hLastRandomSpawn;
 protected:
@@ -204,11 +220,6 @@ protected:
 	{
 		m_hMinion.Set(NULL);
 		V_memset(m_strMinionClass.GetForModify(), '\0', 32);
-	}
-
-	bool		HasMPModel()
-	{
-		return m_MPModel.szSectionID[0] != '\0';
 	}
 
 	playerModel_t m_MPModel;

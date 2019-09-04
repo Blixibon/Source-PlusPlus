@@ -750,8 +750,8 @@ bool CAI_PlayerAlly::SelectQuestionAndAnswerSpeech( AISpeechSelection_t *pSelect
 		return false;
 
 	// if there is a friend nearby to speak to, play sentence, set friend's response time, return
-	CAI_PlayerAlly *pFriend = dynamic_cast<CAI_PlayerAlly *>(FindSpeechTarget( AIST_NPCS ));
-	if ( pFriend && !pFriend->IsMoving() && !pFriend->HasSpawnFlags(SF_NPC_GAG) )
+	CBaseCombatCharacter* pFriend = dynamic_cast<CBaseCombatCharacter*>(FindSpeechTarget(AIST_NPCS | AIST_PLAYERS));
+	if ( pFriend && !pFriend->IsMoving() && (pFriend->IsPlayer() || !pFriend->HasSpawnFlags(SF_NPC_GAG)) )
 		return SelectQuestionFriend( pFriend, pSelection );
 
 	return false;

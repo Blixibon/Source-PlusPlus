@@ -87,7 +87,7 @@ void CHealthKit::Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 		}
 		else
 		{
-			if (pPlayer->GiveNamedItem("weapon_medkit"))
+			if (gpGlobals->maxClients == 1 && pPlayer->GiveNamedItem("weapon_medkit"))
 			{
 				if (g_pGameRules->ItemShouldRespawn(this) == GR_ITEM_RESPAWN_YES)
 				{

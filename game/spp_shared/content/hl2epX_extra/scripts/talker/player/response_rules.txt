@@ -11,6 +11,7 @@ criterion	"ConceptPlayerDeadPlayer"	"Concept" "TLK_PLAYER_DEAD" required
 criterion	"ConceptPlayerDeadPlayerAnswer"	"Concept" "TLK_PLAYER_DEAD_ANSWER" required
 criterion	"ConceptPlayerDied"			"Concept"	"TLK_DIED"	required
 criterion	"ConceptPlayerAttacking"	"Concept"	"TLK_FIREWEAPON"	required
+criterion	"ConceptPlayerAnswer"	"Concept" "TLK_PLAYER_ANSWER" required
 
 criterion	"ConceptPlayerHelp"		"Concept" "TLK_PLAYER_HELP" required
 criterion	"ConceptPlayerThanks"		"Concept" "TLK_PLAYER_THANKS" required

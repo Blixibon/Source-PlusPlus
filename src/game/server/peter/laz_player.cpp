@@ -68,6 +68,7 @@ DEFINE_FIELD(m_iszSuitVoice, FIELD_STRING),
 DEFINE_EMBEDDED(m_AnnounceAttackTimer),
 
 DEFINE_CUSTOM_FIELD(m_iPlayerSoundType, &g_FootStepStringOps),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "AnswerQuestion", InputAnswerQuestion),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
@@ -930,6 +931,46 @@ bool CLaz_Player::SetObserverMode(int mode)
 	CheckObserverSettings();
 
 	return true;
+}
+
+void CLaz_Player::InputAnswerQuestion(inputdata_t& inputdata)
+{
+	AnswerQuestion(dynamic_cast<CBaseCombatCharacter*>(inputdata.pActivator), inputdata.value.Int(), false);
+}
+
+void CLaz_Player::AnswerQuestion(CBaseCombatCharacter* pQuestioner, int iQARandomNum, bool bAnsweringHello)
+{
+	// Original questioner may have died
+	if (!pQuestioner)
+		return;
+
+	AI_Response selection;
+	static ConVarRef rr_debug_qa("rr_debug_qa");
+
+	// Use the random number that the questioner used to determine his Question (so we can match answers via response rules)
+	//m_iQARandomNumber = iQARandomNum;
+
+	// The activator is the person we're responding to
+	if (SpeakFindResponse(selection, "TLK_PLAYER_ANSWER", CFmtStr("speechtarget:%s", pQuestioner->GetClassname())))
+	{
+		if (rr_debug_qa.GetBool())
+		{
+			if (bAnsweringHello)
+			{
+				Warning("Q&A: '%s' answered the Hello from '%s'\n", GetDebugName(), pQuestioner->GetDebugName());
+			}
+			else
+			{
+				Warning("Q&A: '%s' answered the Question from '%s'\n", GetDebugName(), pQuestioner->GetDebugName());
+			}
+		}
+
+		SpeakDispatchResponse("TLK_PLAYER_ANSWER", selection);
+	}
+	else if (rr_debug_qa.GetBool())
+	{
+		Warning("Q&A: '%s' couldn't answer '%s'\n", GetDebugName(), pQuestioner->GetDebugName());
+	}
 }
 
 void CLaz_Player::PainSound(const CTakeDamageInfo & info)
