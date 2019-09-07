@@ -1066,7 +1066,7 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 	if (pLaz->HasMPModel())
 	{
 		const playerModel_t* pModel = pLaz->GetMPModel();
-		KeyValues* pkvAbillites = pModel->kvAbilities;
+		KeyValues* pkvAbillites = pModel->GetAbilities();
 		if (pkvAbillites != nullptr)
 		{
 			KeyValues* pItems = pkvAbillites->FindKey("spawnitems");
@@ -1092,6 +1092,8 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 					}
 				}
 			}
+
+			pkvAbillites->deleteThis();
 		}
 	}
 
@@ -4381,7 +4383,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 
 	CLaz_Player* pHLMS = assert_cast<CLaz_Player*> (pPlayer);
 
-	KeyValues* pkvAbillites = modelType->kvAbilities;
+	KeyValues* pkvAbillites = modelType->GetAbilities();
 	if (pkvAbillites != nullptr)
 	{
 		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_VOICE);
@@ -4390,6 +4392,8 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 
 		const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_FEET);
 		pHLMS->SetFootsteps(pchFootSound);
+
+		pkvAbillites->deleteThis();
 	}
 	else
 	{
