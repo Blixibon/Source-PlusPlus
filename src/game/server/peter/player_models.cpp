@@ -99,11 +99,11 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 			KeyValues *pkvAbilities = pkvModel->FindKey("abilities");
 			if (pkvAbilities)
 			{
-				pkvAbilities->WriteAsBinary(player.bufKVAbilities);
+				player.kvAbilities = pkvAbilities->MakeCopy();
 			}
 			else
 			{
-				player.bKVAbilities = false;
+				player.kvAbilities = nullptr;
 			}
 		}
 	}
@@ -269,29 +269,4 @@ CPlayerModels* g_pPlayerModels = &g_PlayerModels;
 CPlayerModels* PlayerModelSystem()
 {
 	return &g_PlayerModels;
-}
-
-playerModel_s& playerModel_s::operator=(const playerModel_s& other)
-{
-	V_strncpy(szSectionID, other.szSectionID, 32);
-	V_strncpy(szArmModel, other.szArmModel, MAX_PATH);
-	models = other.models;
-	armbodys = other.armbodys;
-	reqs = other.reqs;
-	armSkin = other.armSkin;
-	iRefCount = other.iRefCount;
-	bKVAbilities = other.bKVAbilities;
-	bufKVAbilities.CopyBuffer(other.bufKVAbilities);
-
-	return *this;
-}
-
-KeyValues* playerModel_s::GetAbilities()
-{
-	if (!bKVAbilities)
-		return nullptr;
-
-	KeyValues* pKV = new KeyValues("abilites");
-	pKV->ReadAsBinary(bufKVAbilities);
-	return pKV;
 }

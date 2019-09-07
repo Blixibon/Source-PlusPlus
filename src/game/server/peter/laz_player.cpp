@@ -160,7 +160,7 @@ void CLaz_Player::Spawn(void)
 			}
 		}
 
-		KeyValues* pkvAbillites = m_MPModel.GetAbilities();
+		KeyValues* pkvAbillites = m_MPModel.kvAbilities;
 		if (pkvAbillites != nullptr)
 		{
 			const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_VOICE);
@@ -171,8 +171,6 @@ void CLaz_Player::Spawn(void)
 			SetFootsteps(pchFootSound);
 
 			m_nSpecialAttack = UTIL_StringFieldToInt(pkvAbillites->GetString("special"), g_pszSpecialAttacks, SPECIAL_ATTACK_COUNT);
-
-			pkvAbillites->deleteThis();
 		}
 		else
 		{
@@ -212,7 +210,7 @@ void CLaz_Player::UpdateOnRemove()
 	if (HasMPModel())
 	{
 		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.szSectionID);
-		m_MPModel.Clear();
+		m_MPModel = { 0 };
 	}
 }
 
@@ -660,7 +658,7 @@ void CLaz_Player::SetPlayerModel(void)
 	if (HasMPModel())
 	{
 		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.szSectionID);
-		m_MPModel.Clear();
+		m_MPModel = { 0 };
 	}
 
 	CUtlVector<playerModel_t> models = PlayerModelSystem()->GetAvailableModelsForTeam(TeamID());

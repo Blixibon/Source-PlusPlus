@@ -3,7 +3,6 @@
 
 #include "igamesystem.h"
 #include "utlvector.h"
-#include "utlbuffer.h"
 
 typedef struct bodygroup_s
 {
@@ -21,7 +20,7 @@ typedef struct requirement_s
 
 	struct {
 		char szTeam[32];
-		byte iMaxNum;
+		int iMaxNum;
 	} multiplayer;
 } requirement_t;
 
@@ -40,36 +39,7 @@ typedef struct playerModel_s
 	short armSkin;
 	CCopyableUtlVector<bodygroup_t> armbodys;
 	requirement_t reqs;
-	//KeyValues *kvAbilities = NULL;
-	CUtlBuffer bufKVAbilities;
-	bool bKVAbilities = true;
-
-	playerModel_s &operator=(const playerModel_s&);
-	playerModel_s(const playerModel_s& other) { *this = other; }
-	playerModel_s()
-	{
-		Clear();
-	}
-
-	void Clear()
-	{
-		szSectionID[0] = 0;
-		szArmModel[0] = 0;
-		armSkin = 0;
-		bKVAbilities = true;
-		iRefCount = 0;
-
-		models.Purge();
-		armbodys.Purge();
-		bufKVAbilities.Clear();
-
-		reqs = { 0 };
-	}
-
-	// Caller is responsible for deletion
-	KeyValues* GetAbilities();
-	KeyValues* GetAbilities() const { return const_cast<playerModel_s*> (this)->GetAbilities(); }
-
+	KeyValues *kvAbilities = NULL;
 	/*~playerModel_s()
 	{
 		if (kvAbilities != NULL)
