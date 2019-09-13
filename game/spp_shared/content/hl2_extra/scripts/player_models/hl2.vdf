@@ -342,7 +342,7 @@
 		//"maxplayers"	"4"
 		"games"
 		{
-			"game"	"human"
+			"game"	"none"
 		}
 		"models"
 		{

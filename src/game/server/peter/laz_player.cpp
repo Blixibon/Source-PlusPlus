@@ -45,7 +45,8 @@ ConVar sv_forcedspecialattack("sv_laz_forcedspecial", "-1", FCVAR_CHEAT);
 CStringTableSaveRestoreOps g_FootStepStringOps;
 
 const char *g_pszSpecialAttacks[SPECIAL_ATTACK_COUNT] = {
-	"manhack"
+	"manhack",
+	"olivia"
 };
 
 LINK_ENTITY_TO_CLASS(info_player_combine, CPointEntity);

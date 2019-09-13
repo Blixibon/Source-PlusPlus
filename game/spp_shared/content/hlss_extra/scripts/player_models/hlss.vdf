@@ -55,7 +55,7 @@
 			"bodygroups"
 			{
 				//"body"	"0"
-				"manhack"	"1"
+				"manhack"	"0"
 			}
 			"skin"		"0"
 			}
@@ -71,7 +71,11 @@
 			"footsteps"		"NPC_MetroPolice"
 			"voice"			"noah"
 			"suit"			"pcv_hev"
-			"special"		"manhack"
+			//"special"		"manhack"
+			"spawnitems"
+			{
+				"weapon_shotgun"	"1"
+			}
 		}
 	}
 
@@ -91,7 +95,7 @@
 			"bodygroups"
 			{
 				//"body"	"0"
-				"manhack"	"1"
+				"manhack"	"0"
 			}
 			"skin"		"0"
 			}
@@ -111,6 +115,43 @@
 			{
 				"weapon_medkit"	"1"
 			}
+		}
+	}
+
+	"hlss_anders"
+	{
+		"needs_suit"	"0"
+		"team"			"Combine"
+		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"human"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/police.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+				"manhack"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/dpfilms/weapons/v_arms_metropolice.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_MetroPolice"
+			"voice"			"anders"
+			"suit"			"pcv_hev"
+			"special"		"olivia"
 		}
 	}
 }
