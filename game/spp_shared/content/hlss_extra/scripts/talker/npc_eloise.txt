@@ -1,0 +1,401 @@
+//============================================================================================================
+// Eloise criteria
+//============================================================================================================
+criterion "IncomingMessage" "concept" "IncomingMessage" "required"
+criterion "IsEloise" "classname" "npc_Eloise" "required"
+
+//============================================================================================================
+// Eloise Questions & Responses speech
+//============================================================================================================
+response "EloiseQuestion"
+{
+	scene "scenes/npc/eloise/idle_question01.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question02.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question03.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question04.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question05.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question06.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question07.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question08.vcd" delay 1
+	scene "scenes/npc/eloise/idle_question09.vcd" delay 1
+}
+
+rule EloiseQuestion
+{
+	criteria		IsEloise ConceptTalkQuestion IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response 		EloiseQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "EloiseAnswer"
+{
+	scene "scenes/npc/eloise/idle_answer01.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer02.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer03.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer04.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer05.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer06.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer07.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer08.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer09.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer10.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer11.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer12.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer13.vcd" delay 1
+	scene "scenes/npc/eloise/idle_answer14.vcd" delay 1
+}
+//---------------------
+rule EloiseAnswer
+{
+	criteria		IsEloise ConceptTalkAnswer IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response		EloiseAnswer
+}
+
+//-----------------------------------------
+response "EloiseHeal"
+{
+	scene "scenes/npc/eloise/take_medkit.vcd" delay 1
+	scene "scenes/npc/eloise/your_medic.vcd" delay 1
+}
+
+rule EloiseHeal
+{
+	criteria		IsEloise ConceptTalkHeal Combat_Talk_Allowed
+	response		EloiseHeal
+}
+//---------------------------
+response "EloiseGiveAmmo"
+{
+	scene "scenes/npc/eloise/ammo01.vcd" delay 1
+	scene "scenes/npc/eloise/ammo02.vcd" delay 1
+	scene "scenes/npc/eloise/ammo03.vcd" delay 1
+}
+
+rule EloiseGiveAmmo
+{
+	criteria		IsEloise ConceptTalkGiveAmmo Combat_Talk_Allowed
+	response		EloiseGiveAmmo
+}
+
+//============================================================================================================
+// Eloise Combat speech
+//============================================================================================================
+response "EloiseDanger" 
+{
+	print "Danger"
+}
+
+rule EloiseDanger
+{
+	criteria		IsEloise ConceptTalkDanger Combat_Talk_Allowed
+	response		EloiseDanger
+}
+
+
+//============================================================================================================
+// Eloise Reloads Weapon
+//============================================================================================================
+response "EloiseHideAndReload" 
+{
+  	scene "scenes/npc/eloise/reloading01.vcd"
+  	scene "scenes/npc/eloise/reloading02.vcd"
+  	scene "scenes/npc/eloise/reloading03.vcd"
+}
+
+rule EloiseHideAndReload
+{
+	criteria		IsEloise ConceptHideAndReload Combat_Talk_Allowed
+	response		EloiseHideAndReload
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response EloiseOuch
+{
+   	scene "scenes/npc/eloise/pain01.vcd" delay 3 weight 6
+	scene "scenes/npc/eloise/pain02.vcd" delay 3 weight 1
+}
+
+rule EloiseWound
+{
+	criteria		IsEloise  ConceptTalkWound Combat_Talk_Allowed
+   	response EloiseOuch
+}
+
+response EloiseBees
+{
+	print "Not the bees!" speakonce weight 0.1
+	response EloiseOuch weight 4.0
+}
+
+rule EloiseBeesDamage
+{
+	criteria		IsEloise  ConceptBeeDamage Combat_Talk_Allowed
+	response EloiseBees
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Eloise_Hostiles
+{
+	scene "scenes/npc/eloise/incoming.vcd" delay 4 weight 1
+	scene "scenes/npc/eloise/incoming_hostiles.vcd" delay 4 weight 1
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Eloise_RebelsGroup
+{
+	scene "scenes/npc/eloise/rebels.vcd" delay 1 weight 4 
+	scene "scenes/npc/eloise/incoming.vcd" delay 4 weight 1
+	scene "scenes/npc/eloise/incoming_hostiles.vcd" delay 4 weight 1
+}
+
+response Eloise_Rebels
+{
+   response Eloise_RebelsGroup respeakdelay 300
+}
+
+rule EloiseStartCombatRebel
+{
+	criteria    IsEloise ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_citizen required
+	response    Eloise_Rebels
+}
+
+rule EloiseStartCombatAlyx
+{
+	criteria    IsEloise ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_alyx required
+	response    Eloise_Rebels
+}
+
+rule EloiseStartCombatDog
+{
+	criteria    IsEloise ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_dog required
+	response    Eloise_Hostiles
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Eloise_XeniansGroup
+{
+	scene "scenes/npc/eloise/aliens.vcd" delay 1 weight 4 
+	scene "scenes/npc/eloise/incoming.vcd" delay 4 weight 1
+	scene "scenes/npc/eloise/incoming_hostiles.vcd" delay 4 weight 1
+}
+
+response Eloise_Xenians
+{
+   response Eloise_XeniansGroup respeakdelay 300
+}
+
+rule Eloise_StartCombatAlienGrunt
+{
+	criteria    IsEloise ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliengrunt required
+	response    Eloise_Xenians
+}
+
+rule Eloise_StartCombatVortigaunts
+{
+	criteria    IsEloise ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_vortigaunt required
+	response    Eloise_Xenians
+}
+
+rule Eloise_StartCombatAlienController
+{
+	criteria    IsEloise ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliencontroller required
+	response    Eloise_Xenians
+}
+
+//============================================================================================================
+// Eloise Leader speech (a Eloise that's leading the player somewhere)
+//============================================================================================================
+response "Eloise_LeadWaitOver"
+{
+	print "Wait over here."
+}
+
+rule Eloise_LeadWaitOver
+{
+	criteria		ConceptLeadWaitOver
+	response		Eloise_LeadWaitOver
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "Eloise_LeadAttractPlayer"
+{
+	scene "scenes/npc/eloise/here.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/over_here.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/said_here.vcd" delay 1 weight 0.5
+	scene "scenes/npc/eloise/come_here_asshole.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/come_here_dummy.vcd" delay 1 weight 1
+}
+
+rule Eloise_LeadAttractPlayer
+{
+	criteria		IsEloise ConceptLeadAttractPlayer Combat_Talk_Allowed
+	response		Eloise_LeadAttractPlayer
+}
+
+
+response "Eloise_Come"
+{
+	scene "scenes/npc/eloise/come_already.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/come_on.vcd" delay 1 weight 1
+}
+
+rule Rule_Eloise_Come
+{
+	criteria		IsEloise ConceptLeadComingBack Combat_Talk_Allowed
+	response		Eloise_Come
+}
+
+
+response "Eloise_LetsGo"
+{
+	scene "scenes/npc/eloise/show_way.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/lets_go.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/come_baby.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/keep_up_fido.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/come_on_fido.vcd" delay 1 weight 1
+	scene "scenes/npc/eloise/come_on_lets_go.vcd" delay 1 weight 1
+}
+
+rule Rule_Eloise_LetsGo
+{
+	criteria		IsEloise ConceptLeadRetrieve Combat_Talk_Allowed
+	response		Eloise_LetsGo
+}
+
+rule Rule_Eloise_StartLead
+{
+	criteria		IsEloise ConceptLeadStart Combat_Talk_Allowed
+	response		Eloise_LetsGo
+}
+
+//============================================================================================================
+// Commandable stuff
+//============================================================================================================
+
+response "Eloise_SquadGeneral"
+{
+	print "Yes"
+	//scene "scenes/npc/eloise/idle_answer01.vcd" delay 1
+	//scene "scenes/npc/eloise/idle_answer02.vcd" delay 1
+}
+
+rule Eloise_Commanded
+{
+	criteria		IsEloise ConceptTalkCommanded Combat_Talk_Allowed
+	response		Eloise_SquadGeneral
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response "EloiseEnemyDead"
+{
+	scene "scenes/npc/eloise/banned.vcd" 	odds 10
+	scene "scenes/npc/eloise/trust_me.vcd" 	odds 10
+	scene "scenes/npc/eloise/idle_answer01.vcd" odds 10
+}
+
+rule EloiseEnemyDead
+{
+	criteria		IsEloise ConceptEnemyDead Combat_Talk_Allowed
+	response		EloiseEnemyDead
+	rescenedelay 		6
+}
+
+
+
+//HLSS MEDIC
+
+response "Eloise_ShoutMedic"
+{
+   	scene "scenes/npc/eloise/medic.vcd" delay 6
+}
+
+rule Eloise_NeedMedic
+{
+   criteria    IsEloise ConceptNeedMedic Combat_Talk_Allowed
+   response    Eloise_ShoutMedic
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Eloise_MantarayGroup
+{
+	scene "scenes/npc/eloise/incoming_mantaray.vcd" delay 1 weight 1 
+	scene "scenes/npc/eloise/mantarays_coming.vcd" delay 1 weight 1
+}
+
+response Eloise_Mantarays
+{
+   response Eloise_MantarayGroup respeakdelay 300
+}
+
+rule Eloise_StartCombatMantarays
+{
+	criteria    IsEloise ConceptStartCombat IsGordonCriminal Mantaray_Alert_Allowed
+	enemy npc_mantaray required
+	response    Eloise_Mantarays
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+
+response "Eloise_Male_Traitor"
+{
+   	scene "scenes/npc/eloise/traitor.vcd" delay 1
+}
+
+rule Rule_Eloise_Male_Traitor
+{
+	criteria		IsEloise ConceptTraitor_Male
+	response		Eloise_Male_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// Generator Offline
+//============================================================================================================
+
+
+response "Eloise_GeneratorOffline"
+{
+   	scene "scenes/npc/eloise/generator_offline.vcd" delay 1 
+}
+
+rule Rule_Eloise_GeneratorOffline
+{
+	criteria		IsEloise ConceptGeneratorOffline
+	response		Eloise_GeneratorOffline
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// Recharge
+//============================================================================================================
+
+
+response "Eloise_Recharge"
+{
+   	scene "scenes/npc/eloise/recharge_generator.vcd" delay 1
+}
+
+rule Rule_Eloise_Recharge
+{
+	criteria		IsEloise ConceptRecharge 
+	response		Eloise_Recharge
+	rescenedelay 		3
+}

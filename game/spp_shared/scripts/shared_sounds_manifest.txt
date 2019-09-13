@@ -86,4 +86,13 @@
 	
 	"precache_file"		"scripts/npc_sounds_hydra.txt"
 	"precache_file"		"scripts/game_sounds_vox_extra.txt"
+	
+	//HLSS Sounds
+	"precache_file"		"scripts/npc_sounds_aliengrunt.txt"
+	"precache_file"		"scripts/npc_sounds_aliencontroller.txt"
+	"precache_file"		"scripts/npc_sounds_noah.txt"
+	"precache_file"		"scripts/npc_sounds_eloise.txt"
+	"precache_file"		"scripts/npc_sounds_larson.txt"
+	"precache_file"		"scripts/npc_sounds_olivia.txt"
+	"precache_file"		"scripts/npc_sounds_anders.txt"
 }

@@ -1,0 +1,9 @@
+criterion	"IsPlayerVoiceNoah"	"voice"	"noah"	required
+criterion	"IsPlayerVoiceLarson"	"voice"	"larson"	required
+criterion	"IsPlayerVoiceEloise"	"voice"	"eloise"	required
+criterion	"IsPlayerVoiceAnders"	"voice"	"anders"	required
+
+#include "talker/player/hlss_noah.txt"
+#include "talker/player/hlss_larson.txt"
+#include "talker/player/hlss_anders.txt"
+#include "talker/player/hlss_eloise.txt"

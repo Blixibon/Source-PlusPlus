@@ -1,0 +1,429 @@
+//============================================================================================================
+// Larson criteria
+//============================================================================================================
+criterion "IsLarson" "classname" "npc_larson" "required"
+
+//============================================================================================================
+// Larson Questions & Responses speech
+//============================================================================================================
+response "LarsonQuestion"
+{
+	scene "scenes/npc/larson/idle_question01.vcd" delay 1
+	scene "scenes/npc/larson/idle_question02.vcd" delay 1
+	scene "scenes/npc/larson/idle_question03.vcd" delay 1
+	scene "scenes/npc/larson/idle_question04.vcd" delay 1
+	scene "scenes/npc/larson/idle_question05.vcd" delay 1
+	scene "scenes/npc/larson/idle_question06.vcd" delay 1
+	scene "scenes/npc/larson/idle_question07.vcd" delay 1
+}
+
+rule LarsonQuestion
+{
+	criteria		IsLarson ConceptTalkQuestion IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response 		LarsonQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "LarsonAnswer"
+{
+	scene "scenes/npc/larson/idle_answer01.vcd" delay 1
+	scene "scenes/npc/larson/idle_answer02.vcd" delay 1
+	scene "scenes/npc/larson/idle_answer03.vcd" delay 1
+	scene "scenes/npc/larson/idle_answer04.vcd" delay 1
+	scene "scenes/npc/larson/idle_answer05.vcd" delay 1
+	scene "scenes/npc/larson/idle_answer06.vcd" delay 1
+}
+//---------------------
+rule LarsonAnswer
+{
+	criteria		IsLarson ConceptTalkAnswer IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response		LarsonAnswer
+}
+
+//-----------------------------------------
+response "LarsonHeal"
+{
+	scene "scenes/npc/larson/let_me_heal.vcd" delay 1
+	scene "scenes/npc/larson/have_medkit.vcd" delay 1	
+	scene "scenes/npc/larson/need_a_medic.vcd" delay 1
+	scene "scenes/npc/larson/need_a_medkit.vcd" delay 1
+	scene "scenes/npc/larson/i_has_medkits.vcd" delay 2
+}
+
+rule LarsonHeal
+{
+	criteria		IsLarson ConceptTalkHeal Combat_Talk_Allowed Combat_Talk_Allowed
+	response		LarsonHeal
+}
+//---------------------------
+response "LarsonGiveAmmo"
+{
+	scene "scenes/npc/larson/ammo01.vcd" delay 1
+	scene "scenes/npc/larson/ammo02.vcd" delay 1
+}
+
+rule LarsonGiveAmmo
+{
+	criteria		IsLarson ConceptTalkGiveAmmo Combat_Talk_Allowed 
+	response		LarsonGiveAmmo
+}
+
+//============================================================================================================
+// Larson Combat speech
+//============================================================================================================
+response "LarsonDanger" 
+{
+	print "Danger"
+}
+
+rule LarsonDanger
+{
+	criteria		IsLarson ConceptTalkDanger
+	response		LarsonDanger
+}
+
+
+//============================================================================================================
+// Larson Reloads Weapon
+//============================================================================================================
+response "LarsonHideAndReload" 
+{
+
+  	scene "scenes/npc/larson/reloading.vcd"
+}
+
+rule LarsonHideAndReload
+{
+	criteria		IsLarson ConceptHideAndReload Combat_Talk_Allowed
+	response		LarsonHideAndReload
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response LarsonOuch
+{
+   	scene "scenes/npc/larson/pain01.vcd" delay 3
+	scene "scenes/npc/larson/pain02.vcd" delay 3
+	scene "scenes/npc/larson/pain03.vcd" delay 3
+	scene "scenes/npc/larson/pain04.vcd" delay 6
+	scene "scenes/npc/larson/pain05.vcd" delay 6
+}
+
+rule LarsonWound
+{
+	criteria		IsLarson  ConceptTalkWound Combat_Talk_Allowed
+   	response LarsonOuch
+}
+
+response LarsonBees
+{
+	print "Not the bees!" speakonce weight 0.1
+	response LarsonOuch weight 4.0
+}
+
+rule LarsonBeesDamage
+{
+	criteria		IsLarson  ConceptBeeDamage Combat_Talk_Allowed
+	response LarsonBees
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+response "LarsonShotArm"
+{
+	scene "scenes/npc/larson/my_arm.vcd" delay 5
+}
+
+rule LarsonShotArm
+{
+   criteria    IsLarson ConceptShot ShotInArm Combat_Talk_Allowed
+   response    LarsonShotArm
+}
+
+response "LarsonShotLeg"
+{
+   	scene "scenes/npc/larson/my_leg.vcd" delay 5
+}
+
+
+rule LarsonShotLeg
+{
+   criteria    IsLarson ConceptShot ShotInLeg Combat_Talk_Allowed
+   response    LarsonShotLeg
+}
+
+response "LarsonShotGut"
+{
+   	scene "scenes/npc/larson/my_back.vcd" delay 5
+}
+
+rule LarsonShotGut
+{
+   criteria    IsLarson ConceptShot ShotInGut Combat_Talk_Allowed
+   response    LarsonShotGut
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Larson_Hostiles
+{
+	scene "scenes/npc/larson/hostiles01.vcd" delay 4 weight 1
+	scene "scenes/npc/larson/hostiles02.vcd" delay 4 weight 1
+	scene "scenes/npc/larson/hostiles03.vcd" delay 4 weight 1
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Larson_RebelsGroup
+{
+	scene "scenes/npc/larson/anticitizen.vcd" delay 1 weight 4
+	scene "scenes/npc/larson/hostiles01.vcd" delay 4 weight 1
+	scene "scenes/npc/larson/hostiles02.vcd" delay 4 weight 1
+	scene "scenes/npc/larson/hostiles03.vcd" delay 4 weight 1
+}
+
+response Larson_Rebels
+{
+   response Larson_RebelsGroup respeakdelay 300
+}
+
+rule LarsonStartCombatRebel
+{
+	criteria    IsLarson ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_citizen required
+	response    Larson_Rebels
+}
+
+rule LarsonStartCombatAlyx
+{
+	criteria    IsLarson ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_alyx required
+	response    Larson_Rebels
+}
+
+rule LarsonStartCombatDog
+{
+	criteria    IsLarson ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_dog required
+	response    Larson_Hostiles
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Larson_XeniansGroup
+{
+	scene "scenes/npc/larson/xenoform.vcd" delay 1 weight 4
+	scene "scenes/npc/larson/hostiles01.vcd" delay 4 weight 1
+	scene "scenes/npc/larson/hostiles02.vcd" delay 4 weight 1
+	scene "scenes/npc/larson/hostiles03.vcd" delay 4 weight 1
+}
+
+response Larson_Xenians
+{
+   response Larson_XeniansGroup respeakdelay 300
+}
+
+rule Larson_StartCombatAlienGrunt
+{
+	criteria    IsLarson ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliengrunt required
+	response    Larson_Xenians
+}
+
+rule Larson_StartCombatVortigaunts
+{
+	criteria    IsLarson ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_vortigaunt required
+	response    Larson_Xenians
+}
+
+rule Larson_StartCombatAlienController
+{
+	criteria    IsLarson ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliencontroller required
+	response    Larson_Xenians
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Larson_MantarayGroup
+{
+	scene "scenes/npc/larson/mantarays01.vcd" delay 1 weight 4
+}
+
+response Larson_Mantarays
+{
+   response Larson_MantarayGroup respeakdelay 300
+}
+
+rule Larson_StartCombatMantarays
+{
+	criteria    IsLarson ConceptStartCombat IsGordonCriminal Mantaray_Alert_Allowed
+	enemy npc_mantaray required
+	response    Larson_Mantarays
+}
+
+//============================================================================================================
+// Larson Leader speech (a Larson that's leading the player somewhere)
+//============================================================================================================
+response "Larson_LeadWaitOver"
+{
+	print "Wait over here."
+}
+
+rule Larson_LeadWaitOver
+{
+	criteria		ConceptLeadWaitOver Combat_Talk_Allowed
+	response		Larson_LeadWaitOver
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "Larson_LeadAttractPlayer"
+{
+	scene "scenes/npc/larson/over_here01.vcd" delay 1 weight 1.2
+	scene "scenes/npc/larson/come_here01.vcd" delay 1 weight 1
+	scene "scenes/npc/larson/come_here02.vcd" delay 1 weight 1
+	scene "scenes/npc/larson/come_here03.vcd" delay 1 weight 1
+}
+
+rule Larson_LeadAttractPlayer
+{
+	criteria		IsLarson ConceptLeadAttractPlayer Combat_Talk_Allowed
+	response		Larson_LeadAttractPlayer
+}
+
+
+response "Larson_Come"
+{
+   	scene "scenes/npc/larson/come_here01.vcd" delay 1
+	scene "scenes/npc/larson/come_here02.vcd" delay 1
+	scene "scenes/npc/larson/come_here03.vcd" delay 1
+}
+
+rule Rule_Larson_Come
+{
+	criteria		IsLarson ConceptLeadComingBack Combat_Talk_Allowed
+	response		Larson_Come
+}
+
+response "Larson_LetsGo"
+{
+	scene "scenes/npc/larson/this_way01.vcd" delay 1 weight 1.2
+	scene "scenes/npc/larson/follow_me01.vcd" delay 1 weight 1.2
+}
+
+rule Rule_Larson_LetsGo
+{
+	criteria		IsLarson ConceptLeadRetrieve Combat_Talk_Allowed
+	response		Larson_LetsGo
+}
+
+rule Rule_Larson_StartLead
+{
+	criteria		IsLarson ConceptLeadStart Combat_Talk_Allowed
+	response		Larson_LetsGo
+}
+
+
+//============================================================================================================
+// Commandable stuff
+//============================================================================================================
+
+response "Larson_SquadGeneral"
+{
+	scene "scenes/npc/larson/idle_answer01.vcd" delay 1
+	scene "scenes/npc/larson/idle_answer02.vcd" delay 1
+}
+
+rule Larson_Commanded
+{
+	criteria		IsLarson ConceptTalkCommanded Combat_Talk_Allowed
+	response		Larson_SquadGeneral
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response "LarsonEnemyDead"
+{
+	scene "scenes/npc/larson/savages.vcd" 	odds 10
+	scene "scenes/npc/larson/cease.vcd"	odds 10
+	scene "scenes/npc/larson/judge.vcd"	odds 10
+}
+
+rule LarsonEnemyDead
+{
+	criteria		IsLarson ConceptEnemyDead Combat_Talk_Allowed
+	response		LarsonEnemyDead
+	rescenedelay 		6
+}
+
+
+
+//HLSS MEDIC
+
+response "Larson_ShoutMedic"
+{
+	response LarsonOuch
+}
+
+rule Larson_NeedMedic
+{
+   criteria    IsLarson ConceptNeedMedic Combat_Talk_Allowed
+   response    Larson_ShoutMedic
+}
+
+//============================================================================================================
+// Recharging
+//============================================================================================================
+
+
+response "Larson_Recharging"
+{
+   	scene "scenes/npc/larson/recharging.vcd" delay 1
+	scene "scenes/npc/larson/recharging_that.vcd" delay 1
+	scene "scenes/npc/larson/recharging_generator.vcd" delay 1
+}
+
+rule Rule_Larson_Recharging
+{
+	criteria		IsLarson ConceptRecharging
+	response		Larson_Recharging
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// She's the traitor
+//============================================================================================================
+
+
+response "Larson_Female_Traitor"
+{
+   	scene "scenes/npc/larson/she_traitor.vcd" delay 1
+}
+
+rule Rule_Larson_Female_Traitor
+{
+	criteria		IsLarson ConceptTraitor_Female
+	response		Larson_Female_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+
+response "Larson_Male_Traitor"
+{
+   	scene "scenes/npc/larson/he_traitor.vcd" delay 1
+}
+
+rule Rule_Larson_Male_Traitor
+{
+	criteria		IsLarson ConceptTraitor_Male
+	response		Larson_Male_Traitor
+	rescenedelay 		6
+}
+

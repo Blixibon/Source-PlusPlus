@@ -1,0 +1,158 @@
+//============================================================================================================
+// Anders Questions & Responses speech
+//============================================================================================================
+rule PlayerAndersQuestion
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptTalkQuestion IsGordonCriminal PlayerAlive 
+	response 		AndersQuestion
+}
+
+//---------------------
+rule PlayerAndersAnswer
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptPlayerAnswer
+	response		AndersAnswer
+}
+
+
+
+
+//============================================================================================================
+// Anders Reloads Weapon
+//============================================================================================================
+
+rule PlayerAndersHideAndReload
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptPlayerCoverReload 
+	response		AndersHideAndReload
+}
+
+
+rule PlayerAndersWound
+{
+	criteria		IsPlayer IsPlayerVoiceAnders  ConceptPlayerPain 
+   	response AndersOuch
+}
+
+rule PlayerAndersStartCombatRebel
+{
+	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy IsGordonCriminal 
+	playerenemy npc_citizen required
+	response    Anders_Rebels
+}
+
+rule PlayerAnders_StartCombatAlienGrunt
+{
+	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy 
+	playerenemy npc_aliengrunt required
+	response    Anders_Xenians
+}
+
+rule PlayerAnders_StartCombatVortigaunts
+{
+	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy 
+	playerenemy npc_vortigaunt required
+	response    Anders_Xenians
+}
+
+rule PlayerAnders_StartCombatAlienController
+{
+	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy
+	playerenemy npc_aliencontroller required
+	response    Anders_Xenians
+}
+
+rule PlayerAnders_StartCombatDog
+{
+	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy 
+	playerenemy npc_dog required
+	response    Anders_Hostiles
+}
+
+rule PlayerAnders_StartCombatAlyx
+{
+	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy 
+	playerenemy npc_alyx required
+	response    Anders_Rebels
+}
+
+
+//HLSS MEDIC
+
+rule PlayerAnders_NeedMedic
+{
+   criteria    IsPlayer IsPlayerVoiceAnders ConceptNeedMedic 
+   response    Anders_ShoutMedic 
+}
+
+//============================================================================================================
+// Recharge
+//============================================================================================================
+
+rule PlayerAnders_Recharge
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptRecharge 
+	response		Anders_Recharge
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// Generator Offline
+//============================================================================================================
+
+rule PlayerAnders_GeneratorOffline
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptGeneratorOffline
+	response		Anders_GeneratorOffline
+	rescenedelay 		3
+}
+
+
+//============================================================================================================
+// She's the traitor
+//============================================================================================================
+
+rule PlayerAnders_Female_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptTraitor_Female
+	response		Anders_Female_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+rule PlayerAnders_Male_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptTraitor_Male
+	response		Anders_Male_Traitor
+	rescenedelay 		6
+}
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+rule PlayerAnders_LeadAttractPlayer
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptLeadAttractPlayer 
+	response		Anders_LeadAttractPlayer
+}
+
+rule PlayerAnders_Come
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptPlayerFollow 
+	response		Anders_Come
+}
+
+rule PlayerAnders_LetsGo
+{
+	criteria		IsPlayer IsPlayerVoiceAnders ConceptPlayerGo 
+	response		Anders_LetsGo
+}

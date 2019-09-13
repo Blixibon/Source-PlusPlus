@@ -1,0 +1,233 @@
+
+
+//============================================================================================================
+// Noah Questions & Responses speech
+//============================================================================================================
+rule PlayerNoahQuestion
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptTalkQuestion
+	response 		NoahQuestion
+}
+
+
+//---------------------
+rule PlayerNoahAnswer
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptPlayerAnswer
+	response		NoahAnswer
+}
+
+//-----------------------------------------
+rule PlayerNoahHeal
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptPlayerGiveHealth
+	response		NoahHeal
+}
+
+rule PlayerNoahGiveAmmo
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptPlayerGiveAmmo
+	response		NoahGiveAmmo
+}
+
+
+//============================================================================================================
+// Noah Reloads Weapon
+//============================================================================================================
+rule PlayerNoahHideAndReload
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptPlayerCoverReload
+	response		NoahHideAndReload
+}
+
+
+
+rule PlayerNoahWound
+{
+	criteria		IsPlayer IsPlayerVoiceNoah  ConceptPlayerPain
+   	response NoahOuch
+}
+
+
+rule PlayerNoahBeesDamage
+{
+	criteria		IsPlayer IsPlayerVoiceNoah  ConceptBeeDamage 
+	response NoahBees
+}
+
+rule PlayerNoahShotArm
+{
+   criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerPain ShotInArm
+   response    NoahShotArm
+}
+
+
+rule PlayerNoahShotLeg
+{
+   criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerPain ShotInLeg
+   response    NoahShotLeg
+}
+
+
+rule PlayerNoahShotGut
+{
+   criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerPain ShotInGut
+   response    NoahShotGut
+}
+
+
+rule PlayerNoahStartCombatRebel
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy
+	playerenemy npc_citizen required
+	response    Noah_Rebels
+}
+
+rule PlayerNoahStartCombatAlyx
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy
+	playerenemy npc_alyx required
+	response    Noah_Rebels
+}
+
+rule PlayerNoahStartCombatDog
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy
+	playerenemy npc_dog required
+	response    Noah_Hostiles
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+
+rule PlayerNoah_StartCombatAlienGrunt
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy 
+	playerenemy npc_aliengrunt required
+	response    Noah_Xenians
+}
+
+rule PlayerNoah_StartCombatVortigaunts
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy 
+	playerenemy npc_vortigaunt required
+	response    Noah_Xenians
+}
+
+rule PlayerNoah_StartCombatAlienController
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy 
+	playerenemy npc_aliencontroller required
+	response    Noah_Xenians
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+
+rule PlayerNoah_StartCombatMantarays
+{
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy
+	playerenemy npc_mantaray required
+	response    Noah_Mantarays
+}
+
+//============================================================================================================
+// Noah Leader speech (a Noah that's leading the player somewhere)
+//============================================================================================================
+
+
+rule PlayerNoah_LeadWaitOver
+{
+	criteria		ConceptLeadWaitOver 
+	response		Noah_LeadWaitOver
+}
+
+rule PlayerNoah_LeadAttractPlayer
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptLeadAttractPlayer 
+	response		Noah_LeadAttractPlayer
+}
+
+
+rule Rule_Noah_Come
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptPlayerFollow 
+	response		Noah_Come
+}
+
+
+rule Rule_Noah_LetsGo
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptPlayerGo 
+	response		Noah_LetsGo
+}
+
+rule Rule_Noah_StartLead
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptLeadStart 
+	response		Noah_LetsGo
+}
+
+
+//============================================================================================================
+// Commandable stuff
+//============================================================================================================
+
+rule PlayerNoah_Commanded
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptTalkCommanded 
+	response		Noah_SquadGeneral
+}
+
+//HLSS MEDIC
+
+rule PlayerNoah_NeedMedic
+{
+   criteria    IsPlayer IsPlayerVoiceNoah ConceptNeedMedic 
+   response    Noah_ShoutMedic 
+}
+
+//============================================================================================================
+// Recharge
+//============================================================================================================
+
+rule Rule_Noah_Recharge
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptRecharge 
+	response		Noah_Recharge
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// Generator Offline
+//============================================================================================================
+
+rule Rule_Noah_GeneratorOffline
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptGeneratorOffline
+	response		Noah_GeneratorOffline
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// She's the traitor
+//============================================================================================================
+
+rule Rule_Noah_Female_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptTraitor_Female
+	response		Noah_Female_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+rule Rule_Noah_Male_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptTraitor_Male
+	response		Noah_Male_Traitor
+	rescenedelay 		6
+}

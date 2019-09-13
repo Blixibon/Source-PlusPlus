@@ -1,0 +1,163 @@
+//============================================================================================================
+// Eloise Questions & Responses speech
+//============================================================================================================
+rule PlayerEloiseQuestion
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptTalkQuestion
+	response 		EloiseQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+rule PlayerEloiseAnswer
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerAnswer
+	response		EloiseAnswer
+}
+
+//-----------------------------------------
+rule PlayerEloiseHeal
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerGiveHealth
+	response		EloiseHeal
+}
+//---------------------------
+rule PlayerEloiseGiveAmmo
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerGiveAmmo
+	response		EloiseGiveAmmo
+}
+
+//============================================================================================================
+// Eloise Reloads Weapon
+//============================================================================================================
+
+rule PlayerEloiseHideAndReload
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerCoverReload 
+	response		EloiseHideAndReload
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerEloiseWound
+{
+	criteria		IsPlayer IsPlayerVoiceEloise  ConceptPlayerPain 
+   	response EloiseOuch
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerEloiseStartCombatRebel
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
+	playerenemy npc_citizen required
+	response    Eloise_Rebels
+}
+
+rule PlayerEloiseStartCombatAlyx
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
+	playerenemy npc_alyx required
+	response    Eloise_Rebels
+}
+
+rule PlayerEloiseStartCombatDog
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
+	playerenemy npc_dog required
+	response    Eloise_Hostiles
+}
+
+rule PlayerEloise_StartCombatAlienGrunt
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
+	playerenemy npc_aliengrunt required
+	response    Eloise_Xenians
+}
+
+rule PlayerEloise_StartCombatVortigaunts
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
+	playerenemy npc_vortigaunt required
+	response    Eloise_Xenians
+}
+
+rule PlayerEloise_StartCombatAlienController
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
+	playerenemy npc_aliencontroller required
+	response    Eloise_Xenians
+}
+
+rule PlayerEloise_Come
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerFollow 
+	response		Eloise_Come
+}
+
+rule PlayerEloise_LetsGo
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerGo 
+	response		Eloise_LetsGo
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerEloiseEnemyDead
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptPlayerKill 
+	response		EloiseEnemyDead
+	rescenedelay 		6
+}
+
+
+
+//HLSS MEDIC
+rule PlayerEloise_NeedMedic
+{
+   criteria    IsPlayer IsPlayerVoiceEloise ConceptNeedMedic 
+   response    Eloise_ShoutMedic
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerEloise_StartCombatMantarays
+{
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy
+	playerenemy npc_mantaray required
+	response    Eloise_Mantarays
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+rule PlayerEloise_Male_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptTraitor_Male
+	response		Eloise_Male_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// Generator Offline
+//============================================================================================================
+
+rule PlayerEloise_GeneratorOffline
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptGeneratorOffline
+	response		Eloise_GeneratorOffline
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// Recharge
+//============================================================================================================
+
+rule PlayerEloise_Recharge
+{
+	criteria		IsPlayer IsPlayerVoiceEloise ConceptRecharge 
+	response		Eloise_Recharge
+	rescenedelay 		3
+}

@@ -1,0 +1,449 @@
+//============================================================================================================
+// Noah criteria
+//============================================================================================================
+criterion "IsNoah" "classname" "npc_noah" "required"
+
+//============================================================================================================
+// Noah Questions & Responses speech
+//============================================================================================================
+response "NoahQuestion"
+{
+	scene "scenes/npc/noah/you_okay.vcd" delay 1
+	scene "scenes/npc/noah/still_with_us.vcd" delay 1
+	scene "scenes/npc/noah/act_civil.vcd" delay 1
+	scene "scenes/npc/noah/focus_on_task.vcd" delay 1
+	scene "scenes/npc/noah/can_going.vcd" delay 1
+	scene "scenes/npc/noah/shoot_me.vcd" delay 1
+	scene "scenes/npc/noah/leader_minute.vcd" delay 1
+	scene "scenes/npc/noah/paying_attention.vcd" delay 1
+	scene "scenes/npc/noah/handing_in.vcd" delay 1
+}
+
+rule NoahQuestion
+{
+	criteria		IsNoah ConceptTalkQuestion IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response 		NoahQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "NoahAnswer"
+{
+	scene "scenes/npc/noah/why_no_mutes.vcd" delay 1	
+	scene "scenes/npc/noah/wrong_with_you.vcd" delay 1
+	scene "scenes/npc/noah/sigh_yes.vcd" delay 1
+	scene "scenes/npc/noah/oh_please.vcd" delay 1
+	scene "scenes/npc/noah/stop_asking.vcd" delay 1
+	scene "scenes/npc/noah/get_shit_together.vcd" delay 1
+	scene "scenes/npc/noah/very_professional.vcd" delay 1
+	scene "scenes/npc/noah/most_ridiclious.vcd" delay 1
+	scene "scenes/npc/noah/want_transfer.vcd" delay 1
+	scene "scenes/npc/noah/call_yourself.vcd" delay 1
+}
+
+//---------------------
+rule NoahAnswer
+{
+	criteria		IsNoah ConceptTalkAnswer IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response		NoahAnswer
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "NoahStareResponse"
+{
+	scene "scenes/npc/noah/smile.vcd" delay 1	
+}
+
+//---------------------
+rule NoahStareRule
+{
+	criteria		IsNoah ConceptTalkStare NPCIdle Combat_Talk_Allowed
+	response		NoahStareResponse
+}
+
+//-----------------------------------------
+response "NoahHeal"
+{
+	print "Take this medkit."
+	//scene "scenes/npc/noah/take_medkit.vcd" delay 1
+	//scene "scenes/npc/noah/your_medic.vcd" delay 1
+}
+
+rule NoahHeal
+{
+	criteria		IsNoah ConceptTalkHeal Combat_Talk_Allowed Combat_Talk_Allowed
+	response		NoahHeal
+}
+//---------------------------
+response "NoahGiveAmmo"
+{
+	scene "scenes/npc/noah/ammo.vcd" delay 1 weight 0.5
+	scene "scenes/npc/noah/some_ammo.vcd" delay 1 weight 0.75
+	scene "scenes/npc/noah/something_pocket.vcd" delay 1 weight 1.0
+}
+
+rule NoahGiveAmmo
+{
+	criteria		IsNoah ConceptTalkGiveAmmo Combat_Talk_Allowed
+	response		NoahGiveAmmo
+}
+
+//============================================================================================================
+// Noah Combat speech
+//============================================================================================================
+response "NoahDanger" 
+{
+	print "Danger"
+}
+
+rule NoahDanger
+{
+	criteria		IsNoah ConceptTalkDanger
+	response		NoahDanger
+}
+
+
+//============================================================================================================
+// Noah Reloads Weapon
+//============================================================================================================
+response "NoahHideAndReload" 
+{
+  	scene "scenes/npc/noah/reloading.vcd"
+}
+
+rule NoahHideAndReload
+{
+	criteria		IsNoah ConceptHideAndReload Combat_Talk_Allowed
+	response		NoahHideAndReload
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response NoahOuch
+{
+   	scene "scenes/npc/noah/pain.vcd" delay 3 weight 6
+}
+
+rule NoahWound
+{
+	criteria		IsNoah  ConceptTalkWound Combat_Talk_Allowed
+   	response NoahOuch
+}
+
+response NoahBees
+{
+	print "Not the bees!" speakonce weight 0.1
+	response NoahOuch weight 4.0
+}
+
+rule NoahBeesDamage
+{
+	criteria		IsNoah  ConceptBeeDamage Combat_Talk_Allowed
+	response NoahBees
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+response "NoahShotArm"
+{
+	scene "scenes/npc/noah/my_arm.vcd" delay 5
+}
+
+rule NoahShotArm
+{
+   criteria    IsNoah ConceptShot ShotInArm Combat_Talk_Allowed
+   response    NoahShotArm
+}
+
+response "NoahShotLeg"
+{
+   	scene "scenes/npc/noah/my_leg.vcd" delay 5
+}
+
+
+rule NoahShotLeg
+{
+   criteria    IsNoah ConceptShot ShotInLeg Combat_Talk_Allowed
+   response    NoahShotLeg
+}
+
+response "NoahShotGut"
+{
+   	scene "scenes/npc/noah/my_gut.vcd" delay 5
+}
+
+rule NoahShotGut
+{
+   criteria    IsNoah ConceptShot ShotInGut Combat_Talk_Allowed
+   response    NoahShotGut
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Noah_Hostiles
+{
+	scene "scenes/npc/noah/god_damnit.vcd" delay 4 weight 1
+	scene "scenes/npc/noah/hostiles.vcd" delay 4 weight 1
+	scene "scenes/npc/noah/here_they_Come.vcd" delay 4 weight 1
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Noah_RebelsGroup
+{
+	scene "scenes/npc/noah/anticitizen.vcd" delay 1 weight 4 
+	scene "scenes/npc/noah/god_damnit.vcd" delay 4 weight 1
+	scene "scenes/npc/noah/hostiles.vcd" delay 4 weight 1
+	scene "scenes/npc/noah/here_they_Come.vcd" delay 4 weight 1
+}
+
+response Noah_Rebels
+{
+   response Noah_RebelsGroup respeakdelay 300
+}
+
+rule NoahStartCombatRebel
+{
+	criteria    IsNoah ConceptStartCombat  Combat_Talk_Allowed
+	enemy npc_citizen required
+	response    Noah_Rebels
+}
+
+rule NoahStartCombatAlyx
+{
+	criteria    IsNoah ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_alyx required
+	response    Noah_Rebels
+}
+
+rule NoahStartCombatDog
+{
+	criteria    IsNoah ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_dog required
+	response    Noah_Hostiles
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Noah_XeniansGroup
+{
+	scene "scenes/npc/noah/xenoform.vcd" delay 1 weight 4 
+	scene "scenes/npc/noah/god_damnit.vcd" delay 4 weight 1
+	scene "scenes/npc/noah/hostiles.vcd" delay 4 weight 1
+	scene "scenes/npc/noah/here_they_Come.vcd" delay 4 weight 1
+}
+
+response Noah_Xenians
+{
+   response Noah_XeniansGroup respeakdelay 300
+}
+
+rule Noah_StartCombatAlienGrunt
+{
+	criteria    IsNoah ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliengrunt required
+	response    Noah_Xenians
+}
+
+rule Noah_StartCombatVortigaunts
+{
+	criteria    IsNoah ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_vortigaunt required
+	response    Noah_Xenians
+}
+
+rule Noah_StartCombatAlienController
+{
+	criteria    IsNoah ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliencontroller required
+	response    Noah_Xenians
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Noah_MantarayGroup
+{
+	scene "scenes/npc/noah/mantaray.vcd" delay 1 weight 1 displayfirst
+	scene "scenes/npc/noah/mantarays_coming.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/more_mantarays.vcd" delay 1 weight 1
+}
+
+response Noah_Mantarays
+{
+   response Noah_MantarayGroup respeakdelay 300
+}
+
+rule Noah_StartCombatMantarays
+{
+	criteria    IsNoah ConceptStartCombat IsGordonCriminal Mantaray_Alert_Allowed
+	enemy npc_mantaray required
+	response    Noah_Mantarays
+}
+
+//============================================================================================================
+// Noah Leader speech (a Noah that's leading the player somewhere)
+//============================================================================================================
+response "Noah_LeadWaitOver"
+{
+	print "Wait over here."
+}
+
+rule Noah_LeadWaitOver
+{
+	criteria		ConceptLeadWaitOver Combat_Talk_Allowed
+	response		Noah_LeadWaitOver
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "Noah_LeadAttractPlayer"
+{
+	scene "scenes/npc/noah/here.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/over_here.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/come_here.vcd" delay 1 weight 0.5
+}
+
+rule Noah_LeadAttractPlayer
+{
+	criteria		IsNoah ConceptLeadAttractPlayer Combat_Talk_Allowed
+	response		Noah_LeadAttractPlayer
+}
+
+
+response "Noah_Come"
+{
+	scene "scenes/npc/noah/no_time_waste.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/come_on.vcd" delay 1 weight 1
+}
+
+rule Rule_Noah_Come
+{
+	criteria		IsNoah ConceptLeadComingBack Combat_Talk_Allowed
+	response		Noah_Come
+}
+
+
+response "Noah_LetsGo"
+{
+	scene "scenes/npc/noah/follow_me.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/lets_go.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/come_lets_go.vcd" delay 1 weight 1
+}
+
+rule Rule_Noah_LetsGo
+{
+	criteria		IsNoah ConceptLeadRetrieve Combat_Talk_Allowed
+	response		Noah_LetsGo
+}
+
+rule Rule_Noah_StartLead
+{
+	criteria		IsNoah ConceptLeadStart Combat_Talk_Allowed
+	response		Noah_LetsGo
+}
+
+
+//============================================================================================================
+// Commandable stuff
+//============================================================================================================
+
+response "Noah_SquadGeneral"
+{
+	scene "scenes/npc/noah/sigh_yes.vcd" delay 1
+}
+
+rule Noah_Commanded
+{
+	criteria		IsNoah ConceptTalkCommanded Combat_Talk_Allowed
+	response		Noah_SquadGeneral
+}
+
+//HLSS MEDIC
+
+response "Noah_ShoutMedic"
+{
+   	scene "scenes/npc/noah/medic.vcd" delay 6
+}
+
+rule Noah_NeedMedic
+{
+   criteria    IsNoah ConceptNeedMedic Combat_Talk_Allowed
+   response    Noah_ShoutMedic 
+}
+
+//============================================================================================================
+// Recharge
+//============================================================================================================
+
+
+response "Noah_Recharge"
+{
+   	scene "scenes/npc/noah/recharge_generator.vcd" delay 1
+	scene "scenes/npc/noah/recharge_anders.vcd" delay 1
+}
+
+rule Rule_Noah_Recharge
+{
+	criteria		IsNoah ConceptRecharge 
+	response		Noah_Recharge
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// Generator Offline
+//============================================================================================================
+
+
+response "Noah_GeneratorOffline"
+{
+   	scene "scenes/npc/noah/generator_offline.vcd" delay 1 weight 1.0
+	scene "scenes/npc/noah/generators_down.vcd" delay 1 weight 1.0
+	scene "scenes/npc/noah/protect_generator.vcd" delay 1 weight 1.0
+	scene "scenes/npc/noah/slime_generator.vcd" delay 1 weight 0.5
+	scene "scenes/npc/noah/shoot_vorts.vcd" delay 1 weight 0.5
+}
+
+rule Rule_Noah_GeneratorOffline
+{
+	criteria		IsNoah ConceptGeneratorOffline
+	response		Noah_GeneratorOffline
+	rescenedelay 		3
+}
+
+
+//============================================================================================================
+// She's the traitor
+//============================================================================================================
+
+
+response "Noah_Female_Traitor"
+{
+   	scene "scenes/npc/noah/she_traitor.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/traitor.vcd" delay 1 weight 2
+}
+
+rule Rule_Noah_Female_Traitor
+{
+	criteria		IsNoah ConceptTraitor_Female
+	response		Noah_Female_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+
+response "Noah_Male_Traitor"
+{
+   	scene "scenes/npc/noah/he_traitor.vcd" delay 1 weight 1
+	scene "scenes/npc/noah/traitor.vcd" delay 1 weight 2
+}
+
+rule Rule_Noah_Male_Traitor
+{
+	criteria		IsNoah ConceptTraitor_Male
+	response		Noah_Male_Traitor
+	rescenedelay 		6
+}

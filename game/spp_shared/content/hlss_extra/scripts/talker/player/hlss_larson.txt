@@ -1,0 +1,183 @@
+//============================================================================================================
+// Larson Questions & Responses speech
+//============================================================================================================
+rule PlayerLarsonQuestion
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptTalkQuestion 
+	response 		LarsonQuestion
+}
+
+//---------------------
+rule PlayerLarsonAnswer
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerAnswer 
+	response		LarsonAnswer
+}
+
+rule PlayerLarsonHeal
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerGiveHealth  
+	response		LarsonHeal
+}
+
+rule PlayerLarsonGiveAmmo
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerGiveAmmo  
+	response		LarsonGiveAmmo
+}
+
+
+//============================================================================================================
+// Larson Reloads Weapon
+//============================================================================================================
+rule PlayerLarsonHideAndReload
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerCoverReload 
+	response		LarsonHideAndReload
+}
+
+//------------------------------------------------------------------------------------------------------------
+rule PlayerLarsonWound
+{
+	criteria		IsPlayer IsPlayerVoiceLarson  ConceptPlayerPain 
+   	response LarsonOuch
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerLarsonShotArm
+{
+   criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerPain ShotInArm 
+   response    LarsonShotArm
+}
+
+rule PlayerLarsonShotLeg
+{
+   criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerPain ShotInLeg 
+   response    LarsonShotLeg
+}
+
+rule PlayerLarsonShotGut
+{
+   criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerPain ShotInGut 
+   response    LarsonShotGut
+}
+
+rule PlayerLarsonStartCombatRebel
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	playerenemy npc_citizen required
+	response    Larson_Rebels
+}
+
+rule PlayerLarsonStartCombatAlyx
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	playerenemy npc_alyx required
+	response    Larson_Rebels
+}
+
+rule PlayerLarsonStartCombatDog
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	playerenemy npc_dog required
+	response    Larson_Hostiles
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerLarson_StartCombatAlienGrunt
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	playerenemy npc_aliengrunt required
+	response    Larson_Xenians
+}
+
+rule PlayerLarson_StartCombatVortigaunts
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	playerenemy npc_vortigaunt required
+	response    Larson_Xenians
+}
+
+rule PlayerLarson_StartCombatAlienController
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	playerenemy npc_aliencontroller required
+	response    Larson_Xenians
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerLarson_StartCombatMantarays
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy
+	playerenemy npc_mantaray required
+	response    Larson_Mantarays
+}
+
+
+rule PlayerLarson_LeadAttractPlayer
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerFollow 
+	response		Larson_LeadAttractPlayer
+}
+
+rule PlayerLarson_LetsGo
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerGo 
+	response		Larson_LetsGo
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+rule PlayerLarsonEnemyDead
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptPlayerKill 
+	response		LarsonEnemyDead
+}
+
+
+
+//HLSS MEDIC
+
+rule PlayerLarson_NeedMedic
+{
+   criteria    IsPlayer IsPlayerVoiceLarson ConceptNeedMedic 
+   response    Larson_ShoutMedic
+}
+
+//============================================================================================================
+// Recharging
+//============================================================================================================
+
+rule PlayerLarson_Recharging
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptRecharging
+	response		Larson_Recharging
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// She's the traitor
+//============================================================================================================
+
+rule PlayerLarson_Female_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptTraitor_Female
+	response		Larson_Female_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+rule PlayerLarson_Male_Traitor
+{
+	criteria		IsPlayer IsPlayerVoiceLarson ConceptTraitor_Male
+	response		Larson_Male_Traitor
+	rescenedelay 		6
+}
+
