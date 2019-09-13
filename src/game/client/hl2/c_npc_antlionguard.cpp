@@ -153,7 +153,8 @@ void C_NPC_AntlionGuard::ClientThink()
 		m_dlight->flags = DLIGHT_NO_MODEL_ILLUMINATION;
 	}
 
-	m_dlight->origin	= GetAbsOrigin();
+	//m_dlight->origin	= GetAbsOrigin();
+	GetAttachment("attach_glow2", m_dlight->origin);
 	m_dlight->die = gpGlobals->curtime + 0.1f;
 
 	BaseClass::ClientThink();
