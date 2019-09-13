@@ -20,12 +20,12 @@
 #include "tier0/memdbgon.h"
 
 /// USER-DEFINED SERVER MESSAGE HANDLERS
-
+#ifndef HL2_LAZUL
 void CHud::MsgFunc_ResetHUD( bf_read &msg )
 {
 	ResetHUD();
 }
-
+#endif
 void CHud::ResetHUD()
 {
 	// clear all hud data

@@ -21,6 +21,9 @@
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
+#include "hud.h"
+#include "baseviewport.h"
+#include "clientmode_shared.h"
 #endif // !CLIENT_DLL
 #include "ammodef.h"
 #include "weapon_physcannon.h"
@@ -199,6 +202,34 @@ public:
 };
 
 CEconItemInitializerSystem g_EconInitializer;
+
+#ifdef CLIENT_DLL
+void CHud::MsgFunc_ResetHUD(bf_read& msg)
+{
+	static int s_iLastTeam = TEAM_UNASSIGNED;
+	if (GetLocalPlayerTeam() != s_iLastTeam)
+	{
+		CBaseViewport* pViewport = static_cast<CBaseViewport*>(g_pClientMode->GetViewport());
+		const char* pszSchemeFile = "resource/ClientScheme.res";
+		switch (GetLocalPlayerTeam())
+		{
+		case TEAM_COMBINE:
+			pszSchemeFile = "resource/HudSchemeCombine.res";
+			break;
+		default:
+			break;
+		}
+
+		pViewport->ReloadScheme(pszSchemeFile);
+	}
+	else
+	{
+		ResetHUD();
+	}
+
+	s_iLastTeam = GetLocalPlayerTeam();
+}
+#endif
 
 #ifndef CLIENT_DLL
 static bool s_bInModeChangedScope = false;

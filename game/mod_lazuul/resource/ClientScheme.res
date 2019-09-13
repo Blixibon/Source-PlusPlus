@@ -18,6 +18,10 @@ Scheme
 
 	"BaseSettings"
 	{
+		"BrightBg"		"250 220 0 80"
+		
+		"SquadFg"		"255 220 0 160"
+	
 		// Top-left corner of the "Half-Life 2" on the main screen
 		"Main.Title1.X"				"86"
 		"Main.Title1.Y"				"145"
