@@ -98,7 +98,7 @@ rule PlayerNoahShotGut
 
 rule PlayerNoahStartCombat
 {
-	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	criteria    IsPlayer IsPlayerVoiceNoah ConceptPlayerEnemy 
 	response    Noah_Hostiles
 }
 
