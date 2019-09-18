@@ -82,6 +82,7 @@ $Project
 		$File	"pbr_dx9_helper.cpp"
 
 		$File	"detail_grass.cpp"
+		$File	"ssgi.cpp"
 	}
 
 	$Folder	"Header Files"
