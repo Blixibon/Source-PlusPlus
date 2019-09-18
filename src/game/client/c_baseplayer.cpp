@@ -1247,7 +1247,7 @@ void C_BasePlayer::UpdateFlashlight()
 		#ifdef DEFERRED
 			m_pFlashlight = new CFlashlightEffectDeferred(index);
 		#else
-			m_pFlashlight = new CFlashlightEffect(index);
+			m_pFlashlight = new CFlashlightEffectBase(index);
 		#endif
 
 			if (!m_pFlashlight)
@@ -1902,14 +1902,6 @@ void C_BasePlayer::ThirdPersonSwitch( bool bThirdperson )
 					pBoneAttachment->AddEffects( EF_NODRAW );
 				}
 			}
-		}
-
-		for (int i = 0; i < GetNumWearables(); i++)
-		{
-			CEconWearable* pEnt = GetWearable(i);
-			if (!pEnt)
-				continue;
-			pEnt->UpdateVisibility();
 		}
 	}
 }

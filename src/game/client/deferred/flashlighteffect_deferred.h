@@ -6,7 +6,7 @@
 
 struct def_light_t;
 
-class CFlashlightEffectDeferred : public CFlashlightEffect
+class CFlashlightEffectDeferred : public CFlashlightEffectBase
 {
 public:
 

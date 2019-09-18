@@ -811,8 +811,9 @@ public:
 
 	void GetFrustumExtents( ClientShadowHandle_t handle, Vector &vecMin, Vector &vecMax );
 
-	void SetShadowFromWorldLightsEnabled( bool bEnabled );
-	bool IsShadowingFromWorldLights() const { return m_bShadowFromWorldLights; }
+	virtual void SetShadowFromWorldLightsEnabled( bool bEnabled );
+	void SuppressShadowFromWorldLights(bool bSuppress);
+	virtual bool IsShadowingFromWorldLights() const { return m_bShadowFromWorldLights && !m_bSuppressShadowFromWorldLights; }
 
 private:
 	enum
@@ -1042,6 +1043,7 @@ private:
 	bool m_bDepthTextureActive;
 	int m_nDepthTextureResolution; // Assume square (height == width)
 	bool m_bShadowFromWorldLights;
+	bool m_bSuppressShadowFromWorldLights;
 
 	typedef struct DepthTexCache {
 		CUtlVector<CTextureReference> Textures;
@@ -1257,11 +1259,12 @@ int CVisibleShadowList::FindShadows( const CNewViewSetup *pView, int nLeafCount,
 CClientShadowMgr::CClientShadowMgr() :
 	m_DirtyShadows( 0, 0, ShadowHandleCompareFunc ),
 	m_RenderToTextureActive( false ),
-	m_bDepthTextureActive( false )
+	m_bDepthTextureActive( false ),
+	m_bShadowFromWorldLights(false)
 {
 	m_nDepthTextureResolution = r_flashlightdepthres.GetInt();
 	m_bThreaded = r_threaded_client_shadow_manager.GetBool();
-	m_bShadowFromWorldLights = r_worldlight_castshadows.GetBool();
+	m_bSuppressShadowFromWorldLights = !r_worldlight_castshadows.GetBool();
 
 	m_ActiveDepthTextureHandle = SHADOW_HANDLE_INVALID;
 }
@@ -1655,6 +1658,8 @@ void CClientShadowMgr::GetShadowColor( unsigned char *r, unsigned char *g, unsig
 void CClientShadowMgr::LevelInitPreEntity()
 {
 	m_bUpdatingDirtyShadows = false;
+
+	SetShadowFromWorldLightsEnabled(true);
 
 	Vector ambientColor;
 	engine->GetAmbientLightColor( ambientColor );
@@ -4574,18 +4579,31 @@ void CClientShadowMgr::UpdateDirtyShadow( ClientShadowHandle_t handle )
 
 void WorldLightCastShadowCallback(IConVar *pVar, const char *pszOldValue, float flOldValue)
 {	
-	s_ClientShadowMgr.SetShadowFromWorldLightsEnabled( ConVarRef( pVar ).GetBool() );
+	s_ClientShadowMgr.SuppressShadowFromWorldLights( !ConVarRef( pVar ).GetBool() );
 }
 
 void CClientShadowMgr::SetShadowFromWorldLightsEnabled( bool bEnabled )
 {
-	VPROF_BUDGET( "CVisibleShadowList::SetShadowFromWorldLightsEnabled", VPROF_BUDGETGROUP_SHADOW_RENDERING );
+	VPROF_BUDGET( "CClientShadowMgr::SetShadowFromWorldLightsEnabled", VPROF_BUDGETGROUP_SHADOW_RENDERING );
 
-	if ( bEnabled == IsShadowingFromWorldLights() )
-		return;
-
+	bool bIsShadowingFromWorldLights = IsShadowingFromWorldLights();
 	m_bShadowFromWorldLights = bEnabled;
-	UpdateAllShadows();
+	if (bIsShadowingFromWorldLights != IsShadowingFromWorldLights())
+	{
+		UpdateAllShadows();
+	}
+}
+
+void CClientShadowMgr::SuppressShadowFromWorldLights(bool bSuppress)
+{
+	VPROF_BUDGET("CClientShadowMgr::SuppressShadowFromWorldLights", VPROF_BUDGETGROUP_SHADOW_RENDERING);
+
+	bool bIsShadowingFromWorldLights = IsShadowingFromWorldLights();
+	m_bSuppressShadowFromWorldLights = bSuppress;
+	if (bIsShadowingFromWorldLights != IsShadowingFromWorldLights())
+	{
+		UpdateAllShadows();
+	}
 }
 
 //-----------------------------------------------------------------------------

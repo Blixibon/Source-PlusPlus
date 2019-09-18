@@ -114,6 +114,9 @@ public:
 	virtual ShadowHandle_t GetActiveDepthTextureHandle() = 0;
 
 	virtual void UpdateUberlightState( FlashlightState_t& handle, const UberlightState_t& uberlightState ) = 0;
+
+	virtual void SetShadowFromWorldLightsEnabled(bool bEnabled) = 0;
+	virtual bool IsShadowingFromWorldLights() const = 0;
 };
 
 

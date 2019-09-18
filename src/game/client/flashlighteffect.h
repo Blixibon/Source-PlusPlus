@@ -13,12 +13,12 @@
 struct dlight_t;
 
 
-class CFlashlightEffect
+class CFlashlightEffectBase
 {
 public:
 
-	CFlashlightEffect(int nEntIndex = 0);
-	virtual ~CFlashlightEffect();
+	CFlashlightEffectBase(int nEntIndex = 0);
+	virtual ~CFlashlightEffectBase();
 
 	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance);
 	void TurnOn();
@@ -47,7 +47,7 @@ protected:
 	CTextureReference m_FlashlightTexture;
 };
 
-class CHeadlightEffect : public CFlashlightEffect
+class CHeadlightEffect : public CFlashlightEffectBase
 {
 public:
 	
@@ -57,7 +57,7 @@ public:
 	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance);
 };
 
-class CSpotlightEffect : public CFlashlightEffect
+class CSpotlightEffect : public CFlashlightEffectBase
 {
 public:
 
@@ -85,6 +85,14 @@ protected:
 	Vector m_vecOrigin;
 };
 
-
+//class CMuzzleFlashEffect : public CFlashlightEffectBase
+//{
+//public:
+//
+//	CMuzzleFlashEffect();
+//	~CMuzzleFlashEffect();
+//
+//	virtual void UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp);
+//};
 
 #endif // FLASHLIGHTEFFECT_H

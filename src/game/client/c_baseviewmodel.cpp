@@ -114,6 +114,7 @@ public:
 	}
 
 	virtual bool ShouldDraw();
+	virtual int DrawModel(int flags);
 
 	virtual bool OnInternalDrawModel(ClientModelRenderInfo_t *pInfo)
 	{
@@ -198,8 +199,6 @@ public:
 
 	virtual bool			ShouldReceiveProjectedTextures(int flags)
 	{
-		return true;
-
 		if (m_pViewModel)
 			return m_pViewModel->ShouldReceiveProjectedTextures(flags);
 
@@ -221,7 +220,18 @@ public:
 
 bool C_ViewHands::ShouldDraw()
 {
-	return false;
+	if (m_pViewModel)
+		return m_pViewModel->ShouldDraw();
+
+	return BaseClass::ShouldDraw();
+}
+
+int C_ViewHands::DrawModel(int flags)
+{
+	if (view->GetCurrentlyDrawingEntity() != m_pViewModel)
+		return 0;
+
+	return BaseClass::DrawModel(flags);
 }
 
 //-----------------------------------------------------------------------------

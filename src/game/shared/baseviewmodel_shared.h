@@ -162,7 +162,10 @@ public:
 	// Should this object receive shadows?
 	virtual bool			ShouldReceiveProjectedTextures( int flags )
 	{
-		return false;
+		if (flags & SHADOW_FLAGS_PLAYER_FLASHLIGHT)
+			return false;
+
+		return true;
 	}
 
 	// Add entity to visible view models list?

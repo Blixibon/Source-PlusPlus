@@ -36,7 +36,7 @@
 class C_BaseCombatWeapon;
 class C_BaseViewModel;
 class C_FuncLadder;
-class CFlashlightEffect;
+class CFlashlightEffectBase;
 class C_EconWearable;
 
 extern int g_nKillCamMode;
@@ -226,11 +226,11 @@ public:
 	virtual int					GetVisionFilterFlags( bool bWeaponsCheck = false ) { return 0x00; }
 	bool						HasVisionFilterFlags( int nFlags, bool bWeaponsCheck = false ) { return ( GetVisionFilterFlags( bWeaponsCheck ) & nFlags ) == nFlags; }
 	virtual void				CalculateVisionUsingCurrentFlags( void ) {}
-	void						BuildFirstPersonMeathookTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed, const char *pchHeadBoneName );
+	virtual void				BuildFirstPersonMeathookTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed, const char *pchHeadBoneName );
 
 	// Specific queries about this player.
 	bool						InFirstPersonView();
-	bool						ShouldDrawThisPlayer();
+	virtual bool				ShouldDrawThisPlayer();
 
 	// Called by the view model if its rendering is being overridden.
 	virtual bool				ViewModel_IsTransparent( void );
@@ -531,7 +531,7 @@ private:
 
 
 	// Player flashlight dynamic light pointers
-	CFlashlightEffect *m_pFlashlight;
+	CFlashlightEffectBase *m_pFlashlight;
 
 	typedef CHandle<C_BaseCombatWeapon> CBaseCombatWeaponHandle;
 	CNetworkVar( CBaseCombatWeaponHandle, m_hLastWeapon );

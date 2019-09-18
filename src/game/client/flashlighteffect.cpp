@@ -56,7 +56,7 @@ ClientShadowHandle_t g_hFlashlightHandle[MAX_PLAYERS + 1] = { CLIENTSHADOW_INVAL
 //			vecPos - The position of the light emitter.
 //			vecDir - The direction of the light emission.
 //-----------------------------------------------------------------------------
-CFlashlightEffect::CFlashlightEffect(int nEntIndex)
+CFlashlightEffectBase::CFlashlightEffectBase(int nEntIndex)
 {
 	m_FlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
 	m_nEntIndex = nEntIndex;
@@ -78,7 +78,7 @@ CFlashlightEffect::CFlashlightEffect(int nEntIndex)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CFlashlightEffect::~CFlashlightEffect()
+CFlashlightEffectBase::~CFlashlightEffectBase()
 {
 	LightOff();
 }
@@ -87,7 +87,7 @@ CFlashlightEffect::~CFlashlightEffect()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::TurnOn()
+void CFlashlightEffectBase::TurnOn()
 {
 	m_bIsOn = true;
 	m_flDistMod = 1.0f;
@@ -97,7 +97,7 @@ void CFlashlightEffect::TurnOn()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::TurnOff()
+void CFlashlightEffectBase::TurnOff()
 {
 	if (m_bIsOn)
 	{
@@ -135,9 +135,9 @@ public:
 //-----------------------------------------------------------------------------
 // Purpose: Do the headlight
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecForward, const Vector &vecRight, const Vector &vecUp )
+void CFlashlightEffectBase::UpdateLightNew(const Vector &vecPos, const Vector &vecForward, const Vector &vecRight, const Vector &vecUp )
 {
-	VPROF_BUDGET( "CFlashlightEffect::UpdateLightNew", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
+	VPROF_BUDGET( "CFlashlightEffectBase::UpdateLightNew", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
 	FlashlightState_t state;
 
@@ -344,7 +344,7 @@ void CFlashlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecFo
 //-----------------------------------------------------------------------------
 // Purpose: Do the headlight
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance)
+void CFlashlightEffectBase::UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance)
 {
 	if ( !m_bIsOn )
 	{
@@ -358,7 +358,7 @@ void CFlashlightEffect::UpdateLight(const Vector &vecPos, const Vector &vecDir, 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::LightOffNew()
+void CFlashlightEffectBase::LightOffNew()
 {
 #ifndef NO_TOOLFRAMEWORK
 	if ( clienttools->IsInRecordingMode() )
@@ -386,7 +386,7 @@ void CFlashlightEffect::LightOffNew()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::UpdateLightProjection( FlashlightState_t& state )
+void CFlashlightEffectBase::UpdateLightProjection( FlashlightState_t& state )
 {
 	if( m_FlashlightHandle == CLIENTSHADOW_INVALID_HANDLE )
 	{
@@ -408,7 +408,7 @@ void CFlashlightEffect::UpdateLightProjection( FlashlightState_t& state )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFlashlightEffect::LightOff()
+void CFlashlightEffectBase::LightOff()
 {
 	LightOffNew();
 }
@@ -442,7 +442,7 @@ void CHeadlightEffect::UpdateLight( const Vector &vecPos, const Vector &vecDir, 
 	state.m_vecLightOrigin = vecPos;
 
 	state.m_fHorizontalFOVDegrees = 45.0f;
-	state.m_fVerticalFOVDegrees = 30.0f;
+	state.m_fVerticalFOVDegrees = 45.0f;
 	state.m_fQuadraticAtten = r_flashlightquadratic.GetFloat();
 	state.m_fLinearAtten = r_flashlightlinear.GetFloat();
 	state.m_fConstantAtten = r_flashlightconstant.GetFloat();
