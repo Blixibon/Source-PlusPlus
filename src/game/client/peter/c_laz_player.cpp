@@ -74,6 +74,10 @@ void C_Laz_Player::OnDataChanged(DataUpdateType_t type)
 	{
 		SetNextClientThink(CLIENT_THINK_ALWAYS);
 	}
+	else
+	{
+		UpdateWearables();
+	}
 
 	UpdateVisibility();
 }

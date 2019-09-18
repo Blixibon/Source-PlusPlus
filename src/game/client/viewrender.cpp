@@ -1395,6 +1395,8 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 		}
 	}
 
+	if (viewID == VIEW_MAIN || IsDepthOfFieldEnabled(&view))
+		UpdateSSAODepth(view);
 
 	m_BaseDrawFlags = baseDrawFlags;
 
@@ -2185,11 +2187,6 @@ void CViewRender::UpdateCascadedShadow( const CNewViewSetup &view )
 
 void CViewRender::UpdateSSAODepth(const CNewViewSetup& view)
 {
-	if (!IsDepthOfFieldEnabled(&view))
-	{
-		return;
-	}
-
 	ITexture* pSSAO = materials->FindTexture("_rt_ResolvedFullFrameDepth", TEXTURE_GROUP_RENDER_TARGET);
 
 	CRefPtr<CSSAODepthView> pShadowDepthView = new CSSAODepthView(this);
@@ -2338,8 +2335,6 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 
 		// We can still use the 'current view' stuff set up in ViewDrawScene
 		s_bCanAccessCurrentView = true;
-
-		UpdateSSAODepth(view);
 
 		engine->DrawPortals();
 
@@ -6619,10 +6614,11 @@ void CSSAODepthView::Draw()
 	}
 
 #if 1
-	VPROF_BUDGET("CSimpleWorldView::SSAO_DepthPass", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+	VPROF_BUDGET("CSSAODepthView::Draw", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
 
-	int savedViewID = g_CurrentViewID;
-	g_CurrentViewID = VIEW_SSAO;
+	// Start view
+	unsigned int visFlags;
+	m_pMainView->SetupVis(*this, visFlags);  // @MULTICORE (toml 8/9/2006): Portal problem, not sending custom vis down
 
 	CMatRenderContextPtr pRenderContext(materials);
 
@@ -6637,11 +6633,27 @@ void CSSAODepthView::Draw()
 
 	render->Push3DView(*this, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, m_pDepthTexture, GetFrustum());
 
+	/*pRenderContext.GetFrom(materials);
+	pRenderContext->PushRenderTargetAndViewport(m_pDepthTexture, x, y, width, height);
+	pRenderContext.SafeRelease();*/
+
+	SetupCurrentView(origin, angles, VIEW_SSAO);
+
 	MDLCACHE_CRITICAL_SECTION();
+
+	{
+		VPROF_BUDGET("BuildWorldRenderLists", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+		BuildWorldRenderLists(true, -1, true, false); // @MULTICORE (toml 8/9/2006): Portal problem, not sending custom vis down
+	}
+
+	{
+		VPROF_BUDGET("BuildRenderableRenderLists", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+		BuildRenderableRenderLists(CurrentViewID());
+	}
 
 	engine->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
 
-	m_DrawFlags |= DF_SSAO_DEPTH_PASS;
+	m_DrawFlags = m_pMainView->GetBaseDrawFlags() | DF_RENDER_UNDERWATER | DF_RENDER_ABOVEWATER | DF_SSAO_DEPTH_PASS;	// Don't draw water surface...
 
 	{
 		VPROF_BUDGET("DrawWorld", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
@@ -6667,7 +6679,7 @@ void CSSAODepthView::Draw()
 
 	modelrender->ForcedMaterialOverride(0);
 
-	m_DrawFlags &= ~DF_SSAO_DEPTH_PASS;
+	m_DrawFlags = 0;
 
 	pRenderContext.GetFrom(materials);
 
@@ -6684,7 +6696,5 @@ void CSSAODepthView::Draw()
 #endif
 
 	pRenderContext.SafeRelease();
-
-	g_CurrentViewID = savedViewID;
 #endif
 }

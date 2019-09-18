@@ -389,6 +389,16 @@ void C_BaseNetworkedRagdoll::OnDataChanged(DataUpdateType_t type)
 				CreateHL2MPRagdoll();
 			}
 		}
+
+		CStudioHdr* hdr = GetModelPtr();
+		Assert(hdr);
+		if (!hdr)
+			return;
+
+		for (int i = 0; i < hdr->GetNumPoseParameters(); i++)
+		{
+			SetPoseParameter(hdr, i, 0.0);
+		}
 	}
 	else
 	{

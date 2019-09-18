@@ -110,12 +110,13 @@
 			"GAME+scenes"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\The Citizen Returns"
 			"GAME+scenes"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\The Citizen"
 			"game"		"d:\git-repos\source-plusplus\game\spp_shared\content\hlss_extra"
-			"game"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\human_error"
+			"GAME+scenes"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\human_error"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\he_coop_beta"
 			"game"		"D:\SteamLibrary\steamapps\common\Portal\portal"
 			"game"		"D:\SteamLibrary\steamapps\common\Portal\portal\portal_pak.vpk"
 			"game"		"D:\SteamLibrary\steamapps\common\Counter-Strike Source\cstrike"
 			"game"		"D:\SteamLibrary\steamapps\common\Counter-Strike Source\cstrike\cstrike_pak.vpk"
+			"game"		"D:\SteamLibrary\steamapps\common\MINERVA\metastasis"
 			"GAME+scenes"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\missinginfo"
 			"game"		"C:\Program Files (x86)\Steam\steamapps\sourcemods\depot"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2 Deathmatch\hl2mp"
@@ -125,6 +126,7 @@
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2 Update\hl2"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2 Update\hl2\hl2_pak.vpk"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2"
+			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2\custom\rand"
 			"game+download"		"D:\Git-Repos\Source-PlusPlus\game\mod_lazuul\downloads"
 		}
 	}

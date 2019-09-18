@@ -30,6 +30,8 @@ public:
 
 	virtual bool CreateMove(float flInputSampleTime, CUserCmd *pCmd);
 
+	virtual float			GetMinFOV()	const { return 20.0f; }
+
 	// Shadows
 	virtual ShadowType_t ShadowCastType(void);
 	virtual void GetShadowRenderBounds(Vector &mins, Vector &maxs, ShadowType_t shadowType);
