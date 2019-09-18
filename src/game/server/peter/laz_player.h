@@ -69,6 +69,8 @@ public:
 		return (GetTeamNumber() > LAST_SHARED_TEAM);
 	}
 
+	virtual float		PlayScene(const char* pszScene, float flDelay = 0.0f, AI_Response * response = NULL, IRecipientFilter * filter = NULL);
+
 	//virtual void PostThink(void);
 	virtual void PreThink(void);
 
@@ -168,6 +170,11 @@ public:
 	virtual void			CheckObserverSettings(); // checks, if target still valid (didn't die etc)
 	virtual bool		SetObserverMode(int mode);
 
+	bool				GetResponseSceneFromConcept(int iConcept, char* chSceneBuffer, int numSceneBufferBytes);
+
+	void	UpdateExpression(void);
+	void	ClearExpression(void);
+
 	void			InputAnswerQuestion(inputdata_t& inputdata);
 	void			AnswerQuestion(CBaseCombatCharacter* pQuestioner, int iQARandomNum, bool bAnsweringHello);
 
@@ -227,6 +234,11 @@ protected:
 	int				m_nSpecialAttack;
 	float				m_flNextSpecialAttackTime;
 	bool				m_bPlayedFreezeCamSound;
+
+	// Background expressions
+	string_t			m_iszExpressionScene;
+	EHANDLE				m_hExpressionSceneEnt;
+	float				m_flNextRandomExpressionTime;
 
 	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
 	CNetworkString(m_strMinionClass, 32);

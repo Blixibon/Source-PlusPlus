@@ -53,7 +53,7 @@ protected:
 		SetPaintBackgroundEnabled( false );
 	}
 
-	virtual void CreateDefaultPanels( void ) { /* don't create any panels yet*/ };
+	virtual void CreateDefaultPanels(void) { BaseClass::CreateDefaultPanels(); };
 };
 
 

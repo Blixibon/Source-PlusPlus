@@ -39,6 +39,8 @@ using namespace vgui;
 void UpdateCursorState();
 // void DuckMessage(const char *str);
 
+#define ENABLE_HTML_WINDOW 1
+
 // helper function
 const char *GetStringTeamColor( int i )
 {
@@ -119,13 +121,32 @@ void CTeamMenu::ApplySchemeSettings(IScheme *pScheme)
 	}
 }
 
+void CTeamMenu::OnCommand(const char* command)
+{
+	if (!Q_stricmp(command, "autoassign"))
+	{
+		AutoAssign();
+	}
+	else if (!Q_stricmp(command, "vguicancel"))
+	{
+		BaseClass::OnCommand(command);
+	}
+	else if (Q_stristr(command, "jointeam") == command)
+	{
+		engine->ClientCmd(command);
+		ShowPanel(false);
+		//OnClose();
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: makes the user choose the auto assign option
 //-----------------------------------------------------------------------------
 void CTeamMenu::AutoAssign()
 {
-	engine->ClientCmd("jointeam 0");
-	OnClose();
+	engine->ClientCmd("joingame");
+	ShowPanel(false);
+	//OnClose();
 }
 
 

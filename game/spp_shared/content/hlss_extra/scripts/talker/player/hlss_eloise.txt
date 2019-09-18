@@ -62,10 +62,9 @@ rule PlayerEloiseStartCombatAlyx
 	response    Eloise_Rebels
 }
 
-rule PlayerEloiseStartCombatDog
+rule PlayerEloiseStartCombat
 {
-	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy 
-	playerenemy npc_dog required
+	criteria    IsPlayer IsPlayerVoiceEloise ConceptPlayerEnemy
 	response    Eloise_Hostiles
 }
 

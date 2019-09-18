@@ -62,10 +62,9 @@ rule PlayerAnders_StartCombatAlienController
 	response    Anders_Xenians
 }
 
-rule PlayerAnders_StartCombatDog
+rule PlayerAnders_StartCombat
 {
 	criteria    IsPlayer IsPlayerVoiceAnders ConceptPlayerEnemy 
-	playerenemy npc_dog required
 	response    Anders_Hostiles
 }
 

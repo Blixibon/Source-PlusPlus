@@ -3,6 +3,34 @@ criterion	"IsPlayerVoiceLarson"	"voice"	"larson"	required
 criterion	"IsPlayerVoiceEloise"	"voice"	"eloise"	required
 criterion	"IsPlayerVoiceAnders"	"voice"	"anders"	required
 
+criterion	"IsPlayerNormalUnmaskedCop" required
+{
+	IsPlayerVoiceLarson
+	IsPlayerVoiceEloise
+}
+
+response PlayerCopExpressionIdle
+{
+	scene		"scenes/Expressions/citizen_normal_alert_01.vcd"
+}
+
+response PlayerCopExpressionCombat
+{
+	scene		"scenes/Expressions/citizen_normal_combat_01.vcd"
+}
+
+rule PlayerCopExpIdle
+{
+	criteria	IsPlayer IsPlayerNormalUnmaskedCop ConceptPlayerExpression PlayerNotHasEnemy
+	response	PlayerCopExpressionIdle
+}
+
+rule PlayerCopExpCombat
+{
+	criteria	IsPlayer IsPlayerNormalUnmaskedCop ConceptPlayerExpression PlayerHasEnemy
+	response	PlayerCopExpressionCombat
+}
+
 #include "talker/player/hlss_noah.txt"
 #include "talker/player/hlss_larson.txt"
 #include "talker/player/hlss_anders.txt"

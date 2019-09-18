@@ -3,7 +3,27 @@
 //	AUTOMATIC RESPONSES
 // ============================================
 
-// TLK_PLAYER_HELLO - currently not spoken
+response PlayerCitExpressionIdle
+{
+	scene		"scenes/Expressions/citizen_normal_alert_01.vcd"
+}
+
+response PlayerCitExpressionCombat
+{
+	scene		"scenes/Expressions/citizen_angry_combat_01.vcd"
+}
+
+rule PlayerCitExpIdle
+{
+	criteria	IsPlayer IsPlayerVoiceCitizen ConceptPlayerExpression PlayerNotHasEnemy
+	response	PlayerCitExpressionIdle
+}
+
+rule PlayerCitExpCombat
+{
+	criteria	IsPlayer IsPlayerVoiceCitizen ConceptPlayerExpression PlayerHasEnemy
+	response	PlayerCitExpressionCombat
+}
 
 // using CitizenHello
 rule PlayerHello

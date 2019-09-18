@@ -28,6 +28,7 @@
 #include "npc_playerfollower.h"
 #include "econ_item_system.h"
 #include "econ_wearable.h"
+#include "viewport_panel_names.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -70,6 +71,10 @@ DEFINE_EMBEDDED(m_AnnounceAttackTimer),
 
 DEFINE_CUSTOM_FIELD(m_iPlayerSoundType, &g_FootStepStringOps),
 DEFINE_INPUTFUNC(FIELD_INTEGER, "AnswerQuestion", InputAnswerQuestion),
+
+DEFINE_FIELD(m_iszExpressionScene, FIELD_STRING),
+DEFINE_FIELD(m_hExpressionSceneEnt, FIELD_EHANDLE),
+DEFINE_FIELD(m_flNextRandomExpressionTime, FIELD_TIME),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
@@ -95,6 +100,7 @@ void CLaz_Player::Precache(void)
 	BaseClass::Precache();
 
 	PrecacheFootStepSounds();
+	PrecacheScriptSound("TFPlayer.FreezeCam");
 }
 
 //-----------------------------------------------------------------------------
@@ -135,6 +141,8 @@ void CLaz_Player::Spawn(void)
 	{
 		State_Transition(STATE_ACTIVE);
 	}
+
+	ClearExpression();
 
 	if (HasMPModel())
 	{
@@ -207,6 +215,7 @@ void CLaz_Player::InitialSpawn(void)
 void CLaz_Player::UpdateOnRemove()
 {
 	BaseClass::UpdateOnRemove();
+	ClearExpression();
 
 	if (HasMPModel())
 	{
@@ -413,6 +422,11 @@ void CLaz_Player::DoMuzzleFlash()
 	}
 }
 
+float CLaz_Player::PlayScene(const char* pszScene, float flDelay, AI_Response* response, IRecipientFilter* filter)
+{
+	return InstancedScriptedScene(this, pszScene, NULL, flDelay, false, response, true, filter);
+}
+
 void CLaz_Player::PreThink(void)
 {
 	BaseClass::PreThink();
@@ -607,6 +621,9 @@ void CLaz_Player::SetMinion(CBaseCombatCharacter * pMinion)
 
 bool CLaz_Player::HandleCommand_JoinTeam(int team)
 {
+	if (!g_pGameRules->IsMultiplayer())
+		return false;
+
 	if (team == TF_TEAM_AUTOASSIGN)
 		team = GetAutoTeam();
 
@@ -934,6 +951,58 @@ bool CLaz_Player::SetObserverMode(int mode)
 	return true;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Get response scene corresponding to concept
+//-----------------------------------------------------------------------------
+bool CLaz_Player::GetResponseSceneFromConcept(int iConcept, char* chSceneBuffer, int numSceneBufferBytes)
+{
+	AI_Response result;
+	bool bResult = SpeakConcept(result, iConcept);
+	if (bResult)
+	{
+		const char* szResponse = result.GetResponsePtr();
+		Q_strncpy(chSceneBuffer, szResponse, numSceneBufferBytes);
+	}
+	return bResult;
+}
+
+void CLaz_Player::UpdateExpression(void)
+{
+	char szScene[MAX_PATH];
+	if (!GetResponseSceneFromConcept(MP_CONCEPT_PLAYER_EXPRESSION, szScene, sizeof(szScene)))
+	{
+		ClearExpression();
+		m_flNextRandomExpressionTime = gpGlobals->curtime + RandomFloat(30, 40);
+		return;
+	}
+
+	// Ignore updates that choose the same scene
+	if (m_iszExpressionScene != NULL_STRING && stricmp(STRING(m_iszExpressionScene), szScene) == 0)
+	{
+		m_flNextRandomExpressionTime = gpGlobals->curtime + 1.0f;
+		return;
+	}
+
+	if (m_hExpressionSceneEnt)
+	{
+		ClearExpression();
+	}
+
+	m_iszExpressionScene = AllocPooledString(szScene);
+	float flDuration = InstancedScriptedScene(this, szScene, &m_hExpressionSceneEnt, 0.0, true, NULL, true);
+	m_flNextRandomExpressionTime = gpGlobals->curtime + flDuration;
+}
+
+void CLaz_Player::ClearExpression(void)
+{
+	if (m_hExpressionSceneEnt != NULL)
+	{
+		StopScriptedScene(this, m_hExpressionSceneEnt);
+	}
+	m_iszExpressionScene = NULL_STRING;
+	m_flNextRandomExpressionTime = gpGlobals->curtime;
+}
+
 void CLaz_Player::InputAnswerQuestion(inputdata_t& inputdata)
 {
 	AnswerQuestion(dynamic_cast<CBaseCombatCharacter*>(inputdata.pActivator), inputdata.value.Int(), false);
@@ -1083,6 +1152,10 @@ void CLaz_Player::DeathSound(const CTakeDamageInfo & info)
 		case RESPONSE_SENTENCE:
 			GetExpresser()->SpeakRawSentence(szResponse, 0, VOL_NORM, soundlevel);
 			break;
+
+		case RESPONSE_SCENE:
+			PlayScene(szResponse, 0, &resp);
+			break;
 		}
 	}
 
@@ -1193,7 +1266,7 @@ int UTIL_LazEmitGroupnameSuit(CBasePlayer *entity, const char *groupname)
 	int pitch = PITCH_NORM;
 	int sentenceIndex = -1;
 
-	fvol = 0.7f;
+	fvol = 0.5f;
 	if (random->RandomInt(0, 1))
 		pitch = random->RandomInt(0, 6) + 98;
 
@@ -1237,7 +1310,7 @@ void UTIL_LazEmitSoundSuit(CBasePlayer *entity, const char *sample)
 	float fvol;
 	int pitch = PITCH_NORM;
 
-	fvol = 0.7f;
+	fvol = 0.5f;
 	if (random->RandomInt(0, 1))
 		pitch = random->RandomInt(0, 6) + 98;
 
@@ -1586,12 +1659,12 @@ void CLaz_Player::PlayFlinch(const CTakeDamageInfo & info)
 	case HITGROUP_RIGHTARM:
 		flinchAct = PLAYERANIMEVENT_FLINCH_RIGHTARM;
 		break;
-		case HITGROUP_LEFTLEG:
-			flinchAct = PLAYERANIMEVENT_FLINCH_LEFTLEG;
-			break;
-		case HITGROUP_RIGHTLEG:
-			flinchAct = PLAYERANIMEVENT_FLINCH_RIGHTLEG;
-			break;
+	case HITGROUP_LEFTLEG:
+		flinchAct = PLAYERANIMEVENT_FLINCH_LEFTLEG;
+		break;
+	case HITGROUP_RIGHTLEG:
+		flinchAct = PLAYERANIMEVENT_FLINCH_RIGHTLEG;
+		break;
 	case HITGROUP_STOMACH:
 	case HITGROUP_CHEST:
 		flinchAct = PLAYERANIMEVENT_FLINCH_CHEST;
@@ -1643,6 +1716,10 @@ void CLaz_Player::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 		}
 
 		set.AppendCriteria("playerenemyhealthfrac", UTIL_VarArgs("%.3f", healthfrac));
+	}
+	else
+	{
+		set.AppendCriteria("playerenemy", "none");
 	}
 }
 
@@ -1814,6 +1891,8 @@ void CLaz_Player::StateEnterWELCOME(void)
 		//}
 
 		//m_bSeenRoundInfo = false;
+
+		ShowViewPortPanel(PANEL_TEAM, true);
 	}
 
 	//m_bIsIdle = false;
@@ -1957,6 +2036,12 @@ void CLaz_Player::State_PreThink_ACTIVE()
 			// Always delay when an encounter begins
 			m_AnnounceAttackTimer.Set(4, 8);
 		}
+	}
+
+	// Time to finish the current random expression? Or time to pick a new one?
+	if (IsAlive() && /*m_flNextRandomExpressionTime >= 0 &&*/ gpGlobals->curtime > m_flNextRandomExpressionTime)
+	{
+		UpdateExpression();
 	}
 }
 

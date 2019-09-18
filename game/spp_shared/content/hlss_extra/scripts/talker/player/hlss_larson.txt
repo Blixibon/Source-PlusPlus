@@ -63,6 +63,12 @@ rule PlayerLarsonShotGut
    response    LarsonShotGut
 }
 
+rule PlayerLarsonStartCombat
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	response    Larson_Hostiles
+}
+
 rule PlayerLarsonStartCombatRebel
 {
 	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 

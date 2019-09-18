@@ -1,4 +1,25 @@
 
+response PlayerNoahExpressionIdle
+{
+	scene		"scenes/Expressions/citizen_angry_alert_01.vcd"
+}
+
+response PlayerNoahExpressionCombat
+{
+	scene		"scenes/Expressions/citizen_angry_combat_01.vcd"
+}
+
+rule PlayerNoahExpIdle
+{
+	criteria	IsPlayer IsPlayerVoiceNoah ConceptPlayerExpression PlayerNotHasEnemy
+	response	PlayerNoahExpressionIdle
+}
+
+rule PlayerNoahExpCombat
+{
+	criteria	IsPlayer IsPlayerVoiceNoah ConceptPlayerExpression PlayerHasEnemy
+	response	PlayerNoahExpressionCombat
+}
 
 //============================================================================================================
 // Noah Questions & Responses speech
@@ -75,6 +96,11 @@ rule PlayerNoahShotGut
    response    NoahShotGut
 }
 
+rule PlayerNoahStartCombat
+{
+	criteria    IsPlayer IsPlayerVoiceLarson ConceptPlayerEnemy 
+	response    Noah_Hostiles
+}
 
 rule PlayerNoahStartCombatRebel
 {

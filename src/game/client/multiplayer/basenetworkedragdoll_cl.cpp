@@ -244,6 +244,28 @@ void C_BaseNetworkedRagdoll::CreateHL2MPRagdoll(void)
 
 		m_nBody = pPlayer->GetBody();
 		m_nSkin = pPlayer->GetSkin();
+
+
+		for (int i = 0; i < pPlayer->GetNumWearables(); i++)
+		{
+			CBaseAnimating* pWearable = pPlayer->GetWearable(i);
+			if (!pWearable)
+				continue;
+
+			CBaseAnimating* pAnim = new CBaseAnimating;
+			if (!pAnim->InitializeAsClientEntityByIndex(pWearable->GetModelIndex(), GetRenderGroup()))
+			{
+				pAnim->Release();
+				continue;
+			}
+
+			pAnim->m_nBody = pWearable->m_nBody;
+			pAnim->m_nSkin = pWearable->m_nSkin;
+			pWearable->SnatchModelInstance(pAnim);
+
+			pAnim->FollowEntity(this);
+			m_vecWearables.AddToTail(pAnim);
+		}
 	}
 	else
 	{
@@ -278,27 +300,6 @@ void C_BaseNetworkedRagdoll::CreateHL2MPRagdoll(void)
 	}
 
 	InitAsClientRagdoll(boneDelta0, boneDelta1, currentBones, boneDt);
-
-	for (int i = 0; i < pPlayer->GetNumWearables(); i++)
-	{
-		CBaseAnimating* pWearable = pPlayer->GetWearable(i);
-		if (!pWearable)
-			continue;
-
-		CBaseAnimating* pAnim = new CBaseAnimating;
-		if (!pAnim->InitializeAsClientEntityByIndex(pWearable->GetModelIndex(), GetRenderGroup()))
-		{
-			pAnim->Release();
-			continue;
-		}
-
-		pAnim->m_nBody = pWearable->m_nBody;
-		pAnim->m_nSkin = pWearable->m_nSkin;
-		pWearable->SnatchModelInstance(pAnim);
-
-		pAnim->FollowEntity(this);
-		m_vecWearables.AddToTail(pAnim);
-	}
 
 	if (m_bBurning)
 	{
