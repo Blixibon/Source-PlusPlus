@@ -4468,7 +4468,7 @@
 		"scripts/vehicles/jeep_test.txt"	:	"Jeep"
 		"scripts/vehicles/jalopy.txt"		:	"Jalopy (Episode 2)"
 		"scripts/vehicles/jetski.txt"		:	"Jetski"
-		"scripts/vehicles/prisoner_pod"		:	"Prisoner Pod"
+		"scripts/vehicles/prisoner_pod.txt"		:	"Prisoner Pod"
 	]
 	
 	input Open(void) : "Plays the pod's open animation and unlocks the pod for entry or exit."
