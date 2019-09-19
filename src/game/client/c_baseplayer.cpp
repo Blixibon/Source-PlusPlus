@@ -1422,7 +1422,7 @@ bool C_BasePlayer::ShouldDraw()
 
 int C_BasePlayer::DrawModel( int flags )
 {
-#ifndef PORTAL
+#if !defined(PORTAL) && !defined(HL2_LAZUL)
 	// In Portal this check is already performed as part of
 	// C_Portal_Player::DrawModel()
 	if ( !ShouldDrawThisPlayer() )

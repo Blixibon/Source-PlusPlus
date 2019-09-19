@@ -795,4 +795,16 @@
 		//"BaseBackgroundColor"	"32 32 32 255"		[$X360]
 		"LocalBackgroundColor"	"0 0 0 255"		[$X360]
 	}
+	
+	HudPlayerInfo
+	{
+		"fieldName" "HudPlayerInfo"
+		"visible" "1"
+		"enabled" "1"
+		
+		"xpos"	 "20"
+		"ypos"	 "20"
+		"wide"	 "50"
+		"tall"	 "50"
+	}
 }

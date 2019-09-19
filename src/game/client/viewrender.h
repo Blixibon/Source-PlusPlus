@@ -81,6 +81,8 @@ enum view_id_t
 	VIEW_DEFERRED_SHADOW = 9,
 #endif
 
+	VIEW_VGUI3D, // A vgui panel wants to render an entity. The entity should cooperate.
+
 	VIEW_ID_COUNT
 };
 view_id_t CurrentViewID();

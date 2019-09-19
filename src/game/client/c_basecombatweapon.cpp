@@ -16,6 +16,7 @@
 #include "tier1/KeyValues.h"
 #include "toolframework/itoolframework.h"
 #include "toolframework_client.h"
+#include "viewrender.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -475,7 +476,7 @@ int C_BaseCombatWeapon::DrawModel( int flags )
 	if ( !m_bReadyToDraw )
 		return 0;
 
-	if ( !IsVisible() )
+	if ( !IsVisible() && CurrentViewID() != VIEW_VGUI3D )
 		return 0;
 
 	// check if local player chases owner of this weapon in first person
