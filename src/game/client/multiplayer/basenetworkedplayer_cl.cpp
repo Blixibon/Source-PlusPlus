@@ -184,12 +184,6 @@ CStudioHdr * C_BaseNetworkedPlayer::OnNewModel(void)
 		InitPlayerGibs();
 		if (GetAnimState())
 			GetAnimState()->OnNewModel();
-
-		int i;
-		for (i = 0; i < pHdr->GetNumPoseParameters(); i++)
-		{
-			SetPoseParameter(pHdr, i, 0.0);
-		}
 	}
 
 	return pHdr;
@@ -250,7 +244,7 @@ void C_BaseNetworkedPlayer::Respawn()
 	RemoveAllDecals();
 
 	if (GetAnimState())
-		GetAnimState()->ResetGestureSlots();
+		GetAnimState()->ClearAnimationState();
 	
 	// reset HDR
 	if ( IsLocalPlayer() )

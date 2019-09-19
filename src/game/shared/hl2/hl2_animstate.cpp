@@ -1,10 +1,22 @@
 #include "cbase.h"
 #include "hl2_animstate.h"
 #include "hl2_player_shared.h"
+#ifdef CLIENT_DLL
+#include "iclientvehicle.h"
+#include "c_vehicle_jeep.h"
+#include "c_vehicle_airboat.h"
+#else
+#include "iservervehicle.h"
+#include "vehicle_jeep.h"
+#endif
 
 #ifdef CLIENT_DLL
 extern ConVar anim_showmainactivity;
 #endif
+
+extern ConVar mp_slammoveyaw;
+
+float SnapYawTo(float flValue);
 
 #define ACT_DOD_FIRST ACT_DOD_DEPLOYED
 #define ACT_DOD_LAST ACT_DOD_DEFUSE_TNT
@@ -145,12 +157,292 @@ bool CHL2PlayerAnimState::SetupPoseParameters(CStudioHdr* pStudioHdr)
 
 	m_PoseParameterData.m_iMoveYaw = GetBasePlayer()->LookupPoseParameter(pStudioHdr, "move_yaw");
 	m_PoseParameterData.m_iMoveScale = GetBasePlayer()->LookupPoseParameter(pStudioHdr, "move_scale");
-	/*
-	if ( ( m_PoseParameterData.m_iMoveYaw < 0 ) || ( m_PoseParameterData.m_iMoveScale < 0 ) )
-		return false;
-	*/
+
+	m_PoseParameterData.m_iVerticalVelocity = GetBasePlayer()->LookupPoseParameter("vertical_velocity");
+	m_PoseParameterData.m_iVehicleSteer = GetBasePlayer()->LookupPoseParameter("vehicle_steer");
 
 	return true;
+}
+
+void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
+{
+	// Get the movement velocity.
+	Vector vecVelocity;
+	GetOuterAbsVelocity(vecVelocity);
+	//vecVelocity += GetBasePlayer()->GetBaseVelocity();
+
+	// Check to see if we are moving.
+	bool bMoving = (vecVelocity.Length() > 1.0f) ? true : false;
+
+	if (GetBasePlayer()->IsInAVehicle())
+	{
+		Vector vecEyes;
+		QAngle angEyes = vec3_angle;
+		CBaseAnimating* pVehicleAnim = dynamic_cast<CBaseAnimating*> (GetBasePlayer()->GetVehicle()->GetVehicleEnt());
+		IVehicle* pVehicle = GetBasePlayer()->GetVehicle();
+
+		if (pVehicle && pVehicleAnim)
+		{
+			int nRole = pVehicle->GetPassengerRole(GetBasePlayer());
+			char pAttachmentName[32];
+			Q_snprintf(pAttachmentName, sizeof(pAttachmentName), "vehicle_feet_passenger%d", nRole);
+			int nFeetAttachmentIndex = pVehicleAnim->LookupAttachment(pAttachmentName);
+			if (nRole == VEHICLE_ROLE_DRIVER && nFeetAttachmentIndex <= 0)
+				nFeetAttachmentIndex = pVehicleAnim->LookupAttachment("vehicle_driver_feet");
+
+			if (nFeetAttachmentIndex > 0)
+				pVehicleAnim->GetAttachment(nFeetAttachmentIndex, vecEyes, angEyes);
+
+#ifdef CLIENT_DLL
+			int iVehicleSteer = pVehicleAnim->LookupPoseParameter("vehicle_steer");
+
+			Vector vecVelocity = pVehicleAnim->GetAbsVelocity();
+			Vector vecUp;
+			QAngle angVehicle = pVehicleAnim->GetAbsAngles();
+			AngleVectors(angVehicle, NULL, NULL, &vecUp);
+			float dp = vecUp.Dot(Vector(0, 0, 1));
+			float dp2 = vecUp.Dot(vecVelocity);
+			float flVert = ((dp < 0 ? dp : 0) + dp2 * 0.005);
+			GetBasePlayer()->SetPoseParameter(m_PoseParameterData.m_iVerticalVelocity, flVert);
+
+			if (iVehicleSteer > -1)
+			{
+				float flSteer = pVehicleAnim->GetPoseParameter(iVehicleSteer);
+				//float flVMin, flVMax, flPMin, flPMax;
+				//pVehicleAnim->GetPoseParameterRange(iVehicleSteer, flVMin, flVMax);
+				//GetBasePlayer()->GetPoseParameterRange(m_PoseParameterData.m_iVehicleSteer, flPMin, flPMax);
+
+				//flSteer = RemapValClamped(flSteer, flVMin, flVMax, flPMin, flPMax);
+				flSteer = (flSteer * 2) - 1;
+				GetBasePlayer()->SetPoseParameter(m_PoseParameterData.m_iVehicleSteer, flSteer);
+			}
+#endif
+		}
+
+		QAngle absangles = angEyes;
+		absangles.y = AngleNormalize(absangles.y);
+		m_angRender = absangles;
+
+		m_flCurrentFeetYaw = m_flGoalFeetYaw = absangles.y;
+	}
+	else if (GetBasePlayer()->GetMoveType() == MOVETYPE_LADDER)
+	{
+		QAngle absangles;
+		Vector vecUp(0, 0, 1);
+
+		VectorAngles(-GetBasePlayer()->GetLadderNormal(), vecUp, absangles);
+		absangles.y = AngleNormalize(absangles.y);
+
+		m_flGoalFeetYaw = absangles.y;
+	}
+	// If we are moving or are prone and undeployed.
+	// If you are forcing aim yaw, your code is almost definitely broken if you don't include a delay between 
+	// teleporting and forcing yaw. This is due to an unfortunate interaction between the command lookback window,
+	// and the fact that m_flEyeYaw is never propogated from the server to the client.
+	// TODO: Fix this after Halloween 2014.
+	else if (bMoving || m_bForceAimYaw)
+	{
+		// The feet match the eye direction when moving - the move yaw takes care of the rest.
+		m_flGoalFeetYaw = m_flEyeYaw;
+	}
+	// Else if we are not moving.
+	else
+	{
+		// Initialize the feet.
+		if (m_PoseParameterData.m_flLastAimTurnTime <= 0.0f)
+		{
+			m_flGoalFeetYaw = m_flEyeYaw;
+			m_flCurrentFeetYaw = m_flEyeYaw;
+			m_PoseParameterData.m_flLastAimTurnTime = gpGlobals->curtime;
+		}
+		// Make sure the feet yaw isn't too far out of sync with the eye yaw.
+		// TODO: Do something better here!
+		else
+		{
+			float flYawDelta = AngleNormalize(m_flGoalFeetYaw - m_flEyeYaw);
+
+			if (fabsf(flYawDelta) > 45.0f/*m_AnimConfig.m_flMaxBodyYawDegrees*/)
+			{
+				float flSide = (flYawDelta > 0.0f) ? -1.0f : 1.0f;
+				m_flGoalFeetYaw += (45.0f/*m_AnimConfig.m_flMaxBodyYawDegrees*/ * flSide);
+			}
+		}
+	}
+
+	// Fix up the feet yaw.
+	m_flGoalFeetYaw = AngleNormalize(m_flGoalFeetYaw);
+	if (m_flGoalFeetYaw != m_flCurrentFeetYaw)
+	{
+		// If you are forcing aim yaw, your code is almost definitely broken if you don't include a delay between 
+		// teleporting and forcing yaw. This is due to an unfortunate interaction between the command lookback window,
+		// and the fact that m_flEyeYaw is never propogated from the server to the client.
+		// TODO: Fix this after Halloween 2014.
+		if (m_bForceAimYaw)
+		{
+			m_flCurrentFeetYaw = m_flGoalFeetYaw;
+		}
+		else
+		{
+			ConvergeYawAngles(m_flGoalFeetYaw, /*DOD_BODYYAW_RATE*/720.0f, gpGlobals->frametime, m_flCurrentFeetYaw);
+			m_flLastAimTurnTime = gpGlobals->curtime;
+		}
+	}
+
+	// Rotate the body into position.
+	if (!GetBasePlayer()->IsInAVehicle())
+	{
+		m_angRender[PITCH] = 0.f;
+		m_angRender[YAW] = m_flCurrentFeetYaw;
+		m_angRender[ROLL] = 0.f;
+
+		GetBasePlayer()->SetPoseParameter(m_PoseParameterData.m_iVerticalVelocity, 0);
+		GetBasePlayer()->SetPoseParameter(m_PoseParameterData.m_iVehicleSteer, 0);
+	}
+
+	// Find the aim(torso) yaw base on the eye and feet yaws.
+	float flAimYaw = m_flEyeYaw - m_flCurrentFeetYaw;
+	flAimYaw = AngleNormalize(flAimYaw);
+
+	// Set the aim yaw and save.
+	switch (GetAimType())
+	{
+	case AIM_MP:
+	default:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw, -flAimYaw);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, 0.0f);
+		break;
+	case AIM_HL2:
+	case AIM_BMMP:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, flAimYaw);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw, 0.0f);
+		break;
+	}
+	m_DebugAnimData.m_flAimYaw = flAimYaw;
+
+	// Turn off a force aim yaw - either we have already updated or we don't need to.
+	m_bForceAimYaw = false;
+
+#ifndef CLIENT_DLL
+	QAngle angle = GetBasePlayer()->GetAbsAngles();
+	angle[YAW] = m_flCurrentFeetYaw;
+
+	GetBasePlayer()->SetAbsAngles(angle);
+#endif
+}
+
+void CHL2PlayerAnimState::ComputePoseParam_MoveYaw(CStudioHdr* pStudioHdr)
+{
+	// Get the estimated movement yaw.
+	EstimateYaw();
+
+	// Get the view yaw.
+	float flAngle = AngleNormalize(m_flEyeYaw);
+
+	// Calc side to side turning - the view vs. movement yaw.
+	float flYaw = flAngle - m_PoseParameterData.m_flEstimateYaw;
+	flYaw = AngleNormalize(-flYaw);
+
+	// Get the current speed the character is running.
+	bool bIsMoving;
+	float flSpeed = CalcMovementSpeed(&bIsMoving);
+
+	// Setup the 9-way blend parameters based on our speed and direction.
+	Vector2D vecCurrentMoveYaw(0.0f, 0.0f);
+	if (GetBasePlayer()->GetMoveType() == MOVETYPE_LADDER)
+	{
+		Vector vecVelocity;
+		GetOuterAbsVelocity(vecVelocity);
+
+		GetMovementFlags(pStudioHdr);
+
+		if (mp_slammoveyaw.GetBool())
+		{
+			flYaw = SnapYawTo(flYaw);
+		}
+
+		vecCurrentMoveYaw.x = vecVelocity.Normalized().z;
+		vecCurrentMoveYaw.y = 0;
+
+		if (m_LegAnimType == LEGANIM_9WAY)
+		{
+			// Set the 9-way blend movement pose parameters.
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveX, vecCurrentMoveYaw.x);
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveY, vecCurrentMoveYaw.y);
+		}
+		else
+		{
+			// find what speed was actually authored
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveYaw, 0.0f);
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveScale, 1.0f);
+			float flMaxSpeed = GetBasePlayer()->GetSequenceGroundSpeed(GetBasePlayer()->GetSequence());
+
+			// scale playback
+			if (flMaxSpeed > vecCurrentMoveYaw.x)
+			{
+				GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveScale, vecCurrentMoveYaw.x / flMaxSpeed);
+			}
+		}
+	}
+	else if (bIsMoving)
+	{
+		GetMovementFlags(pStudioHdr);
+
+		if (mp_slammoveyaw.GetBool())
+		{
+			flYaw = SnapYawTo(flYaw);
+		}
+
+		if (m_LegAnimType == LEGANIM_9WAY)
+		{
+			// convert YAW back into vector
+			vecCurrentMoveYaw.x = cos(DEG2RAD(flYaw));
+			vecCurrentMoveYaw.y = -sin(DEG2RAD(flYaw));
+			// push edges out to -1 to 1 box
+			float flInvScale = MAX(fabsf(vecCurrentMoveYaw.x), fabsf(vecCurrentMoveYaw.y));
+			if (flInvScale != 0.0f)
+			{
+				vecCurrentMoveYaw.x /= flInvScale;
+				vecCurrentMoveYaw.y /= flInvScale;
+			}
+
+			// find what speed was actually authored
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveX, vecCurrentMoveYaw.x);
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveY, vecCurrentMoveYaw.y);
+			float flMaxSpeed = GetBasePlayer()->GetSequenceGroundSpeed(GetBasePlayer()->GetSequence());
+
+			// scale playback
+			if (flMaxSpeed > flSpeed)
+			{
+				vecCurrentMoveYaw.x *= flSpeed / flMaxSpeed;
+				vecCurrentMoveYaw.y *= flSpeed / flMaxSpeed;
+			}
+
+			// Set the 9-way blend movement pose parameters.
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveX, vecCurrentMoveYaw.x);
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveY, vecCurrentMoveYaw.y);
+		}
+		else
+		{
+			// find what speed was actually authored
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveYaw, flYaw);
+			GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveScale, 1.0f);
+			float flMaxSpeed = GetBasePlayer()->GetSequenceGroundSpeed(GetBasePlayer()->GetSequence());
+
+			// scale playback
+			if (flMaxSpeed > flSpeed)
+			{
+				GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveScale, flSpeed / flMaxSpeed);
+			}
+		}
+	}
+	else
+	{
+		// Set the 9-way blend movement pose parameters.
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveX, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iMoveY, 0.0f);
+	}
+
+	m_DebugAnimData.m_vecMoveYaw = vecCurrentMoveYaw;
 }
 
 //-----------------------------------------------------------------------------
@@ -235,6 +527,61 @@ bool CHL2PlayerAnimState::HandleVaulting(Activity& idealActivity)
 	return true;
 }
 
+bool CHL2PlayerAnimState::HandleDriving(Activity& idealActivity)
+{
+	CBasePlayer* pPlayer = GetBasePlayer();
+	if (!pPlayer->IsInAVehicle())
+		return false;
+
+#ifdef CLIENT_DLL
+	IClientVehicle* pVehicle = pPlayer->GetVehicle();
+#else
+	IServerVehicle* pVehicle = pPlayer->GetVehicle();
+#endif
+
+	int iRole = pVehicle->GetPassengerRole(pPlayer);
+	if (iRole == VEHICLE_ROLE_DRIVER)
+	{
+		CBaseEntity* pEnt = pVehicle->GetVehicleEnt();
+#ifdef CLIENT_DLL
+		if (dynamic_cast<C_PropAirboat*> (pEnt) != nullptr)
+			idealActivity = ACT_DRIVE_AIRBOAT;
+		else if (dynamic_cast<C_PropVehicleDriveable*> (pEnt) != nullptr)
+			idealActivity = ACT_DRIVE_JEEP;
+		else if (Q_strcmp(modelinfo->GetModelName(pEnt->GetModel()), "models/vehicles/prisoner_pod_inner.mdl") == 0)
+			idealActivity = ACT_DRIVE_POD;
+		else
+			idealActivity = ACT_GMOD_SIT_ROLLERCOASTER;
+#else
+		if (FClassnameIs(pEnt, "prop_vehicle_airboat"))
+			idealActivity = ACT_DRIVE_AIRBOAT;
+		else if (dynamic_cast<CPropVehicleDriveable*> (pEnt) != nullptr)
+			idealActivity = ACT_DRIVE_JEEP;
+		else if (Q_strcmp(STRING(pEnt->GetModelName()), "models/vehicles/prisoner_pod_inner.mdl") == 0)
+			idealActivity = ACT_DRIVE_POD;
+		else
+			idealActivity = ACT_GMOD_SIT_ROLLERCOASTER;
+#endif
+	}
+	else
+	{
+		idealActivity = ACT_GMOD_SIT_ROLLERCOASTER;
+	}
+
+	return true;
+}
+
+bool CHL2PlayerAnimState::HandleClimbing(Activity& idealActivity)
+{
+	if (GetBasePlayer()->GetMoveType() == MOVETYPE_LADDER)
+	{
+		idealActivity = ACT_BMMP_LADDER;
+		return true;
+	}
+
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  :  - 
@@ -244,7 +591,9 @@ Activity CHL2PlayerAnimState::CalcMainActivity()
 {
 	Activity idealActivity = ACT_MP_STAND_IDLE;
 
-	if (HandleVaulting(idealActivity) ||
+	if (HandleDriving(idealActivity) ||
+		HandleClimbing(idealActivity) ||
+		HandleVaulting(idealActivity) ||
 		HandleJumping(idealActivity) ||
 		HandleDucking(idealActivity) ||
 		HandleSwimming(idealActivity) ||

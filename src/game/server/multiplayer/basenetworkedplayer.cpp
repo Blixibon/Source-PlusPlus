@@ -125,6 +125,9 @@ void CBaseNetworkedPlayer::Spawn()
 
 	// used to not interp players when they spawn
 	m_bSpawnInterpCounter = !m_bSpawnInterpCounter;
+
+	if (GetAnimState())
+		GetAnimState()->ClearAnimationState();
 	
 	RemoveSolidFlags( FSOLID_NOT_SOLID );
 
@@ -219,11 +222,11 @@ CStudioHdr * CBaseNetworkedPlayer::OnNewModel(void)
 		if (GetAnimState())
 			GetAnimState()->OnNewModel();
 
-		int i;
+		/*int i;
 		for (i = 0; i < pHdr->GetNumPoseParameters(); i++)
 		{
 			SetPoseParameter(pHdr, i, 0.0);
-		}
+		}*/
 	}
 
 	return pHdr;

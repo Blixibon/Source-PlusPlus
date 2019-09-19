@@ -143,6 +143,16 @@ void CMultiPlayerAnimState::ClearAnimationState()
 	m_nSpecificMainSequence = -1;
 
 	ResetGestureSlots();
+
+	CStudioHdr* pStudioHdr = GetBasePlayer()->GetModelPtr();
+	if (!pStudioHdr)
+		return;
+
+	int i;
+	for (i = 0; i < pStudioHdr->GetNumPoseParameters(); i++)
+	{
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, i, 0.0);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1730,7 +1740,9 @@ void CMultiPlayerAnimState::ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr )
 	}
 
 	// Rotate the body into position.
+	m_angRender[PITCH] = 0.f;
 	m_angRender[YAW] = m_flCurrentFeetYaw;
+	m_angRender[ROLL] = 0.f;
 
 	// Find the aim(torso) yaw base on the eye and feet yaws.
 	float flAimYaw = m_flEyeYaw - m_flCurrentFeetYaw;

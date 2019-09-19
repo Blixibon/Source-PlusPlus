@@ -877,6 +877,7 @@ public:
 
 	surfacedata_t *GetSurfaceData( void ) { return m_pSurfaceData; }
 	void SetLadderNormal( const Vector& vecLadderNormal ) { m_vecLadderNormal = vecLadderNormal; }
+	Vector	GetLadderNormal() const { return m_vecLadderNormal; }
 
 	// Here so that derived classes can use the expresser
 	virtual CAI_Expresser *GetExpresser() { return NULL; };

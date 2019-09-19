@@ -122,6 +122,8 @@ struct MultiPlayerPoseData_t
 	int			m_iBodyHeight;
 	int			m_iMoveYaw;
 	int			m_iMoveScale;
+	int			m_iVerticalVelocity;
+	int			m_iVehicleSteer;
 	//bool		m_bHL2Aim;
 
 	float		m_flEstimateYaw;
@@ -138,6 +140,8 @@ struct MultiPlayerPoseData_t
 		m_iBodyHeight = -1;
 		m_iMoveYaw = -1;
 		m_iMoveScale = -1;
+		m_iVerticalVelocity = -1;
+		m_iVehicleSteer = -1;
 		//m_bHL2Aim = false;
 		m_flEstimateYaw = 0.0f;
 		m_flLastAimTurnTime = 0.0f;

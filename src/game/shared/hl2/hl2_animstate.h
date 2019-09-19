@@ -30,10 +30,14 @@ public:
 
 protected:
 	virtual bool		SetupPoseParameters(CStudioHdr* pStudioHdr);
+	virtual void		ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr);
+	virtual void		ComputePoseParam_MoveYaw(CStudioHdr* pStudioHdr);
 	virtual AimType_e	GetAimType();
 
 	virtual bool HandleJumping(Activity& idealActivity);
 	virtual bool HandleVaulting(Activity& idealActivity);
+	virtual bool HandleDriving(Activity& idealActivity);
+	virtual bool HandleClimbing(Activity& idealActivity);
 private:
 	static acttable_t s_acttableMPToHL2MP[];
 	float	m_fGroundTime;
