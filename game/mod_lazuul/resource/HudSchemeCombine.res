@@ -10,9 +10,6 @@ Scheme
 	{
 		"FgColor"			"0 220 255 100"
 		"BgColor"			"0 0 0 76"
-
-		"Panel.FgColor"			"0 220 255 100"
-		"Panel.BgColor"			"0 0 0 76"
 		
 		"BrightFg"			"0 220 255 255"
 		"BrightBg"			"0 220 255 80"

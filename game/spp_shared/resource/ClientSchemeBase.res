@@ -116,15 +116,7 @@ Scheme
 	// default settings for all panels
 	// controls use these to determine their settings
 	BaseSettings
-	{
-		Label.TextDullColor				"TanDark"
-		Label.TextColor					"TanLight"
-		Label.TextBrightColor			"TanLight"
-		Label.SelectedTextColor			"White"
-		Label.BgColor					"Blank"
-		Label.DisabledFgColor1			"Blank"
-		Label.DisabledFgColor2			"LightOrange"
-	
+	{	
 		Rosette.DefaultFgColor			"White"
 		Rosette.DefaultBgColor			"Blank"
 		Rosette.ArmedBgColor			"Blank"
@@ -142,9 +134,6 @@ Scheme
 
 		"FgColor"			"255 220 0 100"
 		"BgColor"			"0 0 0 76"
-
-		"Panel.FgColor"			"255 220 0 100"
-		"Panel.BgColor"			"0 0 0 76"
 		
 		"BrightFg"		"255 220 0 255"
 
@@ -199,25 +188,165 @@ Scheme
 		// Blank space to leave beneath the menu on the main screen
 		"Main.BottomBorder"	"32"
 
-		ScrollBar.Wide						"12"
+		///HERE
+				// vgui_controls color specifications
+		Border.Bright					"HudPanelBorder"		// the lit side of a control
+		Border.Dark						"HudPanelBorder"		// the dark/unlit side of a control
+		Border.Selection				"Blank"				// the additional border color for displaying the default/selected button
 
-		ScrollBarButton.FgColor				"Black"
+		Button.TextColor				"TanLight"
+		Button.BgColor					"Blank"
+		Button.ArmedTextColor			"TanLight"
+		Button.ArmedBgColor				"Red"
+		Button.DepressedTextColor		"TanLight"
+		Button.DepressedBgColor			"Red"
+
+		CheckButton.TextColor			"TanLight"
+		CheckButton.SelectedTextColor	"TanLight"
+		CheckButton.BgColor				"TransparentBlack"
+		CheckButton.Border1  			"Border.Dark" 		// the left checkbutton border
+		CheckButton.Border2  			"Border.Bright"		// the right checkbutton border
+		CheckButton.Check				"TanLight"				// color of the check itself
+
+		ComboBoxButton.ArrowColor		"TanLight"
+		ComboBoxButton.ArmedArrowColor	"TanLight"
+		ComboBoxButton.BgColor			"TransparentBlack"
+		ComboBoxButton.DisabledBgColor	"Blank"
+
+		Frame.BgColor					"TransparentBlack"
+		Frame.OutOfFocusBgColor			"TransparentBlack"
+		Frame.FocusTransitionEffectTime	"0.0"	// time it takes for a window to fade in/out on focus/out of focus
+		Frame.TransitionEffectTime		"0.0"	// time it takes for a window to fade in/out on open/close
+		Frame.AutoSnapRange				"0"
+		FrameGrip.Color1				"Blank"
+		FrameGrip.Color2				"Blank"
+		FrameTitleButton.FgColor		"Blank"
+		FrameTitleButton.BgColor		"Blank"
+		FrameTitleButton.DisabledFgColor	"Blank"
+		FrameTitleButton.DisabledBgColor	"Blank"
+		FrameSystemButton.FgColor		"Blank"
+		FrameSystemButton.BgColor		"Blank"
+		FrameSystemButton.Icon			""
+		FrameSystemButton.DisabledIcon	""
+		FrameTitleBar.TextColor			"TanLight"
+		FrameTitleBar.BgColor			"Blank"
+		FrameTitleBar.DisabledTextColor	"TanDark"
+		FrameTitleBar.DisabledBgColor	"Blank"
+		
+		"Panel.FgColor"			"TanLight"
+		"Panel.BgColor"			"Blank"
+
+		GraphPanel.FgColor				"TanLight"
+		GraphPanel.BgColor				"TransparentBlack"
+
+		Label.TextDullColor				"TanDark"
+		Label.TextColor					"TanLight"
+		Label.TextBrightColor			"TanLight"
+		Label.SelectedTextColor			"TanLight"
+		Label.BgColor					"Blank"
+		Label.DisabledFgColor1			"Blank"
+		Label.DisabledFgColor2			"LightOrange"
+
+		ListPanel.TextColor					"TanLight"
+		ListPanel.BgColor					"TransparentBlack"
+		ListPanel.SelectedTextColor			"Black"
+		ListPanel.SelectedBgColor			"Red"
+		ListPanel.SelectedOutOfFocusBgColor	"Red"
+		ListPanel.EmptyListInfoTextColor	"TanLight"
+
+		Menu.TextColor					"TanLight"
+		Menu.BgColor					"TransparentBlack"
+		Menu.ArmedTextColor				"TanLight"
+		Menu.ArmedBgColor				"Red"
+		Menu.TextInset					"6"
+
+		Chat.TypingText					"HudWhite"
+
+		ProgressBar.FgColor				"TanLight"
+		ProgressBar.BgColor				"TransparentBlack"
+
+		PropertySheet.TextColor			"TanLight"
+		PropertySheet.SelectedTextColor	"TanLight"
+		PropertySheet.TransitionEffectTime	"0.25"	// time to change from one tab to another
+
+		RadioButton.TextColor			"TanLight"
+		RadioButton.SelectedTextColor	"TanLight"
+
+		RichText.TextColor				"TanLight"
+		RichText.BgColor				"Blank"
+		RichText.SelectedTextColor		"TanLight"
+		RichText.SelectedBgColor		"Blank"
+
+				ScrollBarButton.FgColor				"TanLight"
 		ScrollBarButton.BgColor				"Blank"
-		ScrollBarButton.ArmedFgColor		"White"
+		ScrollBarButton.ArmedFgColor		"TanLight"
 		ScrollBarButton.ArmedBgColor		"Blank"
-		ScrollBarButton.DepressedFgColor	"White"
+		ScrollBarButton.DepressedFgColor	"TanLight"
 		ScrollBarButton.DepressedBgColor	"Blank"
 
-		ScrollBarSlider.FgColor				"0 0 0 255"			// nob color
-		ScrollBarSlider.BgColor				"0 0 0 40"			// slider background color
-		ScrollBarSlider.NobFocusColor		"White"
-		ScrollBarSlider.NobDragColor		"White"
-		ScrollBarSlider.Inset				"3"
-		
+		ScrollBarSlider.FgColor				"Blank"		// nob color
+		ScrollBarSlider.BgColor				"Blank"		// slider background color
+
+		SectionedListPanel.HeaderTextColor	"TanLight"
+		SectionedListPanel.HeaderBgColor	"Blank"
+		SectionedListPanel.DividerColor		"Black"
+		SectionedListPanel.TextColor		"TanLight"
+		SectionedListPanel.BrightTextColor	"TanLight"
+		SectionedListPanel.BgColor			"TransparentLightBlack"
+		SectionedListPanel.SelectedTextColor			"Black"
+		SectionedListPanel.SelectedBgColor				"Red"
+		SectionedListPanel.OutOfFocusSelectedTextColor	"Black"
+		SectionedListPanel.OutOfFocusSelectedBgColor	"255 255 255 32"
+
+		Slider.NobColor				"108 108 108 255"
+		Slider.TextColor			"127 140 127 255"
+		Slider.TrackColor			"31 31 31 255"
+		Slider.DisabledTextColor1	"117 117 117 255"
+		Slider.DisabledTextColor2	"30 30 30 255"
+
+		TextEntry.TextColor			"TanLight"
+		TextEntry.BgColor			"TransparentBlack"
+		TextEntry.CursorColor		"HudOffWhite"
+		TextEntry.DisabledTextColor	"TanLight"
+		TextEntry.DisabledBgColor	"Blank"
+		TextEntry.SelectedTextColor	"Black"
+		TextEntry.SelectedBgColor	"Red"
+		TextEntry.OutOfFocusSelectedBgColor	"Red"
+		TextEntry.FocusEdgeColor	"TransparentBlack"
+
+		ToggleButton.SelectedTextColor	"TanLight"
+
+		Tooltip.TextColor			"TransparentBlack"
+		Tooltip.BgColor				"Red"
+
+		TreeView.BgColor			"TransparentBlack"
+
+		WizardSubPanel.BgColor		"Blank"
+
+		// scheme-specific colors
+
+		"ViewportBG"		"Blank"
+		"team0"			"HUDSpectator" // Spectators
+		"team1"			"HUDBlueTeam" // CT's
+		"team2"			"HUDRedTeam" // T's
+
+		"MapDescriptionText"	"TanLight" // the text used in the map description window
+		"CT_Blue"			"HUDBlueTeamSolid"
+		"T_Red"				"HUDRedTeamSolid"
+		"Hostage_Yellow"	"Panel.FgColor"
+		"HudIcon_Green"		"0 160 0 255"
+		"HudIcon_Red"		"160 0 0 255"
+
 		// CHudMenu
 		"ItemColor"		"255 167 42 200"	// default 255 167 42 255
 		"MenuColor"		"233 208 173 255"
 		"MenuBoxBg"		"0 0 0 100"
+
+		// Hint message colors
+		"HintMessageFg"			"255 255 255 255"
+		"HintMessageBg" 		"0 0 0 60"
+
+		"ProgressBarFg"			"HudOffWhite"
 	}
 
 	//////////////////////// BITMAP FONT FILES /////////////////////////////
