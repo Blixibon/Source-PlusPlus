@@ -19,6 +19,8 @@
 #include "in_buttons.h"
 #include "basetypes.h"
 
+#include "iservervehicle.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -759,37 +761,134 @@ bool CBotLocomotion::IsUsingLadder() const
 //================================================================================
 void CBotLocomotion::TrackPath(const Vector &pathGoal, float deltaT)
 {
-	Vector myOrigin = GetCentroid();
-	m_vecNextSpot = pathGoal;
+	if (GetHost()->IsInAVehicle())
+	{
+		IServerVehicle* pVehicleInterface = GetHost()->GetVehicle();
+		CBaseEntity* pVehicleEnt = pVehicleInterface->GetVehicleEnt();
 
-	// compute our current forward and lateral vectors
-	float flAngle = GetHost()->EyeAngles().y;
+		float flMaxSpeed = pVehicleInterface->GetVehicleParams()->engine.maxSpeed;
+		m_vecNextSpot = pathGoal;
 
-	Vector2D dir(Utils::BotCOS(flAngle), Utils::BotSIN(flAngle));
-	Vector2D lat(-dir.y, dir.x);
+		// Now that we've got the target spline point & tangent, use it to decide what our desired velocity is.
+	// If we're close to the tangent, just use the tangent. Otherwise, Lerp towards it.
+		Vector vecToDesired = (pathGoal - GetCentroid());
+		VectorNormalize(vecToDesired);
 
-	// compute unit vector to goal position
-	Vector2D to(pathGoal.x - myOrigin.x, pathGoal.y - myOrigin.y);
-	to.NormalizeInPlace();
+		
+		Vector vecDesiredVelocity = vecToDesired * flMaxSpeed;
+		
 
-	// move towards the position independant of our view direction
-	float toProj = to.x * dir.x + to.y * dir.y;
-	float latProj = to.x * lat.x + to.y * lat.y;
+		// Decrease speed according to the turn we're trying to make
+		Vector vecForward, vecRight;
+		pVehicleEnt->GetVectors(&vecForward, &vecRight, NULL);
+		Vector vecNormVel = vecDesiredVelocity;
+		VectorNormalize(vecNormVel);
+		float flDotRight = DotProduct(vecRight, vecNormVel);
+		float flSpeedFrac = (1.0f - fabsf(flDotRight));
+		// Don't go slower than we've been told to go
+		if (flSpeedFrac < 0.4f)
+		{
+			flSpeedFrac = 0.4f;
+		}
+		vecDesiredVelocity = vecNormVel * (flSpeedFrac * flMaxSpeed);
 
-	const float c = 0.25f;    // 0.5
+		AngularImpulse angVel;
+		Vector vecVelocity;
+		IPhysicsObject* pVehiclePhysics = pVehicleEnt->VPhysicsGetObject();
+		if (!pVehiclePhysics)
+			return;
+		pVehiclePhysics->GetVelocity(&vecVelocity, &angVel);
+		float flSpeed = VectorNormalize(vecVelocity);
 
-	if (toProj > c) {
-		GetBot()->InjectMovement(FORWARD);
+		float flGoalSpeed = VectorNormalize(vecDesiredVelocity);
+
+		// Is our target in front or behind us?
+		float flDot = DotProduct(vecForward, vecDesiredVelocity);
+		bool bBehind = (flDot < 0);
+		float flVelDot = DotProduct(vecVelocity, vecDesiredVelocity);
+		bool bGoingWrongWay = (flVelDot < 0);
+
+		// Figure out whether we should accelerate / decelerate
+		if (bGoingWrongWay || (flSpeed < flGoalSpeed))
+		{
+			// If it's behind us, go backwards not forwards
+			if (bBehind)
+			{
+				GetBot()->InjectMovement(BACKWARD);
+			}
+			else
+			{
+				GetBot()->InjectMovement(FORWARD);
+			}
+		}
+		else
+		{
+			// Brake if we're go significantly too fast
+			if ((flSpeed - 200) > flGoalSpeed)
+			{
+				GetBot()->InjectButton(IN_JUMP);
+			}
+			else
+			{
+				
+			}
+		}
+
+		// Do we need to turn?
+		//float flDotRight = DotProduct(vecRight, vecDesiredVelocity);
+		if (bBehind)
+		{
+			// If we're driving backwards, flip our turning
+			flDotRight *= -1;
+		}
+		// Map it to the vehicle's steering
+		//flDotRight *= (m_flSteering / 90);
+
+		if (flDotRight < 0)
+		{
+			// Turn left
+			GetBot()->InjectMovement(LEFT);
+		}
+		else if (flDotRight > 0)
+		{
+			// Turn right
+			GetBot()->InjectMovement(RIGHT);
+		}
 	}
-	else if (toProj < -c) {
-		GetBot()->InjectMovement(BACKWARD);
-	}
+	else
+	{
+		Vector myOrigin = GetCentroid();
+		m_vecNextSpot = pathGoal;
 
-	if (latProj >= c) {
-		GetBot()->InjectMovement(LEFT);
-	}
-	else if (latProj <= -c) {
-		GetBot()->InjectMovement(RIGHT);
+		// compute our current forward and lateral vectors
+		float flAngle = GetHost()->EyeAngles().y;
+
+		Vector2D dir(Utils::BotCOS(flAngle), Utils::BotSIN(flAngle));
+		Vector2D lat(-dir.y, dir.x);
+
+		// compute unit vector to goal position
+		Vector2D to(pathGoal.x - myOrigin.x, pathGoal.y - myOrigin.y);
+		to.NormalizeInPlace();
+
+		// move towards the position independant of our view direction
+		float toProj = to.x * dir.x + to.y * dir.y;
+		float latProj = to.x * lat.x + to.y * lat.y;
+
+		const float c = 0.25f;    // 0.5
+
+		if (toProj > c) {
+			GetBot()->InjectMovement(FORWARD);
+		}
+		else if (toProj < -c) {
+			GetBot()->InjectMovement(BACKWARD);
+		}
+
+		if (latProj >= c) {
+			GetBot()->InjectMovement(LEFT);
+		}
+		else if (latProj <= -c) {
+			GetBot()->InjectMovement(RIGHT);
+		}
 	}
 }
 

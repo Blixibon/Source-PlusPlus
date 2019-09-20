@@ -1,3 +1,4 @@
+#include "hl2_animstate.h"
 #include "cbase.h"
 #include "hl2_animstate.h"
 #include "hl2_player_shared.h"
@@ -17,6 +18,8 @@ extern ConVar anim_showmainactivity;
 extern ConVar mp_slammoveyaw;
 
 float SnapYawTo(float flValue);
+
+#define MOVING_MINIMUM_SPEED	0.5f
 
 #define ACT_DOD_FIRST ACT_DOD_DEPLOYED
 #define ACT_DOD_LAST ACT_DOD_DEFUSE_TNT
@@ -539,10 +542,14 @@ bool CHL2PlayerAnimState::HandleDriving(Activity& idealActivity)
 	IServerVehicle* pVehicle = pPlayer->GetVehicle();
 #endif
 
+	Assert(pVehicle);
+
 	int iRole = pVehicle->GetPassengerRole(pPlayer);
 	if (iRole == VEHICLE_ROLE_DRIVER)
 	{
 		CBaseEntity* pEnt = pVehicle->GetVehicleEnt();
+		Assert(pEnt);
+
 #ifdef CLIENT_DLL
 		if (dynamic_cast<C_PropAirboat*> (pEnt) != nullptr)
 			idealActivity = ACT_DRIVE_AIRBOAT;
@@ -580,6 +587,22 @@ bool CHL2PlayerAnimState::HandleClimbing(Activity& idealActivity)
 	}
 
 	return false;
+}
+
+bool CHL2PlayerAnimState::HandleMoving(Activity& idealActivity)
+{
+	// In TF we run all the time now.
+	float flSpeed = GetOuterXYSpeed();
+
+	if (flSpeed > MOVING_MINIMUM_SPEED)
+	{
+		if (flSpeed > m_MovementData.m_flWalkSpeed)
+			idealActivity = ACT_MP_RUN;
+		else
+			idealActivity = ACT_MP_WALK;
+	}
+
+	return true;
 }
 
 //-----------------------------------------------------------------------------

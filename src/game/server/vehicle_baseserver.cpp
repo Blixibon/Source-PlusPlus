@@ -511,6 +511,9 @@ void CBaseServerVehicle::GetPassengerSeatPoint( int nRole, Vector *pPoint, QAngl
 		char pAttachmentName[32];
 		Q_snprintf( pAttachmentName, sizeof( pAttachmentName ), "vehicle_feet_passenger%d", nRole );
 		int nFeetAttachmentIndex = pAnimating->LookupAttachment(pAttachmentName);
+		if (nRole == VEHICLE_ROLE_DRIVER && nFeetAttachmentIndex <= 0)
+			nFeetAttachmentIndex = pAnimating->LookupAttachment("vehicle_driver_feet");
+
 		int nIdleSequence = pAnimating->SelectWeightedSequence( ACT_IDLE );
 		if ( nFeetAttachmentIndex > 0 && nIdleSequence != -1 )
 		{

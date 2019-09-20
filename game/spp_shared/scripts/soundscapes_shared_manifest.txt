@@ -149,8 +149,10 @@ soundscapes_manifest
 	"file"		"scripts/soundscapes_bounce.txt"
  	"file"		"scripts/soundscapes_crossfire.txt"
 
-
 	// List test soundscape files here
 
  	"file"		"scripts/soundscapes_test.txt"
+
+	 // MINERVA: Metastasis stuff!
+	"file"		"scripts/minerva_soundscapes.txt"
 }

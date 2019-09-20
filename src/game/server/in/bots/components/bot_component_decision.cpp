@@ -182,6 +182,9 @@ bool CBotDecision::ShouldUpdateNavigation() const
 //================================================================================
 bool CBotDecision::ShouldTeleport(const Vector &vecGoal) const
 {
+	if (GetHost()->IsInAVehicle())
+		return false;
+
 	// Only if nobody is watching
 	if (bot_locomotion_hiddden_teleport.GetBool()) {
 //#ifdef INSOURCE_DLL

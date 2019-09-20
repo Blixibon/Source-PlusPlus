@@ -154,4 +154,36 @@
 			"special"		"olivia"
 		}
 	}
+
+	"hlss_olivia"
+	{
+		//"team"			"Combine"
+		"maxplayers"	"1"
+		"games"
+		{
+			"game"	"none"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/olivia_citizen.mdl"
+			"bodygroups"
+			{
+
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_citizen.mdl"
+		}
+		
+		"abilities"
+		{
+			
+		}
+	}
 }

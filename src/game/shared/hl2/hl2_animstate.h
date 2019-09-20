@@ -38,6 +38,7 @@ protected:
 	virtual bool HandleVaulting(Activity& idealActivity);
 	virtual bool HandleDriving(Activity& idealActivity);
 	virtual bool HandleClimbing(Activity& idealActivity);
+	virtual bool HandleMoving(Activity& idealActivity);
 private:
 	static acttable_t s_acttableMPToHL2MP[];
 	float	m_fGroundTime;

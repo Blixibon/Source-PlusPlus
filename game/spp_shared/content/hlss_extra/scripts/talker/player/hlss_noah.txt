@@ -165,7 +165,7 @@ rule PlayerNoah_StartCombatMantarays
 
 rule PlayerNoah_LeadWaitOver
 {
-	criteria		ConceptLeadWaitOver 
+	criteria		IsPlayer IsPlayerVoiceNoah ConceptLeadWaitOver 
 	response		Noah_LeadWaitOver
 }
 
