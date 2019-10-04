@@ -56,6 +56,7 @@
 #include "tier1/callqueue.h"
 #include "peter/shelleject_new.h"
 #include "fmtstr.h"
+#include "networkstringtable_clientdll.h"
 
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
@@ -90,6 +91,8 @@ static ConVar dbganimmodel( "dbganimmodel", "" );
 	static ConVar dbg_bonestack_perturb( "dbg_bonestack_perturb", "0", 0);
 	static CInterlockedInt dbg_bonestack_reentrant_count = 0;
 #endif // STAGING_ONLY
+
+extern INetworkStringTable* g_pStringTablePlayerFootSteps;
 
 mstudioevent_t *GetEventIndexForSequence( mstudioseqdesc_t &seqdesc );
 
@@ -3995,6 +3998,89 @@ void HL1FootCallback(const CEffectData &data)
 
 DECLARE_CLIENT_EFFECT("HL1FootStep", HL1FootCallback);
 
+//enum
+//{
+//	STEP_SOUND = 0,
+//	STEP_MATERIAL,
+//	STEP_HL1
+//};
+
+extern inline bool IsInvalidString(int iString);
+
+void FootstepSound(C_BaseAnimating* pEnt, bool bLeftFoot, const char* options)
+{
+	if (!pEnt)
+		return;
+
+	Vector vel;
+	pEnt->EstimateAbsVelocity(vel);
+	bool bRunning = (vel.Length2DSqr() > RUN_SPEED_ESTIMATE_SQR);
+
+#ifdef HL2_LAZUL
+	if (pEnt->IsNPC())
+	{
+		C_AI_BaseNPC* pAI = pEnt->MyNPCPointer();
+		int iSound = pAI->GetStepSound(bLeftFoot, bRunning);
+		if (!IsInvalidString(iSound))
+		{
+			const char* pszSound = g_pStringTablePlayerFootSteps->GetString(iSound);
+
+			if (FStrEq(pszSound, NPC_STEP_SOUND_MATERIAL))
+			{
+				MaterialFootstepSound(pEnt, bLeftFoot, bRunning ? VOL_NORM : (VOL_NORM * 0.5f));
+				return;
+			}
+			else if (FStrEq(pszSound, NPC_STEP_SOUND_HL1))
+			{
+				HL1MaterialFootstepSound(pEnt, bLeftFoot, bRunning ? VOL_NORM : (VOL_NORM * 0.5f));
+				return;
+			}
+			else
+			{
+				options = pszSound;
+			}
+		}
+	}
+#endif
+
+	//if (iStepSoundType == STEP_SOUND)
+	{
+		if (!options || !options[0])
+		{
+			options = "NPC_CombineS";
+		}
+
+		const char* pszSoundFormat = nullptr;
+		if (bLeftFoot)
+		{
+			// If he's moving fast enough, play the run sound
+			if (bRunning)
+			{
+				pszSoundFormat = "%s.RunFootstepLeft";
+			}
+			else
+			{
+				pszSoundFormat = "%s.FootstepLeft";
+			}
+		}
+		else
+		{
+			// If he's moving fast enough, play the run sound
+			if (bRunning)
+			{
+				pszSoundFormat = "%s.RunFootstepRight";
+			}
+			else
+			{
+				pszSoundFormat = "%s.FootstepRight";
+			}
+		}
+
+		CFmtStr str(pszSoundFormat, options);
+		pEnt->EmitSound(str.Access());
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : *origin - 
@@ -4084,25 +4170,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 	case CL_EVENT_FOOTSTEP_LEFT:
 		{
 #ifndef HL2MP
-			char pSoundName[256];
-			if ( !options || !options[0] )
-			{
-				options = "NPC_CombineS";
-			}
-
-			Vector vel;
-			EstimateAbsVelocity( vel );
-
-			// If he's moving fast enough, play the run sound
-			if ( vel.Length2DSqr() > RUN_SPEED_ESTIMATE_SQR )
-			{
-				Q_snprintf( pSoundName, 256, "%s.RunFootstepLeft", options );
-			}
-			else
-			{
-				Q_snprintf( pSoundName, 256, "%s.FootstepLeft", options );
-			}
-			EmitSound( pSoundName );
+		FootstepSound(this, true, options);
 #endif
 		}
 		break;
@@ -4110,24 +4178,7 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 	case CL_EVENT_FOOTSTEP_RIGHT:
 		{
 #ifndef HL2MP
-			char pSoundName[256];
-			if ( !options || !options[0] )
-			{
-				options = "NPC_CombineS";
-			}
-
-			Vector vel;
-			EstimateAbsVelocity( vel );
-			// If he's moving fast enough, play the run sound
-			if ( vel.Length2DSqr() > RUN_SPEED_ESTIMATE_SQR )
-			{
-				Q_snprintf( pSoundName, 256, "%s.RunFootstepRight", options );
-			}
-			else
-			{
-				Q_snprintf( pSoundName, 256, "%s.FootstepRight", options );
-			}
-			EmitSound( pSoundName );
+		FootstepSound(this, false, options);
 #endif
 		}
 		break;

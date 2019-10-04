@@ -172,6 +172,8 @@ void CNPC_CombineS::Spawn( void )
 
 	m_nSkin = iSkin;
 
+	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_CombineS", "NPC_CombineS");
+
 #if HL2_EPISODIC
 	if (m_iUseMarch && !HasSpawnFlags(SF_NPC_START_EFFICIENT))
 	{

@@ -23,6 +23,8 @@
 #include "game.h"
 #include "shot_manipulator.h"
 #include "team.h"
+#include "networkstringtable_gamedll.h"
+#include "saverestore_stringtable.h"
 
 #ifdef HL2_DLL
 #include "ai_interactions.h"
@@ -4079,6 +4081,31 @@ bool CAI_BaseNPC::CheckPVSCondition()
 		ClearCondition( COND_IN_PVS );
 
 	return bInPVS;
+}
+
+void CAI_BaseNPC::SetNPCFootstepSounds(const char* lw, const char* rw, const char* lr, const char* rr)
+{
+#ifdef HL2_LAZUL
+	if (lw)
+		m_iStepSounds.GetForModify(NPC_STEP_LEFT_WALK) = g_pStringTablePlayerFootSteps->AddString(IsServer(), lw);
+	else
+		m_iStepSounds.Set(NPC_STEP_LEFT_WALK, INVALID_STRING_INDEX);
+
+	if (rw)
+		m_iStepSounds.GetForModify(NPC_STEP_RIGHT_WALK) = g_pStringTablePlayerFootSteps->AddString(IsServer(), rw);
+	else
+		m_iStepSounds.Set(NPC_STEP_RIGHT_WALK, INVALID_STRING_INDEX);
+
+	if (lr)
+		m_iStepSounds.GetForModify(NPC_STEP_LEFT_RUN) = g_pStringTablePlayerFootSteps->AddString(IsServer(), lr);
+	else
+		m_iStepSounds.Set(NPC_STEP_LEFT_RUN, INVALID_STRING_INDEX);
+
+	if (rr)
+		m_iStepSounds.GetForModify(NPC_STEP_RIGHT_RUN) = g_pStringTablePlayerFootSteps->AddString(IsServer(), rr);
+	else
+		m_iStepSounds.Set(NPC_STEP_RIGHT_RUN, INVALID_STRING_INDEX);
+#endif
 }
 
 
@@ -11110,6 +11137,11 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_bPlayerAvoidState,			FIELD_BOOLEAN ),
 	DEFINE_EMBEDDED(m_AttributeManager),
 
+#ifdef HL2_LAZUL
+		DEFINE_CUSTOM_ARRAY(m_iStepSounds, &g_FootStepStringOps, NUM_NPC_STEP_SOUNDS),
+#endif // HL2_LAZUL
+
+
 	// Satisfy classcheck
 	// DEFINE_FIELD( m_ScheduleHistory, CUtlVector < AIScheduleChoice_t > ),
 
@@ -11214,6 +11246,10 @@ IMPLEMENT_SERVERCLASS_ST( CAI_BaseNPC, DT_AI_BaseNPC )
 	SendPropBool( SENDINFO( m_bImportanRagdoll ) ),
 	SendPropFloat( SENDINFO( m_flTimePingEffect ) ),
 	SendPropDataTable(SENDINFO_DT(m_AttributeManager), &REFERENCE_SEND_TABLE(DT_AttributeManager)),
+#ifdef HL2_LAZUL
+		SendPropArray3(SENDINFO_ARRAY3(m_iStepSounds), SendPropInt(SENDINFO_ARRAY(m_iStepSounds), MAX_FOOTSTEP_STRING_BITS + 1)),
+#endif // HL2_LAZUL
+
 END_SEND_TABLE()
 
 //-------------------------------------
@@ -11804,6 +11840,11 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_iFrameBlocked = -1;
 	m_bInChoreo = true; // assume so until call to UpdateEfficiency()
 	
+#ifdef HL2_LAZUL
+	V_memset((void*)m_iStepSounds.Base(), INVALID_STRING_INDEX, sizeof(int) * NUM_NPC_STEP_SOUNDS);
+#endif // HL2_LAZUL
+
+
 	SetCollisionGroup( COLLISION_GROUP_NPC );
 }
 

@@ -27,6 +27,8 @@
 
 extern ConVar sv_footsteps;
 
+inline bool IsInvalidString(int iString) { return (unsigned short)iString == INVALID_STRING_INDEX; }
+
 enum
 {
 	CHAN_BODY2 = CHAN_USER_BASE + CHAN_BODY,
@@ -234,7 +236,7 @@ bool CLaz_Player::TestHitboxes(const Ray_t &ray, unsigned int fContentsMask, tra
 
 const char *CLaz_Player::GetPlayerModelSoundPrefix(void)
 {
-	if (m_iPlayerSoundType == INVALID_STRING_INDEX)
+	if (IsInvalidString(m_iPlayerSoundType))
 		return NULL;
 
 	return g_pStringTablePlayerFootSteps->GetString(m_iPlayerSoundType);
@@ -242,7 +244,7 @@ const char *CLaz_Player::GetPlayerModelSoundPrefix(void)
 
 void CLaz_Player::PrecacheFootStepSounds(void)
 {
-	if (m_iPlayerSoundType == INVALID_STRING_INDEX)
+	if (IsInvalidString(m_iPlayerSoundType))
 		return;
 
 	char szFootStepName[128];
@@ -266,7 +268,7 @@ void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface
 {
 	BaseClass::PlayStepSound(vecOrigin, psurface, fvol, force);
 
-	if (m_iPlayerSoundType == INVALID_STRING_INDEX)
+	if (IsInvalidString(m_iPlayerSoundType))
 		return;
 
 	if (gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat())

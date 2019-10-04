@@ -34,6 +34,10 @@ IMPLEMENT_CLIENTCLASS_DT( C_AI_BaseNPC, DT_AI_BaseNPC, CAI_BaseNPC )
 	RecvPropBool( RECVINFO( m_bImportanRagdoll ) ),
 	RecvPropFloat( RECVINFO( m_flTimePingEffect ) ),
 	RecvPropDataTable(RECVINFO_DT(m_AttributeManager), 0, &REFERENCE_RECV_TABLE(DT_AttributeManager)),
+#ifdef HL2_LAZUL
+	RecvPropArray3(RECVINFO_ARRAY(m_iStepSounds), RecvPropInt(RECVINFO_ARRAY(m_iStepSounds))),
+#endif // HL2_LAZUL
+
 END_RECV_TABLE()
 
 extern ConVar cl_npc_speedmod_intime;

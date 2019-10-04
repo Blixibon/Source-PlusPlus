@@ -52,6 +52,21 @@ public:
 	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
 	virtual void ReapplyProvision(void) { /*Do nothing*/ };
 
+#ifdef HL2_LAZUL
+	virtual int GetStepSound(bool bLeft, bool bRunning)
+	{
+		short iIndex = 0;
+		if (!bLeft)
+			iIndex += 1;
+		if (bRunning)
+			iIndex += 2;
+
+		Assert(iIndex < NUM_NPC_STEP_SOUNDS);
+		return m_iStepSounds[iIndex];
+	}
+#endif // HL2_LAZUL
+
+
 private:
 	C_AI_BaseNPC( const C_AI_BaseNPC & ); // not defined, not accessible
 	float m_flTimePingEffect;
@@ -69,6 +84,10 @@ private:
 	bool m_bImportanRagdoll;
 
 	CAttributeManager m_AttributeManager;
+
+#ifdef HL2_LAZUL
+	int m_iStepSounds[NUM_NPC_STEP_SOUNDS];
+#endif // HL2_LAZUL
 };
 
 

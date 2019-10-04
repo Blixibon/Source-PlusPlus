@@ -678,6 +678,8 @@ protected:
 
 	bool				CheckPVSCondition();
 
+	void				SetNPCFootstepSounds(const char* lw, const char* rw, const char* lr, const char* rr);
+
 private:
 	bool				CanThinkRebalance();
 	void				RebalanceThinks();
@@ -1210,6 +1212,11 @@ protected:
 	float								 m_flInteractionYaw;
 
 	CUtlVector<EHANDLE>					m_AttachedEntities;
+
+#ifdef HL2_LAZUL
+	CNetworkArray(int, m_iStepSounds, NUM_NPC_STEP_SOUNDS);
+#endif // HL2_LAZUL
+
 public:
 	//-----------------------------------------------------
 	//

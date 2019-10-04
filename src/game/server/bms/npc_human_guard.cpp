@@ -319,7 +319,7 @@ void CNPC_HumanGuard::Spawn(void)
 
 	m_hFollowSprite->AcceptInput("HideSprite", this, this, emptyvariant, 0);*/
 	
-
+	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_MetroPolice", "NPC_MetroPolice");
 }
 
 

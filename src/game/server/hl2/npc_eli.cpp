@@ -118,6 +118,8 @@ void CNPC_Eli::Spawn()
 	m_flFieldOfView		= 0.5;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
 
+	SetNPCFootstepSounds("NPC_Eli", NPC_STEP_SOUND_MATERIAL, "NPC_Eli", NPC_STEP_SOUND_MATERIAL);
+
 	NPCInit();
 }
 

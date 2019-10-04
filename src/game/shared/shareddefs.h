@@ -1060,4 +1060,19 @@ static const char *g_charBotNames[] =
 #endif // defined(INSOURCE_BOTS) || defined(NEXT_BOT)
 #endif
 
+#ifdef HL2_LAZUL
+enum NPCStepSounds_e
+{
+	NPC_STEP_LEFT_WALK = 0,
+	NPC_STEP_RIGHT_WALK,
+	NPC_STEP_LEFT_RUN,
+	NPC_STEP_RIGHT_RUN,
+
+	NUM_NPC_STEP_SOUNDS
+};
+#endif
+
+#define NPC_STEP_SOUND_MATERIAL "mat_step"
+#define NPC_STEP_SOUND_HL1		"mat_hl1"
+
 #endif // SHAREDDEFS_H

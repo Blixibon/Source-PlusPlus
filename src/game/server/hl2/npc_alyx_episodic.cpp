@@ -371,6 +371,8 @@ void CNPC_Alyx::Spawn()
 	m_fCombatEndTime   = 0.0f;
 
 	m_AnnounceAttackTimer.Set( 3, 5 );
+
+	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL);
 }
 
 //=========================================================

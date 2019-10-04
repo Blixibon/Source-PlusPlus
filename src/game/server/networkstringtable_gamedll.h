@@ -48,6 +48,7 @@ enum
 	MAX_FOOTSTEP_STRING_BITS = 6,
 	MAX_FOOTSTEP_STRINGS = 1 << MAX_FOOTSTEP_STRING_BITS,
 };
+extern INetworkStringTable* g_pStringTablePlayerFootSteps;
 extern CStringTableSaveRestoreOps g_FootStepStringOps;
 #endif
 

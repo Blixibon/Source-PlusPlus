@@ -131,6 +131,8 @@ void CNPC_Barney::Spawn( void )
 
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
 
+	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_Citizen", "NPC_Citizen");
+
 	NPCInit();
 
 	SetUse( &CNPC_Barney::UseFunc );
