@@ -55,8 +55,10 @@ public:
 	virtual bool IsEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
 	{
 		int *pStringIndex = (int *)fieldInfo.pField;
-		return *pStringIndex == INVALID_STRING_INDEX;
+		return IsInvalidString(*pStringIndex);
 	}
+
+	inline bool IsInvalidString(int iString) { return (unsigned short)iString == INVALID_STRING_INDEX; }
 
 private:
 	INetworkStringTable *m_pStringTable;

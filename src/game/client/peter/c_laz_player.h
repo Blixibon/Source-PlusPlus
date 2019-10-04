@@ -21,6 +21,7 @@ public:
 
 	virtual void			OnDataChanged(DataUpdateType_t updateType);
 	virtual void			ClientThink();
+	virtual float GetFOV( void );
 
 	//bool	IsInReload();
 	//int		GetHideBits();

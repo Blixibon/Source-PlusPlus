@@ -4417,7 +4417,7 @@ void CNPC_Strider::FootFX( const Vector &origin )
 		const char* pSound = physprops->GetString(pHit->sounds.impactHard);
 
 		CSoundParameters params;
-		if (!CBaseEntity::GetParametersForSound(pSound, params, NULL))
+		if (!CBaseEntity::GetParametersForSound(pSound, (HSOUNDSCRIPTHANDLE)pHit->soundhandles.impactHard, params, NULL))
 		{
 			CPASAttenuationFilter filter(origin, params.soundlevel);
 			// JAY: If this entity gets deleted, the sound comes out at the world origin

@@ -66,6 +66,20 @@ void C_Laz_Player::ClientThink()
 	}
 }
 
+float C_Laz_Player::GetFOV( void )
+{
+	//Find our FOV with offset zoom value
+	float flFOVOffset = C_BasePlayer::GetFOV() + GetZoom();
+
+	// Clamp FOV in MP
+	float min_fov = GetMinFOV();
+
+	// Don't let it go too low
+	flFOVOffset = MAX( min_fov, flFOVOffset );
+
+	return flFOVOffset;
+}
+
 void C_Laz_Player::OnDataChanged(DataUpdateType_t type)
 {
 	BaseClass::OnDataChanged(type);

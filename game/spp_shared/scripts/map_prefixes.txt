@@ -35,7 +35,9 @@
 		"test_"			"dev"
 		"leonhl2"		"hl2"
 		"he"			"human"
+		"tr_"			"human"
 		"uplink"		"bms"
+		"uplink_ext"	"hl1"
 		"dwn"			"ep2"
 		"yla_"			"ep2"
 	}

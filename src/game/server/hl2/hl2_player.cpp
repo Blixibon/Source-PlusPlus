@@ -2490,6 +2490,8 @@ void CHL2_Player::OnDamagedByExplosion( const CTakeDamageInfo &info )
 	{
 		// No ear ringing for mortar
 		UTIL_ScreenShake( info.GetInflictor()->GetAbsOrigin(), 4.0, 1.0, 0.5, 1000, SHAKE_START, false );
+		CSingleUserRecipientFilter user(this);
+		enginesound->SetPlayerDSP(user, 39, false);
 		return;
 	}
 	BaseClass::OnDamagedByExplosion( info );
@@ -2744,7 +2746,7 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
 #ifndef HL2MP	
-	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
+	if ( !g_pGameRules->IsMultiplayer() && pWeapon->ClassMatches( "weapon_stunstick" ) )
 	{
 		if ( ApplyBattery( 0.5 ) )
 			UTIL_Remove( pWeapon );

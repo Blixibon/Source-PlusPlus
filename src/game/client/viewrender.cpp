@@ -1395,8 +1395,8 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 		}
 	}
 
-	if (viewID == VIEW_MAIN || IsDepthOfFieldEnabled(&view))
-		UpdateSSAODepth(view);
+	//if (viewID == VIEW_MAIN || IsDepthOfFieldEnabled(&view))
+		//UpdateSSAODepth(view);
 
 	m_BaseDrawFlags = baseDrawFlags;
 
@@ -2372,8 +2372,6 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			}
 		}
 
-		GetClientModeNormal()->DoPostScreenSpaceEffects( &view );
-
 		// Now actually draw the viewmodel
 		DrawViewModels( view, whatToDraw & RENDERVIEW_DRAWVIEWMODEL );
 
@@ -2423,6 +2421,7 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			pRenderContext.SafeRelease();
 		}
 
+		GetClientModeNormal()->DoPostScreenSpaceEffects(&view);
 		g_ShaderEditorSystem->CustomPostRender();
 
 		// And here are the screen-space effects
