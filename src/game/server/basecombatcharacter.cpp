@@ -3352,7 +3352,7 @@ CBaseEntity *CBaseCombatCharacter::FindMissTarget( void )
 			continue;
 
 		// New rule for this system. Don't shoot what the player won't see.
-		if ( !ThePlayersSystem->IsInViewcone(pEnts[i]) )
+		if ( !ThePlayersSystem->IsAbleToSee(pEnts[i]) )
 			continue;
 
 		if ( numMissCandidates >= MAX_MISS_CANDIDATES )

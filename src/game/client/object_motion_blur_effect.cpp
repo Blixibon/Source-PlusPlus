@@ -75,18 +75,14 @@ float ScreenRescale(float flIn)
 void CObjectMotionBlurManager::ObjectMotionBlurDefinition_t::DrawModel()
 {
 #if 1
-	Vector v3DVelocity, vOrigin;
-	vOrigin = m_pEntity->GetRenderOrigin();
-	m_pEntity->EstimateAbsVelocity(v3DVelocity);
-	Vector v3DVelocityProj = vOrigin + v3DVelocity;
-	Vector v2DStart, v2DEnd;
-	Vector2D v2DVelocity;
-	ScreenTransform(vOrigin, v2DStart);
-	ScreenTransform(v3DVelocityProj, v2DEnd);
-	v2DVelocity = v2DEnd.AsVector2D() - v2DStart.AsVector2D();
+	Vector vecSceen, vecDelta;
+	ScreenTransform(m_pEntity->GetRenderOrigin(), vecSceen);
+	VectorSubtract(vecSceen, m_vecLastScreen, vecDelta);
+	m_vecLastScreen = vecSceen;
+	vecDelta *= gpGlobals->frametime;
 
-	float flR = ( m_flVelocityScale * ScreenRescale(v2DVelocity.x) );
-	float flG = ( m_flVelocityScale * ScreenRescale(v2DVelocity.y) );
+	float flR = ( ScreenRescale(m_flVelocityScale * vecDelta.x) );
+	float flG = ( ScreenRescale(m_flVelocityScale * vecDelta.y) );
 #else
 	Vector vVelocity;
 	m_pEntity->EstimateAbsVelocity(vVelocity);

@@ -492,6 +492,8 @@ void CLaz_Player::Event_Killed(const CTakeDamageInfo & info)
 
 	BaseClass::Event_Killed(info);
 
+	ClearExpression();
+
 	State_Transition(STATE_DYING);	// Transition into the dying state.
 	m_hEnemy.Term();
 }

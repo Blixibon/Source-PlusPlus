@@ -636,6 +636,7 @@ virtual CAI_Senses *GetSenses() {
 
 	virtual void			SetPlayerUnderwater( bool state );
 	void					UpdateUnderwaterState( void );
+	//void					UpdateWetness();
 	bool					IsPlayerUnderwater( void ) { return m_bPlayerUnderwater; }
 
 	virtual bool			CanBreatheUnderwater() const { return false; }

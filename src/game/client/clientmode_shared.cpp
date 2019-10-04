@@ -73,9 +73,12 @@ extern ConVar replay_rendersetting_renderglow;
 #include "clienteffectprecachesystem.h"
 #include "materialsystem/imaterialvar.h"
 #include "object_motion_blur_effect.h"
+#include "viewpostprocess.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern bool g_bDumpRenderTargets;
 
 using namespace vgui;
 
@@ -843,19 +846,74 @@ void ClientModeShared::DoObjectMotionBlur(const CNewViewSetup *pSetup)
 	pRenderContext->ClearColor4ub(127, 127, 0, 0);
 	// Clear only color, not depth & stencil
 	pRenderContext->ClearBuffers(true, false, false);
+	//pRenderContext->FogMode(MATERIAL_FOG_NONE);
 
 	// Save off state
 	Vector vOrigColor;
 	render->GetColorModulation(vOrigColor.Base());
+	float flSavedBlend = render->GetBlend();
 
 	// Use a solid-color unlit material to render velocity into the buffer
 	g_pStudioRender->ForcedMaterialOverride(pGlowColorMaterial);
+
+	pRenderContext->SetLightingOrigin(vec3_origin);
+	pRenderContext->SetAmbientLight(1.0f, 1.0f, 1.0f);
+
+	/*static */Vector white[6] =
+	{
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+	};
+
+	g_pStudioRender->SetAmbientLightColors(white);
+	g_pStudioRender->SetLocalLights(0, NULL);
+
+	modelrender->SuppressEngineLighting(true);
+	render->SetBlend(1.0f);
 	g_ObjectMotionBlurManager.DrawObjects();
+	modelrender->SuppressEngineLighting(false);
+
 	g_pStudioRender->ForcedMaterialOverride(NULL);
 
 	render->SetColorModulation(vOrigColor.Base());
 
+	// Optionally write the rendered image to a debug texture
+	if (g_bDumpRenderTargets)
+	{
+		DumpTGAofRenderTarget(pSetup->width, pSetup->height, "ObjectBlurVelocity");
+	}
+
 	pRenderContext->PopRenderTargetAndViewport();
+
+	// Render objects to stencil
+	{
+		
+
+		// Set alpha to 0 so we don't touch any color pixels
+		render->SetBlend(0.0f);
+		pRenderContext->OverrideDepthEnable(true, false);
+		pRenderContext->ClearBuffers(false, false, true);
+
+		ShaderStencilState_t stencilState;
+		stencilState.m_bEnable = true;
+		stencilState.m_nReferenceValue = 1;
+		stencilState.m_CompareFunc = STENCILCOMPARISONFUNCTION_ALWAYS;
+		stencilState.m_PassOp = STENCILOPERATION_REPLACE;
+		stencilState.m_FailOp = STENCILOPERATION_KEEP;
+		stencilState.m_ZFailOp = STENCILOPERATION_KEEP;
+
+		stencilState.SetStencilState(pRenderContext);
+
+		g_ObjectMotionBlurManager.DrawObjects();
+
+		pRenderContext->OverrideDepthEnable(false, false);
+	}
+
+	render->SetBlend(flSavedBlend);
 
 	//
 	// Render full-screen pass
@@ -874,6 +932,17 @@ void ClientModeShared::DoObjectMotionBlur(const CNewViewSetup *pSetup)
 	pVelocityTextureVariable = pMotionBlurMaterial->FindVar("$velocity_texture", &bFound2, true);
 	if (bFound1 && bFound2)
 	{
+		ShaderStencilState_t stencilState;
+		stencilState.m_bEnable = true;
+		stencilState.m_nWriteMask = 0; // We're not changing stencil
+		stencilState.m_nReferenceValue = 1;
+		stencilState.m_nTestMask = 1;
+		stencilState.m_CompareFunc = STENCILCOMPARISONFUNCTION_EQUAL;
+		stencilState.m_PassOp = STENCILOPERATION_KEEP;
+		stencilState.m_FailOp = STENCILOPERATION_KEEP;
+		stencilState.m_ZFailOp = STENCILOPERATION_KEEP;
+		stencilState.SetStencilState(pRenderContext);
+
 		pFBTextureVariable->SetTextureValue(pFullFrameFB);
 
 		pVelocityTextureVariable->SetTextureValue(pFullFrameFB1);
@@ -883,6 +952,8 @@ void ClientModeShared::DoObjectMotionBlur(const CNewViewSetup *pSetup)
 
 		pRenderContext->DrawScreenSpaceRectangle(pMotionBlurMaterial, 0, 0, nWidth, nHeight, 0.0f, 0.0f, nWidth - 1, nHeight - 1, nWidth, nHeight);
 	}
+
+	pRenderContext->SetStencilEnable(false);
 }
 
 //-----------------------------------------------------------------------------

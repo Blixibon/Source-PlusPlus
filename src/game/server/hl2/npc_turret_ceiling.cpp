@@ -19,6 +19,7 @@
 #include "animation.h"
 #include "basehlcombatweapon_shared.h"
 #include "iservervehicle.h"
+#include "globalstate.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -117,14 +118,24 @@ public:
 
 	int		OnTakeDamage( const CTakeDamageInfo &inputInfo );
 
+	const char* GetTracerType(void) { return "AR2Tracer"; }
+
 	virtual bool CanBeAnEnemyOf( CBaseEntity *pEnemy );
 
 	Class_T	Classify( void ) 
 	{
-		if( m_bEnabled ) 
-			return CLASS_COMBINE;
-
-		return CLASS_NONE;
+		if (!m_bEnabled)
+		{
+			// NPC's should disregard me if I'm closed.
+			return CLASS_NONE;
+		}
+		else
+		{
+			if (GlobalEntity_GetState("combine_base_hacked") == GLOBAL_ON)
+				return CLASS_COMBINE_HACKED;
+			else
+				return CLASS_COMBINE;
+		}
 	}
 	
 	bool	FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
@@ -263,7 +274,7 @@ void CNPC_CeilingTurret::Precache( void )
 	PrecacheScriptSound( "NPC_CeilingTurret.Move" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Active" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Alert" );
-	PrecacheScriptSound( "NPC_CeilingTurret.ShotSounds" );
+	PrecacheScriptSound( "NPC_FloorTurret.ShotSounds" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Ping" );
 	PrecacheScriptSound( "NPC_CeilingTurret.Die" );
 
@@ -425,6 +436,9 @@ void CNPC_CeilingTurret::Retire( void )
 			SetThink( &CNPC_CeilingTurret::SUB_DoNothing );
 		}
 	}
+
+	//TERO: added by me
+	StopSound("NPC_CeilingTurret.Alert");
 }
 
 //-----------------------------------------------------------------------------
@@ -671,6 +685,7 @@ void CNPC_CeilingTurret::ActiveThink( void )
 		//Fire the gun
 		if ( DotProduct( vecDirToEnemy, vecMuzzleDir ) >= 0.9848 ) // 10 degree slop
 		{
+			ResetActivity();
 			if ( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
 			{
 				SetActivity( (Activity) ACT_CEILING_TURRET_DRYFIRE );
@@ -853,7 +868,7 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 	}
 
 	FireBullets( info );
-	EmitSound( "NPC_CeilingTurret.ShotSounds" );
+	EmitSound( "NPC_FloorTurret.ShotSounds" );
 	DoMuzzleFlash();
 }
 
@@ -1061,9 +1076,7 @@ void CNPC_CeilingTurret::DeathThink( void )
 	Vector pos;
 	CollisionProp()->RandomPointInBounds( vec3_origin, Vector( 1, 1, 1 ), &pos );
 	
-	CBroadcastRecipientFilter filter;
-	
-	te->Smoke( filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10 );
+	g_pEffects->Smoke( pos, g_sModelIndexSmoke, 2.5f, 10.f );
 	
 	g_pEffects->Sparks( pos );
 
