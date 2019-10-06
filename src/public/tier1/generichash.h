@@ -41,6 +41,12 @@ inline uint32 HashStringCaseless( const char *pszKey, size_t len )
 	return MurmurHash3_32( pszKey, len, 1047 /*anything will do for a seed*/, true );
 }
 
+inline uint32 HashStringCaselessConventional(const char* pszKey)
+{
+	size_t len = strlen(pszKey);
+	HashStringCaseless(pszKey, len);
+}
+
 #if	!defined(_MINIMUM_BUILD_)
 inline uint32 HashString( const char *pszKey )
 {

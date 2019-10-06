@@ -20,14 +20,14 @@
 #include "ServerNetworkProperty.h"
 #include "shareddefs.h"
 #include "engine/ivmodelinfo.h"
+#include "AI_Criteria.h"
+#include "AI_ResponseSystem.h"
 
 class CDamageModifier;
 class CDmgAccumulator;
 
 struct CSoundParameters;
 
-class AI_CriteriaSet;
-class IResponseSystem;
 class IEntitySaveUtils;
 class CRecipientFilter;
 class CStudioHdr;
@@ -911,6 +911,7 @@ protected:
 	int FindContextByName( const char *name ) const;
 public:
 	void	AddContext( const char *nameandvalue );
+	void AddContext(const char* pKey, const char* pValue, float duration);
 
 protected:
 	CUtlVector< ResponseContext_t > m_ResponseContexts;
@@ -939,7 +940,7 @@ public:
 	virtual CBaseAnimating*	GetBaseAnimating() { return 0; }
 	virtual CBaseAnimatingOverlay*	GetBaseAnimatingOverlay() { return 0; }
 
-	virtual IResponseSystem *GetResponseSystem();
+	virtual ResponseRules::IResponseSystem *GetResponseSystem();
 	virtual void	DispatchResponse( const char *conceptName );
 
 // Classify - returns the type of group (i.e, "houndeye", or "human military" so that NPCs with different classnames
@@ -1188,6 +1189,10 @@ public:
 #endif // _DEBUG
 
 	virtual void	ModifyOrAppendCriteria( AI_CriteriaSet& set );
+	// this computes criteria that depend on the other criteria having been set. 
+	// needs to be done in a second pass because we may have multiple overrids for
+	// a context before it all settles out.
+	virtual void	ModifyOrAppendDerivedCriteria(AI_CriteriaSet& set) {};
 	void			AppendContextToCriteria( AI_CriteriaSet& set, const char *prefix = "" );
 	void			DumpResponseCriteria( void );
 

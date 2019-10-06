@@ -80,6 +80,11 @@ $Project "server"
 	"game\server\server_lazuul.vpc"		[($WIN32||$POSIX) && $LAZUUL]
 }
 
+$Project "responserules"
+{
+	"responserules\runtime\response_rules.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
 $Project "mathlib"
 {
 	"mathlib\mathlib.vpc" [$WINDOWS||$X360||$POSIX]

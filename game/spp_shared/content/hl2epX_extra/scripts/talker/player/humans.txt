@@ -480,13 +480,13 @@ rule PlayerCitizenStartCombatTurretCeiling
 
 response PlayerResponseFollow
 {
-	scene		"scenes/npc/$gender01/squad_away03.vcd"		weight 4
-	scene		"scenes/npc/$gender01/squad_follow02.vcd"
-	scene		"scenes/npc/$gender01/squad_follow03.vcd"
-	scene		"scenes/npc/$gender01/squad_away01.vcd"		weight 3
-	scene		"scenes/npc/$gender01/squad_away02.vcd"
+	scene		"scenes/npc/$gender01/squad_away03.vcd"		weight 4 then any TLK_PLAYER_LEAD foo:0 0.5
+	scene		"scenes/npc/$gender01/squad_follow02.vcd" then any TLK_PLAYER_LEAD foo:0 0.5
+	scene		"scenes/npc/$gender01/squad_follow03.vcd" then any TLK_PLAYER_LEAD foo:0 0.5
+	scene		"scenes/npc/$gender01/squad_away01.vcd"		weight 3 then any TLK_PLAYER_LEAD foo:0 0.5
+	scene		"scenes/npc/$gender01/squad_away02.vcd" then any TLK_PLAYER_LEAD foo:0 0.5
 //Trav|Edt - add more Follow scenes
-	scene	"scenes/npc/$gender01/overhere01.vcd"
+	scene	"scenes/npc/$gender01/overhere01.vcd" then any TLK_PLAYER_LEAD foo:0 0.5
 }
 
 rule PlayerFollow

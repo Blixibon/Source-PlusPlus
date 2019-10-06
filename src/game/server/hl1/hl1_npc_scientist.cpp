@@ -1073,8 +1073,8 @@ void CNPC_SittingScientist::SittingThink( void )
 			ResetSequenceInfo( );
 			SetCycle( 0 );
 			SetBoneController( 0, 0 );
-
-			GetExpresser()->Speak( TLK_HELLO );
+			CAI_Concept concept(TLK_HELLO);
+			GetExpresser()->Speak(concept);
 		}
 	}
 	else if ( IsSequenceFinished() )
@@ -1085,7 +1085,8 @@ void CNPC_SittingScientist::SittingThink( void )
 		if (m_flResponseDelay && gpGlobals->curtime > m_flResponseDelay)
 		{
 			// respond to question
-			GetExpresser()->Speak( TLK_QUESTION );
+			CAI_Concept concept(TLK_QUESTION);
+			GetExpresser()->Speak(concept);
 			SetSequence( m_baseSequence + SITTING_ANIM_sitscared );
 			m_flResponseDelay = 0;
 		}

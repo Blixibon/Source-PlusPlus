@@ -27,7 +27,7 @@ public:
 
 	virtual int	ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
 
-	virtual IResponseSystem *GetResponseSystem() { return m_pInstancedResponseSystem; }
+	virtual ResponseRules::IResponseSystem *GetResponseSystem() { return m_pInstancedResponseSystem; }
 
 	virtual int	Save( ISave &save );
 	virtual int	Restore( IRestore &restore );
@@ -43,7 +43,7 @@ protected:
 
 	string_t	m_iszRuleScriptFile;
 	string_t	m_iszConcept;
-	IResponseSystem *m_pInstancedResponseSystem;
+	ResponseRules::IResponseSystem *m_pInstancedResponseSystem;
 
 public:
 

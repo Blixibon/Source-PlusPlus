@@ -189,6 +189,7 @@ $Project
 			$File	"ai_dynamiclink.cpp"
 			$File	"ai_dynamiclink.h"
 			$File	"ai_event.cpp"
+			$File	"ai_expresserfollowup.cpp"
 			$File	"ai_goalentity.cpp"
 			$File	"ai_goalentity.h"
 			$File	"ai_hint.cpp"
@@ -255,6 +256,8 @@ $Project
 			$File	"ai_speech.h"
 			$File	"ai_speechfilter.cpp"
 			$File	"ai_speechfilter.h"
+			$File	"ai_speechqueue.cpp"
+			$File	"ai_speechqueue.h"
 			$File	"ai_squad.cpp"
 			$File	"ai_squad.h"
 			$File	"ai_squadslot.cpp"
@@ -491,7 +494,6 @@ $Project
 		$File	"init_factory.h"
 		$File	"intermission.cpp"
 		$File	"$SRCDIR\public\interpolatortypes.h"
-		$File	"$SRCDIR\game\shared\interval.h"
 		$File	"$SRCDIR\public\iregistry.h"
 		$File	"$SRCDIR\game\shared\iscenetokenprocessor.h"
 		$File	"iservervehicle.h"
@@ -761,7 +763,6 @@ $Project
 				"h_export.cpp"										\
 				"init_factory.cpp"									\
 				"$SRCDIR\public\interpolatortypes.cpp"				\
-				"$SRCDIR\game\shared\interval.cpp"					\
 				"$SRCDIR\public\keyframe\keyframe.cpp"				\
 				"$SRCDIR\common\language.cpp"						\
 				"$SRCDIR\public\map_utils.cpp"						\
@@ -1078,6 +1079,7 @@ $Project
 		$File	"$SRCDIR\public\zip_uncompressed.h"
 		$File	"$SRCDIR\game\shared\mp_shareddefs.h"
 		$File	"$SRCDIR\game\shared\econ\ihasowner.h"
+		$File	"$SRCDIR\public\tier1\interval.h"
 		//Haptics
 		$File	"$SRCDIR\public\haptics\haptic_utils.h"	[$WIN32]
 	}
@@ -1098,6 +1100,7 @@ $Project
 		$Lib	tier2
 		$Lib	tier3
 		$Lib	fgdlib
+		$Lib	responserules
 		$ImpLibexternal steam_api
 	}
 }

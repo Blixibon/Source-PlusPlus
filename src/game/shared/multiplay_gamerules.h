@@ -227,7 +227,7 @@ public:
 
 	struct ResponseRules_t
 	{
-		CUtlVector<IResponseSystem*> m_ResponseSystems;
+		CUtlVector<ResponseRules::IResponseSystem*> m_ResponseSystems;
 	};
 	CUtlVector<ResponseRules_t>	m_ResponseRules;
 

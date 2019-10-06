@@ -4,7 +4,7 @@
 #include "sceneentity.h"
 #include "npc_basecollegue.h"
 
-
+using namespace ResponseRules;
 
 #define ALYX_FEAR_ZOMBIE_DIST_SQR	Square(60)
 
@@ -264,9 +264,9 @@ void CNPC_BaseColleague::UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	if (IsAllowedToSpeak(TLK_VITALIDLE, true))
 	{
 		AI_Response pResp;
-		if (SpeakFindResponse(pResp, TLK_VITALIDLE) && pResp.GetType() != RESPONSE_NONE)
+		if (SpeakFindResponse(pResp, TLK_VITALIDLE) && pResp.GetType() != ResponseRules::RESPONSE_NONE)
 		{
-			bSpoke = SpeakDispatchResponse(TLK_VITALIDLE, pResp);
+			bSpoke = SpeakDispatchResponse(TLK_VITALIDLE, &pResp);
 		}
 	}
 

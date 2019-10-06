@@ -23,6 +23,7 @@ $Group "game"
 	"tier1"
 	"vgui_controls"
 	"fgdlib"
+	"responserules"
 }
 
 $Group "shaders"
@@ -42,6 +43,7 @@ $Group "everything"
 	"motionmapper"
 	"phonemeextractor"
 	"raytrace"
+	"responserules"
 	"qc_eyes"
 	"server"
 	"serverplugin_empty"
@@ -65,5 +67,7 @@ $Group "dedicated"
 	"mathlib"
 	"server"
 	"tier1"
+	"fgdlib"
+	"responserules"
 }
 

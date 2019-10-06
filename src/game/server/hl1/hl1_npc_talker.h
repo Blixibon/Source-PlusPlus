@@ -69,7 +69,7 @@ public:
 
 	Disposition_t IRelationType( CBaseEntity *pTarget );
 
-	virtual IResponseSystem *GetResponseSystem() { return m_pInstancedResponseSystem; }
+	virtual ResponseRules::IResponseSystem *GetResponseSystem() { return m_pInstancedResponseSystem; }
 
 	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 
@@ -97,7 +97,7 @@ public:
 protected:
 	virtual void 	FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 
-	IResponseSystem *m_pInstancedResponseSystem;
+	ResponseRules::IResponseSystem *m_pInstancedResponseSystem;
 private:
 	virtual void	DeclineFollowing( void ) {}
 

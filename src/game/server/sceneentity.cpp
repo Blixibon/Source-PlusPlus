@@ -2285,15 +2285,19 @@ void CSceneEntity::InputInterjectResponse( inputdata_t &inputdata )
 
 			// Try to find the response for this slot.
 			AI_Response response;
-			bool result = npc->SpeakFindResponse( response, inputdata.value.String(), modifiers.Get() );
+			CAI_Concept concept(inputdata.value.String());
+			concept.SetSpeaker(npc);
+			AI_CriteriaSet set;
+			npc->GatherCriteria(&set, concept, modifiers.Get());
+			bool result = npc->FindResponse( response, concept, &set);
 			if ( result )
 			{
-				float duration = npc->GetResponseDuration( response );
+				float duration = npc->GetResponseDuration( &response );
 
 				if ( ( duration > 0.0f ) && npc->PermitResponse( duration ) )
 				{
 					// If we could look it up, dispatch it and bail.
-					npc->SpeakDispatchResponse( inputdata.value.String(), response );
+					npc->SpeakDispatchResponse( concept, &response, &set);
 					return;
 				}
 			}
@@ -2821,10 +2825,11 @@ void CSceneEntity::QueueResumePlayback( void )
 				if ( pBaseActor )
 				{
 					AI_Response response;
-					bool result = pBaseActor->SpeakFindResponse( response, STRING(m_iszResumeSceneFile), NULL );
+					CAI_Concept concept(STRING(m_iszResumeSceneFile));
+					bool result = pBaseActor->FindResponse( response, concept, NULL );
 					if ( result )
 					{
-						const char *szResponse = response.GetResponsePtr();
+						const char* szResponse = response.GetResponsePtr();
 						bStartedScene = InstancedScriptedScene( NULL, szResponse, &m_hWaitingForThisResumeScene, 0, false ) != 0;
 					}
 				}
@@ -4707,6 +4712,34 @@ float GetSceneDuration( char const *pszScene )
 	if (pScene)
 	{
 		flSecs = pScene->FindStopTime();
+		delete pScene;
+	}
+
+	return flSecs;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pszScene - 
+// Output : float
+//-----------------------------------------------------------------------------
+float GetSceneSpeechDuration(char const* pszScene)
+{
+	float flSecs = 0.0f;
+
+	CChoreoScene* pScene = CSceneEntity::LoadScene(pszScene, nullptr);
+	if (pScene)
+	{
+		for (int i = pScene->GetNumEvents()-1; i >= 0 ; i--)
+		{
+			CChoreoEvent* pEvent = pScene->GetEvent(i);
+
+			if (pEvent->GetType() == CChoreoEvent::SPEAK)
+			{
+				flSecs = pEvent->GetStartTime() + pEvent->GetDuration();
+				break;
+			}
+		}
 		delete pScene;
 	}
 

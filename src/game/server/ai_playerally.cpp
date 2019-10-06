@@ -138,12 +138,17 @@ bool ConceptStringLessFunc( const string_t &lhs, const string_t &rhs )
 	return CaselessStringLessThan( STRING(lhs), STRING(rhs) ); 
 }
 
+bool ConceptInfoStringLessFunc(const AIConcept_t& lhs, const AIConcept_t& rhs)
+{
+	return CaselessStringLessThan(lhs.GetStringConcept(), rhs.GetStringConcept());
+}
+
 //-----------------------------------------------------------------------------
 
 class CConceptInfoMap : public CUtlMap<AIConcept_t, ConceptInfo_t *> {
 public:
 	CConceptInfoMap() :
-	  CUtlMap<AIConcept_t, ConceptInfo_t *>( CaselessStringLessThan )
+	  CUtlMap<AIConcept_t, ConceptInfo_t *>(ConceptInfoStringLessFunc)
 	  {
 		  for ( int i = 0; i < ARRAYSIZE(g_ConceptInfos); i++ )
 		  {
@@ -575,7 +580,7 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 			if ( SelectNonCombatSpeech( &selection ) )
 			{
 				SetSpeechTarget( selection.hSpeechTarget );
-				SpeakDispatchResponse( selection.concept.c_str(), selection.Response );
+				SpeakDispatchResponse( selection.concept.c_str(), &selection.Response );
 				m_flNextIdleSpeechTime = gpGlobals->curtime + RandomFloat( 20,30 );
 			}
 			else
@@ -715,7 +720,7 @@ bool CAI_PlayerAlly::SelectInterjection()
 		if ( SelectIdleSpeech( &selection ) )
 		{
 			SetSpeechTarget( selection.hSpeechTarget );
-			SpeakDispatchResponse( selection.concept.c_str(), selection.Response );
+			SpeakDispatchResponse( selection.concept.c_str(), &selection.Response );
 			return true;
 		}
 	}
@@ -764,10 +769,10 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 {
 //#ifdef HL2_EPISODIC
 	CAI_AllySpeechManager *pSpeechManager = GetAllySpeechManager();
-	ConceptInfo_t *pConceptInfo	= pSpeechManager->GetConceptInfo( concept );
+	ConceptInfo_t *pConceptInfo	= pSpeechManager->GetConceptInfo( concept.GetStringConcept());
 	if ( pConceptInfo && (pConceptInfo->flags & AICF_QUESTION) && GetSpeechTarget() )
 	{
-		bool bSaidHelloToNPC = !Q_strcmp(concept, "TLK_HELLO_NPC");
+		bool bSaidHelloToNPC = !Q_strcmp(concept.GetStringConcept(), "TLK_HELLO_NPC");
 
 		float duration = GetExpresser()->GetSemaphoreAvailableTime(this) - gpGlobals->curtime;
 
@@ -775,11 +780,11 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 		{
 			if ( bSaidHelloToNPC )
 			{
-				Warning("Q&A: '%s' said Hello to '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept );
+				Warning("Q&A: '%s' said Hello to '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept.GetStringConcept() );
 			}
 			else
 			{
-				Warning("Q&A: '%s' questioned '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept );
+				Warning("Q&A: '%s' questioned '%s' (concept %s)\n", GetDebugName(), GetSpeechTarget()->GetDebugName(), concept.GetStringConcept());
 			}
 			NDebugOverlay::HorzArrow( GetAbsOrigin(), GetSpeechTarget()->GetAbsOrigin(), 8, 0, 255, 0, 64, true, duration );
 		}
@@ -915,7 +920,7 @@ void CAI_PlayerAlly::AnswerQuestion( CAI_PlayerAlly *pQuestioner, int iQARandomN
 		}
 
 		SetSpeechTarget( selection.hSpeechTarget );
-		SpeakDispatchResponse( selection.concept.c_str(), selection.Response );
+		SpeakDispatchResponse( selection.concept.c_str(), &selection.Response );
 
 		// Prevent idle speech for a while
 		DeferAllIdleSpeech( random->RandomFloat( TALKER_DEFER_IDLE_SPEAK_MIN, TALKER_DEFER_IDLE_SPEAK_MAX ), GetSpeechTarget()->MyNPCPointer() );
@@ -1042,7 +1047,7 @@ void CAI_PlayerAlly::StartTask( const Task_t *pTask )
 	case TASK_TALKER_SPEAK_PENDING:
 		if ( !m_PendingConcept.empty() )
 		{
-			SpeakDispatchResponse( m_PendingConcept.c_str(), m_PendingResponse );
+			SpeakDispatchResponse( m_PendingConcept.c_str(), &m_PendingResponse );
 			m_PendingConcept.erase();
 			TaskComplete();
 		}
@@ -1764,7 +1769,7 @@ bool CAI_PlayerAlly::RespondedTo( const char *ResponseConcept, bool bForce, bool
 			if ( bCancelScene )
 				RemoveActorFromScriptedScenes( this, false );
 
-			return SpeakDispatchResponse( ResponseConcept, response );
+			return SpeakDispatchResponse( ResponseConcept, &response );
 		}
 
 		return false;

@@ -53,7 +53,7 @@ public:
 	virtual int DrawDebugTextOverlays(void);
 
 	// Response system stuff
-	virtual IResponseSystem *GetResponseSystem();
+	virtual ResponseRules::IResponseSystem *GetResponseSystem();
 	virtual void ModifyOrAppendCriteria( AI_CriteriaSet& set );
 	void SetSourceClassName( const char *pClassname );
 

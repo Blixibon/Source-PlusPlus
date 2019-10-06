@@ -33,6 +33,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+using namespace ResponseRules;
 
 #define HL2MP_COMMAND_MAX_RATE 0.3
 
@@ -1037,7 +1038,7 @@ void CLaz_Player::AnswerQuestion(CBaseCombatCharacter* pQuestioner, int iQARando
 			}
 		}
 
-		SpeakDispatchResponse("TLK_PLAYER_ANSWER", selection);
+		SpeakDispatchResponse("TLK_PLAYER_ANSWER", &selection);
 	}
 	else if (rr_debug_qa.GetBool())
 	{

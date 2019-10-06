@@ -12,6 +12,8 @@
 // Minimum interval between rate-limited commands that players can run.
 #define COMMAND_MAX_RATE  0.3
 
+using namespace ResponseRules;
+
 CBaseMultiplayerPlayer::CBaseMultiplayerPlayer()
 {
 	m_iCurrentConcept = MP_CONCEPT_NONE;
@@ -28,6 +30,7 @@ CBaseMultiplayerPlayer::CBaseMultiplayerPlayer()
 CBaseMultiplayerPlayer::~CBaseMultiplayerPlayer()
 {
 	m_pAchievementKV->deleteThis();
+	delete m_pExpresser;
 }
 
 //-----------------------------------------------------------------------------
@@ -91,7 +94,9 @@ bool CBaseMultiplayerPlayer::SpeakConcept( AI_Response &response, int iConcept )
 {
 	// Save the current concept.
 	m_iCurrentConcept = iConcept;
-	return SpeakFindResponse( response, g_pszMPConcepts[iConcept] );
+	CAI_Concept concept(g_pszMPConcepts[iConcept]);
+	concept.SetSpeaker(this);
+	return FindResponse( response, concept );
 }
 
 //-----------------------------------------------------------------------------

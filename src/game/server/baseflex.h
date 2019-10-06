@@ -19,7 +19,6 @@
 
 struct flexsettinghdr_t;
 struct flexsetting_t;
-class AI_Response;
 
 //-----------------------------------------------------------------------------
 // Purpose:  A .vfe referenced by a scene during .vcd playback
