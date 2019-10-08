@@ -259,13 +259,13 @@ void CUtlBuffer::SetBufferType( bool bIsText, bool bContainsCRLF )
 				Assert( ContainsCRLF() );
 			}
 		}
-		else
+		/*else
 		{
 			if ( bIsText )
 			{
 				Assert( bContainsCRLF );
 			}
-		}
+		}*/
 	}
 #endif
 

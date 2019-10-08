@@ -28,6 +28,7 @@ class IServerEngineTools;
 class IXboxSystem;
 class CSteamAPIContext;
 class CSteamGameServerAPIContext;
+class IGameSharedUtils;
 
 extern IVEngineServer			*engine;
 extern IVoiceServer				*g_pVoiceServer;
@@ -45,6 +46,7 @@ extern IServerEngineTools		*serverenginetools;
 extern IXboxSystem				*xboxsystem; // 360 only
 extern CSteamAPIContext			*steamapicontext; // available on game clients
 extern CSteamGameServerAPIContext *steamgameserverapicontext; //available on game servers
+extern IGameSharedUtils* spp_utils;
 
 
 

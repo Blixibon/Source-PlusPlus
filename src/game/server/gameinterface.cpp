@@ -135,6 +135,7 @@ extern ConVar tf_mm_servermode;
 
 #include "peter/gametypes.h"
 #include "peter/signon_buffer_hack.h"
+#include "spp_utils/spp_utils.h"
 
 #if HL2_DLL
 #include "peter/player_models.h"
@@ -197,6 +198,9 @@ IMatchmaking *matchmaking = NULL;	// Xbox 360 only
 IReplaySystem *g_pReplay = NULL;
 IServerReplayContext *g_pReplayServerContext = NULL;
 #endif
+
+CSysModule* spp_utils_module = NULL;
+IGameSharedUtils* spp_utils = NULL;
 
 IGameSystem *SoundEmitterSystem();
 
@@ -651,6 +655,15 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 #endif
 	}
 
+	if ((spp_utils_module = filesystem->LoadModule("spp_utils" DLL_EXT_STRING, "sharedbin", false)) == NULL)
+		return false;
+
+	if ((spp_utils = (IGameSharedUtils*)Sys_GetFactory(spp_utils_module)(SPP_UTILS_INTERFACE, NULL)) == NULL)
+		return false;
+
+	if (!spp_utils->Connect(appSystemFactory))
+		return false;
+
 	// Yes, both the client and game .dlls will try to Connect, the soundemittersystem.dll will handle this gracefully
 	if ( !soundemitterbase->Connect( appSystemFactory ) )
 		return false;
@@ -807,6 +820,9 @@ void CServerGameDLL::DLLShutdown( void )
 	IGameSystem::ShutdownAllSystems();
 
 	g_pGameTypeSystem->Shutdown();
+
+	spp_utils->Disconnect();
+	filesystem->UnloadModule(spp_utils_module);
 
 #ifdef CSTRIKE_DLL // BOTPORT: TODO: move these ifdefs out
 	RemoveBotControl();
@@ -1008,6 +1024,9 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 
 	//Tony; parse custom manifest if exists!
 	ParseParticleEffectsMap( pMapName, false );
+
+	IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
+	pMapEntities = pHelper->DoMapEdit(pMapName, pMapEntities);
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()

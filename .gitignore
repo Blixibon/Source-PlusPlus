@@ -83,6 +83,9 @@ client.lib
 server.pdb
 server.dll
 server.lib
+spp_utils.pdb
+spp_utils.dll
+spp_utils.lib
 
 client.so
 client.so.dbg
@@ -100,6 +103,7 @@ server.dylib.dSYM/
 config.cfg
 game/*/save/*
 game/*/screenshots/*
+game/*/maps/edt_cache/*
 
 # shader files
 *.tmp

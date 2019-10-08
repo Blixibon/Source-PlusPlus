@@ -1,0 +1,57 @@
+//-----------------------------------------------------------------------------
+//	VTEX_DLL.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR		"..\.."
+$Macro OUTBINDIR	"$SRCDIR\..\game\spp_shared\bin"
+
+$Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories		"$BASE,$SRCDIR\public\spp_utils"
+		$PreprocessorDefinitions			"$BASE"
+	}
+}
+
+$Configuration	"Debug"
+{
+	$General
+	{
+		$OutputDirectory			".\Debug_dll"			[$WIN32]
+		$IntermediateDirectory		".\Debug_dll"			[$WIN32]
+	}
+}
+
+$Configuration	"Release"
+{
+	$General
+	{
+		$OutputDirectory			".\Release_dll"			[$WIN32]
+		$IntermediateDirectory		".\Release_dll"			[$WIN32]
+	}
+}
+
+$Project "SPP Utils"
+{
+	$Folder	"Source Files"
+	{
+		$File 	"mapedit_helper.cpp"
+		$File	"mapedit_helper.h"
+		$File	"spp_utils.cpp"
+	}
+
+	$Folder	"Header Files"
+	{
+		$File	"$SRCDIR\public\spp_utils\spp_utils.h"
+	}
+
+	$Folder	"Link Libraries"
+	{
+		$Lib	tier2
+	}
+}

@@ -27,6 +27,7 @@
 	#include "serverbenchmark_base.h"
 	#include "ai_networkmanager.h"
 	#include "ai_dynamiclink.h"
+#include "spp_utils/spp_utils.h"
 
 #if defined( REPLAY_ENABLED )	
 	#include "replay/ireplaysystem.h"
@@ -3033,7 +3034,9 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 
 	// DO NOT CALL SPAWN ON info_node ENTITIES!
 
-	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
+	IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
+
+	MapEntity_ParseAllEntities( pHelper->DoMapEdit(gpGlobals->mapname.ToCStr(), engine->GetMapEntitiesString()), &filter, true );
 
 	if (CAI_NetworkManager::NetworksLoaded())
 	{
