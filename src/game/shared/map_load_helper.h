@@ -170,6 +170,7 @@ public:
 			return;
 		}
 
+#if 0
 		if (s_MapHeader.version < MINBSPVERSION || s_MapHeader.version > BSPVERSION)
 		{
 			filesystem->Close(s_MapFileHandle);
@@ -177,6 +178,8 @@ public:
 			Warning("CMapLoadHelper::Init, map %s has wrong version (%i when expecting %i)\n", loadname,
 				s_MapHeader.version, BSPVERSION);
 		}
+#endif // 0
+
 
 		for (int i = 0; i < MAX_LUMPFILES; i++)
 		{

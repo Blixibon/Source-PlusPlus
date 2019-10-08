@@ -23,6 +23,7 @@
 #include "game.h"
 #include "player_resource.h"
 #include "engine/IEngineSound.h"
+#include "fmtstr.h"
 
 #include "tier0/vprof.h"
 
@@ -60,12 +61,8 @@ void ClientActive(edict_t* pEdict, bool bLoadGame)
 		return;
 	}
 
-	if (pPlayer->IsBot())
-	{
-		CCommand cmd;
-		cmd.Tokenize("joingame");
-		pPlayer->ClientCommand(cmd);
-	}
+	CFmtStr name("player%i", engine->GetPlayerUserId(pEdict));
+	pPlayer->SetName(AllocPooledString(name.Access()));
 
 	pPlayer->InitialSpawn();
 

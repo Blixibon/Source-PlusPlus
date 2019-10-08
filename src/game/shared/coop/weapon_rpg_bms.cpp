@@ -14,6 +14,8 @@ public:
 	DECLARE_PREDICTABLE();
 
 	bool	Deploy(void);
+
+	virtual void 			GetControlPanelInfo( int nPanelIndex, const char *&pPanelName );
 };
 
 //=============================================================================
@@ -51,8 +53,16 @@ bool CBMSWeaponRPG::Deploy(void)
 	if (pOwner)
 	{
 		CBaseViewModel *pVM = pOwner->GetViewModel();
-		pVM->SetBodygroup(1, 1);
+		pVM->SetBodygroup(0, 1);
 	}
 
 	return BaseClass::Deploy();
+}
+
+void CBMSWeaponRPG::GetControlPanelInfo(int nPanelIndex, const char*& pPanelName)
+{
+	if (nPanelIndex == 0)
+	{
+		pPanelName = "bms_rpg_screen";
+	}
 }

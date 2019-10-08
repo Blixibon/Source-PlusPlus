@@ -1903,6 +1903,11 @@ void CLaz_Player::StateEnterWELCOME(void)
 
 void CLaz_Player::StateThinkWELCOME(void)
 {
+	if (IsBot() && GetTeamNumber() < FIRST_GAME_TEAM)
+	{
+		int iTeam = GetAutoTeam();
+		HandleCommand_JoinTeam(iTeam);
+	}
 }
 
 void CLaz_Player::StateEnterDYING(void)

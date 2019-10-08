@@ -393,37 +393,37 @@ void CAI_Expresser::GatherCriteria( AI_CriteriaSet * RESTRICT outputSet, const A
 	// Always include the concept name
 	outputSet->AppendCriteria( "concept", concept, CONCEPT_WEIGHT );
 
-#if 1
-	outputSet->Merge( modifiers );
-#else
-	// Always include any optional modifiers
-	if ( modifiers != NULL )
-	{
-		char copy_modifiers[ 255 ];
-		const char *pCopy;
-		char key[ 128 ] = { 0 };
-		char value[ 128 ] = { 0 };
-
-		Q_strncpy( copy_modifiers, modifiers, sizeof( copy_modifiers ) );
-		pCopy = copy_modifiers;
-
-		while( pCopy )
-		{
-			pCopy = SplitContext( pCopy, key, sizeof( key ), value, sizeof( value ), NULL, modifiers );
-
-			if( *key && *value )
-			{
-				outputSet->AppendCriteria( key, value, CONCEPT_WEIGHT );
-			}
-		}
-	}
-#endif
-
 	// include any global criteria
 	ModifyOrAppendGlobalCriteria( outputSet );
 
 	// Let our outer fill in most match criteria
 	GetOuter()->ModifyOrAppendCriteria( *outputSet );
+
+#if 1
+	outputSet->Merge(modifiers);
+#else
+	// Always include any optional modifiers
+	if (modifiers != NULL)
+	{
+		char copy_modifiers[255];
+		const char* pCopy;
+		char key[128] = { 0 };
+		char value[128] = { 0 };
+
+		Q_strncpy(copy_modifiers, modifiers, sizeof(copy_modifiers));
+		pCopy = copy_modifiers;
+
+		while (pCopy)
+		{
+			pCopy = SplitContext(pCopy, key, sizeof(key), value, sizeof(value), NULL, modifiers);
+
+			if (*key && *value)
+			{
+				outputSet->AppendCriteria(key, value, CONCEPT_WEIGHT);
+			}
+		}
+	}
+#endif
 
 	// Append local player criteria to set, but not if this is a player doing the talking
 	if ( !GetOuter()->IsPlayer() )

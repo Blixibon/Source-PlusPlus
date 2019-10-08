@@ -361,7 +361,7 @@ bool CResponseQueue::DispatchOneResponse_ThenANY( CDeferredResponse &response, A
 
 			int iRelation = g_pGameRules->PlayerRelationship(pIssuer, pTarget);
 			if (iRelation != GR_TEAMMATE && iRelation != GR_ALLY)
-				continue;
+				continue; // not friendly
 		}
 
 		pEx = InferExpresserFromBaseEntity(pTarget);
@@ -374,7 +374,7 @@ bool CResponseQueue::DispatchOneResponse_ThenANY( CDeferredResponse &response, A
 		pTarget->ModifyOrAppendDerivedCriteria( characterCriteria );
 		if ( pIssuer )
 		{
-			characterCriteria.AppendCriteria( "dist_from_issuer",  UTIL_VarArgs( "%f", sqrt(distIssuerToTargetSq) ) );
+			characterCriteria.AppendCriteria( "dist_from_issuer",  CFmtStr( "%f", sqrtf(distIssuerToTargetSq) ) );
 		}
 		AI_Response prospectiveResponse;
 

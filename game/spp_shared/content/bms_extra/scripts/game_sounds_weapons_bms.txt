@@ -649,7 +649,7 @@
 	"channel"		"CHAN_WEAPON"
 	"volume"		"VOL_NORM"
 	"soundlevel"	"SNDLVL_NORM"
-	"wave"			"^weapons_bms/shotgun/reload_npc.wav"
+	"wave"			"^weapons/shotgun/reload_npc.wav"
 }
 
 "weapon_shotgun_bms.Single"

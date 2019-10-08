@@ -2508,8 +2508,8 @@ void CNPC_Vortigaunt::MaintainHealSchedule( void )
 		return;
 
 	// For now, we only heal the player
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	if ( pPlayer == NULL )
+	//CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	if ( m_hHealTarget.Get() == NULL )
 		return;
 
 	// FIXME: How can this happen?

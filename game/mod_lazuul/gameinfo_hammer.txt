@@ -126,6 +126,7 @@
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2 Update\hl2"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2 Update\hl2\hl2_pak.vpk"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2"
+			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2\custom\alyx"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2\custom\rand"
 			"game+download"		"D:\Git-Repos\Source-PlusPlus\game\mod_lazuul\downloads"
 		}

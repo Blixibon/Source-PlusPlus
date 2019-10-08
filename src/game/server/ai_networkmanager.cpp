@@ -1017,6 +1017,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 	char		szBspFilename[MAX_PATH];
 	char		szGraphFilename[MAX_PATH];
 	char		szTextFilename[MAX_PATH];
+	char		szEditFilename[MAX_PATH];
 
 #ifndef HL2_LAZUL
 	if (!g_pGameRules->FAllowNPCs())
@@ -1048,6 +1049,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s%s.bsp" ,szMapName, GetPlatformExt() );
 	Q_snprintf( szGraphFilename, sizeof( szGraphFilename ), "maps/graphs/%s%s.ain", szMapName, GetPlatformExt() );
 	Q_snprintf(szTextFilename, sizeof(szTextFilename), "maps/graphs/%s%s.txt", szMapName, GetPlatformExt());
+	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s.edt" ,szMapName );
 	
 	int iCompare;
 	if ( engine->CompareFileTime( szBspFilename, szGraphFilename, &iCompare ) )

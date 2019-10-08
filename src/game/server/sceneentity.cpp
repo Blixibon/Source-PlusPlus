@@ -4736,7 +4736,7 @@ float GetSceneSpeechDuration(char const* pszScene)
 
 			if (pEvent->GetType() == CChoreoEvent::SPEAK)
 			{
-				flSecs = pEvent->GetStartTime() + pEvent->GetDuration();
+				flSecs = pEvent->GetEndTime();
 				break;
 			}
 		}
