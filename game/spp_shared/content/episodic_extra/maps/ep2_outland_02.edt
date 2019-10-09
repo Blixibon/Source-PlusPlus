@@ -1,0 +1,169 @@
+"ep2_outland_02"
+{
+	"edit"
+	{
+		"targetname"	"sheckley"
+		"values"
+		{
+			"flare"	"1"
+			"additionalequipment"	"weapon_mg1"
+		}
+	}
+
+	"delete"
+	{
+		"targetname" "GO_spawn02_final"
+	}
+	
+	"create"
+	{
+		"origin" "-2379.93 -9845.12 -567"
+		"targetname" "GO_spawn02_final"
+		"spawnflags" "0"
+		"classname" "logic_relay"
+		"hammerid" "396880"
+		"OnTrigger" "path02_alarm,PlaySound,,1,-1"
+		"OnTrigger" "path02_light_hard,LightOn,,0,-1"
+		"OnTrigger" "antlion_spawner_02_final,Enable,,13,-1"
+		"OnTrigger" "path02_light_easy,LightOn,,0,-1"
+		"OnTrigger" "path02_light_medium,LightOn,,0,-1"
+	}
+	
+	"delete"
+	{
+		"targetname" "mathCounter_antlionTracker_finalWave"
+	}
+	
+	"create"
+	{
+		"origin" "-2589.53 -9763.3 -707"
+		"targetname" "mathCounter_antlionTracker_finalWave"
+		"startvalue" "0"
+		"max" "4"
+		"classname" "math_counter"
+		"hammerid" "397146"
+		"OnHitMax" "autoSave,Save,,1,-1"
+		"OnHitMax" "lcs_vort_generator,Start,,11,-1"
+		"OnHitMax" "SS_vort_post_fight,BeginSequence,,7,-1"
+		"OnHitMax" "ep2_song0_easy,FadeOut,6,7,-1"
+		"OnHitMax" "ep2_song0_hard,FadeOut,6,7,-1"
+		"OnHitMax" "vortAssault1,Deactivate,,0,-1"
+		"OnHitMax" "SS_vort_post_fight2,BeginSequence,,8,-1"
+		"OnHitMax" "SS_vort_post_fight1,BeginSequence,,7.5,-1"
+		"OnHitMax" "finalbattle_vort_follow_player,Deactivate,,5,-1"
+		"OnHitMax" "spawn_straggler_antlions_rl,Trigger,,0,-1"
+		"OnHitMax" "straggler_*,SetHealth,0,8,-1"
+		"OnHitMax" "turret_2_ammo_out_vcd,Kill,,6,-1"
+		"OnHitMax" "turret_1_ammo_out_vcd,Kill,,6,-1"
+		"OnHitMax" "vort,SetReadinessLow,,0,-1"
+		"OnHitMax" "vort_calvary_1,SetReadinessLow,,0,-1"
+		"OnHitMax" "vort_calvary_2,SetReadinessLow,,0,-1"
+		"OnHitMax" "vort_calvary_actor,SetReadinessLow,,0,-1"
+		"OnHitMax" "vort_calvary_actor,LockReadiness,1000,0,-1"
+		"OnHitMax" "vort_calvary_2,LockReadiness,1000,0,-1"
+		"OnHitMax" "vort_calvary_1,LockReadiness,1000,0,-1"
+		"OnHitMax" "vort,LockReadiness,1000,0,-1"
+		"OnHitMax" "achievement,FireEvent,,0,-1"
+	}
+	
+	"delete"
+	{
+		"targetname" "ep2_song0"
+	}
+	
+	"create"
+	{
+		"origin" "-2293 -9580.85 -375.569"
+		"targetname" "ep2_song0_easy"
+		"spawnflags" "48"
+		"radius" "1250"
+		"pitchstart" "100"
+		"pitch" "100"
+		"message" "ep2_song0_var0"
+		"health" "10"
+		"fadeoutsecs" "6"
+		"fadeinsecs" "10"
+		"classname" "ambient_generic"
+		"hammerid" "398516"
+	}
+	
+	// Start 15 secs earlier
+	"create"
+	{
+		"origin" "-2293 -9580.85 -375.569"
+		"targetname" "ep2_song0_hard"
+		"spawnflags" "48"
+		"radius" "1250"
+		"pitchstart" "100"
+		"pitch" "100"
+		"message" "ep2_song0_var1"
+		"health" "10"
+		"fadeoutsecs" "10"
+		"fadeinsecs" "0"
+		"classname" "ambient_generic"
+	}
+	
+	"delete"
+	{
+		"targetname" "logicRelay_finalWave"
+	}
+	
+	"create"
+	{
+		"origin" "-2662.42 -9668.59 -708.229"
+		"classname"	"logic_difficultytest"
+		"targetname"	"finalWave_difficultytest"
+		"OnEasy"		"logicRelay_finalWaveEasy,Trigger,,0,-1"
+		"OnNormal"	"logicRelay_finalWaveHard,Trigger,,0,-1"
+		"OnHard"		"logicRelay_finalWaveHard,Trigger,,0,-1"
+	}
+	
+	"create"
+	{
+		"origin" "-2662.42 -9668.59 -708.229"
+		"targetname" "logicRelay_finalWaveEasy"
+		"spawnflags" "0"
+		"classname" "logic_relay"
+		"OnTrigger" "GO_spawn03_final,Trigger,,2,-1"
+		"OnTrigger" "GO_spawn02_final,Trigger,,0,-1"
+		"OnTrigger" "GO_spawn01_final,Trigger,,0,-1"
+		"OnTrigger" "GO_spawn00_final,Trigger,,0,-1"
+		"OnTrigger" "ep2_song0_easy,FadeIn,10,0,-1"
+	}
+	
+	"create"
+	{
+		"origin" "-2662.42 -9668.59 -708.229"
+		"targetname" "logicRelay_finalWaveHard"
+		"spawnflags" "0"
+		"classname" "logic_relay"
+		"OnTrigger" "GO_spawn03_final,Trigger,,15.6,-1"
+		"OnTrigger" "GO_spawn02_final,Trigger,,15.6,-1"
+		"OnTrigger" "GO_spawn01_final,Trigger,,15.6,-1"
+		"OnTrigger" "GO_spawn00_final,Trigger,,15.6,-1"
+		"OnTrigger" "ep2_song0_hard,PlaySound,,0,-1"
+		"OnTrigger" "antlion_spawner_00_final,AddOutput,workerspawnrate 0.1,0,-1"
+		"OnTrigger" "antlion_spawner_*,SetMaxChildren,72,0,-1"
+		"OnTrigger" "antlion_spawner_*,SetMaxLiveChildren,5,0,-1"
+	}
+	
+	"create"
+	{
+		"origin" "-2662.42 -9668.59 -708.229"
+		"targetname" "logicRelay_finalWave"
+		"spawnflags" "0"
+		"classname" "logic_relay"
+		"hammerid" "397213"
+		"OnTrigger" "finalWave_difficultytest,TestDifficulty,,8,-1"
+		"OnTrigger" "vortAssault1,BeginAssault,,0,-1"
+		"OnTrigger" "vortAssault1,Activate,,0,-1"
+		"OnTrigger" "cheatchoreo_rl_2,Trigger,,0,-1"
+		"OnTrigger" "citizen_vcd_casehandler_counter,Add,1,9,-1"
+		"OnTrigger" "trigger_noJump,Kill,,0,-1"
+		"OnTrigger" "antlions_like_turrets,RevertRelationship,,0,-1"
+		"OnTrigger" "citizen_tunnel_block_brushes,Kill,,0,-1"
+		"OnTrigger" "finalwave_jump_triggers,Enable,,0,-1"
+		"OnTrigger" "finalbattle_vort_follow_player,Activate,,0.1,-1"
+		"OnTrigger" "vort_calvary_actor,SetReadinessHigh,,0.1,-1"
+	}
+}
