@@ -150,6 +150,8 @@
 #include "fbxsystem/fbxsystem.h"
 #endif
 
+#include "spp_utils/spp_utils.h"
+
 extern vgui::IInputInternal *g_InputInternal;
 
 //=============================================================================
@@ -224,6 +226,9 @@ IEngineReplay *g_pEngineReplay = NULL;
 IEngineClientReplay *g_pEngineClientReplay = NULL;
 IReplaySystem *g_pReplay = NULL;
 #endif
+
+CSysModule* spp_utils_module = NULL;
+IGameSharedUtils* spp_utils = NULL;
 
 IHaptics* haptics = NULL;// NVNT haptics system interface singleton
 
@@ -965,6 +970,15 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	InitFbx();
 #endif
 
+	if ((spp_utils_module = filesystem->LoadModule("spp_utils" DLL_EXT_STRING, "sharedbin", false)) == NULL)
+		return false;
+
+	if ((spp_utils = (IGameSharedUtils*)Sys_GetFactory(spp_utils_module)(SPP_UTILS_INTERFACE, NULL)) == NULL)
+		return false;
+
+	if (!spp_utils->Connect(appSystemFactory))
+		return false;
+
 	// it's ok if this is NULL. That just means the sourcevr.dll wasn't found
 	g_pSourceVR = (ISourceVirtualReality *)appSystemFactory(SOURCE_VIRTUAL_REALITY_INTERFACE_VERSION, NULL);
 
@@ -1217,6 +1231,9 @@ void CHLClient::Shutdown( void )
 	UncacheAllMaterials();
 
 	IGameSystem::ShutdownAllSystems();
+
+	spp_utils->Disconnect();
+	filesystem->UnloadModule(spp_utils_module);
 	
 	gHUD.Shutdown();
 	VGui_Shutdown();

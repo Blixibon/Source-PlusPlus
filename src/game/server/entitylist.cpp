@@ -17,6 +17,7 @@
 #include "ai_initutils.h"
 #include "globalstate.h"
 #include "datacache/imdlcache.h"
+#include "spp_utils/spp_utils.h"
 
 #ifdef HL2_DLL
 #include "npc_playercompanion.h"
@@ -1482,7 +1483,8 @@ public:
 			CNodeEnt::m_nNodeCount = 0;
 
 			CRespawnEntitiesFilter filter;
-			MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
+			IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
+			MapEntity_ParseAllEntities( pHelper->DoMapEdit(STRING(gpGlobals->mapname), engine->GetMapEntitiesString()), &filter, true );
 
 			// Allocate a CBasePlayer for pev, and call spawn
 			if ( nPlayerIndex >= 0 )

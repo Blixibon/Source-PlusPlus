@@ -13,6 +13,7 @@
 #include "c_te_effect_dispatch.h"
 #include "datacache/imdlcache.h"
 #include "view.h"
+#include "spp_utils/spp_utils.h"
 #include "tier0/vprof.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -180,7 +181,8 @@ void C_PhysPropClientside::RecreateAll()
 	DestroyAll();
 	if ( cl_phys_props_enable.GetInt() )
 	{
-		ParseAllEntities( engine->GetMapEntitiesString() );
+		IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
+		ParseAllEntities( pHelper->DoMapEdit(engine->GetLevelName(), engine->GetMapEntitiesString()) );
 		InitializePropRespawnZones();
 	}
 }

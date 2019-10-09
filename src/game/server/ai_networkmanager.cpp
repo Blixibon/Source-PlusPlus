@@ -1049,7 +1049,7 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s%s.bsp" ,szMapName, GetPlatformExt() );
 	Q_snprintf( szGraphFilename, sizeof( szGraphFilename ), "maps/graphs/%s%s.ain", szMapName, GetPlatformExt() );
 	Q_snprintf(szTextFilename, sizeof(szTextFilename), "maps/graphs/%s%s.txt", szMapName, GetPlatformExt());
-	Q_snprintf( szBspFilename, sizeof( szBspFilename ), "maps/%s.edt" ,szMapName );
+	Q_snprintf( szEditFilename, sizeof( szBspFilename ), "maps/%s.edt" ,szMapName );
 	
 	int iCompare;
 	if ( engine->CompareFileTime( szBspFilename, szGraphFilename, &iCompare ) )
@@ -1079,9 +1079,40 @@ bool CAI_NetworkManager::IsAIFileCurrent ( const char *szMapName )
 				return false;
 			}
 		}
-		else if (filesystem->FileExists(szTextFilename))
+		if (filesystem->FileExists(szTextFilename))
 		{
 			if (engine->CompareFileTime(szTextFilename, szGraphFilename, &iCompare))
+			{
+				if (iCompare > 0)
+				{
+					// Text file is newer.
+					if (g_ai_norebuildgraph.GetInt())
+					{
+						// The user has specified that they wish to override the 
+						// rebuilding of outdated nodegraphs (see top of this file)
+						if (filesystem->FileExists(szGraphFilename))
+						{
+							// Display these messages only if the graph exists, and the 
+							// user is asking to override the rebuilding. If the graph does
+							// not exist, we're going to build it whether the user wants to or 
+							// not. 
+							DevMsg(2, ".AIN File will *NOT* be updated. User Override.\n\n");
+							DevMsg("\n*****Node Graph Rebuild OVERRIDDEN by user*****\n\n");
+						}
+						return true;
+					}
+					else
+					{
+						// Graph is out of date. Rebuild at usual.
+						DevMsg(2, ".AIN File will be updated\n\n");
+						return false;
+					}
+				}
+			}
+		}
+		if (filesystem->FileExists(szEditFilename))
+		{
+			if (engine->CompareFileTime(szEditFilename, szGraphFilename, &iCompare))
 			{
 				if (iCompare > 0)
 				{
