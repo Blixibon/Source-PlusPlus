@@ -17,6 +17,7 @@
 //#include "tf_hud_statpanel.h"
 //#include "tf_notificationmanager.h"
 #include "tier0/icommandline.h"
+#include "fmtstr.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -98,6 +99,10 @@ CTFMainMenu::CTFMainMenu(VPANEL parent) : vgui::EditablePanel(NULL, "MainMenu")
 	bInGameLayout = false;
 	m_iStopGameStartupSound = 2;
 	m_iUpdateLayout = 1;
+
+	m_psMusicStatus = MUSIC_FIND;
+	m_pzMusicLink[0] = '\0';
+	m_nSongGuid = 0;
 
 	vgui::ivgui()->AddTickSignal(GetVPanel());
 }
@@ -183,6 +188,99 @@ bool CTFMainMenu::LoadGameUI()
 	return true;
 }
 
+char* CTFMainMenu::GetRandomMusic()
+{
+	int iCount = m_vecMusic.Count();
+
+	if (iCount <= 0)
+	{
+		bool bLooping = !m_bMusicStartup;
+		if (m_bMusicStartup)
+		{
+			const char* fileName = "sound/music/menu_startup.res";
+			FileHandle_t f = g_pFullFileSystem->Open(fileName, "r", "GAME");
+			if (f)
+			{
+				// don't load chapter files that are empty, used in the demo
+				if (g_pFullFileSystem->Size(f) > 0)
+				{
+					CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+					KeyValuesAD KVFile("MenuMusic");
+					if (g_pFullFileSystem->ReadToBuffer(f, buf) && KVFile->LoadFromBuffer(fileName, buf))
+					{
+						for (KeyValues* kvValue = KVFile->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+						{
+							if (g_pFullFileSystem->FileExists(kvValue->GetString(), "GAME"))
+							{
+								FileNameHandle_t fName = g_pFullFileSystem->FindOrAddFileName(kvValue->GetString());
+								m_vecMusic.AddToTail(fName);
+								++iCount;
+							}
+						}
+					}
+				}
+				g_pFullFileSystem->Close(f);
+			}
+			else
+			{
+				bLooping = true;
+			}
+
+			m_bMusicStartup = false;
+		}
+		
+		if (bLooping)
+		{
+			char szFullFileName[MAX_PATH];
+			FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
+
+			const char* fileName = "sound/music/menu_loop_*.res";
+			fileName = g_pFullFileSystem->FindFirst(fileName, &findHandle);
+			while (fileName)
+			{
+				// Only load chapter configs from the current mod's cfg dir
+				// or else chapters appear that we don't want!
+				Q_snprintf(szFullFileName, sizeof(szFullFileName), "sound/music/%s", fileName);
+				FileHandle_t f = g_pFullFileSystem->Open(szFullFileName, "r", "GAME");
+				if (f)
+				{
+					// don't load chapter files that are empty, used in the demo
+					if (g_pFullFileSystem->Size(f) > 0)
+					{
+						CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+						KeyValuesAD KVFile("MenuMusic");
+						if (g_pFullFileSystem->ReadToBuffer(f, buf) && KVFile->LoadFromBuffer(szFullFileName, buf))
+						{
+							for (KeyValues* kvValue = KVFile->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+							{
+								if (g_pFullFileSystem->FileExists(kvValue->GetString(), "GAME"))
+								{
+									FileNameHandle_t fName = g_pFullFileSystem->FindOrAddFileName(kvValue->GetString());
+									m_vecMusic.AddToTail(fName);
+									++iCount;
+								}
+							}
+						}
+					}
+					g_pFullFileSystem->Close(f);
+				}
+				fileName = g_pFullFileSystem->FindNext(findHandle);
+			}
+		}
+	}
+
+	static char szResult[MAX_PATH];
+	
+	if (iCount > 0)
+	{
+		FileNameHandle_t fChosen = m_vecMusic.Random();
+		m_vecMusic.FindAndRemove(fChosen);
+		g_pFullFileSystem->String(fChosen, szResult, MAX_PATH);
+	}
+
+	return V_stristr(szResult, "music");
+}
+
 
 void CTFMainMenu::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
@@ -245,6 +343,30 @@ void CTFMainMenu::OnTick()
 		if (!m_iStopGameStartupSound)
 		{
 			enginesound->NotifyBeginMoviePlayback();
+			m_bMusicStartup = true;
+		}
+	}
+	else
+	{
+		if (!bInGameLayout)
+		{
+			if ((m_psMusicStatus == MUSIC_FIND || m_psMusicStatus == MUSIC_STOP_FIND) && !enginesound->IsSoundStillPlaying(m_nSongGuid))
+			{
+				Q_strncpy(m_pzMusicLink, GetRandomMusic(), sizeof(m_pzMusicLink));
+				m_psMusicStatus = MUSIC_PLAY;
+			}
+			else if ((m_psMusicStatus == MUSIC_PLAY || m_psMusicStatus == MUSIC_STOP_PLAY)&& m_pzMusicLink[0] != '\0')
+			{
+				enginesound->StopSoundByGuid(m_nSongGuid);
+				enginesound->EmitAmbientSound(CFmtStr("*#%s", m_pzMusicLink), 1.0f, PITCH_NORM, 0);			
+				m_nSongGuid = enginesound->GetGuidForLastSoundEmitted();
+				m_psMusicStatus = MUSIC_FIND;
+			}
+		}
+		else if (m_psMusicStatus == MUSIC_FIND)
+		{
+			enginesound->StopSoundByGuid(m_nSongGuid);
+			m_psMusicStatus = (m_nSongGuid == 0 ? MUSIC_STOP_FIND : MUSIC_STOP_PLAY);
 		}
 	}
 	if (m_iUpdateLayout > 0)
