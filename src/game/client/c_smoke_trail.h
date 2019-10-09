@@ -17,6 +17,7 @@
 #include "particles_simple.h"
 #include "c_baseentity.h"
 #include "baseparticleentity.h"
+#include "particles_new.h"
 
 #include "fx_trail.h"
 
@@ -123,6 +124,8 @@ public:
 
 	// Change the spawn rate.
 	void			SetSpawnRate(float rate);
+	
+	virtual void	UpdateOnRemove( void );
 
 
 // C_BaseEntity.
@@ -171,6 +174,10 @@ public:
 
 private:
 	C_RocketTrail( const C_RocketTrail & );
+
+	void CreateRocketTrail();
+
+	CNewParticleEffect				*m_hRocketTrail;
 
 	PMaterialHandle	m_MaterialHandle[2];
 	TimedEvent		m_ParticleSpawn;

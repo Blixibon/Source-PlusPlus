@@ -40,5 +40,15 @@ particles_manifest
 	"file"		"particles/first_person_fx.pcf"
 	"file"		"particles/misc.pcf"
 	
+	// SPP
 	"file"		"!particles/spp_tracers.pcf"
+	
+	// HLSS
+	"file"		"particles/controller_fireball.pcf"	
+	"file"		"particles/controller_beam.pcf"
+	"file"		"!particles/he_smoke.pcf"
+	"file"		"particles/recharger.pcf"
+	"file"		"particles/dandelions.pcf"
+	"file"		"particles/mantaray_fx.pcf"
+	"file"		"particles/waterboiling.pcf"
 }

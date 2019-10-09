@@ -605,6 +605,17 @@ void C_RocketTrail::SetSpawnRate(float rate)
 	m_ParticleSpawn.Init(rate);
 }
 
+void C_RocketTrail::UpdateOnRemove(void)
+{
+	if ( m_hRocketTrail )
+	{
+		m_hRocketTrail->StopEmission();
+		m_hRocketTrail = NULL;
+	}
+
+	BaseClass::UpdateOnRemove();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : bnewentity - 
@@ -612,7 +623,11 @@ void C_RocketTrail::SetSpawnRate(float rate)
 void C_RocketTrail::OnDataChanged(DataUpdateType_t updateType)
 {
 	C_BaseEntity::OnDataChanged(updateType);
-
+	
+#ifdef HL2_LAZUL
+	if (!IsMarkedForDeletion())
+		CreateRocketTrail();
+#endif
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( ParticleMgr(), NULL );
@@ -660,7 +675,7 @@ void C_RocketTrail::Update( float fTimeDelta )
 
 	if ( gpGlobals->frametime == 0.0f )
 		return;
-
+#ifndef HL2_LAZUL
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "MuzzleFlash" );
 	pSimple->SetSortOrigin( GetAbsOrigin() );
 	
@@ -768,7 +783,7 @@ void C_RocketTrail::Update( float fTimeDelta )
 			}
 		}
 	}
-	
+#endif
 	if ( m_bDamaged )
 	{
 		SimpleParticle	*pParticle;
@@ -782,7 +797,7 @@ void C_RocketTrail::Update( float fTimeDelta )
 		PMaterialHandle flameMaterial = m_pRocketEmitter->GetPMaterial( VarArgs( "sprites/flamelet%d", random->RandomInt( 1, 4 ) ) );
 		
 		// Flames from the rocket
-		for ( i = 0; i < 8; i++ )
+		for ( int i = 0; i < 8; i++ )
 		{
 			offset = RandomVector( -8, 8 ) + GetAbsOrigin();
 
@@ -827,6 +842,19 @@ void C_RocketTrail::RenderParticles( CParticleRenderIterator *pIterator )
 
 void C_RocketTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
 {
+}
+
+void C_RocketTrail::CreateRocketTrail()
+{
+	if (!m_hRocketTrail)
+	{
+		// Place a beam between the two points //m_pEnt->
+		CNewParticleEffect *pRocketTrail = ParticleProp()->Create( "he_missile", PATTACH_ABSORIGIN_FOLLOW ); //"0"
+		if ( pRocketTrail )
+		{
+			m_hRocketTrail = pRocketTrail;
+		}
+	}
 }
 
 SporeEffect::SporeEffect( const char *pDebugName ) : CSimpleEmitter( pDebugName )
