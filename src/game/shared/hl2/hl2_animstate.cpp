@@ -164,6 +164,16 @@ bool CHL2PlayerAnimState::SetupPoseParameters(CStudioHdr* pStudioHdr)
 	m_PoseParameterData.m_iVerticalVelocity = GetBasePlayer()->LookupPoseParameter("vertical_velocity");
 	m_PoseParameterData.m_iVehicleSteer = GetBasePlayer()->LookupPoseParameter("vehicle_steer");
 
+#ifdef CLIENT_DLL
+	m_headYawPoseParam = GetBasePlayer()->LookupPoseParameter( "head_yaw" );
+	GetBasePlayer()->GetPoseParameterRange( m_headYawPoseParam, m_headYawMin, m_headYawMax );
+
+	m_headPitchPoseParam = GetBasePlayer()->LookupPoseParameter( "head_pitch" );
+	GetBasePlayer()->GetPoseParameterRange( m_headPitchPoseParam, m_headPitchMin, m_headPitchMax );
+
+	m_chestAttachment = GetBasePlayer()->LookupAttachment("chest");
+#endif
+
 	return true;
 }
 
@@ -330,6 +340,44 @@ void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
 	angle[YAW] = m_flCurrentFeetYaw;
 
 	GetBasePlayer()->SetAbsAngles(angle);
+#else
+	QAngle bodyAngles = m_angRender;
+	
+	if (m_chestAttachment > 0)
+	{
+		Vector vec;
+		GetBasePlayer()->GetAttachment(m_chestAttachment, vec, bodyAngles);
+	}
+
+
+	float flBodyYawDiff = bodyAngles[YAW] - m_flLastBodyYaw;
+	m_flLastBodyYaw = bodyAngles[YAW];
+
+
+	// Set the head's yaw.
+	float desired = AngleNormalize(m_flEyeYaw - bodyAngles[YAW]);
+	desired = clamp(desired, m_headYawMin, m_headYawMax);
+	m_flCurrentHeadYaw = ApproachAngle(desired, m_flCurrentHeadYaw, 130 * gpGlobals->frametime);
+
+	// Counterrotate the head from the body rotation so it doesn't rotate past its target.
+	m_flCurrentHeadYaw = AngleNormalize(m_flCurrentHeadYaw - flBodyYawDiff);
+	desired = clamp(desired, m_headYawMin, m_headYawMax);
+
+	GetBasePlayer()->SetPoseParameter(m_headYawPoseParam, m_flCurrentHeadYaw);
+#endif
+}
+
+void CHL2PlayerAnimState::ComputePoseParam_AimPitch(CStudioHdr* pStudioHdr)
+{
+	BaseClass::ComputePoseParam_AimPitch(pStudioHdr);
+#ifdef CLIENT_DLL
+	// Set the head's yaw.
+	float desired = m_flEyePitch;
+	desired = clamp(desired, m_headPitchMin, m_headPitchMax);
+
+	m_flCurrentHeadPitch = ApproachAngle(desired, m_flCurrentHeadPitch, 130 * gpGlobals->frametime);
+	m_flCurrentHeadPitch = AngleNormalize(m_flCurrentHeadPitch);
+	GetBasePlayer()->SetPoseParameter(m_headPitchPoseParam, m_flCurrentHeadPitch);
 #endif
 }
 

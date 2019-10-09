@@ -31,6 +31,7 @@ public:
 protected:
 	virtual bool		SetupPoseParameters(CStudioHdr* pStudioHdr);
 	virtual void		ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr);
+	virtual void		ComputePoseParam_AimPitch(CStudioHdr* pStudioHdr);
 	virtual void		ComputePoseParam_MoveYaw(CStudioHdr* pStudioHdr);
 	virtual AimType_e	GetAimType();
 
@@ -42,6 +43,21 @@ protected:
 private:
 	static acttable_t s_acttableMPToHL2MP[];
 	float	m_fGroundTime;
+
+#ifdef CLIENT_DLL
+	int	m_headYawPoseParam;
+	int	m_headPitchPoseParam;
+	float m_headYawMin;
+	float m_headYawMax;
+	float m_headPitchMin;
+	float m_headPitchMax;
+
+	float m_flLastBodyYaw;
+	float m_flCurrentHeadYaw;
+	float m_flCurrentHeadPitch;
+
+	int m_chestAttachment;
+#endif
 };
 
 #endif
