@@ -7,10 +7,10 @@ criterion "SoldierVoiceElite" "voicetype"	"elite" required
 criterion "SoldierVoiceSynth" "voicetype"	"synth" required
 criterion "SoldierVoiceProtoGuard" "voicetype" "protoguard" required
 
-criterion "SoldierEnteredCombat"	"worldsoldierincombat"	"1" required
-criterion "SoldierNotEnteredCombat"	"worldsoldierincombat"	"!=1" required
-criterion "SoldierReplyToCheck"	"worldsoldierreplytocheck"	"1" required
-criterion "SoldierNotReplyToCheck"	"worldsoldierreplytocheck"	"!=1" required
+criterion "SoldierEnteredCombat"	"soldierincombat"	"1" required
+criterion "SoldierNotEnteredCombat"	"soldierincombat"	"!=1" required
+criterion "SoldierReplyToCheck"	"soldierreplytocheck"	"1" required
+criterion "SoldierNotReplyToCheck"	"soldierreplytocheck"	"!=1" required
 criterion "SoldierRecentCombat"	"timesincecombat" ">0, <8" required
 
 criterion "SoldierEnemyIsPlayer"	"enemyclass" "CLASS_PLAYER" required
@@ -133,7 +133,7 @@ rule SoldierEnemyDead
 {
 	criteria		IsCombineS SoldierVoiceNormal ConceptEnemyDead
 	applycontext	"soldierincombat:0"
-	applycontexttoworld
+	applycontexttosquad
 	response		SoldierEnemyDead
 }
 
@@ -146,7 +146,7 @@ rule SoldierKillPlayer
 {
 	criteria		IsCombineS SoldierVoiceNormal ConceptEnemyDead SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:0"
-	applycontexttoworld
+	applycontexttosquad
 	response		SoldierKillPlayer
 }
 
@@ -171,7 +171,7 @@ rule SoldierLostLong
 {
 	criteria		IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
 	applycontext	"soldierincombat:0"
-	applycontexttoworld
+	applycontexttosquad
 	response SoldierLostLong
 }
 
@@ -215,7 +215,7 @@ rule CombineStartCombat
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartMonster
 }
 
@@ -223,7 +223,7 @@ rule CombineStartCombatPlayer
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartPlayer
 }
 
@@ -231,7 +231,7 @@ rule CombineStartCombatRebels
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsRebel
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartRebel
 }
 
@@ -239,7 +239,7 @@ rule CombineStartCombatVital
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsVitalAlly
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartVitalAlly
 }
 
@@ -247,7 +247,7 @@ rule CombineStartCombatAntlions
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsAntlion
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartAntlions
 }
 
@@ -255,7 +255,7 @@ rule CombineStartCombatZombies
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsZombie
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartZombies
 }
 
@@ -263,7 +263,7 @@ rule CombineStartCombatParasite
 {
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsParasite
 	applycontext	"soldierincombat:1"
-	applycontexttoworld
+	applycontexttosquad
 	response    SoldierStartParasites
 }
 
@@ -347,7 +347,7 @@ rule SoldierAskCheck
 {
 	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
 	applycontext	"soldierreplytocheck:1"
-	applycontexttoworld
+	applycontexttosquad
 	response	SoldierAskCheck
 }
 
@@ -360,7 +360,7 @@ rule SoldierReplyCheck
 {
 	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck
 	applycontext	"soldierreplytocheck:0"
-	applycontexttoworld
+	applycontexttosquad
 	response	SoldierReplyCheck
 }
 

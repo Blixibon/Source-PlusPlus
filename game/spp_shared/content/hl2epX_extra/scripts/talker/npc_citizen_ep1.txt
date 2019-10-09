@@ -14,7 +14,14 @@ criterion "ConceptCitizenEvacReachTrainLast" "Concept" "TLK_CITIZEN_EVAC_REACHTR
 criterion "ConceptCitizenPlayerDenyTrain" "Concept" "TLK_CITIZEN_PLAYER_DENYTRAIN" required
 criterion "ConceptCitizenNotDoorMan" "c17_05_doorman" "0"
 criterion "c17_01_StreetMedics"	"c17_01_streetmedics" "1" required
-criterion "ConceptBoredCitizens" "ConceptBoredCitizens" "1" required
+
+criterion "ConceptBoredCitizensOld" "ConceptBoredCitizens" "1" required
+criterion "ConceptBoredCitizensNew" "concept" "ConceptBoredCitizens" required
+criterion "ConceptBoredCitizens" required
+{
+	ConceptBoredCitizensOld
+	ConceptBoredCitizensNew
+}
 
 
 //============================================================================================================

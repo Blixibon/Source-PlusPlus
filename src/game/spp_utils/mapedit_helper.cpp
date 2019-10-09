@@ -418,16 +418,19 @@ void MapEdit_RunCommandList(Map_t* pMap, CUtlVector<edtCommand_t>* pCommandList)
 
 const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEntities)
 {
-	if (m_strLastMap.IsEqual_CaseInsensitive(pMapName))
+	char szMapName[MAX_PATH];
+	V_FileBase(pMapName, szMapName, MAX_PATH);
+
+	if (m_strLastMap.IsEqual_CaseInsensitive(szMapName))
 		return m_bufEntities.String();
 
 	m_bufEntities.Clear();
-	m_strLastMap.Set(pMapName);
+	m_strLastMap.Set(szMapName);
 
-	CFmtStr edtPath("maps/%s.edt", pMapName);
+	CFmtStr edtPath("maps/%s.edt", szMapName);
 	if (g_pFullFileSystem->FileExists(edtPath, "GAME"))
 	{
-		CUtlBuffer fileBuf;
+		CUtlBuffer fileBuf(0, 0, CUtlBuffer::TEXT_BUFFER);
 		g_pFullFileSystem->ReadFile(edtPath, "GAME", fileBuf);
 
 		CRC32_t calcCRC;
@@ -436,7 +439,7 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 		CRC32_ProcessBuffer(&calcCRC, fileBuf.Base(), fileBuf.TellPut());
 		CRC32_Final(&calcCRC);
 
-		CFmtStr cachePath("maps/edt_cache/%s.ent", pMapName);
+		CFmtStr cachePath("maps/edt_cache/%s.ent", szMapName);
 		if (g_pFullFileSystem->FileExists(cachePath, "GAME"))
 		{
 			FileHandle_t h = g_pFullFileSystem->Open(cachePath, "rb", "GAME");
@@ -461,8 +464,8 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 		Map_t map;
 		MapEdit_ExtractEnts(&map, pMapEntities);
 
-		KeyValuesAD KV(pMapName);
-		if (KV->LoadFromFile(g_pFullFileSystem, edtPath, "GAME"))
+		KeyValuesAD KV(szMapName);
+		if (KV->LoadFromBuffer(edtPath, fileBuf.String(), g_pFullFileSystem, "GAME"))
 		{
 			CUtlVector<edtCommand_t> vecCommands;
 			CUtlBuffer creationBuf(0, 0, CUtlBuffer::TEXT_BUFFER);

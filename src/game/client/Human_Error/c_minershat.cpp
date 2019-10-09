@@ -42,6 +42,7 @@ private:
 	int		m_iAttachment;
 	dlight_t* m_pELight;
 	CSpotlightEffect* m_pSpotLight;
+	CBeam *m_pBeam;
 };
 
 IMPLEMENT_CLIENTCLASS_DT(C_MinersHat, DT_MinersHat, CHLSS_MinersHat)
@@ -114,6 +115,12 @@ void C_MinersHat::UpdateOnRemove()
 		// Turned off the headlight; delete it.
 		delete m_pSpotLight;
 		m_pSpotLight = NULL;
+	}
+
+	if (m_pBeam)
+	{
+		m_pBeam->Remove();
+		m_pBeam = NULL;
 	}
 }
 
@@ -200,38 +207,39 @@ void C_MinersHat::ClientThink(void)
 	}
 
 	// Inner beams
-	BeamInfo_t beamInfo;
-
-	beamInfo.m_vecStart = vec3_origin;
-	beamInfo.m_pStartEnt = this;
-	beamInfo.m_nStartAttachment = m_iAttachment;
-
-	beamInfo.m_vecEnd = effect_origin + (forward * HLSS_MINERS_HAT_LIGHT_LENGTH);
-	beamInfo.m_pEndEnt = NULL;
-	beamInfo.m_nEndAttachment = -1;
 
 	float flColor = 128.0f;
 
-	beamInfo.m_pszModelName = "sprites/glow_test02.vmt";
-	beamInfo.m_pszHaloName = "sprites/light_glow03.vmt";
-	beamInfo.m_flHaloScale = 6.0f;
-	beamInfo.m_flLife = 0.01f;
-	beamInfo.m_flWidth = 8.0f; //random->RandomFloat( 1.0f, 2.0f );
-	beamInfo.m_flEndWidth = (24.0f * flScale) + 8.0f;
-	//beamInfo.m_flFadeLength = HLSS_MINERS_HAT_LIGHT_LENGTH;
-	beamInfo.m_flAmplitude = 0.0f; //random->RandomFloat( 16, 32 );
-	beamInfo.m_flBrightness = flColor * flScale;
-	beamInfo.m_flSpeed = 0.0;
-	beamInfo.m_nStartFrame = 0.0;
-	beamInfo.m_flFrameRate = 1.0f;
+	if (!m_pBeam)
+	{
+		m_pBeam = CBeam::BeamCreate("sprites/glow_test02.vmt", 0.2);
+		m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
+		m_pBeam->SetBrightness(flColor * flScale);
+		m_pBeam->SetNoise(0);
+		m_pBeam->SetWidth(8.0f);	// On low end TVs these lasers are very hard to see at a distance
+		m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
+		m_pBeam->SetScrollRate(0);
+		m_pBeam->SetFadeLength(0);
+		m_pBeam->SetHaloTexture(PrecacheModel("sprites/light_glow03.vmt"));
+		m_pBeam->SetHaloScale(6.0f);
+		m_pBeam->SetCollisionGroup(COLLISION_GROUP_NONE);
+		m_pBeam->SetBeamFlag(FBEAM_SHADEOUT | FBEAM_NOTILE);
+		m_pBeam->PointsInit(effect_origin, effect_origin + (forward * 64));
+		m_pBeam->SetType( BEAM_ENTPOINT );
+		m_pBeam->SetStartEntity(this);
+		m_pBeam->SetEndPos(effect_origin + (forward * 64));
+		m_pBeam->SetStartAttachment( m_iAttachment );
+		m_pBeam->SetEndAttachment( 0 );
+		m_pBeam->RelinkBeam();
+	}
+	else
+	{
+		m_pBeam->RemoveEffects(EF_NODRAW);
+		m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
+		m_pBeam->SetBrightness(flColor * flScale);
+		m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
 
-	beamInfo.m_flRed = flColor * flScale;
-	beamInfo.m_flGreen = flColor * flScale;
-	beamInfo.m_flBlue = flColor * flScale;
-
-	beamInfo.m_nSegments = 0;
-	beamInfo.m_bRenderable = true;
-	beamInfo.m_nFlags = FBEAM_SHADEOUT | FBEAM_NOTILE;
-
-	beams->CreateBeamEntPoint(beamInfo);
+		m_pBeam->SetEndPos(effect_origin + (forward * 64));
+		m_pBeam->RelinkBeam();
+	}
 }

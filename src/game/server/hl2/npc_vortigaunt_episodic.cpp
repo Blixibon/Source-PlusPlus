@@ -1014,7 +1014,7 @@ int CNPC_Vortigaunt::MeleeAttack2Conditions(float flDot, float flDist)
 		return 0;
 
 	// no melee attacks against rollermins
-	if (IsRoller(GetEnemy()))
+	if (IsRoller(GetEnemy()) || IsAntlion(GetEnemy()))
 		return COND_NONE;
 
 	/*if (GetEnemy()->IsNPC())

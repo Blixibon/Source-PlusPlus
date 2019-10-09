@@ -75,10 +75,14 @@ END_RECV_TABLE()
 void C_NPC_AntlionGuard::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
-
-	if ( (type == DATA_UPDATE_CREATED) && m_bCavernBreed && m_bInCavern )
+	
+	if ( /*(type == DATA_UPDATE_CREATED) &&*/ m_bCavernBreed && m_bInCavern )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
+	else
+	{
+		SetNextClientThink(CLIENT_THINK_NEVER);
 	}
 
 
