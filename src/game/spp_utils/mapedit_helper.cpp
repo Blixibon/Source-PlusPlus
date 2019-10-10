@@ -440,24 +440,20 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 		CRC32_Final(&calcCRC);
 
 		CFmtStr cachePath("maps/edt_cache/%s.ent", szMapName);
-		if (g_pFullFileSystem->FileExists(cachePath, "GAME"))
+		CFmtStr crcPath("maps/edt_cache/%s.crc", szMapName);
+		if (g_pFullFileSystem->FileExists(cachePath, "GAME") && g_pFullFileSystem->FileExists(crcPath, "GAME"))
 		{
-			FileHandle_t h = g_pFullFileSystem->Open(cachePath, "rb", "GAME");
+			FileHandle_t h = g_pFullFileSystem->Open(crcPath, "rb", "GAME");
 			CRC32_t testCRC;
 			g_pFullFileSystem->Read(&testCRC, sizeof(CRC32_t), h);
+			g_pFullFileSystem->Close(h);
 			if (calcCRC == testCRC)
 			{
-				int iRemainingSize = g_pFullFileSystem->Size(h) - g_pFullFileSystem->Tell(h);
-				m_bufEntities.SetBufferType(false, false);
-				m_bufEntities.EnsureCapacity(iRemainingSize);
-				g_pFullFileSystem->Read(m_bufEntities.Base(), iRemainingSize, h);
-				m_bufEntities.SetBufferType(true, false);
-				g_pFullFileSystem->Close(h);
+				g_pFullFileSystem->ReadFile(cachePath, "GAME", m_bufEntities);
 
 				return m_bufEntities.String();
 			}
 			
-			g_pFullFileSystem->Close(h);
 		}
 
 		
@@ -518,10 +514,10 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 			map.entitiesBuffer = nullptr;
 
 			g_pFullFileSystem->CreateDirHierarchy("maps/edt_cache", "DEFAULT_WRITE_PATH");
-			FileHandle_t h = g_pFullFileSystem->Open(cachePath, "wb", "DEFAULT_WRITE_PATH");
+			FileHandle_t h = g_pFullFileSystem->Open(crcPath, "wb", "DEFAULT_WRITE_PATH");
 			g_pFullFileSystem->Write(&calcCRC, sizeof(CRC32_t), h);
-			g_pFullFileSystem->Write(m_bufEntities.Base(), m_bufEntities.TellMaxPut(), h);
 			g_pFullFileSystem->Close(h);
+			g_pFullFileSystem->WriteFile(cachePath, "DEFAULT_WRITE_PATH", m_bufEntities);
 
 			return m_bufEntities.String();
 		}
