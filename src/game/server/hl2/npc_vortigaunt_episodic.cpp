@@ -1767,7 +1767,7 @@ void CNPC_Vortigaunt::Spawn( void )
 
 	if (g_pGameTypeSystem->GetCurrentGameType() == GAME_EP2 && !Q_strnicmp(STRING(GetModelName()), "models/vortigaunt_blue.mdl", 26))
 	{
-		SetModelName(AllocPooledString("models/vortigaunt_blue_ep2.mdl"));
+		SetModelName(AllocPooledString("models/vortigaunt_blu2.mdl"));
 	}
 
 	BaseClass::Spawn();
