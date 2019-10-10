@@ -3219,18 +3219,23 @@ void CAI_BaseNPC::RunDieTask()
 	{
 		m_lifeState = LIFE_DEAD;
 
+		SetDeathPose(ACT_INVALID);
+		SetDeathPoseFrame(0);
+
 		SetThink ( NULL );
 		StopAnimation();
 
-		if ( !BBoxFlat() )
+		if (!BBoxFlat())
 		{
 			// a bit of a hack. If a corpses' bbox is positioned such that being left solid so that it can be attacked will
-			// block the player on a slope or stairs, the corpse is made nonsolid.
-//					SetSolid( SOLID_NOT );
-			UTIL_SetSize ( this, Vector ( -4, -4, 0 ), Vector ( 4, 4, 1 ) );
+			// block the player on a slope or stairs, the corpse is made nonsolid. 
+			//					SetSolid( SOLID_NOT );
+
+			AddSolidFlags(FSOLID_NOT_SOLID);
 		}
-		else // !!!HACKHACK - put NPC in a thin, wide bounding box until we fix the solid type/bounding volume problem
-			UTIL_SetSize ( this, WorldAlignMins(), Vector ( WorldAlignMaxs().x, WorldAlignMaxs().y, WorldAlignMins().z + 1 ) );
+
+		UTIL_SetSize(this, WorldAlignMins(), Vector(WorldAlignMaxs().x, WorldAlignMaxs().y, WorldAlignMins().z + 1));
+
 	}
 }
 

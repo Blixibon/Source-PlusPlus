@@ -4001,7 +4001,7 @@ bool CNPC_Antlion::ShouldGib( const CTakeDamageInfo &info )
 
 #ifdef HL2_EPISODIC
 	if ( IsWorker() && ANTLION_WORKERS_BURST() )
-		return !m_bDontExplode;
+		return m_bDontExplode ? false : IsCurSchedule(SCHED_DIE, false);
 #endif
 
 	if ( info.GetDamageType() & (DMG_ALWAYSGIB|DMG_BLAST) )
