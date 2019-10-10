@@ -19,6 +19,8 @@
 #include "fx_line.h"
 #include "fx_water.h"
 #include "particle_property.h"
+#include "iclientmode.h"
+#include "view.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -693,6 +695,12 @@ void C_BaseExplosionEffect::CreateDebris( void )
 //-----------------------------------------------------------------------------
 void C_BaseExplosionEffect::CreateMisc( void )
 {
+	Vector vecCamera = MainViewOrigin();
+	Vector vecDelta = m_vecOrigin - vecCamera;
+	float flDist = VectorNormalize(vecDelta);
+	float flDot = DotProduct(vecDelta, MainViewForward());
+
+	g_pClientMode->OnExplosionBlind(flDist, flDot, 0);
 }
 
 //-----------------------------------------------------------------------------

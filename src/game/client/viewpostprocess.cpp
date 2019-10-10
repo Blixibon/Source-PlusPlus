@@ -34,6 +34,7 @@ float g_flCustomAutoExposureMin = 0;
 float g_flCustomAutoExposureMax = 0;
 float g_flCustomBloomScale = 0.0f;
 float g_flCustomBloomScaleMinimum = 0.0f;
+float g_flCustomBloomScaleFactor = 1.0f;
 
 // mapmaker controlled depth of field
 bool  g_bDOFEnabled = false;
@@ -783,7 +784,7 @@ static float GetCurrentBloomScale( void )
 	{
 		flCurrentBloomScale = mat_bloomscale.GetFloat();
 	}
-	return flCurrentBloomScale;
+	return flCurrentBloomScale * g_flCustomBloomScaleFactor;
 }
 
 static void GetExposureRange( float *flAutoExposureMin, float *flAutoExposureMax )

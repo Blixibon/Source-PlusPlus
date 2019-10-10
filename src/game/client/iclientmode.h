@@ -151,6 +151,9 @@ public:
 	virtual bool	IsInfoPanelAllowed() = 0;
 	virtual void	InfoPanelDisplayed() = 0;
 	virtual bool	IsHTMLInfoPanelAllowed() = 0;
+
+public:
+	virtual void	OnExplosionBlind(float flDist, float flDot, int iType) = 0;
 };	
 
 extern IClientMode *g_pClientMode;

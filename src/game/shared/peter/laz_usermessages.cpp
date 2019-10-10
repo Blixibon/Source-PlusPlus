@@ -47,6 +47,7 @@ void RegisterUserMessages(void)
 	usermessages->Register("AchievementMapEvent", -1);
 	usermessages->Register("UpdateJalopyRadar", -1);
 	usermessages->Register("VoiceSubtitle", 3);
+	usermessages->Register("ExplosionBlind", 10);
 
 #ifndef _X360
 	// NVNT register haptic user messages

@@ -137,12 +137,29 @@ public:
 	virtual void OnColorCorrectionWeightsReset();
 	virtual float GetColorCorrectionScale() const { return 1.0f; }
 
+	virtual void	OnExplosionBlind(float flDist, float flDot, int iType);
+
 protected:
 	CBaseViewport			*m_pViewport;
 
 	void			DisplayReplayReminder();
 
 	void DoObjectMotionBlur(const CNewViewSetup *pSetup);
+
+	ClientCCHandle_t m_ExploCCHandle;
+
+	float			m_flExploBlindTime;
+	float			m_flExploBlindControllers[2]; // 0 is CC, 1 is bloomscale
+
+	float			GetExploBlindIntensity()
+	{
+		if (m_flExploBlindTime == 0.f)
+			return 0.f;
+
+		float flIntensity = RemapValClamped(gpGlobals->curtime, m_flExploBlindTime, m_flExploBlindTime + 2.5f, 1.f, 0.f);
+
+		return SimpleSpline(flIntensity);
+	}
 
 private:
 	virtual void	UpdateReplayMessages();

@@ -79,6 +79,7 @@ extern ConVar replay_rendersetting_renderglow;
 #include "tier0/memdbgon.h"
 
 extern bool g_bDumpRenderTargets;
+extern float g_flCustomBloomScaleFactor;
 
 using namespace vgui;
 
@@ -293,6 +294,16 @@ static void __MsgFunc_VGUIMenu( bf_read &msg )
 	gViewPortInterface->ShowPanel( viewport, bShow );
 }
 
+static void __MsgFunc_ExplosionBlind(bf_read& msg)
+{
+	float flDist = msg.ReadFloat();
+	float flDot = msg.ReadFloat();
+	short sType = msg.ReadShort();
+
+	if (g_pClientMode)
+		g_pClientMode->OnExplosionBlind(flDist, flDot, sType);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -308,6 +319,12 @@ ClientModeShared::ClientModeShared()
 	m_flReplayStartRecordTime = 0.0f;
 	m_flReplayStopRecordTime = 0.0f;
 #endif
+
+	m_ExploCCHandle = INVALID_CLIENT_CCHANDLE;
+
+	m_flExploBlindControllers[0] = 0.f;
+	m_flExploBlindControllers[1] = 1.f;
+	m_flExploBlindTime = 0.f;
 }
 
 //-----------------------------------------------------------------------------
@@ -316,6 +333,11 @@ ClientModeShared::ClientModeShared()
 ClientModeShared::~ClientModeShared()
 {
 	delete m_pViewport;
+
+	if (g_pMaterialSystem != nullptr && m_ExploCCHandle != INVALID_CLIENT_CCHANDLE)
+	{
+		g_pColorCorrectionMgr->RemoveColorCorrection(m_ExploCCHandle);
+	}
 }
 
 void ClientModeShared::ReloadScheme( bool flushLowLevel )
@@ -398,6 +420,7 @@ void ClientModeShared::Init()
 
 	HOOK_MESSAGE( VGUIMenu );
 	HOOK_MESSAGE( Rumble );
+	HOOK_MESSAGE( ExplosionBlind );
 }
 
 
@@ -654,6 +677,13 @@ void ClientModeShared::Update()
 
 		engine->Con_NPrintf( 0, "# Active particle systems: %i", nCount );
 	}
+
+	if (m_ExploCCHandle == INVALID_CLIENT_CCHANDLE)
+	{
+		m_ExploCCHandle = g_pColorCorrectionMgr->AddColorCorrection("scripts/colorcorrection/explosionblind.raw");
+	}
+
+	g_flCustomBloomScaleFactor = Clamp(m_flExploBlindControllers[1] * GetExploBlindIntensity(), 1.f, 50.f);
 }
 
 //-----------------------------------------------------------------------------
@@ -1016,6 +1046,8 @@ void ClientModeShared::LevelInit( const char *newmap )
 	CLocalPlayerFilter filter;
 	enginesound->SetPlayerDSP( filter, 0, true );
 	enginesound->SetRoomType( filter, 1 );
+
+	m_flExploBlindTime = 0.f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1710,6 +1742,19 @@ void ClientModeShared::DeactivateInGameVGuiContext()
 	vgui::ivgui()->ActivateContext( DEFAULT_VGUI_CONTEXT );
 }
 
+void ClientModeShared::OnExplosionBlind(float flDist, float flDot, int iType)
+{
+	if (flDist > 250.f)
+		return;
+
+	m_flExploBlindTime = gpGlobals->curtime;
+
+	float flIntensity = RemapValClamped(flDist, 64.f, 256.f, 1.f, 0.f);
+
+	m_flExploBlindControllers[0] = flIntensity * RemapValClamped(flDot, 0.f, 0.8, 0.f, 1.f);
+	m_flExploBlindControllers[1] = RemapVal(flIntensity, 0.f, 1.f, 1.f, 30.f);
+}
+
 void ClientModeShared::OnColorCorrectionWeightsReset()
 {
 	C_ColorCorrection *pNewColorCorrection = NULL;
@@ -1731,5 +1776,10 @@ void ClientModeShared::OnColorCorrectionWeightsReset()
 			pNewColorCorrection->EnableOnClient( true, pOldColorCorrection == NULL );
 		}
 		m_pCurrentColorCorrection = pNewColorCorrection;
+	}
+
+	if (m_ExploCCHandle != INVALID_CLIENT_CCHANDLE)
+	{
+		g_pColorCorrectionMgr->SetColorCorrectionWeight(m_ExploCCHandle, m_flExploBlindControllers[0] * GetExploBlindIntensity());
 	}
 }
