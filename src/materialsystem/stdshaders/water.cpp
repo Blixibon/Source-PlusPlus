@@ -654,8 +654,8 @@ inline void DrawCheapWater(IMaterialVar** params, IShaderShadow* pShaderShadow,
 		Vector4D Scroll1;
 		params[SCROLL1]->GetVecValue(Scroll1.Base(), 4);
 		SET_STATIC_PIXEL_SHADER_COMBO(MULTITEXTURE,fabs(Scroll1.x) > 0.0);
-		SET_STATIC_PIXEL_SHADER_COMBO(FLOWMAP, bHasFlowmap);
-		SET_STATIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, clamp(params[FLOW_DEBUG]->GetIntValue(), 0, 2));
+		SET_STATIC_PIXEL_SHADER_COMBO(FLOWMAP, 0);
+		SET_STATIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, 0);
 		SET_STATIC_PIXEL_SHADER(pp_watercheap_ps20);
 	}
 

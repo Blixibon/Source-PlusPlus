@@ -5,4 +5,9 @@ depth_of_field_vs20.fxc
 object_motion_blur_vs20.fxc
 object_motion_blur_ps2x.fxc
 
+pp_WaterCheap_ps2x.fxc
+pp_WaterCheap_vs20.fxc
+pp_water_ps2x.fxc
+pp_Water_vs20.fxc
+
 passthru_vs20.fxc

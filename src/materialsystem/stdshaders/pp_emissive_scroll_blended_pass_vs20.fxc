@@ -4,6 +4,7 @@
 // DYNAMIC: "SKINNING"					"0..1"
 
 // DYNAMIC: "MORPHING"					"0..1" [vs30] [ = pShaderAPI->IsHWMorphingEnabled() ]
+// DYNAMIC: "MORPHING"					"0..0" [vs20]
 
 // Includes
 #include "common_vs_fxc.h"
@@ -30,7 +31,7 @@ struct VS_INPUT
 
 	float3 vPosFlex				: POSITION1;	// Delta positions for flexing
 	
-#ifdef defined(SHADER_MODEL_VS_3_0) && MORPHING
+#if defined(SHADER_MODEL_VS_3_0) && MORPHING
 	float vVertexID				: POSITION2;
 #endif
 };

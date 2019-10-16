@@ -10,14 +10,13 @@
 	"$envmap" "env_cubemap"
 	"ldr?$envmaptint" "[ .42 .53 .64 ]"
 	"hdr?$envmaptint" "[.09 .1 .12]"
+	"$phong" "1"
 
-	"LightmappedGeneric_DX9"
-	{
-		"$bumpmap" "metal/metalwall101b_normal"
-//		"$parallaxmap" "Metal/metalwall101a_height"
-//		"$parallaxmapscale" ".04"
-		"$normalmapalphaenvmapmask" 1
-	}
+	
+	"$bumpmap" "metal/metalwall101b_normal"
+//	"$parallaxmap" "Metal/metalwall101a_height"
+//	"$parallaxmapscale" ".04"
+	"$normalmapalphaenvmapmask" 1
 
 	"LightmappedGeneric_DX8"
 	{
@@ -30,7 +29,6 @@
 	{
 		"$basetexture" "metal/citadel_metalwall101b"
 		"$basealphaenvmapmask" 1
-	"$phong" "1"
 	}
 }
 

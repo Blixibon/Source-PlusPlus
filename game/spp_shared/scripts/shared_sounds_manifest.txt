@@ -98,4 +98,13 @@
 
 	// MINERVA: Metastasis stuff!
 	"precache_file"		"scripts/minerva_sounds.txt"
+	
+	// Portal content sounds
+	"precache_file"		"scripts/level_sounds_music_portal.txt"
+	"precache_file"		"scripts/level_sounds_escape.txt"
+	"precache_file"		"scripts/npc_sounds_aperture_ai.txt"
+	"precache_file"		"scripts/npc_sounds_energy_ball.txt"
+	"precache_file"		"scripts/npc_sounds_turret_portal.txt"
+	"precache_file"		"scripts/npc_sounds_rocket_turret.txt"
+	"precache_file"		"scripts/npc_sounds_glados_cores.txt"
 }

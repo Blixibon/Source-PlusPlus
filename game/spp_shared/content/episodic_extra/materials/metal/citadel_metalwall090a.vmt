@@ -8,14 +8,13 @@
 	"$envmapcontrast" 1
 	"$envmapsaturation" 1
 	"hdr?$envmaptint" "[.09 .1 .12]"
+	"$phong" "1"
 
-	"LightmappedGeneric_DX9"
-	{
-		"$bumpmap" "Metal/metalwall090a_normal"
-//		"$parallaxmap" "Metal/metalwall090a_height"
-//		"$parallaxmapscale" ".05"
-		"$normalmapalphaenvmapmask" 1
-	}
+	
+	"$bumpmap" "Metal/metalwall090a_normal"
+//	"$parallaxmap" "Metal/metalwall090a_height"
+//	"$parallaxmapscale" ".05"
+	"$normalmapalphaenvmapmask" 1
 
 	"LightmappedGeneric_DX8"
 	{
@@ -28,6 +27,5 @@
 	{
 		"$basetexture" "Metal/metalwall090a"
 		"$basealphaenvmapmask" 1
-	"$phong" "1"
 	}
 }

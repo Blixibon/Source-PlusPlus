@@ -12,13 +12,11 @@
 	"$envmapcontrast" 1
 	"$envmapsaturation" 1
 
-	"LightmappedGeneric_DX9"
-	{
-		"$bumpmap" "metal/metalwall091a_normal"
-	//	"$parallaxmap" "Metal/metalwall091a_height"
-	//	"$parallaxmapscale" ".0125"
-		"$normalmapalphaenvmapmask" 1
-	}
+	
+	"$bumpmap" "metal/metalwall091a_normal"
+	//"$parallaxmap" "Metal/metalwall091a_height"
+	//"$parallaxmapscale" ".0125"
+	"$normalmapalphaenvmapmask" 1
 
 	"LightmappedGeneric_DX8"
 	{

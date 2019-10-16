@@ -10,12 +10,10 @@
 	"$envmapcontrast" 1
 	"$envmapsaturation" 1
 	"hdr?$envmaptint" "[.09 .1 .12]"
+	"$phong" "1"
 
-	"LightmappedGeneric_DX9"
-	{
-		"$bumpmap" "Metal/metalwall_combinecore01a_normal"
-		"$normalmapalphaenvmapmask" 1
-	}
+	"$bumpmap" "Metal/metalwall_combinecore01a_normal"
+	"$normalmapalphaenvmapmask" 1
 
 	"LightmappedGeneric_DX8"
 	{
@@ -28,6 +26,5 @@
 	{
 		"$basetexture" "Metal/metalwall_combinecore01a"
 		"$basealphaenvmapmask" 1
-	"$phong" "1"
 	}
 }

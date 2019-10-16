@@ -13,15 +13,8 @@
 	//"$parallaxmap" "Metal/metalwall090a_height"
 	//"$parallaxmapscale" ".05"
 
-	//SAD : removed line below
-	//"$normalmapalphaenvmapmask" 1
-
-	//SAD : Added all below 
-	"LightmappedGeneric_DX9"
-	{
-		"$bumpmap" "metal/metalwall077a_normal"
-		"$normalmapalphaenvmapmask" 1
-	}
+	"$bumpmap" "metal/metalwall077a_normal"
+	"$normalmapalphaenvmapmask" 1
 
 	"LightmappedGeneric_DX8"
 	{

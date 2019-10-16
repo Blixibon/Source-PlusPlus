@@ -13,7 +13,6 @@
 // STATIC: "LIGHTMAPWATERFOG"               "0..1"  [ps20b]
 // STATIC: "LIGHTMAPWATERFOG"               "0..0"  [ps20] [ = 0; ]
 // STATIC: "FORCEFRESNEL"					"0..1"
-// STATIC: "CONVERT_TO_SRGB"				"0..1"	[ps20b] [= g_pHardwareConfig->NeedsShaderSRGBConversion()] [PC]
 
 // DYNAMIC: "FLASHLIGHTSHADOWS"             "0..1"  [ps20b]
 // DYNAMIC: "FLASHLIGHTSHADOWS"             "0..0"  [ps20] [ = 0; ]

@@ -166,12 +166,14 @@ static void ParseDetailGroup( int detailId, KeyValues* pGroupKeyValues )
 					model.m_Tex[0].Init();
 					model.m_Tex[1].Init();
 
-					float x = 0, y = 0, flWidth = 64, flHeight = 64, flTextureSize = 512;
-					int nValid = sscanf( pSpriteData, "%f %f %f %f %f", &x, &y, &flWidth, &flHeight, &flTextureSize );
-					if ( (nValid != 5) || (flTextureSize == 0) )
+					float x = 0, y = 0, flWidth = 64, flHeight = 64, flTextureSize = 512, flTextureSizeY = 512;
+					int nValid = sscanf( pSpriteData, "%f %f %f %f %f %f", &x, &y, &flWidth, &flHeight, &flTextureSize, &flTextureSizeY );
+					if ( (nValid < 5) || (flTextureSize == 0) )
 					{
 						Error( "Invalid arguments to \"sprite\" in detail.vbsp (model %s)!\n", model.m_ModelName.String() );
 					}
+					else if (nValid < 6)
+						flTextureSizeY = flTextureSize;
 
 					model.m_Tex[0].x = ( x + 0.5f ) / flTextureSize;
 					model.m_Tex[0].y = ( y + 0.5f ) / flTextureSize;

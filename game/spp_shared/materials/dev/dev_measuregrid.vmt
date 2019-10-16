@@ -1,0 +1,9 @@
+"LightMappedGeneric"
+{
+	"$basetexture" "dev/dev_measuregrid"
+	"$bumpmap" "dev/dev_measuregrid_normal"
+	"$detail" "dev/dev_measuregrid_detail"
+	"$detailblendfactor" 0.15
+	"$surfaceprop" "default"
+	"%keywords" "dev"
+}

@@ -10,3 +10,6 @@ pbr_vs20.fxc
 ssgi_ps30.fxc
 
 passthru_vs20.fxc
+
+pp_skin_ps20b.fxc
+pp_skin_vs20.fxc

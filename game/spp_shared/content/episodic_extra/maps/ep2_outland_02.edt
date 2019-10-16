@@ -128,6 +128,7 @@
 		"OnTrigger" "GO_spawn02_final,Trigger,,0,-1"
 		"OnTrigger" "GO_spawn01_final,Trigger,,0,-1"
 		"OnTrigger" "GO_spawn00_final,Trigger,,0,-1"
+		"OnTrigger" "citizen_vcd_casehandler_counter,Add,1,1,-1"
 		"OnTrigger" "ep2_song0_easy,FadeIn,10,0,-1"
 	}
 	
@@ -141,6 +142,7 @@
 		"OnTrigger" "GO_spawn02_final,Trigger,,15.6,-1"
 		"OnTrigger" "GO_spawn01_final,Trigger,,15.6,-1"
 		"OnTrigger" "GO_spawn00_final,Trigger,,15.6,-1"
+		"OnTrigger" "citizen_vcd_casehandler_counter,Add,1,16.6,-1"
 		"OnTrigger" "ep2_song0_hard,PlaySound,,0,-1"
 		"OnTrigger" "antlion_spawner_00_final,AddOutput,workerspawnrate 0.1,0,-1"
 		"OnTrigger" "antlion_spawner_*,SetMaxChildren,72,0,-1"
@@ -158,7 +160,6 @@
 		"OnTrigger" "vortAssault1,BeginAssault,,0,-1"
 		"OnTrigger" "vortAssault1,Activate,,0,-1"
 		"OnTrigger" "cheatchoreo_rl_2,Trigger,,0,-1"
-		"OnTrigger" "citizen_vcd_casehandler_counter,Add,1,9,-1"
 		"OnTrigger" "trigger_noJump,Kill,,0,-1"
 		"OnTrigger" "antlions_like_turrets,RevertRelationship,,0,-1"
 		"OnTrigger" "citizen_tunnel_block_brushes,Kill,,0,-1"

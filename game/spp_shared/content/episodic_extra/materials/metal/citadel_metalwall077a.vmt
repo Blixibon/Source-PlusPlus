@@ -12,11 +12,9 @@
 	"$envmapcontrast" 1
 	"$envmapsaturation" 1
 
-	"LightmappedGeneric_DX9"
-	{
-		"$bumpmap" "metal/metalwall077a_normal"
-		"$normalmapalphaenvmapmask" 1
-	}
+	
+	"$bumpmap" "metal/metalwall077a_normal"
+	"$normalmapalphaenvmapmask" 1
 
 	"LightmappedGeneric_DX8"
 	{
