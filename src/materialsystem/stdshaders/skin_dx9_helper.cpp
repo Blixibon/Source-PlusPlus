@@ -740,7 +740,7 @@ void DrawSkin_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShad
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-			//SET_DYNAMIC_PIXEL_SHADER_COMBO( PHONG_USE_EXPONENT_FACTOR, bHasPhongExponentFactor );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( PHONG_USE_EXPONENT_FACTOR, bHasPhongExponentFactor );
 			SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, pp_skin_ps20b );
 		}
 #ifndef _X360
@@ -767,7 +767,7 @@ void DrawSkin_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShad
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, bWriteDepthToAlpha );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-			//SET_DYNAMIC_PIXEL_SHADER_COMBO( PHONG_USE_EXPONENT_FACTOR, bHasPhongExponentFactor );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( PHONG_USE_EXPONENT_FACTOR, bHasPhongExponentFactor );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( CASCADED_SHADOW, iCascadedShadowCombo );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( UBERLIGHT, bUberlight );
 			SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, pp_skin_ps30 );
@@ -974,8 +974,8 @@ void DrawSkin_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShad
 		{
 			params[info.m_nPhongFresnelRanges]->GetVecValue( vFresnelRanges_SpecBoost, 3 );	// Grab optional Fresnel range parameters
 			// Change fresnel range encoding from (min, mid, max) to ((mid-min)*2, mid, (max-mid)*2)
-			vFresnelRanges_SpecBoost[0] = (vFresnelRanges_SpecBoost[1] - vFresnelRanges_SpecBoost[0]) * 2;
-			vFresnelRanges_SpecBoost[2] = (vFresnelRanges_SpecBoost[2] - vFresnelRanges_SpecBoost[1]) * 2;
+			//vFresnelRanges_SpecBoost[0] = (vFresnelRanges_SpecBoost[1] - vFresnelRanges_SpecBoost[0]) * 2;
+			//vFresnelRanges_SpecBoost[2] = (vFresnelRanges_SpecBoost[2] - vFresnelRanges_SpecBoost[1]) * 2;
 		}
 
 		if ( (info.m_nPhongBoost != -1 ) && params[info.m_nPhongBoost]->IsDefined())		// Grab optional Phong boost param

@@ -24,6 +24,8 @@
 // DYNAMIC: "WRITE_DEPTH_TO_DESTALPHA"	"0..1"	[ps30]
 // DYNAMIC: "FLASHLIGHTSHADOWS"			"0..1"	[ps20b]
 // DYNAMIC: "FLASHLIGHTSHADOWS"			"0..1"	[ps30]
+// DYNAMIC: "PHONG_USE_EXPONENT_FACTOR"	"0..0"	[ps20]
+// DYNAMIC: "PHONG_USE_EXPONENT_FACTOR"	"0..1"	[ps20b] [ps30]  [PC]
 // DYNAMIC: "CASCADED_SHADOW"			"0..1"	[ps30]
 // DYNAMIC: "UBERLIGHT"					"0..1"	[ps30]
 
@@ -314,7 +316,11 @@ float4 main( PS_INPUT i ) : COLOR
 	[flatten]
 #endif
 	
+#if ( PHONG_USE_EXPONENT_FACTOR )
+	fSpecExp = ( 1.0f + g_EyePos_SpecExponent.w * vSpecExpMap.r );
+#else
 	fSpecExp = (g_EyePos_SpecExponent.w >= 0.0) ? g_EyePos_SpecExponent.w : (1.0f + 149.0f * vSpecExpMap.r);
+#endif
 
 	// If constant tint is negative, tint with albedo, based upon scalar tint map
 #if defined( _X360 )
@@ -324,7 +330,7 @@ float4 main( PS_INPUT i ) : COLOR
 	vSpecularTint = (g_SpecularTint.r >= 0.0) ? g_SpecularTint.rgb : vSpecularTint;
 		
 #else
-    fSpecExp = max(g_EyePos_SpecExponent.w, 0);
+	fSpecExp = max(g_EyePos_SpecExponent.w, 0);
 #endif
 
 	float3 albedo = baseColor.rgb;
