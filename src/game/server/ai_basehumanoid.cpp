@@ -169,10 +169,13 @@ bool CAI_BaseHumanoid::OnMoveBlocked( AIMoveResult_t *pResult )
 #define SNEAK_ATTACK_DIST	360.0f // 30 feet
 void CAI_BaseHumanoid::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
 {
+	CTakeDamageInfo newInfo = info;
+
 	bool bSneakAttacked = false;
 
 	if( ptr->hitgroup == HITGROUP_HEAD )
 	{
+
 		if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() && info.GetAttacker() != GetEnemy() && !IsInAScript() )
 		{
 			// Shot in the head by a player I've never seen. In this case the player 
@@ -202,14 +205,10 @@ void CAI_BaseHumanoid::TraceAttack( const CTakeDamageInfo &info, const Vector &v
 
 	if( bSneakAttacked )
 	{
-		CTakeDamageInfo newInfo = info;
-
 		newInfo.SetDamage( GetHealth() );
-		BaseClass::TraceAttack( newInfo, vecDir, ptr, pAccumulator );
-		return;
 	}
 
-	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
+	BaseClass::TraceAttack(newInfo, vecDir, ptr, pAccumulator );
 }
 
 //-----------------------------------------------------------------------------

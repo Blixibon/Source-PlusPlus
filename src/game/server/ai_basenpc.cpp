@@ -1327,6 +1327,12 @@ void CAI_BaseNPC::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 
 	case HITGROUP_HEAD:
 		subInfo.ScaleDamage( GetHitgroupDamageMultiplier(ptr->hitgroup, info) );
+#if /*defined(TF_CLASSIC) ||*/ defined(HL2_LAZUL)
+		if (info.GetDamageType() & DMG_SNIPER)
+		{
+			subInfo.SetDamageCustom(TF_DMG_CUSTOM_HEADSHOT);
+		}
+#endif
 		if( bDebug ) DevMsg("Hit Location: Head\n");
 		break;
 
@@ -1359,12 +1365,11 @@ void CAI_BaseNPC::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 
 	if ( subInfo.GetDamage() >= 1.0 && !(subInfo.GetDamageType() & DMG_SHOCK ) )
 	{
-		if( !IsPlayer() || ( IsPlayer() && g_pGameRules->IsMultiplayer() ) )
-		{
-			// NPC's always bleed. Players only bleed in multiplayer.
-			SpawnBlood( ptr->endpos, vecDir, BloodColor(), subInfo.GetDamage() );// a little surface blood.
-		}
+		CDisablePredictionFiltering dis(true);
 
+		// NPC's always bleed. Players only bleed in multiplayer.
+		SpawnBlood( ptr->endpos, vecDir, BloodColor(), subInfo.GetDamage() );// a little surface blood.
+		
 		TraceBleed( subInfo.GetDamage(), vecDir, ptr, subInfo.GetDamageType() );
 
 		if ( ptr->hitgroup == HITGROUP_HEAD && m_iHealth - subInfo.GetDamage() > 0 )

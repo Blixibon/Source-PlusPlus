@@ -1697,6 +1697,17 @@ void CLaz_Player::PlayFlinch(const CTakeDamageInfo & info)
 	DoAnimationEvent(flinchAct, iSubType);
 }
 
+void CLaz_Player::TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator)
+{
+	CTakeDamageInfo subInfo = info;
+	if (ptr->hitgroup == HITGROUP_HEAD && info.GetDamageType() & DMG_SNIPER)
+	{
+		subInfo.SetDamageCustom(TF_DMG_CUSTOM_HEADSHOT);
+	}
+
+	BaseClass::TraceAttack(subInfo, vecDir, ptr, pAccumulator);
+}
+
 void CLaz_Player::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 {
 	BaseClass::ModifyOrAppendCriteria(set);

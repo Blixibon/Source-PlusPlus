@@ -817,7 +817,7 @@ float CLazuul::GetAmmoDamage(CBaseEntity* pAttacker, CBaseEntity* pVictim, int n
 	float flDamage = 0.0f;
 	CAmmoDef* pAmmoDef = GetAmmoDef();
 
-	if (pAmmoDef->DamageType(nAmmoType) & DMG_SNIPER)
+	if (pAmmoDef->Flags(nAmmoType) & AMMO_DAMAGE_BASED_ON_VICTIM)
 	{
 		// If this damage is from a SNIPER, we do damage based on what the bullet
 		// HITS, not who fired it. All other bullets have their damage values
@@ -920,22 +920,17 @@ bool CLazuul::AllowDamage(CBaseEntity* pVictim, const CTakeDamageInfo& info)
 				{
 					// A physics object has struck a player ally. Don't allow damage if it
 					// came from the player's physcannon. 
-					CBaseEntity* pWeapon = pPlayer->HasNamedPlayerItem("weapon_physcannon");
+					CBaseCombatWeapon* pCannon = pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_PHYSGUN);
 
-					if (pWeapon)
+					if (pCannon)
 					{
-						CBaseCombatWeapon* pCannon = assert_cast <CBaseCombatWeapon*>(pWeapon);
-
-						if (pCannon)
+						if (PhysCannonAccountableForObject(pCannon, info.GetInflictor()))
 						{
-							if (PhysCannonAccountableForObject(pCannon, info.GetInflictor()))
-							{
-								// Antlions can always be squashed!
-								if (pVictim->Classify() == CLASS_ANTLION)
-									return true;
+							// Antlions can always be squashed!
+							if (pVictim->Classify() == CLASS_ANTLION)
+								return true;
 
-								return false;
-							}
+							return false;
 						}
 					}
 				}
@@ -3816,6 +3811,10 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 			killer_weapon_name = "hunter_pound";
 		}
 	}
+	else if (V_strcmp(killer_weapon_name, "sniper") == 0)
+	{
+		killer_weapon_name = "sniperrifle";
+	}
 
 	else if (iWeaponID)
 	{
@@ -4247,14 +4246,14 @@ CAmmoDef* GetAmmoDef()
 		def.AddAmmoType("AlyxGun", DMG_BULLET, TRACER_LINE, "sk_plr_dmg_alyxgun", "sk_npc_dmg_alyxgun", "sk_max_alyxgun", BULLET_IMPULSE(200, 1225), 0);
 		def.AddAmmoType("Pistol", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_pistol", "sk_npc_dmg_pistol", "sk_max_pistol", BULLET_IMPULSE(200, 1225), 0);
 		def.AddAmmoType("SMG1", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_smg1", "sk_npc_dmg_smg1", "sk_max_smg1", BULLET_IMPULSE(200, 1225), 0);
-		def.AddAmmoType("357", DMG_BULLET, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_357", "sk_npc_dmg_357", "sk_max_357", BULLET_IMPULSE(800, 5000), 0);
+		def.AddAmmoType("357", DMG_BULLET | DMG_SNIPER, TRACER_LINE_AND_WHIZ, "sk_plr_dmg_357", "sk_npc_dmg_357", "sk_max_357", BULLET_IMPULSE(800, 5000), 0);
 		def.AddAmmoType("XBowBolt", DMG_BULLET, TRACER_LINE, "sk_plr_dmg_crossbow", "sk_npc_dmg_crossbow", "sk_max_crossbow", BULLET_IMPULSE(800, 8000), 0);
 
 		def.AddAmmoType("Buckshot", DMG_BULLET | DMG_BUCKSHOT, TRACER_LINE, "sk_plr_dmg_buckshot", "sk_npc_dmg_buckshot", "sk_max_buckshot", BULLET_IMPULSE(400, 1200), 0);
 		def.AddAmmoType("RPG_Round", DMG_BURN, TRACER_NONE, "sk_plr_dmg_rpg_round", "sk_npc_dmg_rpg_round", "sk_max_rpg_round", 0, 0);
 		def.AddAmmoType("SMG1_Grenade", DMG_BURN, TRACER_NONE, "sk_plr_dmg_smg1_grenade", "sk_npc_dmg_smg1_grenade", "sk_max_smg1_grenade", 0, 0);
-		def.AddAmmoType("SniperRound", DMG_BULLET | DMG_SNIPER, TRACER_NONE, "sk_plr_dmg_sniper_round", "sk_npc_dmg_sniper_round", "sk_max_sniper_round", BULLET_IMPULSE(650, 6000), 0);
-		def.AddAmmoType("SniperPenetratedRound", DMG_BULLET | DMG_SNIPER, TRACER_NONE, "sk_dmg_sniper_penetrate_plr", "sk_dmg_sniper_penetrate_npc", "sk_max_sniper_round", BULLET_IMPULSE(150, 6000), 0);
+		def.AddAmmoType("SniperRound", DMG_BULLET | DMG_SNIPER, TRACER_NONE, "sk_plr_dmg_sniper_round", "sk_npc_dmg_sniper_round", "sk_max_sniper_round", BULLET_IMPULSE(650, 6000), AMMO_DAMAGE_BASED_ON_VICTIM);
+		def.AddAmmoType("SniperPenetratedRound", DMG_BULLET | DMG_SNIPER, TRACER_NONE, "sk_dmg_sniper_penetrate_plr", "sk_dmg_sniper_penetrate_npc", "sk_max_sniper_round", BULLET_IMPULSE(150, 6000), AMMO_DAMAGE_BASED_ON_VICTIM);
 		def.AddAmmoType("Grenade", DMG_BURN, TRACER_NONE, "sk_plr_dmg_grenade", "sk_npc_dmg_grenade", "sk_max_grenade", 0, 0);
 		def.AddAmmoType("Thumper", DMG_SONIC, TRACER_NONE, 10, 10, 2, 0, 0);
 		def.AddAmmoType("Gravity", DMG_CLUB, TRACER_NONE, 0, 0, 8, 0, 0);
@@ -4319,7 +4318,7 @@ CAmmoDef* GetAmmoDef()
 
 		// HL1
 		def.AddAmmoType("9mmRound", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_9mm_bullet", "sk_npc_dmg_9mm_bullet", "sk_max_9mm_bullet", BULLET_IMPULSE(500, 1325), 0);
-		def.AddAmmoType("357Round", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_357_bullet", "sk_npc_dmg_12mm_bullet", "sk_max_357_bullet", BULLET_IMPULSE(650, 6000), 0);
+		def.AddAmmoType("357Round", DMG_BULLET | DMG_NEVERGIB | DMG_SNIPER, TRACER_LINE, "sk_plr_dmg_357_bullet", "sk_npc_dmg_12mm_bullet", "sk_max_357_bullet", BULLET_IMPULSE(650, 6000), 0);
 		def.AddAmmoType("BuckshotHL1", DMG_BULLET | DMG_BUCKSHOT, TRACER_LINE, "sk_plr_dmg_buckshot", NULL, "sk_max_buckshot", BULLET_IMPULSE(200, 1200), 0);
 		def.AddAmmoType("XBowBoltHL1", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_xbow_bolt_plr", NULL, "sk_max_xbow_bolt", BULLET_IMPULSE(200, 1200), 0);
 		def.AddAmmoType("MP5_Grenade", DMG_BURN | DMG_BLAST, TRACER_NONE, "sk_plr_dmg_mp5_grenade", NULL, "sk_max_mp5_grenade", 0, 0);

@@ -91,7 +91,7 @@ public:
 	//virtual int			OnTakeDamage(const CTakeDamageInfo &inputInfo);
 
 	void PlayFlinch(const CTakeDamageInfo &info);
-
+	virtual void			TraceAttack(const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator);
 	void PainSound(const CTakeDamageInfo &info);
 	virtual void			DeathSound(const CTakeDamageInfo &info);
 
