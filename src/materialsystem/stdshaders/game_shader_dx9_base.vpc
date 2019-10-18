@@ -83,6 +83,9 @@ $Project
 
 		$File	"detail_grass.cpp"
 		$File	"ssgi.cpp"
+
+		$File	"eye_refract.cpp"
+		$File	"eye_refract_helper.cpp"
 	}
 
 	$Folder	"Header Files"

@@ -8,8 +8,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-DEFINE_FALLBACK_SHADER( EyeRefract, EyeRefract_dx9 )
-BEGIN_VS_SHADER( EyeRefract_dx9, "Help for Eyes" )
+DEFINE_FALLBACK_SHADER( PP_EyeRefract, PP_EyeRefract_dx9 )
+BEGIN_VS_SHADER(PP_EyeRefract_dx9, "Help for Eyes" )
 	BEGIN_SHADER_PARAMS
 		SHADER_PARAM( IRIS, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "iris texture" )
 		SHADER_PARAM( IRISFRAME, SHADER_PARAM_TYPE_INTEGER, "0", "frame for the iris texture" )
@@ -44,13 +44,15 @@ BEGIN_VS_SHADER( EyeRefract_dx9, "Help for Eyes" )
 		SHADER_PARAM( CLOAKCOLORTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "Cloak color tint" )
 		SHADER_PARAM( REFRACTAMOUNT, SHADER_PARAM_TYPE_FLOAT, "2", "" )
 
-		// Emissive Scroll Pass
-		SHADER_PARAM( EMISSIVEBLENDENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enable emissive blend pass" )
-		SHADER_PARAM( EMISSIVEBLENDSCROLLVECTOR, SHADER_PARAM_TYPE_VEC2, "[0.11 0.124]", "Emissive scroll vec" )
-		SHADER_PARAM( EMISSIVEBLENDSTRENGTH, SHADER_PARAM_TYPE_FLOAT, "1.0", "Emissive blend strength" )
-		SHADER_PARAM( EMISSIVEBLENDTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "self-illumination map" )
-		SHADER_PARAM( EMISSIVEBLENDTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "Self-illumination tint" )
-		SHADER_PARAM( EMISSIVEBLENDFLOWTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "flow map" )
+	// Emissive Scroll Pass
+	SHADER_PARAM(EMISSIVEBLENDENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enable emissive blend pass")
+	SHADER_PARAM(EMISSIVEBLENDBASETEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "self-illumination map")
+	SHADER_PARAM(EMISSIVEBLENDSCROLLVECTOR, SHADER_PARAM_TYPE_VEC2, "[0.11 0.124]", "Emissive scroll vec")
+	SHADER_PARAM(EMISSIVEBLENDSTRENGTH, SHADER_PARAM_TYPE_FLOAT, "1.0", "Emissive blend strength")
+	SHADER_PARAM(EMISSIVEBLENDTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "self-illumination map")
+	SHADER_PARAM(EMISSIVEBLENDTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "Self-illumination tint")
+	SHADER_PARAM(EMISSIVEBLENDFLOWTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "flow map")
+	SHADER_PARAM(TIME, SHADER_PARAM_TYPE_FLOAT, "0.0", "Needs CurrentTime Proxy")
 	END_SHADER_PARAMS
 
 	void SetupVarsEyeRefract( Eye_Refract_Vars_t &info )
@@ -118,11 +120,12 @@ BEGIN_VS_SHADER( EyeRefract_dx9, "Help for Eyes" )
 	void SetupVarsEmissiveScrollBlendedPass( EmissiveScrollBlendedPassVars_t &info )
 	{
 		info.m_nBlendStrength = EMISSIVEBLENDSTRENGTH;
-		info.m_nBaseTexture = IRIS;
+		info.m_nBaseTexture = EMISSIVEBLENDBASETEXTURE;
 		info.m_nFlowTexture = EMISSIVEBLENDFLOWTEXTURE;
 		info.m_nEmissiveTexture = EMISSIVEBLENDTEXTURE;
 		info.m_nEmissiveTint = EMISSIVEBLENDTINT;
 		info.m_nEmissiveScrollVector = EMISSIVEBLENDSCROLLVECTOR;
+		info.m_nTime = TIME;
 	}
 
 	SHADER_INIT_PARAMS()

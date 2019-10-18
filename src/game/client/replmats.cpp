@@ -40,6 +40,7 @@ static const char * const pszShaderReplaceDict[][2] = {
 #endif
 #endif // !DEFERRED
 	"Teeth",					"PP_Teeth",
+	"EyeRefract",				"PP_EyeRefract",
 	//"Cable",					"PP_Cable",
 	"DepthWrite",				"PP_DepthWrite",
 	//"SplineRope",				"PP_SplineRope",
