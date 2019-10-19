@@ -970,6 +970,20 @@ void CClientLeafSystem::AddShadowToRenderable( ClientRenderHandle_t renderHandle
 		IClientRenderable* pRenderable = m_Renderables[renderHandle].m_pRenderable;
 		g_pClientShadowMgr->AddShadowToReceiver( m_Shadows[shadowHandle].m_Shadow,
 			pRenderable, SHADOW_RECEIVER_STUDIO_MODEL );
+
+		// This is here because the normal way isn't working for some reason.
+		if (m_Renderables[renderHandle].m_RenderGroup == RENDER_GROUP_VIEW_MODEL_OPAQUE)
+		{
+			C_BaseViewModel* pVM = dynamic_cast<C_BaseViewModel*> (pRenderable);
+			C_BaseAnimating* pHands = pVM->GetHandsModel();
+			if (pHands && pHands->GetModel())
+			{
+				ClientRenderHandle_t handHandle = pHands->GetRenderHandle();
+				m_ShadowsOnRenderable.AddElementToBucket(handHandle, shadowHandle);
+				g_pClientShadowMgr->AddShadowToReceiver(m_Shadows[shadowHandle].m_Shadow,
+					pHands, SHADOW_RECEIVER_STUDIO_MODEL);
+			}
+		}
 	}
 }
 

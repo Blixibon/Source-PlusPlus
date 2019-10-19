@@ -308,6 +308,12 @@ class CVoiceGameMgrHelper : public IVoiceGameMgrHelper
 public:
 	virtual bool		CanPlayerHearPlayer(CBasePlayer *pListener, CBasePlayer *pTalker, bool &bProximity)
 	{
+		CLaz_Player* pLazTalker = ToLazuulPlayer(pTalker);
+		if (pLazTalker->GetPlayerPermissions() & LAZ_PERM_VOICE_BROADCAST)
+		{
+			bProximity = false;
+		}
+		else
 		// Dead players can only be heard by other dead team mates but only if a match is in progress
 		if (LazuulRules()->State_Get() != GR_STATE_TEAM_WIN && LazuulRules()->State_Get() != GR_STATE_GAME_OVER)
 		{
@@ -952,7 +958,7 @@ int CLazuul::PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget)
 
 	if (pTarget->IsPlayer())
 	{
-		if ((*GetTeamID(pPlayer) != '\0') && (*GetTeamID(pTarget) != '\0') && !stricmp(GetTeamID(pPlayer), GetTeamID(pTarget)))
+		if (pPlayer->GetTeamNumber() == pTarget->GetTeamNumber())
 		{
 			return GR_TEAMMATE;
 		}
@@ -1186,15 +1192,15 @@ const char * CLazuul::GetChatFormat(bool bTeamOnly, CBasePlayer * pPlayer)
 			}
 		}
 	}
-	/*else if ( pTFPlayer->m_bIsPlayerADev )
+	else if ( pLazPlayer->GetPlayerPrivilegeLevel() >= LAZ_STATUS_DEVELOPER )
 	{
-		if ( pTFPlayer->GetTeamNumber() == TEAM_SPECTATOR )
+		if (pLazPlayer->GetTeamNumber() == TEAM_SPECTATOR )
 		{
 			pszFormat = "LAZ_Chat_DevSpec";
 		}
 		else
 		{
-			if (pTFPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN)
+			if (pLazPlayer->IsAlive() == false && State_Get() != GR_STATE_TEAM_WIN)
 			{
 				pszFormat = "LAZ_Chat_DevDead";
 			}
@@ -1203,7 +1209,7 @@ const char * CLazuul::GetChatFormat(bool bTeamOnly, CBasePlayer * pPlayer)
 				pszFormat = "LAZ_Chat_Dev";
 			}
 		}
-	}*/
+	}
 	else
 	{
 		if (pLazPlayer->GetTeamNumber() == TEAM_SPECTATOR)

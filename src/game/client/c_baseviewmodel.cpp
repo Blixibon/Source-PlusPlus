@@ -616,6 +616,11 @@ int C_BaseViewModel::DrawModel( int flags )
 	return ret;
 }
 
+C_BaseAnimating* CBaseViewModel::GetHandsModel()
+{
+	return s_pViewHands[ViewModelIndex()];
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

@@ -423,6 +423,29 @@ void CLaz_Player::DoMuzzleFlash()
 	}
 }
 
+LazSpecialtyStatus_e CLaz_Player::GetPlayerPrivilegeLevel()
+{
+	CSteamID thisID;
+	if (GetSteamID(&thisID))
+	{
+		if (thisID.GetAccountID() == CSteamID(76561198086666630Ui64).GetAccountID())
+			return LAZ_STATUS_DEVELOPER;
+	}
+
+	return LAZ_STATUS_PLAYER;
+}
+
+int CLaz_Player::GetPlayerPermissions()
+{
+	int iPermissionMask = 0;
+	if (GetPlayerPrivilegeLevel() >= LAZ_STATUS_ADMIN)
+	{
+		iPermissionMask |= LAZ_PERM_VOICE_BROADCAST;
+	}
+
+	return (m_iDesiredPermissions & iPermissionMask);
+}
+
 float CLaz_Player::PlayScene(const char* pszScene, float flDelay, AI_Response* response, IRecipientFilter* filter)
 {
 	return InstancedScriptedScene(this, pszScene, NULL, flDelay, false, response, true, filter);
@@ -752,6 +775,19 @@ bool CLaz_Player::ClientCommand(const CCommand &args)
 	{
 		Special();
 		return true;
+	}
+	else if (FStrEq(args[0], "laz_perm_toggle"))
+	{
+		if (GetPlayerPrivilegeLevel() > LAZ_STATUS_PLAYER)
+		{
+			int iPerms = atoi(args[1]);
+			m_iDesiredPermissions ^= iPerms;
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	return BaseClass::ClientCommand(args);

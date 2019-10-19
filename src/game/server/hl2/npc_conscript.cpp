@@ -344,11 +344,6 @@ int CNPC_Conscript::GetSoundInterests ( void)
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Conscript::Classify ( void )
 {
-	if (FClassnameIs(this, "npc_conscript"))
-	{
-		return	CLASS_CONSCRIPT;
-	}
-
 	if (FClassnameIs(this, "npc_conscript_combine"))
 	{
 		return	CLASS_COMBINE;
@@ -359,6 +354,8 @@ Class_T	CNPC_Conscript::Classify ( void )
 		return	CLASS_METROPOLICE; //Only hostile temporarily, will change to CLASS_CONSCRIPT
 		//10-8-2018: NOTE TO DOWNLOADERS: You really, really, really want to change this if you don't have a CLASS_TEAM1 defined in gamerules
 	}
+
+	return	CLASS_CONSCRIPT;
 }
 
 //=========================================================

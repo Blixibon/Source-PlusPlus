@@ -26,6 +26,18 @@ enum LazSpecialAttack_e
 
 extern INetworkStringTable *g_pStringTablePlayerFootSteps;
 
+enum LazSpecialtyStatus_e
+{
+	LAZ_STATUS_PLAYER = 0,
+	LAZ_STATUS_ADMIN,
+	LAZ_STATUS_DEVELOPER,
+};
+
+enum LazPlayerPermissions_e
+{
+	LAZ_PERM_VOICE_BROADCAST = (1 << 0),
+};
+
 //=============================================================================
 // >> HL2MP_Player
 //=============================================================================
@@ -60,6 +72,9 @@ public:
 	virtual CBaseEntity		*EntSelectSpawnPoint(void);
 
 	virtual void DoMuzzleFlash();
+
+	LazSpecialtyStatus_e GetPlayerPrivilegeLevel();
+	int					GetPlayerPermissions();
 
 	virtual bool	IsReadyToPlay(void)
 	{
@@ -239,6 +254,8 @@ protected:
 	string_t			m_iszExpressionScene;
 	EHANDLE				m_hExpressionSceneEnt;
 	float				m_flNextRandomExpressionTime;
+
+	int					m_iDesiredPermissions;
 
 	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
 	CNetworkString(m_strMinionClass, 32);

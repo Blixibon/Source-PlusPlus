@@ -122,6 +122,8 @@ public:
 		return m_iHandsModelIndex.Get();
 	}
 
+	C_BaseAnimating* GetHandsModel();
+
 // Only supported in TF2 right now
 #if defined( INVASION_CLIENT_DLL )
 
