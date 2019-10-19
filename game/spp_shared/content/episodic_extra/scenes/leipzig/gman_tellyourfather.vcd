@@ -5,7 +5,7 @@ actor "Gman"
   {
     event speak "gman_tellyourfather-notthistime01"
     {
-      time 0.076389 1.816457
+      time 0.076389 5.207999
       param "ep_02.leipzig.gman_tellyourfather-notthistime01"
       fixedlength
       cctype "cc_master"
@@ -13,7 +13,7 @@ actor "Gman"
     }
     event speak "gman_tellyourfather-notthistime02"
     {
-      time 1.993056 4.187228
+      time 5.270833 7.987568
       param "ep_02.leipzig.gman_tellyourfather-notthistime02"
       fixedlength
       cctype "cc_master"
@@ -21,7 +21,7 @@ actor "Gman"
     }
     event speak "gman_tellyourfather-notthistime03"
     {
-      time 4.368056 9.315765
+      time 8.951391 13.479577
       param "ep_02.leipzig.gman_tellyourfather-notthistime03"
       fixedlength
       cctype "cc_master"
@@ -32,7 +32,7 @@ actor "Gman"
   {
     event lookat "lookit"
     {
-      time 2.927222 5.373888
+      time 8.156388 10.603054
       param "!player"
       event_ramp
       {
@@ -65,3 +65,4 @@ scalesettings
 }
 fps 60
 snap off
+ignorePhonemes off

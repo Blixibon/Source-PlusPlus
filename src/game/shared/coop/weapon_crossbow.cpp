@@ -82,7 +82,7 @@ public:
 	void BoltTouch( CBaseEntity *pOther );
 	bool CreateVPhysics( void );
 	unsigned int PhysicsSolidMaskForEntity() const;
-	static CCrossbowBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner = NULL );
+	static CCrossbowBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, const CWeaponCoopBase *pCrossbow, CBasePlayer *pentOwner = NULL );
 
 protected:
 
@@ -90,6 +90,7 @@ protected:
 
 	CHandle<CSprite>		m_pGlowSprite;
 	//CHandle<CSpriteTrail>	m_pGlowTrail;
+	CHandle<CWeaponCoopBase> m_hCrossbow;
 };
 
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
@@ -106,11 +107,12 @@ BEGIN_DATADESC( CCrossbowBolt )
 	// These are recreated on reload, they don't need storage
 	DEFINE_FIELD( m_pGlowSprite, FIELD_EHANDLE ),
 	//DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
+	DEFINE_FIELD(m_hCrossbow, FIELD_EHANDLE),
 
 END_DATADESC()
 #endif
 
-CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
+CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, const CWeaponCoopBase* pCrossbow, CBasePlayer *pentOwner )
 {
 	// Create a new entity with CCrossbowBolt private data
 	CCrossbowBolt *pBolt = (CCrossbowBolt *)CreateEntityByName( "crossbow_bolt" );
@@ -118,6 +120,7 @@ CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle 
 	pBolt->SetAbsAngles( angAngles );
 	pBolt->Spawn();
 	pBolt->SetOwnerEntity( pentOwner );
+	pBolt->m_hCrossbow.Set(pCrossbow);
 
 	return pBolt;
 }
@@ -175,7 +178,7 @@ bool CCrossbowBolt::CreateVPhysics( void )
 //-----------------------------------------------------------------------------
 unsigned int CCrossbowBolt::PhysicsSolidMaskForEntity() const
 {
-	return ( BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX ) & ~CONTENTS_GRATE;
+	return (CONTENTS_SOLID | CONTENTS_MOVEABLE | CONTENTS_WINDOW | CONTENTS_MONSTER | CONTENTS_HITBOX);
 }
 
 //-----------------------------------------------------------------------------
@@ -268,15 +271,21 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 #endif//HL2_EPISODIC
 
-		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
+		CBaseEntity* pOwner = GetOwnerEntity();
+		if (m_hCrossbow.Get() && (!pOwner || !pOwner->IsPlayer()) && m_hCrossbow->GetOwner() && m_hCrossbow->GetOwner()->IsPlayer())
 		{
-			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), sk_plr_dmg_crossbow.GetFloat(), DMG_NEVERGIB );
+			pOwner = m_hCrossbow->GetOwner();
+		}
+
+		if(pOwner && pOwner->IsPlayer() && pOther->IsNPC() )
+		{
+			CTakeDamageInfo	dmgInfo( this, pOwner, m_hCrossbow.Get(), sk_plr_dmg_crossbow.GetFloat(), DMG_NEVERGIB | DMG_SNIPER );
 			dmgInfo.AdjustPlayerDamageInflictedForSkillLevel();
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
 
-			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
+			CBasePlayer *pPlayer = ToBasePlayer(pOwner);
 			if ( pPlayer )
 			{
 				gamestats->Event_WeaponHit( pPlayer, true, "weapon_crossbow", dmgInfo );
@@ -285,7 +294,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 		else
 		{
-			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), sk_plr_dmg_crossbow.GetFloat(), DMG_BULLET | DMG_NEVERGIB );
+			CTakeDamageInfo	dmgInfo( this, pOwner, m_hCrossbow.Get(), sk_plr_dmg_crossbow.GetFloat(), DMG_BULLET | DMG_NEVERGIB | DMG_SNIPER);
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
@@ -753,7 +762,7 @@ void CWeaponCrossbow::FireBolt( void )
 #endif
 
 //#ifndef CLIENT_DLL
-	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, pOwner );
+	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, this, pOwner );
 
 	if ( pOwner->GetWaterLevel() == 3 )
 	{

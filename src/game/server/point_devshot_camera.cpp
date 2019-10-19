@@ -19,6 +19,10 @@ int g_iDevShotCameraCount = 0;
 #define DEVSHOT_INITIAL_WAIT		5			// Time after the level spawn before the first devshot camera takes it's shot
 #define DEVSHOT_INTERVAL			5			// Time between each devshot camera taking it's shot
 
+#ifdef HL2_LAZUL
+ConVar make_observer_points("laz_mp_create_observer_points_from_devshot_cams", "1", FCVAR_DONTRECORD);
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: A camera entity that's used by the -makedevshots system to take
 //			dev screenshots everytime the map is checked into source control.
@@ -82,6 +86,14 @@ void CPointDevShotCamera::Spawn( void )
 	if ( !CommandLine()->FindParm("-makedevshots") )
 	{
 		UTIL_Remove( this );
+#ifdef HL2_LAZUL
+		if (make_observer_points.GetBool() && g_pGameRules->IsMultiplayer())
+		{
+			CBaseEntity* pCamera = CreateNoSpawn("info_observer_point", GetAbsOrigin(), GetAbsAngles());
+			pCamera->KeyValue("fov", m_iFOV);
+			DispatchSpawn(pCamera);
+		}
+#endif
 		return;
 	}
 

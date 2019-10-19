@@ -620,6 +620,7 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	CTakeDamageInfo info_modified = info;
+#ifdef HL2_LAZUL
 	CBaseEntity *pAttacker = info.GetAttacker();
 	if ((!pAttacker || pAttacker == this || pAttacker->IsBSPModel()))
 	{
@@ -634,7 +635,7 @@ void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 			info_modified.SetDamageCustom(TF_DMG_CUSTOM_SUICIDE);
 		}
 	}
-
+#endif
 	g_pGameRules->NPCKilled(this, info_modified);
 
 	BaseClass::Event_Killed( info );
@@ -1400,7 +1401,16 @@ void CAI_BaseNPC::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 		subInfo.SetInflictor( info.GetAttacker() );
 	}
 
-	AddMultiDamage( subInfo, this );
+#ifdef GAME_DLL
+	if (pAccumulator)
+	{
+		pAccumulator->AccumulateMultiDamage(subInfo, this);
+	}
+	else
+#endif // GAME_DLL
+	{
+		AddMultiDamage(subInfo, this);
+	}
 }
 
 //-----------------------------------------------------------------------------

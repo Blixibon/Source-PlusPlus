@@ -3623,6 +3623,11 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 			iWeaponID = HLSS_WEAPON_ID_FLAMER;
 		}
 	}
+	else if (pWeapon)
+	{
+		killer_weapon_name = pWeapon->GetClassname();
+		iWeaponID = pWeapon->GetWeaponID();
+	}
 	else if (pScorer && pInflictor && (pInflictor == pScorer))
 	{
 		// If the inflictor is the killer, then it must be their current weapon doing the damage

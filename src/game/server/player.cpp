@@ -974,7 +974,16 @@ void CBasePlayer::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &v
 			TraceBleed( info.GetDamage(), vecDir, ptr, info.GetDamageType() );
 		}
 
-		AddMultiDamage( info, this );
+#ifdef GAME_DLL
+		if (pAccumulator)
+		{
+			pAccumulator->AccumulateMultiDamage(info, this);
+		}
+		else
+#endif // GAME_DLL
+		{
+			AddMultiDamage(info, this);
+		}
 	}
 }
 

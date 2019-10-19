@@ -2297,6 +2297,9 @@ bool CLaz_Player::IsValidObserverTarget(CBaseEntity * target)
 			if (pAI->GetSleepState() != AISS_AWAKE)
 				return false;
 
+			if (pAI->GetEffects() & EF_NODRAW)
+				return false;
+
 			// Don't spectate burrowed npcs
 			if (pAI->GetFlags() & FL_NOTARGET)
 				return false;
