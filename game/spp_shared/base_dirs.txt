@@ -14,21 +14,6 @@
 		"background_movies"
 		{
 		}
-		
-		"better_effects"
-		{
-		
-		}
-
-		"csgo_ambient"
-		{
-			
-		}
-		
-		"l4d2_ambient"
-		{
-		
-		}
 	}
 
 	"|shared_parent|"
@@ -43,12 +28,12 @@
 				"scenes"	"1"
 			}
 			
-			//vpk		csgo_ambient
-			//vpk		l4d2_ambient
+			vpk		csgo_ambient
+			vpk		l4d2_ambient
+			vpk		better_effects
 			vpk		asrd_content
 			vpk		hl2wars_content
 			"vpk"	"sdk_pak"
-			vpk		p2_dissolve
 		}
 	}
 }

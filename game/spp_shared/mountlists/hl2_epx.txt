@@ -4,9 +4,11 @@
 	{
 		"head"	"1"
 		
-		"hl2_reloaded/reloaded"
+		"hl2epX_lowextra"
 		{
+			"noroot"	"1"
 			
+			vpk			hl2_reloaded
 		}
 		
 		"hl2epX_extra"
