@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/monk/monk_sheet"
+	"$bumpmap" "models/monk/monk_sheet_normal"
+	"$halflambert" 1
+}

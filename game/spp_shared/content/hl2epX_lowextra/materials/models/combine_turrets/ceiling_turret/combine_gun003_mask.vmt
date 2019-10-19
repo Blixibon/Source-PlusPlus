@@ -1,0 +1,5 @@
+"LightmappedGeneric"
+{
+	"$basetexture" "models/combine_turrets/ceiling_turret/combine_gun003_mask"
+	"$translucent" 1
+}

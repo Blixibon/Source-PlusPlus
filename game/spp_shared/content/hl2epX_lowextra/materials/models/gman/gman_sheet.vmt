@@ -1,0 +1,17 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "Models/Gman/gman_sheet"
+	"$halflambert" 1
+	"$bumpmap" "models/gman/gman_sheet_normal"
+
+	"$phong" "1"
+	"$phongboost" "0.5"
+	"$phongexponent" "3"
+	// "$phongexponenttexture" "models/gman/gman_sheet_phong"
+	// "$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.05 .2 1]"
+	
+	"$rimlight" "1"
+	"$rimlightexponent" "8"
+	"$rimlightboost" "2"
+}

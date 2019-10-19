@@ -1,0 +1,7 @@
+"VertexLitGeneric"
+{
+	// Original shader: VertexLitTexture
+	"$basetexture" "models/Odessa/hat"
+	"$bumpmap" "models/Odessa/hat_normal"
+	"$halflambert" 1
+}
