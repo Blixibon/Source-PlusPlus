@@ -54,11 +54,13 @@ class IShaderExtension : public IShaderExtensionV1
 {
 public:
 	virtual void SetDepthTextureFallbackForFlashlightState(FlashlightState_t&, ITexture*) = 0;
+	// Callers can use this to keep their own data organized
+	virtual int GetIndexOfFlashlightState(FlashlightState_t&) = 0;
 
 protected:
 	virtual ~IShaderExtension() {};
 };
 
-#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension002"
+#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension003"
 
 #endif // ISHADEREXTENSION_H

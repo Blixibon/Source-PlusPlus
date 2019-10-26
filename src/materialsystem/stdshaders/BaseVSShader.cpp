@@ -2302,6 +2302,12 @@ public:
 		m_dataTable[index - 1].pDepth = pDepthTex;
 	}
 
+	virtual int GetIndexOfFlashlightState(FlashlightState_t& flashlightState)
+	{
+		AUTO_LOCK(mutex);
+		return GetFlashlightStateIndex(flashlightState);
+	}
+
 	void OnFlashlightStateDestroyed( const FlashlightState_t& flashlightState ) OVERRIDE
 	{
 		AUTO_LOCK( mutex );

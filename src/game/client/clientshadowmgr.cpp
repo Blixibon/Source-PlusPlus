@@ -734,9 +734,9 @@ public:
 	virtual void DestroyShadow( ClientShadowHandle_t handle );
 
 	// Create flashlight (projected texture light source)
-	virtual ClientShadowHandle_t CreateFlashlight( const FlashlightState_t &lightState );
-	virtual void UpdateFlashlightState( ClientShadowHandle_t shadowHandle, const FlashlightState_t &lightState );
-	virtual void UpdateUberlightState( FlashlightState_t& flashlightState, const UberlightState_t& uberlightState );
+	virtual ClientShadowHandle_t CreateFlashlight( const ClientFlashlightState_t&lightState );
+	virtual void UpdateFlashlightState( ClientShadowHandle_t shadowHandle, const ClientFlashlightState_t&lightState );
+	//virtual void UpdateUberlightState( FlashlightState_t& flashlightState, const UberlightState_t& uberlightState );
 	virtual void DestroyFlashlight( ClientShadowHandle_t shadowHandle );
 
 	// Update a shadow
@@ -865,7 +865,9 @@ private:
 
 	void BuildWorldToShadowMatrix( VMatrix& matWorldToShadow, const Vector& origin, const Quaternion& quatOrientation );
 
-	void BuildPerspectiveWorldToFlashlightMatrix( VMatrix& matWorldToShadow, const FlashlightState_t &flashlightState );
+	void BuildPerspectiveWorldToFlashlightMatrix( VMatrix& matWorldToShadow, const ClientFlashlightState_t&flashlightState );
+
+	void BuildOrthoWorldToFlashlightMatrix(VMatrix& matWorldToShadow, const ClientFlashlightState_t& flashlightState);
 
 	// Update a shadow
 	void UpdateProjectedTextureInternal( ClientShadowHandle_t handle, bool force );
@@ -881,41 +883,56 @@ public:
 	// NOTE: this will ONLY return SHADOWS_NONE, SHADOWS_SIMPLE, or SHADOW_RENDER_TO_TEXTURE.
 	ShadowType_t GetActualShadowCastType( ClientShadowHandle_t handle ) const;
 	ShadowHandle_t GetShadowHandle( ClientShadowHandle_t clienthandle ) { return m_Shadows[clienthandle].m_ShadowHandle; };
+	int GetMaxShadowDepthtextures() { return m_nMaxDepthTextureShadows; }
 	int GetNumShadowDepthtextures()
-	{ 
+	{
 		int iNum = 0;
 		for (int i = 0; i < ARRAYSIZE(m_DepthTextureCaches); i++)
-		{
-			i += m_DepthTextureCaches[i].Textures.Count();
-		}
+			for (int j = 0; j < m_DepthTextureCaches[i].Textures.Count(); j++)
+			{
+				if (m_DepthTextureCaches[i].Locks[j] == true)
+				{
+					iNum++;
+				}
+			}
 
 		return iNum;
 	}
-	int GetMaxShadowDepthtextures() { return m_nMaxDepthTextureShadows; }
 	CTextureReference GetShadowDepthTex( int num )
 	{ 
 		for (int i = 0; i < ARRAYSIZE(m_DepthTextureCaches); i++)
-		{
-			if (num < m_DepthTextureCaches[i].Textures.Count())
-				return m_DepthTextureCaches[i].Textures[num];
-			else
-				num -= m_DepthTextureCaches[i].Textures.Count();
-		}
+			for (int j = 0; j < m_DepthTextureCaches[i].Textures.Count(); j++)
+			{
+				if (m_DepthTextureCaches[i].Locks[j] == true)
+				{
+					if (num > 0)
+						num--;
+					else
+						return m_DepthTextureCaches[i].Textures[j];
+				}
+			}
 
 		return m_DepthTextureCaches[3].Textures.Tail();
 	}
 
 	virtual ShadowHandle_t GetShadowDepthHandle( int num )
 	{
-		if ( num < 0 || num >= ARRAYSIZE( m_ActiveDepthTextureShadows ) )
+		if ( num < 0 || num >= GetMaxShadowDepthtextures())
 			return SHADOW_HANDLE_INVALID;
 
-		ClientShadowHandle_t handle = m_ActiveDepthTextureShadows[ num ];
+		for (int i = 0; i < ARRAYSIZE(m_DepthTextureCaches); i++)
+			for (int j = 0; j < m_DepthTextureCaches[i].Textures.Count(); j++)
+			{
+				if (m_DepthTextureCaches[i].Locks[j] == true)
+				{
+					if (num > 0)
+						num--;
+					else
+						return m_DepthTextureCaches[i].Handles[j];
+				}
+			}
 
-		if ( handle == CLIENTSHADOW_INVALID_HANDLE )
-			return SHADOW_HANDLE_INVALID;
-
-		return m_Shadows[ handle ].m_ShadowHandle;
+		return SHADOW_HANDLE_INVALID;
 	}
 
 	virtual ShadowHandle_t GetActiveDepthTextureHandle() { return m_ActiveDepthTextureHandle; }
@@ -995,7 +1012,7 @@ private:
 	ClientShadowHandle_t CreateProjectedTexture( ClientEntityHandle_t entity, int flags );
 
 	// Lock down the usage of a shadow depth texture...must be unlocked use on subsequent views / frames
-	bool	LockShadowDepthTexture( CTextureReference *shadowDepthTexture, float flDistSq );
+	bool	LockShadowDepthTexture( CTextureReference *shadowDepthTexture, ShadowHandle_t handle, bool bHighQuality, float flDistSq );
 	void	UnlockAllShadowDepthTextures();
 
 	// Set and clear flashlight target renderable
@@ -1014,8 +1031,14 @@ private:
 	void	UpdateDirtyShadow( ClientShadowHandle_t handle );
 	void	UpdateShadowDirectionFromLocalLightSource( ClientShadowHandle_t shadowHandle );
 
+	// Draw flashlight wireframe using debug overlay
+	void	DrawFrustum(const Vector& vOrigin, const VMatrix& matWorldToFlashlight);
+
+	// Draw uberlight rig in wireframe using debug overlay
+	void	DrawUberlightRig(const Vector& vOrigin, const VMatrix& matWorldToFlashlight, ClientFlashlightState_t state);
+
 private:
-	ClientShadowHandle_t m_ActiveDepthTextureShadows[ 128 ];
+	//ClientShadowHandle_t m_ActiveDepthTextureShadows[ 128 ];
 	ShadowHandle_t m_ActiveDepthTextureHandle;
 	Vector	m_SimpleShadowDir;
 	color32	m_AmbientLightColor;
@@ -1048,10 +1071,13 @@ private:
 	typedef struct DepthTexCache {
 		CUtlVector<CTextureReference> Textures;
 		CUtlVector<bool> Locks;
+		CUtlVector<ShadowHandle_t> Handles;
 		int Resolution;
 	} DepthTexCache_t;
 
 	DepthTexCache_t m_DepthTextureCaches[4]; // Huge, Large, Small, Tiny
+
+	CUtlMap<int, ClientFlashlightState_t> m_ClientFlashlightStates;
 
 	/*CUtlVector< CTextureReference > m_DepthTextureCache;
 	CUtlVector< bool > m_DepthTextureCacheLocks;*/
@@ -1384,7 +1410,11 @@ bool CClientShadowMgr::Init()
 	char dllPath[MAX_PATH * 2];
 	V_sprintf_safe( dllPath, "%s" CORRECT_PATH_SEPARATOR_S "bin" CORRECT_PATH_SEPARATOR_S "game_shader_dx9" DLL_EXT_STRING, engine->GetGameDirectory() );
 
-	Sys_LoadInterface( dllPath, SHADEREXTENSION_INTERFACE_VERSION, &shaderDLL, reinterpret_cast< void** >( &g_pShaderExtension ) );
+	if (!Sys_LoadInterface(dllPath, SHADEREXTENSION_INTERFACE_VERSION, &shaderDLL, reinterpret_cast<void**>(&g_pShaderExtension)))
+	{
+		AssertMsgAlways(0, "Client failed to get critical interface from game_shader_dx9!");
+		return false;
+	}
 
 	Vector dir( 0.1, 0.1, -1 );
 	SetShadowDirection(dir);
@@ -1477,6 +1507,7 @@ void CClientShadowMgr::InitDepthTextureShadows()
 		{
 			m_DepthTextureCaches[j].Textures.Purge();
 			m_DepthTextureCaches[j].Locks.Purge();
+			m_DepthTextureCaches[j].Handles.Purge();
 
 			m_DepthTextureCaches[j].Resolution = nTextureResolutions[j];
 
@@ -1502,6 +1533,7 @@ void CClientShadowMgr::InitDepthTextureShadows()
 
 				m_DepthTextureCaches[j].Textures.AddToTail(depthTex);
 				m_DepthTextureCaches[j].Locks.AddToTail(bFalse);
+				m_DepthTextureCaches[j].Handles.AddToTail(SHADOW_HANDLE_INVALID);
 			}
 		}
 
@@ -1538,6 +1570,7 @@ void CClientShadowMgr::ShutdownDepthTextureShadows()
 
 				m_DepthTextureCaches[i].Locks.Remove(elem);
 				m_DepthTextureCaches[i].Textures.Remove(elem);
+				m_DepthTextureCaches[i].Handles.Remove(elem);
 			}
 		}
 
@@ -2010,7 +2043,7 @@ ClientShadowHandle_t CClientShadowMgr::CreateProjectedTexture( ClientEntityHandl
 	return h;
 }
 
-ClientShadowHandle_t CClientShadowMgr::CreateFlashlight( const FlashlightState_t &lightState )
+ClientShadowHandle_t CClientShadowMgr::CreateFlashlight( const ClientFlashlightState_t&lightState )
 {
 	// We don't really need a model entity handle for a projective light source, so use an invalid one.
 	static ClientEntityHandle_t invalidHandle = INVALID_CLIENTENTITY_HANDLE;
@@ -2052,23 +2085,42 @@ ClientShadowHandle_t CClientShadowMgr::CreateShadow( ClientEntityHandle_t entity
 //-----------------------------------------------------------------------------
 // Updates the flashlight direction and re-computes surfaces it should lie on
 //-----------------------------------------------------------------------------
-void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle, const FlashlightState_t &flashlightState )
+void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle, const ClientFlashlightState_t&flashlightState )
 {
 	VPROF_BUDGET( "CClientShadowMgr::UpdateFlashlightState", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
-	const FlashlightState_t &oldState = shadowmgr->GetFlashlightState(shadowHandle);
+	if (!g_pShaderExtension)
+	{
+		return;
+	}
 
 	ClientShadow_t &shadow = m_Shadows[shadowHandle];
+
+	const FlashlightState_t& oldState = shadowmgr->GetFlashlightState(shadow.m_ShadowHandle);
 
 	FlashlightState_t procState = flashlightState;
 	procState.m_nShadowQuality = oldState.m_nShadowQuality;
 
-	BuildPerspectiveWorldToFlashlightMatrix( shadow.m_WorldToShadow, procState);
+	if (flashlightState.m_bOrtho)
+	{
+		BuildOrthoWorldToFlashlightMatrix(shadow.m_WorldToShadow, flashlightState);
+	}
+	else
+	{
+		BuildPerspectiveWorldToFlashlightMatrix(shadow.m_WorldToShadow, flashlightState);
+	}
 
-	shadowmgr->UpdateFlashlightState( shadow.m_ShadowHandle, procState);
+	g_pShaderExtension->SetUberlightParamsForFlashlightState(procState, flashlightState.m_UberlightState);
+	int iStateIndex = g_pShaderExtension->GetIndexOfFlashlightState(procState);
+
+	shadowmgr->UpdateFlashlightState(shadow.m_ShadowHandle, procState);
+
+	ClientFlashlightState_t newState = flashlightState;
+	newState.m_nShadowQuality = procState.m_nShadowQuality;
+	m_ClientFlashlightStates.InsertOrReplace(iStateIndex, newState);
 }
 
-void CClientShadowMgr::UpdateUberlightState( FlashlightState_t& flashlightState, const UberlightState_t& uberlightState )
+/*void CClientShadowMgr::UpdateUberlightState( FlashlightState_t& flashlightState, const UberlightState_t& uberlightState )
 {
 	VPROF_BUDGET( "CClientShadowMgr::UpdateUberlightState", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
@@ -2076,12 +2128,17 @@ void CClientShadowMgr::UpdateUberlightState( FlashlightState_t& flashlightState,
 		return;
 
 	g_pShaderExtension->SetUberlightParamsForFlashlightState( flashlightState, uberlightState );
-}
+}*/
 
 void CClientShadowMgr::DestroyFlashlight( ClientShadowHandle_t shadowHandle )
 {
-	if ( g_pShaderExtension )
-		g_pShaderExtension->OnFlashlightStateDestroyed( shadowmgr->GetFlashlightState( m_Shadows[shadowHandle].m_ShadowHandle ) );
+	if (g_pShaderExtension)
+	{
+		FlashlightState_t state = shadowmgr->GetFlashlightState(m_Shadows[shadowHandle].m_ShadowHandle);
+		int idx = g_pShaderExtension->GetIndexOfFlashlightState(state);
+		m_ClientFlashlightStates.Remove(idx);
+		g_pShaderExtension->OnFlashlightStateDestroyed(state);
+	}
 
 	DestroyShadow( shadowHandle );
 }
@@ -2171,7 +2228,7 @@ void CClientShadowMgr::BuildWorldToShadowMatrix( VMatrix& matWorldToShadow,	cons
 	matWorldToShadow[3][3] = 1.0f;
 }
 
-void CClientShadowMgr::BuildPerspectiveWorldToFlashlightMatrix( VMatrix& matWorldToShadow, const FlashlightState_t &flashlightState )
+void CClientShadowMgr::BuildPerspectiveWorldToFlashlightMatrix( VMatrix& matWorldToShadow, const ClientFlashlightState_t&flashlightState )
 {
 	VPROF_BUDGET( "CClientShadowMgr::BuildPerspectiveWorldToFlashlightMatrix", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
@@ -2185,6 +2242,38 @@ void CClientShadowMgr::BuildPerspectiveWorldToFlashlightMatrix( VMatrix& matWorl
 							flashlightState.m_NearZ, flashlightState.m_FarZ );
 
 	MatrixMultiply( matPerspective, matWorldToShadowView, matWorldToShadow );
+}
+
+void CClientShadowMgr::BuildOrthoWorldToFlashlightMatrix(VMatrix& matWorldToShadow, const ClientFlashlightState_t& flashlightState)
+{
+	VPROF_BUDGET("CClientShadowMgr::BuildPerspectiveWorldToFlashlightMatrix", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+
+	// Buildworld to shadow matrix, then perspective projection and concatenate
+	VMatrix matWorldToShadowView, matPerspective;
+	BuildWorldToShadowMatrix(matWorldToShadowView, flashlightState.m_vecLightOrigin,
+		flashlightState.m_quatOrientation);
+
+	MatrixBuildOrtho(matPerspective,
+		flashlightState.m_fOrthoLeft, flashlightState.m_fOrthoTop, flashlightState.m_fOrthoRight, flashlightState.m_fOrthoBottom,
+		flashlightState.m_NearZ, flashlightState.m_FarZ);
+
+	// Shift it z/y to 0 to -2 space
+	VMatrix addW;
+	addW.Identity();
+	addW[0][3] = -1.0f;
+	addW[1][3] = -1.0f;
+	addW[2][3] = 0.0f;
+	MatrixMultiply(addW, matPerspective, matPerspective);
+
+	// Flip x/y to positive 0 to 1... flip z to negative
+	VMatrix scaleHalf;
+	scaleHalf.Identity();
+	scaleHalf[0][0] = -0.5f;
+	scaleHalf[1][1] = -0.5f;
+	scaleHalf[2][2] = -1.0f;
+	MatrixMultiply(scaleHalf, matPerspective, matPerspective);
+
+	MatrixMultiply(matPerspective, matWorldToShadowView, matWorldToShadow);
 }
 
 //-----------------------------------------------------------------------------
@@ -2546,7 +2635,7 @@ void CClientShadowMgr::BuildOrthoShadow( IClientRenderable* pRenderable,
 
 	// Compute extra clip planes to prevent poke-thru
 // FIXME!!!!!!!!!!!!!!  Removing this for now since it seems to mess up the blobby shadows.
-	ComputeExtraClipPlanes( pRenderable, handle, vec, mins, maxs, localShadowDir );
+	//ComputeExtraClipPlanes( pRenderable, handle, vec, mins, maxs, localShadowDir );
 
 	// Add the shadow to the client leaf system so it correctly marks 
 	// leafs as being affected by a particular shadow
@@ -2732,43 +2821,635 @@ void CClientShadowMgr::BuildRenderToTextureShadow( IClientRenderable* pRenderabl
 	ClientLeafSystem()->ProjectShadow( m_Shadows[handle].m_ClientLeafShadowHandle, nCount, pLeafList );
 }
 
-static void LineDrawHelper( const Vector &startShadowSpace, const Vector &endShadowSpace, 
-						   const VMatrix &shadowToWorld, unsigned char r = 255, unsigned char g = 255, 
-						   unsigned char b = 255 )
+static void LineDrawHelperProjective(const Vector& startShadowSpace, const Vector& endShadowSpace,
+	const VMatrix& shadowToWorld, unsigned char r = 255, unsigned char g = 255, unsigned char b = 255)
 {
 	Vector startWorldSpace, endWorldSpace;
-	Vector3DMultiplyPositionProjective( shadowToWorld, startShadowSpace, startWorldSpace );
-	Vector3DMultiplyPositionProjective( shadowToWorld, endShadowSpace, endWorldSpace );
+	Vector3DMultiplyPositionProjective(shadowToWorld, startShadowSpace, startWorldSpace);
+	Vector3DMultiplyPositionProjective(shadowToWorld, endShadowSpace, endWorldSpace);
 
-	debugoverlay->AddLineOverlay( startWorldSpace + Vector( 0.0f, 0.0f, 1.0f ), 
-		endWorldSpace + Vector( 0.0f, 0.0f, 1.0f ), r, g, b, false, -1 );
+	debugoverlay->AddLineOverlay(startWorldSpace, endWorldSpace, r, g, b, false, -1);
 }
 
-static void DebugDrawFrustum( const Vector &vOrigin, const VMatrix &matWorldToFlashlight )
+
+static void LineDrawHelper(const Vector& start, const Vector& end,
+	const VMatrix& viewMatrixInverse, unsigned char r = 255, unsigned char g = 255, unsigned char b = 255)
+{
+	Vector startWorldSpace, endWorldSpace;
+	Vector3DMultiplyPosition(viewMatrixInverse, start, startWorldSpace);
+	Vector3DMultiplyPosition(viewMatrixInverse, end, endWorldSpace);
+
+	debugoverlay->AddLineOverlay(startWorldSpace, endWorldSpace, r, g, b, false, -1);
+}
+
+void CClientShadowMgr::DrawFrustum( const Vector &vOrigin, const VMatrix &matWorldToFlashlight )
 {
 	VMatrix flashlightToWorld;
 	MatrixInverseGeneral( matWorldToFlashlight, flashlightToWorld );
 	
 	// Draw boundaries of frustum
-	LineDrawHelper( Vector( 0.0f, 0.0f, 0.0f ), Vector( 0.0f, 0.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 0.0f, 1.0f ), Vector( 0.0f, 1.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 1.0f, 1.0f ), Vector( 0.0f, 1.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 1.0f, 0.0f ), Vector( 0.0f, 0.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 1.0f, 0.0f, 0.0f ), Vector( 1.0f, 0.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 1.0f, 0.0f, 1.0f ), Vector( 1.0f, 1.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 1.0f, 1.0f, 1.0f ), Vector( 1.0f, 1.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 1.0f, 1.0f, 0.0f ), Vector( 1.0f, 0.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 0.0f, 0.0f ), Vector( 1.0f, 0.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 0.0f, 1.0f ), Vector( 1.0f, 0.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 1.0f, 1.0f ), Vector( 1.0f, 1.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
-	LineDrawHelper( Vector( 0.0f, 1.0f, 0.0f ), Vector( 1.0f, 1.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 0.0f, 0.0f ), Vector( 0.0f, 0.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 0.0f, 1.0f ), Vector( 0.0f, 1.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 1.0f, 1.0f ), Vector( 0.0f, 1.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 1.0f, 0.0f ), Vector( 0.0f, 0.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 1.0f, 0.0f, 0.0f ), Vector( 1.0f, 0.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 1.0f, 0.0f, 1.0f ), Vector( 1.0f, 1.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 1.0f, 1.0f, 1.0f ), Vector( 1.0f, 1.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 1.0f, 1.0f, 0.0f ), Vector( 1.0f, 0.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 0.0f, 0.0f ), Vector( 1.0f, 0.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 0.0f, 1.0f ), Vector( 1.0f, 0.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 1.0f, 1.0f ), Vector( 1.0f, 1.0f, 1.0f ), flashlightToWorld, 255, 255, 255 );
+	LineDrawHelperProjective( Vector( 0.0f, 1.0f, 0.0f ), Vector( 1.0f, 1.0f, 0.0f ), flashlightToWorld, 255, 255, 255 );
 
 	// Draw RGB triad at front plane
-	LineDrawHelper( Vector( 0.5f, 0.5f, 0.0f ), Vector( 1.0f, 0.5f, 0.0f ),  flashlightToWorld, 255,   0,   0 );
-	LineDrawHelper( Vector( 0.5f, 0.5f, 0.0f ), Vector( 0.5f, 1.0f, 0.0f ),  flashlightToWorld,   0, 255,   0 );
-	LineDrawHelper( Vector( 0.5f, 0.5f, 0.0f ), Vector( 0.5f, 0.5f, 0.35f ), flashlightToWorld,   0,   0, 255 );
+	LineDrawHelperProjective( Vector( 0.5f, 0.5f, 0.0f ), Vector( 1.0f, 0.5f, 0.0f ),  flashlightToWorld, 255,   0,   0 );
+	LineDrawHelperProjective( Vector( 0.5f, 0.5f, 0.0f ), Vector( 0.5f, 1.0f, 0.0f ),  flashlightToWorld,   0, 255,   0 );
+	LineDrawHelperProjective( Vector( 0.5f, 0.5f, 0.0f ), Vector( 0.5f, 0.5f, 0.35f ), flashlightToWorld,   0,   0, 255 );
 }
 
+//   We're going to sweep out an inner and outer superellipse.  Each superellipse has the equation:
+//
+//           2          2
+//           -          -
+//      ( x )d     ( y )d
+//      (---)   +  (---)    =  1
+//      ( a )      ( b )
+//
+//  where,
+//           d is what we're calling m_fRoundness
+//
+//           The inner superellipse uses a = m_fWidth               and  b = m_fHeight 
+//           The outer superellipse uses a = (m_fWidth + m_fWedge)  and  b = (m_fHeight + m_fHedge) 
+//
+
+// Controls density of wireframe uberlight
+#define NUM_SUPER_ELLIPSE_POINTS      192
+#define CONNECTOR_FREQ			       24
+
+void CClientShadowMgr::DrawUberlightRig(const Vector& vOrigin, const VMatrix& matWorldToFlashlight, ClientFlashlightState_t state)
+{
+	int i;
+	float fXNear, fXFar, fYNear, fYFar, fXNearEdge, fXFarEdge, fYNearEdge, fYFarEdge, m;
+	UberlightState_t uber = state.m_UberlightState;
+	VMatrix viewMatrixInverse, viewMatrix;
+
+	// A set of scratch points on the +x +y quadrants of the near and far ends of the swept superellipse wireframe
+	Vector vecNearInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];        // Inner points for four superellipses
+	Vector vecFarInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];
+	Vector vecNearEdgeInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];
+	Vector vecFarEdgeInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];
+
+	Vector vecNearOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];        // Outer points for four superellipses
+	Vector vecFarOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];
+	Vector vecNearEdgeOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];
+	Vector vecFarEdgeOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 4) + 1];
+
+	// Clock hand which sweeps out a full circle
+	float fTheta = 0;
+	float fThetaIncrement = (2.0f * 3.14159) / ((float)NUM_SUPER_ELLIPSE_POINTS);
+
+	// precompute the 2/d exponent
+	float r = 2.0f / uber.m_fRoundness;
+
+	// Initialize arrays of points in light's local space defining +x +y quadrants of extruded superellipses (including x==0 and y==0 vertices)
+	for (i = 0; i < (NUM_SUPER_ELLIPSE_POINTS / 4) + 1; i++)
+	{
+		if (i == 0)												 // If this is the 0th vertex
+		{
+			fXFar = uber.m_fWidth * uber.m_fCutOff;             // compute near and far x's
+			fXNear = uber.m_fWidth * uber.m_fCutOn;
+			fXFarEdge = uber.m_fWidth * (uber.m_fCutOff + uber.m_fFarEdge);
+			fXNearEdge = uber.m_fWidth * (uber.m_fCutOn - uber.m_fNearEdge);
+
+			fYFar = fYNear = fYFarEdge = fYNearEdge = 0;     // y's are zero
+		}
+		else if (i == (NUM_SUPER_ELLIPSE_POINTS / 4))     // If this is the vertex on the y axis, avoid numerical problems
+		{
+			fXFar = fXNear = fXFarEdge = fXNearEdge = 0;    // x's are zero
+
+			fYFar = uber.m_fHeight * uber.m_fCutOff;             // compute near and far y's
+			fYNear = uber.m_fHeight * uber.m_fCutOn;
+			fYFarEdge = uber.m_fHeight * (uber.m_fCutOff + uber.m_fFarEdge);
+			fYNearEdge = uber.m_fHeight * (uber.m_fCutOn - uber.m_fNearEdge);
+		}
+		else
+		{
+			m = sinf(fTheta) / cosf(fTheta);   // compute slope of line from origin
+
+			// Solve for inner x's (intersect line of slope m with inner superellipses)
+			fXFar = (powf(powf(1.0f / uber.m_fWidth, r) + powf(m / uber.m_fHeight, r), -1.0f / r) * uber.m_fCutOff);
+			fXNear = (powf(powf(1.0f / uber.m_fWidth, r) + powf(m / uber.m_fHeight, r), -1.0f / r) * uber.m_fCutOn);
+
+			fXFarEdge = (powf(powf(1.0f / uber.m_fWidth, r) + powf(m / uber.m_fHeight, r), -1.0f / r) * (uber.m_fCutOff + uber.m_fFarEdge));
+			fXNearEdge = (powf(powf(1.0f / uber.m_fWidth, r) + powf(m / uber.m_fHeight, r), -1.0f / r) * (uber.m_fCutOn - uber.m_fNearEdge));
+
+			// Solve for inner y's using line equations
+			fYFar = m * fXFar;
+			fYNear = m * fXNear;
+			fYFarEdge = m * fXFarEdge;
+			fYNearEdge = m * fXNearEdge;
+		}
+
+		// World to Light's View matrix
+		BuildWorldToShadowMatrix(viewMatrix, state.m_vecLightOrigin, state.m_quatOrientation);
+		viewMatrixInverse = viewMatrix.InverseTR();
+
+		// Store world space positions in array
+		vecFarInnerPoints[i] = Vector(fXFar, fYFar, uber.m_fCutOff);
+		vecNearInnerPoints[i] = Vector(fXNear, fYNear, uber.m_fCutOn);
+		vecFarEdgeInnerPoints[i] = Vector(fXFarEdge, fYFarEdge, uber.m_fCutOff + uber.m_fFarEdge);
+		vecNearEdgeInnerPoints[i] = Vector(fXNearEdge, fYNearEdge, uber.m_fCutOn - uber.m_fNearEdge);
+
+		if (i == 0)																// If this is the 0th vertex
+		{
+			fXFar = (uber.m_fWidth + uber.m_fWedge) * uber.m_fCutOff;              // compute near and far x's
+			fXNear = (uber.m_fWidth + uber.m_fWedge) * uber.m_fCutOn;
+			fXFarEdge = (uber.m_fWidth + uber.m_fWedge) * (uber.m_fCutOff + uber.m_fFarEdge);
+			fXNearEdge = (uber.m_fWidth + uber.m_fWedge) * (uber.m_fCutOn - uber.m_fNearEdge);
+
+			fYFar = fYNear = fYFarEdge = fYNearEdge = 0;             // y's are zero
+		}
+		else if (i == (NUM_SUPER_ELLIPSE_POINTS / 4))  // If this is the vertex on the y axis, avoid numerical problems
+		{
+			fXFar = fXNear = fXFarEdge = fXNearEdge = 0;             // x's are zero
+
+			fYFar = (uber.m_fHeight + uber.m_fHedge) * uber.m_fCutOff;             // compute near and far y's
+			fYNear = (uber.m_fHeight + uber.m_fHedge) * uber.m_fCutOn;
+			fYFarEdge = (uber.m_fHeight + uber.m_fHedge) * (uber.m_fCutOff + uber.m_fFarEdge);
+			fYNearEdge = (uber.m_fHeight + uber.m_fHedge) * (uber.m_fCutOn - uber.m_fNearEdge);
+		}
+		else
+		{
+			m = sinf(fTheta) / cosf(fTheta);   // compute slope of line from origin
+
+			// Solve for inner x's (intersect line of slope m with inner superellipses)
+			fXFar = (powf(powf(1.0f / (uber.m_fWidth + uber.m_fWedge), r) + powf(m / (uber.m_fHeight + uber.m_fHedge), r), -1.0f / r) * uber.m_fCutOff);
+			fXNear = (powf(powf(1.0f / (uber.m_fWidth + uber.m_fWedge), r) + powf(m / (uber.m_fHeight + uber.m_fHedge), r), -1.0f / r) * uber.m_fCutOn);
+
+			fXFarEdge = (powf(powf(1.0f / (uber.m_fWidth + uber.m_fWedge), r) + powf(m / (uber.m_fHeight + uber.m_fHedge), r), -1.0f / r) * (uber.m_fCutOff + uber.m_fFarEdge));
+			fXNearEdge = (powf(powf(1.0f / (uber.m_fWidth + uber.m_fWedge), r) + powf(m / (uber.m_fHeight + uber.m_fHedge), r), -1.0f / r) * (uber.m_fCutOn - uber.m_fNearEdge));
+
+			// Solve for inner y's using line equations
+			fYFar = m * fXFar;
+			fYNear = m * fXNear;
+			fYFarEdge = m * fXFarEdge;
+			fYNearEdge = m * fXNearEdge;
+		}
+
+		// Store in array
+		vecFarOuterPoints[i] = Vector(fXFar, fYFar, uber.m_fCutOff);
+		vecNearOuterPoints[i] = Vector(fXNear, fYNear, uber.m_fCutOn);
+		vecFarEdgeOuterPoints[i] = Vector(fXFarEdge, fYFarEdge, uber.m_fCutOff + uber.m_fFarEdge);
+		vecNearEdgeOuterPoints[i] = Vector(fXNearEdge, fYNearEdge, uber.m_fCutOn - uber.m_fNearEdge);
+
+		fTheta += fThetaIncrement;
+	}
+
+	Vector preVector, curVector;
+
+	// Near inner superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecNearInnerPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecNearInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecNearInnerPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecNearInnerPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 255, 10, 10);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecNearInnerPoints[0], viewMatrixInverse, 255, 10, 10);
+
+	// Far inner superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecFarInnerPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecFarInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecFarInnerPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecFarInnerPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 10, 10, 255);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecFarInnerPoints[0], viewMatrixInverse, 10, 10, 255);
+
+
+	// Near outer superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecNearOuterPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecNearOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecNearOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecNearOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 255, 10, 10);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecNearOuterPoints[0], viewMatrixInverse, 255, 10, 10);
+
+
+	// Far outer superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecFarOuterPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecFarOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecFarOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecFarOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 10, 10, 255);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecFarOuterPoints[0], viewMatrixInverse, 10, 10, 255);
+
+	// Near edge inner superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecNearEdgeInnerPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecNearEdgeInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecNearEdgeInnerPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecNearEdgeInnerPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 255, 10, 10);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecNearEdgeInnerPoints[0], viewMatrixInverse, 255, 10, 10);
+
+
+	// Far inner superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecFarEdgeInnerPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecFarEdgeInnerPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecFarEdgeInnerPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecFarEdgeInnerPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 10, 10, 255);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecFarEdgeInnerPoints[0], viewMatrixInverse, 10, 10, 255);
+
+
+	// Near outer superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecNearEdgeOuterPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecNearEdgeOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecNearEdgeOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecNearEdgeOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 255, 10, 10);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecNearEdgeOuterPoints[0], viewMatrixInverse, 255, 10, 10);
+
+
+	// Far outer superellipse
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+		{
+			curVector = vecFarEdgeOuterPoints[i];
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+		{
+			curVector = vecFarEdgeOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+			curVector.x *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+		{
+			curVector = vecFarEdgeOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+			curVector.x *= -1;
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+		else                                                                 // +x -y quadrant, negate y when copying from scratch array
+		{
+			curVector = vecFarEdgeOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+			curVector.y *= -1;
+			curVector.x += uber.m_fShearx * curVector.z;
+			curVector.y += uber.m_fSheary * curVector.z;
+		}
+
+		if (i != 0)
+		{
+			LineDrawHelper(preVector, curVector, viewMatrixInverse, 10, 10, 255);
+		}
+
+		preVector = curVector;
+	}
+
+	LineDrawHelper(preVector, vecFarEdgeOuterPoints[0], viewMatrixInverse, 10, 10, 255);
+
+	// Connectors
+	for (i = 0; i < NUM_SUPER_ELLIPSE_POINTS; i++)
+	{
+		if ((i % CONNECTOR_FREQ) == 0)
+		{
+			Vector vecNearEdgeOuter, vecNearOuter, vecFarOuter, vecFarEdgeOuter;
+
+			if (i <= (NUM_SUPER_ELLIPSE_POINTS / 4))                            // +x +y quadrant, copy from scratch array directly
+			{
+				vecNearEdgeOuter = vecNearEdgeOuterPoints[i];
+				vecNearEdgeOuter.x += uber.m_fShearx * vecNearEdgeOuter.z;
+				vecNearEdgeOuter.y += uber.m_fSheary * vecNearEdgeOuter.z;
+
+				vecNearOuter = vecNearOuterPoints[i];
+				vecNearOuter.x += uber.m_fShearx * vecNearOuter.z;
+				vecNearOuter.y += uber.m_fSheary * vecNearOuter.z;
+
+				vecFarEdgeOuter = vecFarEdgeOuterPoints[i];
+				vecFarEdgeOuter.x += uber.m_fShearx * vecFarEdgeOuter.z;
+				vecFarEdgeOuter.y += uber.m_fSheary * vecFarEdgeOuter.z;
+
+				vecFarOuter = vecFarOuterPoints[i];
+				vecFarOuter.x += uber.m_fShearx * vecFarOuter.z;
+				vecFarOuter.y += uber.m_fSheary * vecFarOuter.z;
+			}
+			else if (i <= (NUM_SUPER_ELLIPSE_POINTS / 2))                        // -x +y quadrant, negate x when copying from scratch array
+			{
+				vecNearEdgeOuter = vecNearEdgeOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+				vecNearEdgeOuter.x *= -1;
+				vecNearEdgeOuter.x += uber.m_fShearx * vecNearEdgeOuter.z;
+				vecNearEdgeOuter.y += uber.m_fSheary * vecNearEdgeOuter.z;
+
+				vecNearOuter = vecNearOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+				vecNearOuter.x *= -1;
+				vecNearOuter.x += uber.m_fShearx * vecNearOuter.z;
+				vecNearOuter.y += uber.m_fSheary * vecNearOuter.z;
+
+				vecFarEdgeOuter = vecFarEdgeOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+				vecFarEdgeOuter.x *= -1;
+				vecFarEdgeOuter.x += uber.m_fShearx * vecFarEdgeOuter.z;
+				vecFarEdgeOuter.y += uber.m_fSheary * vecFarEdgeOuter.z;
+
+				vecFarOuter = vecFarOuterPoints[(NUM_SUPER_ELLIPSE_POINTS / 2) - i];
+				vecFarOuter.x *= -1;
+				vecFarOuter.x += uber.m_fShearx * vecFarOuter.z;
+				vecFarOuter.y += uber.m_fSheary * vecFarOuter.z;
+			}
+			else if (i <= (3 * NUM_SUPER_ELLIPSE_POINTS / 4))                     // -x -y quadrant, negate when copying from scratch array
+			{
+				vecNearEdgeOuter = vecNearEdgeOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+				vecNearEdgeOuter.x *= -1;
+				vecNearEdgeOuter.y *= -1;
+				vecNearEdgeOuter.x += uber.m_fShearx * vecNearEdgeOuter.z;
+				vecNearEdgeOuter.y += uber.m_fSheary * vecNearEdgeOuter.z;
+
+				vecNearOuter = vecNearOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+				vecNearOuter.x *= -1;
+				vecNearOuter.y *= -1;
+				vecNearOuter.x += uber.m_fShearx * vecNearOuter.z;
+				vecNearOuter.y += uber.m_fSheary * vecNearOuter.z;
+
+				vecFarEdgeOuter = vecFarEdgeOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+				vecFarEdgeOuter.x *= -1;
+				vecFarEdgeOuter.y *= -1;
+				vecFarEdgeOuter.x += uber.m_fShearx * vecFarEdgeOuter.z;
+				vecFarEdgeOuter.y += uber.m_fSheary * vecFarEdgeOuter.z;
+
+				vecFarOuter = vecFarOuterPoints[i - (NUM_SUPER_ELLIPSE_POINTS / 2)];
+				vecFarOuter.x *= -1;
+				vecFarOuter.y *= -1;
+				vecFarOuter.x += uber.m_fShearx * vecFarOuter.z;
+				vecFarOuter.y += uber.m_fSheary * vecFarOuter.z;
+			}
+			else                                                                 // +x -y quadrant, negate y when copying from scratch array
+			{
+				vecNearEdgeOuter = vecNearEdgeOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+				vecNearEdgeOuter.y *= -1;
+				vecNearEdgeOuter.x += uber.m_fShearx * vecNearEdgeOuter.z;
+				vecNearEdgeOuter.y += uber.m_fSheary * vecNearEdgeOuter.z;
+
+				vecNearOuter = vecNearOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+				vecNearOuter.y *= -1;
+				vecNearOuter.x += uber.m_fShearx * vecNearOuter.z;
+				vecNearOuter.y += uber.m_fSheary * vecNearOuter.z;
+
+				vecFarEdgeOuter = vecFarEdgeOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+				vecFarEdgeOuter.y *= -1;
+				vecFarEdgeOuter.x += uber.m_fShearx * vecFarEdgeOuter.z;
+				vecFarEdgeOuter.y += uber.m_fSheary * vecFarEdgeOuter.z;
+
+				vecFarOuter = vecFarOuterPoints[NUM_SUPER_ELLIPSE_POINTS - i];
+				vecFarOuter.y *= -1;
+				vecFarOuter.x += uber.m_fShearx * vecFarOuter.z;
+				vecFarOuter.y += uber.m_fSheary * vecFarOuter.z;
+			}
+
+			LineDrawHelper(vecNearOuter, vecNearEdgeOuter, viewMatrixInverse, 255, 10, 10);
+			LineDrawHelper(vecNearOuter, vecFarOuter, viewMatrixInverse, 220, 10, 220);
+			LineDrawHelper(vecFarEdgeOuter, vecFarOuter, viewMatrixInverse, 10, 10, 255);
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Builds a list of leaves inside the flashlight volume
@@ -4111,20 +4792,23 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 	ClientShadowHandle_t pActiveDepthShadows[1024];
 	int nActiveDepthShadowCount = BuildActiveShadowDepthList( viewSetup, ARRAYSIZE( pActiveDepthShadows ), pActiveDepthShadows );
 
-	for ( int i = 0; i < m_nMaxDepthTextureShadows; i++ )
+	/*for ( int i = 0; i < m_nMaxDepthTextureShadows; i++ )
 		m_ActiveDepthTextureShadows[ i ] = SHADOW_HANDLE_INVALID;
 
-	Assert( m_nMaxDepthTextureShadows < ARRAYSIZE( m_ActiveDepthTextureShadows ) );
+	Assert( m_nMaxDepthTextureShadows < ARRAYSIZE( m_ActiveDepthTextureShadows ) );*/
 
 	// Iterate over all existing textures and allocate shadow textures
 	bool bDebugFrustum = r_flashlightdrawfrustum.GetBool();
 	for ( int j = 0; j < nActiveDepthShadowCount; ++j )
 	{
 		ClientShadow_t& shadow = m_Shadows[ pActiveDepthShadows[j] ];
-		FlashlightState_t flashlightState = shadowmgr->GetFlashlightState(shadow.m_ShadowHandle);
+		FlashlightState_t engineState = shadowmgr->GetFlashlightState(shadow.m_ShadowHandle);
+		int iIndex = g_pShaderExtension->GetIndexOfFlashlightState(engineState);
+		unsigned short sIDX = m_ClientFlashlightStates.Find(iIndex);
+		ClientFlashlightState_t flashlightState = m_ClientFlashlightStates.Element(sIDX);
 
 		CTextureReference shadowDepthTexture;
-		bool bGotShadowDepthTexture = LockShadowDepthTexture( &shadowDepthTexture, flashlightState.m_vecLightOrigin.DistToSqr(MainViewOrigin()));
+		bool bGotShadowDepthTexture = LockShadowDepthTexture( &shadowDepthTexture, shadow.m_ShadowHandle, flashlightState.m_bShadowHighRes, flashlightState.m_vecLightOrigin.DistToSqr(MainViewOrigin()));
 		if ( !bGotShadowDepthTexture )
 		{
 			// If we don't get one, that means we have too many this frame so bind no depth texture
@@ -4142,14 +4826,28 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		}
 
 		m_ActiveDepthTextureHandle = shadow.m_ShadowHandle;
-		m_ActiveDepthTextureShadows[ j ] = shadow.m_ShadowHandle;
+		//m_ActiveDepthTextureShadows[ j ] = shadow.m_ShadowHandle;
 
 		CNewViewSetup shadowView;
 		shadowView.m_flAspectRatio = 1.0f;
 		shadowView.x = shadowView.y = 0;
 		shadowView.width = shadowDepthTexture->GetActualWidth();
 		shadowView.height = shadowDepthTexture->GetActualHeight();
-		shadowView.m_bOrtho = false;
+
+		// Copy flashlight parameters
+		if (!flashlightState.m_bOrtho)
+		{
+			shadowView.m_bOrtho = false;
+		}
+		else
+		{
+			shadowView.m_bOrtho = true;
+			shadowView.m_OrthoLeft = flashlightState.m_fOrthoLeft;
+			shadowView.m_OrthoTop = flashlightState.m_fOrthoTop;
+			shadowView.m_OrthoRight = flashlightState.m_fOrthoRight;
+			shadowView.m_OrthoBottom = flashlightState.m_fOrthoBottom;
+		}
+
 		shadowView.m_bDoBloomAndToneMapping = false;
 
 		// Copy flashlight parameters
@@ -4163,7 +4861,12 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		// Can turn on all light frustum overlays or per light with flashlightState parameter...
 		if ( bDebugFrustum || flashlightState.m_bDrawShadowFrustum )
 		{
-			DebugDrawFrustum( shadowView.origin, shadow.m_WorldToShadow );
+			if (flashlightState.m_UberlightState.m_bEnabled)
+			{
+				DrawUberlightRig(shadowView.origin, shadow.m_WorldToShadow, flashlightState);
+			}
+
+			DrawFrustum(shadowView.origin, shadow.m_WorldToShadow);
 		}
 
 		// Set depth bias factors specific to this flashlight
@@ -4307,10 +5010,10 @@ void CClientShadowMgr::ComputeShadowTextures( const CViewSetup &view, int leafCo
 //-------------------------------------------------------------------------------------------------------
 // Lock down the usage of a shadow depth texture...must be unlocked for use on subsequent views / frames
 //-------------------------------------------------------------------------------------------------------
-bool CClientShadowMgr::LockShadowDepthTexture( CTextureReference *shadowDepthTexture, float flDistSq )
+bool CClientShadowMgr::LockShadowDepthTexture( CTextureReference *shadowDepthTexture, ShadowHandle_t handle, bool bHighQuality, float flDistSq)
 {
 	int StartCache = 2;
-	if (flDistSq < 512*512)
+	if (bHighQuality || flDistSq < 512*512)
 		StartCache = 0;
 	else if (flDistSq < 1024*1024)
 		StartCache = 1;
@@ -4322,6 +5025,7 @@ bool CClientShadowMgr::LockShadowDepthTexture( CTextureReference *shadowDepthTex
 			{
 				*shadowDepthTexture = m_DepthTextureCaches[i].Textures[j];
 				m_DepthTextureCaches[i].Locks[j] = true;
+				m_DepthTextureCaches[i].Handles[j] = handle;
 				return true;
 			}
 		}
@@ -4339,6 +5043,7 @@ void CClientShadowMgr::UnlockAllShadowDepthTextures()
 		for (int i = 0; i < m_DepthTextureCaches[j].Locks.Count(); i++)
 		{
 			m_DepthTextureCaches[j].Locks[i] = false;
+			m_DepthTextureCaches[j].Handles[i] = SHADOW_HANDLE_INVALID;
 		}
 	}
 

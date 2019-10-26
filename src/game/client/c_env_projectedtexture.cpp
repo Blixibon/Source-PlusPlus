@@ -63,18 +63,18 @@ IMPLEMENT_CLIENTCLASS_DT( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvPro
 	RecvPropFloat(	 RECVINFO( m_flVolumetricsQualityBias ) ),
 	RecvPropFloat(	 RECVINFO( m_flVolumetricsMultiplier ) ),
 
-	RecvPropBool( RECVINFO_NAME( m_UberlightState.m_bEnabled, m_bUberlight ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fNearEdge, m_fNearEdge ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fFarEdge, m_fFarEdge ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fCutOn, m_fCutOn ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fCutOff, m_fCutOff ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fShearx, m_fShearx ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fSheary, m_fSheary ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fWidth, m_fWidth ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fWedge, m_fWedge ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fHeight, m_fHeight ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fHedge, m_fHedge ) ),
-	RecvPropFloat( RECVINFO_NAME( m_UberlightState.m_fRoundness, m_fRoundness ) ),
+	RecvPropBool( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_bEnabled, m_bUberlight ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fNearEdge, m_fNearEdge ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fFarEdge, m_fFarEdge ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fCutOn, m_fCutOn ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fCutOff, m_fCutOff ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fShearx, m_fShearx ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fSheary, m_fSheary ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fWidth, m_fWidth ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fWedge, m_fWedge ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fHeight, m_fHeight ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fHedge, m_fHedge ) ),
+	RecvPropFloat( RECVINFO_NAME(m_FlashlightState.m_UberlightState.m_fRoundness, m_fRoundness ) ),
 END_RECV_TABLE()
 
 C_EnvProjectedTexture::C_EnvProjectedTexture( void )
@@ -111,7 +111,7 @@ void C_EnvProjectedTexture::OnDataChanged( DataUpdateType_t updateType )
 {
 	if ( updateType == DATA_UPDATE_CREATED )
 	{
-		m_SpotlightTexture.Init( m_UberlightState.m_bEnabled ? "white" : m_SpotlightTextureName, TEXTURE_GROUP_OTHER, true );
+		m_SpotlightTexture.Init(m_FlashlightState.m_UberlightState.m_bEnabled ? "white" : m_SpotlightTextureName, TEXTURE_GROUP_OTHER, true );
 	}
 
 	if ( m_flLastFOV != m_flLightFOV )
@@ -212,7 +212,7 @@ void C_EnvProjectedTexture::UpdateLight( bool bForceUpdate )
 	m_FlashlightState.m_pSpotlightTexture = m_SpotlightTexture;
 	m_FlashlightState.m_nSpotlightTextureFrame = m_nSpotlightTextureFrame;
 
-	//m_FlashlightState.m_nShadowQuality = m_nShadowQuality; // Allow entity to affect shadow quality
+	m_FlashlightState.m_bShadowHighRes = (m_nShadowQuality > 0); // Allow entity to affect shadow quality
 
 	if ( m_LightHandle == CLIENTSHADOW_INVALID_HANDLE )
 	{
@@ -222,7 +222,6 @@ void C_EnvProjectedTexture::UpdateLight( bool bForceUpdate )
 	{
 		//if ( m_hTargetEntity != NULL || bForceUpdate == true )
 		{
-			g_pClientShadowMgr->UpdateUberlightState( m_FlashlightState, m_UberlightState );
 			g_pClientShadowMgr->UpdateFlashlightState( m_LightHandle, m_FlashlightState );
 		}
 	}

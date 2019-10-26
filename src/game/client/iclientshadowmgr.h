@@ -18,13 +18,51 @@
 #include "engine/ishadowmgr.h"
 #include "ivrenderview.h"
 #include "toolframework/itoolentity.h"
+#include "materialsystem/imaterialsystem.h"
 #include "../materialsystem/stdshaders/IShaderExtension.h"
 
 //-----------------------------------------------------------------------------
-// Forward decls
+// Client-side flashlight state
 //-----------------------------------------------------------------------------
-struct FlashlightState_t;
+struct ClientFlashlightState_t : public FlashlightState_t
+{
+	ClientFlashlightState_t() : FlashlightState_t()
+	{
+		m_bVolumetric = false;
+		m_flNoiseStrength = 0.8f;
+		m_flFlashlightTime = 0.0f;
+		m_flVolumetricIntensity = 1.0f;
 
+		m_bOrtho = false;
+		m_fOrthoLeft = -1.0f;
+		m_fOrthoRight = 1.0f;
+		m_fOrthoTop = -1.0f;
+		m_fOrthoBottom = 1.0f;
+
+		m_bShadowHighRes = false;
+	}
+
+	void CopyFromOld(const FlashlightState_t& other)
+	{
+		*static_cast<FlashlightState_t*>(this) = other;
+	}
+
+	bool  m_bOrtho;
+	float m_fOrthoLeft;
+	float m_fOrthoRight;
+	float m_fOrthoTop;
+	float m_fOrthoBottom;
+
+	bool  m_bShadowHighRes;
+
+	// Uberlight parameters
+	UberlightState_t m_UberlightState;
+
+	bool m_bVolumetric;
+	float m_flNoiseStrength;
+	float m_flFlashlightTime;
+	float m_flVolumetricIntensity;
+};
 
 //-----------------------------------------------------------------------------
 // Handles to a client shadow
@@ -49,8 +87,8 @@ public:
 
 	// Create flashlight.
 	// FLASHLIGHTFIXME: need to rename all of the shadow stuff to projectedtexture and have flashlights and shadows as instances.
-	virtual ClientShadowHandle_t CreateFlashlight( const FlashlightState_t &lightState ) = 0;
-	virtual void UpdateFlashlightState( ClientShadowHandle_t shadowHandle, const FlashlightState_t &lightState ) = 0;
+	virtual ClientShadowHandle_t CreateFlashlight( const ClientFlashlightState_t&lightState ) = 0;
+	virtual void UpdateFlashlightState( ClientShadowHandle_t shadowHandle, const ClientFlashlightState_t&lightState ) = 0;
 	virtual void DestroyFlashlight( ClientShadowHandle_t handle ) = 0;
 	
 	// Indicate that the shadow should be recomputed due to a change in
@@ -113,7 +151,8 @@ public:
 	virtual ShadowHandle_t GetShadowDepthHandle( int num ) = 0;
 	virtual ShadowHandle_t GetActiveDepthTextureHandle() = 0;
 
-	virtual void UpdateUberlightState( FlashlightState_t& handle, const UberlightState_t& uberlightState ) = 0;
+	// OBSOLETE
+	//virtual void UpdateUberlightState( FlashlightState_t& handle, const UberlightState_t& uberlightState ) = 0;
 
 	virtual void SetShadowFromWorldLightsEnabled(bool bEnabled) = 0;
 	virtual bool IsShadowingFromWorldLights() const = 0;

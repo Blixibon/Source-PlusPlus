@@ -30,7 +30,7 @@ public:
 	
 protected:
 
-	virtual void UpdateLightProjection( FlashlightState_t &state );
+	virtual void UpdateLightProjection( ClientFlashlightState_t &state );
 
 	virtual void LightOff();
 	void LightOffNew();

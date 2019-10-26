@@ -620,7 +620,9 @@ void CClientTools::DestroyShadow( ClientShadowHandle_t h )
 
 ClientShadowHandle_t CClientTools::CreateFlashlight( const FlashlightState_t &lightState )
 {
-	return g_pClientShadowMgr->CreateFlashlight( lightState );
+	ClientFlashlightState_t clientState;
+	clientState.CopyFromOld(lightState);
+	return g_pClientShadowMgr->CreateFlashlight(clientState);
 }
 
 void CClientTools::DestroyFlashlight( ClientShadowHandle_t h )
@@ -630,7 +632,9 @@ void CClientTools::DestroyFlashlight( ClientShadowHandle_t h )
 
 void CClientTools::UpdateFlashlightState( ClientShadowHandle_t h, const FlashlightState_t &lightState )
 {
-	g_pClientShadowMgr->UpdateFlashlightState( h, lightState );
+	ClientFlashlightState_t clientState;
+	clientState.CopyFromOld(lightState);
+	g_pClientShadowMgr->UpdateFlashlightState( h, clientState);
 }
 
 void CClientTools::AddToDirtyShadowList( ClientShadowHandle_t h, bool force )

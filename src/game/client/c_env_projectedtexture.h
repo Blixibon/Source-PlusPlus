@@ -13,7 +13,7 @@
 
 #include "c_baseentity.h"
 #include "basetypes.h"
-#include "../../materialsystem/stdshaders/IShaderExtension.h"
+#include "iclientshadowmgr.h"
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -96,8 +96,8 @@ private:
 	int		m_nSpotlightTextureFrame;
 	int		m_nShadowQuality;
 
-	FlashlightState_t	m_FlashlightState;
-	UberlightState_t	m_UberlightState;
+	ClientFlashlightState_t	m_FlashlightState;
+	//UberlightState_t	m_UberlightState;
 	Vector m_vecRenderBoundsMin, m_vecRenderBoundsMax;
 
 	bool m_bEnableVolumetrics;

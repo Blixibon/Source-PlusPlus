@@ -139,7 +139,7 @@ void CFlashlightEffectBase::UpdateLightNew(const Vector &vecPos, const Vector &v
 {
 	VPROF_BUDGET( "CFlashlightEffectBase::UpdateLightNew", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
-	FlashlightState_t state;
+	ClientFlashlightState_t state;
 
 	C_BasePlayer* pl = UTIL_PlayerByIndex( m_nEntIndex );
 	
@@ -386,7 +386,7 @@ void CFlashlightEffectBase::LightOffNew()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFlashlightEffectBase::UpdateLightProjection( FlashlightState_t& state )
+void CFlashlightEffectBase::UpdateLightProjection(ClientFlashlightState_t& state )
 {
 	if( m_FlashlightHandle == CLIENTSHADOW_INVALID_HANDLE )
 	{
@@ -428,7 +428,7 @@ void CHeadlightEffect::UpdateLight( const Vector &vecPos, const Vector &vecDir, 
 	if ( IsOn() == false )
 		 return;
 
-	FlashlightState_t state;
+	ClientFlashlightState_t state;
 	Vector basisX, basisY, basisZ;
 	basisX = vecDir;
 	basisY = vecRight;
@@ -746,7 +746,7 @@ void CSpotlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecDir
 	/*if (r_dynamic_shadow_mode.GetInt() < 2)
 		return;*/
 
-	FlashlightState_t state;
+	ClientFlashlightState_t state;
 	Vector basisX, basisY, basisZ;
 	basisX = vecDir;
 	basisY = vecRight;
