@@ -1288,6 +1288,8 @@ CClientShadowMgr::CClientShadowMgr() :
 	m_bDepthTextureActive( false ),
 	m_bShadowFromWorldLights(false)
 {
+	SetDefLessFunc(m_ClientFlashlightStates);
+
 	m_nDepthTextureResolution = r_flashlightdepthres.GetInt();
 	m_bThreaded = r_threaded_client_shadow_manager.GetBool();
 	m_bSuppressShadowFromWorldLights = !r_worldlight_castshadows.GetBool();
