@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "VGUI/entities/gdcw_overwatch"
+	"$translucent" 1
+}
