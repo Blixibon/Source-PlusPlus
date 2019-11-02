@@ -146,6 +146,7 @@ public:
 		m_nDoFQuality = 0;
 
 		m_bDoDepthOfField = false;
+		m_bDrawVolumetrics = false;
 	}
 
 	CNewViewSetup(const CViewSetup &src) : CNewViewSetup()
@@ -163,6 +164,8 @@ public:
 	int			m_nDoFQuality;
 
 	bool		m_bDoDepthOfField : 1;
+
+	bool		m_bDrawVolumetrics;
 };
 
 #endif // VIEW_SHARED_H

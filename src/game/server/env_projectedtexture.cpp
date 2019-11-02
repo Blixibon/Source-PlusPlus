@@ -415,6 +415,8 @@ void CC_CreateFlashlight( const CCommand &args )
 	}
 
 	pFlashlight->Teleport( &origin, &angles, NULL );
-
+	pFlashlight->KeyValue("enableshadows", "1");
+	pFlashlight->AddSpawnFlags(ENV_PROJECTEDTEXTURE_STARTON);
+	DispatchSpawn(pFlashlight);
 }
 static ConCommand create_flashlight( "create_flashlight", CC_CreateFlashlight, 0, FCVAR_CHEAT );

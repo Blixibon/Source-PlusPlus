@@ -1306,6 +1306,21 @@ void AddPointToBounds (const Vector& v, Vector& mins, Vector& maxs)
 	}
 }
 
+bool AreBoundsValid(const Vector& vMin, const Vector& vMax)
+{
+	return (vMax.x > vMin.x) &&
+		(vMax.y > vMin.y) &&
+		(vMax.z > vMin.z);
+}
+
+bool IsPointInBounds(const Vector& vPoint, const Vector& vMin, const Vector& vMax)
+{
+	return ((vPoint.x >= vMin.x && vPoint.x <= vMax.x) &&
+		(vPoint.y >= vMin.y && vPoint.y <= vMax.y) &&
+		(vPoint.z >= vMin.z && vPoint.z <= vMax.z));
+}
+
+
 // solve a x^2 + b x + c = 0
 bool SolveQuadratic( float a, float b, float c, float &root1, float &root2 )
 {

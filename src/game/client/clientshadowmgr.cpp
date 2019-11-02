@@ -87,6 +87,7 @@
 #include "c_lights.h"
 #include "debugoverlay_shared.h"
 #include "view.h"
+#include "fmtstr.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -843,6 +844,39 @@ private:
 		int						m_nRenderFrame;
 		EHANDLE					m_hTargetEntity;
 	};
+
+	typedef struct InternalStateFlashlight
+	{
+		ClientFlashlightState_t clientState;
+		IMesh* pMesh_Volumetrics;
+		IMesh* pMesh_VolumPrepass;
+		ClientShadowHandle_t handle;
+
+		InternalStateFlashlight() : clientState()
+		{
+			pMesh_Volumetrics = nullptr;
+			pMesh_VolumPrepass = nullptr;
+			handle = CLIENTSHADOW_INVALID_HANDLE;
+		}
+
+		InternalStateFlashlight(const InternalStateFlashlight& other)
+		{
+			clientState = other.clientState;
+			handle = other.handle;
+			pMesh_Volumetrics = nullptr;
+			pMesh_VolumPrepass = nullptr;
+		}
+
+		~InternalStateFlashlight()
+		{
+			CMatRenderContextPtr pRenderContext(materials);
+			if (pMesh_Volumetrics)
+				pRenderContext->DestroyStaticMesh(pMesh_Volumetrics);
+
+			if (pMesh_VolumPrepass)
+				pRenderContext->DestroyStaticMesh(pMesh_VolumPrepass);
+		}
+	} InternalFlashlightState_t;
 
 private:
 	// Shadow update functions
@@ -2083,6 +2117,32 @@ ClientShadowHandle_t CClientShadowMgr::CreateShadow( ClientEntityHandle_t entity
 	return shadowHandle;
 }
 
+inline bool StatesHaveDifferentSize(const ClientFlashlightState_t& state1, const ClientFlashlightState_t& state2)
+{
+	if (state1.m_bOrtho != state2.m_bOrtho)
+		return true;
+
+	if (state1.m_NearZ != state2.m_NearZ ||
+		state1.m_FarZ != state2.m_FarZ)
+		return true;
+
+	if (state1.m_bOrtho)
+	{
+		if (state1.m_fOrthoLeft != state2.m_fOrthoLeft ||
+			state1.m_fOrthoRight != state2.m_fOrthoRight ||
+			state1.m_fOrthoTop != state2.m_fOrthoTop ||
+			state1.m_fOrthoBottom != state2.m_fOrthoBottom)
+			return true;
+	}
+	else
+	{
+		if (state1.m_fHorizontalFOVDegrees != state2.m_fHorizontalFOVDegrees ||
+			state1.m_fVerticalFOVDegrees != state2.m_fVerticalFOVDegrees)
+			return true;
+	}
+
+	return false;
+}
 
 //-----------------------------------------------------------------------------
 // Updates the flashlight direction and re-computes surfaces it should lie on
@@ -2117,9 +2177,34 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 
 	shadowmgr->UpdateFlashlightState(shadow.m_ShadowHandle, procState);
 
-	ClientFlashlightState_t newState = flashlightState;
-	newState.m_nShadowQuality = procState.m_nShadowQuality;
-	m_ClientFlashlightStates.InsertOrReplace(iStateIndex, newState);
+	InternalFlashlightState_t newState;
+	newState.clientState = flashlightState;
+	newState.clientState.m_nShadowQuality = procState.m_nShadowQuality;
+	newState.handle = shadowHandle;
+	unsigned short IDX = m_ClientFlashlightStates.Find(iStateIndex);
+	if (m_ClientFlashlightStates.IsValidIndex(IDX))
+	{
+		InternalFlashlightState_t &persistantState = m_ClientFlashlightStates.Element(IDX);
+		if (StatesHaveDifferentSize(persistantState.clientState, newState.clientState))
+		{
+			CMatRenderContextPtr pRenderContext(materials);
+
+			if (persistantState.pMesh_Volumetrics)
+				pRenderContext->DestroyStaticMesh(persistantState.pMesh_Volumetrics);
+
+			if (persistantState.pMesh_VolumPrepass)
+				pRenderContext->DestroyStaticMesh(persistantState.pMesh_VolumPrepass);
+
+			persistantState.pMesh_Volumetrics = nullptr;
+			persistantState.pMesh_VolumPrepass = nullptr;
+		}
+
+		persistantState.clientState = newState.clientState;
+	}
+	else
+	{
+		m_ClientFlashlightStates.Insert(iStateIndex, newState);
+	}
 }
 
 /*void CClientShadowMgr::UpdateUberlightState( FlashlightState_t& flashlightState, const UberlightState_t& uberlightState )
@@ -4807,7 +4892,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		FlashlightState_t engineState = shadowmgr->GetFlashlightState(shadow.m_ShadowHandle);
 		int iIndex = g_pShaderExtension->GetIndexOfFlashlightState(engineState);
 		unsigned short sIDX = m_ClientFlashlightStates.Find(iIndex);
-		ClientFlashlightState_t flashlightState = m_ClientFlashlightStates.Element(sIDX);
+		ClientFlashlightState_t &flashlightState = m_ClientFlashlightStates.Element(sIDX).clientState;
 
 		CTextureReference shadowDepthTexture;
 		bool bGotShadowDepthTexture = LockShadowDepthTexture( &shadowDepthTexture, shadow.m_ShadowHandle, flashlightState.m_bShadowHighRes, flashlightState.m_vecLightOrigin.DistToSqr(MainViewOrigin()));
@@ -4824,6 +4909,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 			Assert(0);
 			shadowmgr->SetFlashlightDepthTexture( shadow.m_ShadowHandle, NULL, 0 );
 			g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(flashlightState, nullptr);
+			shadow.m_ShadowDepthTexture.Shutdown();
 			continue;
 		}
 
@@ -4878,6 +4964,8 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		// Render to the shadow depth texture with appropriate view
 		view->UpdateShadowDepthTexture( m_DummyColorTexture, shadowDepthTexture, shadowView );
 
+		shadow.m_ShadowDepthTexture = shadowDepthTexture;
+		flashlightState.m_flShadowMapResolution = shadowDepthTexture->GetActualWidth();
 		g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(flashlightState, shadowDepthTexture);
 		shadowmgr->UpdateFlashlightState( shadow.m_ShadowHandle, flashlightState );
 

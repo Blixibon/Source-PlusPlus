@@ -532,7 +532,11 @@ public:
 
 	virtual CBasePlayer *GetBestPlayer()
 	{
-		return AI_GetAlliedPlayer(this);
+		CBasePlayer* pPlayer = AI_GetAlliedPlayer(this);
+		if (!pPlayer)
+			pPlayer = AI_GetNeutralPlayer(this);
+
+		return pPlayer;
 	}
 
 	virtual CBasePlayer *GetBestPlayer() const

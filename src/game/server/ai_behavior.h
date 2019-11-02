@@ -371,6 +371,13 @@ public:
 
 typedef CAI_Behavior<> CAI_SimpleBehavior;
 
+class IBehaviorHost
+{
+public:
+	virtual void			AddBehavior(CAI_BehaviorBase* pBehavior) = 0;
+	virtual void			RemoveBehavior(CAI_BehaviorBase* pBehavior) = 0;
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: Base class for AIs that want to act as a host for CAI_Behaviors
 //			NPCs aren't required to use this, but probably want to.
@@ -378,6 +385,7 @@ typedef CAI_Behavior<> CAI_SimpleBehavior;
 
 template <class BASE_NPC>
 class CAI_BehaviorHost : public BASE_NPC,
+						 public IBehaviorHost,
 						 private IBehaviorBackBridge
 {
 public:
@@ -473,9 +481,9 @@ public:
 	virtual bool	OnBehaviorChangeStatus( CAI_BehaviorBase *pBehavior, bool fCanFinishSchedule );
 	virtual void	OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior );
 
-protected:
-	void			AddBehavior( CAI_BehaviorBase *pBehavior );
+	void			AddBehavior(CAI_BehaviorBase* pBehavior);
 	void			RemoveBehavior(CAI_BehaviorBase* pBehavior);
+protected:
 	
 	bool			BehaviorSelectSchedule();
 	virtual bool	ShouldBehaviorSelectSchedule( CAI_BehaviorBase *pBehavior ) { return true; }
@@ -1505,6 +1513,17 @@ inline void CAI_BehaviorHost<BASE_NPC>::OnChangeActiveWeapon( CBaseCombatWeapon 
 	{
 		m_Behaviors[i]->BridgeOnChangeActiveWeapon( pOldWeapon, pNewWeapon );
 	}
+
+	if (pOldWeapon)
+	{
+		pOldWeapon->NPC_DetachBehavior(this);
+	}
+
+	if (pNewWeapon)
+	{
+		pNewWeapon->NPC_AttachBehavior(this);
+	}
+
 	BaseClass::OnChangeActiveWeapon( pOldWeapon, pNewWeapon );
 }
 
@@ -1795,6 +1814,9 @@ inline void CAI_BehaviorHost<BASE_NPC>::UpdateOnRemove()
 template <class BASE_NPC>
 inline void CAI_BehaviorHost<BASE_NPC>::Event_Killed( const CTakeDamageInfo &info )
 {
+	if (GetActiveWeapon())
+		GetActiveWeapon()->NPC_DetachBehavior(this);
+
 	for( int i = 0; i < m_Behaviors.Count(); i++ )
 	{
 		m_Behaviors[i]->BridgeEvent_Killed( info );
@@ -1893,7 +1915,7 @@ inline void CAI_BehaviorHost<BASE_NPC>::AddBehavior( CAI_BehaviorBase *pBehavior
 {
 #ifdef DEBUG
 	Assert( m_Behaviors.Find( pBehavior ) == m_Behaviors.InvalidIndex() );
-	Assert( m_fDebugInCreateBehaviors );
+	//Assert( m_fDebugInCreateBehaviors );
 	for ( int i = 0; i < m_Behaviors.Count(); i++)
 	{
 		Assert( typeid(*m_Behaviors[i]) != typeid(*pBehavior) );
@@ -1909,11 +1931,17 @@ inline void CAI_BehaviorHost<BASE_NPC>::RemoveBehavior(CAI_BehaviorBase* pBehavi
 {
 #ifdef DEBUG
 	Assert(m_Behaviors.Find(pBehavior) != m_Behaviors.InvalidIndex());
-	Assert(m_fDebugInCreateBehaviors);
+	//Assert(m_fDebugInCreateBehaviors);
 #endif
 	m_Behaviors.FindAndRemove(pBehavior);
 	pBehavior->SetOuter(nullptr);
 	pBehavior->SetBackBridge(nullptr);
+
+	if (m_pCurBehavior == pBehavior)
+	{
+		ChangeBehaviorTo(nullptr);
+		ClearSchedule("Behavior removed.");
+	}
 }
 
 //-------------------------------------

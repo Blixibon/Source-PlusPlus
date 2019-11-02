@@ -1381,10 +1381,10 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 			pTable = s_acttableRPG;
 			iActivityCount = ARRAYSIZE(s_acttableRPG);
 			break;
-		/*case 1:
-			pTable = s_acttableShotgun;
-			iActivityCount = ARRAYSIZE(s_acttableShotgun);
-			break;*/
+		case 1:
+			pTable = s_acttableAR2;
+			iActivityCount = ARRAYSIZE(s_acttableAR2);
+			break;
 		case 2:
 			pTable = s_acttableCrossbow;
 			iActivityCount = ARRAYSIZE(s_acttableCrossbow);

@@ -32,7 +32,7 @@ inline CBasePlayer *AI_GetSinglePlayer()
 }
 
 CBasePlayer *AI_GetAlliedPlayer(CBaseEntity *pAI);
-
+CBasePlayer* AI_GetNeutralPlayer(CBaseEntity* pAI);
 CBasePlayer *AI_GetEnemyPlayer(CBaseEntity *pAI);
 
 inline bool AI_IsSinglePlayer()

@@ -1468,3 +1468,49 @@
 
 	"wave"			"^weapons/smg1/smg1_fireburst1.wav"
 }
+
+"clipout_com"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	
+	"wave"			"sniper/magout.wav"
+}
+
+"clipin_com"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	
+	"wave"			"sniper/magin.wav"
+}
+
+"boltpull_com"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	
+	"wave"			"npc/sniper/reload1.wav"
+}
+
+"deploy_com"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"soundlevel"	"SNDLVL_80db"
+	
+	"wave"			"sniper/foley.wav"
+}
+
+"Weapon_Sniper_Rifle.Single"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_GUNFIRE"
+	"pitch"			"98,102"
+	
+	"wave"		"sniper/shot.wav"
+}

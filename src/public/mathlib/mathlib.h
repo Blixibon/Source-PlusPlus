@@ -995,6 +995,18 @@ inline int FASTCALL BoxOnPlaneSide2 (const Vector& emins, const Vector& emaxs, c
 void ClearBounds (Vector& mins, Vector& maxs);
 void AddPointToBounds (const Vector& v, Vector& mins, Vector& maxs);
 
+//-----------------------------------------------------------------------------
+// Ensures that the min and max bounds values are valid. 
+// (ClearBounds() sets min > max, which is clearly invalid.)
+//-----------------------------------------------------------------------------
+bool AreBoundsValid(const Vector& vMin, const Vector& vMax);
+
+//-----------------------------------------------------------------------------
+// Returns true if the provided point is in the AABB defined by vMin
+// at the lower corner and vMax at the upper corner.
+//-----------------------------------------------------------------------------
+bool IsPointInBounds(const Vector& vPoint, const Vector& vMin, const Vector& vMax);
+
 //
 // COLORSPACE/GAMMA CONVERSION STUFF
 //

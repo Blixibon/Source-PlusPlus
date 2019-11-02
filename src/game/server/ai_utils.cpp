@@ -26,6 +26,17 @@ CBasePlayer *AI_GetAlliedPlayer(CBaseEntity *pAI)
 	return UTIL_GetIdealPlayer(params);
 }
 
+CBasePlayer* AI_GetNeutralPlayer(CBaseEntity* pAI)
+{
+	findPlayerParams_t params;
+	params.pLooker = pAI;
+	params.life = GETPLAYER_LIFE_ALIVE;
+	params.selector = GETPLAYER_NEAREST;
+	params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
+	params.nRelation = D_LI;
+	return UTIL_GetIdealPlayer(params);
+}
+
 CBasePlayer *AI_GetEnemyPlayer(CBaseEntity *pAI)
 {
 	findPlayerParams_t params;

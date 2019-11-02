@@ -13541,6 +13541,7 @@ bool CAI_BaseNPC::IsFirmlyOnGround(void)
 
 bool CAI_BaseNPC::ShouldCollide(int collisionGroup, int contentsMask) const
 {
+#ifdef HL2_LAZUL
 	if (g_pGameRules->IsMultiplayer())
 	{
 		if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
@@ -13561,7 +13562,7 @@ bool CAI_BaseNPC::ShouldCollide(int collisionGroup, int contentsMask) const
 			}
 		}
 	}
-
+#endif
 	return BaseClass::ShouldCollide(collisionGroup, contentsMask);
 }
 

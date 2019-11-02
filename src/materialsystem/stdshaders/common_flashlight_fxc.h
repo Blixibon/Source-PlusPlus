@@ -421,7 +421,7 @@ float DoFlashlightShadow( sampler DepthSampler, sampler RandomRotationSampler, f
 
 	if( nShadowLevel == NVIDIA_PCF_POISSON )
 #if defined( NEW_SHADOW_FILTERS )
-		flShadow = DoShadowNvidiaPCF5x5Gaussian( DepthSampler, vProjCoords, float2( 1.0 / 2048.0, 1.0 / 2048.0 ) );
+		flShadow = DoShadowNvidiaPCF5x5Gaussian( DepthSampler, vProjCoords, vShadowTweaks.xy );
 #else		
 		flShadow = DoShadowPoisson16Sample( DepthSampler, RandomRotationSampler, vProjCoords, vScreenPos, vShadowTweaks, true, false );
 #endif

@@ -33,6 +33,7 @@ extern void OnBaseCombatWeaponCreated( CBaseCombatWeapon * );
 extern void OnBaseCombatWeaponDestroyed( CBaseCombatWeapon * );
 
 void *SendProxy_SendLocalWeaponDataTable( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID );
+#include "ai_behavior.h"
 #endif
 
 class CBasePlayer;
@@ -469,6 +470,9 @@ public:
 	virtual	int				WeaponRangeAttack2Condition( float flDot, float flDist );
 	virtual	int				WeaponMeleeAttack1Condition( float flDot, float flDist );
 	virtual	int				WeaponMeleeAttack2Condition( float flDot, float flDist );
+
+	virtual void			NPC_AttachBehavior(IBehaviorHost* pAI) { return; }
+	virtual void			NPC_DetachBehavior(IBehaviorHost* pAI) { return; }
 
 	virtual void			Operator_FrameUpdate( CBaseCombatCharacter  *pOperator );
 	virtual void			Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );

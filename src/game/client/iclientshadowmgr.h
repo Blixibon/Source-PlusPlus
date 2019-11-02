@@ -62,6 +62,8 @@ struct ClientFlashlightState_t : public FlashlightState_t
 	float m_flNoiseStrength;
 	float m_flFlashlightTime;
 	float m_flVolumetricIntensity;
+
+	IMPLEMENT_OPERATOR_EQUAL(ClientFlashlightState_t);
 };
 
 //-----------------------------------------------------------------------------
