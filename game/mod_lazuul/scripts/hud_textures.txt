@@ -119,5 +119,264 @@
 				"width"		"220"
 				"height"	"30"
 		}
+		"ammo_label"
+		{
+			//	"file"		"sprites/hud1"
+			//	"x"			"120"
+			//	"y"			"28"
+			//	"width"		"40"
+			//	"height"	"14"
+
+				"file"		"sprites/hud2"
+				"x"			"119"
+				"y"			"28"
+				"width"		"41"
+				"height"	"14"
+		}
+		"health_label"
+		{
+			//	"file"		"sprites/hud1"
+			//	"x"			"160"
+			//	"y"			"28"
+			//	"width"		"50"
+			//	"height"	"14"
+
+			// VXP: Almost good
+			//	"file"		"sprites/hud1"
+			//	"x"			"163"
+			//	"y"			"30"
+			//	"width"		"46"
+			//	"height"	"10"
+			
+				"file"		"sprites/hud2"
+				"x"			"160"
+				"y"			"28"
+				"width"		"50"
+				"height"	"14"
+		}
+		"battery_label"
+		{
+			//	"file"		"sprites/hud1"
+			//	"x"			"220"
+			//	"y"			"28"
+			//	"width"		"40"
+			//	"height"	"14"	
+			
+				"file"		"sprites/hud2"
+				"x"			"220"
+				"y"			"28"
+				"width"		"40"
+				"height"	"14"	
+		}
+
+		// VXP: Normal numbers
+		"number_0"
+		{
+				"file"		"sprites/hud1"
+				"x"			"0"
+				"y"			"0"
+				"width"		"20"
+				"height"	"27"
+		}
+		"number_1"
+		{
+				"file"		"sprites/hud1"
+				"x"			"20"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_2"
+		{
+				"file"		"sprites/hud1"
+				"x"			"40"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_3"
+		{
+				"file"		"sprites/hud1"
+				"x"			"60"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_4"
+		{
+				"file"		"sprites/hud1"
+				"x"			"80"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_5"
+		{
+				"file"		"sprites/hud1"
+				"x"			"101"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_6"
+		{
+				"file"		"sprites/hud1"
+				"x"			"121"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_7"
+		{
+				"file"		"sprites/hud1"
+				"x"			"141"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_8"
+		{
+				"file"		"sprites/hud1"
+				"x"			"161"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_9"
+		{
+				"file"		"sprites/hud1"
+				"x"			"180"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_dummy1"
+		{
+				"file"		"sprites/hud1"
+				"x"			"201"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+		"number_dummy2"
+		{
+				"file"		"sprites/hud1"
+				"x"			"221"
+				"y"			"0"
+				"width"		"19"
+				"height"	"27"
+		}
+
+		// VXP: Small numbers
+		"number_0_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"1"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_1_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"10"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_2_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"19"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_3_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"30"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_4_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"40"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_5_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"49"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_6_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"60"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_7_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"69"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_8_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"80"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_9_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"90"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_dummy1_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"100"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"number_dummy2_small"
+		{
+				"file"		"sprites/hud1"
+				"x"			"110"
+				"y"			"28"
+				"width"		"10"
+				"height"	"14"
+		}
+		"progress_bar"
+		{
+			//	"file"		"sprites/hud1"
+			//	"x"			"238"
+			//	"y"			"0"
+			//	"width"		"10"
+			//	"height"	"28"
+
+				"file"		"sprites/hud1"
+				"x"			"241"
+				"y"			"0"
+				"width"		"8"
+				"height"	"27"
+		}
 	}	
 }

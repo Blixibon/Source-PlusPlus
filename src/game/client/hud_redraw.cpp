@@ -62,20 +62,20 @@ void CHud::Think(void)
 #if defined( REPLAY_ENABLED )
 		visible = visible && !bPlayingReplay;
 #endif
-
-		m_HudList[i]->SetActive( visible );
-
 		// If it's a vgui panel, hide/show as appropriate
-		vgui::Panel *pPanel = dynamic_cast<vgui::Panel*>(m_HudList[i]);
-		if ( pPanel && pPanel->IsVisible() != visible )
+		vgui::Panel* pPanel = dynamic_cast<vgui::Panel*>(m_HudList[i]);
+		if (pPanel && pPanel->IsVisible() != visible)
 		{
-			pPanel->SetVisible( visible );
+			visible = visible && pPanel->IsEnabled();
+			pPanel->SetVisible(visible);
 		}
-		else if ( !pPanel )
+		else if (!pPanel)
 		{
 			// All HUD elements should now derive from vgui!!!
-			Assert( 0 );
+			Assert(0);
 		}
+
+		m_HudList[i]->SetActive( visible );
 
 		if ( visible )
 		{
@@ -207,4 +207,61 @@ void CHud::DrawIconProgressBar( int x, int y, CHudTexture *icon, CHudTexture *ic
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose:  The percentage passed in is expected and clamped to 0.0f to 1.0f
+// Input  : x - 
+//			y - 
+//			*icon - 
+//			percentage - 
+//			clr - 
+//			type - 
+//-----------------------------------------------------------------------------
+void CHud::DrawIconProgressBar(int x, int y, int width, int height, CHudTexture* icon, float percentage, Color& clr, int type)
+{
+	if (icon == NULL)
+		return;
 
+	//Clamp our percentage
+	percentage = min(1.0f, percentage);
+	percentage = max(0.0f, percentage);
+
+	//	int	height = icon->Height();
+	//	int	width  = icon->Width();
+
+	Color darkClr = clr;
+	darkClr[0] /= 4;
+	darkClr[1] /= 4;
+	darkClr[2] /= 4;
+
+	//Draw a vertical progress bar
+	if (type == HUDPB_VERTICAL)
+	{
+		int	barOfs = height * percentage;
+
+		icon->DrawSelfCropped(
+			//	x, y,  // Pos
+			x, y, width, height,  // Pos
+			0, 0, width, barOfs, // Cropped subrect
+			darkClr);
+
+		icon->DrawSelfCropped(
+			//	x, y + barOfs, 
+			x, y + barOfs, width, height,
+			0, barOfs, width, height - barOfs, // Cropped subrect
+			clr);
+	}
+	else if (type == HUDPB_HORIZONTAL)
+	{
+		int	barOfs = width * percentage;
+
+		icon->DrawSelfCropped(
+			x, y,  // Pos
+			0, 0, barOfs, height, // Cropped subrect
+			darkClr);
+
+		icon->DrawSelfCropped(
+			x + barOfs, y,
+			barOfs, 0, width - barOfs, height, // Cropped subrect
+			clr);
+	}
+}

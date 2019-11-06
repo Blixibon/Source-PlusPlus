@@ -58,6 +58,15 @@ $Project "Client (Lazuul)"
 			$File "peter\laz_hud_chat.h"
 			$File "peter\laz_hud_player.cpp"
 
+			$Folder "HUD"
+			{
+				$File "hl2\hud_ammo_old.cpp"
+				$File "hl2\hud_battery_old.cpp"
+				$File "hl2\hud_health_old.cpp"
+				$File "hl2\hud_suitpower_old.cpp"
+				$File "hl2\hud_suitpower_old.h"
+			}
+
 			//$Folder "UI"
 			//{
 			//	$File	"peter\laz_pmodelpanel.cpp"

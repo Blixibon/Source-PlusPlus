@@ -209,7 +209,7 @@ void CBaseViewport::OnScreenSizeChanged(int iOldWide, int iOldTall)
 	bool bSpecGuiWasVisible = pSpecGuiPanel && pSpecGuiPanel->IsVisible();
 	
 	// reload the script file, so the screen positions in it are correct for the new resolution
-	ReloadScheme( NULL );
+	ReloadScheme( NULL, NULL );
 
 	// recreate all the default panels
 	RemoveAllPanels();
@@ -674,7 +674,7 @@ void CBaseViewport::FireGameEvent( IGameEvent * event)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CBaseViewport::ReloadScheme(const char *fromFile)
+void CBaseViewport::ReloadScheme(const char *fromFile, const char * pszLayout)
 {
 	CETWScope timer( "CBaseViewport::ReloadScheme" );
 
@@ -706,7 +706,10 @@ void CBaseViewport::ReloadScheme(const char *fromFile)
 	g_pClientMode->ComputeVguiResConditions( pConditions );
 
 	// reload the .res file from disk
-	LoadControlSettings( "scripts/HudLayout.res", NULL, NULL, pConditions );
+	if (pszLayout != NULL)
+		LoadControlSettings(pszLayout, NULL, NULL, pConditions);
+	else
+		LoadControlSettings(GetBuildGroup()->GetResourceName(), NULL, NULL, pConditions);
 
 	gHUD.RefreshHudTextures();
 

@@ -887,3 +887,327 @@ event MenuPulse
 	Animate HudMenu		Blur		"2"			Deaccel	0.5		0.1
 	Animate	HudMenu		Blur		"1"			Deaccel	0.6		0.4
 }
+
+event SuitAuxPowerMaxOld
+{
+	// hide the suit power
+	Animate HudSuitPowerOld BgColor		"0 0 0 0"		Linear 0.0 0.4
+	Animate HudSuitPowerOld AuxPowerColor	"0 0 0 0"		Linear 0.0 0.4
+}
+
+event SuitAuxPowerNotMaxOld
+{
+	// show suit power
+//	Animate HudSuitPowerOld AuxPowerColor	"255 220 0 220"		Linear 0.0 0.4
+	Animate HudSuitPowerOld AuxPowerColor	"OldFgColor"		Linear 0.0 0.4
+}
+
+event SuitAuxPowerDecreasedBelow25Old
+{
+	// make color red
+	Animate HudSuitPowerOld AuxPowerColor	"255 0 0 220"		Linear 0.0 0.4
+}
+
+event SuitAuxPowerIncreasedAbove25Old
+{
+	// make colr bright
+//	Animate HudSuitPowerOld AuxPowerColor	"255 220 0 220"		Linear 0.0 0.4
+	Animate HudSuitPowerOld AuxPowerColor	"OldFgColor"		Linear 0.0 0.4
+}
+
+event HealthIncreasedAbove20Old
+{
+	StopEvent	HealthLoopOld  0.0
+	StopEvent	HealthPulseOld 0.0
+	StopEvent	HealthLowOld   0.0 // VXP
+
+	Animate	HudHealthOld	FgColor "OldFgColor" Linear 0.0 0.04
+	
+	Animate	HudHealthOld		Blur		"3"			Linear	0.0		0.1
+	Animate	HudHealthOld		Blur		"0"			Deaccel	0.1		2.0
+}
+
+event HealthIncreasedBelow20Old
+{
+	Animate HudHealthOld	FgColor		"OldBrightFg"	Linear	0.0		0.25
+	Animate HudHealthOld	FgColor		"OldFgColor"		Linear	0.3		0.75
+	
+	Animate HudHealthOld		Blur		"3"			Linear	0.0		0.1
+	Animate HudHealthOld		Blur		"0"			Deaccel	0.1		2.0
+}
+
+event SuitPowerIncreasedAbove20Old
+{
+	StopEvent	SuitLoopOld 0.0
+	StopEvent	SuitPulseOld 0.0
+	StopEvent	SuitPowerZeroOld	0.0
+
+//	Animate	HudSuitOld 	Alpha		"255"			Linear 0.0 0.0
+
+	Animate	HudSuitOld	BgColor		"BgColor"	Linear	0.0	0.0
+
+	Animate	HudSuitOld 	TextColor	"OldFgColor"	Linear 0.0 0.05
+	Animate	HudSuitOld 	FgColor		"OldFgColor"	Linear 0.0 0.05
+	
+	Animate	HudSuitOld		Blur		"3"			Linear	0.0		0.1
+	Animate	HudSuitOld		Blur		"0"			Deaccel	0.1		2.0
+}
+
+event SuitPowerIncreasedBelow20Old
+{
+	StopEvent		SuitPowerZeroOld	0.0
+//	Animate	HudSuitOld 	Alpha		"255"			Linear 0.0 0.0
+
+	Animate HudSuitOld		FgColor		"OldBrightFg"	Linear	0.0		0.25
+	Animate HudSuitOld		FgColor		"OldFgColor"	Linear	0.3		0.75
+	
+	Animate HudSuitOld		Blur		"3"			Linear	0.0		0.1
+	Animate HudSuitOld		Blur		"0"			Deaccel	0.1		2.0
+}
+
+event SuitPowerZeroOld
+{
+	StopEvent	SuitLoopOld 0.0
+	StopEvent	SuitPulseOld 0.0
+	StopEvent	SuitArmorLowOld 0.0
+	StopEvent	SuitDamageTakenOld 0.0
+
+//	Animate	HudSuitOld Alpha		"0"			Linear 0.0 0.4 // VXP: We don't need to hide it
+	Animate HudSuitOld FgColor	"OldFgColor"	Linear	0.0		0.4 // VXP: But better to set the initial color here
+}
+
+event HealthDamageTakenOld
+{
+	Animate HudHealthOld		Blur		"3"			Linear	0.0		0.1
+	Animate HudHealthOld		Blur		"0"			Deaccel	0.1		2.0
+	
+	Animate HudHealthOld	FgColor		"OldBrightFg"	Linear	0.0		0.1
+	Animate HudHealthOld	FgColor		"OldFgColor"		Deaccel	0.1		1.2
+}
+
+event SuitDamageTakenOld
+{
+	Animate HudSuitOld		Blur		"3"			Linear	0.0		0.1
+	Animate HudSuitOld		Blur		"0"			Deaccel	0.1		2.0
+	
+	Animate HudSuitOld		FgColor	"OldBrightFg"	Linear	0.0		0.1
+	Animate HudSuitOld		FgColor	"OldFgColor"		Deaccel	0.1		1.2
+}
+
+event HealthLowOld
+{
+	StopEvent HealthDamageTakenOld	0.0
+	StopEvent HealthPulseOld	0.0
+	StopEvent HealthLoopOld	0.0	
+
+	Animate HudHealthOld FgColor		"OldBrightFg"	Linear	0.0		0.1
+	Animate HudHealthOld	FgColor		"OldDamagedFg"		Linear	0.1		1.2
+	
+	Animate HudHealthOld		Blur		"5"			Linear	0.0		0.1
+	Animate HudHealthOld		Blur		"3"			Deaccel	0.1		0.9
+
+	RunEvent HealthPulseOld	1.0
+}
+
+event HealthPulseOld
+{
+	Animate HudHealthOld		Blur		"5"			Linear	0.0		0.1
+	Animate HudHealthOld		Blur		"2"			Deaccel	0.1		0.8
+	Animate HudHealthOld		FgColor	"OldBrightDamagedFg"	Linear	0.0		0.1
+	Animate HudHealthOld		FgColor	"OldDamagedFg"		Deaccel	0.1		0.8
+
+	RunEvent HealthLoopOld	0.8
+}
+
+event HealthLoopOld
+{
+	RunEvent HealthPulseOld 0.0
+}
+
+event SuitArmorLowOld
+{
+	StopEvent SuitDamageTakenOld 0.0
+	StopEvent SuitPulseOld	0.0
+	StopEvent SuitLoopOld	0.0
+
+	Animate HudSuitOld	FgColor		"OldBrightFg"	Linear	0.0		0.2
+	Animate HudSuitOld	FgColor		"OldDamagedFg"		Linear	0.2		1.2
+	
+	Animate HudSuitOld		Blur		"5"			Linear	0.0		0.1
+	Animate HudSuitOld		Blur		"3"			Deaccel	0.1		0.9
+	
+	RunEvent SuitPulseOld	1.0
+}
+
+event SuitPulseOld
+{
+	Animate HudSuitOld		Blur		"5"			Linear	0.0		0.1
+	Animate HudSuitOld		Blur		"2"			Deaccel	0.1		0.8
+	Animate HudSuitOld		FgColor	"OldBrightDamagedFg"	Linear	0.0		0.1
+	Animate HudSuitOld		FgColor	"OldDamagedFg"		Deaccel	0.1		0.8
+
+	RunEvent SuitLoopOld	0.8
+}
+
+event SuitLoopOld
+{
+	RunEvent SuitPulseOld 0.0
+}
+
+event AmmoIncreasedOld
+{
+	Animate HudAmmoOld		FgColor	"OldBrightFg"		Linear	0.0	0.15
+	Animate HudAmmoOld		FgColor	"OldFgColor"		Deaccel	0.15	1.5
+	Animate HudAmmoOld		Blur		"5"			Linear	0.0	0.0 
+	Animate HudAmmoOld		Blur		"0"			Accel		0.01	1.5 
+}
+
+event AmmoDecreasedOld
+{
+	StopEvent AmmoIncreasedOld	0.0
+
+	Animate HudAmmoOld		Blur		"7"			Linear	0.0	0.0
+	Animate HudAmmoOld		Blur		"0"			Deaccel	0.1	1.5
+	
+	Animate HudAmmoOld		FgColor	"OldBrightFg"		Linear	0.0	0.1
+	Animate HudAmmoOld		FgColor	"OldFgColor"		Deaccel	0.1	0.75
+}
+
+event AmmoEmptyOld
+{
+	Animate HudAmmoOld	FgColor		"OldBrightDamagedFg"	Linear	0.0	0.2
+	Animate HudAmmoOld	FgColor		"OldDamagedFg"		Accel		0.2	1.2		
+}
+
+event Ammo2IncreasedOld
+{
+	Animate HudAmmoOld	ammo2color		"OldBrightFg"		Linear	0.0	0.2
+	Animate HudAmmoOld	ammo2color		"OldFgColor"		Accel		0.2	1.2		
+}
+
+event Ammo2DecreasedOld
+{
+	Animate HudAmmoOld	ammo2color		"OldBrightFg"		Linear	0.0	0.2
+	Animate HudAmmoOld	ammo2color		"OldFgColor"		Accel		0.2	1.2		
+}
+
+event Ammo2EmptyOld
+{
+	Animate HudAmmoOld	ammo2color		"OldBrightDamagedFg"	Linear	0.0	0.2
+	Animate HudAmmoOld	ammo2color		"OldDamagedFg"		Accel		0.2	1.2		
+}
+
+event AmmoSecondaryIncreasedOld
+{
+//	Animate HudAmmoSecondaryOld		Color	"OldBrightFg"		Linear	0.0	0.15
+//	Animate HudAmmoSecondaryOld		Color	"OldFgColor"		Deaccel	0.15	1.5
+	Animate HudAmmoSecondaryOld		FgColor	"OldBrightFg"		Linear	0.0	0.15
+	Animate HudAmmoSecondaryOld		FgColor	"OldFgColor"		Deaccel	0.15	1.5
+	Animate HudAmmoSecondaryOld		Blur		"5"			Linear	0.0	0.0 
+	Animate HudAmmoSecondaryOld		Blur		"0"			Accel		0.01	1.5 	
+}
+
+event AmmoSecondaryDecreasedOld
+{
+	StopEvent AmmoSecondaryIncreasedOld	0.0
+
+	Animate HudAmmoSecondaryOld		Blur		"7"			Linear	0.0	0.0
+	Animate HudAmmoSecondaryOld		Blur		"0"			Deaccel	0.1	1.5
+
+//	Animate HudAmmoSecondaryOld		Color	"OldBrightFg"		Linear	0.0	0.1
+//	Animate HudAmmoSecondaryOld		Color	"OldFgColor"		Deaccel	0.1	0.75
+	Animate HudAmmoSecondaryOld		FgColor	"OldBrightFg"		Linear	0.0	0.1
+	Animate HudAmmoSecondaryOld		FgColor	"OldFgColor"		Deaccel	0.1	0.75
+}
+
+event AmmoSecondaryEmptyOld
+{
+//	Animate HudAmmoSecondaryOld		Color		"OldBrightDamagedFg"	Linear	0.0	0.2
+//	Animate HudAmmoSecondaryOld		Color		"OldDamagedFg"		Accel		0.2	1.2
+	Animate HudAmmoSecondaryOld		FgColor		"OldBrightDamagedFg"	Linear	0.0	0.2
+	Animate HudAmmoSecondaryOld		FgColor		"OldDamagedFg"		Accel		0.2	1.2
+	Animate HudAmmoSecondaryOld		Blur		"7"			Linear	0.0	0.0
+	Animate HudAmmoSecondaryOld		Blur		"0"			Deaccel	0.1	1.5
+
+}
+
+event WeaponChangedOld
+{
+	StopEvent AmmoIncreasedOld	0.0
+	StopEvent AmmoDecreasedOld	0.0
+	// VXP: Dirty hack
+//	StopEvent	HudPlayerDeath  0.5
+
+	Animate HudAmmoOld		FgColor		"OldBrightFg"		Linear	0.0		0.1
+	Animate HudAmmoOld		FgColor		"OldFgColor"		Linear	0.2		1.5
+}
+
+event WeaponUsesClipsOld
+{
+//	Animate HudAmmoOld		Position	"r150 432"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Position	"r150 445"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Position	"r135 442"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Position	"r98 445"	Deaccel	0.0		0.4
+	Animate HudAmmoOld		Position	"r95 445"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Size		"132 30"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Size		"132 36"	Deaccel	0.0		0.4
+	Animate HudAmmoOld		Size		"132 27"	Deaccel	0.0		0.4
+}
+
+event WeaponDoesNotUseClipsOld
+{
+//	Animate HudAmmoOld		Position	"r118 432"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Position	"r98 445"	Deaccel	0.0		0.4
+	Animate HudAmmoOld		Position	"r95 445"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Size		"100 30"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Size		"100 36"	Deaccel	0.0		0.4
+	Animate HudAmmoOld		Size		"100 27"	Deaccel	0.0		0.4
+}
+
+event WeaponUsesSecondaryAmmoOld
+{
+	StopAnimation 	HudAmmoOld Position 0.0
+	StopAnimation 	HudAmmoOld Size 0.0
+	StopPanelAnimations HudAmmoSecondaryOld 0.0
+
+//	Animate HudAmmoSecondaryOld	BgColor		"250 220 0 60"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryOld	BgColor		"BgColor"		Deaccel	0.1		1.0
+	Animate HudAmmoSecondaryOld	FgColor		"OldBrightFg"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryOld	FgColor		"OldFgColor"		Linear	0.2		1.5
+	Animate HudAmmoSecondaryOld	FgColor		"OldFgColor"		Linear	0.2		1.5
+
+//	Animate HudAmmoOld		Position	"r222 432"	Deaccel	0.0		0.5
+//	Animate HudAmmoOld		Position	"r222 443"	Deaccel	0.0		0.5
+//	Animate HudAmmoOld		Position	"r98 445"	Deaccel	0.0		0.5
+	Animate HudAmmoOld		Position	"r95 445"	Deaccel	0.0		0.5
+//	Animate HudAmmoOld		Size		"132 30"	Deaccel	0.0		0.4
+//	Animate HudAmmoOld		Size		"132 36"	Deaccel	0.0		0.4
+	Animate HudAmmoOld		Size		"132 27"	Deaccel	0.0		0.4
+}
+
+event WeaponUsesSecondaryAmmoRestoreOld
+{
+	StopAnimation 	HudAmmoOld Position 0.0
+	StopAnimation 	HudAmmoOld Size 0.0
+	StopPanelAnimations HudAmmoSecondaryOld 0.0
+
+	Animate HudAmmoSecondaryOld	BgColor		"OldBgColor"		Deaccel	0.0	0.0
+	Animate HudAmmoSecondaryOld	FgColor		"OldFgColor"		Linear	0.0	0.0
+
+//	Animate HudAmmoOld		Position	"r222 432"	Deaccel	0.0	0.0
+//	Animate HudAmmoOld		Position	"r222 442"	Deaccel	0.0	0.0
+//	Animate HudAmmoOld		Position	"r98 445"	Deaccel	0.0	0.0
+	Animate HudAmmoOld		Position	"r95 445"	Deaccel	0.0	0.0
+//	Animate HudAmmoOld		Size		"132 30"	Deaccel	0.0	0.0
+//	Animate HudAmmoOld		Size		"132 36"	Deaccel	0.0	0.0
+	Animate HudAmmoOld		Size		"132 27"	Deaccel	0.0	0.0
+}
+
+event WeaponDoesNotUseSecondaryAmmoOld
+{
+	StopPanelAnimations	HudAmmoSecondaryOld 	0.0
+//	Animate HudAmmoSecondaryOld	Color		"0 0 0 0"	Linear	0.0		0.4
+	Animate HudAmmoSecondaryOld	FgColor		"0 0 0 0"	Linear	0.0		0.4
+	Animate HudAmmoSecondaryOld	BgColor		"0 0 0 0"	Linear	0.0		0.4
+//	Animate HudAmmoOld		Position	"r150 432"	Deaccel	0.0		0.5
+}

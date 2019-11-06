@@ -47,7 +47,7 @@ public:
 	virtual void Start( IGameUIFuncs *pGameUIFuncs, IGameEventManager2 *pGameEventManager );
 	virtual void SetParent(vgui::VPANEL parent);
 
-	virtual void ReloadScheme(const char *fromFile);
+	virtual void ReloadScheme(const char *fromFile, const char * pszLayout = "scripts/HudLayout.res");
 	virtual void ActivateClientUI();
 	virtual void HideClientUI();
 	virtual bool AllowedToPrintText( void );

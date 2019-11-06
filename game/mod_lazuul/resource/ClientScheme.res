@@ -21,6 +21,14 @@ Scheme
 		"BrightBg"		"250 220 0 80"
 		
 		"SquadFg"		"255 220 0 160"
+		
+		// VXP: Old HL2 HUD
+	//	"OldFgColor"			"177 150 70 255"
+		"OldFgColor"			"247 192 84 255"
+	//	"OldBrightFg"			"224 188 89 255"
+		"OldBrightFg"			"244 209 144 255"
+		"OldDamagedFg"			"180 0 0 255"
+		"OldBrightDamagedFg"	"BrightDamagedFg"
 	
 		// Top-left corner of the "Half-Life 2" on the main screen
 		"Main.Title1.X"				"86"
