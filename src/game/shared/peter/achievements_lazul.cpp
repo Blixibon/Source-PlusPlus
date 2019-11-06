@@ -446,7 +446,7 @@ class CAchievementTFGetConsecutiveKillsNoDeaths : public CBaseAchievement
 		{
 			m_iConsecutiveKills = 0;
 		}
-		else if (pLocalPlayer == pAttacker)
+		else if (pLocalPlayer == pAttacker && pVictim->IsPlayer())
 		{
 			m_iConsecutiveKills++;
 			if (5 == m_iConsecutiveKills)
@@ -742,7 +742,7 @@ class CAchievementHL2KillEnemiesWithAntlions : public CBaseAchievement
 		if (pPlayer)
 		{
 			// Only count antlion kills once player owns bugbait. 
-			if (pPlayer->Weapon_OwnsThisType("weapon_bugbait"))
+			if (pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_BUGBAIT))
 			{
 				IncrementCount();
 			}

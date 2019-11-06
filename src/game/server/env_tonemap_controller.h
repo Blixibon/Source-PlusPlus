@@ -5,6 +5,7 @@
 #endif
 
 #include "triggers.h"
+#include "GameEventListener.h"
 #if 0
 class CTonemapTrigger : public CBaseTrigger
 {
@@ -33,7 +34,7 @@ inline CBaseEntity *CTonemapTrigger::GetTonemapController( void ) const
 
 //--------------------------------------------------------------------------------------------------------
 // Tonemap Controller System.
-class CTonemapSystem : public CAutoGameSystem
+class CTonemapSystem : public CAutoGameSystem, public CGameEventListener
 {
 public:
 
@@ -50,10 +51,12 @@ public:
 
 	virtual void LevelInitPreEntity();
 	virtual void LevelInitPostEntity();
+	virtual void FireGameEvent(IGameEvent* pEvent) { InitMasterController(); }
 	CBaseEntity *GetMasterTonemapController( void ) const;
 
 private:
 
+	void InitMasterController(void);
 	EHANDLE m_hMasterController;
 };
 

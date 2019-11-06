@@ -593,8 +593,32 @@ public:
 			st = gpGlobals->curtime + (float)params.delay_msec / 1000.f;
 		}
 
+#ifndef CLIENT_DLL
+		CRecipientFilter procFilter;
+		if (filter.IsInitMessage())
+			procFilter.MakeInitMessage();
+		if (filter.IsReliable())
+			procFilter.MakeReliable();
+		for (int i = 0; i < filter.GetRecipientCount(); i++)
+		{
+			procFilter.AddRecipient(UTIL_PlayerByIndex(filter.GetRecipientIndex(i)));
+		}
+
+		for (int i = 0; i < ep.m_UtlVecSoundOrigin.Count(); i++)
+		{
+			CPASAttenuationFilter pasFilter(ep.m_UtlVecSoundOrigin[i], ep.m_pSoundName, handle);
+			for (int i = 0; i < pasFilter.GetRecipientCount(); i++)
+			{
+				procFilter.AddRecipient(UTIL_PlayerByIndex(pasFilter.GetRecipientIndex(i)));
+			}
+		}
+
+		filter = procFilter;
+#endif // !CLIENT_DLL
+
+
 		enginesound->EmitSound( 
-			filter, 
+			filter,
 			entindex, 
 			params.channel, 
 			params.soundname,
@@ -621,7 +645,7 @@ public:
 		// Don't caption modulations to the sound
 		if ( !( ep.m_nFlags & ( SND_CHANGE_PITCH | SND_CHANGE_VOL ) ) )
 		{
-			EmitCloseCaption( filter, entindex, params, ep );
+			EmitCloseCaption(filter, entindex, params, ep );
 		}
 #if defined( WIN32 ) && !defined( _X360 )
 		// NVNT notify the haptics system of this sound
@@ -672,8 +696,33 @@ public:
 				Msg( "Sound %s was not precached\n", ep.m_pSoundName );
 			}
 #endif
+
+#ifndef CLIENT_DLL
+			CRecipientFilter procFilter;
+			if (filter.IsInitMessage())
+				procFilter.MakeInitMessage();
+			if (filter.IsReliable())
+				procFilter.MakeReliable();
+			for (int i = 0; i < filter.GetRecipientCount(); i++)
+			{
+				procFilter.AddRecipient(UTIL_PlayerByIndex(filter.GetRecipientIndex(i)));
+			}
+
+			for (int i = 0; i < ep.m_UtlVecSoundOrigin.Count(); i++)
+			{
+				CPASAttenuationFilter pasFilter(ep.m_UtlVecSoundOrigin[i], ep.m_SoundLevel);
+				for (int i = 0; i < pasFilter.GetRecipientCount(); i++)
+				{
+					procFilter.AddRecipient(UTIL_PlayerByIndex(pasFilter.GetRecipientIndex(i)));
+				}
+			}
+
+			filter = procFilter;
+#endif // !CLIENT_DLL
+
+
 			enginesound->EmitSound( 
-				filter, 
+				filter,
 				entindex, 
 				ep.m_nChannel, 
 				ep.m_pSoundName, 

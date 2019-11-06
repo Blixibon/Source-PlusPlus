@@ -1111,7 +1111,7 @@ private:
 
 	DepthTexCache_t m_DepthTextureCaches[4]; // Huge, Large, Small, Tiny
 
-	CUtlMap<int, ClientFlashlightState_t> m_ClientFlashlightStates;
+	CUtlMap<int, InternalFlashlightState_t> m_ClientFlashlightStates;
 
 	/*CUtlVector< CTextureReference > m_DepthTextureCache;
 	CUtlVector< bool > m_DepthTextureCacheLocks;*/

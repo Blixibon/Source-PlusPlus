@@ -45,6 +45,10 @@
 #include "weapon_physcannon.h"
 #endif
 
+#ifdef HL2_LAZUL
+#include "peter/laz_player.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1178,13 +1182,24 @@ void EnableNoClip( CBasePlayer *pPlayer )
 
 void CC_Player_NoClip( void )
 {
+#ifndef HL2_LAZUL
 	if ( !sv_cheats->GetBool() )
 		return;
 
 	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() ); 
 	if ( !pPlayer )
 		return;
+#else
+	CLaz_Player* pPlayer = ToLazuulPlayer(UTIL_GetCommandClient());
+	if (!pPlayer)
+		return;
 
+	if ((pPlayer->GetPlayerPermissions() & LAZ_PERM_NOCLIP) == 0)
+	{
+		if (!sv_cheats->GetBool())
+			return;
+	}
+#endif
 	CPlayerState *pl = pPlayer->PlayerData();
 	Assert( pl );
 
@@ -1230,7 +1245,7 @@ void CC_Player_NoClip( void )
 	}
 }
 
-static ConCommand noclip("noclip", CC_Player_NoClip, "Toggle. Player becomes non-solid and flies.", FCVAR_CHEAT);
+static ConCommand noclip("noclip", CC_Player_NoClip, "Toggle. Player becomes non-solid and flies.", FCVAR_NONE);
 
 
 //------------------------------------------------------------------------------

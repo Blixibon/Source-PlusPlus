@@ -88,7 +88,7 @@ void C_EnvTonemapController::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged(updateType);
 
-	g_bUseCustomAutoExposureMin = m_bUseCustomAutoExposureMin;
+	/*g_bUseCustomAutoExposureMin = m_bUseCustomAutoExposureMin;
 	g_bUseCustomAutoExposureMax = m_bUseCustomAutoExposureMax;
 	g_bUseCustomBloomScale = m_bUseCustomBloomScale;
 	g_flCustomAutoExposureMin = m_flCustomAutoExposureMin;
@@ -96,7 +96,7 @@ void C_EnvTonemapController::OnDataChanged( DataUpdateType_t updateType )
 	g_flCustomBloomScale = m_flCustomBloomScale;
 	g_flCustomBloomScaleMinimum = m_flCustomBloomScaleMinimum;
 
-	g_hTonemapControllerInUse = this;
+	g_hTonemapControllerInUse = this;*/
 }
 
 void GetTonemapSettingsFromEnvTonemapController()

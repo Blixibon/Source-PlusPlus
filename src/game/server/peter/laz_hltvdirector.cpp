@@ -57,6 +57,7 @@ void CLAZHLTVDirector::SetHLTVServer(IHLTVServer *hltv)
 		ListenForGameEvent("teamplay_capture_blocked");
 		ListenForGameEvent("teamplay_point_startcapture");
 		ListenForGameEvent("teamplay_flag_event");
+		ListenForGameEvent("teamplay_round_start");
 		ListenForGameEvent("ctf_flag_captured");
 		ListenForGameEvent("npc_death");
 	}
@@ -200,6 +201,10 @@ void CLAZHLTVDirector::CreateShotFromEvent(CHLTVGameEvent *event)
 		// shot 2 seconds after death/hurt
 		m_nNextShotTick = MIN(m_nNextShotTick, (event->m_Tick + TIME_TO_TICKS(2.0)));
 	}
+	else if (!Q_strcmp("teamplay_round_start", name))
+	{
+		StartBestFixedCameraShot(false);
+	}
 	else
 	{
 
@@ -295,12 +300,12 @@ void CLAZHLTVDirector::LevelInitPostEntity()
 {
 	BaseClass::LevelInitPostEntity();
 
-	gEntList.AddListenerEntity(this);
+	//gEntList.AddListenerEntity(this);
 }
 
 void CLAZHLTVDirector::LevelShutdownPreEntity()
 {
-	gEntList.RemoveListenerEntity(this);
+	//gEntList.RemoveListenerEntity(this);
 }
 
 const char** CLAZHLTVDirector::GetModEvents()

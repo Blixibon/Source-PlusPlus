@@ -290,19 +290,6 @@ BEGIN_SEND_TABLE(CLazuulProxy, DT_LazuulProxy)
 SendPropDataTable("lazuul_game_data", 0, &REFERENCE_SEND_TABLE(DT_Lazuul), SendProxy_Lazuul)
 END_SEND_TABLE()
 
-BEGIN_DATADESC(CLazuulProxy)
-DEFINE_KEYFIELD(m_bModeAllowed[0], FIELD_BOOLEAN, "allowdeathmatch"),
-DEFINE_KEYFIELD(m_bModeAllowed[1], FIELD_BOOLEAN, "allowcoop"),
-DEFINE_KEYFIELD(m_bModeAllowed[2], FIELD_BOOLEAN, "allowversus"),
-END_DATADESC()
-
-void CLazuulProxy::Activate()
-{
-	BaseClass::Activate();
-
-	LazuulRules()->SetAllowedModes(m_bModeAllowed);
-}
-
 class CVoiceGameMgrHelper : public IVoiceGameMgrHelper
 {
 public:
@@ -523,7 +510,7 @@ bool CLazuul::PlayerMayBlockPoint(CBasePlayer *pPlayer, int iPointIndex, char *p
 
 	
 
-	return false;
+	return true;
 }
 
 // ------------------------------------------------------------------------------------ //
@@ -733,7 +720,23 @@ float CLazuul::FlPlayerFallDamage(CBasePlayer* pPlayer)
 	if (iCancelDamage > 0)
 		return 0.0f;
 
-	float flDamage = BaseClass::FlPlayerFallDamage(pPlayer);
+	float flDamage;
+
+	{
+		int iFallDamage = IsMultiplayer() ? falldamage.GetInt() : 1;
+
+		switch (iFallDamage)
+		{
+		case 1://progressive
+			pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
+			flDamage = pPlayer->m_Local.m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
+			break;
+		default:
+		case 0:// fixed
+			flDamage = 10;
+			break;
+		}
+	}
 
 	float flScale = 1.0f;
 	CALL_ATTRIB_HOOK_FLOAT_ON_OTHER(pPlayer, flScale, mult_falling_damage);
@@ -4185,8 +4188,6 @@ void CLazuul::CreateStandardEntities()
 	// Create the entity that will send our data to the client.
 	CBaseEntity* pEnt = CBaseEntity::Create("laz_gamerules", vec3_origin, vec3_angle);
 	Assert(pEnt);
-	pEnt->SetName(AllocPooledString("laz_gamerules"));
-	pEnt->KeyValue("allowdeathmatch", "1");
 }
 
 void CLazuul::CleanUpMap(void)

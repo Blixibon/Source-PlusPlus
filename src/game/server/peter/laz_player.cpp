@@ -432,6 +432,9 @@ LazSpecialtyStatus_e CLaz_Player::GetPlayerPrivilegeLevel()
 			return LAZ_STATUS_DEVELOPER;
 	}
 
+	if (!engine->IsDedicatedServer() && UTIL_GetListenServerHost() == this)
+		return LAZ_STATUS_ADMIN;
+
 	return LAZ_STATUS_PLAYER;
 }
 
@@ -440,7 +443,7 @@ int CLaz_Player::GetPlayerPermissions()
 	int iPermissionMask = 0;
 	if (GetPlayerPrivilegeLevel() >= LAZ_STATUS_ADMIN)
 	{
-		iPermissionMask |= LAZ_PERM_VOICE_BROADCAST;
+		iPermissionMask |= LAZ_PERM_VOICE_BROADCAST|LAZ_PERM_NOCLIP;
 	}
 
 	return (m_iDesiredPermissions & iPermissionMask);

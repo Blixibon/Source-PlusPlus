@@ -58,11 +58,10 @@ $Project "Client (Lazuul)"
 			$File "peter\laz_hud_chat.h"
 			$File "peter\laz_hud_player.cpp"
 
-			$Folder "UI"
-			{
-				$File	"peter\laz_pmodelpanel.cpp"
-				$File	"peter\laz_pmodelpanel.cpp"
-			}
+			//$Folder "UI"
+			//{
+			//	$File	"peter\laz_pmodelpanel.cpp"
+			//}
 		}
 
 		$Folder	"HL1 DLL"

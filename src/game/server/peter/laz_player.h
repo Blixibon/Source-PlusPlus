@@ -36,6 +36,7 @@ enum LazSpecialtyStatus_e
 enum LazPlayerPermissions_e
 {
 	LAZ_PERM_VOICE_BROADCAST = (1 << 0),
+	LAZ_PERM_NOCLIP = (1 << 1),
 };
 
 //=============================================================================

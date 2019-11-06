@@ -27,7 +27,7 @@ public:
 	void Enable(void);
 	void Disable(void);
 
-	static CEnvVolume* FindEnvVolumeForPosition(const Vector& position);
+	static CEnvVolume* FindEnvVolumeForPosition(const Vector& position, CBaseEntity *pLooker = nullptr);
 
 	CBaseEntity* GetTonemapController(void) const
 	{

@@ -2,6 +2,7 @@
 #include "environment_volume.h"
 #include "fmtstr.h"
 #include "collisionutils.h"
+#include "filters.h"
 
 
 CUtlVector< CEnvVolume* > TheEnvVolumes;
@@ -47,7 +48,7 @@ CEnvVolume::~CEnvVolume()
 }
 
 //--------------------------------------------------------------------------------------------------------
-CEnvVolume* CEnvVolume::FindEnvVolumeForPosition(const Vector& position)
+CEnvVolume* CEnvVolume::FindEnvVolumeForPosition(const Vector& position, CBaseEntity* pLooker)
 {
 	CEnvVolume* fogVolume = NULL;
 	for (int i = 0; i < TheEnvVolumes.Count(); ++i)
@@ -56,7 +57,7 @@ CEnvVolume* CEnvVolume::FindEnvVolumeForPosition(const Vector& position)
 
 		Vector vecRelativeCenter;
 		fogVolume->CollisionProp()->WorldToCollisionSpace(position, &vecRelativeCenter);
-		if (IsBoxIntersectingSphere(fogVolume->CollisionProp()->OBBMins(), fogVolume->CollisionProp()->OBBMaxs(), vecRelativeCenter, 1.0f))
+		if (IsBoxIntersectingSphere(fogVolume->CollisionProp()->OBBMins(), fogVolume->CollisionProp()->OBBMaxs(), vecRelativeCenter, 1.0f) && (!pLooker || !fogVolume->UsesFilter() || fogVolume->m_hFilter->PassesFilter(fogVolume, pLooker)))
 		{
 			break;
 		}

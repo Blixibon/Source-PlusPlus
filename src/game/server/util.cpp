@@ -42,6 +42,11 @@
 //#include "Portal_PhysicsEnvironmentMgr.h"
 #endif
 
+#ifdef HL2_LAZUL
+#include "peter/laz_player.h"
+#endif // HL2_LAZUL
+
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -916,30 +921,42 @@ CBasePlayer *UTIL_GetListenServerHost( void )
  */
 bool UTIL_IsCommandIssuedByServerAdmin( void )
 {
+#ifndef HL2_LAZUL
 	int issuingPlayerIndex = UTIL_GetCommandClientIndex();
 
-	if ( engine->IsDedicatedServer() && issuingPlayerIndex > 0 )
+	if (engine->IsDedicatedServer() && issuingPlayerIndex > 0)
 		return false;
 
 #if defined( REPLAY_ENABLED )
 	// entity 1 is replay?
 	player_info_t pi;
-	bool bPlayerIsReplay = engine->GetPlayerInfo( 1, &pi ) && pi.isreplay;
+	bool bPlayerIsReplay = engine->GetPlayerInfo(1, &pi) && pi.isreplay;
 #else
 	bool bPlayerIsReplay = false;
 #endif
 
-	if ( bPlayerIsReplay )
+	if (bPlayerIsReplay)
 	{
-		if ( issuingPlayerIndex > 2 )
+		if (issuingPlayerIndex > 2)
 			return false;
 	}
-	else if ( issuingPlayerIndex > 1 )
+	else if (issuingPlayerIndex > 1)
 	{
 		return false;
 	}
 
 	return true;
+#else
+	CLaz_Player* pPlayer = ToLazuulPlayer(UTIL_GetCommandClient());
+	if (!pPlayer)
+		return false;
+
+	if (pPlayer->GetPlayerPrivilegeLevel() >= LAZ_STATUS_ADMIN)
+		return true;
+
+	return false;
+#endif // !HL2_LAZUL
+
 }
 
 

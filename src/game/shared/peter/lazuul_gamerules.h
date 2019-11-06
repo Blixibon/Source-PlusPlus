@@ -33,13 +33,6 @@ class CLazuulProxy : public CTeamplayRoundBasedRulesProxy
 public:
 	DECLARE_CLASS(CLazuulProxy, CTeamplayRoundBasedRulesProxy);
 	DECLARE_NETWORKCLASS();
-
-#ifdef GAME_DLL
-	DECLARE_DATADESC();
-	virtual void Activate();
-
-	bool	m_bModeAllowed[LAZ_GM_COUNT];
-#endif
 };
 
 class CLazuul : public CTeamplayRoundBasedRules, public IHalfLife2

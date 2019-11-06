@@ -357,7 +357,7 @@ void CFogController::SetLerpValues( void )
 void CFogSystem::LevelInitPreEntity( void )
 {
 	m_hMasterController = NULL;
-	ListenForGameEvent( "round_start" );
+	ListenForGameEvent( "teamplay_round_start" );
 }
 
 void CFogSystem::LevelInitPostEntity()

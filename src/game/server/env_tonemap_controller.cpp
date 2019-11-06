@@ -488,6 +488,31 @@ void CTonemapTrigger::EndTouch( CBaseEntity *other )
 void CTonemapSystem::LevelInitPreEntity( void )
 {
 	m_hMasterController = NULL;
+	ListenForGameEvent("teamplay_round_start");
+}
+
+void CTonemapSystem::InitMasterController(void)
+{
+	// Overall master controller
+	CEnvTonemapController* pTonemapController = NULL;
+	do
+	{
+		pTonemapController = static_cast<CEnvTonemapController*>(gEntList.FindEntityByClassname(pTonemapController, "env_tonemap_controller"));
+		if (pTonemapController)
+		{
+			if (m_hMasterController == NULL)
+			{
+				m_hMasterController = pTonemapController;
+			}
+			else
+			{
+				if (pTonemapController->IsMaster())
+				{
+					m_hMasterController = pTonemapController;
+				}
+			}
+		}
+	} while (pTonemapController);
 }
 
 //-----------------------------------------------------------------------------
@@ -496,28 +521,7 @@ void CTonemapSystem::LevelInitPreEntity( void )
 //-----------------------------------------------------------------------------
 void CTonemapSystem::LevelInitPostEntity( void )
 {
-	// Overall master controller
-	CEnvTonemapController *pTonemapController = NULL;
-	do
-	{
-		pTonemapController = static_cast<CEnvTonemapController*>( gEntList.FindEntityByClassname( pTonemapController, "env_tonemap_controller" ) );
-		if ( pTonemapController )
-		{
-			if ( m_hMasterController == NULL )
-			{
-				m_hMasterController = pTonemapController;
-			}
-			else
-			{
-				if ( pTonemapController->IsMaster() )
-				{
-					m_hMasterController = pTonemapController;
-				}
-			}
-		}
-	} while ( pTonemapController );
-
-
+	InitMasterController();
 }
 
 

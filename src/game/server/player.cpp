@@ -9571,7 +9571,7 @@ void CBasePlayer::UpdateFXVolume( void )
 		eyePos = EyePosition();
 	}
 
-	CEnvVolume*pFogVolume = CEnvVolume::FindEnvVolumeForPosition( eyePos );
+	CEnvVolume*pFogVolume = CEnvVolume::FindEnvVolumeForPosition( eyePos, this );
 	if ( pFogVolume )
 	{
 		pFogController = pFogVolume->GetFogController();

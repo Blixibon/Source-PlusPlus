@@ -294,7 +294,7 @@ CColorCorrectionSystem *ColorCorrectionSystem( void )
 void CColorCorrectionSystem::LevelInitPreEntity( void )
 {
 	m_hMasterController = NULL;
-	ListenForGameEvent( "round_start" );
+	ListenForGameEvent( "teamplay_round_start" );
 }
 
 //-----------------------------------------------------------------------------
