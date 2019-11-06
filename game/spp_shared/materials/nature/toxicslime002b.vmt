@@ -25,7 +25,9 @@ $reflectskyboxonly 0
 $reflectonlymarkedentities 1
 
 
-
+	"$refracttexture" "_rt_WaterRefraction"
+	$refracttint "{ 58 35 20 }"
+	$refractamount "0.1"
 
 $abovewater 1
 $bottommaterial "nature/toxicslime002b_beneath"
