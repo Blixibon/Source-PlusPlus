@@ -1,0 +1,753 @@
+detail
+{
+	desert_grass
+	//Grass --
+	{
+		"density" "800.0"
+
+		Group1
+		{
+			"alpha" "1.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/grass_swamp_001a.mdl"
+				"amount" "0.3"
+			}
+
+			Model2
+			{
+				"model" "models/props_foliage/grass_swamp_001b.mdl"
+				"amount" "0.3"
+			}
+
+		}
+		
+		Group2
+		{
+			"alpha" "0.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/Grass_tuft_003a.mdl"
+				"amount" "0.05"
+			}
+
+			Model2
+			{
+				"model" "models/props_foliage/Grass_tuft_004b.mdl"
+				"amount" "0.05"
+			}
+		}
+	}
+
+	desert_sand_ripple
+	//Few plants --
+	{
+		"density" "500.0"
+
+		Group1
+		{
+			"alpha" "0.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.1"
+			}
+			Model2
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.4"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.5"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+
+		}
+		
+		Group2
+		{
+			"alpha" "1.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/Grass_tuft_003a.mdl"
+				"amount" "0.05"
+			}
+
+			Model2
+			{
+				"model" "models/props_foliage/Grass_tuft_004b.mdl"
+				"amount" "0.05"
+			}
+		}
+	}
+
+	desert_minefield
+	//Few plants --
+	{
+		"density" "325.0"
+
+		Group1
+		{
+			"alpha" "0.0"
+
+			Model1
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.4"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.5"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"model" 								"models/props_foliage/detail_shrub01.mdl"
+				"amount" "0.35"
+			}
+
+		}
+		
+		Group2
+		{
+			"alpha" "1.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/Grass_tuft_003a.mdl"
+				"amount" "0.0"
+			}
+		}
+	}
+
+	desert_composite
+	//Many rocks and desert plants --
+	{
+		"density" "2500.0"
+
+		Group1
+		{
+			"alpha" "0.0"
+			Model1
+			{
+				"sprite" "144 0 128 128 512" 
+				"spritesize" "0.5 0.0 19 25"
+				"spriterandomscale" "0.2"
+				"amount" "0.3"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.3"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.15"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model4
+			{
+				"sprite" "144 144 128 128 512" 
+				"spritesize" "0.5 0.0 18 21"
+				"spriterandomscale" "0.2"
+				"amount" "0.3"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			//shrub
+			Model5
+			{
+				"sprite" "144 288 128 128 512" 
+				"spritesize" "0.5 0.0 38 38"
+				"spriterandomscale" "0.2"
+				"amount" "0.3"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model6
+			{
+				"sprite" "0 288 128 128 512" 
+				"spritesize" "0.5 0.0 23 23"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model7
+			{
+				"sprite" "288 288 128 128 512" 
+				"spritesize" "0.5 0.0 29 29"
+				"spriterandomscale" "0.3"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model8
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.012"
+			}
+			Model9
+			{
+				"model" "models/props_foliage/detail_stone01.mdl"
+				"amount" "0.0"
+			}
+			Model10
+			{
+				"model" "models/props_foliage/detail_leaf01.mdl"
+				"amount" "0.005"
+			}
+			Model11
+			{
+				"model" "models/props_foliage/detail_leaf02.mdl"
+				"amount" "0.01"
+			}
+			Model12
+			{
+				"model" "models/props_foliage/detail_shrub01.mdl"
+				"amount" "0.1"
+			}
+			Model13
+			{
+				"model" "models/props_foliage/detail_shrub02.mdl"
+				"amount" "0.15"
+			}
+			Model14
+			{
+				"model" "models/props_foliage/detail_cactus01.mdl"
+				"amount" "0.009"
+			}
+			Model15
+			{
+				"model" "models/props_foliage/detail_shrub03.mdl"
+				"amount" "0.01"
+			}
+			Model16
+			{
+				"model" "models/props_foliage/detail_flower01.mdl"
+				"amount" "0.01"
+			}
+			Model17
+			{
+				"model" "models/props_foliage/detail_flower02.mdl"
+				"amount" "0.008"
+			}
+			Model18
+			{
+				"model" "models/props_foliage/detail_cactus02.mdl"
+				"amount" "0.002"
+			}
+			Model19
+			{
+				"model" "models/props_foliage/detail_shrub04.mdl"
+				"amount" "0.004"
+			}
+			Model20
+			{
+				"model" "models/props_foliage/detail_plant02.mdl"
+				"amount" "0.004"
+			}
+		}
+
+		Group2
+		{
+			"alpha" "1.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.005"
+			}
+			Model2
+			{
+				"model" "models/props_foliage/detail_stone01.mdl"
+				"amount" "0.0075"
+			}
+		}
+	}
+short_redgrass_bms
+	
+	{
+		"density" "1200.0"
+
+		Group1
+		{
+			"alpha" "1"
+			Model1
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 10 13"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 12 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"sprite" "144 0 128 128 512" 
+				"spritesize" "0.5 0.0 8 8"
+				"spriterandomscale" "0.2"
+				"amount" "0.15"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model4
+			{
+				"sprite" "144 144 128 128 512" 
+				"spritesize" "0.5 0.0 9 11"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			//shrub
+			Model5
+			{
+				"sprite" "144 288 128 128 512" 
+				"spritesize" "0.5 0.0 19 19"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model6
+			{
+				"sprite" "0 288 128 128 512" 
+				"spritesize" "0.5 0.0 12 12"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model7
+			{
+				"sprite" "288 288 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.3"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+		}
+
+		Group2
+		{
+	
+			"alpha" "0.0"
+		}
+	}
+	desert_norock
+	//only rock on sand; Nothing on rock texture --
+	{
+		"density" "768.0" //was 2500 / 980
+
+		Group1
+		{
+			"alpha" "0.0"
+			Model1
+			{
+				"sprite" "144 0 128 128 512" 
+				"spritesize" "0.5 0.0 19 25"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.15"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model4
+			{
+				"sprite" "144 144 128 128 512" 
+				"spritesize" "0.5 0.0 18 21"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			//shrub
+			Model5
+			{
+				"sprite" "144 288 128 128 512" 
+				"spritesize" "0.5 0.0 38 38"
+				"spriterandomscale" "0.2"
+				"amount" "0.2"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model6
+			{
+				"sprite" "0 288 128 128 512" 
+				"spritesize" "0.5 0.0 23 23"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model7
+			{
+				"sprite" "288 288 128 128 512" 
+				"spritesize" "0.5 0.0 29 29"
+				"spriterandomscale" "0.3"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model8
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.012"
+			}
+			Model9
+			{
+				"model" "models/props_foliage/detail_leaf01.mdl"
+				"amount" "0.0"
+			}
+			Model10
+			{
+				"model" "models/props_foliage/detail_leaf02.mdl"
+				"amount" "0.0"
+			}
+			Model11
+			{
+				"model" "models/props_foliage/detail_shrub01.mdl"
+				"amount" "0.02"
+			}
+			Model12
+			{
+				"model" "models/props_foliage/detail_shrub02.mdl"
+				"amount" "0.1"
+			}
+			Model13
+			{
+				"model" "models/props_foliage/detail_cactus01.mdl"
+				"amount" "0.001"
+			}
+			Model14
+			{
+				"model" "models/props_foliage/detail_shrub03.mdl"
+				"amount" "0.005"
+			}
+			Model16
+			{
+				"model" "models/props_foliage/detail_flower01.mdl"
+				"amount" "0.005"
+			}
+			Model17
+			{
+				"model" "models/props_foliage/detail_flower02.mdl"
+				"amount" "0.0025"
+			}
+			Model18
+			{
+				"model" "models/props_foliage/detail_cactus02.mdl"
+				"amount" "0.0025"
+			}
+			Model19
+			{
+				"model" "models/props_foliage/detail_shrub04.mdl"
+				"amount" "0.0"
+			}
+			Model20
+			{
+				"model" "models/props_foliage/detail_plant02.mdl"
+				"amount" "0.0025"
+			}
+		}
+
+		Group2
+		{
+			"alpha" "1.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.0"
+			}
+		}
+	}
+
+	desert_norock_wave
+	//only rock on sand; Nothing on rock texture --
+	{
+		"density" "512.0" //was 2500 / 980
+
+		Group1
+		{
+			"alpha" "0.0"
+			Model1
+			{
+				"sprite" "144 0 128 128 512" 
+				"spritesize" "0.5 0.0 19 25"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.15"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model4
+			{
+				"sprite" "144 144 128 128 512" 
+				"spritesize" "0.5 0.0 18 21"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			//shrub
+			Model5
+			{
+				"sprite" "144 288 128 128 512" 
+				"spritesize" "0.5 0.0 38 38"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model6
+			{
+				"sprite" "0 288 128 128 512" 
+				"spritesize" "0.5 0.0 23 23"
+				"spriterandomscale" "0.2"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model7
+			{
+				"sprite" "288 288 128 128 512" 
+				"spritesize" "0.5 0.0 29 29"
+				"spriterandomscale" "0.3"
+				"amount" "0.1"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model8
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.012"
+			}
+			Model9
+			{
+				"model" "models/props_foliage/detail_leaf01.mdl"
+				"amount" "0.0"
+			}
+			Model10
+			{
+				"model" "models/props_foliage/detail_leaf02.mdl"
+				"amount" "0.0"
+			}
+			Model11
+			{
+				"model" "models/props_foliage/detail_shrub01.mdl"
+				"amount" "0.1"
+			}
+			Model12
+			{
+				"model" "models/props_foliage/detail_shrub02.mdl"
+				"amount" "0.05"
+			}
+			Model13
+			{
+				"model" "models/props_foliage/detail_cactus01.mdl"
+				"amount" "0.001"
+			}
+			Model14
+			{
+				"model" "models/props_foliage/detail_shrub03.mdl"
+				"amount" "0.001"
+			}
+			Model16
+			{
+				"model" "models/props_foliage/detail_flower01.mdl"
+				"amount" "0.0"
+			}
+			Model17
+			{
+				"model" "models/props_foliage/detail_flower02.mdl"
+				"amount" "0.005"
+			}
+			Model18
+			{
+				"model" "models/props_foliage/detail_cactus02.mdl"
+				"amount" "0.0025"
+			}
+			Model19
+			{
+				"model" "models/props_foliage/detail_shrub04.mdl"
+				"amount" "0.0"
+			}
+			Model20
+			{
+				"model" "models/props_foliage/detail_plant02.mdl"
+				"amount" "0.0"
+			}
+		}
+
+		Group2
+		{
+			"alpha" "1.0"
+
+			Model1
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.0"
+			}
+		}
+	}
+
+	desert_roadside
+	//Few plants/shrubs - nothing on asphalt --
+	{
+		"density" "400.0"
+		Group1
+		{
+			"alpha" "0.0"
+			Model1
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.0"
+			}
+		}
+		Group2
+		{
+			"alpha" "0.67"
+			Model1
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.0"
+			}
+		}
+		Group3
+		{
+			"alpha" "0.33"
+			Model1
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.4"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.5"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.1"
+			}
+		}
+		Group4
+		{
+			"alpha" "1.0"
+			Model1
+			{
+				"sprite" "0 0 128 128 512" 
+				"spritesize" "0.5 0.0 23 30"
+				"spriterandomscale" "0.2"
+				"amount" "0.4"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model2
+			{
+				"sprite" "288 0 128 128 512" 
+				"spritesize" "0.5 0.0 15 15"
+				"spriterandomscale" "0.2"
+				"amount" "0.5"
+				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_desert"
+			}
+			Model3
+			{
+				"model" "models/props_foliage/detail_plant01.mdl"
+				"amount" "0.1"
+			}
+			Model4
+			{
+				"model" "models/props_foliage/detail_cactus01.mdl"
+				"amount" "0.05"
+			}
+		}
+	}
+}

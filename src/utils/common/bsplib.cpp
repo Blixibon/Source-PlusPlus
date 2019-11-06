@@ -434,6 +434,7 @@ BEGIN_BYTESWAP_DATADESC( DetailSpriteDictLump_t )
 	DEFINE_FIELD( m_LR, FIELD_VECTOR2D ),
 	DEFINE_FIELD( m_TexUL, FIELD_VECTOR2D ),
 	DEFINE_FIELD( m_TexLR, FIELD_VECTOR2D ),
+	DEFINE_FIELD(m_SpritePage, FIELD_SHORT),
 END_BYTESWAP_DATADESC()
 
 BEGIN_BYTESWAP_DATADESC( DetailPropLightstylesLump_t )
@@ -1135,7 +1136,7 @@ void CGameLump::SwapGameLump( GameLumpId_t id, int version, byte *dest, byte *sr
 		src += sizeof(DetailObjectDictLump_t) * count;
 		dest += sizeof(DetailObjectDictLump_t) * count;
 
-		if ( version == 4 )
+		if ( version >= 4 )
 		{
 			// Swap the detail sprite dict
 			count = *(int*)src;

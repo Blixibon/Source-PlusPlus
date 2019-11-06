@@ -34,7 +34,7 @@ enum
 // Versions...
 enum
 {
-	GAMELUMP_DETAIL_PROPS_VERSION = 4,
+	GAMELUMP_DETAIL_PROPS_VERSION = 5,
 	GAMELUMP_DETAIL_PROP_LIGHTING_VERSION = 0,
 	GAMELUMP_STATIC_PROPS_VERSION = 10,
 	GAMELUMP_STATIC_PROP_LIGHTING_VERSION = 0,
@@ -77,6 +77,17 @@ struct DetailObjectDictLump_t
 // Information about the sprite to render
 //-----------------------------------------------------------------------------
 struct DetailSpriteDictLump_t
+{
+	DECLARE_BYTESWAP_DATADESC();
+	// NOTE: All detail prop sprites must lie in the material detail/detailsprites
+	Vector2D	m_UL;		// Coordinate of upper left 
+	Vector2D	m_LR;		// Coordinate of lower right
+	Vector2D	m_TexUL;	// Texcoords of upper left
+	Vector2D	m_TexLR;	// Texcoords of lower left
+	unsigned short m_SpritePage; // index to DetailObjectDictLump_t
+};
+
+struct DetailSpriteDictLumpV4_t
 {
 	DECLARE_BYTESWAP_DATADESC();
 	// NOTE: All detail prop sprites must lie in the material detail/detailsprites

@@ -166,14 +166,12 @@ static void ParseDetailGroup( int detailId, KeyValues* pGroupKeyValues )
 					model.m_Tex[0].Init();
 					model.m_Tex[1].Init();
 
-					float x = 0, y = 0, flWidth = 64, flHeight = 64, flTextureSize = 512, flTextureSizeY = 512;
-					int nValid = sscanf( pSpriteData, "%f %f %f %f %f %f", &x, &y, &flWidth, &flHeight, &flTextureSize, &flTextureSizeY );
+					float x = 0, y = 0, flWidth = 64, flHeight = 64, flTextureSize = 512;
+					int nValid = sscanf( pSpriteData, "%f %f %f %f %f", &x, &y, &flWidth, &flHeight, &flTextureSize );
 					if ( (nValid < 5) || (flTextureSize == 0) )
 					{
 						Error( "Invalid arguments to \"sprite\" in detail.vbsp (model %s)!\n", model.m_ModelName.String() );
 					}
-					else if (nValid < 6)
-						flTextureSizeY = flTextureSize;
 
 					model.m_Tex[0].x = ( x + 0.5f ) / flTextureSize;
 					model.m_Tex[0].y = ( y + 0.5f ) / flTextureSize;
@@ -211,6 +209,8 @@ static void ParseDetailGroup( int detailId, KeyValues* pGroupKeyValues )
 					// for the tri shape, this is the distance from the origin to the center of a side
 					float flShapeSize = clamp( pIter->GetFloat( "shape_size", 0.0f ), 0.0, 1.0 );
 					model.m_ShapeSize = (unsigned char)( 255.0 * flShapeSize );
+
+					model.m_ModelName = pIter->GetString("sprite_page", "detail/detailsprites");
 				}
 			}
 
@@ -454,13 +454,14 @@ static int AddDetailDictLump( const char* pModelName )
 	return s_DetailObjectDictLump.AddToTail( dictLump );
 }
 
-static int AddDetailSpriteDictLump( const Vector2D *pPos, const Vector2D *pTex )
+static int AddDetailSpriteDictLump( const Vector2D *pPos, const Vector2D *pTex, const char* pModelName)
 {
 	DetailSpriteDictLump_t dictLump;
 	dictLump.m_UL = pPos[0];
 	dictLump.m_LR = pPos[1];
 	dictLump.m_TexUL = pTex[0];
 	dictLump.m_TexLR = pTex[1];
+	dictLump.m_SpritePage = AddDetailDictLump(pModelName);
 
 	for (int i = s_DetailSpriteDictLump.Count(); --i >= 0; )
 	{
@@ -559,7 +560,7 @@ static void AddDetailToLump( const char* pModelName, const Vector& pt, const QAn
 //-----------------------------------------------------------------------------
 static void AddDetailSpriteToLump( const Vector &vecOrigin, const QAngle &vecAngles, int nOrientation,
 								  const Vector2D *pPos, const Vector2D *pTex, float flScale, int iType,
-									int iShapeAngle = 0, int iShapeSize = 0, int iSwayAmount = 0 )
+									int iShapeAngle = 0, int iShapeSize = 0, int iSwayAmount = 0, const char* pModelName = "detail/detailsprites")
 {
 	// Insert an element into the object dictionary if it aint there...
 	int i = s_DetailObjectLump.AddToTail( );
@@ -570,7 +571,7 @@ static void AddDetailSpriteToLump( const Vector &vecOrigin, const QAngle &vecAng
 	}
 
 	DetailObjectLump_t& objectLump = s_DetailObjectLump[i];
-	objectLump.m_DetailModel = AddDetailSpriteDictLump( pPos, pTex );
+	objectLump.m_DetailModel = AddDetailSpriteDictLump( pPos, pTex, pModelName );
 	VectorCopy( vecAngles, objectLump.m_Angles );
 	VectorCopy( vecOrigin, objectLump.m_Origin );
 	objectLump.m_Leaf = ComputeDetailLeaf(vecOrigin);
@@ -599,7 +600,8 @@ static void AddDetailSpriteToLump( const Vector &vecOrigin, const QAngle &vecAng
 		model.m_Type,
 		model.m_ShapeAngle,
 		model.m_ShapeSize,
-		model.m_SwayAmount );
+		model.m_SwayAmount,
+		model.m_ModelName.String());
 }
 
 //-----------------------------------------------------------------------------

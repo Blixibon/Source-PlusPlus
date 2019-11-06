@@ -150,6 +150,7 @@ public:
 	virtual void				OnThreadedDrawSetup() {}
 	virtual bool				IsTransparent( void );
 	virtual const model_t*		GetModel( ) const;
+	virtual const SptrintInfo_t GetSprite() const { return m_SpriteInfo; }
 	virtual int					DrawModel( int flags );
 	virtual void				ComputeFxBlend( );
 	virtual int					GetFxBlend( );
@@ -275,6 +276,7 @@ struct DetailPropSpriteDict_t
 	Vector2D	m_LR;		// Coordinate of lower right
 	Vector2D	m_TexUL;	// Texcoords of upper left
 	Vector2D	m_TexLR;	// Texcoords of lower left
+	unsigned short m_SpritePage; // index to DetailObjectDictLump_t
 };
 
 struct FastSpriteX4_t
@@ -415,6 +417,7 @@ private:
 	struct DetailModelDict_t
 	{
 		model_t* m_pModel;
+		unsigned short m_sMatIndex;
 	};
 
 	struct EnumContext_t
@@ -427,6 +430,12 @@ private:
 	{
 		int m_nIndex;
 		float m_flDistance;
+	};
+
+	struct ParallelCounts_t
+	{
+		int m_iTotal;
+		CCopyableUtlVector<int> m_SeparateCounts;
 	};
 
 	int BuildOutSortedSprites( CFastDetailLeafSpriteList *pData,
@@ -446,17 +455,18 @@ private:
 
 	void UnserializeModelDict( CUtlBuffer& buf );
 	void UnserializeDetailSprites( CUtlBuffer& buf );
+	void UnserializeDetailSpritesV4(CUtlBuffer& buf);
 	void UnserializeModels( CUtlBuffer& buf );
 	void UnserializeModelLighting( CUtlBuffer& buf );
 
 	Vector GetSpriteMiddleBottomPosition( DetailObjectLump_t const &lump ) const;
 	// Count the number of detail sprites in the leaf list
-	int CountSpritesInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const;
+	ParallelCounts_t CountSpritesInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const;
 
 	// Count the number of detail sprite quads in the leaf list
-	int CountSpriteQuadsInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const;
+	ParallelCounts_t CountSpriteQuadsInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const;
 
-	int CountFastSpritesInLeafList( int nLeafCount, LeafIndex_t const *pLeafList, int *nMaxInLeaf ) const;
+	ParallelCounts_t CountFastSpritesInLeafList( int nLeafCount, LeafIndex_t const *pLeafList, int *nMaxInLeaf ) const;
 
 	void FreeSortBuffers( void );
 
@@ -471,8 +481,36 @@ private:
 	CUtlVector<DetailPropLightstylesLump_t>	m_DetailLighting;
 	FastSpriteX4_t *m_pFastSpriteData;
 
+	class CMaterialWrapper
+	{
+	public:
+		CMaterialWrapper(char const* pMaterialName = 0, const char* pTextureGroupName = 0, bool bComplain = true) : m_Material(pMaterialName, pTextureGroupName, bComplain)
+		{}
+
+		CMaterialWrapper(const CMaterialWrapper& other)
+		{
+			m_Material.Init(other.m_Material);
+		}
+
+		CMaterialWrapper(const CMaterialReference& init)
+		{
+			m_Material.Init(init);
+		}
+
+		// Automatic casts to IMaterial
+		operator IMaterial* () { return m_Material; }
+		operator IMaterial* () const { return m_Material; }
+		operator IMaterial const* () const { return m_Material; }
+		operator CMaterialReference () { return m_Material; }
+		operator CMaterialReference () const { return m_Material; }
+		operator CMaterialReference const () const { return m_Material; }
+		IMaterial* operator->() { return m_Material; }
+
+		CMaterialReference m_Material;
+	};
+
 	// Necessary to get sprites to batch correctly
-	CMaterialReference m_DetailSpriteMaterial;
+	CUtlLinkedList<CMaterialWrapper> m_DetailSpriteMaterials;
 	CMaterialReference m_DetailWireframeMaterial;
 
 	// State stored off for rendering detail sprites in a single leaf
@@ -1458,8 +1496,12 @@ void CDetailObjectSystem::LevelInitPreEntity()
 		switch (engine->GameLumpVersion( GAMELUMP_DETAIL_PROPS ) )
 		{
 		case 4:
-			UnserializeDetailSprites( buf );
+			UnserializeDetailSpritesV4( buf );
 			UnserializeModels( buf );
+			break;
+		case 5:
+			UnserializeDetailSprites(buf);
+			UnserializeModels(buf);
 			break;
 		}
 	}
@@ -1497,11 +1539,11 @@ void CDetailObjectSystem::LevelInitPostEntity()
 		IMaterial *pMat = m_DetailSpriteMaterial;
 
 		// adjust for non-square textures (cropped)
-		float flRatio = static_cast<float>( pMat->GetMappingWidth() ) / pMat->GetMappingHeight();
+		float flRatio = pMat->GetMappingWidth() / pMat->GetMappingHeight();
 		if ( flRatio > 1.0 )
 		{
 			for ( int i = 0; i<m_DetailSpriteDict.Count(); i++ )
-	{
+			{
 				m_DetailSpriteDict[i].m_TexUL.y *= flRatio;
 				m_DetailSpriteDict[i].m_TexLR.y *= flRatio;
 				m_DetailSpriteDictFlipped[i].m_TexUL.y *= flRatio;
@@ -1530,7 +1572,7 @@ void CDetailObjectSystem::LevelShutdownPreEntity()
 	m_DetailSpriteDict.Purge();
 	m_DetailSpriteDictFlipped.Purge();
 	m_DetailLighting.Purge();
-	m_DetailSpriteMaterial.Shutdown();
+	m_DetailSpriteMaterials.Purge();
 	if ( m_pFastSpriteData )
 	{
 		MemAlloc_FreeAligned( m_pFastSpriteData );
@@ -1583,7 +1625,23 @@ void CDetailObjectSystem::UnserializeModelDict( CUtlBuffer& buf )
 		buf.Get( &lump, sizeof(DetailObjectDictLump_t) );
 		
 		DetailModelDict_t dict;
-		dict.m_pModel = (model_t *)engine->LoadModel( lump.m_Name, true );
+		if (V_stristr(lump.m_Name, "models") == lump.m_Name)
+		{
+			dict.m_pModel = (model_t*)engine->LoadModel(lump.m_Name, true);
+			dict.m_sMatIndex = m_DetailSpriteMaterials.InvalidIndex();
+		}
+		else
+		{
+			CMaterialReference ref(lump.m_Name, TEXTURE_GROUP_OTHER);
+			unsigned short s = m_DetailSpriteMaterials.Find(ref);
+			if (!m_DetailSpriteMaterials.IsValidIndex(s))
+			{
+				s = m_DetailSpriteMaterials.AddToTail(ref);
+			}
+
+			dict.m_sMatIndex = s;
+			dict.m_pModel = nullptr;
+		}
 
 		// Don't allow vertex-lit models
 		//if (modelinfo->IsModelVertexLit(dict.m_pModel))
@@ -1608,6 +1666,21 @@ void CDetailObjectSystem::UnserializeDetailSprites( CUtlBuffer& buf )
 		int flipi = m_DetailSpriteDictFlipped.AddToTail();
 		m_DetailSpriteDictFlipped[flipi] = m_DetailSpriteDict[i];
 		::V_swap( m_DetailSpriteDictFlipped[flipi].m_TexUL.x, m_DetailSpriteDictFlipped[flipi].m_TexLR.x );
+	}
+}
+
+void CDetailObjectSystem::UnserializeDetailSpritesV4(CUtlBuffer& buf)
+{
+	int count = buf.GetInt();
+	m_DetailSpriteDict.EnsureCapacity(count);
+	m_DetailSpriteDictFlipped.EnsureCapacity(count);
+	while (--count >= 0)
+	{
+		int i = m_DetailSpriteDict.AddToTail();
+		buf.Get(&m_DetailSpriteDict[i], sizeof(DetailSpriteDictLumpV4_t));
+		int flipi = m_DetailSpriteDictFlipped.AddToTail();
+		m_DetailSpriteDictFlipped[flipi] = m_DetailSpriteDict[i];
+		::V_swap(m_DetailSpriteDictFlipped[flipi].m_TexUL.x, m_DetailSpriteDictFlipped[flipi].m_TexLR.x);
 	}
 }
 
@@ -1950,30 +2023,38 @@ void CDetailObjectSystem::RenderOpaqueDetailObjects( int nLeafCount, LeafIndex_t
 //-----------------------------------------------------------------------------
 // Count the number of detail sprites in the leaf list
 //-----------------------------------------------------------------------------
-int CDetailObjectSystem::CountSpritesInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const
+CDetailObjectSystem::ParallelCounts_t CDetailObjectSystem::CountSpritesInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const
 {
 	VPROF_BUDGET( "CDetailObjectSystem::CountSpritesInLeafList", VPROF_BUDGETGROUP_DETAILPROP_RENDERING );
-	int nPropCount = 0;
+	ParallelCounts_t counts;
+	counts.m_SeparateCounts.EnsureCount(m_DetailSpriteMaterials.Count());
 	int nFirstDetailObject, nDetailObjectCount;
 	for ( int i = 0; i < nLeafCount; ++i )
 	{
 		// FIXME: This actually counts *everything* in the leaf, which is ok for now
 		// given how we're using it
 		ClientLeafSystem()->GetDetailObjectsInLeaf( pLeafList[i], nFirstDetailObject, nDetailObjectCount );
-		nPropCount += nDetailObjectCount;
+		for (int j = 0; j < nDetailObjectCount; ++j)
+		{
+			const DetailPropSpriteDict_t &dict = m_DetailSpriteDict[m_DetailObjects[j + nFirstDetailObject].GetSprite().m_nSpriteIndex];
+			const DetailModelDict_t &model = m_DetailObjectDict[dict.m_SpritePage];
+			counts.m_SeparateCounts.Element(model.m_sMatIndex)++;
+		}
+		counts.m_iTotal += nDetailObjectCount;
 	}
 
-	return nPropCount;
+	return counts;
 }
 
 //-----------------------------------------------------------------------------
 // Count the number of fast sprites in the leaf list
 //-----------------------------------------------------------------------------
-int CDetailObjectSystem::CountFastSpritesInLeafList( int nLeafCount, LeafIndex_t const *pLeafList,
+CDetailObjectSystem::ParallelCounts_t CDetailObjectSystem::CountFastSpritesInLeafList( int nLeafCount, LeafIndex_t const *pLeafList,
 													 int *nMaxFoundInLeaf ) const
 {
 	VPROF_BUDGET( "CDetailObjectSystem::CountSpritesInLeafList", VPROF_BUDGETGROUP_DETAILPROP_RENDERING );
-	int nCount = 0;
+	ParallelCounts_t counts;
+	counts.m_SeparateCounts.EnsureCount(m_DetailSpriteMaterials.Count());
 	int nMax = 0;
 	for ( int i = 0; i < nLeafCount; ++i )
 	{
@@ -1981,23 +2062,33 @@ int CDetailObjectSystem::CountFastSpritesInLeafList( int nLeafCount, LeafIndex_t
 			ClientLeafSystem()->GetSubSystemDataInLeaf( pLeafList[i], CLSUBSYSTEM_DETAILOBJECTS ) );
 		if ( pData )
 		{
-			nCount += pData->m_nNumSprites;
+			counts.m_iTotal += pData->m_nNumSprites;
 			nMax = MAX( nMax, pData->m_nNumSprites );
+			for (int i = 0; i < pData->m_nNumSIMDSprites; i++)
+			{
+				const FastSpriteX4_t& Sprite = pData->m_pSprites[i];
+				for (int j = 0; j < 4 && (j + 1) * (i + 1) <= pData->m_nNumSprites; j++)
+				{
+					const DetailModelDict_t& model = m_DetailObjectDict[Sprite.m_pSpriteDefs[j]->m_SpritePage];
+					counts.m_SeparateCounts.Element(model.m_sMatIndex)++;
+				}
+			}
 		}
 	}
 	*nMaxFoundInLeaf = ( nMax + 3 ) & ~3;					// round up
-	return nCount;
+	return counts;
 }
 
 
 //-----------------------------------------------------------------------------
 // Count the number of detail sprite quads in the leaf list
 //-----------------------------------------------------------------------------
-int CDetailObjectSystem::CountSpriteQuadsInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const
+CDetailObjectSystem::ParallelCounts_t CDetailObjectSystem::CountSpriteQuadsInLeafList( int nLeafCount, LeafIndex_t *pLeafList ) const
 {
 #ifdef USE_DETAIL_SHAPES
 	VPROF_BUDGET( "CDetailObjectSystem::CountSpritesInLeafList", VPROF_BUDGETGROUP_DETAILPROP_RENDERING );
-	int nQuadCount = 0;
+	ParallelCounts_t counts;
+	counts.m_SeparateCounts.EnsureCount(m_DetailSpriteMaterials.Count());
 	int nFirstDetailObject, nDetailObjectCount;
 	for ( int i = 0; i < nLeafCount; ++i )
 	{
@@ -2006,11 +2097,14 @@ int CDetailObjectSystem::CountSpriteQuadsInLeafList( int nLeafCount, LeafIndex_t
 		ClientLeafSystem()->GetDetailObjectsInLeaf( pLeafList[i], nFirstDetailObject, nDetailObjectCount );
 		for ( int j = 0; j < nDetailObjectCount; ++j )
 		{
-			nQuadCount += m_DetailObjects[j + nFirstDetailObject].QuadsToDraw();
+			counts.m_iTotal += m_DetailObjects[j + nFirstDetailObject].QuadsToDraw();
+			const DetailPropSpriteDict_t& dict = m_DetailSpriteDict[m_DetailObjects[j + nFirstDetailObject].GetSprite().m_nSpriteIndex];
+			const DetailModelDict_t& model = m_DetailObjectDict[dict.m_SpritePage];
+			counts.m_SeparateCounts.Element(model.m_sMatIndex) += m_DetailObjects[j + nFirstDetailObject].QuadsToDraw();
 		}
 	}
 
-	return nQuadCount;
+	return counts;
 #else
 	return CountSpritesInLeafList( nLeafCount, pLeafList );
 #endif
@@ -2230,8 +2324,8 @@ void CDetailObjectSystem::RenderFastSprites( const Vector &viewOrigin, const Vec
 	// Count the total # of detail quads we possibly could render
 	int nMaxInLeaf;
 
-	int nQuadCount = CountFastSpritesInLeafList( nLeafCount, pLeafList, &nMaxInLeaf );
-	if ( nQuadCount == 0 )
+	ParallelCounts_t nQuadCount = CountFastSpritesInLeafList( nLeafCount, pLeafList, &nMaxInLeaf );
+	if ( nQuadCount.m_iTotal == 0 )
 		return;
 	if  ( r_DrawDetailProps.GetInt() == 0 )
 		return;
@@ -2242,32 +2336,50 @@ void CDetailObjectSystem::RenderFastSprites( const Vector &viewOrigin, const Vec
 	pRenderContext->PushMatrix();
 	pRenderContext->LoadIdentity();
 
-	IMaterial *pMaterial = m_DetailSpriteMaterial;
-	if ( ShouldDrawInWireFrameMode() || r_DrawDetailProps.GetInt() == 2 )
+	struct ParallelRenderData_t
 	{
-		pMaterial = m_DetailWireframeMaterial;
-	}
+		CMeshBuilder meshBuilder;
+		IMesh* pMesh;
+		int nMaxVerts, nMaxIndices;
+		int nMaxQuadsToDraw;
+		int nQuadsToDraw;
+		int nQuadsRemaining;
+		IMaterial* pMaterial;
+	};
 
-	CMeshBuilder meshBuilder;
-	IMesh *pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
+	int iNumMaterials = m_DetailSpriteMaterials.Count();
+	ParallelRenderData_t* pRenderData = new ParallelRenderData_t[iNumMaterials];
 
-	int nMaxVerts, nMaxIndices;
-	pRenderContext->GetMaxToRender( pMesh, false, &nMaxVerts, &nMaxIndices );
-	int nMaxQuadsToDraw = nMaxIndices / 6;
-	if ( nMaxQuadsToDraw > nMaxVerts / 4 ) 
+	if (ShouldDrawInWireFrameMode() || r_DrawDetailProps.GetInt() == 2)
 	{
-		nMaxQuadsToDraw = nMaxVerts / 4;
+
 	}
+	else
+	{
+		for (int i = 0; i < iNumMaterials; i++)
+		{
+			ParallelRenderData_t& dat = pRenderData[i];
 
-	if ( nMaxQuadsToDraw == 0 )
-		return;
+			dat.pMaterial = m_DetailSpriteMaterials[i];
 
-	int nQuadsToDraw = MIN( nQuadCount, nMaxQuadsToDraw );
-	int nQuadsRemaining = nQuadsToDraw;
+			dat.pMesh = pRenderContext->GetDynamicMesh(true, NULL, NULL, dat.pMaterial);
 
-	meshBuilder.Begin( pMesh, MATERIAL_QUADS, nQuadsToDraw );
+			pRenderContext->GetMaxToRender(dat.pMesh, false, &dat.nMaxVerts, &dat.nMaxIndices);
+			dat.nMaxQuadsToDraw = dat.nMaxIndices / 6;
+			if (dat.nMaxQuadsToDraw > dat.nMaxVerts / 4)
+			{
+				dat.nMaxQuadsToDraw = dat.nMaxVerts / 4;
+			}
 
+			if (dat.nMaxQuadsToDraw == 0)
+				continue;
 
+			dat.nQuadsToDraw = MIN(nQuadCount.m_SeparateCounts[i], dat.nMaxQuadsToDraw);
+			dat.nQuadsRemaining = dat.nQuadsToDraw;
+
+			dat.meshBuilder.Begin(dat.pMesh, MATERIAL_QUADS, dat.nQuadsToDraw);
+		}
+	}
 
 	// Sort detail sprites in each leaf independently; then render them
 	for ( int i = 0; i < nLeafCount; ++i )
@@ -2762,7 +2874,7 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
 	// We need to recompute translucency information for all detail props
 	for (int i = m_DetailObjectDict.Size(); --i >= 0; )
 	{
-		if (modelinfo->ModelHasMaterialProxy( m_DetailObjectDict[i].m_pModel ))
+		if (m_DetailObjectDict[i].m_pModel && modelinfo->ModelHasMaterialProxy( m_DetailObjectDict[i].m_pModel ))
 		{
 			modelinfo->RecomputeTranslucency( m_DetailObjectDict[i].m_pModel, 0, 0, NULL );
 		}

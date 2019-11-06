@@ -17,6 +17,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model2
@@ -27,6 +28,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.01"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model3
@@ -37,6 +39,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model4
@@ -47,6 +50,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model5
@@ -57,6 +61,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.05"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 			Model6
 			// Position 6 in sheet
@@ -66,6 +71,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.05"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 			Model7
 			// Position 7 in sheet
@@ -75,6 +81,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.05"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model8
@@ -85,6 +92,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.05"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model9
@@ -95,6 +103,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.4"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 
@@ -136,6 +145,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.8"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 				//"upright" "1.0"
 				//"model" "models/props_foliage/small_cattails.mdl"
 				//"amount" "0.2"
@@ -152,6 +162,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.6"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 				//"upright" "1.0"
 				//"model" "models/props_foliage/small_cattails.mdl"
 				//"amount" "0.2"
@@ -168,6 +179,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.2"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 
 				//"upright" "1.0"
 				//"model" "models/props_foliage/small_cattails.mdl"
@@ -182,6 +194,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.4"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 			
 			Model3
@@ -192,6 +205,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.2"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 			
 			Model4
@@ -202,6 +216,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.2"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 			
 		}
@@ -225,6 +240,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model2
@@ -235,6 +251,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model3
@@ -245,6 +262,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model4
@@ -255,6 +273,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model5
@@ -265,6 +284,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.2"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model6
@@ -275,6 +295,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.4"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 		}
 
@@ -301,6 +322,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.6"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model2
@@ -311,6 +333,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.05"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model3
@@ -321,6 +344,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.05"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model4
@@ -331,6 +355,7 @@ detail
 				"spriterandomscale" "0.3"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model5
@@ -341,6 +366,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 			Model6
@@ -351,6 +377,7 @@ detail
 				"spriterandomscale" "0.2"
 				"amount" "0.1"
 				"detailOrientation" "2"
+				"sprite_page" "detail/detailsprites_ep2"
 			}
 
 		}
