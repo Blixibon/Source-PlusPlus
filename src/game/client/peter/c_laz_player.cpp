@@ -49,6 +49,32 @@ void C_Laz_Player::PreThink(void)
 			StopSprinting();
 		}
 	}
+
+	// Disallow shooting while zooming
+	if (IsX360())
+	{
+		if (m_hZoomOwner.Get() != nullptr)
+		{
+			if (GetActiveWeapon() && !GetActiveWeapon()->IsWeaponZoomed())
+			{
+				// If not zoomed because of the weapon itself, do not attack.
+				m_nButtons &= ~(IN_ATTACK | IN_ATTACK2);
+			}
+		}
+	}
+	else
+	{
+		if (m_nButtons & IN_ZOOM)
+		{
+			//FIXME: Held weapons like the grenade get sad when this happens
+#ifdef HL2_EPISODIC
+		// Episodic allows players to zoom while using a func_tank
+			CBaseCombatWeapon* pWep = GetActiveWeapon();
+			if (!GetUseEntity() || (pWep && pWep->IsWeaponVisible()))
+#endif
+				m_nButtons &= ~(IN_ATTACK | IN_ATTACK2);
+		}
+	}
 }
 
 void C_Laz_Player::ClientThink()

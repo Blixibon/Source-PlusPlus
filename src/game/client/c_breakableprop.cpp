@@ -18,6 +18,8 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_BreakableProp, DT_BreakableProp, CBreakableProp)
+RecvPropInt(RECVINFO(m_iHealth)),
+RecvPropInt(RECVINFO(m_iMaxHealth)),
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------

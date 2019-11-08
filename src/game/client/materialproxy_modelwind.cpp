@@ -10,6 +10,7 @@ public:
 
 private:
 	CFloatInput	m_Factor;
+	CFloatInput m_Height;
 };
 
 bool CModelWindProxy::Init(IMaterial *pMaterial, KeyValues *pKeyValues)
@@ -23,6 +24,9 @@ bool CModelWindProxy::Init(IMaterial *pMaterial, KeyValues *pKeyValues)
 	if (!m_Factor.Init(pMaterial, pKeyValues, "scale", 1.f/25.f))
 		return false;
 
+	if (!m_Height.Init(pMaterial, pKeyValues, "height"))
+		return false;
+
 	return true;
 }
 
@@ -32,9 +36,7 @@ void CModelWindProxy::OnBind(void *pArg)
 
 	if (pRend)
 	{
-		Vector mins, maxs;
-		pRend->GetRenderBounds(mins, maxs);
-		Vector vPoint = pRend->GetRenderOrigin() + Vector(0, 0, maxs.z*0.5f);
+		Vector vPoint = pRend->GetRenderOrigin() + Vector(0, 0, m_Height.GetFloat());
 
 		Vector vecWind = GetWindspeedAtLocation(vPoint) * m_Factor.GetFloat();
 

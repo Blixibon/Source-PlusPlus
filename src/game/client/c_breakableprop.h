@@ -25,6 +25,12 @@ public:
 
 	// Copy fade from another breakable prop
 	void CopyFadeFrom( C_BreakableProp *pSource );
+
+	virtual int		GetHealth() const { return m_iHealth; }
+	virtual int		GetMaxHealth() const { return m_iMaxHealth; }
+
+protected:
+	int		m_iMaxHealth;
 };
 
 #endif // C_BREAKABLEPROP_H

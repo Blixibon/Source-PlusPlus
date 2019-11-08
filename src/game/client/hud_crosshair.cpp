@@ -6,6 +6,7 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "input.h"
 #include "hud.h"
 #include "hud_crosshair.h"
 #include "iclientmode.h"
@@ -191,6 +192,17 @@ void CHudCrosshair::GetDrawPosition ( float *pX, float *pY, bool *pbBehindCamera
 			AngleVectors( CurrentViewAngles() - g_pSixenseInput->GetViewAngleOffset(), &aimVector );
 			// calculate where the bullet would go so we can draw the cross appropriately
 			vecEnd = vecStart + aimVector * MAX_TRACE_LENGTH;
+			bUseOffset = true;
+		}
+#endif
+
+#if HL2_LAZUL
+		if ((bool)::input->CAM_IsThirdPerson())
+		{
+			vecStart = pPlayer->Weapon_ShootPosition();
+			Vector vecDir;
+			vecDir = pPlayer->GetAutoaimVector(1.0f);
+			vecEnd = vecStart + vecDir * MAX_TRACE_LENGTH;
 			bUseOffset = true;
 		}
 #endif

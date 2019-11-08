@@ -2180,7 +2180,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 			forward.Init();
 		}
 
-		if ( !Pickup_ShouldPuntUseLaunchForces( pEntity, PHYSGUN_FORCE_PUNTED ) )
+		if (!IsMegaPhysCannon() && !Pickup_ShouldPuntUseLaunchForces( pEntity, PHYSGUN_FORCE_PUNTED ) )
 		{
 			int i;
 
@@ -2257,18 +2257,9 @@ void CWeaponPhysCannon::ApplyVelocityBasedForce(CBaseEntity* pEntity, const Vect
 	if (!pPhysicsObject)
 		return;
 
-	float flForceMax = physcannon_maxforce.GetFloat();
-	float flForce = flForceMax;
+	// Get the launch velocity
+	Vector vVel = Pickup_PhysGunLaunchVelocity(pEntity, forward, reason);
 
-	float mass = pPhysicsObject->GetMass();
-	if (mass > 100)
-	{
-		mass = MIN(mass, 1000.f);
-		float flForceMin = physcannon_minforce.GetFloat();
-		flForce = SimpleSplineRemapVal(mass, 100, 600, flForceMax, flForceMin);
-	}
-
-	Vector vVel = forward * flForce;
 	// FIXME: Josh needs to put a real value in for PHYSGUN_FORCE_PUNTED
 	AngularImpulse aVel = Pickup_PhysGunLaunchAngularImpulse( pEntity, reason );
 		
@@ -2278,7 +2269,7 @@ void CWeaponPhysCannon::ApplyVelocityBasedForce(CBaseEntity* pEntity, const Vect
 	{
 #ifdef HL2_EPISODIC
 		// The jeep being punted needs special force overrides
-		if (reason == PHYSGUN_FORCE_PUNTED && pEntity->GetServerVehicle())
+		if (hl2_episodic.GetBool() && reason == PHYSGUN_FORCE_PUNTED && pEntity->GetServerVehicle())
 		{
 			// We want the point to emanate low on the vehicle to move it along the ground, not to twist it
 			Vector vecFinalPos = vecHitPos;

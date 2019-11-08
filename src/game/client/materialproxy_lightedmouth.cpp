@@ -14,7 +14,6 @@ void CLightedMouthProxy::OnBind(void *pArg)
 
 	if (pEnt && pEnt->GetBaseAnimating())
 	{
-		
 		float value = 0.0f;
 
 		pEnt->GetBaseAnimating()->GetMouth()->ActivateEnvelope();

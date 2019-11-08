@@ -2221,7 +2221,7 @@ float C_BaseFlex::GetHL2MouthOpenPct()
 			float flWeight = m_vflPhonemeWeights.Element(i);
 			int iIndex = PhonemeCodeToIndex(iCode);
 
-			double dWeight = flWeight * WeightForPhonemeCode(iCode) * g_PhonemeMouthOpenPct[iIndex].Get();
+			double dWeight = (double)flWeight * WeightForPhonemeCode(iCode) * g_PhonemeMouthOpenPct[iIndex].Get();
 			dWeight = Clamp(dWeight, 0.0, 1.0);
 
 			dMouthOpen += dWeight;

@@ -1091,3 +1091,61 @@ void CSelectFirstIfNonZeroProxy::OnBind( void *pC_BaseEntity )
 }
 
 EXPOSE_INTERFACE( CSelectFirstIfNonZeroProxy, IMaterialProxy, "SelectFirstIfNonZero" IMATERIAL_PROXY_INTERFACE_VERSION );
+
+class CLerpProxy : public CFunctionProxy
+{
+public:
+	bool Init(IMaterial* pMaterial, KeyValues* pKeyValues);
+	void OnBind(void* pC_BaseEntity);
+
+protected:
+	CFloatInput m_Fraction;
+};
+
+
+bool CLerpProxy::Init(IMaterial* pMaterial, KeyValues* pKeyValues)
+{
+	// Requires 2 args..
+	bool ok = CFunctionProxy::Init(pMaterial, pKeyValues);
+	ok = ok && m_pSrc2 && m_Fraction.Init(pMaterial, pKeyValues, "fraction", 0.5f);
+	return ok;
+}
+
+void CLerpProxy::OnBind(void* pC_BaseEntity)
+{
+	Assert(m_pSrc1 && m_pSrc2 && m_pResult);
+
+	MaterialVarType_t resultType;
+	int vecSize;
+	ComputeResultType(resultType, vecSize);
+
+	switch (resultType)
+	{
+	case MATERIAL_VAR_TYPE_VECTOR:
+	{
+		Vector a, b, c;
+		m_pSrc1->GetVecValue(a.Base(), vecSize);
+		m_pSrc2->GetVecValue(b.Base(), vecSize);
+
+		VectorLerp(a, b, m_Fraction.GetFloat(), c);
+
+		m_pResult->SetVecValue(c.Base(), vecSize);
+	}
+	break;
+
+	case MATERIAL_VAR_TYPE_FLOAT:
+		SetFloatResult(Lerp(m_Fraction.GetFloat(), m_pSrc1->GetFloatValue(), m_pSrc2->GetFloatValue()));
+		break;
+
+	case MATERIAL_VAR_TYPE_INT:
+		SetFloatResult(Lerp(m_Fraction.GetFloat(), m_pSrc1->GetIntValue(), m_pSrc2->GetIntValue()));
+		break;
+	}
+
+	if (ToolsEnabled())
+	{
+		ToolFramework_RecordMaterialParams(GetMaterial());
+	}
+}
+
+EXPOSE_INTERFACE(CLerpProxy, IMaterialProxy, "Lerp" IMATERIAL_PROXY_INTERFACE_VERSION);

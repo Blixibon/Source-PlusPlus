@@ -35,18 +35,18 @@ WeaponData
 	{
 		"weapon"
 		{
-				"font"		"WeaponIcons"
-				"character"	"b"
+				"font"		"HEWeaponIcons"
+				"character"	"("
 		}
 		"weapon_s"
 		{	
-				"font"		"WeaponIconsSelected"
-				"character"	"b"
+				"font"		"HEWeaponIconsSelected"
+				"character"	"("
 		}
 		"ammo"
 		{
 				"font"		"WeaponIcons"
-				"character"	"s"
+				"character"	"n"
 		}
 		"crosshair"
 		{

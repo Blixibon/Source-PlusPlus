@@ -4917,7 +4917,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		//m_ActiveDepthTextureShadows[ j ] = shadow.m_ShadowHandle;
 
 		CNewViewSetup shadowView;
-		shadowView.m_flAspectRatio = 1.0f;
+		//shadowView.m_flAspectRatio = 1.0f;
 		shadowView.x = shadowView.y = 0;
 		shadowView.width = shadowDepthTexture->GetActualWidth();
 		shadowView.height = shadowDepthTexture->GetActualHeight();
@@ -4940,6 +4940,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 
 		// Copy flashlight parameters
 		shadowView.fov = shadowView.fovViewmodel = flashlightState.m_fHorizontalFOVDegrees;
+		shadowView.m_flAspectRatio = (flashlightState.m_fHorizontalFOVDegrees / flashlightState.m_fVerticalFOVDegrees);
 		shadowView.origin = flashlightState.m_vecLightOrigin;
 		QuaternionAngles( flashlightState.m_quatOrientation, shadowView.angles ); // Convert from Quaternion to QAngle
 

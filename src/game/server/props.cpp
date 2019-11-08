@@ -731,6 +731,8 @@ static ConCommand prop_debug("prop_debug", CC_Prop_Debug, "Toggle prop debug mod
 // BREAKABLE PROPS
 //=============================================================================================================
 IMPLEMENT_SERVERCLASS_ST(CBreakableProp, DT_BreakableProp)
+SendPropInt(SENDINFO(m_iHealth), -1, SPROP_VARINT | SPROP_CHANGES_OFTEN),
+SendPropInt(SENDINFO(m_iMaxHealth), -1),
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CBreakableProp )

@@ -54,6 +54,7 @@ void CProxyHealth::OnBind( void *pC_BaseEntity )
 	}
 }
 
-EXPOSE_INTERFACE( CProxyHealth, IMaterialProxy, "Health" IMATERIAL_PROXY_INTERFACE_VERSION );
+//EXPOSE_INTERFACE( CProxyHealth, IMaterialProxy, "Health" IMATERIAL_PROXY_INTERFACE_VERSION );
+EXPOSE_INTERFACE(CProxyHealth, IMaterialProxy, "EntityHealth" IMATERIAL_PROXY_INTERFACE_VERSION);
 
 
