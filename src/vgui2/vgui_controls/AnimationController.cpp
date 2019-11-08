@@ -637,12 +637,12 @@ bool AnimationController::ParseScriptFile(char *pMem, int length)
 		{
 			// Attempt to find a collision in the sequences, replacing the old one if found
 			int seqIterator;
-			for ( seqIterator = 0; seqIterator < m_Sequences.Count()-1; seqIterator++ )	
+			for ( seqIterator = 0; seqIterator < seqIndex; seqIterator++ )
 			{
 				if ( m_Sequences[seqIterator].name == nameIndex )
 				{
 					// Get rid of it, we're overriding it
-					m_Sequences.Remove( seqIndex );
+					m_Sequences.Remove(seqIterator);
 					break;
 				}
 			}

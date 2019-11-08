@@ -18,6 +18,7 @@
 #include "NextBotManager.h"
 #include "hltvdirector.h"
 #include "game.h"
+#include "team_control_point_master.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -204,23 +205,33 @@ public:
 CEconItemInitializerSystem g_EconInitializer;
 
 #ifdef CLIENT_DLL
+#define MOD_HL2BETA 9
+
 void CHud::MsgFunc_ResetHUD(bf_read& msg)
 {
 	static int s_iLastTeam = TEAM_UNASSIGNED;
-	if (GetLocalPlayerTeam() != s_iLastTeam)
+	static int s_iLastMod = -1;
+	if (/*GetLocalPlayerTeam() != s_iLastTeam || LazuulRules()->GetGameForMap() != s_iLastMod*/ true)
 	{
 		CBaseViewport* pViewport = static_cast<CBaseViewport*>(g_pClientMode->GetViewport());
 		const char* pszSchemeFile = "resource/ClientScheme.res";
+		const char* pszLayoutFile = "scripts/HudLayout.res";
+		const char* pszAnimationFile = "scripts/hudanimations_manifest.txt";
+		if (LazuulRules()->GetGameForMap() == MOD_HL2BETA)
+			pszLayoutFile = "scripts/HudLayout_HL2Beta.res";
+
 		switch (GetLocalPlayerTeam())
 		{
 		case TEAM_COMBINE:
 			pszSchemeFile = "resource/HudSchemeCombine.res";
+			pszLayoutFile = "scripts/HudLayout_HLSS.res";
+			pszAnimationFile = "scripts/hudanimations_hlsshud_manifest.txt";
 			break;
 		default:
 			break;
 		}
 
-		pViewport->ReloadScheme(pszSchemeFile);
+		pViewport->ReloadScheme(pszSchemeFile, pszLayoutFile, pszAnimationFile);
 	}
 	else
 	{
@@ -228,6 +239,7 @@ void CHud::MsgFunc_ResetHUD(bf_read& msg)
 	}
 
 	s_iLastTeam = GetLocalPlayerTeam();
+	s_iLastMod = LazuulRules()->GetGameForMap();
 }
 #endif
 
@@ -256,9 +268,11 @@ BEGIN_NETWORK_TABLE_NOBASE(CLazuul, DT_Lazuul)
 #ifdef CLIENT_DLL
 RecvPropBool(RECVINFO(m_bMegaPhysgun)),
 RecvPropInt(RECVINFO(m_nGameMode)),
+RecvPropInt(RECVINFO(m_iMapGameType)),
 #else
 SendPropBool(SENDINFO(m_bMegaPhysgun)),
 SendPropInt(SENDINFO(m_nGameMode)),
+SendPropInt(SENDINFO(m_iMapGameType)),
 #endif
 END_NETWORK_TABLE()
 
@@ -670,7 +684,7 @@ static const char* s_LazPreserveEnts[] =
 	"objective_resource",
 	"team_manager",
 	"player_manager",
-	"info_player_teamspawn",
+	//"info_player_teamspawn",
 	"", // END Marker
 };
 
@@ -1155,6 +1169,27 @@ bool CLazuul::ClientCommand(CBaseEntity * pEdict, const CCommand & args)
 		return true;
 
 	return false;
+}
+
+const char* CLazuul::GetChatLocation(bool bTeamOnly, CBasePlayer* pPlayer)
+{
+	if (!pPlayer)  // dedicated server output
+	{
+		return NULL;
+	}
+
+	// only teammates see locations
+	if (!bTeamOnly)
+		return NULL;
+
+	// only living players have locations
+	if (pPlayer->GetTeamNumber() < FIRST_GAME_TEAM)
+		return NULL;
+
+	if (!pPlayer->IsAlive())
+		return NULL;
+
+	return pPlayer->GetLastKnownPlaceName();
 }
 
 const char * CLazuul::GetChatFormat(bool bTeamOnly, CBasePlayer * pPlayer)
@@ -3321,6 +3356,13 @@ void CLazuul::LevelInitPreEntity()
 	BaseClass::LevelInitPreEntity();
 }
 
+void CLazuul::LevelInitPostEntity()
+{
+	BaseClass::LevelInitPostEntity();
+
+	m_iMapGameType = g_pGameTypeSystem->GetCurrentGameType();
+}
+
 void CLazuul::Think()
 {
 	BaseClass::Think();
@@ -4198,6 +4240,15 @@ void CLazuul::CleanUpMap(void)
 	{
 		HLTVDirector()->BuildCameraList();
 	}
+
+	for (int i = 0; i < GetNumberOfTeams(); i++)
+	{
+		CTeam* pTeam = GetGlobalTeam(i);
+		if (!pTeam)
+			continue;
+
+		pTeam->InitializeSpawnpoints();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -4224,13 +4275,85 @@ bool CLazuul::ShouldCreateEntity(const char* pszClassName)
 
 void CLazuul::SetupSpawnPointsForRound(void)
 {
-	CBaseEntity *pLaz = gEntList.FindEntityByClassname(nullptr, "laz_gamerules");
-	CBaseEntity *pEnt = nullptr;
-	while ((pEnt = gEntList.FindEntityByClassname(pEnt, "info_player_teamspawn")) != nullptr)
+	
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Called when a new round is being initialized
+//-----------------------------------------------------------------------------
+void CLazuul::SetupOnRoundStart(void)
+{
+	for (int i = 0; i < MAX_TEAMS; i++)
 	{
-		variant_t var;
-		pEnt->AcceptInput("RoundSpawn", pLaz, pLaz, var, 0);
+		ObjectiveResource()->SetBaseCP(-1, i);
 	}
+
+	/*for (int i = 0; i < TF_TEAM_COUNT; i++)
+	{
+		m_iNumCaps[i] = 0;
+	}*/
+
+	// Let all entities know that a new round is starting
+	CBaseEntity* pEnt = gEntList.FirstEnt();
+	while (pEnt)
+	{
+		variant_t emptyVariant;
+		pEnt->AcceptInput("RoundSpawn", NULL, NULL, emptyVariant, 0);
+
+		pEnt = gEntList.NextEnt(pEnt);
+	}
+
+	// All entities have been spawned, now activate them
+	pEnt = gEntList.FirstEnt();
+	while (pEnt)
+	{
+		variant_t emptyVariant;
+		pEnt->AcceptInput("RoundActivate", NULL, NULL, emptyVariant, 0);
+
+		pEnt = gEntList.NextEnt(pEnt);
+	}
+
+	/*if (g_pObjectiveResource && !g_pObjectiveResource->PlayingMiniRounds())
+	{
+		// Find all the control points with associated spawnpoints
+		memset(m_bControlSpawnsPerTeam, 0, sizeof(bool) * MAX_TEAMS * MAX_CONTROL_POINTS);
+		CBaseEntity* pSpot = gEntList.FindEntityByClassname(NULL, "info_player_teamspawn");
+		while (pSpot)
+		{
+			CTFTeamSpawn* pTFSpawn = assert_cast<CTFTeamSpawn*>(pSpot);
+			if (pTFSpawn->GetControlPoint())
+			{
+				m_bControlSpawnsPerTeam[pTFSpawn->GetTeamNumber()][pTFSpawn->GetControlPoint()->GetPointIndex()] = true;
+				pTFSpawn->SetDisabled(true);
+			}
+
+			pSpot = gEntList.FindEntityByClassname(pSpot, "info_player_teamspawn");
+		}
+
+		RecalculateControlPointState();
+
+		SetRoundOverlayDetails();
+	}*/
+
+	//m_szMostRecentCappers[0] = 0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Called when a new round is off and running
+//-----------------------------------------------------------------------------
+void CLazuul::SetupOnRoundRunning(void)
+{
+	// Let out control point masters know that the round has started
+	for (int i = 0; i < g_hControlPointMasters.Count(); i++)
+	{
+		variant_t emptyVariant;
+		if (g_hControlPointMasters[i])
+		{
+			g_hControlPointMasters[i]->AcceptInput("RoundStart", NULL, NULL, emptyVariant, 0);
+		}
+	}
+
+	HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_ROUND_START);
 }
 #endif
 

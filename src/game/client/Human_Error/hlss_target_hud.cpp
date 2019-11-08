@@ -16,7 +16,7 @@
 #include <vgui/ISurface.h>
 #include <vgui/ISystem.h>
 #include <vgui/IVGui.h>
-//#include "view_scene.h"
+#include "view_scene.h"
 
 //#include "Human_Error\hlss_target_hud.h"
 

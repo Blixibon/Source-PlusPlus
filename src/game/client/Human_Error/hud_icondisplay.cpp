@@ -13,7 +13,7 @@
 #include <vgui/ISurface.h>
 #include <vgui/ISystem.h>
 #include <vgui/IVGui.h>
-
+#include <vgui/ILocalize.h>
 #include "ImageFX.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -160,6 +160,13 @@ void CHudIconDisplay::SetLabel(const wchar_t *text, bool IsAPC)
 	m_bIsAPC = IsAPC;
 }
 
+void CHudIconDisplay::SetLabel(const char* text, bool IsAPC)
+{
+	vgui::ILocalize::ConvertANSIToUnicode(text, m_LabelText, sizeof(m_LabelText));
+
+	m_bIsAPC = IsAPC;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: paints a number at the specified position
 //-----------------------------------------------------------------------------
@@ -211,7 +218,7 @@ void CHudIconDisplay::PaintIcons(HFont font, HFont font_small)
 	int length = 7;
 	for (int i=0; i<7; i++)
 	{
-		if (unicode[i] == L'')
+		if (unicode[i] == L'\0')
 		{
 			length = i;
 			break;
@@ -355,7 +362,7 @@ void CHudIconDisplay::SetStandardPoints(ImageFX *pBar)
 //-----------------------------------------------------------------------------
 void CHudIconDisplay::Paint()
 {
-	float flAlpha = GetAlpha1();
+	float flAlpha = GetAlpha();
 	flAlpha *= flAlpha;
 
 	if (m_bDisplayValue)

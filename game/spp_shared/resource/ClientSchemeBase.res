@@ -744,6 +744,63 @@ Scheme
 				"custom"	"1"
 			}
 		}
+		
+		HEWeaponIcons
+		{
+			"1"
+			{
+				"name"		"HumanError"
+				"tall"		"48"
+				"tall_hidef"	"43"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		HEWeaponIconsSelected
+		{
+			"1"
+			{
+				"name"		"HumanError"
+				"tall"		"48"
+				"tall_hidef"	"43"
+				"weight"	"0"
+				"antialias" "1"
+				"blur"		"5"
+				"scanlines"	"2"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		HE_HudFont
+		{
+			"1"
+			{
+				"name"		"HumanError"
+				"tall"		"28"
+				"tall_hidef"	"25"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
+		HE_HudFontGlow
+		{
+			"1"
+			{
+				"name"		"HumanError"
+				"tall"		"28"
+				"tall_hidef"	"25"
+				"weight"	"0"
+				"antialias" 	"1"
+				"blur"		"5"
+				"scanlines"	"2"
+				"additive"	"1"
+				"custom"	"1"
+			}
+		}
 
 		"CloseCaption_Normal"
 		{
@@ -1326,6 +1383,7 @@ Scheme
 		"9"		"resource/RealBeta's Weapon Icons.ttf"
 		"10"	"resource/obsidianweaps.ttf"
 		"11"	"resource/K12HL2.ttf"
+		"12"	"resource/HUMANERROR.ttf"
 	}
 
 }

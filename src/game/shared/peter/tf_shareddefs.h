@@ -1338,4 +1338,10 @@ public:
 #define TF_CAMERA_DIST_RIGHT 30
 #define TF_CAMERA_DIST_UP 0
 
+enum {
+	LAZ_HUD_HL2 = 0,
+	LAZ_HUD_HL2B,
+	LAZ_HUD_HLSS
+};
+
 #endif // TF_SHAREDDEFS_H

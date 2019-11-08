@@ -47,7 +47,7 @@ public:
 	virtual void Start( IGameUIFuncs *pGameUIFuncs, IGameEventManager2 *pGameEventManager );
 	virtual void SetParent(vgui::VPANEL parent);
 
-	virtual void ReloadScheme(const char *fromFile, const char * pszLayout = "scripts/HudLayout.res");
+	virtual void ReloadScheme(const char *fromFile, const char * pszLayout = "scripts/HudLayout.res", const char * pszAnimations = "scripts/hudanimations_manifest.txt");
 	virtual void ActivateClientUI();
 	virtual void HideClientUI();
 	virtual bool AllowedToPrintText( void );
@@ -75,7 +75,7 @@ public: // IGameEventListener:
 
 protected:
 
-	bool LoadHudAnimations( void );
+	bool LoadHudAnimations( const char *pszManifestFile = "scripts/hudanimations_manifest.txt" );
 
 #ifndef _XBOX
 	class CBackGroundPanel : public vgui::Frame

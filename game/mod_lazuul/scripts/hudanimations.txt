@@ -1211,3 +1211,471 @@ event WeaponDoesNotUseSecondaryAmmoOld
 	Animate HudAmmoSecondaryOld	BgColor		"0 0 0 0"	Linear	0.0		0.4
 //	Animate HudAmmoOld		Position	"r150 432"	Deaccel	0.0		0.5
 }
+
+// Manhack health has been decreased, but there is still some remaining
+event ManhackHealthDecreased
+{
+	StopEvent ManhackRadioIncreased 0.0
+	
+	Animate HudManhackHealth		Blur		"7"			Linear	0.0	0.0
+	Animate HudManhackHealth		Blur		"0"			Deaccel	0.1	1.5
+	
+	Animate HudManhackHealth		FgColor		"BrightDamagedFg"	Linear	0.0	0.2
+	Animate HudManhackHealth		FgColor		"DamagedFg"		Accel	0.2	1.2
+}
+
+// Manhack health zippo?
+event ManhackRadioIncreased
+{
+	StopEvent ManhackHealthDecreased 0.0
+
+	Animate HudManhackHealth		BgColor	"BgColor"	Linear	0.0	0.0
+	
+	Animate HudManhackHealth		TextColor "FgColor" Linear 0.0 0.04
+	Animate HudManhackHealth		FgColor   "FgColor" Linear 0.0 0.03		
+}
+
+event HideRadio
+{
+	StopEvent	ShowRadio 	0.0
+	Animate 	HudRadio	Position	"r272 r500"	Linear 0.0		0.2
+	Animate 	HudRadio 	Alpha		0 		Linear 0.0 		0.5
+}
+
+
+event ShowRadio
+{
+	StopEvent 	HideRadio 	0.0
+	Animate 	HudRadio	Position	"r272 r470"	Linear	0.0		0.2
+	Animate 	HudRadio 	Alpha		255	 	Linear 	0.0 		0.5
+}
+
+
+
+event AR2AmmoIncreased
+{
+	StopEvent	AR2AmmoDecreased 0.0
+	StopEvent	AR2AmmoZero	 0.0
+
+	Animate	HudAR2AltFire 	Alpha		"255"			Linear 0.0 0.0
+
+	Animate	HudAR2AltFire	BgColor		"BgColor"	Linear	0.0	0.0
+	
+	Animate	HudAR2AltFire 	TextColor	"FgColor"	Linear 0.0 0.05
+	Animate	HudAR2AltFire	FgColor		"FgColor"	Linear 0.0 0.05
+	
+	Animate	HudAR2AltFire	Blur		"3"			Linear	0.0		0.1
+	Animate	HudAR2AltFire	Blur		"0"			Deaccel	0.1		2.0
+
+	Animate HudAR2AltFire	Position	"r90 5"	Linear 0.0 0.5
+	Animate HudAirDefense	Position	"r90 50" Linear 0.0 0.5
+}
+
+
+event AR2AmmoDecreased
+{
+	StopEvent	AR2AmmoIncreased 0.0
+	StopEvent	AR2AmmoZero	 0.0
+
+	Animate	HudAR2AltFire 	Alpha		"255"			Linear 0.0 0.0
+
+	Animate HudAR2AltFire	FgColor		"BrightDamagedFg" Linear 0.0 0.25
+	Animate HudAR2AltFire	FgColor		"FgColor"	Linear	0.3		0.75
+	
+	Animate HudAR2AltFire	Blur		"3"			Linear	0.0		0.1
+	Animate HudAR2AltFire	Blur		"0"			Deaccel	0.1		2.0
+
+	Animate HudAR2AltFire	Position	"r90 5"	Linear 0.0 0.5
+	Animate HudAirDefense	Position	"r90 50" Linear 0.0 0.5
+}
+
+event AR2AmmoZero
+{
+	StopEvent	AR2AmmoIncreased 0.0
+	StopEvent	AR2AmmoDecreased 0.0
+
+	Animate	HudSuit Alpha		"128"			Linear 0.0 0.4
+
+	Animate HudAR2AltFire	Position	"r90 -40"	Deaccel 0.0 0.5
+	Animate HudAirDefense	Position	"r90 5" 	Deaccel 0.0 0.5
+}
+
+
+event HealthIncreasedAbove20HE
+{
+	StopEvent	HealthLoopHE  0.0
+	StopEvent	HealthPulseHE 0.0
+	StopEvent	HealthLowHE   0.0
+
+	Animate	HudHealthHE	BgColor	"BgColor"	Linear	0.0	0.0
+	
+	Animate	HudHealthHE	TextColor "FgColor" Linear 0.0 0.04
+	Animate	HudHealthHE	FgColor   "FgColor" Linear 0.0 0.03
+	
+	Animate	HudHealthHE		Blur		"3"			Linear	0.0		0.1
+	Animate	HudHealthHE		Blur		"0"			Deaccel	0.1		2.0
+}
+
+event HealthIncreasedBelow20HE
+{
+	Animate HudHealthHE	FgColor		"BrightFg"	Linear	0.0		0.25
+	Animate HudHealthHE	FgColor		"FgColor"	Linear	0.3		0.75
+	
+	Animate HudHealthHE		Blur		"3"			Linear	0.0		0.1
+	Animate HudHealthHE		Blur		"0"			Deaccel	0.1		2.0
+}
+
+event SuitPowerIncreasedAbove20HE
+{
+	StopEvent	SuitLoopHE 0.0
+	StopEvent	SuitPulseHE 0.0
+	StopEvent	SuitPowerZeroHE	0.0
+
+	Animate	HudSuitHe 	Alpha		"255"			Linear 0.0 0.0
+
+	Animate	HudSuitHe		BgColor		"BgColor"	Linear	0.0	0.0
+	
+	Animate	HudSuitHe 	TextColor	"FgColor"	Linear 0.0 0.05
+	Animate	HudSuitHe		FgColor		"FgColor"	Linear 0.0 0.05
+	
+	Animate	HudSuitHe		Blur		"3"			Linear	0.0		0.1
+	Animate	HudSuitHe		Blur		"0"			Deaccel	0.1		2.0
+
+	Animate HudSuitHe		Position	"4 r44"	Linear 0.0 0.5
+	Animate HudHealthHE	Position	"4 r86"	Linear 0.0 0.5
+}
+
+
+event SuitPowerIncreasedBelow20HE
+{
+	StopEvent		SuitPowerZeroHE	0.0
+	Animate	HudSuitHe 	Alpha		"255"			Linear 0.0 0.0
+
+	Animate HudSuitHe		FgColor		"BrightFg"	Linear	0.0		0.25
+	Animate HudSuitHe		FgColor		"FgColor"	Linear	0.3		0.75
+	
+	Animate HudSuitHe		Blur		"3"			Linear	0.0		0.1
+	Animate HudSuitHe		Blur		"0"			Deaccel	0.1		2.0
+
+	Animate HudSuitHe		Position	"4 r44"	Linear 0.0 0.5
+	Animate HudHealthHE	Position	"4 r86"	Linear 0.0 0.5
+}
+
+event SuitPowerZeroHE
+{
+	StopEvent	SuitLoopHE 0.0
+	StopEvent	SuitPulseHE 0.0
+	StopEvent	SuitArmorLowHE 0.0
+	StopEvent	SuitDamageTakenHE 0.0
+
+	Animate	HudSuitHe Alpha		"128"			Linear 0.0 0.4
+
+	Animate HudSuitHe		Position	"4 480"	Deaccel 0.0 0.5
+	Animate HudHealthHE	Position	"4 r44"	Deaccel 0.0 0.5
+}
+
+event HealthDamageTakenHE
+{
+	Animate HudHealthHE	FgColor		"BrightFg"	Linear	0.0		0.25
+	Animate HudHealthHE	FgColor		"FgColor"	Linear	0.3		0.75
+	
+	Animate HudHealthHE		Blur		"3"			Linear	0.0		0.1
+	Animate HudHealthHE		Blur		"0"			Deaccel	0.1		2.0
+	
+	Animate HudHealthHE TextColor		"BrightFg"	Linear	0.0		0.1
+	Animate HudHealthHE TextColor		"FgColor"		Deaccel	0.1		1.2
+}
+
+event SuitDamageTakenHE
+{
+	Animate HudSuitHe		FgColor	"BrightFg"	Linear	0.0		0.25
+	Animate HudSuitHe		FgColor	"FgColor"	Linear	0.3		0.75
+	
+	Animate HudSuitHe		Blur		"3"			Linear	0.0		0.1
+	Animate HudSuitHe		Blur		"0"			Deaccel	0.1		2.0
+	
+	Animate HudSuitHe		TextColor	"BrightFg"		Linear	0.0		0.1
+	Animate HudSuitHe		TextColor	"FgColor"		Deaccel	0.1		1.2
+}
+
+// health has been damaged to below 20%
+event HealthLowHE
+{
+	StopEvent HealthDamageTakenHE	0.0
+	StopEvent HealthPulseHE	0.0
+	StopEvent HealthLoopHE	0.0	
+	
+	Animate HudHealthHE	BgColor		"DamagedBg"		Linear	0.0		0.1
+	Animate HudHealthHE	BgColor		"BgColor"		Deaccel	0.1		1.75
+	
+	Animate HudHealthHE	FgColor		"BrightFg"	Linear	0.0		0.2
+	Animate HudHealthHE	FgColor		"DamagedFg"		Linear	0.2		1.2
+	
+	Animate HudHealthHE TextColor		"BrightFg"	Linear	0.0		0.1
+	Animate HudHealthHE	TextColor		"DamagedFg"		Linear	0.1		1.2
+	
+	Animate HudHealthHE		Blur		"5"			Linear	0.0		0.1
+	Animate HudHealthHE		Blur		"3"			Deaccel	0.1		0.9
+
+	RunEvent HealthPulseHE	1.0
+}
+
+event HealthPulseHE
+{
+	Animate HudHealthHE		Blur		"5"			Linear	0.0		0.1
+	Animate HudHealthHE		Blur		"2"			Deaccel	0.1		0.8
+	Animate HudHealthHE		TextColor	"BrightDamagedFg"	Linear	0.0		0.1
+	Animate HudHealthHE		TextColor	"DamagedFg"		Deaccel	0.1		0.8
+	Animate HudHealthHE		BgColor	"100 0 0 80"		Linear	0.0		0.1
+	Animate HudHealthHE		BgColor	"BgColor"		Deaccel	0.1		0.8
+
+	RunEvent HealthLoopHE	0.8
+}
+
+// call to loop HealthPulse
+event HealthLoopHE
+{
+	RunEvent HealthPulse 0.0
+}
+
+
+// suit armor has been damaged to below 20%
+event SuitArmorLowHE
+{
+	StopEvent SuitDamageTakenHE 0.0
+	StopEvent SuitPulseHE	0.0
+	StopEvent SuitLoopHE	0.0
+
+//	removing this effect -- matching it to the event for normal suit damage
+//	so, there will be no special indication (redness, flashing)
+//	in the hud that the suit armor is low
+	
+//	Animate HudSuitHe	BgColor		"DamagedBg"		Linear	0.0		0.1
+//	Animate HudSuitHe	BgColor		"BgColor"		Deaccel	0.1		1.75
+	
+	Animate HudSuitHe		FgColor	"BrightFg"	Linear	0.0		0.25
+	Animate HudSuitHe		FgColor	"FgColor"		Linear	0.3		0.75
+	
+	Animate HudSuitHe		Blur		"3"			Linear	0.0		0.1
+	Animate HudSuitHe		Blur		"0"			Deaccel	0.1		2.0
+	
+	Animate HudSuitHe		TextColor	"BrightFg"	Linear	0.0		0.1
+	Animate HudSuitHe		TextColor	"FgColor"		Deaccel	0.1		1.2
+	
+//	RunEvent SuitPulseHE	1.0
+}
+
+event SuitPulseHE
+//	this even no longer gets called
+{
+	Animate HudSuitHe		Blur		"5"			Linear	0.0		0.1
+	Animate HudSuitHe		Blur		"2"			Deaccel	0.1		0.8
+	Animate HudSuitHe		TextColor	"BrightDamagedFg"	Linear	0.0		0.1
+	Animate HudSuitHe		TextColor	"DamagedFg"		Deaccel	0.1		0.8
+	Animate HudSuitHe		BgColor	"100 0 0 80"	Linear	0.0		0.1
+	Animate HudSuitHe		BgColor	"BgColor"		Deaccel	0.1		0.8
+	RunEvent SuitLoopHE	0.8
+}
+
+event SuitLoopHE
+{
+//	this event no longer gets called
+	RunEvent SuitPulseHE 0.0
+}
+
+// ammo has been picked up
+event AmmoIncreasedHE
+{
+	Animate HudAmmoHE		FgColor	"BrightFg"		Linear	0.0	0.15
+	Animate HudAmmoHE		FgColor	"FgColor"		Deaccel	0.15	1.5
+	Animate HudAmmoHE		Blur		"5"			Linear	0.0	0.0 
+	Animate HudAmmoHE		Blur		"0"			Accel		0.01	1.5 
+}
+
+// ammo has been decreased, but there is still some remaining
+event AmmoDecreasedHE
+{
+	StopEvent AmmoIncreasedHE	0.0
+	
+	Animate HudAmmoHE		Blur		"7"			Linear	0.0	0.0
+	Animate HudAmmoHE		Blur		"0"			Deaccel	0.1	1.5
+	
+	Animate HudAmmoHE		TextColor	"BrightFg"		Linear	0.0	0.1
+	Animate HudAmmoHE		TextColor	"FgColor"		Deaccel	0.1	0.75
+}
+
+// primary ammo is zero
+event AmmoEmptyHE
+{
+	Animate HudAmmoHE	FgColor		"BrightDamagedFg"	Linear	0.0	0.2
+	Animate HudAmmoHE	FgColor		"DamagedFg"		Accel		0.2	1.2		
+}
+
+// ammo2 is the total ammo for a weapon that uses clip ammo
+event Ammo2IncreasedHE
+{
+	Animate HudAmmoHE	ammo2color		"BrightFg"		Linear	0.0	0.2
+	Animate HudAmmoHE	ammo2color		"FgColor"		Accel		0.2	1.2		
+}
+
+// total ammo has been decreased, but there is still some remaining
+event Ammo2DecreasedHE
+{
+	Animate HudAmmoHE	ammo2color		"BrightFg"		Linear	0.0	0.2
+	Animate HudAmmoHE	ammo2color		"FgColor"		Accel		0.2	1.2		
+}
+
+// total ammo is zero
+event Ammo2EmptyHE
+{
+	Animate HudAmmoHE	ammo2color		"BrightDamagedFg"	Linear	0.0	0.2
+	Animate HudAmmoHE	ammo2color		"DamagedFg"		Accel		0.2	1.2		
+}
+
+event AmmoSecondaryIncreasedHE
+{
+	Animate HudAmmoSecondaryHE		FgColor	"BrightFg"		Linear	0.0	0.15
+	Animate HudAmmoSecondaryHE		FgColor	"FgColor"		Deaccel	0.15	1.5
+	Animate HudAmmoSecondaryHE		Blur		"5"			Linear	0.0	0.0 
+	Animate HudAmmoSecondaryHE		Blur		"0"			Accel		0.01	1.5 	
+}
+
+event AmmoSecondaryDecreasedHE
+{
+	StopEvent AmmoSecondaryIncreasedHE	0.0
+	
+	Animate HudAmmoSecondaryHE		Blur		"7"			Linear	0.0	0.0
+	Animate HudAmmoSecondaryHE		Blur		"0"			Deaccel	0.1	1.5
+	
+	Animate HudAmmoSecondaryHE		TextColor	"BrightFg"		Linear	0.0	0.1
+	Animate HudAmmoSecondaryHE		TextColor	"FgColor"		Deaccel	0.1	0.75
+}
+
+event AmmoSecondaryEmptyHE
+{
+	StopAnimation HudAmmoSecondaryHE FgColor 0.0
+	Animate HudAmmoSecondaryHE		FgColor		"BrightDamagedFg"	Linear	0.0	0.2
+	Animate HudAmmoSecondaryHE		FgColor		"DamagedFg"		Accel		0.2	1.5
+	Animate HudAmmoSecondaryHE		Blur		"7"			Linear	0.0	0.0
+	Animate HudAmmoSecondaryHE		Blur		"0"			Deaccel	0.1	1.5
+
+}
+
+// current weapon has been changed
+event WeaponChangedHE
+{
+	Animate HudAmmoHE		BgColor		"BrightBg"	Linear	0.0		0.1
+	Animate HudAmmoHE		BgColor		"BgColor"		Deaccel	0.1		1.0
+	Animate HudAmmoHE		FgColor		"BrightFg"		Linear	0.0		0.1
+	Animate HudAmmoHE		FgColor		"FgColor"		Linear	0.2		1.5
+}
+
+// ran if we just changed to a weapon that needs clip ammo
+event WeaponUsesClipsHE
+{
+	StopEvent WeaponDoesNotUseClipsHE	0.0
+	Animate HudAmmoHE		Size		"100 50"	Deaccel	0.0		0.2
+
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.0 0.2
+}
+
+// ran if we just changed to a weapon that does not use clip ammo
+event WeaponDoesNotUseClipsHE
+{
+	StopEvent WeaponUsesClipsHE	0.0
+	Animate HudAmmoHE		Size		"100 40"	Deaccel	0.0		0.4
+
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.0 0.2
+}
+
+event WeaponUsesSecondaryAmmoHE
+{
+	StopEvent WeaponUsesSecondaryAmmoNoClipHE 0.0
+	StopEvent WeaponDoesNotUseSecondaryAmmoHE 0.0
+	StopEvent WeaponDoesNotUseSecondaryAmmoNoClipHE 0.0
+
+	StopAnimation 	HudAmmoHE Position 0.0
+	StopPanelAnimations HudAmmoSecondaryHE 0.0
+
+	Animate HudAmmoSecondaryHE	BgColor		"0 220 250 60"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryHE	BgColor		"BgColor"	Deaccel	0.1		1.0
+	Animate HudAmmoSecondaryHE	FgColor		"BrightFg"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryHE	FgColor		"FgColor"	Linear	0.2		1.5
+	Animate HudAmmoSecondaryHE	Alpha		255		Linear	0.0		0.1
+
+	Animate HudAmmoHE			Position	"r110 r100"	Deaccel	0.0		0.5
+	Animate HudAmmoSecondaryHE	Position	"r110 r45"	Deaccel 0.0		0.5
+
+	Animate HudAmmoSecondaryHE		Blur		"5"			Linear	0.0	0.0 
+	Animate HudAmmoSecondaryHE		Blur		"0"			Accel		0.01	1.5 
+
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.0 0.2
+}
+
+event WeaponUsesSecondaryAmmoNoClipHE
+{
+	StopEvent WeaponUsesSecondaryAmmoHE 0.0
+	StopEvent WeaponDoesNotUseSecondaryAmmoHE 0.0
+	StopEvent WeaponDoesNotUseSecondaryAmmoNoClipHE 0.0
+
+	StopAnimation 	HudAmmoHE Position 0.0
+	StopPanelAnimations HudAmmoSecondaryHE 0.0
+
+	Animate HudAmmoSecondaryHE	BgColor		"0 220 250 60"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryHE	BgColor		"BgColor"		Deaccel	0.1		1.0
+	Animate HudAmmoSecondaryHE	FgColor		"BrightFg"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryHE	FgColor		"FgColor"		Linear	0.2		1.5
+	Animate HudAmmoSecondaryHE	Alpha		255		Linear	0.0		0.1
+
+	Animate HudAmmoHE			Position	"r110 r90"	Deaccel	0.0		0.5
+	Animate HudAmmoSecondaryHE	Position	"r110 r45"	Deaccel 0.0		0.5
+	//Animate HudAmmoHE		Size		"132 36"	Deaccel	0.0		0.4
+
+	Animate HudAmmoSecondaryHE		Blur		"5"			Linear	0.0	0.0 
+	Animate HudAmmoSecondaryHE		Blur		"0"			Accel		0.01	1.5 
+
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.0 0.2
+}
+
+
+event WeaponDoesNotUseSecondaryAmmoHE
+{
+	StopEvent WeaponUsesSecondaryAmmoHE 0.0
+	StopEvent WeaponUsesSecondaryAmmoNoClipHE 0.0
+	StopEvent WeaponDoesNotUseSecondaryAmmoNoClipHE 0.0
+
+	StopAnimation 	HudAmmoHE Position 0.0
+	StopPanelAnimations	HudAmmoSecondaryHE 	0.0
+	Animate HudAmmoSecondaryHE	FgColor		"0 0 0 0"	Linear	0.0		0.4
+	Animate HudAmmoSecondaryHE	BgColor		"0 0 0 0"	Linear	0.0		0.4
+	Animate HudAmmoSecondaryHE	Alpha		0		Linear	0.0		0.1
+
+	Animate HudAmmoHE			Position	"r110 r55"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryHE	Position	"r110 r0"	Linear	0.0		0.1
+
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	0 	Linear 0.0 0.2
+}
+
+event WeaponDoesNotUseSecondaryAmmoNoClipHE
+{
+	StopEvent WeaponUsesSecondaryAmmoHE 0.0
+	StopEvent WeaponUsesSecondaryAmmoNoClipHE 0.0
+	StopEvent WeaponDoesNotUseSecondaryAmmoHE 0.0
+
+	StopAnimation 	HudAmmoHE Position 0.0
+	StopPanelAnimations	HudAmmoSecondaryHE 	0.0
+	Animate HudAmmoSecondaryHE	FgColor		"0 0 0 0"	Linear	0.0		0.4
+	Animate HudAmmoSecondaryHE	BgColor		"0 0 0 0"	Linear	0.0		0.4
+	Animate HudAmmoSecondaryHE	Alpha		0		Linear	0.0		0.1
+
+	Animate HudAmmoHE			Position	"r110 r45"	Linear	0.0		0.1
+	Animate HudAmmoSecondaryHE	Position	"r110 r0"	Linear	0.0		0.1
+
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	0 	Linear 0.0 0.2
+}

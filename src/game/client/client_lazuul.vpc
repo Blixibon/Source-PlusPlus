@@ -91,6 +91,17 @@ $Project "Client (Lazuul)"
 		$Folder	"Human Error"
 		{
 			$File	"Human_Error\c_minershat.cpp"
+			$File	"Human_Error\hud_ammo_he.cpp"
+			$File	"Human_Error\hud_battery_he.cpp"
+			$File	"Human_Error\hud_health_he.cpp"
+			$File	"Human_Error\hud_manhack.h"
+			$File	"Human_Error\hud_icondisplay.cpp"
+			$File	"Human_Error\hud_icondisplay.h"
+			$File	"Human_Error\ImageFX.cpp"
+			$File	"Human_Error\ImageFX.h"
+			$File	"Human_Error\hud_radio.cpp"
+			$File	"Human_Error\hud_airdefense.cpp"
+			$File	"Human_Error\hlss_target_hud.cpp"
 		}
 	}
 }

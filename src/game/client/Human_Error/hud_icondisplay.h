@@ -38,6 +38,7 @@ public:
 	void SetShouldDisplaySecondaryValue(bool state);
 
 	void SetLabel(const wchar_t *text, bool IsAPC = false);
+	void SetLabel(const char* text, bool IsAPC = false);
 
 	void SetIcon(wchar_t *icon); // int m_iMaxValue, int m_iMaxSecondaryValue);
 

@@ -7,8 +7,8 @@
 		"ypos"	"432"
 		"wide"	"102"
 		"tall"  "36"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 
 		"PaintBackgroundType"	"2"
 		
@@ -68,8 +68,8 @@
 		"ypos"	"432"
 		"wide"	"108"
 		"tall"  "36"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 
 		"PaintBackgroundType"	"2"
 
@@ -124,8 +124,8 @@
 		"ypos"	"432"
 		"wide"	"136"
 		"tall"  "36"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 
 		"PaintBackgroundType"	"2"
 
@@ -195,8 +195,8 @@
 		"ypos"	"432"
 		"wide"	"60"
 		"tall"  "36"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 
 		"PaintBackgroundType"	"2"
 
@@ -287,45 +287,18 @@
 		"text_xpos"			"33"
 	}
 
-	HudPosture	[$WIN32]
-	{
-		"fieldName" 		"HudPosture"
-		"visible" 		"1"
-		"PaintBackgroundType"	"2"
-		"xpos"	"16"
-		"ypos"	"316"
-		"tall"  "36"
-		"wide"	"36"
-		"font"	"WeaponIconsSmall"
-		"icon_xpos"	"10"
-		"icon_ypos" 	"0"
-	}
-	HudPosture	[$X360]
-	{
-		"fieldName" 		"HudPosture"
-		"visible" 		"1"
-		"PaintBackgroundType"	"2"
-		"xpos"	"48"
-		"ypos"	"316"
-		"tall"  "36"
-		"wide"	"36"
-		"font"	"WeaponIconsSmall"
-		"icon_xpos"	"10"
-		"icon_ypos" 	"2"
-	}
-
 	HudSuitPower
 	{
 		"fieldName" "HudSuitPower"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 		"xpos"	"16"
 		"ypos"	"396"
 		"wide"	"102"
 		"tall"	"26"
 		
 		"AuxPowerLowColor" "255 0 0 220"
-		"AuxPowerHighColor" "255 220 0 220"
+		"AuxPowerHighColor" "BrightFg"
 		"AuxPowerDisabledAlpha" "70"
 
 		"BarInsetX" "8"
@@ -378,6 +351,188 @@
 		"BarHeight" "12" // Same as tall
 
 		"PaintBackgroundType"	"2"
+	}
+	
+	HudHealthHE
+	{
+		"fieldName"		"HudHealthHE"
+		"xpos"			"4"
+		"ypos"			"r44"		//r34
+		"tall"			"40"
+		"wide"			"100"		//144
+		"visible" 		"0"
+		"enabled" 		"0"
+
+		"PaintBackgroundType"	"2"
+
+		"digi_xpos" 		"4"		//100
+		"digi_ypos" 		"2"		//4
+		"icon_xpos" 		"4"		//r0
+		"icon_ypos" 		"2"		//r16
+		
+	}
+	
+	HudSuitHE
+	{
+		"fieldName"		"HudSuitHE"
+		"xpos"			"4"
+		"ypos"			"480"	//r34
+		"wide"			"100"
+		"tall"  		"40" 
+		"visible" 		"0"
+		"enabled" 		"0"
+
+		"PaintBackgroundType"	"2"
+
+		"digi_xpos" 		"4"		//100
+		"digi_ypos" 		"2"		//4
+		"icon_xpos" 		"4"		//0
+		"icon_ypos" 		"2"		//r16
+	}
+
+	HudAmmoHE	
+	{
+		"fieldName" "HudAmmoHE"
+		"xpos"	"r110"
+		"ypos"	"r100"
+		"wide"	"100"
+		"tall"  "50"
+		"visible" "0"
+		"enabled" "0"
+
+		"PaintBackgroundType"	"2"
+
+		"digi_xpos" 		"4"
+		"digi_ypos" 		"2"
+		"icon_xpos" 		"4"
+		"icon_ypos" 		"2"
+	}
+
+	HudAmmoSecondaryHE	
+	{
+		"fieldName" "HudAmmoSecondaryHE"
+		"xpos"	"r110"
+		"ypos"	"r45"
+		"wide"	"100"
+		"tall"  "40"
+		"visible" "0"
+		"enabled" "0"
+
+		"PaintBackgroundType"	"2"
+
+		"digi_xpos" 		"4"
+		"digi_ypos" 		"2"
+		"icon_xpos" 		"2"
+		"icon_ypos" 		"2"
+
+	}
+
+	HudAR2AltFire	
+	{
+		"fieldName" "HudAR2AltFire"
+		"xpos"	"r90"
+		"ypos"	"5"
+		"wide"	"80"
+		"tall"  "40"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+
+		"digi_xpos" 		"4"
+		"digi_ypos" 		"2"
+		"icon_xpos" 		"2"
+		"icon_ypos" 		"2"
+	}
+
+
+	HudAirDefense	
+	{
+		"fieldName" "HudAirDefense"
+		"xpos"	"r90"
+		"ypos"	"50"
+		"wide"	"80"
+		"tall"  "42"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+
+		"recharge_width"	"72"
+		"recharge_height"	"5"
+		"recharge_gap"		"2"
+		"label_xpos" 		"4"
+		"label_ypos" 		"4"
+	}
+	
+	HudManhackHealth
+	{
+		"fieldName" "HudManhackHealth"
+		"xpos"	"r150"
+		"ypos"	"404"
+		"wide"	"136"
+		"tall"  "64"
+		"visible" "0"
+		"enabled" "0"
+
+		"PaintBackgroundType"	"2"
+
+		"text_xpos" "8"
+		"text_ypos" "20"
+		"digit_xpos" "94"
+		"digit_ypos" "2"
+		"text2_xpos" "8"
+		"text2_ypos" "38"
+		"digit2_xpos" "94"
+		"digit2_ypos" "38"
+	}
+
+	HudRadio	
+	{
+		"fieldName" "HudRadio"
+		"xpos"	"r272"
+		"ypos"	"r500"
+		"wide"	"154"
+		"tall"  "20"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+
+		"visualizer_xpos" 	"4"
+		"visualizer_ypos" 	"2"
+		"visualizer_width"	"92"
+		"visualizer_tall"	"16"
+		"base_width"		"100"
+		"label_xpos" 		"102"
+		"label_ypos" 		"2"
+	}
+	
+	HudPosture	[$WIN32]
+	{
+		"fieldName" 		"HudPosture"
+		"visible" 		"1"
+		"PaintBackgroundType"	"2"
+		"xpos"	"16"
+		"ypos"	"316"
+		"tall"  "36"
+		"wide"	"36"
+		"font"	"WeaponIconsSmall"
+		"icon_xpos"	"10"
+		"icon_ypos" 	"0"
+	}
+	HudPosture	[$X360]
+	{
+		"fieldName" 		"HudPosture"
+		"visible" 		"1"
+		"PaintBackgroundType"	"2"
+		"xpos"	"48"
+		"ypos"	"316"
+		"tall"  "36"
+		"wide"	"36"
+		"font"	"WeaponIconsSmall"
+		"icon_xpos"	"10"
+		"icon_ypos" 	"2"
 	}
 	
 	HudFlashlight
@@ -468,6 +623,7 @@
 		"SelectionNumberYPos" "4"
 		"SelectionGrowTime"	"0.4"
 		"TextYPos" "64"
+		"HLSSMode" "0"
 	}
 
 	HudCrosshair

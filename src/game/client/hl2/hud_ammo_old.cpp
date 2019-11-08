@@ -48,6 +48,7 @@ DECLARE_HUDELEMENT( CHudAmmoOld );
 //-----------------------------------------------------------------------------
 CHudAmmoOld::CHudAmmoOld( const char *pElementName ) : BaseClass(NULL, "HudAmmoOld"), CHudElement( pElementName )
 {
+	SetHiddenBits(HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT | HIDEHUD_WEAPONSELECTION);
 }
 
 //-----------------------------------------------------------------------------
@@ -208,6 +209,8 @@ class CHudSecondaryAmmoOld : public CHudBitmapNumericDisplay, public CHudElement
 public:
 	CHudSecondaryAmmoOld( const char *pElementName ) : BaseClass( NULL, "HudAmmoSecondaryOld" ), CHudElement( pElementName )	
 	{
+		SetHiddenBits(HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT | HIDEHUD_WEAPONSELECTION);
+
 		m_iAmmo = -1;
 
 		SetLabelText(L"AMMO2");

@@ -52,7 +52,8 @@ bool CGameTypeManager::Init()
 		"citizen2",
 		"bms",
 		"portal",
-		"hl2beta"
+		"hl2beta",
+		"human"
 	};
 
 	m_vecGames.CopyArray(gwCodedGames, MAX_CODE_GAMETYPES);

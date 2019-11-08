@@ -1,0 +1,140 @@
+// sample animation script
+//
+//
+// commands:
+//	Animate <panel name> <variable> <target value> <interpolator> <start time> <duration>
+//		variables:
+//			FgColor
+//			BgColor
+//			Position
+//			Size
+//			Blur		(hud panels only)
+//			TextColor	(hud panels only)
+//			Ammo2Color	(hud panels only)
+//			Alpha		(hud weapon selection only)
+//			SelectionAlpha  (hud weapon selection only)
+//			TextScan	(hud weapon selection only)
+//
+//		interpolator:
+//			Linear
+//			Accel - starts moving slow, ends fast
+//			Deaccel - starts moving fast, ends slow
+//
+//	RunEvent <event name> <start time>
+//		starts another even running at the specified time
+//
+//	StopEvent <event name> <start time>
+//		stops another event that is current running at the specified time
+//
+//	StopAnimation <panel name> <variable> <start time>
+//		stops all animations refering to the specified variable in the specified panel
+//
+//	StopPanelAnimations <panel name> <start time>
+//		stops all active animations operating on the specified panel
+//
+//
+// Useful game console commands:
+//	cl_Animationinfo <hudelement name> or <panelname> 
+//		displays all the animatable variables for the hud element
+//
+
+event LevelInit
+{
+	//TERO: show ammo
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.0
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.0 0.0
+}
+
+event OpenWeaponSelectionMenu
+{
+	StopEvent CloseWeaponSelectionMenu	0.0
+	StopEvent WeaponPickup				0.0
+	StopEvent FadeOutWeaponSelectionMenu	0.0
+
+	// make the display visible
+	Animate HudWeaponSelection Alpha 		"128"		Linear 0.1 0.4
+	Animate HudWeaponSelection SelectionAlpha 	"255"		Linear 0.1 0.4
+	Animate HudWeaponSelection FgColor		"FgColor"	Linear 0.1 0.4
+	Animate HudWeaponSelection TextColor		"BrightFg"	Linear 0.1 0.4
+	Animate HudWeaponSelection TextScan		"1" 		Linear 0.1 0.4
+	Animate HudWeaponSelection NumberColor	"SelectionNumberFg" Linear 0.0 0.1
+	Animate HudWeaponSelection		SelectedBoxColor	"BgColor"		Linear 0.0 0.1
+	Animate HudWeaponSelection		SelectedFgColor		"FgColor"		Linear 0.0 0.1
+
+	Animate HudWeaponSelection LargeBoxTallAnim	"54"		Linear 0.1 0.4
+
+	Animate HudLocator Position "c54 r0" Linear 0.0 0.1
+
+	//TERO: hide ammo
+	Animate 	HudAmmoHE			Alpha	0 	Linear 0.0 0.2
+	Animate 	HudAmmoSecondaryHE 	Alpha	0 	Linear 0.0 0.2
+}
+
+event CloseWeaponSelectionMenu
+{
+	// hide the whole thing near immediately
+	Animate HudWeaponSelection FgColor		"0 0 0 0"	Linear 0.0 0.3
+	Animate HudWeaponSelection TextColor		"0 0 0 0"	Linear 0.0 0.3
+	Animate HudWeaponSelection Alpha		"0" 		Linear 0.0 0.3
+	Animate HudWeaponSelection SelectionAlpha 	"0" 		Linear 0.0 0.3
+
+	Animate HudWeaponSelection LargeBoxTallAnim	"0"		Linear 0.0 0.3
+
+	Animate HudLocator Position "c64 r36" Linear 0.3 0.4
+
+	//TERO: show ammo
+	Animate 	HudAmmoHE			Alpha	255	Linear 0.3 0.4
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.3 0.4
+}
+
+event FadeOutWeaponSelectionMenu
+{
+	// slowly hide the whole thing
+	Animate HudWeaponSelection FgColor		"0 0 0 0"	Linear 0.0 0.4
+	Animate HudWeaponSelection TextColor		"0 0 0 0"	Linear 0.0 0.4
+	Animate HudWeaponSelection Alpha		"0" 		Linear 0.0 0.4
+	Animate HudWeaponSelection SelectionAlpha 	"0" 		Linear 0.0 0.4
+
+	Animate HudWeaponSelection WeaponBoxDist1Alpha	"0 0 0 0"	Linear 0.0 0.4
+	Animate HudWeaponSelection WeaponBoxDist2Alpha	"0 0 0 0"	Linear 0.0 0.4
+	Animate HudWeaponSelection WeaponBoxDist3Alpha	"0 0 0 0"	Linear 0.0 0.4
+
+	Animate HudWeaponSelection LargeBoxTallAnim	"0"		Linear 0.0 0.4
+
+	Animate HudLocator Position "c64 r36" Linear 0.4 0.6
+
+	//TERO: show ammo
+	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.4
+	Animate 	HudAmmoSecondaryHE 	Alpha	255 	Linear 0.0 0.4
+}
+
+event SuitAuxPowerNoItemsActive
+{
+	// resize the aux power to be the smallest size
+	Animate HudSuitPower Size			"102 26"			Linear 0.0 0.4
+	Animate HudSuitPower Position		"40 4"			Linear 0.0 0.4
+//	Animate HudSuitPower text_xpos		"8"					Linear 0.0 0.4
+//	Animate HudSuitPower text_ypos		"15"				Linear 0.0 0.4
+}
+
+event SuitAuxPowerOneItemActive
+{
+	// resize the aux power to fit one item
+	Animate HudSuitPower Size			"102 36"			Linear 0.0 0.4
+	Animate HudSuitPower Position			"44 4"			Linear 0.0 0.4
+}
+
+event SuitAuxPowerTwoItemsActive
+{
+	// resize the aux power to fit two items
+	Animate HudSuitPower Size			"102 46"			Linear 0.0 0.4
+	Animate HudSuitPower Position			"48 4"			Linear 0.0 0.4
+}
+
+event SuitAuxPowerThreeItemsActive
+{
+	// resize the aux power to fit three items
+	Animate HudSuitPower Size			"102 56"			Linear 0.0 0.4
+	Animate HudSuitPower Position			"52 4"			Linear 0.0 0.4
+}
+

@@ -124,11 +124,10 @@ bool Helper_LoadFile( IBaseFileSystem *pFileSystem, const char *pFilename, CUtlV
 // Purpose: 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CBaseViewport::LoadHudAnimations( void )
+bool CBaseViewport::LoadHudAnimations(const char* pszManifestFile)
 {
-	const char *HUDANIMATION_MANIFEST_FILE = "scripts/hudanimations_manifest.txt";
-	KeyValues *manifest = new KeyValues( HUDANIMATION_MANIFEST_FILE );
-	if ( manifest->LoadFromFile( g_pFullFileSystem, HUDANIMATION_MANIFEST_FILE, "GAME" ) == false )
+	KeyValues *manifest = new KeyValues(pszManifestFile);
+	if ( manifest->LoadFromFile( g_pFullFileSystem, pszManifestFile, "GAME" ) == false )
 	{
 		manifest->deleteThis();
 		return false;
@@ -674,7 +673,7 @@ void CBaseViewport::FireGameEvent( IGameEvent * event)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CBaseViewport::ReloadScheme(const char *fromFile, const char * pszLayout)
+void CBaseViewport::ReloadScheme(const char *fromFile, const char * pszLayout, const char * pszAnimations)
 {
 	CETWScope timer( "CBaseViewport::ReloadScheme" );
 
@@ -691,7 +690,7 @@ void CBaseViewport::ReloadScheme(const char *fromFile, const char * pszLayout)
 	}
 
 	// Force a reload
-	if ( LoadHudAnimations() == false )
+	if ( LoadHudAnimations(pszAnimations) == false )
 	{
 		// Fall back to just the main
 		if ( m_pAnimController->SetScriptFile( GetVPanel(), "scripts/HudAnimations.txt", true ) == false )

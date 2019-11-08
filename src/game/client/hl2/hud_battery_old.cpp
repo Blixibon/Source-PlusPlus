@@ -61,6 +61,7 @@ DECLARE_HUD_MESSAGE( CHudBatteryOld, Battery );
 //-----------------------------------------------------------------------------
 CHudBatteryOld::CHudBatteryOld( const char *pElementName ) : BaseClass(NULL, "HudSuitOld"), CHudElement( pElementName )
 {
+	SetHiddenBits(HIDEHUD_HEALTH | HIDEHUD_NEEDSUIT);
 }
 
 //-----------------------------------------------------------------------------

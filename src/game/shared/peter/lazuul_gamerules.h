@@ -62,6 +62,7 @@ public:
 	virtual float			GetAutoAimScale(CBasePlayer* pPlayer);
 	virtual float			GetAmmoQuantityScale(int iAmmoIndex);
 	virtual void			LevelInitPreEntity();
+	virtual void			LevelInitPostEntity();
 
 	virtual float FlPlayerFallDamage(CBasePlayer* pPlayer);
 
@@ -70,7 +71,12 @@ public:
 	virtual void PlayerSpawn(CBasePlayer* pPlayer);
 	virtual bool			ClientCommand(CBaseEntity *pEdict, const CCommand &args);
 
+	// Location name shown in chat
+	virtual const char* GetChatLocation(bool bTeamOnly, CBasePlayer* pPlayer);
+
+	// VGUI format string for chat, if desired
 	virtual const char *GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer);
+
 	virtual void CleanUpMap(void);
 
 	// Game Achievements (server version)
@@ -94,6 +100,8 @@ public:
 	virtual void Status(void(*print) (const char *fmt, ...));
 
 	virtual void GetTaggedConVarList(KeyValues *pCvarTagList);
+#else
+	int		GetGameForMap() { return m_iMapGameType; }
 #endif
 
 	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }
@@ -139,6 +147,12 @@ public:
 	// Setup spawn points for the current round before it starts
 	virtual void	SetupSpawnPointsForRound(void);
 
+	// Called when a new round is being initialized
+	virtual void	SetupOnRoundStart(void);
+
+	// Called when a new round is off and running
+	virtual void	SetupOnRoundRunning(void);
+
 	// Sets up g_pPlayerResource.
 	virtual void CreateStandardEntities();
 
@@ -179,6 +193,7 @@ private:
 	// Rules change for the mega physgun
 	CNetworkVar(bool, m_bMegaPhysgun);
 	CNetworkVar(int, m_nGameMode);
+	CNetworkVar(int, m_iMapGameType);
 };
 
 inline CLazuul* LazuulRules()
