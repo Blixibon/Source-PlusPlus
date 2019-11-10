@@ -166,6 +166,8 @@ public:
 	virtual const QAngle &EyeAngles();		// Direction of eyes
 	void				 EyePositionAndVectors( Vector *pPosition, Vector *pForward, Vector *pRight, Vector *pUp );
 	virtual const QAngle &LocalEyeAngles();		// Direction of eyes
+	matrix3x4_t& EyeToWorldTransform();
+	const matrix3x4_t& EyeToWorldTransform() const;
 
 	// This can be overridden to return something other than m_pRagdoll if the mod uses separate
 	// entities for ragdolls.

@@ -702,7 +702,7 @@ QAngle CGrabController::TransformAnglesToPlayerSpace( const QAngle &anglesIn, CB
 		AngleMatrix( angleTest, test );
 		return TransformAnglesToLocalSpace( anglesIn, test );
 	}
-	return TransformAnglesToLocalSpace( anglesIn, pPlayer->EntityToWorldTransform() );
+	return TransformAnglesToLocalSpace( anglesIn, pPlayer->EyeToWorldTransform());
 }
 
 QAngle CGrabController::TransformAnglesFromPlayerSpace( const QAngle &anglesIn, CBasePlayer *pPlayer )
@@ -715,7 +715,7 @@ QAngle CGrabController::TransformAnglesFromPlayerSpace( const QAngle &anglesIn, 
 		AngleMatrix( angleTest, test );
 		return TransformAnglesToWorldSpace( anglesIn, test );
 	}
-	return TransformAnglesToWorldSpace( anglesIn, pPlayer->EntityToWorldTransform() );
+	return TransformAnglesToWorldSpace( anglesIn, pPlayer->EyeToWorldTransform() );
 }
 
 
@@ -3075,7 +3075,7 @@ bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 	
 #ifndef CLIENT_DLL
 	// If it has a preferred orientation, update to ensure we're still oriented correctly.
-	Pickup_GetPreferredCarryAngles( pEntity, pPlayer, pPlayer->EntityToWorldTransform(), angles );
+	Pickup_GetPreferredCarryAngles( pEntity, pPlayer, pPlayer->EyeToWorldTransform(), angles );
 
 
 	// We may be holding a prop that has preferred carry angles

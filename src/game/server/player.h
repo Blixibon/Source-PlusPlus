@@ -442,6 +442,8 @@ virtual CAI_Senses *GetSenses() {
 	const QAngle			&EyeAngles( );
 	void					EyePositionAndVectors( Vector *pPosition, Vector *pForward, Vector *pRight, Vector *pUp );
 	virtual const QAngle	&LocalEyeAngles();		// Direction of eyes
+	matrix3x4_t&			EyeToWorldTransform();
+	const matrix3x4_t&		EyeToWorldTransform() const;
 	void					EyeVectors( Vector *pForward, Vector *pRight = NULL, Vector *pUp = NULL );
 	void					CacheVehicleView( void );	// Calculate and cache the position of the player in the vehicle
 

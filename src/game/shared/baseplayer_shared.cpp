@@ -328,6 +328,18 @@ const QAngle &CBasePlayer::LocalEyeAngles()
 	return pl.v_angle;
 }
 
+matrix3x4_t& CBasePlayer::EyeToWorldTransform()
+{
+	static matrix3x4_t matrix;
+	AngleMatrix(EyeAngles(), EyePosition(), matrix);
+	return matrix;
+}
+
+const matrix3x4_t& CBasePlayer::EyeToWorldTransform() const
+{
+	return const_cast<CBasePlayer*>(this)->EyeToWorldTransform();
+}
+
 //-----------------------------------------------------------------------------
 // Actual Eye position + angles
 //-----------------------------------------------------------------------------
