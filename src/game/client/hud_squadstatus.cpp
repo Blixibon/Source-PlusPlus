@@ -128,6 +128,9 @@ void CHudSquadStatus::VidInit()
 void CHudSquadStatus::Reset( void )
 {
 	Init();
+	
+	m_pMedicIcon->hFont = m_hIconFont;
+	m_pMemberIcon->hFont = m_hIconFont;
 }
 
 //-----------------------------------------------------------------------------

@@ -214,33 +214,79 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 	}
 	else
 	{
-		m_pMedium->SetSelected(true);
+		ConVarRef refSkill("skill");
+		switch (refSkill.GetInt())
+		{
+		case 1:
+			m_pEasy->SetSelected(true);
+			break;
+		case 2:
+		default:
+			m_pMedium->SetSelected(true);
+			break;
+		case 3:
+			m_pHard->SetSelected(true);
+			break;
+		}
 	}
 
 	//if (IsPC())
 	{
 		FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
-		const char *fileName = "cfg/*";
+		const char* fileName = "cfg/*";
 		fileName = g_pFullFileSystem->FindFirstEx(fileName, "MOD", &findHandle);
 		while (fileName)
 		{
 			if (g_pFullFileSystem->FindIsDirectory(findHandle) && fileName[0] != '.')
 			{
-				KeyValues *pKV = new KeyValues(fileName);
+				char cControlFile[MAX_PATH];
+				V_snprintf(cControlFile, MAX_PATH, "cfg/%s/maplist.txt", fileName);
+				V_FixSlashes(cControlFile);
 
-				char gameName[64];
-				Q_snprintf(gameName, sizeof(gameName), "#%s_Game_Title", fileName);
-				pKV->SetString("game", gameName);
+				bool bCreate = false;
 
-				m_pFolderList->AddItem(pKV, 0, false, false);
+				CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+				if (g_pFullFileSystem->ReadFile(cControlFile, "MOD", buf))
+				{
+					char szMapName[MAX_MAP_NAME];
+					buf.GetLine(szMapName, MAX_MAP_NAME);
+					const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
+					if (pszLineEnd)
+						const_cast<char *>(pszLineEnd)[0] = 0;
 
-				pKV->deleteThis();
+					char mapname[MAX_PATH];
+					V_snprintf(mapname, sizeof(mapname), "maps/%s.bsp", szMapName);
 
-				BuildImageList(fileName);
+					if (filesystem->FileExists(mapname, "GAME"))
+					{
+						bCreate = true;
+					}
+				}
+				else
+				{
+					bCreate = true;
+				}
+
+				if (bCreate)
+				{
+					KeyValues* pKV = new KeyValues(fileName);
+
+					char gameName[64];
+					Q_snprintf(gameName, sizeof(gameName), "#%s_Game_Title", fileName);
+					pKV->SetString("game", gameName);
+
+					m_pFolderList->AddItem(pKV, 0, false, false);
+
+					pKV->deleteThis();
+
+					BuildImageList(fileName);
+				}
 			}
 
 			fileName = g_pFullFileSystem->FindNext(findHandle);
 		}
+
+		g_pFullFileSystem->FindClose(findHandle);
 	}
 
 	LoadControlSettings("resource/modsupportnewgame.res");

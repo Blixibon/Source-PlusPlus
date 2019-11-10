@@ -13090,8 +13090,15 @@ bool CAI_BaseNPC::IsPlayerAlly( CBasePlayer *pPlayer )
 	{
 		// in multiplayer mode we need a valid pPlayer 
 		// or override this virtual function
-		if ( !AI_IsSinglePlayer() )
+		if (!AI_IsSinglePlayer())
+		{
+#ifdef HL2_LAZUL
+			return (GetTeamNumber() == LazuulRules()->GetProtaganistTeam());
+#else
 			return false;
+#endif // HL2_LAZUL
+
+		}
 
 		// NULL means single player mode
 		pPlayer = UTIL_GetLocalPlayer();

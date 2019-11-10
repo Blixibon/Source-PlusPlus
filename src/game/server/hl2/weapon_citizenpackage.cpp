@@ -72,3 +72,23 @@ acttable_t	CWeaponCitizenSuitcase::m_acttable[] =
 	{ ACT_WALK,						ACT_WALK_SUITCASE,					false },
 };
 IMPLEMENT_ACTTABLE(CWeaponCitizenSuitcase);
+
+//-----------------------------------------------------------------------------
+// Purpose: Citizen suitcase
+//-----------------------------------------------------------------------------
+class CWeaponOldManHarpoon : public CWeaponCitizenSuitcase
+{
+	DECLARE_CLASS(CWeaponOldManHarpoon, CWeaponCitizenSuitcase);
+public:
+	DECLARE_SERVERCLASS();
+	DECLARE_DATADESC();
+};
+
+IMPLEMENT_SERVERCLASS_ST(CWeaponOldManHarpoon, DT_WeaponOldManHarpoon)
+END_SEND_TABLE()
+
+BEGIN_DATADESC(CWeaponOldManHarpoon)
+END_DATADESC()
+
+LINK_ENTITY_TO_CLASS(weapon_oldmanharpoon, CWeaponOldManHarpoon);
+PRECACHE_WEAPON_REGISTER(weapon_oldmanharpoon);
