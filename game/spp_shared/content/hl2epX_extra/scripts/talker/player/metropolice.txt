@@ -7,12 +7,8 @@
 
 // TLK_PLAYER_RELOAD - speak this when player reloads and there are teammates nearby
 
-response PoliceDeployManhack
-{
-	sentence "METROPOLICE_DEPLOY_MANHACK"
-}
 
-rule PoliceDeployManhack
+rule PlayerPoliceDeployManhack
 {
 	criteria	IsPlayer ConceptPlayerDeployManhack IsPlayerVoiceMetroPolice
 	response PoliceDeployManhack
@@ -24,7 +20,7 @@ response PoliceResponseReloading
 	sentence "METROPOLICE_COVER_LOW_AMMO"
 }
 
-rule PoliceReloading
+rule PolicePlayerReloading
 {
 	criteria	ConceptPlayerCoverReload IsPlayer IsPlayerVoiceMetroPolice
 	response	PoliceResponseReloading
@@ -42,23 +38,15 @@ rule PolicePlayerDie
 	response	PolicePlayerDie
 }
 
-response PoliceResponsePain
-{
-	sentence "METROPOLICE_PAIN"
-}
 
-rule PolicePain
+rule PolicePlayerPain
 {
 	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceMetroPolice
 	response	PoliceResponsePain
 }
 
-response PoliceResponsePainLight
-{
-	sentence "METROPOLICE_PAIN_LIGHT"
-}
 
-rule PolicePainLt
+rule PolicePlayerPainLt
 {
 	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceMetroPolice IsPlayerNotVeryWounded
 	"PoliceSpokeLHTPain" "!=1" required
@@ -67,12 +55,8 @@ rule PolicePainLt
 	response	PoliceResponsePainLight
 }
 
-response PoliceResponsePainHeavy
-{
-	sentence "METROPOLICE_PAIN_HEAVY"
-}
 
-rule PolicePainHv
+rule PolicePlayerPainHv
 {
 	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceMetroPolice IsPlayerVeryWounded
 	"PoliceSpokeHVYPain" "!=1" required
@@ -81,80 +65,36 @@ rule PolicePainHv
 	response	PoliceResponsePainHeavy
 }
 
-// TLK_PLAYER_TAUNT
 
-response PoliceResponseTaunt
-{
-	sentence "METROPOLICE_DEPLOY_MANHACK"
-}
-
-rule PoliceTaunt
-{
-	criteria	ConceptPlayerDeployManhack IsPlayer IsPlayerVoiceMetroPolice
-	response	PoliceResponseTaunt
-}
-
-response PoliceResponseKill
-{
-	sentence "METROPOLICE_KILL_MONST"
-}
-
-response PoliceResponseKillAntlions
-{
-	sentence "METROPOLICE_KILL_BUGS"
-}
-
-response PoliceResponseKillCitizen
-{
-	sentence "METROPOLICE_KILL_CITIZENS"
-}
-
-response PoliceResponseKillZombie
-{
-	sentence "METROPOLICE_KILL_ZOMBIES"
-}
-
-response PoliceResponseKillHeadCrab
-{
-	sentence "METROPOLICE_KILL_PARASITES"
-}
 
 rule PoliceKill
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice
-	response	PoliceResponseKill
+	response	CopKillGeneric
 }
 
 rule PoliceKillAntlion
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAntlion
-	response	PoliceResponseKillAntlions
+	response	CopKillBugs
 }
 
 rule PoliceKillCitizen
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsCitizen
-	response	PoliceResponseKillCitizen
+	response	CopKillCitizens
 }
 
 rule PoliceKillZombie
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAZombie
-	response	PoliceResponseKillZombie
+	response	CopKillZombies
 }
 
 rule PoliceKillParasite
 {
 	criteria	ConceptPlayerKill IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsAHeadcrab
-	response	PoliceResponseKillHeadCrab
-}
-
-
-
-// TLK_PLAYER_ENEMY
-response PoliceEnemy
-{
-	sentence "METROPOLICE_MONST"
+	response	CopKillParasites
 }
 
 rule PoliceEnemy
@@ -162,72 +102,62 @@ rule PoliceEnemy
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice
 
 //	response	PoliceResponseEnemy
-	response	PoliceEnemy	// TODO: find sounds that are more like "I see an enemy"
-}
-
-response PoliceEnemyHeadcrab
-{
-	sentence "METROPOLICE_MONST_PARASITES"
+	response	CopAlertGeneric	// TODO: find sounds that are more like "I see an enemy"
 }
 
 // using CitizenHeadcrabGroup
-rule PoliceEnemyHeadcrab
+rule PolicePlayerEnemyHeadcrab
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrab
-	response	PoliceEnemyHeadcrab
+	response	CopAlertParasites
 }
 
 rule PoliceEnemyHeadcrabBlack
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabBlack
-	response	PoliceEnemyHeadcrab
+	response	CopAlertParasites
 }
 
 rule PoliceEnemyHeadcrabPoison
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabPoison
-	response	PoliceEnemyHeadcrab
+	response	CopAlertParasites
 }
 
 rule PoliceEnemyHeadcrabFast
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsHeadcrabFast
-	response	PoliceEnemyHeadcrab
+	response	CopAlertParasites
 }
 
-response PoliceEnemyZombie
-{
-	sentence "METROPOLICE_MONST_ZOMBIES"
-}
-
-rule PoliceEnemyZombie
+rule PolicePlayerEnemyZombie
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombie
-	response	PoliceEnemyZombie
+	response	CopAlertZombies
 }
 
-rule PoliceEnemyZombieTorso
+rule PolicePlayerEnemyZombieTorso
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieTorso
-	response	PoliceEnemyZombie
+	response	CopAlertZombies
 }
 
-rule PoliceEnemyZombieBlack
+rule PolicePlayerEnemyZombieBlack
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieBlack
-	response	PoliceEnemyZombie
+	response	CopAlertZombies
 }
 
-rule PoliceEnemyZombieFast
+rule PolicePlayerEnemyZombieFast
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombieFast
-	response	PoliceEnemyZombie
+	response	CopAlertZombies
 }
 
-rule PoliceEnemyZombine
+rule PolicePlayerEnemyZombine
 {
 	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceMetroPolice PlayerEnemyIsZombine
-	response	PoliceEnemyZombie
+	response	CopAlertZombies
 }
 
 response PoliceCallHelp

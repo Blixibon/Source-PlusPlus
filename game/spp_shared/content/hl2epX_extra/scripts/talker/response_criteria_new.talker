@@ -1,0 +1,46 @@
+criterion "IsInASquad" "squadsize" ">1" "required"
+criterion "IsNotInASquad"	"squadsize" "<2" "required"
+criterion "IsSquadLeader" "isleader" "1" required
+criterion "IsNotSquadLeader" "isleader" "!=1" required
+
+criterion "ConceptTalkFtApproach" "Concept" "TLK_FT_APPROACH" required
+criterion "ConceptTalkFtMount" "Concept" "TLK_FT_MOUNT" required
+criterion "ConceptTalkFtScan" "Concept" "TLK_FT_SCAN" required
+criterion "ConceptTalkFtDismount" "Concept" "TLK_FT_DISMOUNT" required
+criterion "ConceptTalkSoBegin" "Concept" "TLK_SO_BEGIN" required
+criterion "ConceptTalkSoEnd" "Concept" "TLK_SO_END" required
+criterion "ConceptTalkSoForceCover" "Concept" "TLK_SO_FORCE_COVER" required
+criterion "ConceptTalkSoPeek" "Concept" "TLK_SO_PEEK" required
+criterion "ConceptTalkAsHitRally" "Concept" "TLK_AS_HIT_RALLY" required
+criterion "ConceptTalkAsHitAssault" "Concept" "TLK_AS_HIT_ASSAULT" required
+criterion "ConceptTalkAsAdvRally" "Concept" "TLK_AS_ADV_RALLY" required
+criterion "ConceptTalkAsAdvAssault" "Concept" "TLK_AS_ADV_ASSAULT" required
+
+criterion "EnemyIsClassNone" "enemyclass" "CLASS_NONE" required weight 3
+criterion "EnemyIsClassPlayer" "enemyclass" "CLASS_PLAYER" required weight 3
+criterion "EnemyIsClassAntlion" "enemyclass" "CLASS_ANTLION" required weight 3
+criterion "EnemyIsClassBarnacle" "enemyclass" "CLASS_BARNACLE" required weight 3
+criterion "EnemyIsClassBullseye" "enemyclass" "CLASS_BULLSEYE" required weight 3
+//criterion "EnemyIsClassBullsquid" "enemyclass" "CLASS_BULLSQUID" required weight 3
+criterion "EnemyIsClassCitizenPassive" "enemyclass" "CLASS_CITIZEN_PASSIVE" required weight 3
+criterion "EnemyIsClassCitizenRebel" "enemyclass" "CLASS_CITIZEN_REBEL" required weight 3
+criterion "EnemyIsClassCombine" "enemyclass" "CLASS_COMBINE" required weight 3
+criterion "EnemyIsClassCombineGunship" "enemyclass" "CLASS_COMBINE_GUNSHIP" required weight 3
+criterion "EnemyIsClassCombineHunter" "enemyclass" "CLASS_COMBINE_HUNTER" required weight 3
+criterion "EnemyIsClassConscript" "enemyclass" "CLASS_CONSCRIPT" required weight 3
+criterion "EnemyIsClassHeadcrab" "enemyclass" "CLASS_HEADCRAB" required weight 3
+//criterion "EnemyIsClassHoundeye" "enemyclass" "CLASS_HOUNDEYE" required weight 3
+criterion "EnemyIsClassManhack" "enemyclass" "CLASS_MANHACK" required weight 3
+criterion "EnemyIsClassMetropolice" "enemyclass" "CLASS_METROPOLICE" required weight 3
+criterion "EnemyIsClassMilitary" "enemyclass" "CLASS_MILITARY" required weight 3
+criterion "EnemyIsClassScanner" "enemyclass" "CLASS_SCANNER" required weight 3
+criterion "EnemyIsClassStalker" "enemyclass" "CLASS_STALKER" required weight 3
+criterion "EnemyIsClassVortigaunt" "enemyclass" "CLASS_VORTIGAUNT" required weight 3
+criterion "EnemyIsClassZombie" "enemyclass" "CLASS_ZOMBIE" required weight 3
+criterion "EnemyIsClassSniper" "enemyclass" "CLASS_PROTOSNIPER" required weight 3
+criterion "EnemyIsClassMissile" "enemyclass" "CLASS_MISSILE" required weight 3
+criterion "EnemyIsClassFlare" "enemyclass" "CLASS_FLARE" required weight 3
+criterion "EnemyIsClassEarthFauna" "enemyclass" "CLASS_EARTH_FAUNA" required weight 3
+criterion "EnemyIsClassPlayerAlly" "enemyclass" "CLASS_PLAYER_ALLY" required weight 3
+criterion "EnemyIsClassPlayerAllyVital" "enemyclass" "CLASS_PLAYER_ALLY_VITAL" required weight 3
+criterion "EnemyIsClassHackedRollermine" "enemyclass" "CLASS_HACKED_ROLLERMINE" required weight 3

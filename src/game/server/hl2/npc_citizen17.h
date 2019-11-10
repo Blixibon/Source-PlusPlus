@@ -8,7 +8,7 @@
 #ifndef	NPC_CITIZEN_H
 #define	NPC_CITIZEN_H
 
-#include "peter\npc_playerfollower.h"
+#include "peter\npc_combatsupplier.h"
 
 #include "ai_behavior_functank.h"
 
@@ -67,9 +67,9 @@ enum CitizenExpressionTypes_t
 
 //-------------------------------------
 
-class CNPC_Citizen : public CNPC_PlayerFollower
+class CNPC_Citizen : public CNPC_CombatSupplier
 {
-	DECLARE_CLASS( CNPC_Citizen, CNPC_PlayerFollower);
+	DECLARE_CLASS( CNPC_Citizen, CNPC_CombatSupplier);
 public:
 	CNPC_Citizen()
 	 :	m_iHead( -1 )
@@ -126,7 +126,6 @@ public:
 	int				SelectSchedule();
 
 	int 			SelectSchedulePriorityAction();
-	int 			SelectScheduleHeal();
 	int 			SelectScheduleRetrieveItem();
 	int 			SelectScheduleNonCombat();
 	int 			SelectScheduleManhackCombat();
@@ -228,19 +227,19 @@ public:
 	bool 			IsMedic() 			{ return HasSpawnFlags(SF_CITIZEN_MEDIC); }
 	bool 			IsAmmoResupplier() 	{ return HasSpawnFlags(SF_CITIZEN_AMMORESUPPLIER); }
 	
-	bool 			CanHeal();
+	/*bool 			CanHeal();
 	bool 			ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse = false );
 #if HL2_EPISODIC
 	bool 			ShouldHealTossTarget( CBaseEntity *pTarget, bool bActiveUse = false );
 #endif
-	void 			Heal();
+	void 			Heal();*/
 
 	bool			ShouldLookForHealthItem();
 
-#if HL2_EPISODIC
-	void			TossHealthKit( CBaseCombatCharacter *pThrowAt, const Vector &offset ); // create a healthkit and throw it at someone
-	void			InputForceHealthKitToss( inputdata_t &inputdata );
-#endif
+//#if HL2_EPISODIC
+//	void			TossHealthKit( CBaseCombatCharacter *pThrowAt, const Vector &offset ); // create a healthkit and throw it at someone
+//	void			InputForceHealthKitToss( inputdata_t &inputdata );
+//#endif
 	
 	//---------------------------------
 	// Inputs
@@ -271,28 +270,18 @@ private:
 	//-----------------------------------------------------
 	enum
 	{
-		COND_CIT_PLAYERHEALREQUEST = BaseClass::NEXT_CONDITION,
-		COND_CIT_COMMANDHEAL,
-		COND_CIT_HURTBYFIRE,
+		COND_CIT_HURTBYFIRE = BaseClass::NEXT_CONDITION,
 		COND_CIT_START_INSPECTION,
 		
 		SCHED_CITIZEN_PLAY_INSPECT_ACTIVITY = BaseClass::NEXT_SCHEDULE,
-		SCHED_CITIZEN_HEAL,
 		SCHED_CITIZEN_PATROL,
 		SCHED_CITIZEN_MOURN_PLAYER,
 		SCHED_CITIZEN_SIT_ON_TRAIN,
-#ifdef HL2_EPISODIC
-		SCHED_CITIZEN_HEAL_TOSS,
-#endif
 		
-		TASK_CIT_HEAL = BaseClass::NEXT_TASK,
-		TASK_CIT_PLAY_INSPECT_SEQUENCE,
+		TASK_CIT_PLAY_INSPECT_SEQUENCE = BaseClass::NEXT_TASK,
 		TASK_CIT_SIT_ON_TRAIN,
 		TASK_CIT_LEAVE_TRAIN,
 		TASK_CIT_SPEAK_MOURNING,
-#ifdef HL2_EPISODIC
-		TASK_CIT_HEAL_TOSS,
-#endif
 
 	};
 
@@ -302,12 +291,7 @@ private:
 	float			m_flNextFearSoundTime;
 	float			m_flStopManhackFlinch;
 	float			m_fNextInspectTime;		// Next time I'm allowed to get inspected by a scanner
-	float			m_flPlayerHealTime;
 	float			m_flNextHealthSearchTime; // Next time I'm allowed to look for a healthkit
-	float			m_flAllyHealTime;
-	float			m_flPlayerGiveAmmoTime;
-	string_t		m_iszAmmoSupply;
-	int				m_iAmmoAmount;
 	bool			m_bShouldPatrol;
 	//string_t		m_iszOriginalSquad;
 	//float			m_flTimeJoinedPlayerSquad;
@@ -324,9 +308,6 @@ private:
 	int				m_iHead;
 
 	//static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
-
-	float			m_flTimePlayerStare;	// The game time at which the player started staring at me.
-	float			m_flTimeNextHealStare;	// Next time I'm allowed to heal a player who is staring at me.
 
 	//-----------------------------------------------------
 	//	Outputs

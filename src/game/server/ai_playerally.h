@@ -101,6 +101,7 @@
 #define TLK_SPOTTED_HEADCRAB_LEAVING_ZOMBIE	"TLK_SPOTTED_HEADCRAB_LEAVING_ZOMBIE"
 #define TLK_DANGER_ZOMBINE_GRENADE			"TLK_DANGER_ZOMBINE_GRENADE"
 #define TLK_BALLSOCKETED					"TLK_BALLSOCKETED"
+#define TLK_LOST_ENEMY						"TLK_LOST_ENEMY"
 
 // Vehicle passenger
 #define	TLK_PASSENGER_WARN_COLLISION	"TLK_PASSENGER_WARN_COLLISION"	// About to collide with something
@@ -121,6 +122,13 @@
 
 // Vortigaunt
 #define TLK_VORTIGAUNT_DISPEL	"TLK_VORTIGAUNT_DISPEL"	// Dispel attack starting
+
+// UNIQUE METROCOP - HUMAN ERROR (TERO)
+#define TLK_CP_MEDIC					"TLK_CP_MEDIC"
+#define TLK_CP_BEES						"TLK_CP_BEES"
+#define TLK_CP_RECHARGING				"TLK_CP_RECHARGING"
+#define TLK_CP_RECHARGE					"TLK_CP_RECHARGE"
+#define TLK_CP_GENERATOR_OFFLINE		"TLK_CP_GENERATOR_OFFLINE"
 
 // resume is "as I was saying..." or "anyhow..."
 #define TLK_RESUME 		"TLK_RESUME"
@@ -284,6 +292,7 @@ public:
 	void		TaskFail( const char *pszGeneralFailText )	{ BaseClass::TaskFail( pszGeneralFailText ); }
 	void		ClearTransientConditions();
 	void		Touch(	CBaseEntity *pOther );
+	virtual void		LostEnemySound(void);
 
 	//---------------------------------
 	// Combat

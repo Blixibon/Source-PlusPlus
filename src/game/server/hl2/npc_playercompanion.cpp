@@ -834,6 +834,14 @@ int CNPC_PlayerCompanion::SelectScheduleDanger()
 							pszModifiers = "danger_is_grenade:1";
 						}
 					}
+					else if (pSoundOwner->GetServerVehicle())
+					{
+						IServerVehicle* pVehicle = pSoundOwner->GetServerVehicle();
+						if (IRelationType(pVehicle->GetPassenger()) != D_LI)
+						{
+							pszModifiers = "danger_is_vehicle:1";
+						}
+					}
 				}
 
 				SpeakIfAllowed(TLK_DANGER, pszModifiers);
@@ -1762,6 +1770,17 @@ void CNPC_PlayerCompanion::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 			set.AppendCriteria( "readiness", "agitated" );
 			break;
 		}
+	}
+
+	if (GetSquad())
+	{
+		set.AppendCriteria("squadsize", GetSquad()->NumMembers());
+		set.AppendCriteria("isleader", GetSquad()->IsLeader(this) ? 1.0f : 0.f);
+	}
+	else
+	{
+		set.AppendCriteria("squadsize", 1.0f);
+		set.AppendCriteria("isleader", 0.0f);
 	}
 
 	if (m_FollowBehavior.GetFollowTarget() && m_FollowBehavior.GetFollowTarget()->IsPlayer())

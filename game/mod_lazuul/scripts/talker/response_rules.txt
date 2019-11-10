@@ -138,6 +138,7 @@
 
 // Base script
 #include "talker/response_criteria.talker"
+#include "talker/response_criteria_new.talker"
 
 // Test rules
 #include "talker/interjections.txt" 
@@ -169,6 +170,7 @@
 #include "talker/npc_fisherman.txt"
 #include "talker/npc_personality_core.talker"
 #include "talker/npc_conscript.txt"
+#include "talker/npc_metropolice.talker"
 
 // Rule Groups
 #include "talker/hlss_rules.talker"

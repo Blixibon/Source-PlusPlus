@@ -23,14 +23,33 @@
 #include "ai_behavior_rappel.h"
 #include "ai_behavior_police.h"
 #include "ai_behavior_follow.h"
+#include "Human_Error\ai_behavior_recharge.h"
 #include "ai_sentence.h"
 #include "props.h"
 
+#include "peter/npc_combatsupplier.h"
+
+//#define SF_METROPOLICE_					0x00010000
+#define SF_METROPOLICE_SIMPLE_VERSION		0x00020000
+#define SF_METROPOLICE_ALWAYS_STITCH		0x00080000
+#define SF_METROPOLICE_NOCHATTER			0x00100000
+#define SF_METROPOLICE_ARREST_ENEMY			0x00200000
+#define SF_METROPOLICE_NO_FAR_STITCH		0x00400000
+#define SF_METROPOLICE_NO_MANHACK_DEPLOY	0x00800000
+#define SF_METROPOLICE_ALLOWED_TO_RESPOND	0x01000000
+#define SF_METROPOLICE_MID_RANGE_ATTACK		0x02000000
+
+#define SF_METROPOLICE_FOLLOW				0x04000000
+#define	SF_METROPOLICE_MEDIC				0x08000000
+#define SF_METROPOLICE_AMMORESUPPLIER		0x10000000	
+#define SF_METROPOLICE_NOT_COMMANDABLE		0x20000000
+#define SF_METROPOLICE_USE_RENDER_BOUNDS	0x40000000
+
 class CNPC_MetroPolice;
 
-class CNPC_MetroPolice : public CAI_BaseActor
+class CNPC_MetroPolice : public CNPC_CombatSupplier
 {
-	DECLARE_CLASS( CNPC_MetroPolice, CAI_BaseActor );
+	DECLARE_CLASS( CNPC_MetroPolice, CNPC_CombatSupplier);
 	DECLARE_DATADESC();
 
 public:
@@ -41,6 +60,11 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
+	virtual bool	ShouldAutosquad() { return gpGlobals->maxClients == 1; }
+
+	int MeleeAttack1Conditions(float flDot, float flDist);
+	void		ModifyOrAppendCriteria(AI_CriteriaSet& set);
+
 	Class_T		Classify( void );
 	Disposition_t IRelationType(CBaseEntity *pTarget);
 	float		MaxYawSpeed( void );
@@ -48,6 +72,9 @@ public:
 	Activity NPC_TranslateActivity( Activity newActivity );
 
 	Vector		EyeDirection3D( void )	{ return CAI_BaseHumanoid::EyeDirection3D(); } // cops don't have eyes
+
+	bool 				IsMedic() { return HasSpawnFlags(SF_METROPOLICE_MEDIC); }
+	bool 				IsAmmoResupplier() { return HasSpawnFlags(SF_METROPOLICE_AMMORESUPPLIER); }
 
 	virtual void Event_Killed( const CTakeDamageInfo &info );
 
@@ -101,7 +128,7 @@ public:
 	void	SetBatonState( bool state );
 	bool	BatonActive( void );
 
-	CAI_Sentence< CNPC_MetroPolice > *GetSentences() { return &m_Sentences; }
+	//CAI_Sentence< CNPC_MetroPolice > *GetSentences() { return &m_Sentences; }
 
 	virtual	bool		AllowedToIgnite( void ) { return true; }
 
@@ -138,6 +165,8 @@ private:
 	virtual void	DeathSound( const CTakeDamageInfo &info );
 	virtual void	IdleSound( void );
 	virtual bool	ShouldPlayIdleSound( void );
+
+	virtual bool	CanJoinPlayerSquad(CBasePlayer* pPlayer = nullptr);
 
 	// Burst mode!
 	void		SetBurstMode( bool bEnable );
@@ -184,6 +213,7 @@ private:
 	void OnAnimEventBatonOff( void );
 	void OnAnimEventStartDeployManhack( void );
 	void OnAnimEventPreDeployManhack( void );
+	void				OnAnimEventHeal();
 
 	bool HasBaton( void );
 
@@ -445,15 +475,12 @@ private:
 	AIHANDLE		m_hManhack;
 	CHandle<CPhysicsProp>	m_hBlockingProp;
 
-	CAI_ActBusyBehavior		m_ActBusyBehavior;
-	CAI_StandoffBehavior	m_StandoffBehavior;
-	CAI_AssaultBehavior		m_AssaultBehavior;
 	CAI_FuncTankBehavior	m_FuncTankBehavior;
 	CAI_RappelBehavior		m_RappelBehavior;
 	CAI_PolicingBehavior	m_PolicingBehavior;
-	CAI_FollowBehavior		m_FollowBehavior;
+	CAI_RechargeBehavior	m_RechargeBehavior;
 
-	CAI_Sentence< CNPC_MetroPolice > m_Sentences;
+	//CAI_Sentence< CNPC_MetroPolice > m_Sentences;
 
 	int				m_nRecentDamage;
 	float			m_flRecentDamageTime;
@@ -462,6 +489,26 @@ private:
 	float			m_flLastHitYaw;
 
 	static float	gm_flTimeLastSpokePeek;
+
+	//TERO: UNIQUE CIVIL PROTECTION OFFICERS
+protected:
+
+	enum unique_cps
+	{
+		METROPOLICE_NORMAL = 0,
+		METROPOLICE_LARSON,
+		METROPOLICE_NOAH,
+		METROPOLICE_ELOISE,
+	};
+
+	int		m_iUniqueMetropolice;
+
+	inline bool IsUnique() { return (m_iUniqueMetropolice != METROPOLICE_NORMAL); }
+	inline bool IsEloise() { return (m_iUniqueMetropolice == METROPOLICE_ELOISE); }
+	inline bool IsLarson() { return (m_iUniqueMetropolice == METROPOLICE_LARSON); }
+	inline bool IsNoah() { return (m_iUniqueMetropolice == METROPOLICE_NOAH); }
+
+	bool	m_bCanRecharge;
 
 public:
 	DEFINE_CUSTOM_AI;

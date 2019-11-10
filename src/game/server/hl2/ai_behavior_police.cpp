@@ -125,9 +125,7 @@ void CAI_PolicingBehavior::HostSpeakSentence( const char *pSentence, SentencePri
 
 	if ( pCop != NULL )
 	{
-		CAI_Sentence< CNPC_MetroPolice > *pSentences = pCop->GetSentences();
-
-		pSentences->Speak( pSentence, nSoundPriority, nCriteria );
+		pCop->SpeakIfAllowed(pSentence, CFmtStr("numwarnings:%i", m_nNumWarnings), true);
 	}
 }
 
@@ -206,26 +204,7 @@ void CAI_PolicingBehavior::GatherConditions( void )
 //-----------------------------------------------------------------------------
 void CAI_PolicingBehavior::AnnouncePolicing( void )
 {
-	// We're policing
-	static const char *pWarnings[3] = 
-	{
-		"METROPOLICE_MOVE_ALONG_A",
-		"METROPOLICE_MOVE_ALONG_B",
-		"METROPOLICE_MOVE_ALONG_C",
-	};
-
-	if ( m_nNumWarnings <= 3 )
-	{
-		HostSpeakSentence( pWarnings[ m_nNumWarnings - 1 ], SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-	}
-	else 
-	{
-		// We loop at m_nNumWarnings == 4 for players who aren't moving 
-		// but still pissing us off, and we're not allowed to do anything about it. (i.e. can't leave post)
-		// First two sentences sound pretty good, so randomly pick one of them.
-		int iSentence = RandomInt( 0, 1 );
-		HostSpeakSentence( pWarnings[ iSentence ], SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-	}
+	HostSpeakSentence( "TLK_METROPOLICE_MOVE_ALONG", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 }
 
 //-----------------------------------------------------------------------------

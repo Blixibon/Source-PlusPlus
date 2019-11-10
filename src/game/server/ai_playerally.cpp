@@ -102,6 +102,7 @@ ConceptInfo_t g_ConceptInfos[] =
 	{ 	TLK_SPOTTED_HEADCRAB_LEAVING_ZOMBIE,SPEECH_IMPORTANT, 	-1,		-1,		-1,		-1,		-1,		-1,		AICF_DEFAULT,	},
 	{ 	TLK_DANGER_ZOMBINE_GRENADE,			SPEECH_IMPORTANT, 	-1,		-1,		-1,		-1,		-1,		-1,		AICF_DEFAULT,	},
 	{ 	TLK_BALLSOCKETED,					SPEECH_IMPORTANT, 	-1,		-1,		-1,		-1,		-1,		-1,		AICF_DEFAULT,	},
+	{	TLK_LOST_ENEMY,	SPEECH_IMPORTANT,	-1,		-1,		-1,		-1,		30,		 0,		AICF_DEFAULT,	},
 		
 	// Darkness mode
 	{ 	TLK_DARKNESS_LOSTPLAYER, SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
@@ -129,6 +130,13 @@ ConceptInfo_t g_ConceptInfos[] =
 
 	// Passenger behaviour
 	{ TLK_PASSENGER_NEW_RADAR_CONTACT,		SPEECH_IMPORTANT,	-1,		-1,		-1,		-1,		-1,		-1,		AICF_DEFAULT,	},	
+
+	//Unique Metrocop -TERO
+	{	TLK_CP_MEDIC,				SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_BEES,				SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_RECHARGING,			SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_RECHARGE,			SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
+	{	TLK_CP_GENERATOR_OFFLINE,	SPEECH_IMPORTANT,-1,	-1,		-1,		-1,		 -1,	-1,		AICF_DEFAULT,	},
 };
 
 //-----------------------------------------------------------------------------
@@ -1146,6 +1154,11 @@ void CAI_PlayerAlly::Touch( CBaseEntity *pOther )
 	}
 }
 
+void CAI_PlayerAlly::LostEnemySound(void)
+{
+	SpeakIfAllowed(TLK_LOST_ENEMY);
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CAI_PlayerAlly::OnKilledNPC( CBaseCombatCharacter *pKilled )
@@ -1277,7 +1290,7 @@ bool CAI_PlayerAlly::CreateVPhysics()
 //-----------------------------------------------------------------------------
 void CAI_PlayerAlly::PainSound( const CTakeDamageInfo &info )
 {
-	SpeakIfAllowed( TLK_WOUND );
+	SpeakIfAllowed( TLK_WOUND, CFmtStr("damagebits:%i,damagecustom:%i", info.GetDamageType(), info.GetDamageCustom()) );
 }
 
 //-----------------------------------------------------------------------------
