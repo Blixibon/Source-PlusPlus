@@ -119,6 +119,38 @@
 				"width"		"220"
 				"height"	"30"
 		}
+		"apc_hud"
+		{
+				"file"		"sprites/metrocop_hud/hud_apc"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"apc_target_hud"
+		{
+				"file"		"sprites/metrocop_hud/hud_apc_target"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"manhack_upper"
+		{
+				"file"		"sprites/metrocop_hud/manhack_upper"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"128"
+		}
+		"manhack_lower"
+		{
+				"file"		"sprites/metrocop_hud/manhack_lower"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"128"
+		}
 		"ammo_label"
 		{
 			//	"file"		"sprites/hud1"

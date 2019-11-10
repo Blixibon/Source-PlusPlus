@@ -185,4 +185,34 @@
 		"TextColor"	"255 170 0 220"
 		"PaintBackgroundType"	"2"
 	}
+	
+	HudSuitPower
+	{
+		"fieldName" "HudSuitPower"
+		"visible" "1"
+		"enabled" "1"
+		"xpos"	"40"
+		"ypos"	"4"
+		"wide"	"102"
+		"tall"	"26"
+		
+		"AuxPowerLowColor" "255 0 0 220"
+		"AuxPowerHighColor" "BrightFg"
+		"AuxPowerDisabledAlpha" "70"
+
+		"BarInsetX" "8"
+		"BarInsetY" "15"
+		"BarWidth" "92"
+		"BarHeight" "4"
+		"BarChunkWidth" "6"
+		"BarChunkGap" "3"
+
+		"text_xpos" "8"
+		"text_ypos" "4"
+		"text2_xpos" "8"
+		"text2_ypos" "22"
+		"text2_gap" "10"
+
+		"PaintBackgroundType"	"2"
+	}
 }
