@@ -16,6 +16,7 @@
 #include "tier0/memdbgon.h"
 
 #define SOUNDSCAPE_MANIFEST_FILE				"scripts/soundscapes_manifest.txt"
+#define SOUNDSCAPE_SHARED_MANIFEST_FILE			"scripts/soundscapes_shared_manifest.txt"
 
 ConVar debug_print_soundscapes( "debug_print_soundscapes", "0", FCVAR_HIDDEN );
 
@@ -160,6 +161,28 @@ bool CSoundscapeSystem::Init()
 			Warning( "CSoundscapeSystem::Init:  Manifest '%s' with bogus file type '%s', expecting 'file'\n", 
 				SOUNDSCAPE_MANIFEST_FILE, sub->GetName() );
 		}
+
+		KeyValues* shared = new KeyValues(SOUNDSCAPE_MANIFEST_FILE);
+		if (filesystem->LoadKeyValues(*shared, IFileSystem::TYPE_SOUNDSCAPE, SOUNDSCAPE_SHARED_MANIFEST_FILE, "SHARED"))
+		{
+			for (KeyValues* sub = shared->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey())
+			{
+				if (!Q_stricmp(sub->GetName(), "file"))
+				{
+					// Add
+					AddSoundscapeFile(sub->GetString());
+					if (mapSoundscapeFilename && FStrEq(sub->GetString(), mapSoundscapeFilename))
+					{
+						mapSoundscapeFilename = NULL; // we've already loaded the map's soundscape
+					}
+					continue;
+				}
+
+				Warning("CSoundscapeSystem::Init:  Manifest '%s' with bogus file type '%s', expecting 'file'\n",
+					SOUNDSCAPE_SHARED_MANIFEST_FILE, sub->GetName());
+			}
+		}
+		shared->deleteThis();
 
 		if ( mapSoundscapeFilename && filesystem->FileExists( mapSoundscapeFilename ) )
 		{
