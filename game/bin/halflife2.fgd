@@ -111,6 +111,24 @@
 	output OnNavFailBlocked(void) : "Fires when this Citizen's movement fails because he/she is blocked."
 ]
 
+@BaseClass base(PlayerFollower) = CombatSupplier
+[
+	ammosupply(choices) : "Ammo to Resupply (if spawnflag set)" : "SMG1" =
+	[
+		"Pistol" : "Pistol"
+		"SMG1" : "SMG1"
+		"SMG1_Grenade" : "SMG1 Grenade"
+		"AR2" : "AR2"
+		"Buckshot" : "Shotgun"
+		"RPG_Round" : "RPG"
+		"Grenade" : "Grenade"
+		"XBowBolt" : "Crossbow Bolt"
+		"Current" : "Current Weapon Ammo"
+		"Auto" : "Current Player Weapon Ammo"
+	]
+	ammoamount(integer) : "Amount of ammo to give" : 30
+]
+
 @BaseClass base(BaseNPC ) = RappelNPC
 [
 	waitingtorappel(choices) : "Waiting to Rappel?" : "No" : "If yes, this NPC spawns suspended in air and awaits a BeginRappel input. It will then spawn a zipline and slide down. When it hits the ground, NPC will cut away the line and try to move forward a few feet to make room for the next NPC. The NPC will not attempt to clear its landing space if it cannot do so by taking a few steps forward" =
@@ -810,7 +828,7 @@
 
 
 
-@NPCClass base(BaseNPC,Parentname, TalkNPC, PlayerFollower ) studio() = npc_citizen : "Citizen"
+@NPCClass base(BaseNPC,Parentname, TalkNPC, CombatSupplier) studio() = npc_citizen : "Citizen"
 [
 
 	spawnflags(Flags) =
@@ -838,19 +856,6 @@
 		"weapon_rpg" : "RPG"
 		"0"  : "Nothing"
 	]
-
-	ammosupply(choices) : "Ammo to Resupply (if spawnflag set)" : "SMG1" =
-	[
-		"Pistol" : "Pistol"
-		"SMG1" : "SMG1"
-		"SMG1_Grenade" : "SMG1 Grenade"
-		"AR2" : "AR2"
-		"Buckshot" : "Shotgun"
-		"RPG_Round" : "RPG"
-		"Grenade" : "Grenade"
-		"XBowBolt" : "Crossbow Bolt"
-	]
-	ammoamount(integer) : "Amount of ammo to give" : 1
 
 	citizentype(choices) : "Type" : "Default" =
 	[
@@ -1786,7 +1791,7 @@
 ]
 
 
-@NPCClass base(BaseNPC,RappelNPC) studio("models/Police.mdl") = npc_metropolice : "MetroPolice"
+@NPCClass base(BaseNPC,RappelNPC,CombatSupplier) studio("models/Police.mdl") = npc_metropolice : "MetroPolice"
 [
 	additionalequipment(choices) : "Weapons" : "weapon_pistol" =
 	[
@@ -1794,6 +1799,8 @@
 		"weapon_smg1"  : "SMG1"
 		"weapon_stunstick"  : "Stun Stick"
 		"weapon_shotgun"  : "Shotgun"
+		"weapon_357" : "357"
+		"weapon_toothbrush" : "Toothbrush!"
 		"0"  : "Nothing"
 	]
 
@@ -1821,6 +1828,11 @@
 		8388608 : "Prevent manhack toss" : 0
 		16777216: "Allowed to respond to thrown objects" : 0
 		33554432: "Mid-range attacks (halfway between normal + long-range)" : 0
+		67108864: "Follow player" : 0
+		134217728: "Medic" : 0
+		268435456: "Ammo Supplier" : 1
+		536870912: "Not commandable" : 0
+		1073741824: "Use render bounds": 0
 	]
 	  
 	// Inputs
