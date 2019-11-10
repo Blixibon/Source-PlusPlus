@@ -112,6 +112,7 @@ private:
 //-----------------------------------------------------------------------------
 CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot, bool bSaved );
 void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget );
+bool DoesLaserDotHaveTarget(CBaseEntity* pLaserDot);
 void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable );
 bool IsLaserDotOn(CBaseEntity* pLaserDot);
 CBaseEntity* GetFirstLaserDot();

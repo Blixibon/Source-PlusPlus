@@ -128,6 +128,7 @@
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2\custom\alyx"
 			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2\custom\rand"
+			"game"		"D:\SteamLibrary\steamapps\common\Half-Life 2\hl2\custom\Zanzibar"
 			"game+download"		"D:\Git-Repos\Source-PlusPlus\game\mod_lazuul\downloads"
 		}
 	}

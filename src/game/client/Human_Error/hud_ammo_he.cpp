@@ -395,9 +395,9 @@ void CHudAmmoHE::UpdateVehicleAmmo( C_BasePlayer *player, IClientVehicle *pVehic
 		SetIcon( IsAPC ? L"u" : L"*");
 		wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_TITLE_%s", GetAmmoDef()->m_AmmoType[pVehicle->GetPrimaryAmmoType()].pName));
 		if (tempString)
-			SetLabel(tempString);
+			SetLabel(tempString, IsAPC);
 		else
-			SetLabel(GetAmmoDef()->m_AmmoType[pVehicle->GetPrimaryAmmoType()].pName);
+			SetLabel(GetAmmoDef()->m_AmmoType[pVehicle->GetPrimaryAmmoType()].pName, IsAPC);
 
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("WeaponChangedHE");
 		m_hCurrentVehicle = pVehicleEnt;

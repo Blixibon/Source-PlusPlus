@@ -66,7 +66,7 @@ public:
 
 	virtual void	CreateServerVehicle( void );
 	virtual Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator);
 	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
 	virtual void	EnterVehicle( CBasePlayer *pPlayer );
 	virtual void	ExitVehicle( int nRole );

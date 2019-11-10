@@ -206,6 +206,7 @@ CEconItemInitializerSystem g_EconInitializer;
 
 #ifdef CLIENT_DLL
 #define MOD_HL2BETA 9
+#define MOD_HLSS 10
 
 void CHud::MsgFunc_ResetHUD(bf_read& msg)
 {
@@ -373,6 +374,14 @@ CLazuul::~CLazuul()
 #ifndef CLIENT_DLL
 	g_Teams.Purge();
 #endif // !CLIENT_DLL
+}
+
+int CLazuul::GetProtaganistTeam()
+{
+	if (m_iMapGameType == MOD_HLSS)
+		return TEAM_COMBINE;
+
+	return TEAM_REBELS;
 }
 
 //-----------------------------------------------------------------------------

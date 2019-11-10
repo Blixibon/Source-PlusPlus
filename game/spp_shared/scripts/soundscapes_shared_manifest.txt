@@ -155,4 +155,7 @@ soundscapes_manifest
 
 	 // MINERVA: Metastasis stuff!
 	"file"		"scripts/minerva_soundscapes.txt"
+	
+	// Human Error
+	"file"		"scripts/soundscapes_human_error.txt"
 }

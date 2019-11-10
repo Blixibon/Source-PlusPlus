@@ -245,3 +245,38 @@
 	"Music"				"0.65"
 	"All"				"0.01"
 }
+
+"Metrocop_Dialog_Only"
+{
+//	group name			mix value
+//  --------			---------
+
+	"NPC_Voice"			"1.0"
+	"Dialog"			"1.0"
+	"Music"				"0.81"
+	"All"				"0.31"
+	"Weapons"			"0.11"
+}
+
+"Metrocop_Dialog_Better"
+{
+//	group name			mix value
+//  --------			---------
+
+	"NPC_Voice"			"1.0"
+	"Dialog"			"1.0"
+	"Music"				"0.81"
+	"All"				"0.41"
+}
+
+"Controller_Dialogue"
+{
+//	group name			mix value
+//  --------			---------
+
+	"NPC_Voice"			"1.0"
+	"Dialog"			"1.0"
+	"Music"				"0.81"
+	"All"				"0.41"
+	"Weapons"			"0.11"
+}

@@ -5,17 +5,20 @@
 //=============================================================================//
 
 #include "cbase.h"
-#include "basehlcombatweapon.h"
+#include "coop/weapon_coop_basehlcombatweapon.h"
 
+#ifndef CLIENT_DLL
 #include "player.h"
+#include "globalstate.h"
+#include "items.h"
+#include "soundent.h"
+#endif
+
 #include "gamerules.h"
 #include "ammodef.h"
 #include "in_buttons.h"
-#include "globalstate.h"
 
 #include "engine/IEngineSound.h"
-#include "items.h"
-#include "soundent.h"
 
 #include "npcevent.h"
 #include "IEffects.h"
@@ -24,11 +27,15 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef CLIENT_DLL
+#define CWeapon_Camera C_Weapon_Camera
+#endif
+
 //-----------------------------------------------------------------------------
 // Singleton interfaces
 //-----------------------------------------------------------------------------
 extern IMaterialSystemHardwareConfig *g_pMaterialSystemHardwareConfig;
-
+#ifndef CLIENT_DLL
 class CHLSS_CameraOutput : public CPointEntity
 {
 	DECLARE_CLASS( CHLSS_CameraOutput, CPointEntity );
@@ -54,19 +61,19 @@ public:
 
 	DECLARE_DATADESC();
 };
+#endif
 
-
-class CWeapon_Camera : public CBaseHLCombatWeapon
+class CWeapon_Camera : public CWeaponCoopBaseHLCombat
 {
 public:
-	DECLARE_CLASS( CWeapon_Camera, CBaseHLCombatWeapon );
-	DECLARE_SERVERCLASS();
+	DECLARE_CLASS( CWeapon_Camera, CWeaponCoopBaseHLCombat);
+	DECLARE_NETWORKCLASS();
+	DECLARE_PREDICTABLE();
 
 	CWeapon_Camera()
 	{
 		m_flDrawScreenTime = 0;
 		m_bCameraLowered = false;
-		m_flNextPhoto = 0;
 	}
 
 	void			Precache( void );
@@ -75,7 +82,14 @@ public:
 	void			PrimaryAttack( void );
 	void			Drop( const Vector &vecVelocity );
 
-	void			Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+#ifndef CLIENT_DLL
+	void			Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCharacter* pOperator);
+#else
+	virtual bool IsWeaponCamera() { return ((m_flDrawScreenTime == 0) || (m_flDrawScreenTime < gpGlobals->curtime)); }
+
+	virtual bool ShouldDrawCrosshair(void) { return false; }
+#endif // !CLIENT_DLL
+
 
 	//bool			Deploy(void);
 
@@ -84,8 +98,7 @@ public:
 	//void			WeaponSwitch( void );
 
 	CNetworkVar( float, m_flDrawScreenTime );
-	float m_flNextPhoto;
-	bool m_bCameraLowered;
+	CNetworkVar(bool, m_bCameraLowered);
 
 	DECLARE_ACTTABLE();
 	DECLARE_DATADESC();
@@ -102,14 +115,24 @@ IMPLEMENT_ACTTABLE(CWeapon_Camera);
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CWeapon_Camera )
-	DEFINE_FIELD( m_flNextPhoto,					FIELD_TIME),
 	DEFINE_FIELD( m_flDrawScreenTime,				FIELD_TIME),
 	DEFINE_FIELD( m_bCameraLowered,					FIELD_BOOLEAN ),
 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CWeapon_Camera, DT_Weapon_Camera)
-	SendPropFloat(SENDINFO(m_flDrawScreenTime), SPROP_CHANGES_OFTEN),
-END_SEND_TABLE()
+IMPLEMENT_NETWORKCLASS_ALIASED(Weapon_Camera, DT_Weapon_Camera)
+
+BEGIN_NETWORK_TABLE( CWeapon_Camera, DT_Weapon_Camera)
+#ifndef CLIENT_DLL
+SendPropFloat(SENDINFO(m_flDrawScreenTime), SPROP_CHANGES_OFTEN),
+SendPropBool(SENDINFO(m_bCameraLowered)),
+#else
+RecvPropFloat(RECVINFO(m_flDrawScreenTime)),
+RecvPropBool(RECVINFO(m_bCameraLowered)),
+#endif // !CLIENT_DLL
+	END_NETWORK_TABLE()
+
+	BEGIN_PREDICTION_DATA(CWeapon_Camera)
+	END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( weapon_camera, CWeapon_Camera );
 PRECACHE_WEAPON_REGISTER(weapon_camera);
@@ -121,55 +144,58 @@ void CWeapon_Camera::Precache( void )
 	BaseClass::Precache();
 }
 
-void CWeapon_Camera::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+#ifndef CLIENT_DLL
+void CWeapon_Camera::Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCharacter* pOperator)
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 
-	switch( pEvent->event )
+	switch (pEvent->event)
 	{
-		case EVENT_WEAPON_THROW:
-			if (pOwner)
+	case EVENT_WEAPON_THROW:
+		if (pOwner)
+		{
+			Vector vecForward;
+			pOwner->GetVectors(&vecForward, NULL, NULL);
+			Vector vecOrigin = pOwner->EyePosition();
+
+			trace_t	tr;
+			UTIL_TraceLine(vecOrigin, vecOrigin + (vecForward * MAX_TRACE_LENGTH), MASK_SHOT, pOwner, COLLISION_GROUP_NONE, &tr);
+
+			if (tr.m_pEnt)
 			{
-				Vector vecForward;
-				pOwner->GetVectors(&vecForward, NULL, NULL);
-				Vector vecOrigin = pOwner->EyePosition();
-				
-				trace_t	tr;
-				UTIL_TraceLine( vecOrigin, vecOrigin + (vecForward * MAX_TRACE_LENGTH), MASK_SHOT, pOwner, COLLISION_GROUP_NONE, &tr );
 
-				if (tr.m_pEnt )
+				for (CHLSS_CameraOutput* pCamera = CHLSS_CameraOutput::GetCameraOutputList(); pCamera != NULL; pCamera = pCamera->m_pNext)
 				{
-					
-					for ( CHLSS_CameraOutput *pCamera = CHLSS_CameraOutput::GetCameraOutputList(); pCamera != NULL; pCamera = pCamera->m_pNext )
-					{
-						if ( pCamera== NULL )
-							continue;
+					if (pCamera == NULL)
+						continue;
 
-						pCamera->CheckTakePhoto( tr.m_pEnt );
-					}
+					pCamera->CheckTakePhoto(tr.m_pEnt);
 				}
-
-				m_flDrawScreenTime = gpGlobals->curtime + 1.0f;
-
-				color32 white = { 255, 255, 255, 195 };
-
-				if ( ( g_pMaterialSystemHardwareConfig != NULL ) && ( g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE ) )
-				{
-					white.a = ( byte )( ( float )white.a * 0.9f );
-				}
-
-				float flFadeTime = 0.3f;
-				UTIL_ScreenFade( pOwner, white, flFadeTime, 0.3, FFADE_IN );
-
-				EmitSound( "NPC_CScanner.TakePhoto" );
 			}
 
-			break;
-		default:
-			BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
-			break;
+			m_flDrawScreenTime = gpGlobals->curtime + 1.0f;
+
+			color32 white = { 255, 255, 255, 195 };
+
+			if ((g_pMaterialSystemHardwareConfig != NULL) && (g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE))
+			{
+				white.a = (byte)((float)white.a * 0.9f);
+			}
+
+			float flFadeTime = 0.3f;
+			UTIL_ScreenFade(pOwner, white, flFadeTime, 0.3, FFADE_IN);
+
+			EmitSound("NPC_CScanner.TakePhoto");
+		}
+
+		break;
+	default:
+		BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
+		break;
 	}
 }
+#endif // !CLIENT_DLL
+
 
 //------------------------------------------------------------------------------
 // Purpose :
@@ -228,18 +254,18 @@ void CWeapon_Camera::Drop( const Vector &vecVelocity )
 
 void CWeapon_Camera::PrimaryAttack()
 {
-	if (m_flNextPhoto > gpGlobals->curtime )
+	if (m_flNextPrimaryAttack > gpGlobals->curtime )
 		return;
 
 
-	m_flNextPhoto = gpGlobals->curtime + 1.0f;
+	m_flNextPrimaryAttack = gpGlobals->curtime + 1.0f;
 
 	m_flDrawScreenTime = 0;
 	SendWeaponAnim( ACT_VM_THROW );
 }
 
 
-
+#ifndef CLIENT_DLL
 // global pointer to Larson for fast lookups
 CEntityClassList<CHLSS_CameraOutput> g_CameraOutputList;
 template <> CHLSS_CameraOutput *CEntityClassList<CHLSS_CameraOutput>::m_pClassList = NULL;
@@ -337,3 +363,4 @@ void CHLSS_CameraOutput::CheckTakePhoto( CBaseEntity *pEntity )
 		}
 	}
 }
+#endif

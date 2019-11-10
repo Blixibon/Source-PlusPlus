@@ -95,6 +95,7 @@
 	"precache_file"		"scripts/npc_sounds_larson.txt"
 	"precache_file"		"scripts/npc_sounds_olivia.txt"
 	"precache_file"		"scripts/npc_sounds_anders.txt"
+	"precache_file"		"scripts/level_sounds_music_hlss.txt"
 
 	// MINERVA: Metastasis stuff!
 	"precache_file"		"scripts/minerva_sounds.txt"

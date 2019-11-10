@@ -11,11 +11,11 @@
 	
 	content
 	{
-		"hl1_low"		1	// Half-Life: Source
 		"bms_low"		1	// Black Mesa: Source mod and retail
 		citizen2		1	// The Citizen Returns
 		citizen			1	// The Citizen
 		human_error		1	// Human Error + Human Error: Coop
+		"hl1_low"		1	// Half-Life: Source
 		"portal_low"	1	// Portal 1
 		cstrike_low		1	// Counter-Strike: Source
 		hl2_downfall	1	// Half-Life 2: Downfall

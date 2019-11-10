@@ -2448,6 +2448,12 @@ void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget )
 	pDot->SetTargetEntity( pTarget );
 }
 
+bool DoesLaserDotHaveTarget(CBaseEntity* pLaserDot)
+{
+	CLaserDot* pDot = assert_cast<CLaserDot*>(pLaserDot);
+	return pDot->GetTargetEntity() != nullptr;
+}
+
 void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable )
 {
 	CLaserDot *pDot = assert_cast< CLaserDot* >(pLaserDot );

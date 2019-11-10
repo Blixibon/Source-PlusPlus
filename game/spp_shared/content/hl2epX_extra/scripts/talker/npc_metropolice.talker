@@ -1,0 +1,1277 @@
+//============================================================================================================
+// Metropolice criteria
+//============================================================================================================
+criterion "IsMetropolice" "classname" "npc_metropolice" "required"
+criterion "Homies_Responsible" "concept" "Homies_Responsibility" "required"
+
+criterion "ConceptTalkCopManhackKilled" "Concept" "TLK_METROPOLICE_MANHACK_KILLED" required
+criterion "ConceptTalkCopManDown" "Concept" "TLK_ALLY_KILLED" required
+criterion "ConceptTalkCopGoAlert" "Concept" "TLK_METROPOLICE_GO_ALERT" required
+criterion "ConceptTalkCopFreeze" "Concept" "TLK_METROPOLICE_FREEZE" required
+criterion "ConceptTalkCopOverHere" "Concept" "TLK_METROPOLICE_OVER_HERE" required
+criterion "ConceptTalkCopHesRunning" "Concept" "TLK_METROPOLICE_HES_RUNNING" required
+criterion "ConceptTalkCopTakeHimDown" "Concept" "TLK_METROPOLICE_TAKE_HIM_DOWN" required
+criterion "ConceptTalkCopArrestInPos" "Concept" "TLK_METROPOLICE_ARREST_IN_POS" required
+criterion "ConceptTalkCopDeployManhack" "Concept" "TLK_METROPOLICE_DEPLOY_MANHACK" required
+criterion "ConceptTalkCopPlayerHit" "Concept" "TLK_METROPOLICE_PLAYERHIT" required
+criterion "ConceptTalkCopFlank" "Concept" "TLK_METROPOLICE_FLANK" required
+criterion "ConceptTalkCopHeardSomething" "Concept" "TLK_DARKNESS_HEARDSOUND" required
+criterion "ConceptTalkCopEnemy" "Concept" "TLK_STARTCOMBAT" required
+criterion "ConceptTalkCopKillEnemy" "Concept" "TLK_ENEMY_DEAD" required
+criterion "ConceptTalkCopNoAmmo" "Concept" "TLK_METROPOLICE_NOAMMO" required
+criterion "ConceptTalkCopLowAmmo" "Concept" "TLK_METROPOLICE_LOWAMMO" required
+criterion "ConceptTalkCopDanger" "Concept" "TLK_DANGER" required
+criterion "ConceptTalkCopDie" "Concept" "TLK_DEATH" required
+criterion "ConceptTalkCopLostEnemy" "Concept" "TLK_LOST_ENEMY" required
+criterion "ConceptTalkCopRefindEnemy" "Concept" "TLK_METROPOLICE_REFIND_ENEMY" required
+criterion "ConceptTalkCopHarass" "Concept" "TLK_STARE" required
+criterion "ConceptTalkCopShootCover" "Concept" "TLK_METROPOLICE_SHOOTCOVER" required
+criterion "ConceptTalkCopBackUp" "Concept" "TLK_METROPOLICE_BACK_UP" required // This means "Back up, dude", not "I need some backup!"
+criterion "ConceptTalkCopHitByPhysObj" "Concept" "TLK_PLYR_PHYSATK" required
+criterion "ConceptTalkCopThrowGrenade" "Concept" "TLK_THROWGRENADE" required
+criterion "ConceptTalkCopActivateBaton" "Concept" "TLK_METROPOLICE_ACTIVATE_BATON" required
+criterion "ConceptTalkCopDeactivateBaton" "Concept" "TLK_METROPOLICE_DEACTIVATE_BATON" required
+criterion "ConceptTalkCopMoveAlong" "Concept" "TLK_METROPOLICE_MOVE_ALONG" required
+
+//============================================================================================================
+// Metropolice Questions & Responses speech
+//============================================================================================================
+response "MetropoliceQuestion"
+{
+	sentence "METROPOLICE_IDLE_QUEST" delay 1
+}
+
+rule MetropoliceQuestion
+{
+	criteria		IsMetropolice ConceptTalkQuestion IsGordonPreCriminal SoldierNotEnteredCombat
+	response 		MetropoliceQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "MetropoliceAnswer"
+{
+	sentence "METROPOLICE_IDLE_ANSWER" delay 1
+}
+//---------------------
+rule MetropoliceAnswer
+{
+	criteria		IsMetropolice ConceptTalkAnswer IsGordonPreCriminal SoldierNotEnteredCombat
+	response		MetropoliceAnswer
+}
+
+response "MetropoliceQuestionCR"
+{
+	sentence "METROPOLICE_IDLE_QUEST_CR" delay 1
+}
+
+rule MetropoliceQuestionCR
+{
+	criteria		IsMetropolice ConceptTalkQuestion IsGordonCriminal SoldierNotEnteredCombat
+	response 		MetropoliceQuestionCR
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "MetropoliceAnswerCR"
+{
+	sentence "METROPOLICE_IDLE_ANSWER_CR" delay 1
+}
+//---------------------
+rule MetropoliceAnswerCR
+{
+	criteria		IsMetropolice ConceptTalkAnswer IsGordonCriminal SoldierNotEnteredCombat
+	response		MetropoliceAnswerCR
+}
+
+response MetropoliceIdle
+{
+	sentence "METROPOLICE_IDLE"
+}
+
+rule MetropoliceIdle
+{
+	criteria	IsMetropolice ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck IsGordonPreCriminal
+	response	MetropoliceIdle
+}
+
+response MetropoliceAskCheck
+{
+	sentence "METROPOLICE_IDLE_CHECK"
+}
+
+rule MetropoliceAskCheck
+{
+	criteria	IsMetropolice ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck IsInASquad IsGordonPreCriminal
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	response	MetropoliceAskCheck
+}
+
+response MetropoliceReplyCheck
+{
+	sentence "METROPOLICE_IDLE_CLEAR"
+}
+
+rule MetropoliceReplyCheck
+{
+	criteria	IsMetropolice ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck IsInASquad IsGordonPreCriminal
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	response	MetropoliceReplyCheck
+}
+
+response MetropoliceIdleCR
+{
+	sentence "METROPOLICE_IDLE_CR"
+}
+
+rule MetropoliceIdleCR
+{
+	criteria	IsMetropolice ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck IsGordonCriminal
+	response	MetropoliceIdleCR
+}
+
+response MetropoliceAskCheckCR
+{
+	sentence "METROPOLICE_IDLE_CHECK_CR"
+}
+
+rule MetropoliceAskCheckCR
+{
+	criteria	IsMetropolice ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck IsInASquad IsGordonCriminal
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	response	MetropoliceAskCheckCR
+}
+
+response MetropoliceReplyCheckCR
+{
+	sentence "METROPOLICE_IDLE_CLEAR_CR"
+}
+
+rule MetropoliceReplyCheckCR
+{
+	criteria	IsMetropolice ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck IsInASquad IsGordonCriminal
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	response	MetropoliceReplyCheckCR
+}
+
+response PoliceResponsePainHeavy
+{
+	sentence "METROPOLICE_PAIN_HEAVY"
+}
+
+response PoliceResponsePainLight
+{
+	sentence "METROPOLICE_PAIN_LIGHT"
+}
+
+response PoliceResponsePain
+{
+	sentence "METROPOLICE_PAIN"
+}
+
+rule PolicePain
+{
+	criteria	ConceptTalkWound IsMetropolice
+	response	PoliceResponsePain
+}
+
+rule PolicePainHeavy
+{
+	criteria	ConceptTalkMortal IsMetropolice
+	PoliceSpokePainHeavy "!=1" required
+	applycontext "PoliceSpokePainHeavy:1:60"
+	response	PoliceResponsePainHeavy
+}
+
+rule PolicePainLight
+{
+	criteria	ConceptTalkWound IsMetropolice
+	healthfrac	">.8" required
+	PoliceSpokePainLight "!=1" required
+	applycontext "PoliceSpokePainLight:1"
+	response	PoliceResponsePainLight
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+response "CopHarass"
+{
+	sentence "METROPOLICE_IDLE_HARASS_PLAYER" noscene
+}
+
+rule CopHarass
+{
+	criteria		IsMetroPolice ConceptTalkCopHarass
+	response		CopHarass
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Policing Behavior
+//------------------------------------------------------------------------------------------------------------
+response "CopMoveAlongA"
+{
+	sentence "METROPOLICE_MOVE_ALONG_A" noscene
+}
+
+rule CopMoveAlongA
+{
+	criteria		IsMetroPolice ConceptTalkCopMoveAlong
+	numwarnings 1
+	response		CopMoveAlongA
+}
+
+response "CopMoveAlongB"
+{
+	sentence "METROPOLICE_MOVE_ALONG_B" noscene
+}
+
+rule CopMoveAlongB
+{
+	criteria		IsMetroPolice ConceptTalkCopMoveAlong
+	numwarnings 2
+	response		CopMoveAlongB
+}
+
+response "CopMoveAlongC"
+{
+	sentence "METROPOLICE_MOVE_ALONG_C" noscene
+}
+
+rule CopMoveAlongC
+{
+	criteria		IsMetroPolice ConceptTalkCopMoveAlong
+	numwarnings 3
+	response		CopMoveAlongC
+}
+
+response "CopMoveAlongD"
+{
+	response CopMoveAlongA
+	response CopMoveAlongB
+}
+
+rule CopMoveAlongD
+{
+	criteria		IsMetroPolice ConceptTalkCopMoveAlong
+	numwarnings >3
+	response		CopMoveAlongD
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopBackUpA"
+{
+	sentence "METROPOLICE_MOVE_ALONG_A" noscene
+}
+
+rule CopBackUpA
+{
+	criteria		IsMetroPolice ConceptTalkCopBackUp
+	numwarnings <1
+	response		CopBackUpA
+}
+
+response "CopBackUpB"
+{
+	sentence "METROPOLICE_MOVE_ALONG_B" noscene
+}
+
+rule CopBackUpB
+{
+	criteria		IsMetroPolice ConceptTalkCopBackUp
+	numwarnings 2
+	response		CopBackUpB
+}
+
+response "CopBackUpC"
+{
+	sentence "METROPOLICE_MOVE_ALONG_C" noscene
+}
+
+rule CopBackUpC
+{
+	criteria		IsMetroPolice ConceptTalkCopBackUp
+	numwarnings 3
+	response		CopBackUpC
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopActivateBaton"
+{
+	sentence "METROPOLICE_ACTIVATE_BATON" noscene
+}
+
+rule CopActivateBaton
+{
+	criteria		IsMetroPolice ConceptTalkCopActivateBaton
+	response		CopActivateBaton
+}
+
+response "CopDeactivateBaton"
+{
+	sentence "METROPOLICE_DEACTIVATE_BATON" noscene
+}
+
+rule CopDeactivateBaton
+{
+	criteria		IsMetroPolice ConceptTalkCopDeactivateBaton
+	response		CopDeactivateBaton
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopOnFire"
+{
+	sentence "METROPOLICE_ON_FIRE" noscene
+}
+
+rule CopOnFire
+{
+	criteria		IsMetroPolice ConceptTalkWound
+	hurt_by_fire 1
+	response		CopOnFire
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopShootCover"
+{
+	sentence "METROPOLICE_SHOOT_COVER" noscene
+}
+
+rule CopShootCover
+{
+	criteria		IsMetroPolice ConceptTalkCopShootCover
+	response		CopShootCover
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopFlank"
+{
+	sentence "METROPOLICE_FLANK" noscene
+}
+
+rule CopFlank
+{
+	criteria		IsMetroPolice ConceptTalkCopFlank
+	response		CopFlank
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopHeardSomething"
+{
+	sentence "METROPOLICE_HEARD_SOMETHING" noscene
+}
+
+rule CopHeardSomething
+{
+	criteria		IsMetroPolice ConceptTalkCopHeardSomething
+	response		CopHeardSomething
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopPlayerHit"
+{
+	sentence "METROPOLICE_PLAYERHIT" noscene
+}
+
+rule CopPlayerHit
+{
+	criteria		IsMetroPolice ConceptTalkCopPlayerHit
+	response		CopPlayerHit
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopNoAmmo"
+{
+	sentence "METROPOLICE_COVER_NO_AMMO" noscene
+}
+
+rule CopNoAmmo
+{
+	criteria		IsMetroPolice ConceptTalkCopNoAmmo
+	response		CopNoAmmo
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopLowAmmo"
+{
+	sentence "METROPOLICE_COVER_LOW_AMMO" noscene
+}
+
+rule CopLowAmmo
+{
+	criteria		IsMetroPolice ConceptTalkCopLowAmmo
+	response		CopLowAmmo
+}
+
+response "CopLostShort"
+{
+	sentence "METROPOLICE_LOST_SHORT" noscene
+}
+
+rule CopLostShort
+{
+	criteria		IsMetroPolice ConceptTalkCopLostEnemy
+	response		CopLostShort
+}
+
+response "CopLostLong"
+{
+	sentence "METROPOLICE_LOST_LONG" noscene
+}
+
+rule CopLostLong
+{
+	criteria		IsMetroPolice ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	response		CopLostLong
+}
+
+response "CopRefindEnemy"
+{
+	sentence "METROPOLICE_REFIND_ENEMY" noscene
+}
+
+rule CopRefindEnemy
+{
+	criteria		IsMetroPolice ConceptTalkCopRefindEnemy
+	response		CopRefindEnemy
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopAlertGeneric"
+{
+	sentence "METROPOLICE_MONST" noscene
+}
+
+rule CopAlertGeneric
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertGeneric
+}
+
+response "CopAlertPlayer"
+{
+	sentence "METROPOLICE_MONST_PLAYER" noscene
+}
+
+rule CopAlertPlayer
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassPlayer
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertPlayer
+}
+
+response "CopAlertPlayerVehicle"
+{
+	sentence "METROPOLICE_MONST_PLAYER_VEHICLE" noscene
+}
+
+rule CopAlertPlayerVehicle
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassPlayer
+	enemy_in_vehicle !=0
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertPlayerVehicle
+}
+
+response "CopAlertBugs"
+{
+	sentence "METROPOLICE_MONST_BUGS" noscene
+}
+
+rule CopAlertBugs
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassAntlion
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertBugs
+}
+
+response "CopAlertCitizens"
+{
+	sentence "METROPOLICE_MONST_CITIZENS" noscene
+}
+
+rule CopAlertCitizenPassive
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassCitizenPassive
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertCitizens
+}
+
+rule CopAlertCitizenRebel
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassCitizenRebel
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertCitizens
+}
+
+rule CopAlertVortigaunt
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassVortigaunt
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertCitizens
+}
+
+rule CopAlertPlayerAlly
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassPlayerAlly
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertCitizens
+}
+
+response "CopAlertCharacter"
+{
+	sentence "METROPOLICE_MONST_CHARACTER" noscene
+}
+
+rule CopAlertCharacter
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassPlayerAllyVital
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertCharacter
+}
+
+response "CopAlertZombies"
+{
+	sentence "METROPOLICE_MONST_ZOMBIES" noscene
+}
+
+rule CopAlertZombies
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassZombie
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertZombies
+}
+
+response "CopAlertParasites"
+{
+	sentence "METROPOLICE_MONST_PARASITES" noscene
+}
+
+rule CopAlertHeadcrab
+{
+	criteria		IsMetroPolice ConceptTalkCopEnemy EnemyIsClassHeadcrab
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertParasites
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopKillGeneric"
+{
+	sentence "METROPOLICE_KILL_MONST" noscene
+}
+
+rule CopKillGeneric
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillGeneric
+}
+
+response "CopKillBugs"
+{
+	sentence "METROPOLICE_KILL_BUGS" noscene
+}
+
+rule CopKillBugs
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassAntlion
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillBugs
+}
+
+response "CopKillPlayer"
+{
+	sentence "METROPOLICE_KILL_PLAYER" noscene
+}
+
+rule CopKillPlayer
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassPlayer //IsInASquad
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillPlayer
+}
+
+response "CopKillCitizens"
+{
+	sentence "METROPOLICE_MONST_CITIZENS" noscene
+}
+
+rule CopKillCitizenPassive
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassCitizenPassive
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopAlertCitizens
+}
+
+rule CopKillCitizenRebel
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassCitizenRebel
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillCitizens
+}
+
+rule CopKillVortigaunt
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassVortigaunt
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillCitizens
+}
+
+rule CopKillPlayerAlly
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassPlayerAlly
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillCitizens
+}
+
+response "CopKillCharacter"
+{
+	sentence "METROPOLICE_MONST_CHARACTER" noscene
+}
+
+rule CopKillCharacter
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassPlayerAllyVital
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillCharacter
+}
+
+response "CopKillZombies"
+{
+	sentence "METROPOLICE_MONST_ZOMBIES" noscene
+}
+
+rule CopKillZombies
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassZombie
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillZombies
+}
+
+response "CopKillParasites"
+{
+	sentence "METROPOLICE_MONST_PARASITES" noscene
+}
+
+rule CopKillHeadcrab
+{
+	criteria		IsMetroPolice ConceptTalkCopKillEnemy EnemyIsClassHeadcrab
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		CopKillParasites
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopDeployManhack"
+{
+	sentence "METROPOLICE_DEPLOY_MANHACK" noscene
+}
+
+rule CopDeployManhack
+{
+	criteria		IsMetroPolice ConceptTalkCopDeployManhack
+	response		CopDeployManhack
+}
+
+response "CopManhackKilled"
+{
+	sentence "METROPOLICE_MANHACK_KILLED" noscene
+}
+
+rule CopManhackKilled
+{
+	criteria		IsMetroPolice ConceptTalkCopManhackKilled
+	response		CopManhackKilled
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopManDown"
+{
+	sentence "METROPOLICE_MAN_DOWN" noscene
+}
+
+rule CopManDown
+{
+	criteria		IsMetroPolice ConceptTalkCopManDown
+	response		CopManDown
+}
+
+response "CopLastOfSquad"
+{
+	sentence "METROPOLICE_LAST_OF_SQUAD" noscene
+}
+
+rule CopLastOfSquad
+{
+	criteria		IsMetroPolice ConceptTalkCopManDown
+	squadsize <2
+	response		CopLastOfSquad
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopThrowGrenade"
+{
+	// Say nothing
+	// Implement a sentence for this if you want
+	//sentence "METROPOLICE_THROW_GRENADE" noscene
+}
+
+rule CopThrowGrenade
+{
+	criteria		IsMetroPolice ConceptTalkCopThrowGrenade
+	response		CopThrowGrenade
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopGrenadeDanger"
+{
+	sentence "METROPOLICE_GREN" noscene
+}
+
+rule CopGrenadeDanger
+{
+	criteria		IsMetroPolice ConceptTalkCopDanger
+	danger_is_grenade 1 required
+	response		CopGrenadeDanger
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopVehicleDanger"
+{
+	sentence "METROPOLICE_DANGER_VEHICLE" noscene
+}
+
+rule CopVehicleDanger
+{
+	criteria		IsMetroPolice ConceptTalkCopDanger
+	danger_is_vehicle 1 required
+	response		CopVehicleDanger
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopManhackDanger"
+{
+	sentence "METROPOLICE_DANGER_MANHACK" noscene
+}
+
+rule CopManhackDanger
+{
+	criteria		IsMetroPolice ConceptTalkCopDanger
+	danger_is_manhack 1 required
+	response		CopManhackDanger
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopDanger"
+{
+	sentence "METROPOLICE_DANGER" noscene
+}
+
+rule CopDanger
+{
+	criteria		IsMetroPolice ConceptTalkCopDanger
+	response		CopDanger
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Behaviors
+//------------------------------------------------------------------------------------------------------------
+response "CopFtApproach"
+{
+	sentence "METROPOLICE_FT_APPROACH" noscene
+}
+rule CopFtApproach
+{
+	criteria		IsMetroPolice ConceptTalkFtApproach
+	response		CopFtApproach
+}
+
+response "CopFtMount"
+{
+	sentence "METROPOLICE_FT_MOUNT" noscene
+}
+rule CopFtMount
+{
+	criteria		IsMetroPolice ConceptTalkFtMount
+	response		CopFtMount
+}
+
+response "CopFtScan"
+{
+	sentence "METROPOLICE_FT_SCAN" noscene
+}
+rule CopFtScan
+{
+	criteria		IsMetroPolice ConceptTalkFtScan
+	response		CopFtScan
+}
+
+response "CopFtDismount"
+{
+	sentence "METROPOLICE_FT_DISMOUNT" noscene
+}
+rule CopFtDismount
+{
+	criteria		IsMetroPolice ConceptTalkFtDismount
+	response		CopFtDismount
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopAsHitRally"
+{
+	sentence "METROPOLICE_AS_HIT_RALLY" noscene
+}
+rule CopAsHitRally
+{
+	criteria		IsMetroPolice ConceptTalkAsHitRally
+	response		CopAsHitRally
+}
+
+response "CopAsHitAssault"
+{
+	sentence "METROPOLICE_AS_HIT_ASSAULT" noscene
+}
+rule CopAsHitAssault
+{
+	criteria		IsMetroPolice ConceptTalkAsHitAssault
+	response		CopAsHitAssault
+}
+
+response "CopAsAdvRally"
+{
+	sentence "METROPOLICE_AS_ADV_RALLY" noscene
+}
+rule CopAsAdvRally
+{
+	criteria		IsMetroPolice ConceptTalkAsAdvRally IsSquadLeader
+	response		CopAsAdvRally
+}
+
+response "CopAsAdvAssault"
+{
+	sentence "METROPOLICE_AS_ADV_ASSAULT" noscene
+}
+rule CopAsAdvAssault
+{
+	criteria		IsMetroPolice ConceptTalkAsAdvAssault IsSquadLeader
+	response		CopAsAdvAssault
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopSoBegin"
+{
+	sentence "METROPOLICE_SO_BEGIN" noscene
+}
+rule CopSoBegin
+{
+	criteria		IsMetroPolice ConceptTalkSoBegin IsSquadLeader
+	response		CopSoBegin
+}
+
+response "CopSoEnd"
+{
+	sentence "METROPOLICE_SO_END" noscene
+}
+rule CopSoEnd
+{
+	criteria		IsMetroPolice ConceptTalkSoEnd IsSquadLeader
+	response		CopSoEnd
+}
+
+response "CopSoForceCover"
+{
+	sentence "METROPOLICE_SO_FORCE_COVER" noscene
+}
+rule CopSoForceCover
+{
+	criteria		IsMetroPolice ConceptTalkSoForceCover
+	response		CopSoForceCover
+}
+
+response "CopSoPeek"
+{
+	sentence "METROPOLICE_SO_PEEK" noscene
+}
+rule CopSoPeek
+{
+	criteria		IsMetroPolice ConceptTalkSoPeek
+	response		CopSoPeek
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Arrest Behavior
+//------------------------------------------------------------------------------------------------------------
+response "CopFreeze"
+{
+	sentence "METROPOLICE_FREEZE" noscene
+}
+rule CopFreeze
+{
+	criteria		IsMetroPolice ConceptTalkCopFreeze
+	response		CopFreeze
+}
+
+response "CopOverHere"
+{
+	sentence "METROPOLICE_OVER_HERE" noscene
+}
+rule CopOverHere
+{
+	criteria		IsMetroPolice ConceptTalkCopOverHere
+	response		CopOverHere
+}
+
+response "CopHesRunning"
+{
+	sentence "METROPOLICE_HES_RUNNING" noscene
+}
+rule CopHesRunning
+{
+	criteria		IsMetroPolice ConceptTalkCopHesRunning
+	response		CopHesRunning
+}
+
+response "CopHesArrestInPos"
+{
+	sentence "METROPOLICE_ARREST_IN_POS" noscene
+}
+rule CopHesArrestInPos
+{
+	criteria		IsMetroPolice ConceptTalkCopArrestInPos
+	response		CopHesArrestInPos
+}
+
+response "CopTakeHimDown"
+{
+	sentence "METROPOLICE_TAKE_HIM_DOWN" noscene
+}
+rule CopTakeHimDown
+{
+	criteria		IsMetroPolice ConceptTalkCopTakeHimDown
+	response		CopTakeHimDown
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Hey, it was at the bottom of the Metro-Police sentences in sentences.txt, don't blame me!
+//------------------------------------------------------------------------------------------------------------
+response "CopHitByPhysObj"
+{
+	sentence "METROPOLICE_HIT_BY_PHYSOBJECT" noscene
+}
+
+rule CopHitByPhysObj
+{
+	criteria		IsMetroPolice ConceptTalkCopHitByPhysObj
+	response		CopHitByPhysObj
+}
+
+//============================================================================================================
+// Metropolice commander mode speech
+//============================================================================================================
+
+response "MetropoliceAffim"
+{
+	sentence "METROPOLICE_IDLE_ANSWER_CR"
+}
+
+response "MetropoliceDenyMove"
+{
+	sentence "METROPOLICE_CANT_MOVE"
+}
+
+response "MetropoliceJoin"
+{
+	sentence "METROPOLICE_IDLE_CLEAR"
+}
+
+
+rule MetropoliceCommanded
+{
+	criteria		IsMetropolice ConceptTalkCommanded
+	response		MetropoliceAffim
+}
+
+rule MetropoliceFollow
+{
+	criteria		IsMetropolice ConceptTalkStartFollow
+	response		MetropoliceAffim
+}
+
+rule MetropoliceUnFollow
+{
+	criteria		IsMetropolice ConceptTalkStopFollow
+	response		MetropoliceDenyMove
+}
+
+rule MetropoliceJoinGroup
+{
+	criteria		IsMetropolice ConceptJoinPlayer
+	response		MetropoliceJoin
+}
+
+// Special
+
+response PoliceDeployManhack
+{
+	sentence "METROPOLICE_DEPLOY_MANHACK"
+}
+
+rule PoliceDeployManhack
+{
+	criteria	IsPlayer IsMetropolice
+	concept "TLK_METROPOLICE_DEPLOY_MANHACK"
+	response PoliceDeployManhack
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Behaviors
+//------------------------------------------------------------------------------------------------------------
+response "CopFtApproach"
+{
+	sentence "METROPOLICE_FT_APPROACH" noscene
+}
+rule CopFtApproach
+{
+	criteria		IsMetroPolice ConceptTalkFtApproach
+	response		CopFtApproach
+}
+
+response "CopFtMount"
+{
+	sentence "METROPOLICE_FT_MOUNT" noscene
+}
+rule CopFtMount
+{
+	criteria		IsMetroPolice ConceptTalkFtMount
+	response		CopFtMount
+}
+
+response "CopFtScan"
+{
+	sentence "METROPOLICE_FT_SCAN" noscene
+}
+rule CopFtScan
+{
+	criteria		IsMetroPolice ConceptTalkFtScan
+	response		CopFtScan
+}
+
+response "CopFtDismount"
+{
+	sentence "METROPOLICE_FT_DISMOUNT" noscene
+}
+rule CopFtDismount
+{
+	criteria		IsMetroPolice ConceptTalkFtDismount
+	response		CopFtDismount
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopAsHitRally"
+{
+	sentence "METROPOLICE_AS_HIT_RALLY" noscene
+}
+rule CopAsHitRally
+{
+	criteria		IsMetroPolice ConceptTalkAsHitRally
+	response		CopAsHitRally
+}
+
+response "CopAsHitAssault"
+{
+	sentence "METROPOLICE_AS_HIT_ASSAULT" noscene
+}
+rule CopAsHitAssault
+{
+	criteria		IsMetroPolice ConceptTalkAsHitAssault
+	response		CopAsHitAssault
+}
+
+response "CopAsAdvRally"
+{
+	sentence "METROPOLICE_AS_ADV_RALLY" noscene
+}
+rule CopAsAdvRally
+{
+	criteria		IsMetroPolice ConceptTalkAsAdvRally IsSquadLeader
+	response		CopAsAdvRally
+}
+
+response "CopAsAdvAssault"
+{
+	sentence "METROPOLICE_AS_ADV_ASSAULT" noscene
+}
+rule CopAsAdvAssault
+{
+	criteria		IsMetroPolice ConceptTalkAsAdvAssault IsSquadLeader
+	response		CopAsAdvAssault
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "CopSoBegin"
+{
+	sentence "METROPOLICE_SO_BEGIN" noscene
+}
+rule CopSoBegin
+{
+	criteria		IsMetroPolice ConceptTalkSoBegin IsSquadLeader
+	response		CopSoBegin
+}
+
+response "CopSoEnd"
+{
+	sentence "METROPOLICE_SO_END" noscene
+}
+rule CopSoEnd
+{
+	criteria		IsMetroPolice ConceptTalkSoEnd IsSquadLeader
+	response		CopSoEnd
+}
+
+response "CopSoForceCover"
+{
+	sentence "METROPOLICE_SO_FORCE_COVER" noscene
+}
+rule CopSoForceCover
+{
+	criteria		IsMetroPolice ConceptTalkSoForceCover
+	response		CopSoForceCover
+}
+
+response "CopSoPeek"
+{
+	sentence "METROPOLICE_SO_PEEK" noscene
+}
+rule CopSoPeek
+{
+	criteria		IsMetroPolice ConceptTalkSoPeek
+	response		CopSoPeek
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Arrest Behavior
+//------------------------------------------------------------------------------------------------------------
+response "CopFreeze"
+{
+	sentence "METROPOLICE_FREEZE" noscene
+}
+rule CopFreeze
+{
+	criteria		IsMetroPolice ConceptTalkCopFreeze
+	response		CopFreeze
+}
+
+response "CopOverHere"
+{
+	sentence "METROPOLICE_OVER_HERE" noscene
+}
+rule CopOverHere
+{
+	criteria		IsMetroPolice ConceptTalkCopOverHere
+	response		CopOverHere
+}
+
+response "CopHesRunning"
+{
+	sentence "METROPOLICE_HES_RUNNING" noscene
+}
+rule CopHesRunning
+{
+	criteria		IsMetroPolice ConceptTalkCopHesRunning
+	response		CopHesRunning
+}
+
+response "CopHesArrestInPos"
+{
+	sentence "METROPOLICE_ARREST_IN_POS" noscene
+}
+rule CopHesArrestInPos
+{
+	criteria		IsMetroPolice ConceptTalkCopArrestInPos
+	response		CopHesArrestInPos
+}
+
+response "CopTakeHimDown"
+{
+	sentence "METROPOLICE_TAKE_HIM_DOWN" noscene
+}
+rule CopTakeHimDown
+{
+	criteria		IsMetroPolice ConceptTalkCopTakeHimDown
+	response		CopTakeHimDown
+}
+
+//------------------------------------------------------------------------------------------------------------
+// Hey, it was at the bottom of the Metro-Police sentences in sentences.txt, don't blame me!
+//------------------------------------------------------------------------------------------------------------
+response "CopHitByPhysObj"
+{
+	sentence "METROPOLICE_HIT_BY_PHYSOBJECT" noscene
+}
+
+rule CopHitByPhysObj
+{
+	criteria		IsMetroPolice ConceptTalkCopHitByPhysObj
+	response		CopHitByPhysObj
+}
+
+//
+// Misc
+//
+
+response "Homies_WhoIsResponsible"
+{
+	scene "scenes/npc/homies/he03_02_responsibility.vcd" delay 180
+}
+
+rule HomiesResponsible
+{
+	criteria		Homies_Responsible
+
+	response		Homies_WhoIsResponsible
+}

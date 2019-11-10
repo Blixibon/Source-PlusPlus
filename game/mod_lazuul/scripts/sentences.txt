@@ -2501,61 +2501,6 @@ CONSCRIPT_PAIN3 npc/metropolice_new/pain3 {Len 1.0}
 CONSCRIPT_DIE1 npc/metropolice_new/die1 {Len 1.0}
 CONSCRIPT_DIE2 npc/metropolice_new/die2 {Len 1.0}
 CONSCRIPT_DIE3 npc/metropolice_new/die3 {Len 1.0}
-//===============================================================//
-// 	OVERHEAD ANNOUNCEMENTS - POST HECU TAKEOVER	//
-//===============================================================//
-
-// WGH
-BM_C1A3_0 bms_vox/buzwarn buzwarn(e95) attention.(e75) all(e75) science(e75) personnel(e75) report(e75) topside(e65) four(e75) immediate(e75) questioning {Len 8.16 closecaption C1A3_0}
-BM_C1A3_1 bms_vox/buzwarn(p95) buzwarn(p95 e95) all(e85) personnel(e85) evacuate(e85) high(e75) security(e70) materials(e60) storage(e70) facility {Len 7.53 closecaption C1A3_1}
-BM_C1A3_2 bms_vox/buzwarn(p130) buzwarn(p130 e95) emergency(e75) uranium(e75) containment(e75) team,(e35) to(e95) sector(e70) d(e110) {Len 10.044 closecaption C1A3_2}
-BM_C1A3_3 bms_vox/deeoo(e80) turret(e85) maintenance(e60) team,(e85) report(e75) to(e70) central(e70) command(e70) and(e70) communications(e70) center {Len 15.32 closecaption C1A3_3}
-BM_C1A3_4 bms_vox/buzwarn(p98) buzwarn(p98 e95) military(e70) personnel(e85),(e75) prosecute(e75) kilo01(e85) india(e85) lima(e70) with(e75) extreme(e75) force {Len 7.28 closecaption C1A3_4}
-BM_C1A3_5 bms_vox/buzwarn buzwarn buzwarn(e95) attention.  this(e65) announcement(e65) system(e75) now(e75) under(e75) military(e75) command {Len 14.88 closecaption C1A3_5}
-BM_C1A3_6 bms_vox/buzwarn buzwarn(e95) search(e80) and(e80) destroy(e80) force(e75) bravo, reports(e70) secondary(e75) objective(e70) terminated {Len 7.87 closecaption C1A3_6}
-BM_C1A3_7 bms_vox/dadeda(p98 e95) bravo(e85) force(e85) reports(e85) hotel(e85) sierra(e85) mike(e85) facility(e85) is(e85) secured {Len 13.6 closecaption C1A3_7}
-BM_C1A3_8 bms_vox/buzwarn buzwarn(t15 e95) attention.(e75) all(e65) military(e75) personnel(e75),(e75) atomic(e75) biological(e85) chemical(e85) alert {Len 6.76 closecaption C1A3_8}
-BM_C1A3_9 bms_vox/buzwarn buzwarn(t15 e95) attention.(e37) all(e65) military(e75) personnel(e75),(e75) extreme(e85) atomic(e75) biological(e95) chemical(e95) alert {Len 7.40 closecaption C1A3_9}
-BM_C1A3_10 bms_vox/buzwarn(p95) buzwarn(p95) buzwarn(p95 e95) attention.  black(e70) mesa(e70) announcement(e70) system(e70) now(e70) under(e70) military(e70) command {Len 16.40 closecaption C1A3_10}
-
-// BLAST PIT
-BM_C1A4_1 bms_vox/deeoo (e95) repair crew report to(e70) track control, sector e(e100) {Len 5.75 closecaption C2A1_1}
-BM_C1A4_2 bms_vox/deeoo (e95) maintenance team blue(p100 t0 s0 e100), check heat exchange coolant level(e100) {Len 5.55 closecaption C2A1_2}
-BM_C1A4_3 bms_vox/deeoo (e95) maintenance team green, check voltage(e100) on cable seven two nine(e100) {Len 6.73 closecaption C2A1_3}
-BM_C1A4_4 bms_vox/(p130) buzwarn buzwarn (p98 e95) medical team to materials storage facility, team bravo reports men down {Len 8.74 closecaption C2A1_4}
-BM_C1A4_5 bms_vox/(p130) buzwarn buzwarn (p98 e95) alpha force move out, science personnel resistance extreme {Len 6.68 closecaption C2A1_5}
-BM_C1A4_6 bms_vox/(p130) buzwarn buzwarn (p98 e95) attention. all black mesa security personnel wanted four immediate questioning {Len 8.48 closecaption C2A1_6}
-BM_C1A4_7 bms_vox/(p130) buzwarn buzwarn (p98 e95) attention. gordon freeman report to military personnel four immediate security check {Len 9.24 closecaption C2A1_7}
-BM_C1A4_8 bms_vox/buzwarn buzwarn (p102) warning, hostile biological forms detected in track control area e {Len 8.65 closecaption C2A1_8}
-
-//todo
-BM_C1A4_ROCKET_DISABLED bms_vox/buzwarn buzwarn. attention, experimental rocket test fire disengaged. {Len 7.38 closecaption C2A1_9}
-BM_C1A4_FUEL_POW_OFF bms_vox/fuel and power must be engaged to activate rocket test fire {Len 6.49 closecaption HECU.BP_10}
-BM_C1A4_FUEL_OFF bms_vox/fuel must be engaged to activate rocket test fire. {Len 6.49 closecaption HECU.BP_11}
-BM_C1A4_POW_OFF bms_vox/power must be engaged to ativate rocket test fire. {Len 6.49 closecaption HECU.BP_12}
-
-// POWER UP
-BM_C2A1_0 bms_vox/buzwarn buzwarn. warning. track power failure. check lower level power plant. {Len 8.00 closecaption C1A4_0}
-BM_C2A1_1 bms_vox/deeoo (e95) maintenance team yellow, please(s0 e100) service relay three hundred ninety four(e100) {Len 6.68 closecaption C1A4_1}
-BM_C2A1_2 bms_vox/(p130) dadeda (p98 e95) attention. gordon freeman report to military personnel four immediate security check {Len 8.72 closecaption C1A4_2}
-BM_C2A1_3 bms_vox/(p130) buzwarn buzwarn (p98 e95) delta team reports launch control secured {Len 5.51 closecaption C1A4_3}
-BM_C2A1_4 bms_vox/bizwarn bizwarn bizwarn danger, turret defense systems activated, silo e {Len 7.86 closecaption C1A4_4}
-BM_C2A1_5 bms_vox/deeoo sector e track control please report status {Len 5.43 closecaption C1A4_5}
-BM_C2A1_6 bms_vox/(p130) buzwarn buzwarn (p98 e95) echo force reports perimeter breach, sector e {Len 5.79 closecaption C1A4_6}
-BM_C2A1_7 bms_vox/(p130) buzwarn buzwarn (p98 e95) attention, search and destroy force go to code three. eliminate all biological forms. {Len 10.03 closecaption C1A4_7}
-BM_C2A1_8 bms_vox/bizwarn bizwarn danger, unauthorized detonation detected in experimental propulsion lab {Len 9.24 closecaption C1A4_8}
-
-//todo
-BM_POWER_OFF bms_vox/buzwarn main power is not on {Len 3.51 closecaption HECU.PU_10}
-BM_POWER_ON bms_vox/deeoo main power is on {Len 2.93 closecaption HECU.PU_11}
-
-// ON A RAIL
-BM_C2A2B_0 bms_vox/buzwarn(p110 e85) buzwarn(p110 e85) attention(e65) all(e75) personnel(e75). launch(e75) control(e75) train(e75) activated(e85), clear(e75) area(e75) immediately {Len 16.10 closecaption C2A2B_0}
-BM_C2A2B_1 bms_vox/dadeda(e85) attention(e90), satellite(e75) rocket(e75) silo(e75) reports(e85) status(e85) green(e55) four(e90) launch {Len 14.46 closecaption C2A2B_1}
-BM_C2A2C_launch_0 bms_vox/buzwarn(p95) buzwarn(p95) buzwarn(p95 e95) satellite(e70) launch(e70) system(e70) activated. {Len 9.13 closecaption C2A2C_launch_0}
-BM_C2A2C_launch_1 bms_vox/twenty(e75) seconds(e70) remaining {Len 3.71 closecaption C2A2C_launch_1}
-BM_C2A2C_launch_2 bms_vox/fifteen seconds {Len 2.76 closecaption C2A2C_launch_2}
-BM_C2A2C_launch_3 bms_vox/ten nine eight seven six five four three two one zero launch(e65) is(e70) go {Len 14.84 closecaption C2A2C_launch_3}
 // HALF-LIFE SPEECH SYSTEM SENTENCES. DO NOT MODIFY THIS FILE! Max of 1023 sentences.
 
 // HUMAN GRUNTS
@@ -5126,3 +5071,58 @@ SC_SUPPLIES1 scientist/c1a3_sci_rescued, cantbeworse {Len 4.15}
 SC_SUPPLIES2 scientist/protectme {Len 2.15}
 SC_SNEEZE scientist/sneeze {Len 2.15}
 SC_SUPPLIES3 scientist/thiswillhelp {Len 1.15}
+//===============================================================//
+// 	OVERHEAD ANNOUNCEMENTS - POST HECU TAKEOVER	//
+//===============================================================//
+
+// WGH
+BM_C1A3_0 bms_vox/buzwarn buzwarn(e95) attention.(e75) all(e75) science(e75) personnel(e75) report(e75) topside(e65) four(e75) immediate(e75) questioning {Len 8.16 closecaption C1A3_0}
+BM_C1A3_1 bms_vox/buzwarn(p95) buzwarn(p95 e95) all(e85) personnel(e85) evacuate(e85) high(e75) security(e70) materials(e60) storage(e70) facility {Len 7.53 closecaption C1A3_1}
+BM_C1A3_2 bms_vox/buzwarn(p130) buzwarn(p130 e95) emergency(e75) uranium(e75) containment(e75) team,(e35) to(e95) sector(e70) d(e110) {Len 10.044 closecaption C1A3_2}
+BM_C1A3_3 bms_vox/deeoo(e80) turret(e85) maintenance(e60) team,(e85) report(e75) to(e70) central(e70) command(e70) and(e70) communications(e70) center {Len 15.32 closecaption C1A3_3}
+BM_C1A3_4 bms_vox/buzwarn(p98) buzwarn(p98 e95) military(e70) personnel(e85),(e75) prosecute(e75) kilo01(e85) india(e85) lima(e70) with(e75) extreme(e75) force {Len 7.28 closecaption C1A3_4}
+BM_C1A3_5 bms_vox/buzwarn buzwarn buzwarn(e95) attention.  this(e65) announcement(e65) system(e75) now(e75) under(e75) military(e75) command {Len 14.88 closecaption C1A3_5}
+BM_C1A3_6 bms_vox/buzwarn buzwarn(e95) search(e80) and(e80) destroy(e80) force(e75) bravo, reports(e70) secondary(e75) objective(e70) terminated {Len 7.87 closecaption C1A3_6}
+BM_C1A3_7 bms_vox/dadeda(p98 e95) bravo(e85) force(e85) reports(e85) hotel(e85) sierra(e85) mike(e85) facility(e85) is(e85) secured {Len 13.6 closecaption C1A3_7}
+BM_C1A3_8 bms_vox/buzwarn buzwarn(t15 e95) attention.(e75) all(e65) military(e75) personnel(e75),(e75) atomic(e75) biological(e85) chemical(e85) alert {Len 6.76 closecaption C1A3_8}
+BM_C1A3_9 bms_vox/buzwarn buzwarn(t15 e95) attention.(e37) all(e65) military(e75) personnel(e75),(e75) extreme(e85) atomic(e75) biological(e95) chemical(e95) alert {Len 7.40 closecaption C1A3_9}
+BM_C1A3_10 bms_vox/buzwarn(p95) buzwarn(p95) buzwarn(p95 e95) attention.  black(e70) mesa(e70) announcement(e70) system(e70) now(e70) under(e70) military(e70) command {Len 16.40 closecaption C1A3_10}
+
+// BLAST PIT
+BM_C1A4_1 bms_vox/deeoo (e95) repair crew report to(e70) track control, sector e(e100) {Len 5.75 closecaption C2A1_1}
+BM_C1A4_2 bms_vox/deeoo (e95) maintenance team blue(p100 t0 s0 e100), check heat exchange coolant level(e100) {Len 5.55 closecaption C2A1_2}
+BM_C1A4_3 bms_vox/deeoo (e95) maintenance team green, check voltage(e100) on cable seven two nine(e100) {Len 6.73 closecaption C2A1_3}
+BM_C1A4_4 bms_vox/(p130) buzwarn buzwarn (p98 e95) medical team to materials storage facility, team bravo reports men down {Len 8.74 closecaption C2A1_4}
+BM_C1A4_5 bms_vox/(p130) buzwarn buzwarn (p98 e95) alpha force move out, science personnel resistance extreme {Len 6.68 closecaption C2A1_5}
+BM_C1A4_6 bms_vox/(p130) buzwarn buzwarn (p98 e95) attention. all black mesa security personnel wanted four immediate questioning {Len 8.48 closecaption C2A1_6}
+BM_C1A4_7 bms_vox/(p130) buzwarn buzwarn (p98 e95) attention. gordon freeman report to military personnel four immediate security check {Len 9.24 closecaption C2A1_7}
+BM_C1A4_8 bms_vox/buzwarn buzwarn (p102) warning, hostile biological forms detected in track control area e {Len 8.65 closecaption C2A1_8}
+
+//todo
+BM_C1A4_ROCKET_DISABLED bms_vox/buzwarn buzwarn. attention, experimental rocket test fire disengaged. {Len 7.38 closecaption C2A1_9}
+BM_C1A4_FUEL_POW_OFF bms_vox/fuel and power must be engaged to activate rocket test fire {Len 6.49 closecaption HECU.BP_10}
+BM_C1A4_FUEL_OFF bms_vox/fuel must be engaged to activate rocket test fire. {Len 6.49 closecaption HECU.BP_11}
+BM_C1A4_POW_OFF bms_vox/power must be engaged to ativate rocket test fire. {Len 6.49 closecaption HECU.BP_12}
+
+// POWER UP
+BM_C2A1_0 bms_vox/buzwarn buzwarn. warning. track power failure. check lower level power plant. {Len 8.00 closecaption C1A4_0}
+BM_C2A1_1 bms_vox/deeoo (e95) maintenance team yellow, please(s0 e100) service relay three hundred ninety four(e100) {Len 6.68 closecaption C1A4_1}
+BM_C2A1_2 bms_vox/(p130) dadeda (p98 e95) attention. gordon freeman report to military personnel four immediate security check {Len 8.72 closecaption C1A4_2}
+BM_C2A1_3 bms_vox/(p130) buzwarn buzwarn (p98 e95) delta team reports launch control secured {Len 5.51 closecaption C1A4_3}
+BM_C2A1_4 bms_vox/bizwarn bizwarn bizwarn danger, turret defense systems activated, silo e {Len 7.86 closecaption C1A4_4}
+BM_C2A1_5 bms_vox/deeoo sector e track control please report status {Len 5.43 closecaption C1A4_5}
+BM_C2A1_6 bms_vox/(p130) buzwarn buzwarn (p98 e95) echo force reports perimeter breach, sector e {Len 5.79 closecaption C1A4_6}
+BM_C2A1_7 bms_vox/(p130) buzwarn buzwarn (p98 e95) attention, search and destroy force go to code three. eliminate all biological forms. {Len 10.03 closecaption C1A4_7}
+BM_C2A1_8 bms_vox/bizwarn bizwarn danger, unauthorized detonation detected in experimental propulsion lab {Len 9.24 closecaption C1A4_8}
+
+//todo
+BM_POWER_OFF bms_vox/buzwarn main power is not on {Len 3.51 closecaption HECU.PU_10}
+BM_POWER_ON bms_vox/deeoo main power is on {Len 2.93 closecaption HECU.PU_11}
+
+// ON A RAIL
+BM_C2A2B_0 bms_vox/buzwarn(p110 e85) buzwarn(p110 e85) attention(e65) all(e75) personnel(e75). launch(e75) control(e75) train(e75) activated(e85), clear(e75) area(e75) immediately {Len 16.10 closecaption C2A2B_0}
+BM_C2A2B_1 bms_vox/dadeda(e85) attention(e90), satellite(e75) rocket(e75) silo(e75) reports(e85) status(e85) green(e55) four(e90) launch {Len 14.46 closecaption C2A2B_1}
+BM_C2A2C_launch_0 bms_vox/buzwarn(p95) buzwarn(p95) buzwarn(p95 e95) satellite(e70) launch(e70) system(e70) activated. {Len 9.13 closecaption C2A2C_launch_0}
+BM_C2A2C_launch_1 bms_vox/twenty(e75) seconds(e70) remaining {Len 3.71 closecaption C2A2C_launch_1}
+BM_C2A2C_launch_2 bms_vox/fifteen seconds {Len 2.76 closecaption C2A2C_launch_2}
+BM_C2A2C_launch_3 bms_vox/ten nine eight seven six five four three two one zero launch(e65) is(e70) go {Len 14.84 closecaption C2A2C_launch_3}

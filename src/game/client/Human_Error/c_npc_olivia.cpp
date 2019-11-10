@@ -25,7 +25,7 @@
 #include "materialsystem/IMaterialVar.h"
 #include "colorcorrectionmgr.h"
 
-#include "ge_screeneffects.h"
+#include "glow_outline_effect.h"
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -81,7 +81,7 @@ private:
 
 	ClientCCHandle_t m_CCHandle;
 
-	CEntGlowEffect *m_pEntGlowEffect;
+	CGlowObject *m_pGlowEffect;
 	bool m_bGlowEnabled;
 };
 
@@ -110,7 +110,9 @@ C_NPC_Olivia::C_NPC_Olivia()
 
 	m_CCHandle = INVALID_CLIENT_CCHANDLE;
 
-	m_pEntGlowEffect = (CEntGlowEffect*)g_pScreenSpaceEffects->GetScreenSpaceEffect("ge_entglow");
+	Vector vecColor(255, 255, 196);
+	vecColor /= 255;
+	m_pGlowEffect = new CGlowObject(this, vecColor, 0.f, false, false);
 	m_bGlowEnabled = false;
 }
 
@@ -119,6 +121,12 @@ C_NPC_Olivia::~C_NPC_Olivia()
 	if (m_CCHandle != INVALID_CLIENT_CCHANDLE)
 	{
 		g_pColorCorrectionMgr->RemoveColorCorrection( m_CCHandle );
+	}
+
+	if (m_pGlowEffect)
+	{
+		delete m_pGlowEffect;
+		m_pGlowEffect = nullptr;
 	}
 }
 
@@ -268,11 +276,12 @@ void C_NPC_Olivia::ClientThink()
 	{
 		if (m_bOliviaLight)
 		{
-			m_pEntGlowEffect->RegisterEnt( this, Color(255, 255, 196, 64) );
+			//255, 255, 196, 64
+			m_pGlowEffect->SetRenderFlags(false, true);
 		}
 		else
 		{
-			m_pEntGlowEffect->DeregisterEnt( this );
+			m_pGlowEffect->SetRenderFlags(false, false);
 		}
 
 		m_bGlowEnabled = m_bOliviaLight;
@@ -280,7 +289,9 @@ void C_NPC_Olivia::ClientThink()
 
 	if (m_bGlowEnabled)
 	{
-		m_pEntGlowEffect->SetEntGlowScale( this, flScale * 0.1f );
+		float flAlpha = 64 * flScale;
+		flAlpha /= 255;
+		m_pGlowEffect->SetAlpha(flAlpha);
 	}
 
 	UpdateParticleEffects();

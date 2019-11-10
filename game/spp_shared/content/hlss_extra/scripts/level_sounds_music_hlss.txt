@@ -1,0 +1,291 @@
+//
+//
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+//
+// VOL_NORM		1.0f
+//
+//-----------------------------------------------------------------------------
+// common attenuation values
+//-----------------------------------------------------------------------------
+//
+// DON'T USE THESE - USE SNDLVL_ INSTEAD!!!
+//	ATTN_NONE		0.0f	
+//	ATTN_NORM		0.8f
+//	ATTN_IDLE		2.0f
+//	ATTN_STATIC		1.25f 
+//	ATTN_RICOCHET	1.5f
+//	ATTN_GUNFIRE	0.27f
+//
+//	SNDLVL_NONE		= 0,
+//	SNDLVL_25dB		= 25,
+//	SNDLVL_30dB		= 30,
+//	SNDLVL_35dB		= 35,
+//	SNDLVL_40dB		= 40,
+//	SNDLVL_45dB		= 45,
+//	SNDLVL_50dB		= 50,	= 3.9
+//	SNDLVL_55dB		= 55,	= 3.0
+//	SNDLVL_IDLE		= 60,	= 2.0
+//	SNDLVL_TALKING		= 60,	= 2.0
+//	SNDLVL_60dB		= 60,	= 2.0
+//	SNDLVL_65dB		= 65,	= 1.5
+//	SNDLVL_STATIC		= 66,	= 1.25
+//	SNDLVL_70dB		= 70,	= 1.0
+//	SNDLVL_NORM		= 75,
+//	SNDLVL_75dB		= 75,	= 0.8
+//	SNDLVL_80dB		= 80,	= 0.7
+//	SNDLVL_85dB		= 85,	= 0.6
+//	SNDLVL_90dB		= 90,	= 0.5
+//	SNDLVL_95dB		= 95,
+//	SNDLVL_100dB	= 100,	= 0.4
+//	SNDLVL_105dB	= 105,
+//	SNDLVL_120dB	= 120,
+//	SNDLVL_130dB	= 130,
+//	SNDLVL_GUNFIRE	= 140, = 0.27
+//	SNDLVL_140dB	= 140,	= 0.2
+//	SNDLVL_150dB	= 150,	= 0.2
+//
+
+"song_apc"				
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/VLVX_song23.mp3"
+}
+
+"song_aliengrunt"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/GruntSpotted.mp3"
+}
+
+"song_controller"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.20000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/VLVX_song0.mp3"
+}
+
+"song_end_credits"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/End_Credits.mp3"
+}
+
+"song_barricade"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Barricade.mp3"	
+}
+
+"song_museum"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Barricade.mp3"	
+}
+
+"song_final_battle"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.60000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Flight Of The Manta Ray.mp3"
+}
+
+"song_metrocop_theme"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Metrocop_Theme.mp3"	
+}
+
+"song_recharge_generators"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/RECHARGE THE GENERATORS - Adam Coltman.mp3"	
+}
+
+
+"song_olivia_pad_c"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Intro/Olivia Pad C.mp3"	
+}
+
+"song_olivia_piano_roll1"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Intro/Olivia Piano Roll 1.mp3"	
+}
+
+"song_olivia_piano_roll2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Intro/Olivia Piano Roll 2.mp3"	
+}
+"song_olivia_piano_roll3"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Intro/Olivia Piano Roll 3.mp3"	
+}
+
+"song_olivia_piano_roll4"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.80000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Intro/Olivia Piano Roll 4.mp3"	
+}
+
+
+"song_olivia_minecontrol"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Minecontrol Topline 1.mp3"	
+}
+
+"song_olivia_vortessence"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Vortessence Topline 1.mp3"	
+}
+
+"song_olivia_ritual"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Vortessence Topline 1.mp3"	
+}
+
+"song_olivia_outro1"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia String Outtro 1.mp3"	
+}
+
+"song_olivia_outro2"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia String Outtro 2.mp3"	
+}
+
+"song_olivia_outro3"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia String Outtro 3.mp3"	
+}
+
+"song_olivia_outro4"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia String Outtro 4.mp3"	
+}
+
+"song_olivia_riser"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"0.70000"
+	"pitch"			"100"
+
+	"soundlevel"	"0"
+
+	"wave"			"*#music/Olivia Intro Riser.mp3"	
+}

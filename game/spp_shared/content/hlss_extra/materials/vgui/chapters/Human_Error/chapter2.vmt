@@ -1,0 +1,9 @@
+"UnlitGeneric"
+
+{
+	"$basetexture" "vgui/chapters/Human_Error/chapter2"
+	"$vertexalpha" 1
+	"$ignorez" "1"
+     
+
+}

@@ -1,0 +1,116 @@
+"VGUI_Screens"
+{
+	"manhack_screen"
+	{
+		// TERO: Screen for the Combine Console
+		// type defined in c_combine_console_screen.cpp
+		"type"				"manhack_screen" // //vgui_screen_panel
+
+		// These describe the dimensions of the screen *in pixels*
+
+		"pixelswide" 	128
+		"pixelshigh"	64
+
+		// This is the name of the .res file to load up and apply to the vgui panel
+		"resfile"			"scripts/Human_Error_screens/ManhackViewModel.res"
+	
+	}
+
+	"combine_console_screen"
+	{
+	// TERO: Screen for the Combine Console
+	// type defined in c_combine_console_screen.cpp
+	"type"				"vgui_screen_panel"
+
+	// These describe the dimensions of the screen *in pixels*
+
+	"pixelswide" 	240
+	"pixelshigh"	480
+
+	// This is the name of the .res file to load up and apply to the vgui panel
+	"resfile"			"scripts/Human_Error_screens/combine_console_screen.res"
+	
+	}
+
+
+	"hacked_warnings001"
+	{
+	// TERO: Screen for the Combine Console
+	// type defined in c_combine_console_screen.cpp
+	"type"				"vgui_screen_panel"
+
+	// These describe the dimensions of the screen *in pixels*
+
+	"pixelswide" 	400
+	"pixelshigh"	1200
+
+	// This is the name of the .res file to load up and apply to the vgui panel
+	"resfile"			"scripts/Human_Error_screens/hacked_warnings001.res"
+	
+	}
+
+	"energy_directed_triplasers"
+	{
+	// TERO: Screen for the Combine Console
+	// type defined in c_combine_console_screen.cpp
+	"type"				"vgui_screen_panel"
+
+	// These describe the dimensions of the screen *in pixels*
+
+	"pixelswide" 	210
+	"pixelshigh"	220
+
+	// This is the name of the .res file to load up and apply to the vgui panel
+	"resfile"			"scripts/Human_Error_screens/energy_directed_triplasers.res"
+	
+	}
+
+	"energy_directed_elevator"
+	{
+	// TERO: Screen for the Combine Console
+	// type defined in c_combine_console_screen.cpp
+	"type"				"vgui_screen_panel"
+
+	// These describe the dimensions of the screen *in pixels*
+
+	"pixelswide" 	210
+	"pixelshigh"	220
+
+	// This is the name of the .res file to load up and apply to the vgui panel
+	"resfile"			"scripts/Human_Error_screens/energy_directed_elevator.res"
+	
+	}
+
+	"generator_online"
+	{
+	// TERO: Screen for the Combine Console
+	// type defined in c_combine_console_screen.cpp
+	"type"				"vgui_screen_panel"
+
+	// These describe the dimensions of the screen *in pixels*
+
+	"pixelswide" 	210
+	"pixelshigh"	150
+
+	// This is the name of the .res file to load up and apply to the vgui panel
+	"resfile"			"scripts/Human_Error_screens/generator_online.res"
+	
+	}
+
+	"generator_offline"
+	{
+	// TERO: Screen for the Combine Console
+	// type defined in c_combine_console_screen.cpp
+	"type"				"vgui_screen_panel"
+
+	// These describe the dimensions of the screen *in pixels*
+
+	"pixelswide" 	210
+	"pixelshigh"	150
+
+	// This is the name of the .res file to load up and apply to the vgui panel
+	"resfile"			"scripts/Human_Error_screens/generator_offline.res"
+	
+	}
+
+}

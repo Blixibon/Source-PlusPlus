@@ -204,10 +204,8 @@ void CHLSS_MetrocopRadio::FakeRadio(float flTime)
 
 void CHLSS_MetrocopRadio::UpdateRadioHud()
 {
-	CBasePlayer *pPlayer  = AI_GetSinglePlayer();
-	if (pPlayer && pPlayer->IsSuitEquipped())
 	{
-		CSingleUserRecipientFilter filter(pPlayer);
+		CTeamRecipientFilter filter(TEAM_COMBINE);
 		UserMessageBegin(filter, "UpdateRadioDuration");
 			WRITE_FLOAT(m_flLastSoundDuration);
 		MessageEnd();

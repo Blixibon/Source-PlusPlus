@@ -91,7 +91,43 @@ static void SolveBlockingProps( bool bBreakProps, CPropDrivableAPC *pVehicleEnti
 static void SimpleCollisionResponse( Vector velocityIn, const Vector &normal, float coefficientOfRestitution, Vector *pVelocityOut );
 static void KillBlockingEnemyNPCs( CBasePlayer *pPlayer, CBaseEntity *pVehicleEntity, IPhysicsObject *pVehiclePhysics );
 
-extern int HLSS_SelectTargetType(CBaseEntity *pEntity);
+int HLSS_SelectTargetType(CBaseEntity* pEntity)
+{
+	if (pEntity)
+	{
+		switch (pEntity->Classify())
+		{
+		case CLASS_CITIZEN_REBEL:
+		case CLASS_PLAYER_ALLY:
+		case CLASS_PLAYER_ALLY_VITAL:
+		case CLASS_PLAYER:
+			return 1;
+			break;
+		case CLASS_ALIENCONTROLLER:
+		case CLASS_ALIENGRUNT:
+		case CLASS_VORTIGAUNT:
+		case CLASS_MANTARAY_TELEPORTER:
+			return 2;
+			break;
+		case CLASS_HEADCRAB:
+		case CLASS_ZOMBIE:
+		case CLASS_ANTLION:
+			return 3;
+			break;
+		case CLASS_MILITARY_HACKED:
+		case CLASS_COMBINE_HACKED:
+		case CLASS_AIR_DEFENSE_HACKED:
+		case CLASS_HACKED_ROLLERMINE:
+			return 4;
+			break;
+		default:
+			return 0;
+			break;
+		}
+	}
+
+	return 0;
+}
 
 BEGIN_DATADESC( CPropDrivableAPC )
 	DEFINE_FIELD( m_flDangerSoundTime, FIELD_TIME ),
@@ -263,7 +299,7 @@ void CPropDrivableAPC::CreateAPCLaserDot( void )
 	// Create a laser if we don't have one
 	if ( m_hLaserDot == NULL )
 	{
-		m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false );
+		m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false, false );
 	}
 }
 
@@ -327,12 +363,12 @@ void CPropDrivableAPC::Activate()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CPropDrivableAPC::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr )
+void CPropDrivableAPC::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator)
 {
 	CTakeDamageInfo info = inputInfo;
 
 	if (info.GetAttacker() && info.GetAttacker()->MyNPCPointer() && info.GetAttacker()->IsAlive() &&
-		CBaseCombatCharacter::GetDefaultRelationshipDispositionBetweenClasses( CLASS_PLAYER, info.GetAttacker()->Classify() ) != D_LI )
+		g_pGameRules->PlayerRelationship(GetDriver(), info.GetAttacker()) != GR_TEAMMATE )
 	{
 		if (!m_hTarget || m_flTargetSelectTime < gpGlobals->curtime)
 		{
@@ -349,7 +385,7 @@ void CPropDrivableAPC::TraceAttack( const CTakeDamageInfo &inputInfo, const Vect
 		}
 	}
 
-	BaseClass::TraceAttack( info, vecDir, ptr );
+	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 }
 
 //-----------------------------------------------------------------------------
@@ -551,7 +587,7 @@ void CPropDrivableAPC::AimGunAt( Vector *endPos, float flInterval )
 			SetLaserDotTarget( m_hLaserDot, NULL );
 		}*/
 
-		if (tr.m_pEnt && tr.m_pEnt->MyNPCPointer() && CBaseCombatCharacter::GetDefaultRelationshipDispositionBetweenClasses( CLASS_PLAYER, tr.m_pEnt->Classify() ) == D_HT )
+		if (tr.m_pEnt && tr.m_pEnt->MyNPCPointer() && g_pGameRules->PlayerRelationship(GetDriver(), tr.m_pEnt) == GR_NOTTEAMMATE)
 		{
 			SetLaserDotTarget( m_hLaserDot, tr.m_pEnt );
 

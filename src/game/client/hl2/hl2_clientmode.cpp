@@ -19,7 +19,7 @@ ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 // The current client mode. Always ClientModeNormal in HL.
 IClientMode *g_pClientMode = NULL;
 
-#define SCREEN_FILE		"scripts/vgui_screens.txt"
+#define SCREEN_FOLDER		"scripts/vgui_screens"
 
 class CHLModeManager : public IVModeManager
 {
@@ -46,7 +46,24 @@ CHLModeManager::~CHLModeManager( void )
 void CHLModeManager::Init( void )
 {
 	g_pClientMode = GetClientModeNormal();
-	PanelMetaClassMgr()->LoadMetaClassDefinitionFile( SCREEN_FILE );
+	//PanelMetaClassMgr()->LoadMetaClassDefinitionFile( SCREEN_FILE );
+
+	FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
+	const char* fileName = SCREEN_FOLDER "/*.txt";
+	fileName = g_pFullFileSystem->FindFirstEx(fileName, "GAME", &findHandle);
+	while (fileName)
+	{
+		if (!g_pFullFileSystem->FindIsDirectory(findHandle))
+		{
+			char cScreenFile[MAX_PATH];
+			V_ComposeFileName(SCREEN_FOLDER, fileName, cScreenFile, MAX_PATH);
+			PanelMetaClassMgr()->LoadMetaClassDefinitionFile(cScreenFile);
+		}
+
+		fileName = g_pFullFileSystem->FindNext(findHandle);
+	}
+
+	g_pFullFileSystem->FindClose(findHandle);
 }
 
 void CHLModeManager::SwitchMode( bool commander, bool force )

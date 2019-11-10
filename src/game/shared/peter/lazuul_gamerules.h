@@ -125,10 +125,7 @@ public:
 		return m_nGameMode;
 	}
 
-	int		GetProtaganistTeam()
-	{
-		return TEAM_REBELS;
-	}
+	int		GetProtaganistTeam();
 
 #ifndef CLIENT_DLL
 	virtual float			GetAmmoDamage(CBaseEntity* pAttacker, CBaseEntity* pVictim, int nAmmoType);

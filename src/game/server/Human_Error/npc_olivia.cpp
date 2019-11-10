@@ -919,7 +919,7 @@ void CNPC_Olivia::Spawn()
 
 		m_vOldGoal = vec3_origin;
 
-		SetHullType( HULL_HUMAN_CENTERED ); 
+		SetHullType( HULL_HUMAN ); 
 		SetHullSizeNormal();
 
 		SetCollisionBounds( OLIVIA_HULL_MINS, OLIVIA_HULL_MAXS );
@@ -1054,7 +1054,7 @@ void CNPC_Olivia::Spawn()
 	SetUse( &CNPC_Olivia::OliviaUse );
 }
 
-void CNPC_Olivia::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CNPC_Olivia::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator)
 {
 	if (HasSpawnFlags(SF_OLIVIA_INVISIBLE))
 	{
@@ -1063,7 +1063,7 @@ void CNPC_Olivia::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 
 	if (HasSpawnFlags(SF_OLIVIA_TAKE_DAMAGE) || HasSpawnFlags(SF_OLIVIA_INFLICT_DAMAGE_ON_PLAYER))
 	{
-		BaseClass::TraceAttack( info, vecDir, ptr );
+		BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 	}
 }
 
