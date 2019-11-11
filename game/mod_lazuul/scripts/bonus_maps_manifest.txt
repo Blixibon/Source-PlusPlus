@@ -1,0 +1,8 @@
+bonus_maps_manifest
+{
+	"dir"		"scripts/bms_hazzard"
+
+	"search"	"maps"	[$WIN32]
+
+	"map"		"scripts/bms_hazzard/bms_hazzard.bns"	[$X360]
+}
