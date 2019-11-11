@@ -3173,10 +3173,13 @@ bool CAI_Navigator::SimplifyFlyPath(  const AI_ProgressFlyPathParams_t &params )
 	if ( params.bTrySimplify && SimplifyPathForward( FLY_ROUTE_SIMPLIFY_LOOK_DIST ) )
 		return true;
 
+	//TERO: added
+	Vector vecOrigin = GetLocalOrigin() + Vector(0, 0, params.vertOffset);
+
 	// don't shorten path_corners
 	bool bIsStrictWaypoint = ( !params.bTrySimplify || ( (GetPath()->CurWaypointFlags() & (bits_WP_TO_PATHCORNER|bits_WP_DONT_SIMPLIFY) ) != 0 ) );
 
-	Vector dir = GetCurWaypointPos() - GetLocalOrigin();
+	Vector dir = GetCurWaypointPos() - vecOrigin;
 	float length = VectorNormalize( dir );
 	
 	if ( !bIsStrictWaypoint || length < params.strictPointTolerance )
@@ -3187,7 +3190,7 @@ bool CAI_Navigator::SimplifyFlyPath(  const AI_ProgressFlyPathParams_t &params )
 			return false;
 
 		AIMoveTrace_t moveTrace;
-		GetMoveProbe()->MoveLimit( NAV_FLY, GetLocalOrigin(), GetPath()->NextWaypointPos(),
+		GetMoveProbe()->MoveLimit( NAV_FLY, vecOrigin, GetPath()->NextWaypointPos(),
 			params.collisionMask, params.pTarget, &moveTrace);
 		
 		if ( moveTrace.flDistObstructed - params.blockTolerance < 0.01 || 

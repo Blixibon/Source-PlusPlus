@@ -56,6 +56,21 @@ public:
 	virtual const char		*GetDeathMessageText( void ) { return "ELOISE_DEAD"; }
 };
 
+class CNPC_Anders : public CNPC_UniqueMetrocop
+{
+public:
+	DECLARE_CLASS(CNPC_Anders, CNPC_MetroPolice);
+
+	void Precache()
+	{
+		m_iUniqueMetropolice = METROPOLICE_ANDERS;
+		SetModelName(AllocPooledString("models/HLSS_Characters/police_sdk.mdl"));
+		BaseClass::Precache();
+	}
+
+	virtual const char* GetDeathMessageText(void) { return "ANDERS_DEAD"; }
+};
+
 // global pointer to Larson for fast lookups
 CEntityClassList<CNPC_UniqueMetrocop> g_UniqueMetrocopList;
 template <> CNPC_UniqueMetrocop *CEntityClassList<CNPC_UniqueMetrocop>::m_pClassList = NULL;
@@ -63,6 +78,7 @@ template <> CNPC_UniqueMetrocop *CEntityClassList<CNPC_UniqueMetrocop>::m_pClass
 LINK_ENTITY_TO_CLASS( npc_noah,		CNPC_Noah );
 LINK_ENTITY_TO_CLASS( npc_eloise,	CNPC_Eloise );
 LINK_ENTITY_TO_CLASS( npc_larson,	CNPC_Larson );
+LINK_ENTITY_TO_CLASS(npc_anders, CNPC_Anders);
 
 //=========================================================
 // Returns a pointer to Eloise's entity

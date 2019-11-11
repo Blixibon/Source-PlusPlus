@@ -37,6 +37,7 @@
 
 // Spawnflags
 #define SF_DROPSHIP_WAIT_FOR_DROPOFF_INPUT		( 1 << 15 )
+#define SF_DROPSHIP_UNLOAD_IN_HOVER				(1 << 16)
 
 #define DROPSHIP_ACCEL_RATE				300
 
@@ -133,6 +134,8 @@ enum LandingState_t
 	LANDING_HOVER_LEVEL_OUT,
 	LANDING_HOVER_DESCEND,
 	LANDING_HOVER_TOUCHDOWN,
+	LANDING_HOVER_UNLOADING,
+	LANDING_HOVER_UNLOADED,
 	LANDING_END_HOVER,
 };
 
@@ -2153,10 +2156,10 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 				return;
 
 			// Wait here till designer tells us to get moving again.
-			if ( IsHovering() )
+			if ( IsHovering() && !HasSpawnFlags(SF_DROPSHIP_UNLOAD_IN_HOVER) )
 				return;
 
-			SetLandingState( LANDING_UNLOADING );
+			SetLandingState(IsHovering() ? LANDING_HOVER_UNLOADING : LANDING_UNLOADING);
 
 			// If we're dropping off troops, we'll wait for them to be done.
 			// Otherwise, just pause on the ground for a few seconds and then leave.
@@ -2181,6 +2184,7 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 		break;
 
 	case LANDING_UNLOADING:
+	case LANDING_HOVER_UNLOADING:
 		{
 			// If we've got no specified takeoff time, we're still waiting for troops to exit. Idle.
 			if ( !m_flTimeTakeOff )
@@ -2258,6 +2262,14 @@ void CNPC_CombineDropship::PrescheduleThink( void )
 
 	case LANDING_LIFTOFF:
 		{
+			if (IsHovering() && m_hLandTarget != NULL)
+			{
+				// We're trying to hover above an arbitrary point, not above the ground.
+				// Recompute flAltitude to indicate the vertical distance from the land
+				// target so that touchdown is correctly detected.
+				flAltitude = GetAbsOrigin().z - m_hLandTarget->GetAbsOrigin().z;
+			}
+
 			// Once we're off the ground, start flying again
 			if ( flAltitude > 120 )
 			{

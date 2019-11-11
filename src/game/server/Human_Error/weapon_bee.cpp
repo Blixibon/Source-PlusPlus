@@ -202,7 +202,7 @@ void CBee::SetGracePeriod( float flGracePeriod )
 
 unsigned int CBee::PhysicsSolidMaskForEntity( void ) const
 { 
-	return BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX;
+	return (BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX) & ~CONTENTS_GRATE;
 }
 
 void CBee::Explode( void )
@@ -234,7 +234,7 @@ void CBee::Explode( void )
 	if (bee_gib.GetBool())
 	{
 		CEffectData	data;
-		Vector forward;
+		//Vector forward;
 
 	
 		data.m_vOrigin = GetAbsOrigin();
@@ -326,8 +326,9 @@ Vector CBee::GetShootEnemyDir( const Vector &shootOrigin, bool bNoisy )
 
 			//TERO: lets do a trace to see if we can get to enemy straight
 			trace_t tr;
-			UTIL_TraceLine( GetAbsOrigin(), GetEnemy()->GetAbsOrigin(), MASK_ALL,  this, COLLISION_GROUP_NPC, &tr);
+			UTIL_TraceLine( GetAbsOrigin(), GetEnemy()->GetAbsOrigin(), PhysicsSolidMaskForEntity(),  this, COLLISION_GROUP_NPC, &tr);
 
+#ifdef BEE_USE_NOCLIP_ON_CHAINLINKS
 			//TERO: lets see if we are going to hit a frigging fence
 			const surfacedata_t *pdata = physprops->GetSurfaceData( tr.surface.surfaceProps );	
 			if ( pdata != NULL )
@@ -338,7 +339,7 @@ Vector CBee::GetShootEnemyDir( const Vector &shootOrigin, bool bNoisy )
 					SetMoveType( MOVETYPE_NOCLIP );
 				}
 			}
-
+#endif
 			if ( tr.fraction!=1.0 && tr.m_pEnt != GetEnemy() && !m_bHasNoClip &&
 				 (tr.m_pEnt != NULL || tr.m_pEnt->Classify() != CLASS_ALIENGRUNT)) //&& m_bWorkingPathFinding
 			{

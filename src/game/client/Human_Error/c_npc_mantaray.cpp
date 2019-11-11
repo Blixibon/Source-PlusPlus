@@ -29,7 +29,7 @@
 #include "c_te_effect_dispatch.h"
 
 
-#include "mantaray_shared.h"
+#include "Human_Error/mantaray_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

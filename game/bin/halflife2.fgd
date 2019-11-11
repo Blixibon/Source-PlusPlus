@@ -127,6 +127,15 @@
 		"Auto" : "Current Player Weapon Ammo"
 	]
 	ammoamount(integer) : "Amount of ammo to give" : 30
+
+	can_recharge(choices) : "Can do recharge behavior?" : 0 = 
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	input SetRechargerOn(void) : "Set recharge behavior on."
+	input SetRechargerOff(void) : "Set recharge behavior off."
 ]
 
 @BaseClass base(BaseNPC ) = RappelNPC
@@ -1460,6 +1469,7 @@
 	spawnflags(Flags) =
 	[
 		32768 : "Wait for input before dropoff" : 0
+		65536 : "Deploy troops while hovering"	: 0
 	]
 
 	LandTarget(target_destination) : "Land target name"
@@ -1839,6 +1849,16 @@
 	input EnableManhackToss(void) : "Enables manhack toss (which had been disabled by the spawnflag)"
 	input SetPoliceGoal(string) : "Causes the NPC to police the area defined by an ai_goal_police"
 	input ActivateBaton(void) : "Set the baton to active"
+
+	input SetCommandable(void) : "Make a previously uncommandable metrocop commandable"
+	input SetNotCommandable(void) : "Make a previously commandable metrocop uncommandable"
+	input SetMedicOn(void) : "Set the medic flag on. Will not change the model or skin of the metrocop."
+	input SetMedicOff(void) : "Set the medic flag off. Will not change the model or skin of the metrocop."
+	input SetAmmoResupplierOn(void) : "Set the ammo-resupplier flag on. Will not change the model or skin of the metrocop."
+	input SetAmmoResupplierOff(void) : "Set the ammo-resupplier flag off. Will not change the model or skin of the metrocop."
+
+	input SpeakRecharge(void) : "Speak the recharging line."
+	input SpeakGeneratorOffline(void) : "Speak generator offline line."
 
 	// Outputs
 	output OnStunnedPlayer(void) : "Fires when the player is hit by a stunstick by this NPC."
@@ -4252,6 +4272,7 @@
 	[
 		"scripts/vehicles/airboat.txt"		:	"Airboat"
 		"scripts/vehicles/apc.txt"			:	"APC"
+		"scripts/vehicles/drivable_apc.txt"	:	"APC (Player)"
 		"scripts/vehicles/apc_npc.txt"		:	"APC (NPC)"
 		"scripts/vehicles/digger.txt"		:	"Digger"
 		"scripts/vehicles/driveway.txt"		:	"Driveway"

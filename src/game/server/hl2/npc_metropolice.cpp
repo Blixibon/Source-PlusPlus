@@ -211,8 +211,6 @@ BEGIN_DATADESC( CNPC_MetroPolice )
 
 	DEFINE_FIELD(m_iUniqueMetropolice, FIELD_INTEGER),
 
-	DEFINE_KEYFIELD(m_bCanRecharge, FIELD_BOOLEAN, "can_recharge"),
-
 	DEFINE_FIELD( m_nRecentDamage, FIELD_INTEGER ),
 	DEFINE_FIELD( m_flRecentDamageTime, FIELD_TIME ),
 
@@ -243,6 +241,14 @@ BEGIN_DATADESC( CNPC_MetroPolice )
 	DEFINE_INPUTFUNC( FIELD_VOID, "EnableManhackToss", InputEnableManhackToss ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetPoliceGoal", InputSetPoliceGoal ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "ActivateBaton", InputActivateBaton ),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SpeakRecharge", InputSpeakRecharge),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SpeakGeneratorOffline", InputSpeakGeneratorOffline),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetCommandable", InputSetCommandable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetNotCommandable", InputSetNotCommandable),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetMedicOn", InputSetMedicOn),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetMedicOff", InputSetMedicOff),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetAmmoResupplierOn", InputSetAmmoResupplierOn),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SetAmmoResupplierOff", InputSetAmmoResupplierOff),
 	
 	DEFINE_USEFUNC( PrecriminalUse ),
 
@@ -483,6 +489,12 @@ void CNPC_MetroPolice::NotifyDeadFriend( CBaseEntity* pFriend )
 //-----------------------------------------------------------------------------
 CNPC_MetroPolice::CNPC_MetroPolice()
 {
+	m_iUniqueMetropolice = 0;
+	m_bCanRecharge = false;
+
+	m_iAmmoAmount = 30;
+
+	m_iszAmmoSupply = AllocPooledString("Current");
 }
 
 
@@ -765,6 +777,16 @@ void CNPC_MetroPolice::Spawn( void )
 	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_MetroPolice", "NPC_MetroPolice");
 }
 
+void CNPC_MetroPolice::PostNPCInit()
+{
+	if (!IsInPlayerSquad() && (m_spawnflags & SF_METROPOLICE_FOLLOW) && AI_IsSinglePlayer())
+	{
+		m_FollowBehavior.SetFollowTarget(UTIL_GetLocalPlayer());
+		m_FollowBehavior.SetParameters(AIF_SIMPLE);
+	}
+
+	BaseClass::PostNPCInit();
+}
 
 //-----------------------------------------------------------------------------
 // Update weapon ranges
@@ -2473,7 +2495,6 @@ bool CNPC_MetroPolice::CreateBehaviors()
 	AddBehavior( &m_RappelBehavior );
 	AddBehavior( &m_PolicingBehavior );
 	AddBehavior( &m_FuncTankBehavior );
-	AddBehavior(&m_RechargeBehavior);
 	
 	return BaseClass::CreateBehaviors();
 }
@@ -2520,6 +2541,86 @@ void CNPC_MetroPolice::InputActivateBaton( inputdata_t &inputdata )
 	SetBatonState( inputdata.value.Bool() );
 }
 
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSetCommandable(inputdata_t& inputdata)
+{
+	RemoveSpawnFlags(SF_METROPOLICE_NOT_COMMANDABLE);
+	gm_PlayerSquadEvaluateTimer.Force();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSetNotCommandable(inputdata_t& inputdata)
+{
+	AddSpawnFlags(SF_METROPOLICE_NOT_COMMANDABLE);
+	
+	if (IsInPlayerSquad())
+	{
+		RemoveFromPlayerSquad();
+	}
+	else
+	{
+		ClearFollowTarget();
+		ClearCommandGoal();
+		if (m_iszOriginalSquad != NULL_STRING && strcmp(STRING(m_iszOriginalSquad), PLAYER_SQUADNAME) != 0)
+			AddToSquad(m_iszOriginalSquad);
+
+		if (m_hSavedFollowGoalEnt)
+			m_FollowBehavior.SetFollowGoal(m_hSavedFollowGoalEnt);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSetMedicOn(inputdata_t& inputdata)
+{
+	AddSpawnFlags(SF_METROPOLICE_MEDIC);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSetMedicOff(inputdata_t& inputdata)
+{
+	RemoveSpawnFlags(SF_METROPOLICE_MEDIC);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSetAmmoResupplierOn(inputdata_t& inputdata)
+{
+	AddSpawnFlags(SF_METROPOLICE_AMMORESUPPLIER);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSetAmmoResupplierOff(inputdata_t& inputdata)
+{
+	RemoveSpawnFlags(SF_METROPOLICE_AMMORESUPPLIER);
+}
+
+// ------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSpeakRecharge(inputdata_t & inputdata)
+{
+	Speak(TLK_CP_RECHARGE); //IfAllowed
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void CNPC_MetroPolice::InputSpeakGeneratorOffline(inputdata_t& inputdata)
+{
+	Speak(TLK_CP_GENERATOR_OFFLINE); //IfAllowed
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2996,6 +3097,7 @@ void CNPC_MetroPolice::HandleAnimEvent( animevent_t *pEvent )
 		{
 			EmitSound("NPC_Metropolice.Shove");
 		}
+		return;
 	}
 
 	BaseClass::HandleAnimEvent( pEvent );
@@ -5248,8 +5350,8 @@ bool CNPC_MetroPolice::CanJoinPlayerSquad(CBasePlayer* pPlayer)
 			return false;
 	}
 
-	if (IsUnique())
-		return false;
+	/*if (IsUnique())
+		return false;*/
 
 	if (m_NPCState == NPC_STATE_SCRIPT || m_NPCState == NPC_STATE_PRONE)
 		return false;

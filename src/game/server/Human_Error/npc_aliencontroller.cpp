@@ -1586,6 +1586,7 @@ bool CNPC_AlienController::ControllerProgressFlyPath()
 	params.waypointTolerance = 8.0f; // * flDot;
 	params.strictPointTolerance = 4.0f; // * flDot;
 	params.goalTolerance = 8.0f;
+	params.vertOffset = 35.0f;
 
 	float waypointDist = ( GetNavigator()->GetCurWaypointPos() - (GetAbsOrigin() + CONTROLLER_BODY_CENTER)).Length();
 
@@ -1612,7 +1613,7 @@ bool CNPC_AlienController::ControllerProgressFlyPath()
 			}
 		}
 
-		if ( HasCondition( COND_ALIENCONTROLLER_FLY_BLOCKED ) && GetNavigator()->SimplifyFlyPath( params, 35.0f ) )
+		if ( HasCondition( COND_ALIENCONTROLLER_FLY_BLOCKED ) && GetNavigator()->SimplifyFlyPath( params ) )
 		{
 
 #ifdef CONTROLLER_MOVE_DEBUG_MESSAGES
@@ -2047,7 +2048,7 @@ void CNPC_AlienController::ControllerLand(float flInterval)
 	}
 	else
 	{
-		Vector vecMoveDir;
+		//Vector vecMoveDir;
 
 		trace_t tr;
 		AI_TraceLine ( GetAbsOrigin() + CONTROLLER_BODY_CENTER, GetAbsOrigin(), MASK_NPCSOLID, this, HLSS_ALIENCONTROLLER_COLLISIONGROUP_FOR_MOVEMENT, &tr);
@@ -2551,7 +2552,7 @@ bool CNPC_AlienController::FindNearestPhysicsObjects( int iMaxMass )
 	for (i=0; i<ALIENCONTROLLER_NUMBER_OF_TELEKINESIS_OBJECTS; i++)
 	{
 		//TERO: every object has to be closer than player or 1024
-		flNearestDist[i] = min( dist * 2, ALIENCONTROLLER_FARTHEST_PHYSICS_OBJECT );
+		flNearestDist[i] = Min( dist * 2.f, (float)ALIENCONTROLLER_FARTHEST_PHYSICS_OBJECT );
 	}
 
 	//DevMsg("minimum distance is %f\n", min( dist * 2, ALIENCONTROLLER_FARTHEST_PHYSICS_OBJECT ));
@@ -3031,10 +3032,10 @@ int	CNPC_AlienController::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	return  BaseClass::OnTakeDamage_Alive( info ); //ret;
 }
 
-void CNPC_AlienController::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr )
+void CNPC_AlienController::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator)
 {
 	
-	BaseClass::TraceAttack( inputInfo, vecDir, ptr );
+	BaseClass::TraceAttack( inputInfo, vecDir, ptr, pAccumulator );
 }
 
 

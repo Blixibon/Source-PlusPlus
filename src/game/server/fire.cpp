@@ -423,7 +423,6 @@ bool FireSystem_StartFire( const Vector &position, float fireHeight, float attac
 	return true;
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: Starts a fire on a specified model.
 // Input  : pEntity - The model entity to catch on fire.
@@ -435,45 +434,44 @@ bool FireSystem_StartFire( const Vector &position, float fireHeight, float attac
 //			type - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool FireSystem_StartFire( CBaseAnimating *pEntity, float fireHeight, float attack, float fuel, int flags, CBaseEntity *owner, fireType_e type )
+bool FireSystem_StartFire(CBaseAnimating* pEntity, float fireHeight, float attack, float fuel, int flags, CBaseEntity* owner, fireType_e type)
 {
-	VPROF_FIRE( "FireSystem_StartFire2" );
+	VPROF_FIRE("FireSystem_StartFire2");
 
 	Vector position = pEntity->GetAbsOrigin();
 	Vector testPos = position;
 
 	// Make sure its a valid position for fire (not in a wall, etc)
-	if ( FireSystem_CanAddFire( &testPos, 16.0f, type, flags ) == false )
+	if (FireSystem_CanAddFire(&testPos, 16.0f, type, flags) == false)
 	{
 		// Contribute heat to all fires within 16 units of this fire.
-		CFire *pFires[16];
-		int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), true, position, 16.0f );
-		for ( int i = 0; i < fireCount; i++ )
+		CFire* pFires[16];
+		int fireCount = FireSystem_GetFiresInSphere(pFires, ARRAYSIZE(pFires), true, position, 16.0f);
+		for (int i = 0; i < fireCount; i++)
 		{
-			pFires[i]->AddHeat( fireHeight, false );
+			pFires[i]->AddHeat(fireHeight, false);
 		}
 
 		return false;
 	}
 
 	// Create a new fire entity
-	CFire *fire = (CFire *) CreateEntityByName( "env_fire" );
-	if ( fire == NULL )
+	CFire* fire = (CFire*)CreateEntityByName("env_fire");
+	if (fire == NULL)
 	{
 		return false;
 	}
 
 	// Spawn the fire.
 	// Fires not placed by a designer should be cleaned up automatically (not catch fire again).
-	fire->AddSpawnFlags( SF_FIRE_DIE_PERMANENT );
+	fire->AddSpawnFlags(SF_FIRE_DIE_PERMANENT);
 	fire->Spawn();
-	fire->Init( testPos, fireHeight, attack, fuel, flags, type );
+	fire->Init(testPos, fireHeight, attack, fuel, flags, type);
 	fire->Start();
-	fire->SetOwner( owner );
+	fire->SetOwner(owner);
 
 	return true;
 }
-
 
 void FireSystem_ExtinguishInRadius( const Vector &origin, float radius, float rate )
 {

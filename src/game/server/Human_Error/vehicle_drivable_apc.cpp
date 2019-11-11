@@ -1246,7 +1246,7 @@ void CPropDrivableAPC::EnterVehicle( CBasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 void CPropDrivableAPC::ExitVehicle( int nRole )
 {
-	HeadlightTurnOff();
+	//HeadlightTurnOff();
 
 	//m_bForcePlayerOut = false;
 

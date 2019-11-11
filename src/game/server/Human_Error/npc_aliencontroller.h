@@ -132,7 +132,7 @@ public:
 	virtual float	GetReactionDelay( CBaseEntity *pEnemy ) { return 0.0; }
 
 	// CAI_BaseNPC:
-	void			TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	void			TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator);
 	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
 
 	virtual float	MaxYawSpeed( void ) { return 100.0f; }

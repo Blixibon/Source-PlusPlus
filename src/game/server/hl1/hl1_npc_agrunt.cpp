@@ -37,8 +37,8 @@
 #include    "te.h"
 #include "hl1_ai_basenpc.h"
 
-ConVar sk_agrunt_health( "sk_agrunt_health", "0" );
-ConVar sk_agrunt_dmg_punch( "sk_agrunt_dmg_punch", "0" );
+ConVar sk_agrunthl1_health( "sk_agrunthl1_health", "0" );
+ConVar sk_agrunthl1_dmg_punch( "sk_agrunthl1_dmg_punch", "0" );
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -97,9 +97,9 @@ enum
 };
 
 
-class CNPC_AlienGrunt : public CHL1BaseNPC
+class CNPC_HL1AlienGrunt : public CHL1BaseNPC
 {
-	DECLARE_CLASS( CNPC_AlienGrunt, CHL1BaseNPC );
+	DECLARE_CLASS( CNPC_HL1AlienGrunt, CHL1BaseNPC );
 public:
 
 	void Spawn( void );
@@ -151,9 +151,9 @@ public:
 	float   m_flDamageTime;
 };
 
-LINK_ENTITY_TO_CLASS( monster_alien_grunt, CNPC_AlienGrunt );
+LINK_ENTITY_TO_CLASS( monster_alien_grunt, CNPC_HL1AlienGrunt );
 
-BEGIN_DATADESC( CNPC_AlienGrunt )
+BEGIN_DATADESC( CNPC_HL1AlienGrunt )
 	DEFINE_FIELD( m_fCanHornetAttack, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flNextHornetAttackCheck, FIELD_TIME ),
 	DEFINE_FIELD( m_flNextPainTime, FIELD_TIME ),
@@ -162,7 +162,7 @@ BEGIN_DATADESC( CNPC_AlienGrunt )
 	DEFINE_FIELD( m_flDamageTime, FIELD_TIME ),
 END_DATADESC()
 
-int CNPC_AlienGrunt::IRelationPriority( CBaseEntity *pTarget )
+int CNPC_HL1AlienGrunt::IRelationPriority( CBaseEntity *pTarget )
 {
 	//I hate grunts more than anything.
 	if ( pTarget->Classify() == CLASS_HUMAN_MILITARY )
@@ -176,7 +176,7 @@ int CNPC_AlienGrunt::IRelationPriority( CBaseEntity *pTarget )
 	return BaseClass::IRelationPriority( pTarget );
 }
 
-void CNPC_AlienGrunt::Spawn()
+void CNPC_HL1AlienGrunt::Spawn()
 {
 	Precache();
 
@@ -193,7 +193,7 @@ void CNPC_AlienGrunt::Spawn()
 	SetMoveType( MOVETYPE_STEP );
 	m_bloodColor		= BLOOD_COLOR_GREEN;
 	ClearEffects();
-	m_iHealth			= sk_agrunt_health.GetFloat();
+	m_iHealth			= sk_agrunthl1_health.GetFloat();
 	m_flFieldOfView		= 0.2;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
 
@@ -222,7 +222,7 @@ void CNPC_AlienGrunt::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CNPC_AlienGrunt::Precache()
+void CNPC_HL1AlienGrunt::Precache()
 {
 	PrecacheModel("models/agrunt.mdl");
 
@@ -242,7 +242,7 @@ void CNPC_AlienGrunt::Precache()
 	PrecacheScriptSound( "AlienGrunt.Idle" );
 }
 
-float CNPC_AlienGrunt::MaxYawSpeed( void )
+float CNPC_HL1AlienGrunt::MaxYawSpeed( void )
 {
 	float ys;
 
@@ -259,7 +259,7 @@ float CNPC_AlienGrunt::MaxYawSpeed( void )
 	return ys;
 }
 
-int CNPC_AlienGrunt::GetSoundInterests ( void )
+int CNPC_HL1AlienGrunt::GetSoundInterests ( void )
 {
 	return	SOUND_WORLD	|
 			SOUND_COMBAT	|
@@ -273,7 +273,7 @@ int CNPC_AlienGrunt::GetSoundInterests ( void )
 //
 // Returns number of events handled, 0 if none.
 //=========================================================
-void CNPC_AlienGrunt::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_HL1AlienGrunt::HandleAnimEvent( animevent_t *pEvent )
 {
 	switch( pEvent->event )
 	{
@@ -365,7 +365,7 @@ void CNPC_AlienGrunt::HandleAnimEvent( animevent_t *pEvent )
 			vecMins.z = vecMins.x;
 			vecMaxs.z = vecMaxs.x;
 
-			CBaseEntity *pHurt = CheckTraceHullAttack( AGRUNT_MELEE_DIST, vecMins, vecMaxs, sk_agrunt_dmg_punch.GetFloat(), DMG_CLUB );
+			CBaseEntity *pHurt = CheckTraceHullAttack( AGRUNT_MELEE_DIST, vecMins, vecMaxs, sk_agrunthl1_dmg_punch.GetFloat(), DMG_CLUB );
 			CPASAttenuationFilter filter4( this );
 
 			if ( pHurt )
@@ -405,7 +405,7 @@ void CNPC_AlienGrunt::HandleAnimEvent( animevent_t *pEvent )
 			vecMins.z = vecMins.x;
 			vecMaxs.z = vecMaxs.x;
 
-			CBaseEntity *pHurt = CheckTraceHullAttack( AGRUNT_MELEE_DIST, vecMins, vecMaxs, sk_agrunt_dmg_punch.GetFloat(), DMG_CLUB );
+			CBaseEntity *pHurt = CheckTraceHullAttack( AGRUNT_MELEE_DIST, vecMins, vecMaxs, sk_agrunthl1_dmg_punch.GetFloat(), DMG_CLUB );
 			CPASAttenuationFilter filter5( this );
 
 			if ( pHurt )
@@ -447,7 +447,7 @@ void CNPC_AlienGrunt::HandleAnimEvent( animevent_t *pEvent )
 //=========================================================
 // DieSound
 //=========================================================
-void CNPC_AlienGrunt::DeathSound( const CTakeDamageInfo &info )
+void CNPC_HL1AlienGrunt::DeathSound( const CTakeDamageInfo &info )
 {
 	StopTalking();
 
@@ -458,7 +458,7 @@ void CNPC_AlienGrunt::DeathSound( const CTakeDamageInfo &info )
 //=========================================================
 // AlertSound
 //=========================================================
-void CNPC_AlienGrunt::AlertSound( void )
+void CNPC_HL1AlienGrunt::AlertSound( void )
 {
 	StopTalking();
 
@@ -469,7 +469,7 @@ void CNPC_AlienGrunt::AlertSound( void )
 //=========================================================
 // AttackSound
 //=========================================================
-void CNPC_AlienGrunt::AttackSound( void )
+void CNPC_HL1AlienGrunt::AttackSound( void )
 {
 	StopTalking();
 
@@ -480,7 +480,7 @@ void CNPC_AlienGrunt::AttackSound( void )
 //=========================================================
 // PainSound
 //=========================================================
-void CNPC_AlienGrunt::PainSound( const CTakeDamageInfo &info )
+void CNPC_HL1AlienGrunt::PainSound( const CTakeDamageInfo &info )
 {
 	if ( m_flNextPainTime > gpGlobals->curtime )
 	{
@@ -498,7 +498,7 @@ void CNPC_AlienGrunt::PainSound( const CTakeDamageInfo &info )
 //=========================================================
 // ShouldSpeak - Should this agrunt be talking?
 //=========================================================
-bool CNPC_AlienGrunt::ShouldSpeak( void )
+bool CNPC_HL1AlienGrunt::ShouldSpeak( void )
 {
 	if ( m_flNextSpeakTime > gpGlobals->curtime )
 	{
@@ -525,7 +525,7 @@ bool CNPC_AlienGrunt::ShouldSpeak( void )
 //=========================================================
 // PrescheduleThink
 //=========================================================
-void CNPC_AlienGrunt::PrescheduleThink ( void )
+void CNPC_HL1AlienGrunt::PrescheduleThink ( void )
 {
 	BaseClass::PrescheduleThink();
 
@@ -556,7 +556,7 @@ void CNPC_AlienGrunt::PrescheduleThink ( void )
 // because they can use their smart weapons against unseen
 // enemies. Base class doesn't attack anyone it can't see.
 //=========================================================
-bool CNPC_AlienGrunt::FCanCheckAttacks ( void )
+bool CNPC_HL1AlienGrunt::FCanCheckAttacks ( void )
 {
 	if ( !HasCondition( COND_ENEMY_TOO_FAR ) )
 		  return true;
@@ -568,7 +568,7 @@ bool CNPC_AlienGrunt::FCanCheckAttacks ( void )
 // CheckMeleeAttack1 - alien grunts zap the crap out of
 // any enemy that gets too close.
 //=========================================================
-int CNPC_AlienGrunt::MeleeAttack1Conditions ( float flDot, float flDist )
+int CNPC_HL1AlienGrunt::MeleeAttack1Conditions ( float flDot, float flDist )
 {
 	if ( flDist > AGRUNT_MELEE_DIST )
 		 return COND_NONE;
@@ -589,7 +589,7 @@ int CNPC_AlienGrunt::MeleeAttack1Conditions ( float flDot, float flDist )
 // tracelines are done, so we may not want to do this every
 // server frame. Definitely not while firing.
 //=========================================================
-int CNPC_AlienGrunt::RangeAttack1Conditions ( float flDot, float flDist )
+int CNPC_HL1AlienGrunt::RangeAttack1Conditions ( float flDot, float flDist )
 {
 	if ( gpGlobals->curtime < m_flNextHornetAttackCheck )
 	{
@@ -645,13 +645,13 @@ int CNPC_AlienGrunt::RangeAttack1Conditions ( float flDot, float flDist )
 //=========================================================
 // StopTalking - won't speak again for 10-20 seconds.
 //=========================================================
-void CNPC_AlienGrunt::StopTalking( void )
+void CNPC_HL1AlienGrunt::StopTalking( void )
 {
 	m_flNextWordTime = m_flNextSpeakTime = gpGlobals->curtime + 10 + random->RandomInt(0, 10);
 }
 
 
-void CNPC_AlienGrunt::StartTask ( const Task_t *pTask )
+void CNPC_HL1AlienGrunt::StartTask ( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
@@ -766,7 +766,7 @@ void CNPC_AlienGrunt::StartTask ( const Task_t *pTask )
 }
 
 
-void CNPC_AlienGrunt::RunTask( const Task_t *pTask )
+void CNPC_HL1AlienGrunt::RunTask( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
@@ -795,7 +795,7 @@ void CNPC_AlienGrunt::RunTask( const Task_t *pTask )
 // monster's member function to get a pointer to a schedule
 // of the proper type.
 //=========================================================
-int CNPC_AlienGrunt::SelectSchedule( void )
+int CNPC_HL1AlienGrunt::SelectSchedule( void )
 {
 	if ( HasCondition( COND_HEAR_DANGER ) )
 	{
@@ -848,7 +848,7 @@ int CNPC_AlienGrunt::SelectSchedule( void )
 	return BaseClass::SelectSchedule();
 }
 
-int CNPC_AlienGrunt::TranslateSchedule( int scheduleType )
+int CNPC_HL1AlienGrunt::TranslateSchedule( int scheduleType )
 {
 	switch	( scheduleType )
 	{
@@ -890,7 +890,7 @@ int CNPC_AlienGrunt::TranslateSchedule( int scheduleType )
 	return BaseClass::TranslateSchedule( scheduleType );
 }
 
-void CNPC_AlienGrunt::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CNPC_HL1AlienGrunt::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
 {
 	CTakeDamageInfo ainfo = info;
 
@@ -940,7 +940,7 @@ void CNPC_AlienGrunt::TraceAttack( const CTakeDamageInfo &info, const Vector &ve
 //=========================================================
 // AI Schedules Specific to this monster
 //=========================================================
-AI_BEGIN_CUSTOM_NPC( monster_alien_grunt, CNPC_AlienGrunt )
+AI_BEGIN_CUSTOM_NPC( monster_alien_grunt, CNPC_HL1AlienGrunt )
 
 	DECLARE_ACTIVITY( ACT_THREAT_DISPLAY )
 

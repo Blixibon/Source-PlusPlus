@@ -236,7 +236,8 @@ struct AI_ProgressFlyPathParams_t
 		goalTolerance( _goalTolerance ),
 		blockHandling( _blockHandling ),
 		pTarget( NULL ),
-		bTrySimplify( true )
+		bTrySimplify( true ),
+		vertOffset(0.f)
 	{
 	}
 
@@ -257,6 +258,8 @@ struct AI_ProgressFlyPathParams_t
 													// noone had set a good tolerance in the path itself. It is therefore redundant,
 													// and more than likely should be excised
 	AI_NpcBlockHandling_t 	blockHandling;			// @TODO (toml 07-03-02): rename "blockHandling". This is specifically the "simplify" block handling. See SimplifyFlyPath()
+
+	float					vertOffset;
 
 	// Fields that tend to change
 	const CBaseEntity *		pTarget;

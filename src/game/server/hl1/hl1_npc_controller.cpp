@@ -51,10 +51,10 @@
 
 #define DIST_TO_CHECK	200
 
-ConVar sk_controller_health ( "sk_controller_health", "60" );
-ConVar sk_controller_dmgzap ( "sk_controller_dmgzap", "15" );
-ConVar sk_controller_speedball ( "sk_controller_speedball", "650" );
-ConVar sk_controller_dmgball ( "sk_controller_dmgball", "3" );
+ConVar sk_controllerhl1_health ( "sk_controllerhl1_health", "60" );
+ConVar sk_controllerhl1_dmgzap ( "sk_controllerhl1_dmgzap", "15" );
+ConVar sk_controllerhl1_speedball ( "sk_controllerhl1_speedball", "650" );
+ConVar sk_controllerhl1_dmgball ( "sk_controllerhl1_dmgball", "3" );
 
 int ACT_CONTROLLER_UP;
 int ACT_CONTROLLER_DOWN;
@@ -64,7 +64,7 @@ int ACT_CONTROLLER_FORWARD;
 int ACT_CONTROLLER_BACKWARD;
 
 class CSprite;
-class CNPC_Controller;
+class CNPC_HL1Controller;
 
 enum
 {
@@ -82,11 +82,11 @@ enum
 	SCHED_CONTROLLER_FAIL,
 };
 
-class CControllerNavigator : public CAI_ComponentWithOuter<CNPC_Controller, CAI_Navigator>
+class CControllerNavigator : public CAI_ComponentWithOuter<CNPC_HL1Controller, CAI_Navigator>
 {
-	typedef CAI_ComponentWithOuter<CNPC_Controller, CAI_Navigator> BaseClass;
+	typedef CAI_ComponentWithOuter<CNPC_HL1Controller, CAI_Navigator> BaseClass;
 public:
-	CControllerNavigator( CNPC_Controller *pOuter )
+	CControllerNavigator( CNPC_HL1Controller *pOuter )
 	 :	BaseClass( pOuter )
 	{
 	}
@@ -94,11 +94,11 @@ public:
 	bool ActivityIsLocomotive( Activity activity ) { return true; }
 };
 
-class CNPC_Controller : public CAI_BaseFlyingBot
+class CNPC_HL1Controller : public CAI_BaseFlyingBot
 {
 public:
 
-	DECLARE_CLASS( CNPC_Controller, CAI_BaseFlyingBot );
+	DECLARE_CLASS( CNPC_HL1Controller, CAI_BaseFlyingBot );
 	DEFINE_CUSTOM_AI;
 	DECLARE_DATADESC();
 
@@ -212,9 +212,9 @@ public:
 	CSprite *m_pSprite;
 };
 
-LINK_ENTITY_TO_CLASS( monster_alien_controller, CNPC_Controller );
+LINK_ENTITY_TO_CLASS( monster_alien_controller, CNPC_HL1Controller );
 
-BEGIN_DATADESC( CNPC_Controller )
+BEGIN_DATADESC( CNPC_HL1Controller )
 
 	DEFINE_ARRAY( m_pBall, FIELD_CLASSPTR, 2 ),
 	DEFINE_ARRAY( m_iBall, FIELD_INTEGER, 2 ),
@@ -230,7 +230,7 @@ BEGIN_DATADESC( CNPC_Controller )
 END_DATADESC()
 
 
-void CNPC_Controller::Spawn()
+void CNPC_HL1Controller::Spawn()
 {
 	Precache( );
 
@@ -245,7 +245,7 @@ void CNPC_Controller::Spawn()
 
 
 	m_bloodColor		= BLOOD_COLOR_GREEN;
-	m_iHealth =			sk_controller_health.GetFloat();
+	m_iHealth =			sk_controllerhl1_health.GetFloat();
 
 	m_flFieldOfView		= VIEW_FIELD_FULL;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
@@ -268,7 +268,7 @@ void CNPC_Controller::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CNPC_Controller::Precache()
+void CNPC_HL1Controller::Precache()
 {
 	PrecacheModel("models/controller.mdl");
 
@@ -288,13 +288,13 @@ void CNPC_Controller::Precache()
 //=========================================================
 // TakeDamage - 
 //=========================================================
-int CNPC_Controller::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CNPC_HL1Controller::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	PainSound( info );
 	return BaseClass::OnTakeDamage_Alive( info );
 }
 
-bool CNPC_Controller::ShouldGib( const CTakeDamageInfo &info )
+bool CNPC_HL1Controller::ShouldGib( const CTakeDamageInfo &info )
 {
 	if ( info.GetDamageType() & DMG_NEVERGIB )
 		 return false;
@@ -306,7 +306,7 @@ bool CNPC_Controller::ShouldGib( const CTakeDamageInfo &info )
 	
 }
 
-int CNPC_Controller::IRelationPriority( CBaseEntity *pTarget )
+int CNPC_HL1Controller::IRelationPriority( CBaseEntity *pTarget )
 {
 	if ( pTarget->Classify() == CLASS_PLAYER )
 	{
@@ -316,7 +316,7 @@ int CNPC_Controller::IRelationPriority( CBaseEntity *pTarget )
 	return BaseClass::IRelationPriority( pTarget );
 }
 
-void CNPC_Controller::Event_Killed( const CTakeDamageInfo &info )
+void CNPC_HL1Controller::Event_Killed( const CTakeDamageInfo &info )
 {
 	if( ShouldGib(info) )
 	{
@@ -350,7 +350,7 @@ void CNPC_Controller::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 }
 
-void CNPC_Controller::PainSound( const CTakeDamageInfo &info )
+void CNPC_HL1Controller::PainSound( const CTakeDamageInfo &info )
 {
 	if (random->RandomInt(0,5) < 2)
 	{
@@ -359,25 +359,25 @@ void CNPC_Controller::PainSound( const CTakeDamageInfo &info )
 	}
 }
 
-void CNPC_Controller::AlertSound( void )
+void CNPC_HL1Controller::AlertSound( void )
 {
 	CPASAttenuationFilter filter( this );
 	EmitSound( filter, entindex(), "Controller.Alert" ); 
 }
 
-void CNPC_Controller::IdleSound( void )
+void CNPC_HL1Controller::IdleSound( void )
 {
 	CPASAttenuationFilter filter( this );
 	EmitSound( filter, entindex(), "Controller.Idle" );
 }
 
-void CNPC_Controller::AttackSound( void )
+void CNPC_HL1Controller::AttackSound( void )
 {
 	CPASAttenuationFilter filter( this );
 	EmitSound( filter, entindex(), "Controller.Attack" );
 }
 
-void CNPC_Controller::DeathSound( const CTakeDamageInfo &info )
+void CNPC_HL1Controller::DeathSound( const CTakeDamageInfo &info )
 {
 	CPASAttenuationFilter filter( this );
 	EmitSound( filter, entindex(), "Controller.Die" );
@@ -387,7 +387,7 @@ void CNPC_Controller::DeathSound( const CTakeDamageInfo &info )
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CNPC_Controller::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_HL1Controller::HandleAnimEvent( animevent_t *pEvent )
 {
 	switch( pEvent->event )
 	{
@@ -467,7 +467,7 @@ void CNPC_Controller::HandleAnimEvent( animevent_t *pEvent )
 // AI Schedules Specific to this monster
 //=========================================================
 
-AI_BEGIN_CUSTOM_NPC( monster_alien_controller, CNPC_Controller )
+AI_BEGIN_CUSTOM_NPC( monster_alien_controller, CNPC_HL1Controller )
 
 	//declare our tasks
 	DECLARE_TASK( TASK_CONTROLLER_CHASE_ENEMY )
@@ -553,7 +553,7 @@ AI_END_CUSTOM_NPC()
 //=========================================================
 // StartTask
 //=========================================================
-void CNPC_Controller::StartTask( const Task_t *pTask )
+void CNPC_HL1Controller::StartTask( const Task_t *pTask )
 {
 	BaseClass::StartTask( pTask );
 }
@@ -595,7 +595,7 @@ Vector Intersect( Vector vecSrc, Vector vecDst, Vector vecMove, float flSpeed )
 }
 
 
-int CNPC_Controller::LookupFloat( )
+int CNPC_HL1Controller::LookupFloat( )
 {
 	if (m_velocity.Length( ) < 32.0)
 	{
@@ -636,7 +636,7 @@ int CNPC_Controller::LookupFloat( )
 //=========================================================
 // RunTask 
 //=========================================================
-void CNPC_Controller::RunTask ( const Task_t *pTask )
+void CNPC_HL1Controller::RunTask ( const Task_t *pTask )
 {
 	if (m_flShootEnd > gpGlobals->curtime)
 	{
@@ -660,10 +660,10 @@ void CNPC_Controller::RunTask ( const Task_t *pTask )
 				{
 					m_vecEstVelocity = m_vecEstVelocity * 0.8;
 				}
-				vecDir = Intersect( vecSrc, GetEnemy()->BodyTarget( GetAbsOrigin() ), m_vecEstVelocity, sk_controller_speedball.GetFloat() );
+				vecDir = Intersect( vecSrc, GetEnemy()->BodyTarget( GetAbsOrigin() ), m_vecEstVelocity, sk_controllerhl1_speedball.GetFloat() );
 			
 				float delta = 0.03490; // +-2 degree
-				vecDir = vecDir + Vector( random->RandomFloat( -delta, delta ), random->RandomFloat( -delta, delta ), random->RandomFloat( -delta, delta ) ) * sk_controller_speedball.GetFloat();
+				vecDir = vecDir + Vector( random->RandomFloat( -delta, delta ), random->RandomFloat( -delta, delta ), random->RandomFloat( -delta, delta ) ) * sk_controllerhl1_speedball.GetFloat();
 
 				vecSrc = vecSrc + vecDir * (gpGlobals->curtime - m_flShootTime);
 				CAI_BaseNPC *pBall = (CAI_BaseNPC*)Create( "controller_energy_ball", vecSrc, GetAbsAngles(), this );
@@ -738,7 +738,7 @@ void CNPC_Controller::RunTask ( const Task_t *pTask )
 	}
 }
 
-void CNPC_Controller::SetSequence( int nSequence )
+void CNPC_HL1Controller::SetSequence( int nSequence )
 {
 	BaseClass::SetSequence( nSequence );
 }
@@ -746,7 +746,7 @@ void CNPC_Controller::SetSequence( int nSequence )
 
 //=========================================================
 //=========================================================
-int CNPC_Controller::TranslateSchedule( int scheduleType )
+int CNPC_HL1Controller::TranslateSchedule( int scheduleType )
 {
 	switch	( scheduleType )
 	{
@@ -773,7 +773,7 @@ int CNPC_Controller::TranslateSchedule( int scheduleType )
 //=========================================================
 // CheckRangeAttack1  - shoot a bigass energy ball out of their head
 //=========================================================
-int CNPC_Controller::RangeAttack1Conditions ( float flDot, float flDist )
+int CNPC_HL1Controller::RangeAttack1Conditions ( float flDot, float flDist )
 {
 	if( flDist > 2048 )
 	{
@@ -796,7 +796,7 @@ int CNPC_Controller::RangeAttack1Conditions ( float flDot, float flDist )
 //=========================================================
 // CheckRangeAttack1  - head
 //=========================================================
-int CNPC_Controller::RangeAttack2Conditions ( float flDot, float flDist )
+int CNPC_HL1Controller::RangeAttack2Conditions ( float flDot, float flDist )
 {
 		if( flDist > 2048 )
 	{
@@ -818,7 +818,7 @@ int CNPC_Controller::RangeAttack2Conditions ( float flDot, float flDist )
 
 //=========================================================
 //=========================================================
-Activity CNPC_Controller::NPC_TranslateActivity( Activity eNewActivity )
+Activity CNPC_HL1Controller::NPC_TranslateActivity( Activity eNewActivity )
 {
 	switch ( eNewActivity)
 	{
@@ -834,7 +834,7 @@ Activity CNPC_Controller::NPC_TranslateActivity( Activity eNewActivity )
 //=========================================================
 // SetActivity  - 
 //=========================================================
-void CNPC_Controller::SetActivity ( Activity NewActivity )
+void CNPC_HL1Controller::SetActivity ( Activity NewActivity )
 {
 	BaseClass::SetActivity( NewActivity );
 	m_flGroundSpeed = 100;
@@ -843,7 +843,7 @@ void CNPC_Controller::SetActivity ( Activity NewActivity )
 //=========================================================
 // RunAI
 //=========================================================
-void CNPC_Controller::RunAI( void )
+void CNPC_HL1Controller::RunAI( void )
 {
 	BaseClass::RunAI();
 
@@ -888,7 +888,7 @@ void CNPC_Controller::RunAI( void )
 //=========================================================
 // Stop  - 
 //=========================================================
-void CNPC_Controller::Stop( void ) 
+void CNPC_HL1Controller::Stop( void ) 
 { 
 	SetIdealActivity( GetStoppedActivity() );
 }
@@ -897,7 +897,7 @@ void CNPC_Controller::Stop( void )
 // Purpose: Handles movement towards the last move target.
 // Input  : flInterval - 
 //-----------------------------------------------------------------------------
-bool CNPC_Controller::OverridePathMove( float flInterval )
+bool CNPC_HL1Controller::OverridePathMove( float flInterval )
 {
 	CBaseEntity *pMoveTarget = (GetTarget()) ? GetTarget() : GetEnemy();
 	Vector waypointDir = GetNavigator()->GetCurWaypointPos() - GetLocalOrigin();
@@ -950,7 +950,7 @@ bool CNPC_Controller::OverridePathMove( float flInterval )
 	return false;
 }
 
-bool CNPC_Controller::OverrideMove( float flInterval )
+bool CNPC_HL1Controller::OverrideMove( float flInterval )
 {
 	if (m_flGroundSpeed == 0)
 	{
@@ -1030,7 +1030,7 @@ bool CNPC_Controller::OverrideMove( float flInterval )
 	return true;
 }
 
-void CNPC_Controller::MoveToTarget( float flInterval, const Vector &vecMoveTarget )
+void CNPC_HL1Controller::MoveToTarget( float flInterval, const Vector &vecMoveTarget )
 {
 	const float	myAccel	 = 300.0;
 	const float	myDecay	 = 9.0;
@@ -1137,7 +1137,7 @@ void CNPC_ControllerHeadBall::HuntThink( void  )
 			ClearMultiDamage( );
 			Vector dir = GetAbsVelocity();
 			VectorNormalize( dir );
-			CTakeDamageInfo info( this, this, sk_controller_dmgball.GetFloat(), DMG_SHOCK );
+			CTakeDamageInfo info( this, this, sk_controllerhl1_dmgball.GetFloat(), DMG_SHOCK );
 			CalculateMeleeDamageForce( &info, dir, tr.endpos );
 			pEntity->DispatchTraceAttack( info, dir, &tr );
 			ApplyMultiDamage();
@@ -1284,13 +1284,13 @@ void CNPC_ControllerZapBall::ExplodeTouch( CBaseEntity *pOther )
 
 		if (m_hOwner != NULL)
 		{
-			CTakeDamageInfo info( this, m_hOwner, sk_controller_dmgball.GetFloat(), DMG_ENERGYBEAM );
+			CTakeDamageInfo info( this, m_hOwner, sk_controllerhl1_dmgball.GetFloat(), DMG_ENERGYBEAM );
 			CalculateMeleeDamageForce( &info, vecAttackDir, tr.endpos );
 			pOther->DispatchTraceAttack( info, vecAttackDir, &tr );
 		}
 		else
 		{
-			CTakeDamageInfo info( this, this, sk_controller_dmgball.GetFloat(), DMG_ENERGYBEAM );
+			CTakeDamageInfo info( this, this, sk_controllerhl1_dmgball.GetFloat(), DMG_ENERGYBEAM );
 			CalculateMeleeDamageForce( &info, vecAttackDir, tr.endpos );
 			pOther->DispatchTraceAttack( info, vecAttackDir, &tr );
 		}

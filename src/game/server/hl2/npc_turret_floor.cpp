@@ -1707,6 +1707,7 @@ void CNPC_FloorTurret::Enable( void )
 
 	// Always allow us to come back to life, even if not right now
 	m_bEnabled = true;
+	UpdateTeam();
 
 	//This turret is on its side, it can't function
 	if ( OnSide() || ( IsAlive() == false ) )
@@ -1735,6 +1736,7 @@ void CNPC_FloorTurret::Disable( void )
 	{
 		m_bEnabled = false;
 		m_bAutoStart = false;
+		UpdateTeam();
 
 		SetEnemy( NULL );
 		SetThink( &CNPC_FloorTurret::Retire );

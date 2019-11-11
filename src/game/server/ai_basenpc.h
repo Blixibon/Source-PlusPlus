@@ -89,7 +89,7 @@ extern bool AIStrongOpt( void );
 #define COMMAND_GOAL_TOLERANCE	48	// 48 inches.
 #define TIME_CARE_ABOUT_DAMAGE	3.0
 
-#define ITEM_PICKUP_TOLERANCE	48.0f
+#define ITEM_PICKUP_TOLERANCE	64.0f
 
 // Max's of the box used to search for a weapon to pick up. 45x45x~8 ft.
 #define WEAPON_SEARCH_DELTA	Vector( 540, 540, 100 )
@@ -709,7 +709,7 @@ public:
 	//
 	//-----------------------------------------------------
 	
-	void				SetSchedule( CAI_Schedule *pNewSchedule );
+	virtual void		SetSchedule( CAI_Schedule *pNewSchedule, bool DontClearGoal = false);
 	bool				SetSchedule( int localScheduleID );
 	
 	void				SetDefaultFailSchedule( int failSchedule )	{ m_failSchedule = failSchedule; }

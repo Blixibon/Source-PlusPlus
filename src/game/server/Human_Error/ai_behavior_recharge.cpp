@@ -9,17 +9,22 @@
 #include "ai_navigator.h"
 #include "ai_memory.h"
 #include "ai_squad.h"
+#include "npc_unique_metropolice.h"
+#include "ammodef.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 BEGIN_DATADESC( CRechargePoint )
 	DEFINE_FIELD( m_hLockedBy,					FIELD_EHANDLE ),
+	DEFINE_FIELD(m_hAmmoCrate, FIELD_EHANDLE),
+	DEFINE_FIELD(m_iAmmoIndex, FIELD_INTEGER),
 //	DEFINE_KEYFIELD( m_bActive,					FIELD_BOOLEAN,		"active" ),
 	DEFINE_KEYFIELD( m_flMaxDistance,			FIELD_FLOAT,		"max_distance" ),
 	DEFINE_KEYFIELD( m_RechargeSequenceName,	FIELD_STRING,		"sequence" ),
 	DEFINE_KEYFIELD( m_iszActor,				FIELD_STRING,		"actor" ),	
 	DEFINE_KEYFIELD( m_SearchType,				FIELD_INTEGER, 		"SearchType" ),
+	DEFINE_KEYFIELD( m_iszAmmoCrate,			FIELD_STRING,		"ammo_crate"),
 
 	DEFINE_THINKFUNC( FindRechargeThink ),
 
@@ -37,12 +42,38 @@ void CRechargePoint::Spawn()
 {
 	BaseClass::Spawn();
 
+	m_iAmmoIndex = GetAmmoDef()->Index("AR2AltFire");
+}
+
+void CRechargePoint::Activate()
+{
+	BaseClass::Activate();
+
 	if (HasSpawnFlags(SF_HLSS_BEHAVIOR_RECHARGE_START_ACTIVE))
 	{
 		if (!FindRechagerNPC())
 		{
-			SetThink ( &CRechargePoint::FindRechargeThink );
-			SetNextThink( gpGlobals->curtime + HLSS_RECHARGE_POINT_THINK_DELAY );
+			SetThink(&CRechargePoint::FindRechargeThink);
+			SetNextThink(gpGlobals->curtime + HLSS_RECHARGE_POINT_THINK_DELAY);
+		}
+	}
+
+	if (HasSpawnFlags(SF_HLSS_BEHAVIOR_RECHARGE_NEEDS_AMMO))
+	{
+		CBaseEntity* pCrate = gEntList.FindEntityByNameNearest(STRING(m_iszAmmoCrate), GetAbsOrigin(), 0, this);
+		if (pCrate != nullptr)
+		{
+			m_hAmmoCrate = pCrate;
+			IAmmoCrate* pAmmo = dynamic_cast<IAmmoCrate*> (pCrate);
+			if (pAmmo)
+			{
+				m_iAmmoIndex = pAmmo->GetCrateAmmoType();
+			}
+		}
+		else
+		{
+			Warning("WARNING: hlss_recharge_point (%s) needs ammo, but couldn't find ammo crate \"%s\"!\n", GetDebugName(), STRING(m_iszAmmoCrate));
+			RemoveSpawnFlags(SF_HLSS_BEHAVIOR_RECHARGE_NEEDS_AMMO);
 		}
 	}
 }
@@ -123,6 +154,7 @@ bool CRechargePoint::FindRechagerNPC()
 	float flBestDist = m_flMaxDistance;
 	CAI_BaseNPC *pBest = NULL;
 	bool bBestAlreadyHasPoint = true;
+	bool bBestHasAmmo = false;
 
 	CBaseEntity *pEntity = NULL;
 
@@ -137,6 +169,12 @@ bool CRechargePoint::FindRechagerNPC()
 		case ST_CLASSNAME:
 		{
 			pEntity = gEntList.FindEntityByClassname( pEntity, STRING( m_iszActor ) );
+			break;
+		}
+
+		case ST_UNIQUECOPS:
+		{
+			pEntity = CNPC_UniqueMetrocop::GetUniqueMetrocopList();
 			break;
 		}
 	}
@@ -157,7 +195,7 @@ bool CRechargePoint::FindRechagerNPC()
 
 			if ( pNPC->IsAlive() && pNPC->GetBehavior( &pBehavior ) )
 			{
-				if ( pBehavior->CanRecharge() && (!pBehavior->HasRechargePoint() || !pBehavior->HasReachedRechargePoint()))
+				if ( pBehavior->CanRecharge() && (!pBehavior->HasRechargePoint() || !pBehavior->HasReachedRechargePoint()) && !pBehavior->IsMovingToAcquireAmmo())
 				{
 					float flDist = (GetAbsOrigin() - pNPC->GetAbsOrigin()).Length();
 
@@ -175,13 +213,17 @@ bool CRechargePoint::FindRechagerNPC()
 						//DevMsg("Old point has distance %f, new one %f\n", flDistCurrent, flDist);
 					}
 
-					//TERO: get the NPC closest to us
-					if ((flDist < flBestDist && !pBehavior->HasRechargePoint()) || (flDistCurrent > flDist) )
+					if (!HasSpawnFlags(SF_HLSS_BEHAVIOR_RECHARGE_NEEDS_AMMO) || !bBestHasAmmo || pNPC->GetAmmoCount(m_iAmmoIndex) > 0)
 					{
-						bBestAlreadyHasPoint = pBehavior->HasRechargePoint();
+						//TERO: get the NPC closest to us
+						if ((flDist < flBestDist && !pBehavior->HasRechargePoint()) || (flDistCurrent > flDist))
+						{
+							bBestAlreadyHasPoint = pBehavior->HasRechargePoint();
+							bBestHasAmmo = (pNPC->GetAmmoCount(m_iAmmoIndex) > 0);
 
-						pBest = pNPC;
-						flBestDist = flDist;
+							pBest = pNPC;
+							flBestDist = flDist;
+						}
 					}
 				}
 			}
@@ -198,6 +240,12 @@ bool CRechargePoint::FindRechagerNPC()
 			case ST_CLASSNAME:
 			{
 				pEntity = gEntList.FindEntityByClassname( pEntity, STRING( m_iszActor ) );
+				break;
+			}
+
+			case ST_UNIQUECOPS:
+			{
+				pEntity = static_cast<CNPC_UniqueMetrocop*> (pEntity)->m_pNext;
 				break;
 			}
 		}
@@ -356,6 +404,11 @@ int CAI_RechargeBehavior::TranslateSchedule( int scheduleType )
 
 	case SCHED_MOVE_TO_WEAPON_RANGE:
 	case SCHED_CHASE_ENEMY:
+		if (NeedsToAcquireAmmo())
+		{
+			return SCHED_RECHARGE_ACQUIRE_AMMO;
+		}
+		else
 		{
 			ClearCondition( COND_RECHARGE_CHANGED_POINT );
 			return SCHED_MOVE_TO_RECHARGE_POINT;
@@ -396,10 +449,7 @@ void CAI_RechargeBehavior::ClearSchedule( const char *szReason )
 //-----------------------------------------------------------------------------
 int CAI_RechargeBehavior::SelectSchedule()
 {
-	Vector vecDiff = GetOuter()->GetAbsOrigin() - m_hRechargePoint->GetAbsOrigin();
-	vecDiff.z = 0.0;
-
-	m_bHasReachedRechargePoint = (vecDiff.LengthSqr() < Square(HLSS_RECHARGE_POINT_TOLERANCE) );
+	UpdateRechargePointDistance();
 
 	if ( !HasReachedRechargePoint() )
 	{
@@ -429,6 +479,11 @@ int CAI_RechargeBehavior::SelectSchedule()
 	}
 	
 	return BaseClass::SelectSchedule();*/
+
+	if (NeedsToAcquireAmmo())
+	{
+		return SCHED_RECHARGE_ACQUIRE_AMMO;
+	}
 
 	ClearCondition( COND_RECHARGE_CHANGED_POINT );
 	m_bHasReachedRechargePoint = false;
@@ -540,6 +595,64 @@ void CAI_RechargeBehavior::StartTask( const Task_t *pTask )
 		
 		break;
 
+	case TASK_GET_PATH_TO_AMMO_CRATE:
+	{
+		if (m_hRechargePoint)
+		{
+			CBaseEntity* pCrate = m_hRechargePoint->GetAmmoCrateEnt();
+			if (pCrate)
+			{
+				AI_NavGoal_t goal(pCrate->GetAbsOrigin());
+				goal.pTarget = pCrate;
+				goal.tolerance = 64.f;
+				if (GetNavigator()->SetGoal(goal) == false)
+				{
+					// Try and get as close as possible otherwise
+					AI_NavGoal_t nearGoal(GOALTYPE_LOCATION, pCrate->GetAbsOrigin(), AIN_DEF_ACTIVITY, 0); //_NEAREST_NODE
+					if (GetNavigator()->SetGoal(nearGoal, AIN_CLEAR_PREVIOUS_STATE))
+					{
+						//FIXME: HACK! The internal pathfinding is setting this without our consent, so override it!
+						ClearCondition(COND_TASK_FAILED);
+						TaskComplete();
+						return;
+					}
+				}
+			}
+			else
+			{
+				TaskFail("No ammo crate");
+			}
+		}
+		else
+		{
+			TaskFail("No recharge point");
+		}
+	}
+	break;
+
+	case TASK_GET_AMMO:
+	{
+		if (m_hRechargePoint)
+		{
+			IAmmoCrate* pCrate = m_hRechargePoint->GetIAmmoCrate();
+			if (pCrate)
+			{
+				pCrate->OpenForNPC(GetOuter());
+				GetOuter()->SetWait(0.6f);
+			}
+			else
+			{
+				GetOuter()->GiveAmmo(3, m_hRechargePoint->GetAmmoType());
+				TaskComplete();
+			}
+		}
+		else
+		{
+			TaskFail("No recharge point");
+		}
+	}
+	break;
+
 	default:
 		BaseClass::StartTask( pTask );
 		break;
@@ -629,14 +742,57 @@ void CAI_RechargeBehavior::RunTask( const Task_t *pTask )
 		}
 		break;
 
+	case TASK_GET_AMMO:
+	{
+		if (m_hRechargePoint)
+		{
+			IAmmoCrate* pCrate = m_hRechargePoint->GetIAmmoCrate();
+			if (pCrate)
+			{
+				if (GetOuter()->IsWaitFinished() && !pCrate->IsCrateOpen())
+					TaskComplete();
+				else
+					GetMotor()->SetIdealYawToTargetAndUpdate(m_hRechargePoint->GetAmmoCrateEnt()->GetAbsOrigin());
+			}
+			else
+			{
+				TaskFail("No ammo crate");
+			}
+		}
+		else
+		{
+			TaskFail("No recharge point");
+		}
+	}
+	break;
+
 	default:
 		BaseClass::RunTask( pTask );
 		break;
 	}
 }
 
+bool CAI_RechargeBehavior::NeedsToAcquireAmmo()
+{
+	if (m_hRechargePoint && m_hRechargePoint->HasSpawnFlags(SF_HLSS_BEHAVIOR_RECHARGE_NEEDS_AMMO))
+	{
+		int iAmmoType = m_hRechargePoint->GetAmmoType();
+
+		if (GetOuter()->GetAmmoCount(iAmmoType) < 1)
+			return true;
+	}
+
+	return false;
+}
+
 void CAI_RechargeBehavior::UpdateRechargePointDistance( void )
 {
+	if (!m_hRechargePoint || NeedsToAcquireAmmo())
+	{
+		m_bHasReachedRechargePoint = false;
+		return;
+	}
+
 	Vector vecDiff = GetOuter()->GetAbsOrigin() - m_hRechargePoint->GetAbsOrigin();
 	vecDiff.z = 0.0;
 
@@ -689,6 +845,11 @@ void CAI_RechargeBehavior::Recharge()
 		GetOuter()->SpeakSentence( RECHARGE_SENTENCE_STARTING_RECHARGE );
 	}
 
+	if (m_hRechargePoint->HasSpawnFlags(SF_HLSS_BEHAVIOR_RECHARGE_NEEDS_AMMO))
+	{
+		GetOuter()->RemoveAmmo(1, m_hRechargePoint->GetAmmoType());
+	}
+
 	m_flNextTimeChange = 0;
 
 	UnlockRechargePoint();
@@ -710,6 +871,8 @@ AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER(CAI_RechargeBehavior)
 	DECLARE_TASK(TASK_FACE_RECHARGE_POINT)
 	DECLARE_TASK(TASK_RECHARGE)
 	DECLARE_TASK(TASK_RECHARGE_DEFER_SCHEDULE_SELECTION)
+	DECLARE_TASK(TASK_GET_PATH_TO_AMMO_CRATE)
+	DECLARE_TASK(TASK_GET_AMMO)
 
 	DECLARE_CONDITION(COND_RECHARGE_CHANGED_POINT)
 	
@@ -746,5 +909,26 @@ AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER(CAI_RechargeBehavior)
 		"	"
 		"	Interrupts"
 	)
+
+	//=========================================================
+	//=========================================================
+		DEFINE_SCHEDULE
+		(
+			SCHED_RECHARGE_ACQUIRE_AMMO,
+
+			"	Tasks"
+			"		TASK_SET_FAIL_SCHEDULE					SCHEDULE:SCHED_RECHARGE_FAILED_TO_MOVE"
+			"		TASK_GET_PATH_TO_AMMO_CRATE			0"
+			"		TASK_RUN_PATH							0"
+			"		TASK_WAIT_FOR_MOVEMENT					0"
+			"		TASK_STOP_MOVING						0"
+			"		TASK_GET_AMMO							0"
+			"	"
+			"	Interrupts"
+			"		COND_RECHARGE_CHANGED_POINT"
+			//		"		COND_PROVOKED"
+			//		"		COND_NO_PRIMARY_AMMO"
+			//		"		COND_PLAYER_PUSHING"
+		)
 
 AI_END_CUSTOM_SCHEDULE_PROVIDER()

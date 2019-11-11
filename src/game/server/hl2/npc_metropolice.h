@@ -59,6 +59,7 @@ public:
 	bool CreateBehaviors();
 	void Spawn( void );
 	void Precache( void );
+	void PostNPCInit();
 
 	virtual bool	ShouldAutosquad() { return gpGlobals->maxClients == 1; }
 
@@ -195,6 +196,14 @@ private:
 	void InputEnableManhackToss( inputdata_t &inputdata );
 	void InputSetPoliceGoal( inputdata_t &inputdata );
 	void InputActivateBaton( inputdata_t &inputdata );
+	void			InputSetCommandable(inputdata_t& inputdata);
+	void			InputSetNotCommandable(inputdata_t& inputdata);
+	void			InputSetMedicOn(inputdata_t& inputdata);
+	void			InputSetMedicOff(inputdata_t& inputdata);
+	void			InputSetAmmoResupplierOn(inputdata_t& inputdata);
+	void			InputSetAmmoResupplierOff(inputdata_t& inputdata);
+	void			InputSpeakRecharge(inputdata_t& inputdata);
+	void			InputSpeakGeneratorOffline(inputdata_t& inputdata);
 
 	void NotifyDeadFriend ( CBaseEntity* pFriend );
 
@@ -478,7 +487,6 @@ private:
 	CAI_FuncTankBehavior	m_FuncTankBehavior;
 	CAI_RappelBehavior		m_RappelBehavior;
 	CAI_PolicingBehavior	m_PolicingBehavior;
-	CAI_RechargeBehavior	m_RechargeBehavior;
 
 	//CAI_Sentence< CNPC_MetroPolice > m_Sentences;
 
@@ -499,6 +507,7 @@ protected:
 		METROPOLICE_LARSON,
 		METROPOLICE_NOAH,
 		METROPOLICE_ELOISE,
+		METROPOLICE_ANDERS
 	};
 
 	int		m_iUniqueMetropolice;
@@ -507,8 +516,7 @@ protected:
 	inline bool IsEloise() { return (m_iUniqueMetropolice == METROPOLICE_ELOISE); }
 	inline bool IsLarson() { return (m_iUniqueMetropolice == METROPOLICE_LARSON); }
 	inline bool IsNoah() { return (m_iUniqueMetropolice == METROPOLICE_NOAH); }
-
-	bool	m_bCanRecharge;
+	inline bool IsAnders() { return (m_iUniqueMetropolice == METROPOLICE_ANDERS); }
 
 public:
 	DEFINE_CUSTOM_AI;

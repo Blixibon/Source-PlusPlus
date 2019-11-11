@@ -12,6 +12,8 @@ criterion "ConceptTraitor_Male"		"Concept" "TLK_CP_HE_TRAITOR"		required
 criterion "Mantaray_Alert_Allowed" "no_mantaray_alert" "!=1" required	
 criterion "Combat_Talk_Allowed" "no_combat_talk" "!=1" required
 
+criterion "IsAnders" "classname" "npc_anders" "required" 
+
 #include "talker/npc_noah.txt"
 #include "talker/npc_eloise.txt"
 #include "talker/npc_larson.txt"

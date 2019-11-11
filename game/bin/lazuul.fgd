@@ -640,8 +640,7 @@
 	"Driveable studiomodel APC."
 [
 	model(studio) : "World model" : "models/vehicles/combine_apc.mdl"
-	vehiclescript(string) :	"Vehicle Script File" : "scripts/vehicles/drivable_apc.txt"
-
+	
 	cannotmove(choices) : "Cannot Move" : 0 =
 	[
 		0 : "No"
@@ -686,6 +685,80 @@
 
 @NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_larson.mdl") = npc_larson : "Larson"
 [
+]
+
+@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_sdk.mdl") = npc_anders : "Anders"
+[
+]
+
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/hlss_recharger.vmt") studio("models/editor/scriptedsequence.mdl") sphere(max_distance) = hlss_recharge_point : "Recharge point for recharge behavior." 
+[
+	spawnflags(flags) =
+	[
+		1 : "Start active." : 0
+		2 : "Don't speak TLK_CP_RECHARGING." : 0
+		4 : "Need AR2 AltFire ammo to use." : 0
+	]
+
+	max_distance(float) : "Max Distance to look for NPCs" : "4096"
+	sequence(string) : "Sequence name" : "buttonfront" : "The name of the sequence to play when doing recharging."
+	actor(target_name_or_class) : "Actor" : "" : "Targetname or classname of the NPC to run the behavior. If you choose Unique Metrocops as the search type, you can leave this empty."
+	SearchType(choices) : "Search Type" : 0 : "How to search for the NPC." = 
+	[
+		0 : "Entity Name"
+		1 : "Classname"
+		2 : "Unique Metrocops"
+	]
+	ammo_crate(target_destination) : "Ammo Crate" : "" : "Targetname of the Ammo Crate where NPCs should run to get AR2 ammo if the SF is set." 
+
+	input Activate(void)		: "Activate."
+	input Deactivate(void)		: "Deactivate."
+
+	// Outputs
+	output OnRecharge(void) 		: "OnRecharge."
+]
+
+@PointClass base(Targetname, Angles) studio("models/editor/scriptedsequence.mdl") = hlss_olivia_target : "Target for Olivia to enable." 
+[
+	enabled(choices) : "Target enabled" : 0 : "Start target enabled?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	glowentity(target_destination) : "Target entity name" : "" : "The entity Anders must be looking at to active the output."
+
+	description(string) : "Description to write." : "" : "Description to show in the location of this entity when the target is enabled. Use '/' for line break."
+
+	delay(float) : "Delay" : 120 : "Delay before reuse during the round."
+	difficulty(integer) : "Difficulty" : 50 : "What the difficulty must be atleast."
+
+	animation(string) : "Sequence" : "ButtonPush" : "Name of the sequence to do when doing this."
+	movement(choices) : "Movement" : 0 : "How to get to our position?" =
+	[
+		0 : "Walk"
+		1 : "Run"
+		2 : "Dance!"
+		3 : "Lead"
+	]
+
+	item_give(choices) : "Item to give" : 0 : "Instead of doing the animation, give this item to Anders." =
+	[
+		0 : "Nothing"
+		1 : "Healthkit"
+		2 : "SMG1"
+		3 : "Shotgun"
+		4 : "AR2"
+		5 : "RPG"
+		6 : "Emp Tool (only if revealed Traitor)"
+	]
+
+	//Inputs
+	input Enable(void) : "Enable Target"
+	input Disable(void) : "Disable Target"
+
+	//Outputs
+	output OnOliviaUsed(void) : "Fired when the player has succesfully used the target."
 ]
 
 @PointClass base(Targetname) iconsprite("editor/ambient_generic.vmt") sphere() = hlss_metrocopradio : "Metrocop Radio."

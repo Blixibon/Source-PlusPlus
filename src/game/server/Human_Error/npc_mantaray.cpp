@@ -43,7 +43,7 @@
 #include "mapentities.h"
 #include "datacache/imdlcache.h"
 
-#include "mantaray_shared.h"
+#include "Human_Error/mantaray_shared.h"
 #include "npc_mantaray.h"
 //#include "cbasehelicopter.h"
 

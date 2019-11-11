@@ -97,11 +97,7 @@ public:
 	virtual void	StartTask( const Task_t *pTask );
 	virtual void	ClearSchedule( const char *szReason );
 
-	bool		IsPlayerEnemy()
-	{
-		//return GetDefaultRelationshipDisposition(CLASS_PLAYER) == D_HT;
-		return FindClassRelationship(CLASS_PLAYER)->disposition == D_HT;
-	}
+	bool		IsPlayerEnemy();
 
 	// Various start tasks
 	virtual	void StartTaskRangeAttack1(const Task_t *pTask);

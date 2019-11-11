@@ -2257,7 +2257,7 @@ void CHL2_Player::SetPlayerUnderwater( bool state )
 bool CHL2_Player::PassesDamageFilter( const CTakeDamageInfo &info )
 {
 	CBaseEntity *pAttacker = info.GetAttacker();
-	if( pAttacker && pAttacker->MyNPCPointer() && pAttacker->MyNPCPointer()->IsPlayerAlly() )
+	if( pAttacker && pAttacker->MyNPCPointer() && pAttacker->MyNPCPointer()->IsPlayerAlly(this) )
 	{
 		return false;
 	}

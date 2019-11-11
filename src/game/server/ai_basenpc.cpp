@@ -13093,10 +13093,10 @@ bool CAI_BaseNPC::IsPlayerAlly( CBasePlayer *pPlayer )
 		if (!AI_IsSinglePlayer())
 		{
 #ifdef HL2_LAZUL
-			return (GetTeamNumber() == LazuulRules()->GetProtaganistTeam());
-#else
-			return false;
+			if (g_pGameRules)
+				return (GetTeamNumber() == LazuulRules()->GetProtaganistTeam());
 #endif // HL2_LAZUL
+			return false;
 
 		}
 

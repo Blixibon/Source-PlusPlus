@@ -919,7 +919,7 @@ void CNPC_Olivia::Spawn()
 
 		m_vOldGoal = vec3_origin;
 
-		SetHullType( HULL_HUMAN ); 
+		SetHullType( HULL_HUMAN_CENTERED ); 
 		SetHullSizeNormal();
 
 		SetCollisionBounds( OLIVIA_HULL_MINS, OLIVIA_HULL_MAXS );

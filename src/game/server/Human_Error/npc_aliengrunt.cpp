@@ -361,7 +361,7 @@ bool CNPC_AlienGrunt::DestroyPlayerConstrain(bool bThrow)
 
 void CNPC_AlienGrunt::GrabRagdoll()
 {
-	if (GetEnemy()->Classify() == CLASS_PLAYER)
+	if (GetEnemy()->IsPlayer())
 	{
 		CBasePlayer *pPlayer = ToBasePlayer( GetEnemy() );
 		if (pPlayer && !pPlayer->GetVehicle())
@@ -419,7 +419,7 @@ void CNPC_AlienGrunt::GrabRagdoll()
 		if (!bIsValidTarget)
 			return;
 
-		if (pNPC->Classify() != CLASS_COMBINE && pNPC->Classify() != CLASS_METROPOLICE && pNPC->Classify() != CLASS_PLAYER_ALLY_VITAL )
+		if (pNPC->Classify() != CLASS_COMBINE && pNPC->Classify() != CLASS_METROPOLICE )
 		{
 			return;
 		}
@@ -919,7 +919,7 @@ void CNPC_AlienGrunt::StartTask( const Task_t *pTask )
 				break;
 			}
 
-			Vector vecGoalPos;
+			//Vector vecGoalPos;
 			Vector vecDir;
 
 			vecDir = GetLocalOrigin() - m_hPhysicsEnt->GetLocalOrigin();
@@ -1217,7 +1217,7 @@ void CNPC_AlienGrunt::RunTask( const Task_t *pTask )
 						}
 					}*/
 
-					int disposition = CBaseCombatCharacter::GetDefaultRelationshipDispositionBetweenClasses( CLASS_ALIENGRUNT, moveTrace.pObstruction->Classify() );
+					int disposition = IRelationType(moveTrace.pObstruction);
 					if ( disposition == D_HT )
 					{
 						// Crash unless we're trying to stop already
@@ -1391,6 +1391,7 @@ int CNPC_AlienGrunt::MeleeAttack1Conditions ( float flDot, float flDist )
 			}
 			break;
 		case CLASS_PLAYER:
+		case CLASS_COMBINE_PLAYER:
 			{
 				CBasePlayer *pPlayer = ToBasePlayer( GetEnemy() );
 				if (pPlayer && !pPlayer->GetVehicle())
@@ -2042,10 +2043,10 @@ void CNPC_AlienGrunt::AlertSound( void )
 	}
 }
 
-void CNPC_AlienGrunt::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr )
+void CNPC_AlienGrunt::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator)
 {
 
-	BaseClass::TraceAttack( inputInfo, vecDir, ptr );
+	BaseClass::TraceAttack( inputInfo, vecDir, ptr, pAccumulator );
 }
 
 int CNPC_AlienGrunt::TranslateSchedule( int scheduleType )
@@ -2262,10 +2263,9 @@ int CNPC_AlienGrunt::SelectSchedule( void )
 			}
 
 
-			if ( HasCondition( COND_ALIENGRUNT_SHOULD_CHARGE ) )
+			if ( HasCondition( COND_ALIENGRUNT_SHOULD_CHARGE ) && OccupyStrategySlot(SQUAD_SLOT_ALIENGRUNT_CHARGE))
 			{
 				//DevMsg("npc_aliengrunt: SCHED_ALIENGRUNT_CHARGE\n"); 
-				OccupyStrategySlot( SQUAD_SLOT_ALIENGRUNT_CHARGE );
 				return SCHED_ALIENGRUNT_CHARGE;
 			}
 
@@ -2548,7 +2548,7 @@ bool CNPC_AlienGrunt::FindNearestPhysicsObject( int iMaxMass )
 		return false;
 	}
 
-	float flNearestDist = min( dist, ALIENGRUNT_FARTHEST_PHYSICS_OBJECT * 0.5 );
+	float flNearestDist = Min( dist, (float)(ALIENGRUNT_FARTHEST_PHYSICS_OBJECT) * 0.5f );
 	Vector vecDelta( flNearestDist, flNearestDist, GetHullHeight() * 2.0 );
 
 	class CAlienGruntSwatEntitiesEnum : public CFlaggedEntitiesEnum

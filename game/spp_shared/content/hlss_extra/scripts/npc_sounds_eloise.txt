@@ -1,0 +1,1381 @@
+//
+//
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+//
+// VOL_NORM		1.0f
+//
+//-----------------------------------------------------------------------------
+// common attenuation values
+//-----------------------------------------------------------------------------
+//
+// DON'T USE THESE - USE SNDLVL_ INSTEAD!!!
+//	ATTN_NONE		0.0f	
+//	ATTN_NORM		0.8f
+//	ATTN_IDLE		2.0f
+//	ATTN_STATIC		1.25f 
+//	ATTN_RICOCHET	1.5f
+//	ATTN_GUNFIRE	0.27f
+//
+//	SNDLVL_NONE		= 0,
+//	SNDLVL_25dB		= 25,
+//	SNDLVL_30dB		= 30,
+//	SNDLVL_35dB		= 35,
+//	SNDLVL_40dB		= 40,
+//	SNDLVL_45dB		= 45,
+//	SNDLVL_50dB		= 50,	= 3.9
+//	SNDLVL_55dB		= 55,	= 3.0
+//	SNDLVL_IDLE		= 60,	= 2.0
+//	SNDLVL_TALKING		= 60,	= 2.0
+//	SNDLVL_60dB		= 60,	= 2.0
+//	SNDLVL_65dB		= 65,	= 1.5
+//	SNDLVL_STATIC		= 66,	= 1.25
+//	SNDLVL_70dB		= 70,	= 1.0
+//	SNDLVL_NORM		= 75,
+//	SNDLVL_75dB		= 75,	= 0.8
+//	SNDLVL_80dB		= 80,	= 0.7
+//	SNDLVL_85dB		= 85,	= 0.6
+//	SNDLVL_90dB		= 90,	= 0.5
+//	SNDLVL_95dB		= 95,
+//	SNDLVL_100dB	= 100,	= 0.4
+//	SNDLVL_105dB	= 105,
+//	SNDLVL_120dB	= 120,
+//	SNDLVL_130dB	= 130,
+//	SNDLVL_GUNFIRE	= 140, = 0.27
+//	SNDLVL_140dB	= 140,	= 0.2
+//	SNDLVL_150dB	= 150,	= 0.2
+//
+
+
+
+"NPC_Eloise.Let_Me_Do_It"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/let_me_do_it.wav"
+}
+
+
+"NPC_Eloise.Rebels"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/rebels01.wav"
+	"wave"			"npc/eloise/rebels02.wav"
+	"wave"			"npc/eloise/rebels03.wav"
+}
+
+"NPC_Eloise.Aliens"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/aliens01.wav"
+	"wave"			"npc/eloise/aliens02.wav"
+	"wave"			"npc/eloise/aliens03.wav"
+}
+
+"NPC_Eloise.Incoming"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/incoming01.wav"
+	"wave"			"npc/eloise/incoming02.wav"
+}
+
+"NPC_Eloise.Incoming_Hostiles"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/incoming_hostiles01.wav"
+	"wave"			"npc/eloise/incoming_hostiles02.wav"
+}
+
+"NPC_Eloise.Reloading"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/reloading01.wav"
+	"wave"			"npc/eloise/reloading02.wav"
+}
+
+"NPC_Eloise.Reloading_Hold_On"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/reloading_hold_on.wav"
+}
+
+"NPC_Eloise.Give_Second"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/give_second01.wav"
+	"wave"			"npc/eloise/give_second02.wav"
+}
+
+"NPC_Eloise.Oh_Shit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/oh_shit01.wav"
+}
+
+"NPC_Eloise.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/pain01.wav"
+	"wave"			"npc/eloise/pain02.wav"
+	"wave"			"npc/eloise/pain03.wav"
+	"wave"			"npc/eloise/pain04.wav"
+}
+
+"NPC_Eloise.Banned"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/banned01.wav"
+	"wave"			"npc/eloise/banned02.wav"
+}
+
+"NPC_Eloise.Trust_Me"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/trust_me01.wav"
+}
+
+"NPC_Eloise.Ammo"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/ammo01.wav"
+	"wave"			"npc/eloise/ammo02.wav"
+}
+
+
+"NPC_Eloise.Ammo_For_Ya"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/ammo_for_ya.wav"
+}
+
+
+"NPC_Eloise.Like_Machine"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/like_machine01.wav"
+	"wave"			"npc/eloise/like_machine02.wav"
+}
+
+
+"NPC_Eloise.Take_Medkit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/take_medkit01.wav"
+	"wave"			"npc/eloise/take_medkit02.wav"
+}
+
+"NPC_Eloise.Your_Medic"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/your_medic01.wav"
+	"wave"			"npc/eloise/your_medic02.wav"
+}
+
+"NPC_Eloise.Over_Here"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/over_here01.wav"
+	"wave"			"npc/eloise/over_here02.wav"
+	"wave"			"npc/eloise/over_here03.wav"
+}
+
+"NPC_Eloise.Here"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/here01.wav"
+	"wave"			"npc/eloise/here02.wav"
+}
+
+"NPC_Eloise.Come_On"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/come_on01.wav"
+	"wave"			"npc/eloise/come_on02.wav"
+}
+
+"NPC_Eloise.Come_Here_Dummy"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/come_here_dummy.wav"
+}
+
+"NPC_Eloise.Come_Here_Asshole"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/come_here_asshole.wav"
+}
+
+"NPC_Eloise.I_Said_Here"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/i_said_here.wav"
+}
+
+"NPC_Eloise.Come_Already"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/come_already01.wav"
+}
+
+
+"NPC_Eloise.Show_Way"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/show_way01.wav"
+	"wave"			"npc/eloise/show_way02.wav"
+}
+
+
+"NPC_Eloise.Lets_Go"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/lets_go01.wav"
+}
+
+"NPC_Eloise.Come_On_Lets_Go"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/come_on_lets_go.wav"
+}
+
+"NPC_Eloise.Lets_Go_Baby"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/lets_go_baby.wav"
+}
+
+"NPC_Eloise.Fido"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/fido.wav"
+}
+
+"NPC_Eloise.Come_On_Fido"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/come_on_fido.wav"
+}
+
+"NPC_Eloise.Lobotomise"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/lobotomise.wav"
+}
+
+"NPC_Eloise.Past_Difference"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/past_difference.wav"
+}
+
+
+"NPC_Eloise.Taxes"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/taxes.wav"
+}
+
+"NPC_Eloise.This_Job"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/this_job.wav"
+}
+
+"NPC_Eloise.This_Town"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/this_town.wav"
+}
+
+"NPC_Eloise.Food_Coupons"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/food.wav"
+}
+
+"NPC_Eloise.Get_Laid"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/get_laid.wav"
+}
+
+"NPC_Eloise.Joined"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/joined.wav"
+}
+
+"NPC_Eloise.Jump_Ship"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/jump_ship.wav"
+}
+
+"NPC_Eloise.Ha"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/ha01.wav"
+//	"wave"			"npc/eloise/ha02.wav"
+}
+
+"NPC_Eloise.Please_Dont_Talk"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/please_dont_talk.wav"
+}
+
+"NPC_Eloise.Not_Friend"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/not_friend.wav"
+}
+
+"NPC_Eloise.Chit_Chat"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/chit_chat.wav"
+}
+
+"NPC_Eloise.No"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/no01.wav"
+}
+
+"NPC_Eloise.Almost_Cared"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/almost_cared.wav"
+}
+
+"NPC_Eloise.Dont_Think_So"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/dont_think_so.wav"
+}
+
+"NPC_Eloise.Go_Away"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/go_away.wav"
+}
+
+"NPC_Eloise.Best_Of_The_Species"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/best_of_the_species.wav"
+}
+
+"NPC_Eloise.Maybe"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/maybe.wav"
+}
+
+"NPC_Eloise.Of_Course_Not"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/of_course_not.wav"
+}
+
+"NPC_Eloise.Shut_Up"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/shut_up.wav"
+}
+
+"NPC_Eloise.Yeah_No"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/yeah_no.wav"
+}
+
+"NPC_Eloise.Very_Compelling"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/very_compelling.wav"
+}
+
+
+"NPC_Eloise.Medic"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/medic.wav"
+}
+
+"NPC_Eloise.Incoming_Mantarays"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/incoming_mantarays.wav"
+}
+
+"NPC_Eloise.Mantarays_Coming"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/mantarays_coming01.wav"
+	"wave"			"npc/eloise/mantarays_coming02.wav"
+}
+
+"NPC_Eloise.Traitor"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/traitor01.wav"
+	"wave"			"npc/eloise/he_traitor02.wav"
+	"wave"			"npc/eloise/he_traitor01.wav"
+	"wave"			"npc/eloise/fucking_traitor.wav"
+	"wave"			"npc/eloise/he_traitor01.wav"
+	"wave"			"npc/eloise/frakking_traitor.wav"
+	"wave"			"npc/eloise/kill_him01.wav"
+	"wave"			"npc/eloise/kill_him02.wav"
+}
+
+"NPC_Eloise.Generator_Offline"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/generator_offline01.wav"
+	"wave"			"npc/eloise/generator_offline02.wav"
+}
+
+
+"NPC_Eloise.Recharge_Generator"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/recharge_gen01.wav"
+	"wave"			"npc/eloise/recharge_gen02.wav"
+	"wave"			"npc/eloise/recharge_gen03.wav"
+}
+
+"NPC_Eloise.Your_Kit"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/your_kit.wav"
+}
+
+"NPC_Eloise.Includes_Larson"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/includes_larson.wav"
+}
+
+"NPC_Eloise.Helmet_Up"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/helmet_up01.wav"
+	"wave"			"npc/eloise/helmet_up02.wav"
+}
+
+"NPC_Eloise.Now_Perhaps"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/now_perhaps01.wav"
+	"wave"			"npc/eloise/now_perhaps02.wav"
+}
+
+"NPC_Eloise.Wake_Up"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/wake_up.wav"
+}
+
+"NPC_Eloise.Something_Going_On"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/something_going_on.wav"
+}
+
+"NPC_Eloise.Back_Up_Running"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/back_up_running.wav"
+}
+
+"NPC_Eloise.Bore_To_Death"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/bore_to_death.wav"
+}
+
+"NPC_Eloise.Civil_Protection_Central"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/civil_protection_central.wav"
+}
+
+"NPC_Eloise.Cunningly_Hidden"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/cunningly_hidden.wav"
+}
+
+"NPC_Eloise.Get_In"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/get_in.wav"
+}
+
+"NPC_Eloise.Incoming_Message"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/incoming_message.wav"
+}
+
+"NPC_Eloise.Mean_To_Rush"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/mean_to_rush.wav"
+}
+
+"NPC_Eloise.Plan_He_Says"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/plan_he_says.wav"
+}
+
+"NPC_Eloise.Protocol_Broken"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/Protocol_Broken.wav"
+}
+
+"NPC_Eloise.Riot_Tank"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/riot_tank.wav"
+}
+
+"NPC_Eloise.Smashing_Crates"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/smashing_crates.wav"
+}
+
+"NPC_Eloise.Suicide"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/suicide.wav"
+}
+
+"NPC_Eloise.Trunk_Boy"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/trunk_boy.wav"
+}
+
+"NPC_Eloise.Wonder_Boy"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/wonder_boy.wav"
+}
+
+"NPC_Eloise.Spider_Sense"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/spider_sense.wav"
+}
+
+"NPC_Eloise.Boo_Hiss"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/boo_hiss.wav"
+}
+
+"NPC_Eloise.Behalf_Of"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/behalf_of.wav"
+}
+
+"NPC_Eloise.Always_Knew"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/always_knew.wav"
+}
+
+"NPC_Eloise.Approach_University"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/approach_university.wav"
+}
+
+"NPC_Eloise.Our_Responsibility"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/our_responsibility.wav"
+}
+
+"NPC_Eloise.You_Didnt"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/you_didnt.wav"
+}
+
+"NPC_Eloise.Yes_You_were"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/yes_you_were.wav"
+}
+
+"NPC_Eloise.Yep_He_Did"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/yep_he_did.wav"
+}
+
+"NPC_Eloise.Would_Be_Us"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/would_be_us.wav"
+}
+
+"NPC_Eloise.Village_Folk"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/village_folk.wav"
+}
+
+"NPC_Eloise.What_Is_That"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/what_is_that.wav"
+}
+
+"NPC_Eloise.Turrets_Charge"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/turrets_charge.wav"
+}
+
+"NPC_Eloise.Turrets_Ready"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/turrets_ready.wav"
+}
+
+"NPC_Eloise.This_Door"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/this_door.wav"
+}
+
+"NPC_Eloise.These_Guys"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/these_guys.wav"
+}
+
+"NPC_Eloise.Start_Dreaming"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/start_dreaming.wav"
+}
+
+"NPC_Eloise.Stare_Ass"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/stare_ass.wav"
+}
+
+"NPC_Eloise.Smashing"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/smashing.wav"
+}
+
+"NPC_Eloise.Shoot_Head"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/shoot_head.wav"
+}
+
+"NPC_Eloise.Out_Of_My"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/out_of_my.wav"
+}
+
+"NPC_Eloise.Only_Job"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/only_job.wav"
+}
+
+"NPC_Eloise.Okay_Then"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/okay_then.wav"
+}
+
+"NPC_Eloise.Mysteriously_Shaped"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/mysteriously_shaped.wav"
+}
+
+"NPC_Eloise.Its_Stuck"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/its_stuck.wav"
+}
+
+"NPC_Eloise.Inexplicable_Urge"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/inexplicable_urge.wav"
+}
+
+"NPC_Eloise.Hear_Breathing"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/hear_breathing.wav"
+}
+
+"NPC_Eloise.Guess_This_Way"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/guess_this_way.wav"
+}
+
+"NPC_Eloise.Mount_Doom"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/mount_doom.wav"
+}
+
+"NPC_Eloise.Combine_Toys"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/combine_toys.wav"
+}
+
+"NPC_Eloise.Tell_Them"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/tell_them.wav"
+}
+
+"NPC_Eloise.Naturally"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/naturally.wav"
+}
+
+"NPC_Eloise.Marginal_Improvement"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/marginal_improvement.wav"
+}
+
+"NPC_Eloise.Complete_Mission"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/complete_mission.wav"
+}
+
+"NPC_Eloise.Your_Fault"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/your_fault.wav"
+}
+
+"NPC_Eloise.Say_Team_Leader"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/say_team_leader.wav"
+}
+
+"NPC_Eloise.Not_Team_Leader"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/not_team_leader.wav"
+}
+
+"NPC_Eloise.I_On_Team"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"	"SNDLVL_NORM"
+
+	"wave"			"npc/eloise/i_on_team.wav"
+}

@@ -21,7 +21,7 @@
 #define SOUND_ALIENCONTROLLER_ALERT "npc_sounds_alien_controller.Alert"
 #define SOUND_ALIENCONTROLLER_IDLE "npc_sounds_alien_controller.Idle"
 
-ConVar sk_aliencontroller_health("sk_controller_health", "0", FCVAR_NONE);
+ConVar sk_aliencontrollerbms_health("sk_controller_health", "0", FCVAR_NONE);
 
 
 Activity ACT_CONTROLLER_ATTACK_HANDS;
@@ -149,7 +149,7 @@ void CBMSNPC_AlienController::Spawn(void)
 
 
 	m_bloodColor = BLOOD_COLOR_GREEN;
-	m_iHealth = sk_aliencontroller_health.GetFloat();
+	m_iHealth = sk_aliencontrollerbms_health.GetFloat();
 
 	m_flFieldOfView = VIEW_FIELD_FULL;
 

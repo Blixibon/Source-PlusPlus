@@ -21,6 +21,14 @@
 #define HLSS_RECHARGE_POINT_THINK_DELAY 1.0f
 #define HLSS_RECHARGE_POINT_THINK_DELAY_CHANGE 0.2f
 
+class IAmmoCrate
+{
+public:
+	virtual bool	IsCrateOpen() = 0;
+	virtual void	OpenForNPC(CAI_BaseNPC*) = 0;
+	virtual int		GetCrateAmmoType() = 0;
+};
+
 //#define HLSS_DEBUG_RECHARGE_BEHAVIOR
 
 //=============================================================================
@@ -40,8 +48,10 @@ public:
 
 	#define SF_HLSS_BEHAVIOR_RECHARGE_START_ACTIVE		( 1 << 0  )
 	#define SF_HLSS_BEHAVIOR_RECHARGE_DONT_SPEAK		( 1 << 1  )
+	#define SF_HLSS_BEHAVIOR_RECHARGE_NEEDS_AMMO		( 1 << 2  )
 
 	void Spawn( void );
+	void Activate();
 
 	bool Lock( CAI_BaseNPC *pLocker );
 	bool Unlock( CAI_BaseNPC *pUnlocker );
@@ -53,6 +63,10 @@ public:
 
 	bool			FindRechagerNPC( void );
 	void			FindRechargeThink();
+
+	CBaseEntity* GetAmmoCrateEnt() { return m_hAmmoCrate.Get(); }
+	IAmmoCrate* GetIAmmoCrate() { return dynamic_cast<IAmmoCrate*>(m_hAmmoCrate.Get()); }
+	int			GetAmmoType() { return m_iAmmoIndex; }
 
 	DECLARE_DATADESC();
 
@@ -68,10 +82,15 @@ private:
 	{
 		ST_ENTNAME,
 		ST_CLASSNAME,
+		ST_UNIQUECOPS,
 	};
 
 	string_t				m_iszActor;
 	SearchType_t			m_SearchType;
+
+	string_t				m_iszAmmoCrate;
+	EHANDLE					m_hAmmoCrate;
+	int						m_iAmmoIndex;
 };
 
 enum
@@ -99,6 +118,8 @@ public:
 	//virtual void	EndScheduleSelection();
 	
 	bool			HasReachedRechargePoint() { return m_bHasReachedRechargePoint; }
+	bool			IsMovingToAcquireAmmo() { return IsCurSchedule(SCHED_RECHARGE_ACQUIRE_AMMO, false); }
+	bool			NeedsToAcquireAmmo();
 
 	void			UpdateRechargePointDistance();
 
@@ -122,12 +143,15 @@ public:
 	{
 		SCHED_MOVE_TO_RECHARGE_POINT = BaseClass::NEXT_SCHEDULE,		// Try to get out of the player's way
 		SCHED_RECHARGE_FAILED_TO_MOVE,
+		SCHED_RECHARGE_ACQUIRE_AMMO,
 		NEXT_SCHEDULE,
 
 		TASK_GET_PATH_TO_RECHARGE_POINT = BaseClass::NEXT_TASK,
 		TASK_FACE_RECHARGE_POINT,
 		TASK_RECHARGE,
 		TASK_RECHARGE_DEFER_SCHEDULE_SELECTION,
+		TASK_GET_PATH_TO_AMMO_CRATE,
+		TASK_GET_AMMO,
 		NEXT_TASK,
 
 

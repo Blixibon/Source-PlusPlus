@@ -11,6 +11,7 @@
 #include "ammodef.h"
 #include "eventlist.h"
 #include "npcevent.h"
+#include "Human_Error/ai_behavior_recharge.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -598,7 +599,7 @@ enum
 
 // Ammo crate
 
-class CItem_AmmoCrate : public CBaseAnimating
+class CItem_AmmoCrate : public CBaseAnimating, public IAmmoCrate
 {
 public:
 	DECLARE_CLASS( CItem_AmmoCrate, CBaseAnimating );
@@ -621,6 +622,10 @@ public:
 	
 	virtual int OnTakeDamage( const CTakeDamageInfo &info );
 
+	virtual bool	IsCrateOpen();
+	virtual void	OpenForNPC(CAI_BaseNPC* pNPC);
+	virtual int		GetCrateAmmoType();
+
 protected:
 
 	int		m_nAmmoType;
@@ -633,7 +638,8 @@ protected:
 
 	float	m_flCloseTime;
 	COutputEvent	m_OnUsed;
-	CHandle< CBasePlayer > m_hActivator;
+	COutputEvent	m_OnUsedByNPC;
+	CHandle< CBaseCombatCharacter > m_hActivator;
 
 	DECLARE_DATADESC();
 };
@@ -654,6 +660,7 @@ BEGIN_DATADESC( CItem_AmmoCrate )
 	//DEFINE_FIELD( m_nAmmoAmounts,	FIELD_INTEGER ),
 
 	DEFINE_OUTPUT( m_OnUsed, "OnUsed" ),
+	DEFINE_OUTPUT(m_OnUsedByNPC, "OnUsedByNPC"),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
 
@@ -861,7 +868,7 @@ int CItem_AmmoCrate::OnTakeDamage( const CTakeDamageInfo &info )
 	{
 		CBaseCombatWeapon *weapon = player->GetActiveWeapon();
 
-		if (weapon && !stricmp(weapon->GetName(), "weapon_crowbar"))
+		if (weapon && weapon->IsMeleeWeapon())
 		{
 			// play the normal use sound
 			player->EmitSound( "HL2Player.Use" );
@@ -872,6 +879,46 @@ int CItem_AmmoCrate::OnTakeDamage( const CTakeDamageInfo &info )
 
 	// don't actually take any damage
 	return 0;
+}
+
+bool CItem_AmmoCrate::IsCrateOpen()
+{
+	return m_hActivator != nullptr;
+}
+
+void CItem_AmmoCrate::OpenForNPC(CAI_BaseNPC* pNPC)
+{
+	if (pNPC == NULL)
+		return;
+
+	m_OnUsedByNPC.FireOutput(pNPC, this);
+
+	int iSequence = LookupSequence("Open");
+
+	// See if we're not opening already
+	if (GetSequence() != iSequence)
+	{
+		m_hActivator = pNPC;
+
+		// Animate!
+		ResetSequence(iSequence);
+
+		// Make sound
+		CPASAttenuationFilter sndFilter(this, "AmmoCrate.Open");
+		EmitSound(sndFilter, entindex(), "AmmoCrate.Open");
+
+		// Start thinking to make it return
+		SetThink(&CItem_AmmoCrate::CrateThink);
+		SetNextThink(gpGlobals->curtime + 0.1f);
+	}
+
+	// Don't close again for two seconds
+	m_flCloseTime = gpGlobals->curtime + AMMO_CRATE_CLOSE_DELAY;
+}
+
+int CItem_AmmoCrate::GetCrateAmmoType()
+{
+	return m_nAmmoIndex;
 }
 
 
@@ -886,7 +933,7 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 	{
 		if ( m_hActivator )
 		{
-			if ( m_pGiveWeapon[m_nAmmoType] && !m_hActivator->Weapon_OwnsThisType( m_pGiveWeapon[m_nAmmoType] ) )
+			if ( m_hActivator->IsPlayer() && m_pGiveWeapon[m_nAmmoType] && !m_hActivator->Weapon_OwnsThisType( m_pGiveWeapon[m_nAmmoType] ) )
 			{
 				CBaseEntity *pEntity = CreateEntityByName( m_pGiveWeapon[m_nAmmoType] );
 				CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>(pEntity);
@@ -896,7 +943,7 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 					pWeapon->m_iPrimaryAmmoType = 0;
 					pWeapon->m_iSecondaryAmmoType = 0;
 					pWeapon->Spawn();
-					if ( !m_hActivator->BumpWeapon( pWeapon ) )
+					if ( !ToBasePlayer(m_hActivator)->BumpWeapon( pWeapon ) )
 					{
 						UTIL_Remove( pEntity );
 					}

@@ -1,0 +1,1548 @@
+//
+//
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+// NOTE:  AUTOMATICALLY GENERATED FILE, ANY HAND EDITED COMMENTS WILL BE LOST!!!
+//
+// VOL_NORM		1.0f
+//
+//-----------------------------------------------------------------------------
+// common attenuation values
+//-----------------------------------------------------------------------------
+//
+// DON'T USE THESE - USE SNDLVL_ INSTEAD!!!
+//	ATTN_NONE		0.0f	
+//	ATTN_NORM		0.8f
+//	ATTN_IDLE		2.0f
+//	ATTN_STATIC		1.25f 
+//	ATTN_RICOCHET	1.5f
+//	ATTN_GUNFIRE	0.27f
+//
+//	SNDLVL_NONE		= 0,
+//	SNDLVL_25dB		= 25,
+//	SNDLVL_30dB		= 30,
+//	SNDLVL_35dB		= 35,
+//	SNDLVL_40dB		= 40,
+//	SNDLVL_45dB		= 45,
+//	SNDLVL_50dB		= 50,	= 3.9
+//	SNDLVL_55dB		= 55,	= 3.0
+//	SNDLVL_IDLE		= 60,	= 2.0
+//	SNDLVL_TALKING		= 60,	= 2.0
+//	SNDLVL_60dB		= 60,	= 2.0
+//	SNDLVL_65dB		= 65,	= 1.5
+//	SNDLVL_STATIC		= 66,	= 1.25
+//	SNDLVL_70dB		= 70,	= 1.0
+//	SNDLVL_NORM		= 75,
+//	SNDLVL_75dB		= 75,	= 0.8
+//	SNDLVL_80dB		= 80,	= 0.7
+//	SNDLVL_85dB		= 85,	= 0.6
+//	SNDLVL_90dB		= 90,	= 0.5
+//	SNDLVL_95dB		= 95,
+//	SNDLVL_100dB	= 100,	= 0.4
+//	SNDLVL_105dB	= 105,
+//	SNDLVL_120dB	= 120,
+//	SNDLVL_130dB	= 130,
+//	SNDLVL_GUNFIRE	= 140, = 0.27
+//	SNDLVL_140dB	= 140,	= 0.2
+//	SNDLVL_150dB	= 150,	= 0.2
+//
+
+
+"NPC_Noah.Ammo"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/ammo01.wav"
+//	"wave"			"npc/noah/ammo02.wav"
+}
+
+"NPC_Noah.Some_Ammo"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/some_ammo.wav"
+}
+
+"NPC_Noah.Something_Pocket"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/something_pocket.wav"
+}
+
+"NPC_Noah.Act_Civil"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/act_civil.wav"
+}
+
+"NPC_Noah.AntiCitizen_Alert"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/anticitizen01.wav"
+}
+
+
+"NPC_Noah.Can_Get_Going"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/can_going.wav"
+}
+
+"NPC_Noah.Call_Yourself"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/call_yourself.wav"
+}
+
+"NPC_Noah.My_Leg"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/my_leg01.wav"
+	"wave"			"npc/noah/my_leg02.wav"
+}
+
+"NPC_Noah.My_Kidneys"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/my_kidneys01.wav"
+}
+
+
+
+"NPC_Noah.My_Arm"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/my_arm01.wav"
+	"wave"			"npc/noah/my_arm02.wav"
+}
+
+
+"NPC_Noah.Want_Transfer"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/want_transfer.wav"
+}
+
+
+"NPC_Noah.Handing_In"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/handing_in.wav"
+}
+
+
+"NPC_Noah.Most_Ridiclious"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/most_ridiclious.wav"
+}
+
+
+"NPC_Noah.Very_Professional"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/very_professional.wav"
+}
+
+
+"NPC_Noah.Get_Shit_Together"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/get_shit_together.wav"
+}
+
+
+"NPC_Noah.Stop_Asking"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/stop_asking.wav"
+}
+
+
+"NPC_Noah.Oh_Please"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/oh_please.wav"
+}
+
+
+"NPC_Noah.No"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/no01.wav"
+	"wave"			"npc/noah/no02.wav"
+}
+
+
+"NPC_Noah.Nope"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/nope01.wav"
+}
+
+
+"NPC_Noah.Sigh_Yes"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/sigh_yes.wav"
+}
+
+
+"NPC_Noah.Wrong_With_You"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/wrong_with_you.wav"
+}
+
+
+"NPC_Noah.Why_No_Mutes"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/why_no_mutes.wav"
+}
+
+
+"NPC_Noah.Paying_Attention"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/paying_attention.wav"
+}
+
+
+"NPC_Noah.Do_I_Say"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/do_i_say.wav"
+}
+
+
+"NPC_Noah.Leader_Minute"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/leader_minute.wav"
+}
+
+
+"NPC_Noah.Shoot_Me"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/shoot_me.wav"
+}
+
+
+"NPC_Noah.Focus_On_Task"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/focus_on_task.wav"
+}
+
+
+"NPC_Noah.Still_With_Us"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/still_with_us.wav"
+}
+
+
+"NPC_Noah.You_Okay"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/you_okay.wav"
+}
+
+
+"NPC_Noah.Come_Lets_Go"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/come_lets01.wav"
+}
+
+
+"NPC_Noah.Lets_Go"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/lets_go01.wav"
+}
+
+
+"NPC_Noah.Follow_Me"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/follow_me01.wav"
+}
+
+
+"NPC_Noah.No_Time_Waste"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/no_time_waste.wav"
+}
+
+
+"NPC_Noah.Come_On"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/come_on01.wav"
+}
+
+
+"NPC_Noah.Come_Here"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/come_here01.wav"
+	"wave"			"npc/noah/come_here02.wav"
+}
+
+
+"NPC_Noah.Xenoform_Alert"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/xenoform01.wav"
+	"wave"			"mpc/noah/xenoform02.wav"
+}
+
+
+"NPC_Noah.Reloading"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/reloading01.wav"
+	"wave"			"npc/noah/reloading02.wav"
+}
+
+
+"NPC_Noah.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_90dB"
+
+	"wave"			"npc/noah/pain01.wav"
+	"wave"			"npc/noah/pain02.wav"
+	"wave"			"npc/noah/pain03.wav"
+	"wave"			"npc/noah/pain04.wav"
+}
+
+
+"NPC_Noah.Over_Here"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/over_here01.wav"
+}
+
+
+"NPC_Noah.Medic"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/medic01.wav"
+	"wave"			"npc/noah/medic02.wav"
+}
+
+
+"NPC_Noah.Hostiles"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/hostiles01.wav"
+}
+
+
+"NPC_Noah.Here_They_Come"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/here_they_come01.wav"
+}
+
+
+"NPC_Noah.Here"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+	
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/here01.wav"
+}
+
+"NPC_Noah.Mantaray"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/mantaray01.wav"
+}
+
+"NPC_Noah.Mantarays_Coming"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/mantarays_coming01.wav"
+}
+
+
+"NPC_Noah.More_Mantarays"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/more_mantarays.wav"
+}
+
+"NPC_Noah.Recharge_Generator"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/recharge01.wav"
+	"wave"			"npc/noah/recharge02.wav"
+}
+
+"NPC_Noah.Recharge_Anders"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/recharge_anders01.wav"
+}
+
+
+"NPC_Noah.About_To_Be_Attacked"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/about_to_be_attacked.wav"
+}
+
+"NPC_Noah.Zero_Tolerance"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/zero_tolerance.wav"
+}
+
+"NPC_Noah.Someone_With_APC"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/someone_with_apc.wav"
+}
+
+"NPC_Noah.Sticks_And_Stones"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/sticks_and_stones.wav"
+}
+
+"NPC_Noah.Well_Armed"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/well_armed.wav"
+}
+
+"NPC_Noah.Under_Attack"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/under_attack.wav"
+}
+
+
+
+"NPC_Noah.Station_One"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/station_one.wav"
+}
+
+"NPC_Noah.Aliengrunt_See"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/aliengrunt_see.wav"
+}
+
+
+"NPC_Noah.After_Initial"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.9"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/after_initial.wav"
+}
+
+"NPC_Noah.Eyes_On_Monitor"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/eyes_on_monitor.wav"
+}
+
+"NPC_Noah.Place_Turrets"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/place_turrets.wav"
+}
+
+"NPC_Noah.Reckless_Little_Man"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/reckless_little_man.wav"
+}
+
+"NPC_Noah.How_You_Run_Things"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/how_you_run_things.wav"
+}
+
+"NPC_Noah.Remember_Your_Places"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/remember_your_places.wav"
+}
+
+"NPC_Noah.Near_Control_Room"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/near_control_room.wav"
+}
+
+"NPC_Noah.Final_Wave_Fences"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/final_wave_fences.wav"
+}
+
+"NPC_Noah.Been_Hacked"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/been_hacked.wav"
+}
+
+"NPC_Noah.Slime_Generator"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/slime_generator.wav"
+}
+
+"NPC_Noah.Generator_Down"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/generator_down01.wav"
+}
+
+"NPC_Noah.Shoot_Vorts"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/shoot_vorts.wav"
+}
+
+"NPC_Noah.Protect_Generator"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/protect_generator01.wav"
+	"wave"			"npc/noah/protect_generator02.wav"
+}
+
+"NPC_Noah.Generator_Offline"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/generator_offline01.wav"
+	"wave"			"npc/noah/generator_offline02.wav"
+}
+
+
+"NPC_Noah.Dont_Be_Too_Hasty"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/dont_be_too_hasty.wav"
+}
+
+"NPC_Noah.How_Apathetic"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/how_apathetic.wav"
+}
+
+"NPC_Noah.Why_She_Anders"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/why_she_anders.wav"
+}
+
+"NPC_Noah.PA_System"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/pa_system.wav"
+}
+
+"NPC_Noah.University_Network"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/university_network.wav"
+}
+
+"NPC_Noah.Toothpick_Charm"
+{
+	"channel"		"CHAN_STATIC"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/toothpick_charm.wav"
+}
+
+"NPC_Noah.He_Did_It"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/he_did_it.wav"
+}
+
+"NPC_Noah.Oh_For_The"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/oh_for_the.wav"
+}
+
+"NPC_Noah.Helping_Him"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/helping_him.wav"
+}
+
+"NPC_Noah.Its_Working"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/its_working.wav"
+}
+
+"NPC_Noah.Head_Roof"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/head_roof.wav"
+}
+
+"NPC_Noah.Good_Work"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/good_work.wav"
+}
+
+"NPC_Noah.Captured_Vortigaunts"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/captured_vortigaunts.wav"
+}
+
+"NPC_Noah.Fragment_From"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/fragment_from.wav"
+}
+
+"NPC_Noah.We_Did"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/we_did.wav"
+}
+
+"NPC_Noah.Think_We_Did"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/think_we_did.wav"
+}
+
+"NPC_Noah.Knew_That"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/knew_that.wav"
+}
+
+"NPC_Noah.Superior"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/superior.wav"
+}
+
+"NPC_Noah.Hate_You"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/hate_you.wav"
+}
+
+"NPC_Noah.How_Know"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/how_know.wav"
+}
+
+"NPC_Noah.Love_You"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/love_you.wav"
+}
+
+"NPC_Noah.Already_Do"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/already_do.wav"
+}
+
+"NPC_Noah.Seriously"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/seriously.wav"
+}
+
+"NPC_Noah.Stare_Ass"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/stare_ass.wav"
+}
+
+"NPC_Noah.Our_Air_Support"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/our_air_support.wav"
+}
+
+"NPC_Noah.Xenian_Dropships"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/xenian_dropships.wav"
+}
+
+"NPC_Noah.Not_Responsible"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/not_responsible.wav"
+}
+
+"NPC_Noah.Put_This_On"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/put_this_on.wav"
+}
+
+"NPC_Noah.What_Said"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/what_said.wav"
+}
+
+"NPC_Noah.Didnt_Say_That"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/didnt_say_that.wav"
+}
+
+"NPC_Noah.Er_Yes"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/er_yes.wav"
+}
+
+"NPC_Noah.Fuck_Ya_All"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/fuck_ya_all.wav"
+}
+
+"NPC_Noah.Right_Fuck"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/right_fuck.wav"
+}
+
+"NPC_Noah.Fuck_Off_Properly"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/fuck_off_properly.wav"
+}
+
+"NPC_Noah.Very_Droll"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/very_droll.wav"
+}
+
+"NPC_Noah.Him_In_Charge"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/him_in_charge.wav"
+}
+
+"NPC_Noah.No_Larson"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/no_larson.wav"
+}
+
+"NPC_Noah.Be_Quiet_Generators"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/be_quiet_generators.wav"
+}
+
+"NPC_Noah.Get_These_Online"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/get_these_online.wav"
+}
+
+"NPC_Noah.Hold_Down_Fort"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/hold_down_fort.wav"
+}
+
+"NPC_Noah.Generator_Duty"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/generator_duty.wav"
+}
+
+"NPC_Noah.Remember_Gear_Up"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/remember_gear_up.wav"
+}
+
+"NPC_Noah.First_Plug"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/first_plug.wav"
+}
+
+"NPC_Noah.Second_Plug"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/second_plug.wav"
+}
+
+"NPC_Noah.Third_Plug"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/third_plug.wav"
+}
+
+"NPC_Noah.Fix_Generator"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/fix_generator.wav"
+}
+
+"NPC_Noah.Another_Generator"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/another_generator.wav"
+}
+
+"NPC_Noah.System_Recharging"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/system_recharging.wav"
+}
+
+"NPC_Noah.Vortigaunts_Incoming"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/vortigaunts_incoming.wav"
+}
+
+"NPC_Noah.Airdefense_Online"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/airdefense_online.wav"
+}
+
+"NPC_Noah.Attacks_Over"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/attacks_over.wav"
+}
+
+"NPC_Noah.Senior_Officer"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/senior_officer.wav"
+}
+
+"NPC_Noah.The_Lady"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/the_lady.wav"
+}
+
+"NPC_Noah.Dont_Break_Anything"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/dont_break_anything.wav"
+}
+
+"NPC_Noah.Generator_Kitchen"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/generator_kitchen.wav"
+}
+
+"NPC_Noah.Quick_Throw"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/quick_throw.wav"
+}
+
+"NPC_Noah.With_Eloise"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/with_eloise.wav"
+}
+
+"NPC_Noah.Win_Bets"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/win_bets.wav"
+}
+
+"NPC_Noah.He_Traitor"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/he_traitor01.wav"
+}
+
+"NPC_Noah.She_Traitor"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/she_traitor01.wav"
+}
+
+"NPC_Noah.Traitor"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1.0"
+	"pitch"			"PITCH_NORM"
+
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"npc/noah/traitor01.wav"
+	"wave"			"npc/noah/traitor02.wav"
+	"wave"			"npc/noah/traitor03.wav"
+}

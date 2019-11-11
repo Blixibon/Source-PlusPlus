@@ -4,6 +4,7 @@
 
 #include "ai_basenpc.h"
 #include "npc_playerfollower.h"
+#include "Human_Error/ai_behavior_recharge.h"
 
 class CNPC_CombatSupplier : public CNPC_PlayerFollower
 {
@@ -14,6 +15,8 @@ public:
 
 	virtual void	Precache();
 	virtual void	Spawn();
+	bool CreateBehaviors();
+	void PostNPCInit();
 
 	virtual bool	IsAmmoResupplier() { return false; }
 
@@ -36,6 +39,9 @@ public:
 	void			TossHealthKit(CBaseCombatCharacter* pThrowAt, const Vector& offset); // create a healthkit and throw it at someone
 	void			InputForceHealthKitToss(inputdata_t& inputdata);
 #endif
+
+	void			InputSetRechargerOn(inputdata_t& inputdata);
+	void			InputSetRechargerOff(inputdata_t& inputdata);
 
 	void			PredictPlayerPush();
 	void			BuildScheduleTestBits();
@@ -63,6 +69,8 @@ public:
 
 protected:
 
+	CAI_RechargeBehavior	m_RechargeBehavior;
+
 	float			m_flPlayerHealTime;
 	float			m_flAllyHealTime;
 	float			m_flPlayerGiveAmmoTime;
@@ -74,6 +82,8 @@ protected:
 
 	static string_t	gm_iszCurrentAmmo;
 	static string_t gm_iszAutoAmmo;
+
+	bool	m_bCanRecharge;
 };
 
 #endif // !NPC_COMBATSUPPLIER_H

@@ -30,7 +30,7 @@
 #include "tier0/memdbgon.h"
 
 // Increment this to force rebuilding of all networks
-#define	 AINET_VERSION_NUMBER	39
+#define	 AINET_VERSION_NUMBER	40
 
 //-----------------------------------------------------------------------------
 

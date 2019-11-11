@@ -2274,6 +2274,11 @@ void CNPC_Vortigaunt::ClearSchedule( const char *szReason )
 	BaseClass::ClearSchedule( szReason );
 }
 
+bool CNPC_Vortigaunt::IsPlayerEnemy()
+{
+	return !IsPlayerAlly();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Watch our glows and turn them off appropriately
 //-----------------------------------------------------------------------------

@@ -58,6 +58,11 @@ DEFINE_FIELD(m_flTimeNextHealStare, FIELD_TIME),
 #if HL2_EPISODIC
 DEFINE_INPUTFUNC(FIELD_VOID, "ThrowHealthKit", InputForceHealthKitToss),
 #endif
+
+DEFINE_KEYFIELD(m_bCanRecharge, FIELD_BOOLEAN, "can_recharge"),
+
+DEFINE_INPUTFUNC(FIELD_VOID, "SetRechargerOn", InputSetRechargerOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "SetRechargerOff", InputSetRechargerOff),
 END_DATADESC();
 
 void CNPC_CombatSupplier::Precache()
@@ -73,6 +78,41 @@ void CNPC_CombatSupplier::Spawn()
 	BaseClass::Spawn();
 
 	m_flTimePlayerStare = FLT_MAX;
+}
+
+bool CNPC_CombatSupplier::CreateBehaviors()
+{
+	AddBehavior(&m_RechargeBehavior);
+
+	return BaseClass::CreateBehaviors();
+}
+
+void CNPC_CombatSupplier::PostNPCInit()
+{
+	//TERO:
+	m_RechargeBehavior.SetCanRecharge(m_bCanRecharge);
+
+	BaseClass::PostNPCInit();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CNPC_CombatSupplier::InputSetRechargerOn(inputdata_t& inputdata)
+{
+	m_bCanRecharge = true;
+	m_RechargeBehavior.SetCanRecharge(true);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &inputdata - 
+//-----------------------------------------------------------------------------
+void CNPC_CombatSupplier::InputSetRechargerOff(inputdata_t& inputdata)
+{
+	m_bCanRecharge = false;
+	m_RechargeBehavior.SetCanRecharge(false);
 }
 
 void CNPC_CombatSupplier::GatherHealConditions()
