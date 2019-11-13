@@ -7,7 +7,7 @@
 $Macro SRCDIR		"..\.."
 $Macro GAMENAME 	"mod_lazuul"
 
-$Include "$SRCDIR\game\client\client_portal_base_lite.vpc"
+$Include "$SRCDIR\game\client\client_portal_base_full.vpc"
 
 $Configuration
 {

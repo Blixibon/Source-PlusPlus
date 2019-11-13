@@ -289,6 +289,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 		break;
 	case HLSS_WEAPON_ID_PHYSGUN:
 	case HLSS_WEAPON_ID_HIVEHAND:
+	case HLSS_WEAPON_ID_PORTALGUN:
 		iWeaponRole = TF_WPN_TYPE_ITEM1;
 		break;
 	case HLSS_WEAPON_ID_SLAM:
@@ -367,6 +368,7 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_SATCHEL:
 	case HLSS_WEAPON_ID_DEAGLE:
 	case HLSS_WEAPON_ID_CROWBAR_BMS:
+	case HLSS_WEAPON_ID_PORTALGUN:
 		iWeaponVariant = 2;
 		break;
 	case HLSS_WEAPON_ID_EGON:
@@ -1344,6 +1346,10 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 		case 1:
 			pTable = s_acttableHiveHand;
 			iActivityCount = ARRAYSIZE(s_acttableHiveHand);
+			break;
+		case 2:
+			pTable = s_acttableCrossbow;
+			iActivityCount = ARRAYSIZE(s_acttableCrossbow);
 			break;
 		}
 		break;

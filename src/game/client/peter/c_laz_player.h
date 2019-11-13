@@ -1,17 +1,17 @@
 #ifndef C_HLMS_PLAYER_H
 #define C_HLMS_PLAYER_H
 #include "c_basehlplayer.h"
-//#include "c_portal_player.h"
+#include "c_portal_player.h"
 #include "laz_player_shared.h"
 #include "networkstringtabledefs.h"
 #include "iinput.h"
 
 extern INetworkStringTable *g_pStringTablePlayerFootSteps;
 
-class C_Laz_Player : public C_BaseHLPlayer
+class C_Laz_Player : public C_Portal_Player
 {
 public:
-	DECLARE_CLASS(C_Laz_Player, C_BaseHLPlayer);
+	DECLARE_CLASS(C_Laz_Player, C_Portal_Player);
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_INTERPOLATION();

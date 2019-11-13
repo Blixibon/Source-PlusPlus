@@ -12,9 +12,9 @@ $Project
 	{
 		$Folder	"Portal"
 		{
-			$File	"portal\c_npc_portal_turret_floor.cpp"
-			//$File	"portal\c_npc_rocket_turret.cpp"
-			$File	"portal\c_prop_energy_ball.cpp"
+			$File	"portalbase\c_npc_portal_turret_floor.cpp"
+			//$File	"portalbase\c_npc_rocket_turret.cpp"
+			$File	"portalbase\c_prop_energy_ball.cpp"
 			$File	"peter\c_npc_personality_core.cpp"
 		}
 	}

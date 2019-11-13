@@ -2,6 +2,7 @@
 #define HLMS_PLAYER_H
 #include "cbase.h"
 #include "hl2_player.h"
+#include "portalbase/portal_player.h"
 #include "laz_player_shared.h"
 #include "player_models.h"
 
@@ -54,10 +55,10 @@ public:
 	void (CLaz_Player::*pfnPreThink)();	// Do a PreThink() in this state.
 };
 
-class CLaz_Player : public CHL2_Player
+class CLaz_Player : public CPortal_Player
 {
 public:
-	DECLARE_CLASS(CLaz_Player, CHL2_Player);
+	DECLARE_CLASS(CLaz_Player, CPortal_Player);
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
