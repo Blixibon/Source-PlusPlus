@@ -1247,6 +1247,18 @@ acttable_t CWeaponCoopBase::s_acttableDeagle[] =
 		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_REVOLVER,					false},
 };
 
+acttable_t CWeaponCoopBase::s_acttablePortalgun[] =
+{
+	{ ACT_HL2MP_IDLE, ACT_MP_STAND_PRIMARY, false },
+	{ ACT_HL2MP_RUN, ACT_MP_RUN_PRIMARY, false },
+	{ ACT_HL2MP_IDLE_CROUCH, ACT_MP_CROUCH_PRIMARY, false },
+	{ ACT_HL2MP_WALK_CROUCH, ACT_MP_CROUCHWALK_PRIMARY, false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK, ACT_MP_ATTACK_STAND_PRIMARY, false },
+	{ ACT_HL2MP_JUMP, ACT_MP_JUMP_START_PRIMARY, false },
+	{ ACT_HL2MP_SWIM, ACT_HL2MP_SWIM_CROSSBOW, false },
+	{ ACT_HL2MP_WALK, ACT_MP_RUN_PRIMARY, false },
+};
+
 acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 {
 	int iWeaponRole = GetActivityWeaponRole();
@@ -1348,8 +1360,8 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 			iActivityCount = ARRAYSIZE(s_acttableHiveHand);
 			break;
 		case 2:
-			pTable = s_acttableCrossbow;
-			iActivityCount = ARRAYSIZE(s_acttableCrossbow);
+			pTable = s_acttablePortalgun;
+			iActivityCount = ARRAYSIZE(s_acttablePortalgun);
 			break;
 		}
 		break;

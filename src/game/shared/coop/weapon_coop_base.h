@@ -85,6 +85,9 @@ public:
 	// Lazul
 	static acttable_t s_acttableDeagle[];
 	
+	// Portal
+	static acttable_t s_acttablePortalgun[];
+	
 	CNetworkVar(int, m_iPrimaryAttacks);
 	CNetworkVar(int, m_iSecondaryAttacks);
 };
