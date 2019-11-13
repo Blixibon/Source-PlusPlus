@@ -55,4 +55,8 @@ void RegisterUserMessages(void)
 	// NVNT register haptic user messages
 	RegisterHapticMessages();
 #endif
+
+	//new stuff for portal
+	usermessages->Register("EntityPortalled", sizeof(long) + sizeof(long) + sizeof(Vector) + sizeof(QAngle)); //something got teleported through a portal
+	usermessages->Register("CreditsPortalMsg", 1);
 }

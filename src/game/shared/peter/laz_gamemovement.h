@@ -1,11 +1,11 @@
 #ifndef LAZ_GAMEMOVE_H
 #define LAZ_GAMEMOVE_H
 #pragma once
-#include "hl_gamemovement.h"
+#include "portal_gamemovement.h"
 
-class CLazGameMovement : public CHL2GameMovement
+class CLazGameMovement : public CPortalGameMovement
 {
-	typedef CHL2GameMovement BaseClass;
+	typedef CPortalGameMovement BaseClass;
 public:
 	virtual unsigned int PlayerSolidMask(bool brushOnly = false);
 	virtual void	PlayerRoughLandingEffects(float fvol);

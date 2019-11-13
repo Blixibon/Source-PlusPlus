@@ -47,6 +47,7 @@
 	supportsvr	0
 	supportdx8 0
 	multiplecampaigns 1
+	hasportals	1
 
 	FileSystem
 	{

@@ -707,7 +707,7 @@ void CHud::SetupNewHudTexture( CHudTexture *t )
 {
 	if ( t->bRenderUsingFont )
 	{
-		vgui::HScheme scheme = vgui::scheme()->GetScheme( "HudScheme" );
+		vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
 		t->hFont = vgui::scheme()->GetIScheme(scheme)->GetFont( t->szTextureFile, true );
 		t->rc.top = 0;
 		t->rc.left = 0;
@@ -851,7 +851,7 @@ void CHud::RefreshHudTextures()
 	FreeHudTextureList( textureList );
 
 	// fixup all the font icons
-	vgui::HScheme scheme = vgui::scheme()->GetScheme( "HudScheme" );
+	vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
 	for (int i = m_Icons.First(); m_Icons.IsValidIndex(i); i = m_Icons.Next(i))
 	{
 		CHudTexture *icon = m_Icons[i];

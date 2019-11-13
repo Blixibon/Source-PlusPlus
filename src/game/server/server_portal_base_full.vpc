@@ -1,0 +1,75 @@
+//-----------------------------------------------------------------------------
+//	SERVER_PORTAL.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Conditional "PORTALWEAPONS" "1"
+
+$Include "$SRCDIR\game\server\server_portal_base_lite.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\portalbase;.\portalbase"
+		$PreprocessorDefinitions		"$BASE;PORTAL"
+	}
+}
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder	"Portal"
+		{
+			$File	"portalbase\cbaseanimatingprojectile.cpp"
+			$File	"portalbase\cbaseanimatingprojectile.h"
+			$File	"portalbase\env_lightrail_endpoint.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\env_lightrail_endpoint_shared.h"
+			$File	"portalbase\env_portal_credits.cpp"
+			$File	"portalbase\env_portal_path_track.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\env_portal_path_track_shared.h"
+			$File	"portalbase\func_liquidportal.cpp"
+			$File	"portalbase\func_liquidportal.h"
+			$File	"portalbase\func_noportal_volume.cpp"
+			$File	"portalbase\func_noportal_volume.h"
+			$File	"portalbase\func_portal_bumper.cpp"
+			$File	"portalbase\func_portal_detector.cpp"
+			$File	"portalbase\func_portal_detector.h"
+			$File	"portalbase\func_portal_orientation.cpp"
+			$File	"portalbase\func_portal_orientation.h"
+			$File	"portalbase\neurotoxin_countdown.cpp"
+			$File	"portalbase\PhysicsCloneArea.cpp"
+			$File	"portalbase\physicsshadowclone.cpp"
+			$File	"portalbase\physicsshadowclone.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_collideable_enumerator.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_collideable_enumerator.h"
+			$File	"portalbase\Portal_CustomStatsVisualizer.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_gamemovement.cpp"
+			$File	"portalbase\portal_physics_collisionevent.cpp"
+			$File	"portalbase\portal_physics_collisionevent.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_placement.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_placement.h"
+			$File	"portalbase\portal_player.cpp"
+			$File	"portalbase\portal_player.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_player_shared.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_player_shared.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_shareddefs.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_shareddefs.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_util_shared.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_util_shared.h"
+			$File	"$SRCDIR\game\shared\portalbase\PortalSimulation.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\PortalSimulation.h"
+			$File	"portalbase\prop_portal.cpp"
+			$File	"portalbase\prop_portal.h"
+			$File	"portalbase\prop_portal_stats_display.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\prop_portal_shared.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\prop_portal_shared.h"
+			$File	"portalbase\prop_telescopic_arm.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\StaticCollisionPolyhedronCache.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\StaticCollisionPolyhedronCache.h"
+			$File	"portalbase\trigger_portal_cleanser.cpp"
+		}
+	}
+}

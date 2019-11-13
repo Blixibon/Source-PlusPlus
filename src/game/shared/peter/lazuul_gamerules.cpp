@@ -738,7 +738,7 @@ void CLazuul::SetAllowedModes(bool bModes[])
 
 float CLazuul::FlPlayerFallDamage(CBasePlayer* pPlayer)
 {
-	int iCancelDamage = 0;
+	int iCancelDamage = (m_iMapGameType == GAME_PORTAL);
 	CALL_ATTRIB_HOOK_INT_ON_OTHER(pPlayer, iCancelDamage, cancel_falling_damage);
 	if (iCancelDamage > 0)
 		return 0.0f;

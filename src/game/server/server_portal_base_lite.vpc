@@ -12,12 +12,12 @@ $Project
 	{
 		$Folder	"Portal"
 		{
-			$File	"portal\npc_portal_turret_floor.cpp"
-			$File	"portal\npc_portal_turret_ground.cpp"
-			//$File	"portal\npc_rocket_turret.cpp"
-			$File	"portal\npc_security_camera.cpp"
-			$File	"portal\prop_energy_ball.cpp"
-			$File	"portal\prop_glados_core.cpp"
+			$File	"portalbase\npc_portal_turret_floor.cpp"
+			$File	"portalbase\npc_portal_turret_ground.cpp"
+			//$File	"portalbase\npc_rocket_turret.cpp"
+			$File	"portalbase\npc_security_camera.cpp"
+			$File	"portalbase\prop_energy_ball.cpp"
+			$File	"portalbase\prop_glados_core.cpp"
 			$File	"peter\npc_personality_core.cpp"
 		}
 	}

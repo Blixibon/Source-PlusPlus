@@ -91,6 +91,15 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_357_bms.cpp"
 			}
 		}
+		
+		$Folder	"Portal"	[$PORTALWEAPONS]
+		{
+			$Folder "Weapons"
+			{
+				$File	"$SRCDIR\game\shared\coop\weapon_portalgun.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_portalgun.h"
+			}
+		}
 
 		$Folder "Econ"
 		{

@@ -1,0 +1,84 @@
+//-----------------------------------------------------------------------------
+//	CLIENT_EPISODIC.VPC
+//
+//	Project Script
+//-----------------------------------------------------------------------------
+
+$Conditional "PORTALWEAPONS" "1"
+
+$Include "$SRCDIR\game\client\client_portal_base_lite.vpc"
+
+$Configuration
+{
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;.\portalbase;.\portalbase\vgui;$SRCDIR\game\shared\portalbase"
+		$PreprocessorDefinitions		"$BASE;PORTAL"
+	}
+}
+
+$Project
+{
+	$Folder	"Source Files"
+	{
+		$Folder "HL2 DLL"
+		{
+			-$File	"hl2\hud_quickinfo.cpp"
+		}
+
+		$Folder	"Portal"
+		{
+			$File	"portalbase\c_env_lightraill_endpoint.cpp"
+			$File	"portalbase\c_env_portal_path_track.cpp"
+			$File	"portalbase\c_func_liquidportal.cpp"
+			$File	"portalbase\c_func_liquidportal.h"
+			$File	"portalbase\c_neurotoxin_countdown.cpp"
+			$File	"portalbase\c_neurotoxin_countdown.h"
+			$File	"portalbase\c_portal_player.cpp"
+			$File	"portalbase\c_portal_player.h"
+			$File	"portalbase\C_PortalGhostRenderable.cpp"
+			$File	"portalbase\C_PortalGhostRenderable.h"
+			$File	"portalbase\c_prop_portal.cpp"
+			$File	"portalbase\c_prop_portal.h"
+			$File	"portalbase\c_prop_portal_stats_display.cpp"
+			$File	"portalbase\c_prop_portal_stats_display.h"
+			$File	"$SRCDIR\game\shared\portalbase\env_lightrail_endpoint_shared.h"
+			$File	"$SRCDIR\game\shared\portalbase\env_portal_path_track_shared.h"
+			$File	"portalbase\fx_portal.cpp"
+			$File	"portalbase\hud_quickinfo.cpp"
+			$File	"portalbase\MaterialProxy_Portal_PickAlphaMask.cpp"
+			$File	"portalbase\materialproxy_portalstatic.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_collideable_enumerator.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_collideable_enumerator.h"
+			$File	"portalbase\portal_credits.cpp"
+			$File	"portalbase\Portal_DynamicMeshRenderingUtils.cpp"
+			$File	"portalbase\Portal_DynamicMeshRenderingUtils.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_gamemovement.cpp"
+			//$File	"portalbase\portal_hud_crosshair.cpp"
+			//$File	"portalbase\portal_hud_crosshair.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_player_shared.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_player_shared.h"
+			$File	"portalbase\portal_render_targets.cpp"
+			$File	"portalbase\portal_render_targets.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_shareddefs.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_shareddefs.h"
+			$File	"$SRCDIR\game\shared\portalbase\portal_util_shared.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_util_shared.h"
+			$File	"$SRCDIR\game\shared\portalbase\prop_portal_shared.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\prop_portal_shared.h"
+			$File	"$SRCDIR\game\shared\portalbase\PortalSimulation.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\PortalSimulation.h"
+			$File	"$SRCDIR\game\shared\portalbase\StaticCollisionPolyhedronCache.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\StaticCollisionPolyhedronCache.h"
+			$File	"portalbase\PortalRender.cpp"
+			$File	"portalbase\PortalRender.h"
+			$File	"portalbase\portalrenderable_flatbasic.cpp"
+			$File	"portalbase\portalrenderable_flatbasic.h"
+			$File	"portalbase\vgui_portal_stats_display_screen.cpp"
+			$File	"portalbase\vgui_neurotoxin_countdown_screen.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_placement.cpp"
+			$File	"$SRCDIR\game\shared\portalbase\portal_placement.h"
+		}
+	}
+	
+}
