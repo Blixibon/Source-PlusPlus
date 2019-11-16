@@ -17,6 +17,7 @@
 
 class C_PortalGhostRenderable : public C_BaseAnimating//IClientRenderable, public IClientUnknown
 {
+	typedef C_BaseAnimating BaseClass;
 public:
 	C_BaseEntity *m_pGhostedRenderable; //the renderable we're transforming and re-rendering
 	
@@ -37,6 +38,86 @@ public:
 	virtual ~C_PortalGhostRenderable( void );
 
 	void PerFrameUpdate( void ); //called once per frame for misc updating
+
+	virtual bool OnInternalDrawModel(ClientModelRenderInfo_t* pInfo)
+	{
+		if (m_pGhostedRenderable && m_bSourceIsBaseAnimating)
+		{
+			C_BaseAnimating* pAnim = m_pGhostedRenderable->GetBaseAnimating();
+			CStudioHdr* pHdr = pAnim->GetModelPtr();
+			if (pHdr)
+			{
+				matrix3x4_t matTransform;
+				int iAttachment = pHdr->IllumPositionAttachmentIndex();
+				if (iAttachment > 0)
+				{
+					pAnim->GetAttachment(iAttachment, matTransform);
+				}
+				else
+				{
+					matTransform = pAnim->EntityToWorldTransform();
+				}
+
+				static Vector s_vecLOrigin;
+				VectorTransform(pHdr->illumposition(), matTransform, s_vecLOrigin);
+				pInfo->pLightingOrigin = &s_vecLOrigin;
+			}
+		}
+
+		return true;
+	}
+
+	virtual void SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights);
+
+	virtual float	GetHL1MouthOpenPct()
+	{
+		if (m_pGhostedRenderable && m_bSourceIsBaseAnimating)
+		{
+			C_BaseAnimating* pAnim = m_pGhostedRenderable->GetBaseAnimating();
+			return pAnim->GetHL1MouthOpenPct();
+		}
+		else
+		{
+			return BaseClass::GetHL1MouthOpenPct();
+		}
+	}
+
+	virtual float	GetHL2MouthOpenPct() { 
+		if (m_pGhostedRenderable && m_bSourceIsBaseAnimating)
+		{
+			C_BaseAnimating* pAnim = m_pGhostedRenderable->GetBaseAnimating();
+			return pAnim->GetHL2MouthOpenPct();
+		}
+		else
+		{
+			return BaseClass::GetHL2MouthOpenPct();
+		}
+	}
+
+	virtual float	GetVisibleMouthOpenPct() { 
+		if (m_pGhostedRenderable && m_bSourceIsBaseAnimating)
+		{
+			C_BaseAnimating* pAnim = m_pGhostedRenderable->GetBaseAnimating();
+			return pAnim->GetVisibleMouthOpenPct();
+		}
+		else
+		{
+			return BaseClass::GetVisibleMouthOpenPct();
+		}
+	}
+
+	virtual float	GetMouthOpenPct()
+	{
+		if (m_pGhostedRenderable && m_bSourceIsBaseAnimating)
+		{
+			C_BaseAnimating* pAnim = m_pGhostedRenderable->GetBaseAnimating();
+			return pAnim->GetMouthOpenPct();
+		}
+		else
+		{
+			return BaseClass::GetMouthOpenPct();
+		}
+	}
 
 	// Data accessors
 	virtual Vector const&			GetRenderOrigin( void );

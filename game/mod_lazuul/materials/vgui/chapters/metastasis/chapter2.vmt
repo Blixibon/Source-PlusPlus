@@ -1,0 +1,7 @@
+//"LightmappedGeneric"
+"UnlitGeneric"
+{
+	"$basetexture" "vgui/chapters/metastasis/chapter2"
+	"$vertexalpha" 1
+	"$ignorez" "1"
+}

@@ -110,9 +110,7 @@ C_NPC_Olivia::C_NPC_Olivia()
 
 	m_CCHandle = INVALID_CLIENT_CCHANDLE;
 
-	Vector vecColor(255, 255, 196);
-	vecColor /= 255;
-	m_pGlowEffect = new CGlowObject(this, vecColor, 0.f, false, false);
+	m_pGlowEffect = nullptr;
 	m_bGlowEnabled = false;
 }
 
@@ -136,7 +134,7 @@ void C_NPC_Olivia::ClientThink()
 	if ( gpGlobals->frametime <= 0.0f )
 		return;
 
-	C_BasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 
 	//bool m_bOliviaColorCorrection = true;
 
@@ -277,11 +275,18 @@ void C_NPC_Olivia::ClientThink()
 		if (m_bOliviaLight)
 		{
 			//255, 255, 196, 64
-			m_pGlowEffect->SetRenderFlags(false, true);
+			Vector vecColor(255, 255, 196);
+			vecColor /= 255;
+			if (!m_pGlowEffect)
+				m_pGlowEffect = new CGlowObject(this, vecColor, 1.0f, false, true);
 		}
 		else
 		{
-			m_pGlowEffect->SetRenderFlags(false, false);
+			if (m_pGlowEffect)
+			{
+				delete m_pGlowEffect;
+				m_pGlowEffect = nullptr;
+			}
 		}
 
 		m_bGlowEnabled = m_bOliviaLight;
@@ -289,9 +294,9 @@ void C_NPC_Olivia::ClientThink()
 
 	if (m_bGlowEnabled)
 	{
-		float flAlpha = 64 * flScale;
-		flAlpha /= 255;
-		m_pGlowEffect->SetAlpha(flAlpha);
+		/*float flAlpha = 64 * flScale;
+		flAlpha /= 255;*/
+		m_pGlowEffect->SetAlpha(flScale);
 	}
 
 	UpdateParticleEffects();

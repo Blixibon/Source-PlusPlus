@@ -279,7 +279,7 @@ void CNPC_HumanGuard::Spawn(void)
 
 		pWeapon = GetActiveWeapon();
 
-		if (!FClassnameIs(pWeapon, "weapon_pistol") && !FClassnameIs(pWeapon, "weapon_glock"))
+		if (!FClassnameIs(pWeapon, "weapon_pistol") && !FClassnameIs(pWeapon, "weapon_glock_bms"))
 		{
 			m_fWeaponDrawn = true;
 		}

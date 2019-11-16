@@ -12548,6 +12548,17 @@ void CAI_BaseNPC::Teleport( const Vector *newPosition, const QAngle *newAngles, 
 	CleanupScriptsOnTeleport( false );
 
 	BaseClass::Teleport( newPosition, newAngles, newVelocity );
+
+#ifdef PORTAL
+	if (GetMoveType() == MOVETYPE_STEP)
+	{
+		QAngle Angles = GetLocalAngles();
+		Angles[PITCH] = 0;
+		Angles[ROLL] = 0;
+		SetLocalAngles(Angles);
+	}
+#endif // PORTAL
+
 }
 
 //-----------------------------------------------------------------------------

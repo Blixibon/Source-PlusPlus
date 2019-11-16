@@ -25,6 +25,8 @@ float SnapYawTo(float flValue);
 #define ACT_DOD_LAST ACT_DOD_DEFUSE_TNT
 #define ACT_BMMP_FIRST ACT_BMMP_IDLE
 #define ACT_BMMP_LAST _ACT_BMMP_LAST
+#define ACT_MP_FIRST ACT_MP_STAND_IDLE
+#define ACT_MP_LAST ACT_MP_PASSTIME_THROW_CANCEL
 
 acttable_t CHL2PlayerAnimState::s_acttableMPToHL2MP[] = {
 	// Sequences
@@ -100,6 +102,8 @@ AimType_e CHL2PlayerAnimState::GetAimType()
 {
 	Activity actCurrent = TranslateActivity(m_eCurrentMainSequenceActivity);
 	if (actCurrent >= ACT_DOD_FIRST && actCurrent <= ACT_DOD_LAST)
+		return AIM_MP;
+	if (actCurrent >= ACT_MP_FIRST && actCurrent <= ACT_MP_LAST)
 		return AIM_MP;
 	if (actCurrent >= ACT_BMMP_FIRST && actCurrent <= ACT_BMMP_LAST)
 		return AIM_BMMP;

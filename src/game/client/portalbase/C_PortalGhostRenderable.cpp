@@ -50,21 +50,28 @@ void C_PortalGhostRenderable::PerFrameUpdate( void )
 			m_nBody = pSource->m_nBody;
 			m_nSkin = pSource->m_nSkin;
 		}
+
+		// Set position and angles relative to the object it's ghosting
+		Vector ptNewOrigin = m_matGhostTransform * m_pGhostedRenderable->GetAbsOrigin();
+		QAngle qNewAngles = TransformAnglesToWorldSpace(m_pGhostedRenderable->GetAbsAngles(), m_matGhostTransform.As3x4());
+
+		SetAbsOrigin(ptNewOrigin);
+		SetAbsAngles(qNewAngles);
 	}
-
-
-	// Set position and angles relative to the object it's ghosting
-	Vector ptNewOrigin = m_matGhostTransform * m_pGhostedRenderable->GetAbsOrigin();		
-	QAngle qNewAngles = TransformAnglesToWorldSpace( m_pGhostedRenderable->GetAbsAngles(), m_matGhostTransform.As3x4() );
-
-	SetAbsOrigin( ptNewOrigin );
-	SetAbsAngles( qNewAngles );
 
 	AddEffects( EF_NOINTERP );
 
 	RemoveFromInterpolationList();
 
 	g_pClientLeafSystem->RenderableChanged( RenderHandle() );
+}
+
+void C_PortalGhostRenderable::SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights)
+{
+	if (m_pGhostedRenderable != nullptr)
+		m_pGhostedRenderable->SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
+	else
+		BaseClass::SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
 }
 
 Vector const& C_PortalGhostRenderable::GetRenderOrigin( void )
