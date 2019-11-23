@@ -81,6 +81,7 @@ BEGIN_VS_SHADER( PP_LightmappedGeneric,
 		SHADER_PARAM( PHONGBOOST, SHADER_PARAM_TYPE_FLOAT, "1.0", "Phong overbrightening factor (specular mask channel should be authored to account for this)" )
 		SHADER_PARAM( PHONGFRESNELRANGES, SHADER_PARAM_TYPE_VEC3, "[0  0.5  1]", "Parameters for remapping fresnel output" )
 		SHADER_PARAM( PHONGEXPONENT, SHADER_PARAM_TYPE_FLOAT, "5.0", "Phong exponent for local specular lights" )
+		SHADER_PARAM(PHONGWARPTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "warp the specular term")
 END_SHADER_PARAMS
 
 	void SetupVars( LightmappedGeneric_DX9_Vars_t& info )
@@ -150,6 +151,7 @@ END_SHADER_PARAMS
 		info.m_nPhongBoost = PHONGBOOST;
 		info.m_nPhongFresnelRanges = PHONGFRESNELRANGES;
 		info.m_nPhongExponent = PHONGEXPONENT;
+		info.m_nPhongWarpTexture = PHONGWARPTEXTURE;
 	}
 
 	SHADER_FALLBACK

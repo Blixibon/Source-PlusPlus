@@ -72,6 +72,7 @@ public:
 	virtual void			InitialSpawn(void);
 	virtual void UpdateOnRemove();
 	virtual CBaseEntity		*EntSelectSpawnPoint(void);
+	virtual bool ShouldRegenerateHealth();
 
 	virtual void DoMuzzleFlash();
 

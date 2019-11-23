@@ -6,6 +6,9 @@ LightmappedGeneric
 
 	"$envmap" "env_cubemap"
 	"$normalmapalphaenvmapmask" "1"
+	$phong 1
+	$phongboost 10
+	$phongexponent 100
 
 	"%keywords" "wasteland"
 

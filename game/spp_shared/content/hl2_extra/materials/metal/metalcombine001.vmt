@@ -12,4 +12,6 @@
 	"$envmapcontrast" 1
 	"$envmapsaturation" 1
 	"$phong" "1"
+	"$phongboost"	"5"
+	"$phongexponent"	"100"
 }

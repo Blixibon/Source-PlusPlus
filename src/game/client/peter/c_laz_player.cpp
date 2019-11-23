@@ -6,6 +6,12 @@
 #include "c_ai_basenpc.h"
 #include "c_team.h"
 #include "collisionutils.h"
+#include "model_types.h"
+#include "iclientshadowmgr.h"
+#include "flashlighteffect.h"
+#include "view_scene.h"
+#include "view.h"
+#include "PortalRender.h"
 
 static Vector TF_TAUNTCAM_HULL_MIN(-9.0f, -9.0f, -9.0f);
 static Vector TF_TAUNTCAM_HULL_MAX(9.0f, 9.0f, 9.0f);
@@ -18,6 +24,10 @@ static ConVar cl_playermodel("cl_playermodel", "none", FCVAR_USERINFO | FCVAR_AR
 static ConVar cl_defaultweapon("cl_defaultweapon", "weapon_physcannon", FCVAR_USERINFO | FCVAR_ARCHIVE, "Default Spawn Weapon");
 static ConVar cl_laz_mp_suit("cl_laz_mp_suit", "1", FCVAR_USERINFO | FCVAR_ARCHIVE, "Enable suit voice in multiplayer");
 
+extern ConVar cl_meathook_neck_pivot_ingame_up;
+extern ConVar cl_meathook_neck_pivot_ingame_fwd;
+
+ConVar	cl_legs_enable("cl_legs_enable", "1", FCVAR_ARCHIVE, "0 hides the legs, 1 shows the legs, 2 shows the legs and hair", true, 0.f, true, 2.f);
 
 IMPLEMENT_NETWORKCLASS_ALIASED(Laz_Player, DT_Laz_Player);
 
@@ -35,6 +45,11 @@ END_PREDICTION_DATA();
 #define	HL2_WALK_SPEED 150
 #define	HL2_NORM_SPEED 190
 #define	HL2_SPRINT_SPEED 320
+
+bool C_Laz_Player::ShouldDoPortalRenderCulling()
+{
+	return (cl_legs_enable.GetInt() < 1);
+}
 
 void C_Laz_Player::PreThink(void)
 {
@@ -572,7 +587,7 @@ ConVar cl_blobbyshadows("cl_blobbyshadows", "0", FCVAR_CLIENTDLL);
 ShadowType_t C_Laz_Player::ShadowCastType(void)
 {
 	// Removed the GetPercentInvisible - should be taken care off in BindProxy now.
-	if (!IsVisible() /*|| GetPercentInvisible() > 0.0f*/)
+	if (!IsVisible() /*|| GetPercentInvisible() > 0.0f*/ || IsLocalPlayer())
 		return SHADOWS_NONE;
 
 	if (IsEffectActive(EF_NODRAW | EF_NOSHADOW))
@@ -751,4 +766,294 @@ void C_Laz_Player::StopWalking(void)
 {
 	SetMaxSpeed(HL2_NORM_SPEED);
 	m_fIsWalking = false;
+}
+
+void C_Laz_Player::DoAnimationEvents(CStudioHdr* pStudio)
+{
+	if (InFirstPersonView())
+		return;
+
+	BaseClass::DoAnimationEvents(pStudio);
+}
+
+int C_Laz_Player::DrawModel(int flags)
+{
+	// Don't draw in our flashlight's depth texture
+	if (flags & STUDIO_SHADOWDEPTHTEXTURE && m_pFlashlight && m_pFlashlight->IsOn())
+	{
+		ShadowHandle_t hActive = g_pClientShadowMgr->GetActiveDepthTextureHandle();
+		ShadowHandle_t hMine = g_pClientShadowMgr->GetShadowHandle(m_pFlashlight->GetFlashlightHandle());
+		if (hActive == hMine)
+			return 0;
+	}
+
+	if (CurrentViewID() == VIEW_REFLECTION)
+		return 0;
+
+	return BaseClass::DrawModel(flags);
+}
+
+CStudioHdr* C_Laz_Player::OnNewModel(void)
+{
+	CStudioHdr* hdr = BaseClass::OnNewModel();
+
+	m_bitLeftArm.ClearAll();
+	m_bitRightArm.ClearAll();
+	m_bitHair.ClearAll();
+
+	if (hdr)
+	{
+		int iHead = LookupBone("ValveBiped.Bip01_Head1");
+		if (iHead >= 0)
+		{
+			m_bitLeftArm.Set(LookupBone("ValveBiped.Bip01_L_Upperarm"));
+			m_bitRightArm.Set(LookupBone("ValveBiped.Bip01_R_Upperarm"));
+			m_bitHair.Set(iHead);
+		}
+
+		for (int i = 0; i < hdr->numbones(); i++)
+		{
+			int iParent = hdr->boneParent(i);
+
+			if (m_bitLeftArm.IsBitSet(iParent))
+				m_bitLeftArm.Set(i);
+
+			if (m_bitRightArm.IsBitSet(iParent))
+				m_bitRightArm.Set(i);
+
+			if (m_bitHair.IsBitSet(iParent))
+				m_bitHair.Set(i);
+		}
+	}
+
+	return hdr;
+}
+
+bool C_Laz_Player::IsInReload()
+{
+	if (!GetActiveWeapon())
+		return false;
+
+	Activity actWeap = GetViewModel()->GetSequenceActivity(GetViewModel()->GetSequence());
+	if (actWeap >= ACT_VM_RELOAD && actWeap <= ACT_VM_RELOAD_FINISH)
+		return true;
+
+	if (actWeap == ACT_VM_RELOAD_EMPTY)
+		return true;
+
+	return false;
+}
+
+int C_Laz_Player::GetHideBits()
+{
+	int iBits = 0;
+
+	if (IsInAVehicle() && !UsingStandardWeaponsInVehicle())
+		return 0;
+
+	if (GetActiveWeapon())
+	{
+		if (GetActiveWeapon()->GetWpnData().bBodyHideArmL)
+			iBits |= HIDEARM_LEFT;
+
+		if (GetActiveWeapon()->GetWpnData().bBodyHideArmR)
+			iBits |= HIDEARM_RIGHT;
+	}
+
+	if (IsInReload())
+		iBits |= (HIDEARM_LEFT | HIDEARM_RIGHT);
+
+	return iBits;
+}
+
+ConVar hair_dist_scale("cl_legs_hair_scale", "2.5", FCVAR_NONE, "Scale added to hair bones.");
+
+//-----------------------------------------------------------------------------
+// Purpose: In meathook mode, fix the bone transforms to hang the user's own
+//			avatar under the camera.
+//-----------------------------------------------------------------------------
+void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vector* pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList& boneComputed, const char* pchHeadBoneName)
+{
+	// Handle meathook mode. If we aren't rendering, just use last frame's transforms
+	if (!InFirstPersonView())
+		return;
+
+	// If we're in third-person view, don't do anything special.
+	// If we're in first-person view rendering the main view and using the viewmodel, we shouldn't have even got here!
+	// If we're in first-person view rendering the main view(s), meathook and headless.
+	// If we're in first-person view rendering shadowbuffers/reflections, don't do anything special either (we could do meathook but with a head?)
+	if (IsAboutToRagdoll())
+	{
+		// We're re-animating specifically to set up the ragdoll.
+		// Meathook can push the player through the floor, which makes the ragdoll fall through the world, which is no good.
+		// So do nothing.
+		return;
+	}
+
+	if (g_pPortalRender->IsRenderingPortal())
+	{
+		return;
+	}
+
+	int iView = CurrentViewID();
+	if (iView != VIEW_MAIN && iView != VIEW_REFRACTION)
+	{
+		return;
+	}
+
+	// If we aren't drawing the player anyway, don't mess with the bones. This can happen in Portal.
+	if ((IsLocalPlayer() && ShouldDrawThisPlayer()) || !cl_legs_enable.GetBool())
+	{
+		BaseClass::BuildFirstPersonMeathookTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed, pchHeadBoneName);
+		return;
+	}
+
+	m_BoneAccessor.SetWritableBones(BONE_USED_BY_ANYTHING);
+
+	int iHead = LookupBone(pchHeadBoneName);
+	if (iHead == -1)
+	{
+		return;
+	}
+
+	matrix3x4_t& mHeadTransform = GetBoneForWrite(iHead);
+
+	// "up" on the head bone is along the negative Y axis - not sure why.
+	//Vector vHeadTransformUp ( -mHeadTransform[0][1], -mHeadTransform[1][1], -mHeadTransform[2][1] );
+	//Vector vHeadTransformFwd ( mHeadTransform[0][1], mHeadTransform[1][1], mHeadTransform[2][1] );
+	Vector vHeadTransformTranslation(mHeadTransform[0][3], mHeadTransform[1][3], mHeadTransform[2][3]);
+
+
+	// Find out where the player's head (driven by the HMD) is in the world.
+	// We can't move this with animations or effects without causing nausea, so we need to move
+	// the whole body so that the animated head is in the right place to match the player-controlled head.
+	//Vector vHeadUp;
+	Vector vRealPivotPoint(0);
+
+
+	// figure out where to put the body from the aim angles
+	Vector vForward, vRight, vUp;
+	AngleVectors(MainViewAngles(), &vForward, &vRight, &vUp);
+
+	vRealPivotPoint = MainViewOrigin() - (vUp * cl_meathook_neck_pivot_ingame_up.GetFloat()) - (vForward * cl_meathook_neck_pivot_ingame_fwd.GetFloat());
+
+
+	if (m_Local.m_bDucking && GetGroundEntity())
+		vRealPivotPoint.z += 21;
+
+	Vector vDeltaToAdd = vRealPivotPoint - vHeadTransformTranslation;
+
+	Vector vAdd = vUp * -128;
+
+	if (!IsInAVehicle())
+	{
+		// Now add this offset to the entire skeleton.
+		for (int i = 0; i < hdr->numbones(); i++)
+		{
+			// Only update bones reference by the bone mask.
+			if (!(hdr->boneFlags(i) & boneMask))
+			{
+				continue;
+			}
+			matrix3x4_t& bone = GetBoneForWrite(i);
+			Vector vBonePos;
+			MatrixGetTranslation(bone, vBonePos);
+			vBonePos += vDeltaToAdd;
+			MatrixSetTranslation(vBonePos, bone);
+		}
+	}
+
+	Vector vHeadAdd;
+	VectorRotate(Vector(-128, 128, 0), mHeadTransform, vHeadAdd);
+
+	// Then scale the head to zero, but leave its position - forms a "neck stub".
+	// This prevents us rendering junk all over the screen, e.g. inside of mouth, etc.
+	MatrixScaleByZero(mHeadTransform);
+	if (cl_legs_enable.GetInt() < 2)
+	{
+		for (int iBone = 0; iBone < hdr->numbones(); iBone++)
+		{
+			if (m_bitHair.IsBitSet(iBone))
+			{
+				Vector vBonePos;
+				MatrixGetTranslation(GetBoneForWrite(iBone), vBonePos);
+				vBonePos += vHeadAdd;
+				MatrixSetTranslation(vBonePos, GetBoneForWrite(iBone));
+			}
+		}
+	}
+	else
+	{
+		Vector vHeadPos;
+		MatrixGetTranslation(mHeadTransform, vHeadPos);
+		for (int iBone = 0; iBone < hdr->numbones(); iBone++)
+		{
+			if (iBone != iHead && m_bitHair.IsBitSet(iBone))
+			{
+				Vector vBonePos, vHeadDelta;
+				matrix3x4_t& mBoneTransform = GetBoneForWrite(iBone);
+				MatrixGetTranslation(mBoneTransform, vBonePos);
+
+				vHeadDelta = vBonePos - vHeadPos;
+				vBonePos += vHeadDelta * (hair_dist_scale.GetFloat() - 1.0f);
+				if (!IsInAVehicle())
+					vBonePos += (vUp * cl_meathook_neck_pivot_ingame_up.GetFloat()) - (vForward * cl_meathook_neck_pivot_ingame_fwd.GetFloat());
+
+				MatrixSetTranslation(vBonePos, mBoneTransform);
+				MatrixScaleBy(hair_dist_scale.GetFloat(), mBoneTransform);
+			}
+		}
+	}
+
+
+	bool bHideArmL = GetHideBits() & HIDEARM_LEFT;
+	bool bHideArmR = GetHideBits() & HIDEARM_RIGHT;
+
+	if (bHideArmL)
+	{
+		/*int iBone = LookupBone("ValveBiped.Bip01_L_Upperarm");
+		matrix3x4_t bone = GetBone(iBone);
+
+		Vector vAdd;
+		VectorRotate(Vector(0, 0, -128), bone, vAdd);*/
+
+		for (int iBone = 0; iBone < hdr->numbones(); iBone++)
+		{
+			if (m_bitLeftArm.IsBitSet(iBone))
+			{
+				matrix3x4_t& bone = GetBoneForWrite(iBone);
+
+				MatrixScaleByZero(bone);
+
+				Vector vBonePos;
+				MatrixGetTranslation(bone, vBonePos);
+				vBonePos += vAdd;
+				MatrixSetTranslation(vBonePos, bone);
+			}
+		}
+	}
+
+	if (bHideArmR)
+	{
+		/*int iBone = LookupBone("ValveBiped.Bip01_R_Upperarm");
+		matrix3x4_t bone = GetBone(iBone);
+
+		Vector vAdd;
+		VectorRotate(Vector(0, 0, 128), bone, vAdd);*/
+
+		for (int iBone = 0; iBone < hdr->numbones(); iBone++)
+		{
+			if (m_bitRightArm.IsBitSet(iBone))
+			{
+				matrix3x4_t& bone = GetBoneForWrite(iBone);
+
+				MatrixScaleByZero(bone);
+
+				Vector vBonePos;
+				MatrixGetTranslation(bone, vBonePos);
+				vBonePos += vAdd;
+				MatrixSetTranslation(vBonePos, bone);
+			}
+		}
+	}
 }

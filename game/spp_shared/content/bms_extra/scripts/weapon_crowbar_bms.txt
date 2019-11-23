@@ -16,5 +16,10 @@ WeaponData
 		melee_hit	"weapon_crowbar_bms.Melee_Hit"
 		single_shot	"weapon_crowbar_bms.Melee_Miss"
 	}
+	
+	"LowerBody"
+	{
+		"hide_arm_left"	"0"
+	}
 
 }

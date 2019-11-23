@@ -20,4 +20,9 @@ WeaponData
 		single_shot_npc	"weapon_frag_bms.Single_NPC"
 		special1	"weapon_frag_bms.Special1"
 	}
+	
+	"LowerBody"
+	{
+		"hide_arm_left"	"0"
+	}
 }

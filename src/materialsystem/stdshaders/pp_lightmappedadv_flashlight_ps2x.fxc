@@ -10,9 +10,10 @@
 // STATIC: "NORMALMAP2"					"0..1"
 // STATIC: "WORLDVERTEXTRANSITION"		"0..1"
 // STATIC: "SEAMLESS"               	"0..1"
+// STATIC: "PHONGWARPTEXTURE"			"0..1" [ps20b] [ps30]
 // STATIC: "DETAILTEXTURE"             	"0..1"
 // STATIC: "DETAIL_BLEND_MODE"			"0..1"
-// STATIC: "FLASHLIGHTDEPTHFILTERMODE"	"0..2"	[ps20b] [ps30] [PC]
+// STATIC: "FLASHLIGHTDEPTHFILTERMODE"	"0..2"	[ps20b] [ps30]
 // STATIC: "PHONG"						"0..1"	[ps20b] [ps30]
 // STATIC: "PHONGMASK"					"0..3"	[ps20b] [ps30]
 
@@ -24,6 +25,7 @@
 // SKIP: !$NORMALMAP && $NORMALMAP2
 // SKIP: !$DETAILTEXTURE && ( $DETAIL_BLEND_MODE != 0 )
 // SKIP: !$PHONG && $PHONGMASK
+// SKIP: !$PHONG && $PHONGWARPTEXTURE
 
 #include "shader_constant_register_map.h"
 #include "common_flashlight_fxc.h"
@@ -78,6 +80,8 @@ sampler FlashlightDepthSampler				: register( s7 );
 #if PHONGMASK == PHONGMASK_STANDALONE
 sampler PhongMaskSampler					: register( s9 );
 #endif
+
+sampler SpecularWarpSampler : register(s10); // Specular warp sampler (for iridescence etc)
 
 struct PS_INPUT
 {
@@ -162,7 +166,7 @@ float4 main( PS_INPUT i ) : COLOR
 #if defined( SHADER_MODEL_PS_2_B ) || defined( SHADER_MODEL_PS_3_0 )
 	clip( 1-vProjCoords.xyz );
 #endif
-	spotColor = tex2D( SpotSampler, vProjCoords );
+	spotColor = tex2D( SpotSampler, vProjCoords.xy );
 #endif
 
 	float4 baseColor = 0.0f;
@@ -190,8 +194,9 @@ float4 main( PS_INPUT i ) : COLOR
 	vNormal.xyz = vNormal.xyz * 2.0f - 1.0f;		// signed
 
 #	if NORMALMAP2
-	float3 normal2 = SampleNormal( NormalMap2Sampler, i ) * 2.0f - 1.0f;
-	vNormal.xyz = lerp( vNormal.xyz, normal2, lerpAlpha );
+	float4 normal2 = SampleNormal( NormalMap2Sampler, i );
+    normal2.xyz = normal2.xyz * 2.0f - 1.0f;
+	vNormal = lerp( vNormal, normal2, lerpAlpha );
 #	endif
 #endif
 
@@ -199,8 +204,8 @@ float4 main( PS_INPUT i ) : COLOR
 #if ( NORMALMAP == 2 )
 
 #	if NORMALMAP2
-	float3 normal2 = SampleNormal( NormalMap2Sampler, i );
-	vNormal.xyz = lerp( vNormal.xyz, normal2, lerpAlpha );
+	float4 normal2 = SampleNormal( NormalMap2Sampler, i );
+	vNormal = lerp( vNormal, normal2, lerpAlpha );
 #	endif
 #else
 	// Normalize normal after all of the lerps above (including the tri/bilinear texel fetches)
@@ -239,7 +244,7 @@ float4 main( PS_INPUT i ) : COLOR
 	float3 vSpecMask = 1;
 	
 #	if PHONGMASK == PHONGMASK_BASEALPHA
-		vSpecMask = baseColor.a;
+		vSpecMask = 1-baseColor.a;
 #	elif PHONGMASK == PHONGMASK_NORMALALPHA
 		vSpecMask = vNormal.a;
 #	elif PHONGMASK == PHONGMASK_STANDALONE
@@ -295,7 +300,7 @@ float4 main( PS_INPUT i ) : COLOR
 #	endif
 
 	float  fFresnel = Fresnel( vNormal.xyz, posToEye, g_FresnelRanges );
-	float3 specularColor = outColor * SpecularLight( vNormal.xyz, posToLight, g_SpecularExponent, posToEye, false, SpotSampler, fFresnel );
+    float3 specularColor = outColor * SpecularLight(vNormal.xyz, posToLight, g_SpecularExponent, posToEye, PHONGWARPTEXTURE, SpecularWarpSampler, fFresnel);
 	outColor *= saturate( nDotL );
 	outColor += specularColor * fFresnel * vSpecMask * g_SpecularBoost;
 #endif

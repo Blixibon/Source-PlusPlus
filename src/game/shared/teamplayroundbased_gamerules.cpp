@@ -3034,9 +3034,11 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 
 	// DO NOT CALL SPAWN ON info_node ENTITIES!
 
-	IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
+	CUtlStringList vecEvents;
+	GetMapEditVariants(vecEvents);
+	UTIL_GetAllActiveHolidayStrings(vecEvents);
 
-	MapEntity_ParseAllEntities( pHelper->DoMapEdit(gpGlobals->mapname.ToCStr(), engine->GetMapEntitiesString()), &filter, true );
+	MapEntity_ParseAllEntities( spp_utils->DoMapEdit(gpGlobals->mapname.ToCStr(), engine->GetMapEntitiesString(), vecEvents), &filter, true );
 
 	if (CAI_NetworkManager::NetworksLoaded())
 	{

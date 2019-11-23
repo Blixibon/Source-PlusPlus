@@ -23,6 +23,10 @@ WeaponData
 		"melee_hit_world"	"Weapon_Crowbar.Melee_HitWorld"
 	}
 
+	"LowerBody"
+	{
+		"hide_arm_left"	"0"
+	}
 
 	TextureData
 	{

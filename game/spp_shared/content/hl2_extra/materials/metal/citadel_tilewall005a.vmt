@@ -11,11 +11,9 @@
 	"$envmapsaturation" 1
 	//"$envmaptint" "[ 0.75 0.75 1 ]"
 
-	"LightmappedGeneric_DX9"
-	{
 		"$bumpmap" "Tile/tilewall005a_normal"
 		"$normalmapalphaenvmapmask" 1
-	}
+	"$phong" "1"
 
 	"LightmappedGeneric_DX8"
 	{
@@ -28,7 +26,6 @@
 	{
 		"$basetexture" "Tile/citadel_tilewall005a"
 		"$basealphaenvmapmask" 1
-	"$phong" "1"
 	}
 
 }

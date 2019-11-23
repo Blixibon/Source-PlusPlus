@@ -407,7 +407,7 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_9, worldToTexture[3], 1 );
 
 			// Tweaks associated with a given flashlight
-			tweaks[0] = flashlightState.m_flShadowFilterSize / flashlightState.m_flShadowMapResolution;
+			tweaks[0] = ShadowFilterFromState(flashlightState);
 			tweaks[1] = ShadowAttenFromState( flashlightState );
 			pShader->HashShadow2DJitter( flashlightState.m_flShadowJitterSeed, &tweaks[2], &tweaks[3] );
 			pShaderAPI->SetPixelShaderConstant( 9, tweaks, 1 );

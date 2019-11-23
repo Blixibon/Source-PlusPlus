@@ -246,6 +246,37 @@ bool g_bRenderingScreenshot = false;
 #define FREEZECAM_SNAPSHOT_FADE_SPEED 340
 float g_flFreezeFlash = 0.0f;
 
+void MaybeInvalidateLocalPlayerAnimation()
+{
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if ((pPlayer != NULL) && pPlayer->InFirstPersonView())
+	{
+		// We sometimes need different animation for the main view versus the shadow rendering,
+		// so we need to reset the cache to ensure this actually happens.
+		pPlayer->InvalidateBoneCache();
+
+		C_BaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
+		if (pWeapon != NULL)
+		{
+			pWeapon->InvalidateBoneCache();
+		}
+
+#if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC_CLIENT )
+		// ...and all the things you're wearing/holding/etc
+		int NumWearables = pPlayer->GetNumWearables();
+		for (int i = 0; i < NumWearables; ++i)
+		{
+			CEconWearable* pItem = pPlayer->GetWearable(i);
+			if (pItem != NULL)
+			{
+				pItem->InvalidateBoneCache();
+			}
+		}
+#endif // USES_ECON_ITEMS
+
+	}
+}
+
 //-----------------------------------------------------------------------------
 
 CON_COMMAND( r_cheapwaterstart,  "" )
@@ -2372,6 +2403,27 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			}
 		}
 
+		if (!IsInFreezeCam())
+		{
+			Vector vecToneMapScale;
+			if (g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE)
+			{
+				pRenderContext.GetFrom(materials);
+				vecToneMapScale = pRenderContext->GetToneMappingScaleLinear();
+				pRenderContext->SetToneMappingScaleLinear(Vector(1, 1, 1));
+				pRenderContext.SafeRelease();
+			}
+
+			g_GlowObjectManager.RenderGlowEffects(&view, 0);
+
+			if (g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE)
+			{
+				pRenderContext.GetFrom(materials);
+				pRenderContext->SetToneMappingScaleLinear(vecToneMapScale);
+				pRenderContext.SafeRelease();
+			}
+		}
+
 		// Now actually draw the viewmodel
 		DrawViewModels( view, whatToDraw & RENDERVIEW_DRAWVIEWMODEL );
 
@@ -3072,6 +3124,7 @@ void CViewRender::ViewDrawScene_PortalStencil( const CNewViewSetup &viewIn, View
 	//generate unique view ID's for each stencil view
 	view_id_t iNewViewID = (view_id_t)g_pPortalRender->GetCurrentViewId();
 	SetupCurrentView( view.origin, view.angles, (view_id_t)iNewViewID );
+	MaybeInvalidateLocalPlayerAnimation();
 
 	// update vis data
 	unsigned int visFlags;
@@ -3105,7 +3158,7 @@ void CViewRender::ViewDrawScene_PortalStencil( const CNewViewSetup &viewIn, View
 		}
 
 		CSimpleWorldView *pClientView = new CSimpleWorldView( this );
-		pClientView->Setup( view, VIEW_CLEAR_OBEY_STENCIL, drawSkybox, fogInfo, waterInfo, pCustomVisibility );
+		pClientView->Setup( view, iClearFlags | VIEW_CLEAR_OBEY_STENCIL, drawSkybox, fogInfo, waterInfo, pCustomVisibility );
 		AddViewToScene( pClientView );
 		SafeRelease( pClientView );
 	}
@@ -3147,6 +3200,7 @@ void CViewRender::ViewDrawScene_PortalStencil( const CNewViewSetup &viewIn, View
 	// Return to the previous view
 	SetupCurrentView( vecOldOrigin, vecOldAngles, (view_id_t)iCurrentViewID );
 	g_CurrentViewID = iCurrentViewID; //just in case the cast to view_id_t screwed up the id #
+	MaybeInvalidateLocalPlayerAnimation();
 
 
 	//swap back the water render targets
@@ -5330,6 +5384,7 @@ void CShadowDepthView::Draw()
 	pRenderContext.SafeRelease();
 
 	SetupCurrentView( origin, angles, VIEW_SHADOW_DEPTH_TEXTURE );
+	MaybeInvalidateLocalPlayerAnimation();
 
 	MDLCACHE_CRITICAL_SECTION();
 
@@ -5653,38 +5708,6 @@ void CBaseWorldView::DrawSetup( float waterHeight, int nSetupFlags, float waterZ
 	//}
 
 	g_CurrentViewID = savedViewID;
-}
-
-
-void MaybeInvalidateLocalPlayerAnimation()
-{
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( ( pPlayer != NULL ) && pPlayer->InFirstPersonView() )
-	{
-		// We sometimes need different animation for the main view versus the shadow rendering,
-		// so we need to reset the cache to ensure this actually happens.
-		pPlayer->InvalidateBoneCache();
-
-		C_BaseCombatWeapon *pWeapon = pPlayer->GetActiveWeapon();
-		if ( pWeapon != NULL )
-		{
-			pWeapon->InvalidateBoneCache();
-		}
-
-#if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC_CLIENT )
-		// ...and all the things you're wearing/holding/etc
-		int NumWearables = pPlayer->GetNumWearables();
-		for ( int i = 0; i < NumWearables; ++i )
-		{
-			CEconWearable* pItem = pPlayer->GetWearable ( i );
-			if ( pItem != NULL )
-			{
-				pItem->InvalidateBoneCache();
-			}
-		}
-#endif // USES_ECON_ITEMS
-
-	}
 }
 
 void CBaseWorldView::DrawExecute( float waterHeight, view_id_t viewID, float waterZAdjust )

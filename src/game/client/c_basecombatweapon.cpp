@@ -17,6 +17,11 @@
 #include "toolframework/itoolframework.h"
 #include "toolframework_client.h"
 #include "viewrender.h"
+#ifdef PORTAL
+#include "PortalRender.h"
+#include "c_portal_player.h"
+#endif // PORTAL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -137,7 +142,7 @@ void C_BaseCombatWeapon::OnDataChanged( DataUpdateType_t updateType )
 
 	// check if weapon is carried by local player
 	bool bIsLocalPlayer = pPlayer && pPlayer == pOwner;
-	if ( bIsLocalPlayer && ShouldDrawLocalPlayerViewModel() )		// TODO: figure out the purpose of the ShouldDrawLocalPlayer() test.
+	if ( bIsLocalPlayer /*&& ShouldDrawLocalPlayerViewModel()*/ )		// TODO: figure out the purpose of the ShouldDrawLocalPlayer() test.
 	{
 		// If I was just picked up, or created & immediately carried, add myself to this client's list of weapons
 		if ( (m_iState != WEAPON_NOT_CARRIED ) && (m_iOldState == WEAPON_NOT_CARRIED) )
@@ -327,7 +332,20 @@ bool C_BaseCombatWeapon::IsCarriedByLocalPlayer( void )
 //-----------------------------------------------------------------------------
 bool C_BaseCombatWeapon::ShouldDrawUsingViewModel( void )
 {
-	return IsCarriedByLocalPlayer() && !C_BasePlayer::ShouldDrawLocalPlayer();
+	if (IsCarriedByLocalPlayer() && !C_BasePlayer::ShouldDrawLocalPlayer())
+	{
+#ifdef PORTAL
+		if (g_pPortalRender->IsRenderingPortal())
+			return false;
+#endif // PORTAL
+
+		if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE)
+			return false;
+
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -493,6 +511,9 @@ int C_BaseCombatWeapon::DrawModel( int flags )
 			return false;
 	}
 
+	if (ShouldDrawUsingViewModel())
+		return false;
+
 	return BaseClass::DrawModel( flags );
 }
 
@@ -508,7 +529,8 @@ int C_BaseCombatWeapon::CalcOverrideModelIndex()
 	C_BasePlayer *localplayer = C_BasePlayer::GetLocalPlayer();
 	if ( localplayer && 
 		localplayer == GetOwner() &&
-		ShouldDrawLocalPlayerViewModel() )
+		ShouldDrawUsingViewModel() 
+		)
 	{
 #if defined(TF_CLASSIC_CLIENT) || defined(HL2_LAZUL)
 		// Temp fix for weapon model not getting set back to viewmodel after
@@ -524,6 +546,18 @@ int C_BaseCombatWeapon::CalcOverrideModelIndex()
 	}
 }
 
+void CBaseCombatWeapon::ValidateModelIndex(void)
+{
+#ifdef PORTAL
+	int overrideModelIndex = CalcOverrideModelIndex();
+	if (overrideModelIndex != -1 && overrideModelIndex != GetModelIndex())
+	{
+		SetModelIndex(overrideModelIndex);
+	}
+#endif // PORTAL
+
+	BaseClass::ValidateModelIndex();
+}
 
 //-----------------------------------------------------------------------------
 // tool recording

@@ -27,6 +27,11 @@ WeaponData
 		"melee_hit"		"HL1Weapon_Crowbar.Melee_Hit"
 		"melee_hit_world"	"HL1Weapon_Crowbar.Melee_HitWorld"
 	}
+	
+	"LowerBody"
+	{
+		"hide_arm_left"	"0"
+	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
 	TextureData

@@ -10,6 +10,7 @@
 #include "PortalRender.h"
 #include "c_portal_player.h"
 #include "model_types.h"
+#include "c_basecombatweapon.h"
 
 C_PortalGhostRenderable::C_PortalGhostRenderable( C_Prop_Portal *pOwningPortal, C_BaseEntity *pGhostSource, RenderGroup_t sourceRenderGroup, const VMatrix &matGhostTransform, float *pSharedRenderClipPlane, bool bLocalPlayer )
 : m_pGhostedRenderable( pGhostSource ), 
@@ -19,6 +20,7 @@ C_PortalGhostRenderable::C_PortalGhostRenderable( C_Prop_Portal *pOwningPortal, 
 	m_pOwningPortal( pOwningPortal )
 {
 	m_bSourceIsBaseAnimating = (dynamic_cast<C_BaseAnimating *>(pGhostSource) != NULL);
+	m_bSourceIsBaseWeapon = (dynamic_cast<C_BaseCombatWeapon*>(pGhostSource) != NULL);
 
 	cl_entitylist->AddNonNetworkableEntity( GetIClientUnknown() );
 	g_pClientLeafSystem->AddRenderable( this, sourceRenderGroup );
@@ -37,8 +39,17 @@ void C_PortalGhostRenderable::PerFrameUpdate( void )
 {
 	if( m_pGhostedRenderable )
 	{
-		SetModelName( m_pGhostedRenderable->GetModelName() );
-		SetModelIndex( m_pGhostedRenderable->GetModelIndex() );
+		if (!m_bSourceIsBaseWeapon)
+		{
+			SetModelName(m_pGhostedRenderable->GetModelName());
+			SetModelIndex(m_pGhostedRenderable->GetModelIndex());
+		}
+		else
+		{
+			C_BaseCombatWeapon* pWeapon = m_pGhostedRenderable->MyCombatWeaponPointer();
+			SetModelName(pWeapon->GetWorldModel());
+			SetModelIndex(pWeapon->GetWorldModelIndex());
+		}
 		SetEffects( m_pGhostedRenderable->GetEffects() | EF_NOINTERP );		
 		m_flAnimTime = m_pGhostedRenderable->m_flAnimTime;		
 
@@ -96,6 +107,32 @@ bool C_PortalGhostRenderable::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMax
 {
 	if( m_pGhostedRenderable == NULL )
 		return false;
+	
+	class CWeaponModelIndexHelper
+	{
+	public:
+		CWeaponModelIndexHelper(bool bActive, C_BaseCombatWeapon* pWeapon)
+		{
+			m_bActive = bActive;
+			m_pWeapon = pWeapon;
+			if (m_bActive && m_pWeapon)
+			{
+				m_pWeapon->SetModelIndex(m_pWeapon->GetWorldModelIndex());
+			}
+		}
+		~CWeaponModelIndexHelper()
+		{
+			if (m_bActive && m_pWeapon)
+			{
+				m_pWeapon->ValidateModelIndex();
+			}
+		}
+	private:
+		C_BaseCombatWeapon* m_pWeapon;
+		bool				m_bActive;
+	};
+
+	CWeaponModelIndexHelper helper(m_bSourceIsBaseWeapon, m_pGhostedRenderable->MyCombatWeaponPointer());
 
 	if( m_pGhostedRenderable->SetupBones( pBoneToWorldOut, nMaxBones, boneMask, currentTime ) )
 	{
@@ -272,7 +309,7 @@ int C_PortalGhostRenderable::DrawModel( int flags )
 
 ModelInstanceHandle_t C_PortalGhostRenderable::GetModelInstance()
 {
-	if ( m_pGhostedRenderable )
+	if ( m_pGhostedRenderable && !m_bSourceIsBaseWeapon)
 		return m_pGhostedRenderable->GetModelInstance();
 
 	return BaseClass::GetModelInstance();

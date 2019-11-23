@@ -181,8 +181,10 @@ void C_PhysPropClientside::RecreateAll()
 	DestroyAll();
 	if ( cl_phys_props_enable.GetInt() )
 	{
-		IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
-		ParseAllEntities( pHelper->DoMapEdit(engine->GetLevelName(), engine->GetMapEntitiesString()) );
+		CUtlStringList vecEvents;
+		UTIL_GetAllActiveHolidayStrings(vecEvents);
+
+		ParseAllEntities( spp_utils->DoMapEdit(engine->GetLevelName(), engine->GetMapEntitiesString(), vecEvents) );
 		InitializePropRespawnZones();
 	}
 }

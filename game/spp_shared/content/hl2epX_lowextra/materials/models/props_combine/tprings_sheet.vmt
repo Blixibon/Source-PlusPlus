@@ -1,8 +1,0 @@
-"VertexLitGeneric"
-{
-	"$basetexture" "models/props_combine/tprings_sheet"
-	"$surfaceprop" "metal"
-	"$envmap" "env_cubemap"
-	"$envmaptint" "[ .2 .3 .3]"
-	"$selfillum" "1"
-}

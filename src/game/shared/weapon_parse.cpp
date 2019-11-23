@@ -351,7 +351,7 @@ FileWeaponInfo_t::FileWeaponInfo_t()
 
 	bBodyHideArmL = true;
 	bBodyHideArmR = true;
-	bViewModelUseArms = false;
+	bViewModelUseArms = true;
 
 	bHasFirstDraw = false;
 }
@@ -424,6 +424,14 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 		bHasFirstDraw = true;
 
 		Q_strncpy(szFirstDrawAct, pKeyValuesData->GetString("firstdraw_act"), MAX_WEAPON_STRING);
+	}
+
+	bViewModelUseArms = pKeyValuesData->GetBool("viewmodel_arms", true);
+	KeyValues* pLowerBody = pKeyValuesData->FindKey("LowerBody");
+	if (pLowerBody)
+	{
+		bBodyHideArmL = pLowerBody->GetBool("hide_arm_left", true);
+		bBodyHideArmR = pLowerBody->GetBool("hide_arm_right", true);
 	}
 	
 	// LAME old way to specify item flags.

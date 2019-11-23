@@ -1,0 +1,39 @@
+"Holidays"
+{
+	// start_month
+	// end_month
+	// start_day
+	// end_day
+	
+	"AprilFools"
+	{
+		"start_month" "4"
+		"end_month"	"4"
+		"start_day"	"1"
+		"end_day"	"1"
+	}
+	
+	"Halloween"
+	{
+		"start_month" "10"
+		"end_month"	"11"
+		"start_day"	"28"
+		"end_day"	"3"
+	}
+	
+	"Christmas"
+	{
+		"start_month"	"12"
+		"end_month"		"12"
+		"start_day"		"22"
+		"end_day"		"28"
+	}
+	
+	"Winter_Holiday"
+	{
+		"start_month"	"12"
+		"end_month"		"1"
+		"start_day"		"20"
+		"end_day"		"10"
+	}
+}

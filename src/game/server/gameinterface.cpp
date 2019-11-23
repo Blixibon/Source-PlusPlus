@@ -136,6 +136,7 @@ extern ConVar tf_mm_servermode;
 #include "peter/gametypes.h"
 #include "peter/signon_buffer_hack.h"
 #include "spp_utils/spp_utils.h"
+#include "spp_utils/holiday_events.h"
 
 #if HL2_DLL
 #include "peter/player_models.h"
@@ -1025,8 +1026,10 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	//Tony; parse custom manifest if exists!
 	ParseParticleEffectsMap( pMapName, false );
 
-	IMapEditHelper* pHelper = spp_utils->GetMapEditHelper();
-	pMapEntities = pHelper->DoMapEdit(pMapName, pMapEntities);
+	CUtlStringList vecEvents;
+	UTIL_GetAllActiveHolidayStrings(vecEvents);
+
+	pMapEntities = spp_utils->DoMapEdit(pMapName, pMapEntities, vecEvents);
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()

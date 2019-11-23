@@ -1,7 +1,0 @@
-"VertexLitGeneric"
-{
-	// Original shader: VertexLitTexture
-	"$basetexture" "Models/Items/itemcrate_sheet"
-                "$bumpmap"     "Models/Items/itemcrate_sheet_normal"
-	//"$selfillum" 1
-}

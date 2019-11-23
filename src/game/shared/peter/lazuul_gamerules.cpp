@@ -683,6 +683,11 @@ bool CLazuul::ShouldUseRobustRadiusDamage(CBaseEntity* pEntity)
 	return true;
 }
 
+bool CLazuul::IsHolidayActive(EHoliday holiday)
+{
+	return UTIL_IsHolidayActive(holiday);
+}
+
 #ifndef CLIENT_DLL
 
 // Classnames of entities that are preserved across round restarts
@@ -704,7 +709,7 @@ void CLazuul::SetGameMode(int iMode)
 
 	int iGameMode = iMode;
 
-	if (m_bitAllowedModes.IsAllClear())
+	/*if (m_bitAllowedModes.IsAllClear())
 	{
 		iGameMode = LAZ_GM_SINGLEPLAYER;
 		Warning("ERROR: Map has no valid multiplayer modes!\n");
@@ -717,7 +722,7 @@ void CLazuul::SetGameMode(int iMode)
 			iGameMode = LAZ_GM_DEATHMATCH;
 		else
 			iGameMode = LAZ_GM_VERSUS;
-	}
+	}*/
 
 	m_nGameMode.Set(iGameMode);
 	if (iGameMode >= 0)
@@ -4257,6 +4262,24 @@ void CLazuul::CleanUpMap(void)
 			continue;
 
 		pTeam->InitializeSpawnpoints();
+	}
+}
+
+void CLazuul::GetMapEditVariants(CUtlStringList& vecList)
+{
+	switch (GetGameMode())
+	{
+	default:
+		break;
+	case LAZ_GM_DEATHMATCH:
+		vecList.CopyAndAddToTail("dm");
+		break;
+	case LAZ_GM_COOP:
+		vecList.CopyAndAddToTail("coop");
+		break;
+	case LAZ_GM_VERSUS:
+		vecList.CopyAndAddToTail("versus");
+		break;
 	}
 }
 

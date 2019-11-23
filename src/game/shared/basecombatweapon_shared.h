@@ -278,6 +278,7 @@ public:
 #ifdef CLIENT_DLL
 	virtual void			CreateMove( float flInputSampleTime, CUserCmd *pCmd, const QAngle &vecOldViewAngles ) {}
 	virtual int				CalcOverrideModelIndex() OVERRIDE;
+	virtual void			ValidateModelIndex( void );
 #endif
 
 	virtual bool			IsWeaponZoomed() { return false; }		// Is this weapon in its 'zoomed in' mode?

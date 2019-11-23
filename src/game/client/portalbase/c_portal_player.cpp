@@ -242,7 +242,7 @@ int C_Portal_Player::DrawModel( int flags )
 	if ( !m_bReadyToDraw )
 		return 0;
 
-	if( IsLocalPlayer() )
+	if( IsLocalPlayer() && ShouldDoPortalRenderCulling())
 	{
 		if ( !C_BasePlayer::ShouldDrawLocalPlayer() )
 		{
@@ -728,9 +728,25 @@ void C_Portal_Player::CalcViewModelView( const Vector& eyeOrigin, const QAngle& 
 	Vector vUp;
 	AngleVectors( eyeAngles, &vForward, &vRight, &vUp );
 
-	if ( vForward.z < 0.0f )
+	if ( gpGlobals->maxClients == 1 && vForward.z < 0.0f )
 	{
-		float fT = vForward.z * vForward.z;
+		CBaseCombatWeapon* pWeapon = GetActiveWeapon();
+		float exp = 0;
+
+		if (pWeapon != NULL)
+		{
+
+			//get delta time for interpolation
+			float delta = (gpGlobals->curtime - pWeapon->m_flIronsightedTime) * 2.5f; //modify this value to adjust how fast the interpolation is
+			exp = (pWeapon->IsIronsighted()) ?
+				(delta > 1.0f) ? 1.0f : delta : //normal blending
+				(delta > 1.0f) ? 0.0f : 1.0f - delta; //reverse interpolation
+
+			if (exp <= 0.001f) //fully not ironsighted; save performance
+				exp = 0;
+		}
+
+		float fT = vForward.z * vForward.z * (1.f - exp);
 		vInterpEyeOrigin += vRight * ( fT * 4.7f ) + vForward * ( fT * 5.0f ) + vUp * ( fT * 4.0f );
 	}
 

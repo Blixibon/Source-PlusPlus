@@ -56,6 +56,8 @@ public:
 	virtual bool			ShouldCollide(int collisionGroup0, int collisionGroup1);
 	virtual bool			ShouldUseRobustRadiusDamage(CBaseEntity* pEntity);
 
+	virtual bool	IsHolidayActive(EHoliday holiday);
+
 	virtual bool	IsConnectedUserInfoChangeAllowed(CBasePlayer *pPlayer) { return true; }
 #ifndef CLIENT_DLL
 	virtual bool			ShouldAutoAim(CBasePlayer* pPlayer, edict_t* target);
@@ -78,6 +80,7 @@ public:
 	virtual const char *GetChatFormat(bool bTeamOnly, CBasePlayer *pPlayer);
 
 	virtual void CleanUpMap(void);
+	virtual void GetMapEditVariants(CUtlStringList& vecList);
 
 	// Game Achievements (server version)
 	virtual void MarkAchievement(IRecipientFilter& filter, char const *pchAchievementName);

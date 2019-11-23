@@ -114,13 +114,7 @@ public:
 	virtual RenderGroup_t	GetRenderGroup();
 
 	// Returns model index
-	virtual int				GetHandModelData(int &iSkin, int &iBody)
-	{
-		iSkin = m_iHandsSkin.Get();
-		iBody = m_iHandsBody.Get();
-
-		return m_iHandsModelIndex.Get();
-	}
+	virtual int				GetHandModelData(int& iSkin, int& iBody);
 
 	C_BaseAnimating* GetHandsModel();
 

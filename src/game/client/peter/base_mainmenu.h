@@ -70,6 +70,7 @@ private:
 	bool								bInGameLayout;
 	IGameUI*							gameui;
 	int									m_iStopGameStartupSound;
+	int									m_iStartMenuMusic;
 	int									m_iUpdateLayout;
 
 	enum MusicStatus

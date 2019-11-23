@@ -46,6 +46,8 @@ public:
 
 	virtual int DrawModel( int flags );
 
+	virtual bool ShouldDoPortalRenderCulling() { return true; }
+
 	QAngle GetAnimEyeAngles( void ) { return m_angEyeAngles; }
 
 	// Used by prediction, sets the view angles for the player
@@ -84,6 +86,8 @@ public:
 	CProp_Portal *GetHeldObjectPortal( void ) { return m_pHeldObjectPortal; }
 
 	bool IsSuppressingCrosshair() { return m_bSuppressCrosshair; }
+
+	int		GetForceNoDrawInPortalSurface() { return m_iForceNoDrawInPortalSurface; }
 
 private:
 

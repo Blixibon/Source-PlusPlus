@@ -634,16 +634,39 @@ int UTIL_CountNumBitsSet(uint64 nVar);
 //-----------------------------------------------------------------------------
 // Holidays
 //-----------------------------------------------------------------------------
+enum EHoliday
+{
+	kHoliday_None = 0,
+	kHoliday_TF2Birthday,
+	kHoliday_Halloween,
+	kHoliday_Christmas,
+	kHoliday_CommunityUpdate,
+	kHoliday_EOTL,
+	kHoliday_ValentinesDay,
+	kHoliday_MeetThePyro,
+	kHoliday_AprilFools,
+	kHoliday_FullMoon,
+	kHoliday_HalloweenOrFullMoon,
+	kHoliday_HalloweenOrFullMoonOrValentines,
 
-// Used at level change and round start to re-calculate which holiday is active
-void				UTIL_CalculateHolidays();
+	kHolidayCount,
+	kHoliday_LastStatic = kHoliday_AprilFools
+};
 
-bool				UTIL_IsHolidayActive( /*EHoliday*/ int eHoliday );
-/*EHoliday*/ int	UTIL_GetHolidayForString( const char* pszHolidayName );
+int					UTIL_EHolidayToEvent(EHoliday eHoliday);
+EHoliday			UTIL_EventToEHoliday(int iEvent);
+
+bool				UTIL_IsHolidayActive(EHoliday eHoliday);
+EHoliday			UTIL_GetHolidayForString(const char* pszHolidayName);
+
+bool				UTIL_IsEventActive( /*EHoliday*/ int eHoliday );
+/*EHoliday*/ int	UTIL_GetEventForString( const char* pszHolidayName );
 
 // This will return the first active holiday string it can find. In the case of multiple
 // holidays overlapping, the list order will act as priority.
 const char		   *UTIL_GetActiveHolidayString();
+
+void				UTIL_GetAllActiveHolidayStrings(CUtlStringList& vecList);
 
 
 #endif // UTIL_SHARED_H

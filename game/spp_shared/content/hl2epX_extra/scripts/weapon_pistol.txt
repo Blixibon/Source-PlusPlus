@@ -41,6 +41,11 @@ WeaponData
 
 		"fov"			"-20"
 	}
+	
+	"LowerBody"
+	{
+		"hide_arm_left"	"0"
+	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
 	TextureData

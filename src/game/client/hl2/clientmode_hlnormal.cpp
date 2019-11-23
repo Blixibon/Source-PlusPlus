@@ -95,9 +95,6 @@ void ClientModeHLNormal::Init()
 //-----------------------------------------------------------------------------
 bool ClientModeHLNormal::DoPostScreenSpaceEffects(const CNewViewSetup *pSetup)
 {
-	if (!IsInFreezeCam())
-		g_GlowObjectManager.RenderGlowEffects(pSetup, 0);
-
 	return BaseClass::DoPostScreenSpaceEffects(pSetup);
 }
 

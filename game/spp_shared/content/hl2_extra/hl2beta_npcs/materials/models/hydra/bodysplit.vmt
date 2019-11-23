@@ -1,14 +1,18 @@
-"VertexLitGeneric"
+"PP_VertexLitGeneric"
 {
 	$basetexture "models/hydra/bodysplit"
 	$model 1
 	$phong 1
-	$lightwarptexture "models/hydra/gradient"
-	$translucent 1
+	$phongwarptexture "models/hydra/gradient"
+	$translucent 0
 	$additive 1
-	$color 7 4 9
+	$color2 "[0.6 0.8 1.2]"
 	$allowdiffusemodulation 1
-$DiffuseExp"1.0"
-$phongboost 6
-$phongfresnelranges "[.1 5 10]"
+	$DiffuseExp"1.0"
+	$phongboost 6
+	$phongfresnelranges "[.1 5 10]"
+	$selfillum 1
+	"$selfIllumFresnel" "1"
+	"$selfIllumFresnelMinMaxExp" "[2.2 0.2 3]" // 0.0 1.0 1.0 is the default
+	
 }

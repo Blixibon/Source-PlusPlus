@@ -19,6 +19,9 @@
 #include "particle_parse.h"
 #include "KeyValues.h"
 #include "time.h"
+#include "spp_utils/holiday_events.h"
+#include "spp_utils/spp_utils.h"
+#include "utlmap.h"
 
 #if defined USES_ECON_ITEMS && 0
 	#include "econ_item_constants.h"
@@ -1155,60 +1158,96 @@ int find_day_of_week( struct tm& found_day, int day_of_week, int step )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-#if defined USES_ECON_ITEMS && 0
-static bool					  s_HolidaysCalculated = false;
-static CBitVec<kHolidayCount> s_HolidaysActive;
+const char* ppszEconHolidayNames[kHolidayCount] = {
+	"None",
+	"TF2Birthday",
+	"Halloween",
+	"Christmas",
+	"CommunityUpdate",
+	"EOTL",
+	"ValentinesDay",
+	"MeetThePyro",
+	"AprilFools",
+	"FullMoon",
+	"HalloweenOrFullMoon",
+	"HalloweenOrFullMoonOrValentines"
+};
 
-//-----------------------------------------------------------------------------
-// Purpose: Used at level change and round start to re-calculate which holiday is active
-//-----------------------------------------------------------------------------
-void UTIL_CalculateHolidays()
+CUtlMap<EHoliday, int> g_EconToEvent(DefLessFunc(EHoliday));
+CUtlMap<int, EHoliday> g_EventToEcon(DefLessFunc(int));
+
+void CalculateEventMaps()
 {
-	s_HolidaysActive.ClearAll();
-
-	CRTime::UpdateRealTime();
-	for ( int iHoliday = 0; iHoliday < kHolidayCount; iHoliday++ )
+	for (int i = 0; i <= kHoliday_LastStatic; i)
 	{
-		if ( EconHolidays_IsHolidayActive( iHoliday, CRTime::RTime32TimeCur() ) )
+		const char* pszName = ppszEconHolidayNames[i];
+		int iEvent = spp_utils->GetEventSystem()->LookupEvent(pszName);
+		if (iEvent >= 0)
 		{
-			s_HolidaysActive.Set( iHoliday );
+			g_EconToEvent.Insert((EHoliday)i, iEvent);
+			g_EventToEcon.Insert(iEvent, (EHoliday)i);
 		}
 	}
-
-	s_HolidaysCalculated = true;
 }
-#endif // USES_ECON_ITEMS
 
-bool UTIL_IsHolidayActive( /*EHoliday*/ int eHoliday )
+int UTIL_EHolidayToEvent(EHoliday eHoliday)
 {
-#if defined USES_ECON_ITEMS && 0
-	if ( IsX360() )
-		return false;
+	if (!g_EconToEvent.Count())
+		CalculateEventMaps();
 
-	if ( !s_HolidaysCalculated )
+	unsigned short idx = g_EconToEvent.Find(eHoliday);
+	if (!g_EconToEvent.IsValidIndex(idx))
+		return -1;
+
+	return g_EconToEvent.Element(idx);
+}
+
+EHoliday UTIL_EventToEHoliday(int iEvent)
+{
+	if (!g_EconToEvent.Count())
+		CalculateEventMaps();
+
+	unsigned short idx = g_EventToEcon.Find(iEvent);
+	if (!g_EventToEcon.IsValidIndex(idx))
+		return kHoliday_None;
+
+	return g_EventToEcon.Element(idx);
+}
+
+bool UTIL_IsHolidayActive(EHoliday eHoliday)
+{
+	if (eHoliday > kHoliday_LastStatic)
 	{
-		UTIL_CalculateHolidays();
+		return false;
 	}
 
-	return s_HolidaysActive.IsBitSet( eHoliday );
-#else
-	return false;
-#endif
+	int iEvent = UTIL_EHolidayToEvent(eHoliday);
+
+	return UTIL_IsEventActive(iEvent);
+}
+
+EHoliday UTIL_GetHolidayForString(const char* pszHolidayName)
+{
+	for (int i = 0; i < kHolidayCount; i)
+	{
+		if (!Q_strcmp(pszHolidayName, ppszEconHolidayNames[i]))
+			return (EHoliday)i;
+	}
+
+	return kHoliday_None;
+}
+
+bool UTIL_IsEventActive( /*EHoliday*/ int eHoliday )
+{
+	return spp_utils->GetEventSystem()->IsEventActive(eHoliday);
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int	UTIL_GetHolidayForString( const char* pszHolidayName )
+int	UTIL_GetEventForString( const char* pszHolidayName )
 {
-#if defined USES_ECON_ITEMS && 0
-	if ( !pszHolidayName )
-		return kHoliday_None;
-
-	return EconHolidays_GetHolidayForString( pszHolidayName );
-#else
-	return 0;
-#endif
+	return spp_utils->GetEventSystem()->LookupEvent(pszHolidayName);
 }
 
 //-----------------------------------------------------------------------------
@@ -1216,9 +1255,22 @@ int	UTIL_GetHolidayForString( const char* pszHolidayName )
 //-----------------------------------------------------------------------------
 const char* UTIL_GetActiveHolidayString()
 {
-#if defined USES_ECON_ITEMS && 0
-	return EconHolidays_GetActiveHolidayString();
-#else
-	return NULL;
-#endif
+	const holiday_t* pActiveEvents[1];
+	int iNumEvents = spp_utils->GetEventSystem()->GetActiveEvents(pActiveEvents, 1);
+
+	if (iNumEvents < 1)
+		return nullptr;
+
+	return pActiveEvents[0]->chName;
+}
+
+void UTIL_GetAllActiveHolidayStrings(CUtlStringList& vecList)
+{
+	const holiday_t* pActiveEvents[32];
+	int iNumEvents = spp_utils->GetEventSystem()->GetActiveEvents(pActiveEvents, 32);
+	for (int i = 0; i < iNumEvents; i++)
+	{
+		const char* pszEvent = pActiveEvents[i]->chName;
+		vecList.CopyAndAddToTail(pszEvent);
+	}
 }

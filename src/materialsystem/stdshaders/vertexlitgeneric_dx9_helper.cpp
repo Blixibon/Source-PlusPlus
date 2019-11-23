@@ -1144,7 +1144,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				VMatrix worldToTexture;
 				const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
 				float tweaks[4];
-				tweaks[0] = flashlightState.m_flShadowFilterSize / flashlightState.m_flShadowMapResolution;
+				tweaks[0] = ShadowFilterFromState(flashlightState);
 				tweaks[1] = ShadowAttenFromState( flashlightState );
 				pShader->HashShadow2DJitter( flashlightState.m_flShadowJitterSeed, &tweaks[2], &tweaks[3] );
 				pShaderAPI->SetPixelShaderConstant( 2, tweaks, 1 );

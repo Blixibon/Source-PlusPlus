@@ -416,20 +416,90 @@ void MapEdit_RunCommandList(Map_t* pMap, CUtlVector<edtCommand_t>* pCommandList)
 	}
 }
 
-const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEntities)
+bool MapHasAnyEdits(const char* pMapName, CUtlVector<char*>& vecVariants)
+{
+	CFmtStr edtPath("maps/%s.edt", pMapName);
+	if (g_pFullFileSystem->FileExists(edtPath, "GAME"))
+		return true;
+#if 0
+	for (int i = 0; i < vecVariants.Count(); i++)
+	{
+		CFmtStr edtVarPath("maps/%s.%s.edt", pMapName, vecVariants[i]);
+		if (g_pFullFileSystem->FileExists(edtVarPath, "GAME"))
+			return true;
+	}
+#else
+	if (vecVariants.Count() > 0)
+		return true;
+#endif
+
+	return false;
+}
+
+CUtlString BuildCompiledFilename(const char* pMapName, CUtlVector<char*>& vecVariants, const char* pszExtension)
+{
+	CFmtStr str("maps/%s", pMapName);
+	for (int i = 0; i < vecVariants.Count(); i++)
+	{
+		str.AppendFormat(".%s", vecVariants[i]);
+	}
+
+	str.AppendFormat(".%s", pszExtension);
+	CUtlString ret(str.Access());
+	return ret;
+}
+
+void PruneActiveVariants(const char* pMapName, CUtlVector<char*>& vecVariants)
+{
+	for (int i = vecVariants.Count()-1; i >= 0 ; i--)
+	{
+		CFmtStr edtVarPath("maps/%s.%s.edt", pMapName, vecVariants[i]);
+		if (!g_pFullFileSystem->FileExists(edtVarPath, "GAME"))
+		{
+			vecVariants.FastRemove(i);
+		}
+	}
+}
+
+const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>& vecVariantsIn)
 {
 	char szMapName[MAX_PATH];
 	V_FileBase(pMapName, szMapName, MAX_PATH);
 
-	if (m_strLastMap.IsEqual_CaseInsensitive(szMapName))
+	CUtlVector<char*> vecVariants;
+	vecVariants.AddVectorToTail(vecVariantsIn);
+
+	PruneActiveVariants(pMapName, vecVariants);
+
+	bool bVariantsMatch = true;
+	if (m_slstLastVariants.Count() == vecVariants.Count())
+	{
+		for (int i = 0; i < vecVariants.Count(); i++)
+		{
+			if (Q_strcmp(m_slstLastVariants[i], vecVariants[i]) != 0)
+			{
+				bVariantsMatch = false;
+				break;
+			}
+		}
+	}
+	else
+		bVariantsMatch = false;
+
+	if (bVariantsMatch && m_strLastMap.IsEqual_CaseInsensitive(szMapName))
 		return m_bufEntities.String();
 
 	m_bufEntities.Clear();
+	m_slstLastVariants.PurgeAndDeleteElements();
+	for (int i = 0; i < vecVariants.Count(); i++)
+	{
+		m_slstLastVariants.CopyAndAddToTail(vecVariants[i]);
+	}
 	m_strLastMap.Set(szMapName);
 
-	CFmtStr edtPath("maps/%s.edt", szMapName);
-	if (g_pFullFileSystem->FileExists(edtPath, "GAME"))
+	if (MapHasAnyEdits(pMapName, vecVariants))
 	{
+		CFmtStr edtPath("maps/%s.edt", pMapName);
 		CUtlBuffer fileBuf(0, 0, CUtlBuffer::TEXT_BUFFER);
 		g_pFullFileSystem->ReadFile(edtPath, "GAME", fileBuf);
 
@@ -437,10 +507,17 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 		CRC32_Init(&calcCRC);
 		CRC32_ProcessBuffer(&calcCRC, pMapEntities, V_strlen(pMapEntities));
 		CRC32_ProcessBuffer(&calcCRC, fileBuf.Base(), fileBuf.TellPut());
+		for (int i = 0; i < vecVariants.Count(); i++)
+		{
+			CFmtStr edtVarPath("maps/%s.%s.edt", pMapName, vecVariants[i]);
+			CUtlBuffer fileVarBuf(0, 0, CUtlBuffer::TEXT_BUFFER);
+			g_pFullFileSystem->ReadFile(edtVarPath, "GAME", fileVarBuf);
+			CRC32_ProcessBuffer(&calcCRC, fileVarBuf.Base(), fileVarBuf.TellPut());
+		}
 		CRC32_Final(&calcCRC);
 
-		CFmtStr cachePath("edt_cache/%s.ent", szMapName);
-		CFmtStr crcPath("edt_cache/%s.crc", szMapName);
+		CUtlString cachePath = BuildCompiledFilename(pMapName, vecVariants, "ent");
+		CUtlString crcPath = BuildCompiledFilename(pMapName, vecVariants, "crc");
 		if (g_pFullFileSystem->FileExists(cachePath, "GAME") && g_pFullFileSystem->FileExists(crcPath, "GAME"))
 		{
 			FileHandle_t h = g_pFullFileSystem->Open(crcPath, "rb", "GAME");
@@ -456,71 +533,88 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 			
 		}
 
+		CUtlBuffer bufIntermediate(0, 0, CUtlBuffer::TEXT_BUFFER);
+		bufIntermediate.PutString(pMapEntities);
 		
-		Map_t map;
-		MapEdit_ExtractEnts(&map, pMapEntities);
-
-		KeyValuesAD KV(szMapName);
-		if (KV->LoadFromBuffer(edtPath, fileBuf.String(), g_pFullFileSystem, "GAME"))
+		for (int i = 0; i < vecVariants.Count() + 1; i++)
 		{
-			CUtlVector<edtCommand_t> vecCommands;
-			CUtlBuffer creationBuf(0, 0, CUtlBuffer::TEXT_BUFFER);
-			for (KeyValues* pkvSub = KV->GetFirstTrueSubKey(); pkvSub != NULL; pkvSub = pkvSub->GetNextTrueSubKey())
+			Map_t map;
+			MapEdit_ExtractEnts(&map, bufIntermediate.String());
+
+			CUtlString strFilePath;
+			if (i == 0)
+				strFilePath = edtPath;
+			else
 			{
-				const char* pchName = pkvSub->GetName();
-				if (StrEq(pchName, "delete"))
-				{
-					edtCommand_t cmd;
-					cmd.iCommand = COMMAND_DELETE;
-					cmd.pkvFilter = pkvSub->GetFirstSubKey();
-					cmd.pkvData = nullptr;
-					vecCommands.AddToTail(cmd);
-				}
-				else if (StrEq(pchName, "edit"))
-				{
-					edtCommand_t cmd;
-					cmd.iCommand = COMMAND_EDIT;
-					cmd.pkvFilter = pkvSub->GetFirstSubKey();
-					cmd.pkvData = pkvSub->FindKey("values");
-					vecCommands.AddToTail(cmd);
-				}
-				else if (StrEq(pchName, "create"))
-				{
-					creationBuf.PutChar('{');
-					creationBuf.PutChar('\n');
-					for (KeyValues* pkvValue = pkvSub->GetFirstValue(); pkvValue != NULL; pkvValue = pkvValue->GetNextValue())
-					{
-						creationBuf.PutChar('"');
-						creationBuf.PutString(pkvValue->GetName());
-						creationBuf.PutChar('"');
-						creationBuf.PutChar(' ');
-						creationBuf.PutChar('"');
-						creationBuf.PutString(pkvValue->GetString());
-						creationBuf.PutChar('"');
-						creationBuf.PutChar('\n');
-					}
-					creationBuf.PutChar('}');
-					creationBuf.PutChar('\n');
-				}
+				CFmtStr edtVarPath("maps/%s.%s.edt", pMapName, vecVariants[i-1]);
+				strFilePath = edtVarPath;
 			}
 
-			MapEdit_RunCommandList(&map, &vecCommands);
-			MapEdit_BuildEntBuffer(&map);
+			KeyValuesAD KV(szMapName);
+			if (KV->LoadFromFile(g_pFullFileSystem, strFilePath, "GAME"))
+			{
+				CUtlVector<edtCommand_t> vecCommands;
+				CUtlBuffer creationBuf(0, 0, CUtlBuffer::TEXT_BUFFER);
+				for (KeyValues* pkvSub = KV->GetFirstTrueSubKey(); pkvSub != NULL; pkvSub = pkvSub->GetNextTrueSubKey())
+				{
+					const char* pchName = pkvSub->GetName();
+					if (StrEq(pchName, "delete"))
+					{
+						edtCommand_t cmd;
+						cmd.iCommand = COMMAND_DELETE;
+						cmd.pkvFilter = pkvSub->GetFirstSubKey();
+						cmd.pkvData = nullptr;
+						vecCommands.AddToTail(cmd);
+					}
+					else if (StrEq(pchName, "edit"))
+					{
+						edtCommand_t cmd;
+						cmd.iCommand = COMMAND_EDIT;
+						cmd.pkvFilter = pkvSub->GetFirstSubKey();
+						cmd.pkvData = pkvSub->FindKey("values");
+						vecCommands.AddToTail(cmd);
+					}
+					else if (StrEq(pchName, "create"))
+					{
+						creationBuf.PutChar('{');
+						creationBuf.PutChar('\n');
+						for (KeyValues* pkvValue = pkvSub->GetFirstValue(); pkvValue != NULL; pkvValue = pkvValue->GetNextValue())
+						{
+							creationBuf.PutChar('"');
+							creationBuf.PutString(pkvValue->GetName());
+							creationBuf.PutChar('"');
+							creationBuf.PutChar(' ');
+							creationBuf.PutChar('"');
+							creationBuf.PutString(pkvValue->GetString());
+							creationBuf.PutChar('"');
+							creationBuf.PutChar('\n');
+						}
+						creationBuf.PutChar('}');
+						creationBuf.PutChar('\n');
+					}
+				}
 
-			m_bufEntities.Put(map.entitiesBuffer, map.entitiesBufferSize);
-			m_bufEntities.Put(creationBuf.Base(), creationBuf.TellPut());
+				MapEdit_RunCommandList(&map, &vecCommands);
+				MapEdit_BuildEntBuffer(&map);
 
-			free(map.entitiesBuffer);
-			map.entitiesBuffer = nullptr;
+				bufIntermediate.Clear();
+				bufIntermediate.Put(map.entitiesBuffer, map.entitiesBufferSize);
+				bufIntermediate.Put(creationBuf.Base(), creationBuf.TellPut());
 
-			g_pFullFileSystem->CreateDirHierarchy("edt_cache", "DEFAULT_WRITE_PATH");
-			FileHandle_t h = g_pFullFileSystem->Open(crcPath, "wb", "DEFAULT_WRITE_PATH");
-			g_pFullFileSystem->Write(&calcCRC, sizeof(CRC32_t), h);
-			g_pFullFileSystem->Close(h);
-			g_pFullFileSystem->WriteFile(cachePath, "DEFAULT_WRITE_PATH", m_bufEntities);
-
-			return m_bufEntities.String();
+				free(map.entitiesBuffer);
+				map.entitiesBuffer = nullptr;
+			}
 		}
+
+		m_bufEntities.CopyBuffer(bufIntermediate);
+
+		g_pFullFileSystem->CreateDirHierarchy("edt_cache", "DEFAULT_WRITE_PATH");
+		FileHandle_t h = g_pFullFileSystem->Open(crcPath, "wb", "DEFAULT_WRITE_PATH");
+		g_pFullFileSystem->Write(&calcCRC, sizeof(CRC32_t), h);
+		g_pFullFileSystem->Close(h);
+		g_pFullFileSystem->WriteFile(cachePath, "DEFAULT_WRITE_PATH", m_bufEntities);
+
+		return m_bufEntities.String();
 	}
 
 	m_bufEntities.CopyBuffer(pMapEntities, V_strlen(pMapEntities));

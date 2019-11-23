@@ -86,6 +86,27 @@ public:
 #endif
 	}
 private:
+	int m_nPHONGWARPTEXTURE;
+#ifdef _DEBUG
+	bool m_bPHONGWARPTEXTURE;
+#endif
+public:
+	void SetPHONGWARPTEXTURE( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nPHONGWARPTEXTURE = i;
+#ifdef _DEBUG
+		m_bPHONGWARPTEXTURE = true;
+#endif
+	}
+	void SetPHONGWARPTEXTURE( bool i )
+	{
+		m_nPHONGWARPTEXTURE = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bPHONGWARPTEXTURE = true;
+#endif
+	}
+private:
 	int m_nDETAILTEXTURE;
 #ifdef _DEBUG
 	bool m_bDETAILTEXTURE;
@@ -210,6 +231,10 @@ public:
 #endif // _DEBUG
 		m_nSEAMLESS = 0;
 #ifdef _DEBUG
+		m_bPHONGWARPTEXTURE = false;
+#endif // _DEBUG
+		m_nPHONGWARPTEXTURE = 0;
+#ifdef _DEBUG
 		m_bDETAILTEXTURE = false;
 #endif // _DEBUG
 		m_nDETAILTEXTURE = 0;
@@ -235,13 +260,13 @@ public:
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllStaticVarsDefined = m_bNORMALMAP && m_bNORMALMAP2 && m_bWORLDVERTEXTRANSITION && m_bSEAMLESS && m_bDETAILTEXTURE && m_bDETAIL_BLEND_MODE && m_bFLASHLIGHTDEPTHFILTERMODE && m_bPHONG && m_bPHONGMASK;
+		bool bAllStaticVarsDefined = m_bNORMALMAP && m_bNORMALMAP2 && m_bWORLDVERTEXTRANSITION && m_bSEAMLESS && m_bPHONGWARPTEXTURE && m_bDETAILTEXTURE && m_bDETAIL_BLEND_MODE && m_bFLASHLIGHTDEPTHFILTERMODE && m_bPHONG && m_bPHONGMASK;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 8 * m_nNORMALMAP ) + ( 24 * m_nNORMALMAP2 ) + ( 48 * m_nWORLDVERTEXTRANSITION ) + ( 96 * m_nSEAMLESS ) + ( 192 * m_nDETAILTEXTURE ) + ( 384 * m_nDETAIL_BLEND_MODE ) + ( 768 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 2304 * m_nPHONG ) + ( 4608 * m_nPHONGMASK ) + 0;
+		return ( 8 * m_nNORMALMAP ) + ( 24 * m_nNORMALMAP2 ) + ( 48 * m_nWORLDVERTEXTRANSITION ) + ( 96 * m_nSEAMLESS ) + ( 192 * m_nPHONGWARPTEXTURE ) + ( 384 * m_nDETAILTEXTURE ) + ( 768 * m_nDETAIL_BLEND_MODE ) + ( 1536 * m_nFLASHLIGHTDEPTHFILTERMODE ) + ( 4608 * m_nPHONG ) + ( 9216 * m_nPHONGMASK ) + 0;
 	}
 };
-#define shaderStaticTest_pp_lightmappedadv_flashlight_ps30 psh_forgot_to_set_static_NORMALMAP + psh_forgot_to_set_static_NORMALMAP2 + psh_forgot_to_set_static_WORLDVERTEXTRANSITION + psh_forgot_to_set_static_SEAMLESS + psh_forgot_to_set_static_DETAILTEXTURE + psh_forgot_to_set_static_DETAIL_BLEND_MODE + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_PHONG + psh_forgot_to_set_static_PHONGMASK + 0
+#define shaderStaticTest_pp_lightmappedadv_flashlight_ps30 psh_forgot_to_set_static_NORMALMAP + psh_forgot_to_set_static_NORMALMAP2 + psh_forgot_to_set_static_WORLDVERTEXTRANSITION + psh_forgot_to_set_static_SEAMLESS + psh_forgot_to_set_static_PHONGWARPTEXTURE + psh_forgot_to_set_static_DETAILTEXTURE + psh_forgot_to_set_static_DETAIL_BLEND_MODE + psh_forgot_to_set_static_FLASHLIGHTDEPTHFILTERMODE + psh_forgot_to_set_static_PHONG + psh_forgot_to_set_static_PHONGMASK + 0
 class pp_lightmappedadv_flashlight_ps30_Dynamic_Index
 {
 private:

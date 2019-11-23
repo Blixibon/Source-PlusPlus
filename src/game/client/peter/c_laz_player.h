@@ -18,6 +18,7 @@ public:
 
 	//C_Laz_Player();
 
+	virtual bool ShouldDoPortalRenderCulling();
 
 	virtual void			OnDataChanged(DataUpdateType_t updateType);
 	virtual void			ClientThink();
@@ -33,12 +34,30 @@ public:
 
 	virtual float			GetMinFOV()	const { return 20.0f; }
 
+	virtual int DrawModel(int flags);
+
+	virtual CStudioHdr* OnNewModel(void);
+
 	// Shadows
 	virtual ShadowType_t ShadowCastType(void);
 	virtual void GetShadowRenderBounds(Vector &mins, Vector &maxs, ShadowType_t shadowType);
 	virtual void GetRenderBounds(Vector& theMins, Vector& theMaxs);
 	virtual bool GetShadowCastDirection(Vector *pDirection, ShadowType_t shadowType) const;
 	virtual bool ShouldReceiveProjectedTextures(int flags);
+
+	// override in sub-classes
+	virtual void DoAnimationEvents(CStudioHdr* pStudio);
+
+	enum
+	{
+		HIDEARM_LEFT = 0x01,
+		HIDEARM_RIGHT = 0x02
+	};
+
+	bool	IsInReload();
+	int		GetHideBits();
+
+	virtual void				BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vector* pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList& boneComputed, const char* pchHeadBoneName);
 
 	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
 
@@ -87,6 +106,10 @@ protected:
 	QAngle				m_angTauntEngViewAngles;
 
 	bool m_fIsWalking;
+
+	CBitVec<MAXSTUDIOBONES> m_bitLeftArm;
+	CBitVec<MAXSTUDIOBONES> m_bitRightArm;
+	CBitVec<MAXSTUDIOBONES> m_bitHair;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

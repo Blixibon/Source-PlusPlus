@@ -3,19 +3,17 @@
 #pragma once
 
 #include "appframework/IAppSystem.h"
+#include "utlvector.h"
 
-#define SPP_UTILS_INTERFACE "VGameSharedUtils001"
+class IHolidayEvents;
 
-class IMapEditHelper
-{
-public:
-	virtual const char* DoMapEdit(const char* pMapName, const char* pMapEntities) = 0;
-};
+#define SPP_UTILS_INTERFACE "VGameSharedUtils002"
 
 class IGameSharedUtils : public IAppSystem
 {
 public:
-	virtual IMapEditHelper* GetMapEditHelper() = 0;
+	virtual const char* DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char *> &vecVariants) = 0;
+	virtual IHolidayEvents* GetEventSystem() = 0;
 };
 
 #endif // !SPP_UTILS_H

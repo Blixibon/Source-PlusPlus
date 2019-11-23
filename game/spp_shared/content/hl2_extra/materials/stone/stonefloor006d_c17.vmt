@@ -1,0 +1,20 @@
+// envmaptint_fix
+"LightmappedGeneric"
+{
+	"$basetexture" "Stone/stonefloor006d"
+	"$surfaceprop" "concrete"
+	"%keywords" "c17downtown,wasteland"
+
+	">=dx90"
+ 	{
+		"$envmap" "env_cubemap"
+		"$envmapsaturation" 1
+		"$envmapcontrast" 1
+		"$envmaptint" "[ .6 .6 .6 ]"
+		"$bumpmap" "stone/stonefloor006a_normal"
+		"$normalmapalphaenvmapmask" 1
+		$phong 1
+		$phongboost 2
+		$phongexponent 20
+	}
+}

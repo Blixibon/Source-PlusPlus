@@ -344,11 +344,16 @@ void CTFMainMenu::OnTick()
 		{
 			enginesound->NotifyBeginMoviePlayback();
 			m_bMusicStartup = true;
+			m_iStartMenuMusic = 6;
 		}
 	}
 	else
 	{
-		if (!bInGameLayout)
+		if (m_iStartMenuMusic > 0)
+		{
+			m_iStartMenuMusic--;
+		}
+		else if (!bInGameLayout)
 		{
 			if ((m_psMusicStatus == MUSIC_FIND || m_psMusicStatus == MUSIC_STOP_FIND) && !enginesound->IsSoundStillPlaying(m_nSongGuid))
 			{
@@ -358,7 +363,7 @@ void CTFMainMenu::OnTick()
 			else if ((m_psMusicStatus == MUSIC_PLAY || m_psMusicStatus == MUSIC_STOP_PLAY)&& m_pzMusicLink[0] != '\0')
 			{
 				enginesound->StopSoundByGuid(m_nSongGuid);
-				enginesound->EmitAmbientSound(CFmtStr("*#%s", m_pzMusicLink), 1.0f, PITCH_NORM, 0);			
+				enginesound->EmitAmbientSound(CFmtStr("*#%s", m_pzMusicLink), 0.8f, PITCH_NORM, 0);			
 				m_nSongGuid = enginesound->GetGuidForLastSoundEmitted();
 				m_psMusicStatus = MUSIC_FIND;
 			}

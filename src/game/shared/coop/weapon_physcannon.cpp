@@ -1370,10 +1370,13 @@ void PlayerPickupObject( CBasePlayer *pPlayer, CBaseEntity *pObject )
 class CPhysCannonEffect
 {
 public:
-	CPhysCannonEffect( void ) : m_vecColor( 255, 255, 255 ), m_bVisible( true ), m_nAttachment( -1 ), m_flForceVisibleUntil(0.0f) {};
+	CPhysCannonEffect(void) : m_vecColor(255, 255, 255), m_bVisible(true), m_nAttachment{-1}, m_flForceVisibleUntil(0.0f) {};
 
-	void SetAttachment( int attachment ) { m_nAttachment = attachment; }
-	int	GetAttachment( void ) const { return m_nAttachment; }
+	void SetAttachment( int attachment ) { m_nAttachment[0] = attachment; }
+	int	GetAttachment( void ) const { return m_nAttachment[0]; }
+
+	void SetAttachmentWorld(int attachment) { m_nAttachment[1] = attachment; }
+	int	GetAttachmentWorld(void) const { return m_nAttachment[1]; }
 
 	void SetVisible( bool visible = true ) { m_bVisible = visible; }
 	int IsVisible(void) const { return m_bVisible || gpGlobals->curtime < m_flForceVisibleUntil; }
@@ -1400,7 +1403,7 @@ private:
 	Vector				m_vecColor;
 	bool				m_bVisible;
 	float				m_flForceVisibleUntil;
-	int					m_nAttachment;
+	int					m_nAttachment[2];
 	CMaterialReference	m_hMaterial[2];
 };
 
@@ -4400,14 +4403,13 @@ void CWeaponPhysCannon::StartEffects( void )
 		m_Parameters[i].GetAlpha().SetAbsolute( 64.0f );
 		
 		// Different for different views
-		if ( ShouldDrawUsingViewModel() )
-		{
+		SetModelIndex(m_iViewModelIndex);
 			m_Parameters[i].SetAttachment( LookupAttachment( attachNamesGlow[i-PHYSCANNON_GLOW1] ) );
-		}
-		else
-		{
-			m_Parameters[i].SetAttachment( LookupAttachment( attachNamesGlowThirdPerson[i-PHYSCANNON_GLOW1] ) );
-		}
+			SetModelIndex(m_iWorldModelIndex);
+			m_Parameters[i].SetAttachmentWorld(LookupAttachment(attachNamesGlowThirdPerson[i - PHYSCANNON_GLOW1]));
+
+			SetModelIndex(CalcOverrideModelIndex());
+
 		m_Parameters[i].SetColor( Vector( 255, 128, 0 ) );
 		
 		if (m_Parameters[i].SetMaterial(PHYSCANNON_GLOW_SPRITE, 0) == false)
@@ -4442,7 +4444,9 @@ void CWeaponPhysCannon::StartEffects( void )
 
 		m_Parameters[i].GetScale().SetAbsolute( 0.05f * SPRITE_SCALE );
 		m_Parameters[i].GetAlpha().SetAbsolute( 255.0f );
-		m_Parameters[i].SetAttachment( LookupAttachment( attachNamesEndCap[i-PHYSCANNON_ENDCAP1] ) );
+		int iAttachment = LookupAttachment(attachNamesEndCap[i - PHYSCANNON_ENDCAP1]);
+		m_Parameters[i].SetAttachment(iAttachment);
+		m_Parameters[i].SetAttachmentWorld(iAttachment);
 		m_Parameters[i].SetVisible( false );
 		
 		if (m_Parameters[i].SetMaterial(PHYSCANNON_ENDCAP_SPRITE, 0) == false)
@@ -4823,7 +4827,7 @@ void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &col
 	color.a = (int) alpha;
 
 	// Setup the attachment
-	int		attachment = m_Parameters[effectID].GetAttachment();
+	//int		attachment = m_Parameters[effectID].GetAttachment();
 	QAngle	angles;
 
 	// Format for first-person
@@ -4833,13 +4837,13 @@ void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &col
 		
 		if ( pOwner != NULL )
 		{
-			pOwner->GetViewModel()->GetAttachment( attachment, vecAttachment, angles );
+			pOwner->GetViewModel()->GetAttachment(m_Parameters[effectID].GetAttachment(), vecAttachment, angles );
 			::FormatViewModelAttachment( vecAttachment, true );
 		}
 	}
 	else
 	{
-		GetAttachment( attachment, vecAttachment, angles );
+		GetAttachment(m_Parameters[effectID].GetAttachmentWorld(), vecAttachment, angles );
 	}
 }
 
@@ -4907,9 +4911,17 @@ void CWeaponPhysCannon::DrawEffects( void )
 //-----------------------------------------------------------------------------
 int CWeaponPhysCannon::DrawModel( int flags )
 {
+	ValidateModelIndex();
+
 	// Only render these on the transparent pass
 	if ( flags & STUDIO_TRANSPARENCY )
 	{
+#ifdef PORTAL
+		if (ShouldDrawUsingViewModel())
+			return 0;
+#endif // PORTAL
+
+
 		DrawEffects();
 		return 1;
 	}

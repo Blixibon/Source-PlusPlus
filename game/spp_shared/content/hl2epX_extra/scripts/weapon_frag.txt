@@ -27,6 +27,11 @@ WeaponData
 		"double_shot"	"common/null.wav"
 		"single_shot"	"common/null.wav"
 	}
+	
+	"LowerBody"
+	{
+		"hide_arm_left"	"0"
+	}
 
 	// Weapon Sprite data is loaded by the Client DLL.
 	TextureData

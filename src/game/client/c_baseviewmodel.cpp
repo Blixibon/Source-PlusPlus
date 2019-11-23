@@ -616,6 +616,21 @@ int C_BaseViewModel::DrawModel( int flags )
 	return ret;
 }
 
+int CBaseViewModel::GetHandModelData(int& iSkin, int& iBody)
+{
+	if (GetWeapon())
+	{
+		CBaseCombatWeapon* pWeap = GetWeapon();
+		if (!pWeap->GetWpnData().bViewModelUseArms)
+			return -1;
+	}
+
+	iSkin = m_iHandsSkin.Get();
+	iBody = m_iHandsBody.Get();
+
+	return m_iHandsModelIndex.Get();
+}
+
 C_BaseAnimating* CBaseViewModel::GetHandsModel()
 {
 	return s_pViewHands[ViewModelIndex()];

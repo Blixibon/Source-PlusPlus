@@ -464,6 +464,7 @@ protected:
 
 	virtual void RoundRespawn( void );
 	virtual void CleanUpMap( void );
+	virtual void GetMapEditVariants(CUtlStringList& vecList) { return; }
 	virtual void CheckRespawnWaves( void );
 	void ResetScores( void );
 	void ResetMapTime( void );

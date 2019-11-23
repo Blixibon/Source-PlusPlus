@@ -395,7 +395,7 @@ void C_PropVehicleDriveable::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUser
 {
 	if ( r_VehicleViewClamp.GetInt() )
 	{
-		float pitchBounds[2] = { -85.0f, 25.0f };
+		float pitchBounds[2] = { -85.0f, 35.0f };
 		RestrictView( NULL, pitchBounds, NULL, pCmd->viewangles );
 	}
 }

@@ -178,7 +178,7 @@ bool CAI_Senses::CanSeeEntity( CBaseEntity *pSightEnt )
 #ifdef PORTAL
 bool CAI_Senses::CanSeeEntityThroughPortal( const CProp_Portal *pPortal, CBaseEntity *pSightEnt )
 {
-	return GetOuter()->FVisibleThroughPortal( pPortal, pSightEnt );
+	return GetCharacter()->FVisibleThroughPortal( pPortal, pSightEnt );
 }
 #endif
 
@@ -417,7 +417,7 @@ int CAI_Senses::LookForHighPriorityEntities( int iDistance )
 #ifdef PORTAL
 				else
 				{
-					CProp_Portal *pPortal = GetOuter()->FInViewConeThroughPortal( pPlayer );
+					CProp_Portal *pPortal = GetCharacter()->FInViewConeThroughPortal( pPlayer );
 					if ( pPortal && UTIL_Portal_DistanceThroughPortalSqr( pPortal, origin, pPlayer->GetAbsOrigin() ) < distSq && LookThroughPortal( pPortal, pPlayer ) )
 					{
 						nSeen++;

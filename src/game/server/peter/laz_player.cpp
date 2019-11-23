@@ -407,6 +407,11 @@ ReturnSpot:
 	return pSpot;
 }
 
+bool CLaz_Player::ShouldRegenerateHealth()
+{
+	return g_pGameTypeSystem->GetCurrentGameType() == GAME_PORTAL;
+}
+
 void CLaz_Player::DoMuzzleFlash()
 {
 	BaseClass::DoMuzzleFlash();

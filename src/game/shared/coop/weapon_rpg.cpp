@@ -2212,6 +2212,10 @@ int	CWeaponRPG::DrawModel( int flags )
 	// Only render these on the transparent pass
 	if ( flags & STUDIO_TRANSPARENCY )
 	{
+#ifdef PORTAL
+		if (ShouldDrawUsingViewModel())
+			return 0;
+#endif // PORTAL
 		DrawEffects(false);
 		return 1;
 	}

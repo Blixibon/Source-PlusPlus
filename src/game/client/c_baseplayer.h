@@ -499,7 +499,7 @@ private:
 	// Make sure no one calls this...
 	C_BasePlayer& operator=( const C_BasePlayer& src );
 	C_BasePlayer( const C_BasePlayer & ); // not defined, not accessible
-
+protected:
 	// Vehicle stuff.
 	EHANDLE			m_hVehicle;
 	EHANDLE			m_hOldVehicle;
