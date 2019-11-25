@@ -1342,7 +1342,7 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 
 	if ( pSpeaker->GetEnemy() )
 	{
-		set.AppendCriteria( "enemy", pSpeaker->GetEnemy()->GetClassname() );
+		set.AppendCriteria( "enemy", pSpeaker->GetEnemy()->GetResponseClassname(pSpeaker) );
 		set.AppendCriteria( "timesincecombat", "-1" );
 	}
 	else

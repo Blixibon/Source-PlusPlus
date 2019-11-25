@@ -10,8 +10,7 @@
 
 class CLaz_Player;
 
-#define DEFAULT_VOICE "none"
-#define DEFAULT_FEET "none"
+#define DEFAULT_ABILITY "none"
 
 extern ConVar	spec_freeze_time;
 extern ConVar	spec_freeze_traveltime;
@@ -120,6 +119,7 @@ public:
 	virtual	void		Event_KilledOther(CBaseEntity *pVictim, const CTakeDamageInfo &info);
 
 	void			ModifyOrAppendCriteria(AI_CriteriaSet& set);
+	virtual const char* GetResponseClassname(CBaseEntity* pCaller);
 
 	virtual void	DeathNotice(CBaseEntity *pVictim);
 
@@ -134,6 +134,11 @@ public:
 	{
 		m_iszVoiceType = AllocPooledString(pchVoice);
 		m_iszSuitVoice = AllocPooledString(pchSuit);
+	}
+
+	void		SetResponseClassname(const char* pchClassname)
+	{
+		m_iszResponseClassname = AllocPooledString(pchClassname);
 	}
 
 	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
@@ -220,6 +225,9 @@ protected:
 
 	string_t			m_iszVoiceType;
 	string_t			m_iszSuitVoice;
+	string_t			m_iszResponseClassname;
+
+	static string_t		gm_iszDefaultAbility;
 
 	LAZPlayerState m_iPlayerState;
 	CLAZPlayerStateInfo *m_pCurStateInfo;

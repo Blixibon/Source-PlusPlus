@@ -37,16 +37,17 @@ public:
 	virtual bool			IsWearable( void ) { return true; }
 	virtual int				GetSkin( void );
 	virtual void			SetParticle( const char* name );
-	virtual void			UpdateWearableBodyGroups( CBasePlayer *pPlayer );
+	virtual void			UpdateWearableBodyGroups(CBaseCombatCharacter*pPlayer );
 	virtual void			GiveTo( CBaseEntity *pEntity );
 
 #ifdef GAME_DLL
-	virtual void			Equip( CBasePlayer *pPlayer );
-	virtual void			UnEquip( CBasePlayer *pPlayer );
+	virtual void			Equip( CBaseCombatCharacter *pPlayer );
+	virtual void			UnEquip(CBaseCombatCharacter*pPlayer );
 #else
 	virtual void			OnDataChanged(DataUpdateType_t type);
 	virtual	ShadowType_t	ShadowCastType( void );
 	virtual bool			ShouldDraw( void );
+	virtual int				DrawModel(int flags);
 #endif
 
 private:

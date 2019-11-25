@@ -26,6 +26,8 @@ typedef struct
 {
 	const char *pszCleanModel;
 	const char *pszHurtModel;
+	int iFirstSkin;
+	int iNumSkins;
 } colleagueModel_t;
 
 class CNPC_BaseColleague : public CNPC_PlayerFollower
@@ -99,7 +101,8 @@ public:
 
 	
 
-	static const char *ChooseColleagueModel(colleagueModel_t mdl[]);
+	static const char *ChooseColleagueModel(colleagueModel_t * models, int iNumModels);
+	static int gm_iLastChosenSkin;
 
 protected:
 	CNetworkVar(int, m_iHeadRndSeed);

@@ -503,7 +503,7 @@ void CBaseServerVehicle::SetPassenger( int nRole, CBaseCombatCharacter *pPasseng
 //-----------------------------------------------------------------------------
 void CBaseServerVehicle::GetPassengerSeatPoint( int nRole, Vector *pPoint, QAngle *pAngles )
 {
-	Assert( nRole == VEHICLE_ROLE_DRIVER ); 
+	Assert( nRole < LAST_SHARED_VEHICLE_ROLE);
 
 	CBaseAnimating *pAnimating = dynamic_cast<CBaseAnimating *>(m_pVehicle);
 	if ( pAnimating )
@@ -514,7 +514,9 @@ void CBaseServerVehicle::GetPassengerSeatPoint( int nRole, Vector *pPoint, QAngl
 		if (nRole == VEHICLE_ROLE_DRIVER && nFeetAttachmentIndex <= 0)
 			nFeetAttachmentIndex = pAnimating->LookupAttachment("vehicle_driver_feet");
 
-		int nIdleSequence = pAnimating->SelectWeightedSequence( ACT_IDLE );
+		int nIdleSequence = pAnimating->SelectWeightedSequence(ACT_IDLE);
+		if (nIdleSequence == ACT_INVALID)
+			nIdleSequence = pAnimating->LookupSequence("idle");
 		if ( nFeetAttachmentIndex > 0 && nIdleSequence != -1 )
 		{
 			// FIXME: This really wants to be a faster query than this implementation!

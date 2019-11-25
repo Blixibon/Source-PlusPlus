@@ -3367,6 +3367,8 @@ void CLazuul::LevelInitPreEntity()
 		CBaseEntity::sm_bAccurateTriggerBboxChecks = true;
 	}
 
+	SetGameMode(gamemode.GetInt());
+
 	BaseClass::LevelInitPreEntity();
 }
 
@@ -4581,17 +4583,21 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 	KeyValues* pkvAbillites = modelType->kvAbilities;
 	if (pkvAbillites != nullptr)
 	{
-		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_VOICE);
-		const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_VOICE);
+		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_ABILITY);
+		const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_ABILITY);
 		pHLMS->SetVoiceType(pchVoice, pchSuit);
 
-		const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_FEET);
+		const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_ABILITY);
 		pHLMS->SetFootsteps(pchFootSound);
+
+		const char* pchClassname = pkvAbillites->GetString("response_class", DEFAULT_ABILITY);
+		pHLMS->SetResponseClassname(pchClassname);
 	}
 	else
 	{
-		pHLMS->SetVoiceType(DEFAULT_VOICE, DEFAULT_VOICE);
-		pHLMS->SetFootsteps(DEFAULT_FEET);
+		pHLMS->SetVoiceType(DEFAULT_ABILITY, DEFAULT_ABILITY);
+		pHLMS->SetFootsteps(DEFAULT_ABILITY);
+		pHLMS->SetResponseClassname(DEFAULT_ABILITY);
 	}
 }
 #endif

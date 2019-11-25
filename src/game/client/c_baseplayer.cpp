@@ -50,6 +50,7 @@
 #include "steam/steam_api.h"
 #include "sourcevr/isourcevirtualreality.h"
 #include "client_virtualreality.h"
+#include "viewrender.h"
 
 #if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC_CLIENT )
 #include "econ_wearable.h"
@@ -2228,7 +2229,7 @@ Vector C_BasePlayer::GetAutoaimVector( float flScale )
 {
 	// Never autoaim a predicted weapon (for now)
 	Vector	forward;
-	AngleVectors( GetAbsAngles() + m_Local.m_vecPunchAngle, &forward );
+	AngleVectors( EyeAngles() + m_Local.m_vecPunchAngle, &forward );
 	return	forward;
 }
 
@@ -2718,6 +2719,19 @@ void C_BasePlayer::GetPredictionErrorSmoothingVector( Vector &vOffset )
 #endif
 }
 
+
+bool C_BasePlayer::IsRenderingMyFlashlight()
+{
+	if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE && m_pFlashlight && m_pFlashlight->IsOn())
+	{
+		ShadowHandle_t hActive = g_pClientShadowMgr->GetActiveDepthTextureHandle();
+		ShadowHandle_t hMine = g_pClientShadowMgr->GetShadowHandle(m_pFlashlight->GetFlashlightHandle());
+		if (hActive == hMine)
+			return true;
+	}
+
+	return false;
+}
 
 IRagdoll* C_BasePlayer::GetRepresentativeRagdoll() const
 {

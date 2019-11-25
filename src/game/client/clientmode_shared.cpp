@@ -788,7 +788,7 @@ int ClientModeShared::HandleSpectatorKeyInput( int down, ButtonCode_t keynum, co
 		engine->ClientCmd( "spec_mode" );
 		return 0;
 	}
-	else if ( down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+strafe" ) == 0 )
+	else if ( down && pszCurrentBinding && Q_strcmp( pszCurrentBinding, "+use" ) == 0 )
 	{
 		HLTVCamera()->SetAutoDirector( true );
 #if defined( REPLAY_ENABLED )

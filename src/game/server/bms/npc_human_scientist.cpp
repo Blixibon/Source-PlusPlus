@@ -196,8 +196,8 @@ END_DATADESC()
 
 colleagueModel_t CNPC_BaseScientist::gm_Models[] =
 {
-	{ MSCI_MODEL,	"models/humans/scientist_hurt.mdl" },
-	{ MSCI_MODEL2,	"models/humans/scientist_hurt_02.mdl" },
+	{ MSCI_MODEL,	"models/humans/scientist_hurt.mdl", 0, 15 },
+	{ MSCI_MODEL2,	"models/humans/scientist_hurt_02.mdl", 1, 7 },
 };
 
 //-----------------------------------------------------------------------------
@@ -210,7 +210,7 @@ void CNPC_BaseScientist::SelectModel()
 	else
 		SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(gm_Models)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(gm_Models, 2)));
 }
 
 #define SCI_MAX_GLASSES 6
@@ -238,9 +238,7 @@ void CNPC_BaseScientist::Spawn(void)
 
 	SetUse(&CNPC_BaseScientist::CommanderUse);
 
-	
-
-	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+	m_nSkin = gm_iLastChosenSkin;
 	int iGlasses = FindBodygroupByName("glasses");
 	SetBodygroup(iGlasses, RandomInt(0, SCI_MAX_GLASSES));
 }

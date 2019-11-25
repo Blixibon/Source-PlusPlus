@@ -7,6 +7,11 @@
 #include "cbase.h"
 #include "econ_wearable.h"
 
+#if defined(PORTAL) && defined(CLIENT_DLL)
+#include "PortalRender.h"
+#include "c_portal_player.h"
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -71,7 +76,7 @@ int CEconWearable::GetSkin( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEconWearable::UpdateWearableBodyGroups( CBasePlayer *pPlayer )
+void CEconWearable::UpdateWearableBodyGroups(CBaseCombatCharacter*pPlayer )
 {
 	EconItemVisuals *visual = GetItem()->GetStaticData()->GetVisuals( GetTeamNumber() );
 	for ( unsigned int i = 0; i < visual->player_bodygroups.Count(); i++ )
@@ -119,7 +124,7 @@ void CEconWearable::GiveTo( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEconWearable::Equip( CBasePlayer *pPlayer )
+void CEconWearable::Equip(CBaseCombatCharacter*pPlayer )
 {
 	if ( pPlayer )
 	{
@@ -134,7 +139,7 @@ void CEconWearable::Equip( CBasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CEconWearable::UnEquip( CBasePlayer *pPlayer )
+void CEconWearable::UnEquip(CBaseCombatCharacter*pPlayer )
 {
 	if ( pPlayer )
 	{
@@ -168,7 +173,12 @@ ShadowType_t CEconWearable::ShadowCastType( void )
 {
 	if ( ShouldDraw() )
 	{
-		return SHADOWS_RENDER_TO_TEXTURE_DYNAMIC;
+		CBaseEntity* pOwner = GetOwnerEntity();
+
+		if (!pOwner)
+			return SHADOWS_RENDER_TO_TEXTURE_DYNAMIC;
+
+		return pOwner->ShadowCastType();
 	}
 
 	return SHADOWS_NONE;
@@ -179,18 +189,48 @@ ShadowType_t CEconWearable::ShadowCastType( void )
 //-----------------------------------------------------------------------------
 bool CEconWearable::ShouldDraw( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwnerEntity() );
+	CBaseEntity *pOwner = GetOwnerEntity();
 
 	if ( !pOwner )
 		return false;
 
-	if ( !pOwner->ShouldDrawThisPlayer() )
+	if ( !pOwner->ShouldDraw() )
 		return false;
 
 	if ( !pOwner->IsAlive() )
 		return false;
 
 	return BaseClass::ShouldDraw();
+}
+
+int CEconWearable::DrawModel(int flags)
+{
+	if (GetOwnerEntity() && GetOwnerEntity()->IsPlayer())
+	{
+#ifdef PORTAL
+		C_Portal_Player* pOwner = ToPortalPlayer(GetOwnerEntity());
+		if (pOwner->IsLocalPlayer() && pOwner->ShouldDoPortalRenderCulling())
+		{
+			if (!C_BasePlayer::ShouldDrawLocalPlayer())
+			{
+				if (!g_pPortalRender->IsRenderingPortal())
+					return 0;
+
+				if ((g_pPortalRender->GetViewRecursionLevel() == 1) && (pOwner->GetForceNoDrawInPortalSurface() != -1)) //CPortalRender::s_iRenderingPortalView )
+					return 0;
+			}
+		}
+#endif
+
+		C_BasePlayer* pPlayer = ToBasePlayer(GetOwnerEntity());
+		if (pPlayer->IsRenderingMyFlashlight())
+			return 0;
+
+		if (CurrentViewID() == VIEW_REFLECTION)
+			return 0;
+	}
+
+	return BaseClass::DrawModel(flags);
 }
 
 #endif

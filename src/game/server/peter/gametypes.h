@@ -87,6 +87,7 @@ public:
 	bool IsMapInGame(const char *pchGame); 
 
 	int LookupGametype(const char *);
+	const char* GetGameTypeName(int);
 
 	bool IsMapInArea(int iArea)
 	{

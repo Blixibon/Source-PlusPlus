@@ -877,6 +877,17 @@ void CPropVehicleDriveable::StopEngine( void )
 	m_VehiclePhysics.TurnOff();
 }
 
+void CPropVehicleDriveable::PassengerEnterVehicle(CBasePlayer* pPlayer, int nRole)
+{
+	if (!pPlayer)
+		return;
+
+	if (nRole == VEHICLE_ROLE_DRIVER)
+	{
+		return EnterVehicle(pPlayer);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: // The player takes damage if he hits something going fast enough
 //-----------------------------------------------------------------------------

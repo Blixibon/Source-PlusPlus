@@ -89,20 +89,45 @@ void CNPC_BaseColleague::Precache()
 	}
 }
 
-const char *CNPC_BaseColleague::ChooseColleagueModel(colleagueModel_t models[])
+int CNPC_BaseColleague::gm_iLastChosenSkin = 0;
+
+const char *CNPC_BaseColleague::ChooseColleagueModel(colleagueModel_t * models, int iNumModels)
 {
-	colleagueModel_t mdl = models[RandomInt(0, _ARRAYSIZE(models)-1)];
+	int iNumSkins = 0;
+	for (int i = 0; i < iNumModels; i++)
+	{
+		colleagueModel_t& mdl = models[i];
+		iNumSkins += mdl.iNumSkins;
+	}
+
+	gm_iLastChosenSkin = RandomInt(0, iNumSkins - 1);
+
+	colleagueModel_t outMDL = models[0];
+	for (int i = 0; i < iNumModels; i++)
+	{
+		colleagueModel_t& mdl = models[i];
+		if (gm_iLastChosenSkin >= mdl.iNumSkins)
+		{
+			gm_iLastChosenSkin -= mdl.iNumSkins;
+		}
+		else
+		{
+			gm_iLastChosenSkin += mdl.iFirstSkin;
+			outMDL = mdl;
+			break;
+		}
+	}
 
 	if (IsPreDisaster())
 	{
-		return mdl.pszCleanModel;
+		return outMDL.pszCleanModel;
 	}
 	else
 	{
-		if (RandomFloat() > 0.75)
-			return mdl.pszHurtModel;
+		if (RandomFloat() > 0.75f)
+			return outMDL.pszHurtModel;
 		else
-			return mdl.pszCleanModel;
+			return outMDL.pszCleanModel;
 	}
 }
 

@@ -1,4 +1,4 @@
-"VertexLitGeneric"
+"PP_VertexLitGeneric"
 {
 	"$surfaceprop" "default"
 	"$basetexture" "Models/vortigaunt/vortigaunt_base"
@@ -35,6 +35,7 @@
 	"$emissiveBlendFlowTexture" "models/vortigaunt/vortigaunt_flow"
 	"$emissiveBlendTint"        "[1 1 1]"
 	"$emissiveBlendScrollVector" "[0.11 0.124]"
+	"$EMISSIVEBLENDCORRECTFLOW"	"1"
 	"$time" "0"
 	"Proxies"
 	{

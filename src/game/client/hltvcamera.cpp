@@ -17,6 +17,7 @@
 #include "vguicenterprint.h"
 #include "game/client/iviewport.h"
 #include <KeyValues.h>
+#include "c_ai_basenpc.h"
 
 #ifdef CSTRIKE_DLL
 	#include "c_cs_player.h"
@@ -104,6 +105,37 @@ void C_HLTVCamera::Reset()
 	m_vecVelocity.Init();
 }
 
+Vector GetChaseCamViewOffset(CBaseEntity* target)
+{
+	C_BasePlayer* player = ToBasePlayer(target);
+
+	if (player)
+	{
+		if (player->IsAlive())
+		{
+			if (player->GetFlags() & FL_DUCKING)
+			{
+				return VEC_DUCK_VIEW_SCALED(player);
+			}
+
+			return VEC_VIEW_SCALED(player);
+		}
+		else
+		{
+			// assume it's the players ragdoll
+			return VEC_DEAD_VIEWHEIGHT_SCALED(player);
+		}
+	}
+	else if (target->IsNPC())
+	{
+		C_AI_BaseNPC* pAI = target->MyNPCPointer();
+		return pAI->GetObserverViewOffset();
+	}
+
+	// assume it's the players ragdoll
+	return VEC_DEAD_VIEWHEIGHT;
+}
+
 void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov )
 {
 	bool bManual = !spec_autodirector.GetBool();	// chase camera controlled manually
@@ -122,20 +154,9 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
 	if ( target1->IsAlive() && target1->IsDormant() )
 		return;
 
-	targetOrigin1 = target1->GetRenderOrigin();
+	targetOrigin1 = target1->GetObserverCamOrigin();
 
-	if ( !target1->IsAlive() )
-	{
-		targetOrigin1 += VEC_DEAD_VIEWHEIGHT;
-	}
-	else if ( target1->GetFlags() & FL_DUCKING )
-	{
-		targetOrigin1 += VEC_DUCK_VIEW;
-	}
-	else
-	{
-		targetOrigin1 += VEC_VIEW;
-	}
+	VectorAdd(targetOrigin1, GetChaseCamViewOffset(target1), targetOrigin1);
 
 	// get secondary target if set
 	C_BaseEntity *target2 = NULL;
@@ -150,20 +171,9 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
 
 		if ( target2 )
 		{
-			targetOrigin2 = target2->GetRenderOrigin();
+			targetOrigin2 = target2->GetObserverCamOrigin();
 
-			if ( !target2->IsAlive() )
-			{
-				targetOrigin2 += VEC_DEAD_VIEWHEIGHT;
-			}
-			else if ( target2->GetFlags() & FL_DUCKING )
-			{
-				targetOrigin2 += VEC_DUCK_VIEW;
-			}
-			else
-			{
-				targetOrigin2 += VEC_VIEW;
-			}
+			VectorAdd(targetOrigin2, GetChaseCamViewOffset(target2), targetOrigin2);
 		}
 	}
 
@@ -210,8 +220,31 @@ void C_HLTVCamera::CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float
 
 	VectorNormalize( forward );
 
+	float flMaxDistance = m_flDistance;
+
+	if (target1 && target1->IsNPC() && !target1->IsPointSized())
+	{
+		ICollideable* pCollide = target1->CollisionProp();
+		Vector vecPlayerSize, vecSize;
+		VectorSubtract(VEC_HULL_MAX, VEC_HULL_MIN, vecPlayerSize);
+		VectorSubtract(pCollide->OBBMaxsPreScaled(), pCollide->OBBMinsPreScaled(), vecSize);
+		float flScaleFactor = vecSize.x / vecPlayerSize.x;
+		flScaleFactor = Clamp(flScaleFactor, 0.4f, 3.6f);
+		flMaxDistance *= flScaleFactor;
+	}
+
+	if (target1)
+	{
+		C_BaseAnimating* pTargetAnimating = target1->GetBaseAnimating();
+		if (pTargetAnimating)
+		{
+			float flScaleSquared = pTargetAnimating->GetModelScale() * pTargetAnimating->GetModelScale();
+			flMaxDistance *= flScaleSquared;
+		}
+	}
+
 	// calc optimal camera position
-	VectorMA(targetOrigin1, -m_flDistance, forward, cameraOrigin );
+	VectorMA(targetOrigin1, -flMaxDistance, forward, cameraOrigin );
 
  	targetOrigin1.z += m_flOffset; // add offset
 

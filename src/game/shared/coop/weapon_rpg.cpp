@@ -37,6 +37,11 @@
 	#include "iservervehicle.h"
 #endif
 
+#ifdef PORTAL
+#include "portal_util_shared.h"
+#endif // PORTAL
+
+
 #include "hl2_player_shared.h"
 
 #include "debugoverlay_shared.h"
@@ -1913,7 +1918,14 @@ void CWeaponRPG::UpdateLaserPosition( Vector vecMuzzlePos, Vector vecEndPos )
 	trace_t	tr;
 	
 	// Trace out for the endpoint
-	UTIL_TraceLine( vecMuzzlePos, vecEndPos, (MASK_SHOT & ~CONTENTS_WINDOW), GetOwner(), COLLISION_GROUP_NONE, &tr );
+#ifndef PORTAL
+	UTIL_TraceLine(vecMuzzlePos, vecEndPos, (MASK_SHOT & ~CONTENTS_WINDOW), GetOwner(), COLLISION_GROUP_NONE, &tr);
+#else
+	Ray_t ray;
+	ray.Init(vecMuzzlePos, vecEndPos);
+	UTIL_Portal_TraceRay(ray, (MASK_SHOT & ~CONTENTS_WINDOW), GetOwner(), COLLISION_GROUP_NONE, &tr);
+#endif // !PORTAL
+
 
 	// Move the laser sprite
 	if ( m_hLaserDot != NULL )
@@ -2622,7 +2634,7 @@ int CLaserDot::DrawModel( int flags )
 		{
 			QAngle ang;
 			pOwner->GetActiveWeapon()->GetAttachment(RPG_GUIDE_ATTACHMENT_3RD, vecAttachment, ang);
-			AngleVectors(ang, &vecAttachment);
+			AngleVectors(ang, &vecDir);
 		}
 		else if ( pOwner->IsLocalPlayer() ) // Always draw the dot in front of our faces when in first-person
 		{
@@ -2640,7 +2652,14 @@ int CLaserDot::DrawModel( int flags )
 		}
 		
 		trace_t tr;
-		UTIL_TraceLine( vecAttachment, vecAttachment + ( vecDir * MAX_TRACE_LENGTH ), MASK_SHOT, pOwner, COLLISION_GROUP_NONE, &tr );
+#ifdef PORTAL
+		Ray_t ray;
+		ray.Init(vecAttachment, vecAttachment + (vecDir * MAX_TRACE_LENGTH));
+		UTIL_Portal_TraceRay(ray, (MASK_SHOT & ~CONTENTS_WINDOW), pOwner, COLLISION_GROUP_NONE, &tr);
+#else
+		UTIL_TraceLine(vecAttachment, vecAttachment + (vecDir * MAX_TRACE_LENGTH), (MASK_SHOT & ~CONTENTS_WINDOW), pOwner, COLLISION_GROUP_NONE, &tr);
+#endif // PORTAL
+
 		
 		// Backup off the hit plane
 		endPos = tr.endpos + ( tr.plane.normal * 4.0f );

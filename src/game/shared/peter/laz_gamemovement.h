@@ -8,7 +8,7 @@ class CLazGameMovement : public CPortalGameMovement
 	typedef CPortalGameMovement BaseClass;
 public:
 	virtual unsigned int PlayerSolidMask(bool brushOnly = false);
-	virtual void	PlayerRoughLandingEffects(float fvol);
+	virtual void	PlayerRoughLandingEffects(float fvol, bool bLateral);
 	virtual bool CheckJumpButton(void);
 };
 

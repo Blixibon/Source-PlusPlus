@@ -1,4 +1,4 @@
-"EyeRefract"
+"PP_EyeRefract"
 {
 	"$Iris"               "models/vortigaunt/new_vort_eye"	  		// Iris color in RGB with cornea noise in A
 	"$AmbientOcclTexture" "Engine/eye-ambient"			// Ambient occlusion in RGB, A unused
@@ -24,9 +24,10 @@
 	"$emissiveBlendEnabled"     "1" // Enables effect
 	"$emissiveBlendTexture"     "models/vortigaunt/eyeball_blue"
 	"$emissiveBlendBaseTexture" "vgui/white"
-	"$emissiveBlendFlowTexture" "dev/flat_normal"
+	"$emissiveBlendFlowTexture" "liquids/flow_test"
 	"$emissiveBlendTint"        "[1 1 1]"
 	"$emissiveBlendScrollVector" "[0.11 0.124]"
+	
 	"$time" "0"
 	"$detailblendfactor" "0.0"
 	"Proxies"

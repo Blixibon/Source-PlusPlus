@@ -438,7 +438,7 @@ bool MapHasAnyEdits(const char* pMapName, CUtlVector<char*>& vecVariants)
 
 CUtlString BuildCompiledFilename(const char* pMapName, CUtlVector<char*>& vecVariants, const char* pszExtension)
 {
-	CFmtStr str("maps/%s", pMapName);
+	CFmtStr str("edt_cache/%s", pMapName);
 	for (int i = 0; i < vecVariants.Count(); i++)
 	{
 		str.AppendFormat(".%s", vecVariants[i]);

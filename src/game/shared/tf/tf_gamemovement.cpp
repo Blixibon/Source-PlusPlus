@@ -81,7 +81,7 @@ public:
 	virtual void	StepMove( Vector &vecDestination, trace_t &trace );
 	virtual bool	GameHasLadders() const;
 	virtual void SetGroundEntity( trace_t *pm );
-	virtual void PlayerRoughLandingEffects( float fvol );
+	virtual void PlayerRoughLandingEffects( float fvol, bool bLateral);
 protected:
 
 	virtual void CheckWaterJump(void );
@@ -1732,7 +1732,7 @@ void CTFGameMovement::SetGroundEntity( trace_t *pm )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CTFGameMovement::PlayerRoughLandingEffects( float fvol )
+void CTFGameMovement::PlayerRoughLandingEffects( float fvol, bool bLateral)
 {
 	if ( m_pTFPlayer && m_pTFPlayer->IsPlayerClass(TF_CLASS_SCOUT) )
 	{
@@ -1743,5 +1743,5 @@ void CTFGameMovement::PlayerRoughLandingEffects( float fvol )
 		}
 	}
 
-	BaseClass::PlayerRoughLandingEffects( fvol );
+	BaseClass::PlayerRoughLandingEffects( fvol, bLateral );
 }

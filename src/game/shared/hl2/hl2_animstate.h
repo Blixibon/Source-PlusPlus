@@ -43,6 +43,7 @@ protected:
 private:
 	static acttable_t s_acttableMPToHL2MP[];
 	float	m_fGroundTime;
+	bool	m_bLongJump;
 
 #ifdef CLIENT_DLL
 	int	m_headYawPoseParam;

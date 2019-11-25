@@ -723,6 +723,8 @@ $Project
 		$File	"variant_t.cpp"
 		$File	"vehicle_base.cpp"
 		$File	"vehicle_baseserver.cpp"
+		$File	"vehicle_passenger.cpp"
+		$File	"vehicle_passengerserver.cpp"
 		$File	"vehicle_sounds.h"
 		$File	"$SRCDIR\game\shared\vehicle_viewblend_shared.cpp"
 		$File	"vguiscreen.cpp"

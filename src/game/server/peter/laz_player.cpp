@@ -89,6 +89,7 @@ END_SEND_TABLE();
 #define HL2MPPLAYER_PHYSDAMAGE_SCALE 4.0f
 
 EHANDLE CLaz_Player::gm_hLastRandomSpawn = nullptr;
+string_t		CLaz_Player::gm_iszDefaultAbility = NULL_STRING;
 
 CLaz_Player::CLaz_Player()
 {
@@ -100,8 +101,12 @@ void CLaz_Player::Precache(void)
 {
 	BaseClass::Precache();
 
+	gm_iszDefaultAbility = AllocPooledString_StaticConstantStringPointer(DEFAULT_ABILITY);
+
 	PrecacheFootStepSounds();
 	PrecacheScriptSound("TFPlayer.FreezeCam");
+	PrecacheScriptSound("JumpLand.HighVelocityImpact");
+	PrecacheScriptSound("PortalPlayer.FallRecover");
 }
 
 //-----------------------------------------------------------------------------
@@ -123,7 +128,7 @@ void CLaz_Player::ForceRespawn(void)
 
 void CLaz_Player::Spawn(void)
 {
-	m_iszVoiceType = AllocPooledString(DEFAULT_VOICE);
+	m_iszVoiceType = gm_iszDefaultAbility;
 
 	if (!g_pGameRules->IsMultiplayer())
 		ChangeTeam(GetAutoTeam());
@@ -173,19 +178,23 @@ void CLaz_Player::Spawn(void)
 		KeyValues* pkvAbillites = m_MPModel.kvAbilities;
 		if (pkvAbillites != nullptr)
 		{
-			const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_VOICE);
-			const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_VOICE);
+			const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_ABILITY);
+			const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_ABILITY);
 			SetVoiceType(pchVoice, pchSuit);
 
-			const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_FEET);
+			const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_ABILITY);
 			SetFootsteps(pchFootSound);
+
+			const char* pchClassname = pkvAbillites->GetString("response_class", DEFAULT_ABILITY);
+			SetResponseClassname(pchClassname);
 
 			m_nSpecialAttack = UTIL_StringFieldToInt(pkvAbillites->GetString("special"), g_pszSpecialAttacks, SPECIAL_ATTACK_COUNT);
 		}
 		else
 		{
-			SetVoiceType(DEFAULT_VOICE, DEFAULT_VOICE);
-			SetFootsteps(DEFAULT_FEET);
+			SetVoiceType(DEFAULT_ABILITY, DEFAULT_ABILITY);
+			SetFootsteps(DEFAULT_ABILITY);
+			SetResponseClassname(DEFAULT_ABILITY);
 			m_nSpecialAttack = -1;
 		}
 	}
@@ -498,9 +507,9 @@ void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo
 	if (g_pGameRules->PlayerRelationship(this, pVictim) == GR_TEAMMATE)
 		return;
 
-	if (pVictim->IsNPC())
+	//if (pVictim->IsNPC())
 	{
-		CFmtStrN<128> modifiers("playerenemy:%s", pVictim->GetClassname());
+		CFmtStrN<128> modifiers("playerenemy:%s", pVictim->GetResponseClassname(this));
 		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_TAUNTS, modifiers);
 	}
 }
@@ -1207,7 +1216,7 @@ void CLaz_Player::DeathSound(const CTakeDamageInfo & info)
 	}
 
 	// play one of the suit death alarms
-	if (IsSuitEquipped() && !(m_iszSuitVoice == AllocPooledString(DEFAULT_VOICE)))
+	if (IsSuitEquipped() && !(m_iszSuitVoice == gm_iszDefaultAbility))
 	{
 		UTIL_LazEmitGroupnameSuit(this, CFmtStr("%s_DEAD", STRING(m_iszSuitVoice)));
 	}
@@ -1483,7 +1492,7 @@ void CLaz_Player::SetSuitUpdate(const char *name, int fgroup, int iNoRepeatTime)
 		return;
 	}
 
-	if (m_iszSuitVoice == AllocPooledString(DEFAULT_VOICE))
+	if (m_iszSuitVoice == gm_iszDefaultAbility)
 		return;
 
 	if (name[0] == AI_SP_SPECIFIC_SENTENCE)
@@ -1765,7 +1774,7 @@ void CLaz_Player::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 	if (GetEnemy())
 	{
 		CBaseEntity* pEnemy = GetEnemy();
-		set.AppendCriteria("playerenemy", pEnemy->GetClassname());
+		set.AppendCriteria("playerenemy", pEnemy->GetResponseClassname(this));
 		set.AppendCriteria("playerenemyclass", g_pGameRules->AIClassText(pEnemy->Classify()));
 		float healthfrac = 0.0f;
 		if (pEnemy->GetMaxHealth() > 0)
@@ -1773,12 +1782,32 @@ void CLaz_Player::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 			healthfrac = (float)pEnemy->GetHealth() / (float)pEnemy->GetMaxHealth();
 		}
 
-		set.AppendCriteria("playerenemyhealthfrac", UTIL_VarArgs("%.3f", healthfrac));
+		set.AppendCriteria("playerenemyhealthfrac", CFmtStr("%.3f", healthfrac));
 	}
 	else
 	{
 		set.AppendCriteria("playerenemy", "none");
 	}
+}
+
+const char* CLaz_Player::GetResponseClassname(CBaseEntity* pCaller)
+{
+	if (pCaller != this)
+	{
+		if (m_iszResponseClassname != gm_iszDefaultAbility)
+		{
+			return STRING(m_iszResponseClassname);
+		}
+		else if (m_iszVoiceType != gm_iszDefaultAbility)
+		{
+			static CFmtStr str;
+			str.Clear();
+			str.AppendFormat("npc_%s", STRING(m_iszVoiceType));
+			return str.Access();
+		}
+	}
+
+	return BaseClass::GetResponseClassname(pCaller);
 }
 
 void CLaz_Player::DeathNotice(CBaseEntity * pVictim)
@@ -1789,7 +1818,7 @@ void CLaz_Player::DeathNotice(CBaseEntity * pVictim)
 
 void CLaz_Player::SetFootsteps(const char *pchPrefix)
 {
-	if (0 == Q_strcmp(DEFAULT_FEET, pchPrefix))
+	if (0 == Q_strcmp(DEFAULT_ABILITY, pchPrefix))
 	{
 		m_iPlayerSoundType = INVALID_STRING_INDEX;
 	}

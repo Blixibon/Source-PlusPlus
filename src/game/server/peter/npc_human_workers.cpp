@@ -47,7 +47,7 @@ void CNPC_HumanMainT::Spawn(void)
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
 
-	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+	m_nSkin = gm_iLastChosenSkin;
 	int iHelmet = FindBodygroupByName("helmet");
 	SetBodygroup(iHelmet, RandomInt(0, GetBodygroupCount(iHelmet) - 1));
 }
@@ -67,7 +67,7 @@ void CNPC_HumanMainT::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel, 2)));
 }
 
 class CNPC_HumanEngie : public CNPC_BaseColleague
@@ -115,7 +115,7 @@ void CNPC_HumanEngie::Spawn(void)
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
 
-	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+	m_nSkin = gm_iLastChosenSkin;
 	int iHelmet = FindBodygroupByName("helmet");
 	SetBodygroup(iHelmet, RandomInt(0, GetBodygroupCount(iHelmet) - 1));
 }
@@ -135,7 +135,7 @@ void CNPC_HumanEngie::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel, 2)));
 }
 
 class CNPC_HumanOffice : public CNPC_BaseColleague
@@ -183,7 +183,7 @@ void CNPC_HumanOffice::Spawn(void)
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
 
-	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+	m_nSkin = gm_iLastChosenSkin;
 	int iGlasses = FindBodygroupByName("glasses");
 	SetBodygroup(iGlasses, RandomInt(0, GetBodygroupCount(iGlasses)-1));
 }
@@ -203,5 +203,5 @@ void CNPC_HumanOffice::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel, 2)));
 }

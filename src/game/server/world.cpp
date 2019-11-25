@@ -651,6 +651,52 @@ void CWorld::Spawn( void )
 			}
 		}
 	}
+	// Black-Mesa does this too
+	else if (g_pGameTypeSystem->GetCurrentGameType() == MOD_BMS && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
+	{
+		struct chapterID_s
+		{
+			const char* pszName;
+			const char* pszChapter;
+		};
+
+		chapterID_s chapters[] = {
+			{ "hc_t0a0", "hazard" },
+			{ "bm_c0a0", "inbound" },
+			{ "bm_c1a0", "anomalous" },
+			{ "bm_c1a1", "unforseen" },
+			{ "bm_c1a2", "office" },
+			{ "bm_c1a3", "wgh" },
+			{ "bm_c1a4", "blast_pit" },
+			{ "bm_c2a1", "power_up" },
+			{ "bm_c2a2", "oar" },
+			{ "bm_c2a3", "app" },
+			{ "bm_c2a4h", "questionable" },	// These must appear before "C2A4" so all other map names starting with C2A4 get that title
+			{ "bm_c2a4e", "questionable" },
+			{ "bm_c2a4f", "questionable" },
+			{ "bm_c2a4g", "questionable" },
+			{ "bm_c2a4", "residue" },
+			{ "bm_c2a5", "surface" },
+			{ "bm_c3a1", "faf" },
+			{ "bm_c3a2", "lcore" },
+			{ "bm_c4a1", "xen" },
+			{ "bm_c4a2", "gon_lair"  },
+			{ "bm_c4a3", "interloper"},
+			{ "bm_c4a4", "nihil"  },
+			{ "bm_c5a1", "endgame"  },
+		};
+
+		// Try to find a matching title comment for this mapname
+		for (int i = 0; i < ARRAYSIZE(chapters); i++)
+		{
+			if (!Q_strnicmp(STRING(gpGlobals->mapname), chapters[i].pszName, strlen(chapters[i].pszName)))
+			{
+				CFmtStr str("blackmesa/%s", chapters[i].pszChapter);
+				m_iszPopulationTag = AllocPooledString(str.Access());
+				break;
+			}
+		}
+	}
 
 	char szMapadd[128];
 	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", STRING(gpGlobals->mapname));

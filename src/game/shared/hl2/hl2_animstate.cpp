@@ -39,6 +39,7 @@ acttable_t CHL2PlayerAnimState::s_acttableMPToHL2MP[] = {
 	{ACT_MP_SPRINT, ACT_HL2MP_RUN, true},
 	{ACT_MP_JUMP, ACT_HL2MP_JUMP, true},
 	{ACT_MP_SWIM, ACT_HL2MP_SWIM, true},
+	{ACT_MP_DOUBLEJUMP, ACT_AHL_DUCKJUMP, true},
 	// Gestures
 	{ACT_MP_ATTACK_STAND_PRIMARYFIRE, ACT_HL2MP_GESTURE_RANGE_ATTACK, false},
 	{ACT_MP_ATTACK_STAND_GRENADE, ACT_GMOD_GESTURE_ITEM_THROW, false},
@@ -68,7 +69,7 @@ acttable_t CHL2PlayerAnimState::s_acttableMPToHL2MP[] = {
 //mv.m_flSprintSpeed = 320;
 //m_PlayerAnimState = new CHL2PlayerAnimState(this, mv);
 
-MultiPlayerMovementData_t CHL2PlayerAnimState::s_MoveParams = { 150.f, 190.f, 320.f, 360.f };
+MultiPlayerMovementData_t CHL2PlayerAnimState::s_MoveParams = { -1.f, 190.f, 320.f, 360.f };
 
 Activity CHL2PlayerAnimState::TranslateActivity(Activity actDesired)
 {
@@ -87,9 +88,10 @@ Activity CHL2PlayerAnimState::TranslateActivity(Activity actDesired)
 	CBaseCombatWeapon* pWeapon = GetBasePlayer()->GetActiveWeapon();
 	if (pWeapon)
 	{
+		actTranslated = pWeapon->GetItem()->GetActivityOverride(GetBasePlayer()->GetTeamNumber(), actTranslated);
+
 		actTranslated = pWeapon->ActivityOverride(actTranslated, false);
 
-		// Live TF2 does this but is doing this after the above call correct?
 		actTranslated = pWeapon->GetItem()->GetActivityOverride(GetBasePlayer()->GetTeamNumber(), actTranslated);
 	}
 	else if (actTranslated == ACT_HL2MP_JUMP)
@@ -345,29 +347,29 @@ void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
 
 	GetBasePlayer()->SetAbsAngles(angle);
 #else
-	QAngle bodyAngles = m_angRender;
-	
-	if (m_chestAttachment > 0)
-	{
-		Vector vec;
-		GetBasePlayer()->GetAttachment(m_chestAttachment, vec, bodyAngles);
-	}
+	//QAngle bodyAngles = m_angRender;
+	//
+	//if (m_chestAttachment > 0)
+	//{
+	//	Vector vec;
+	//	GetBasePlayer()->GetAttachment(m_chestAttachment, vec, bodyAngles);
+	//}
 
 
-	float flBodyYawDiff = bodyAngles[YAW] - m_flLastBodyYaw;
-	m_flLastBodyYaw = bodyAngles[YAW];
+	//float flBodyYawDiff = bodyAngles[YAW] - m_flLastBodyYaw;
+	//m_flLastBodyYaw = bodyAngles[YAW];
 
 
-	// Set the head's yaw.
-	float desired = AngleNormalize(m_flEyeYaw - bodyAngles[YAW]);
-	desired = clamp(desired, m_headYawMin, m_headYawMax);
-	m_flCurrentHeadYaw = ApproachAngle(desired, m_flCurrentHeadYaw, 130 * gpGlobals->frametime);
+	//// Set the head's yaw.
+	//float desired = AngleNormalize(m_flEyeYaw - bodyAngles[YAW]);
+	//desired = clamp(desired, m_headYawMin, m_headYawMax);
+	//m_flCurrentHeadYaw = ApproachAngle(desired, m_flCurrentHeadYaw, 130 * gpGlobals->frametime);
 
-	// Counterrotate the head from the body rotation so it doesn't rotate past its target.
-	m_flCurrentHeadYaw = AngleNormalize(m_flCurrentHeadYaw - flBodyYawDiff);
-	desired = clamp(desired, m_headYawMin, m_headYawMax);
+	//// Counterrotate the head from the body rotation so it doesn't rotate past its target.
+	//m_flCurrentHeadYaw = AngleNormalize(m_flCurrentHeadYaw - flBodyYawDiff);
+	//desired = clamp(desired, m_headYawMin, m_headYawMax);
 
-	GetBasePlayer()->SetPoseParameter(m_headYawPoseParam, m_flCurrentHeadYaw);
+	//GetBasePlayer()->SetPoseParameter(m_headYawPoseParam, m_flCurrentHeadYaw);
 #endif
 }
 
@@ -510,6 +512,7 @@ bool CHL2PlayerAnimState::HandleJumping(Activity& idealActivity)
 	if (GetBasePlayer()->GetMoveType() == MOVETYPE_NOCLIP)
 	{
 		m_bJumping = false;
+		m_bLongJump = false;
 		return false;
 	}
 
@@ -541,6 +544,7 @@ bool CHL2PlayerAnimState::HandleJumping(Activity& idealActivity)
 		if (GetBasePlayer()->GetWaterLevel() >= WL_Waist)
 		{
 			m_bJumping = false;
+			m_bLongJump = false;
 			RestartMainSequence();
 		}
 		// Don't check if he's on the ground for a sec.. sometimes the client still has the
@@ -550,13 +554,14 @@ bool CHL2PlayerAnimState::HandleJumping(Activity& idealActivity)
 			if (GetBasePlayer()->GetFlags() & FL_ONGROUND)
 			{
 				m_bJumping = false;
+				m_bLongJump = false;
 				RestartMainSequence();
 			}
 		}
 	}
 	if (m_bJumping)
 	{
-		idealActivity = ACT_MP_JUMP;
+		idealActivity = m_bLongJump ? ACT_MP_DOUBLEJUMP : ACT_MP_JUMP;
 		return true;
 	}
 	else
@@ -619,12 +624,12 @@ bool CHL2PlayerAnimState::HandleDriving(Activity& idealActivity)
 		else if (Q_strcmp(STRING(pEnt->GetModelName()), "models/vehicles/prisoner_pod_inner.mdl") == 0)
 			idealActivity = ACT_DRIVE_POD;
 		else
-			idealActivity = ACT_GMOD_SIT_ROLLERCOASTER;
+			idealActivity = pPlayer->UsingStandardWeaponsInVehicle() ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
 #endif
 	}
-	else
+	else /*if (iRole == VEHICLE_ROLE_PASSENGER)*/
 	{
-		idealActivity = ACT_GMOD_SIT_ROLLERCOASTER;
+		idealActivity = pPlayer->UsingStandardWeaponsInVehicle() ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
 	}
 
 	return true;
@@ -706,6 +711,7 @@ void CHL2PlayerAnimState::DoAnimationEvent(PlayerAnimEvent_t event, int nData)
 		m_bJumping = true;
 		m_bFirstJumpFrame = true;
 		m_flJumpStartTime = gpGlobals->curtime;
+		m_bLongJump = true;
 
 		RestartMainSequence();
 

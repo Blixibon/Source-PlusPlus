@@ -6392,7 +6392,7 @@ void CBaseEntity::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	// Append map name
 	set.AppendCriteria( "map", gpGlobals->mapname.ToCStr() );
 	// Append our classname and game name
-	set.AppendCriteria( "classname", GetClassname() );
+	set.AppendCriteria( "classname", GetResponseClassname(this) );
 	set.AppendCriteria( "name", GetEntityName().ToCStr() );
 
 	// Append our health

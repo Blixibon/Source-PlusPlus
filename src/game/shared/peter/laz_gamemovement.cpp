@@ -34,31 +34,41 @@ unsigned int CLazGameMovement::PlayerSolidMask(bool brushOnly)
 	return (uMask | BaseClass::PlayerSolidMask(brushOnly));
 }
 
-void CLazGameMovement::PlayerRoughLandingEffects(float fvol)
+void CLazGameMovement::PlayerRoughLandingEffects(float fvol, bool bLateral)
 {
-	BaseClass::PlayerRoughLandingEffects(fvol);
-
-	int iPlaySound = 0;
-	CALL_ATTRIB_HOOK_INT_ON_OTHER(player, iPlaySound, play_rough_landing_sound);
-
-	if (iPlaySound > 0 && fvol >= 1.0)
+	if (!bLateral)
 	{
-		// Play the future shoes sound
-		string_t strSound = AllocPooledString_StaticConstantStringPointer("PortalPlayer.FallRecover");
-		CALL_ATTRIB_HOOK_STRING_ON_OTHER(player, strSound, rough_landing_sound);
+		BaseClass::PlayerRoughLandingEffects(fvol, bLateral);
 
-		CSoundParameters params;
-		if (CBaseEntity::GetParametersForSound(STRING(strSound), params, NULL))
+		int iPlaySound = 0;
+		CALL_ATTRIB_HOOK_INT_ON_OTHER(player, iPlaySound, play_rough_landing_sound);
+
+		if (iPlaySound > 0 && fvol >= 1.0)
 		{
-			EmitSound_t ep(params);
-			ep.m_nPitch = 125.0f - player->m_Local.m_flFallVelocity * 0.03f;					// lower pitch the harder they land
-			ep.m_flVolume = min(player->m_Local.m_flFallVelocity * 0.00075f - 0.38f, 1.0f);	// louder the harder they land
+			// Play the future shoes sound
+			string_t strSound = AllocPooledString_StaticConstantStringPointer("PortalPlayer.FallRecover");
+			CALL_ATTRIB_HOOK_STRING_ON_OTHER(player, strSound, rough_landing_sound);
 
-			CPASAttenuationFilter filter(player, ep.m_SoundLevel);
-			if (gpGlobals->maxClients > 1)
-				filter.UsePredictionRules();
+			CSoundParameters params;
+			if (CBaseEntity::GetParametersForSound(STRING(strSound), params, NULL))
+			{
+				EmitSound_t ep(params);
+				ep.m_nPitch = 125.0f - player->m_Local.m_flFallVelocity * 0.03f;					// lower pitch the harder they land
+				ep.m_flVolume = min(player->m_Local.m_flFallVelocity * 0.00075f - 0.38f, 1.0f);	// louder the harder they land
 
-			CBaseEntity::EmitSound(filter, player->entindex(), ep);
+				CPASAttenuationFilter filter(player, ep.m_SoundLevel);
+				if (gpGlobals->maxClients > 1)
+					filter.UsePredictionRules();
+
+				CBaseEntity::EmitSound(filter, player->entindex(), ep);
+			}
+		}
+	}
+	else
+	{
+		if (fvol > 0.0)
+		{
+			MoveHelper()->StartSound((Vector&)mv->GetAbsOrigin(), CHAN_AUTO, "JumpLand.HighVelocityImpact", fvol, SNDLVL_NONE, 0, PITCH_NORM);
 		}
 	}
 }

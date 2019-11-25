@@ -22,6 +22,13 @@
 #endif
 #include "PortalSimulation.h"
 
+#ifdef CLIENT_DLL
+#define PORTAL_TRACE_PARTITIONS PARTITION_CLIENT_SOLID_EDICTS
+#else
+#define PORTAL_TRACE_PARTITIONS PARTITION_ENGINE_SOLID_EDICTS
+#endif // CLIENT_DLL
+
+
 bool g_bAllowForcePortalTrace = false;
 bool g_bForcePortalTrace = false;
 bool g_bBulletPortalTrace = false;
@@ -695,7 +702,7 @@ void UTIL_Portal_TraceRay( const CProp_Portal *pPortal, const Ray_t &ray, unsign
 
 		//solid entities
 		CPortalCollideableEnumerator enumerator( pPortal );
-		partition->EnumerateElementsAlongRay( PARTITION_ENGINE_SOLID_EDICTS | PARTITION_ENGINE_STATIC_PROPS, ray, false, &enumerator );
+		partition->EnumerateElementsAlongRay(PORTAL_TRACE_PARTITIONS, ray, false, &enumerator );
 		for( counter = 0; counter != enumerator.m_iHandleCount; ++counter )
 		{
 			if( staticpropmgr->IsStaticProp( enumerator.m_pHandles[counter] ) )

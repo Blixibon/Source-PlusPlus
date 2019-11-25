@@ -407,6 +407,7 @@ $Project
 		$File	"c_user_message_register.cpp"
 		$File	"c_vehicle_choreo_generic.cpp"
 		$File	"c_vehicle_jeep.cpp"
+		$File	"c_vehicle_passenger.cpp"
 		$File	"c_vguiscreen.cpp"
 		$File	"hl2\c_waterbullet.cpp"
 		$File	"hl2\hud_autoaim.cpp"

@@ -203,7 +203,7 @@ protected:
 
 	virtual void	CheckFalling( void );
 
-	virtual void	PlayerRoughLandingEffects( float fvol );
+	virtual void	PlayerRoughLandingEffects( float fvol, bool bLateral );
 
 	void			PlayerWaterSounds( void );
 

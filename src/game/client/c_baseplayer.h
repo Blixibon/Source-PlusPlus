@@ -169,6 +169,8 @@ public:
 	matrix3x4_t& EyeToWorldTransform();
 	const matrix3x4_t& EyeToWorldTransform() const;
 
+	virtual bool		IsRenderingMyFlashlight();
+
 	// This can be overridden to return something other than m_pRagdoll if the mod uses separate
 	// entities for ragdolls.
 	virtual IRagdoll* GetRepresentativeRagdoll() const;

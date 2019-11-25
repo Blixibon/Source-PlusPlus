@@ -740,6 +740,7 @@ public:
 	// classname access
 	void		SetClassname( const char *className );
 	const char* GetClassname();
+	virtual const char* GetResponseClassname(CBaseEntity* pCaller) { return GetClassname(); }
 
 	// Debug Overlays
 	void		 EntityText( int text_offset, const char *text, float flDuration, int r = 255, int g = 255, int b = 255, int a = 255 );

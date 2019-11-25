@@ -2775,7 +2775,7 @@ int CGameMovement::TryPlayerMove( Vector *pFirstDest, trace_t *pFirstTrace )
 		fSlamVol = 0.85f;
 	}
 
-	PlayerRoughLandingEffects( fSlamVol );
+	PlayerRoughLandingEffects( fSlamVol, true );
 
 	return blocked;
 }
@@ -3878,7 +3878,7 @@ void CGameMovement::CheckFalling( void )
 			}
 		}
 
-		PlayerRoughLandingEffects( fvol );
+		PlayerRoughLandingEffects( fvol, false);
 
 		if (bAlive)
 		{
@@ -3895,7 +3895,7 @@ void CGameMovement::CheckFalling( void )
 	player->m_Local.m_flFallVelocity = 0;
 }
 
-void CGameMovement::PlayerRoughLandingEffects( float fvol )
+void CGameMovement::PlayerRoughLandingEffects( float fvol, bool bLateral)
 {
 	if ( fvol > 0.0 )
 	{

@@ -128,6 +128,14 @@ bool CGameTypeManager::IsMapInGame(const char *pchGame)
 	return (0 == Q_strcmp(pchGame, m_vecGames.Element(GetCurrentGameType())));
 }
 
+const char* CGameTypeManager::GetGameTypeName(int iType)
+{
+	if (iType <= GAME_INVALID || iType >= m_vecGames.Count())
+		return nullptr;
+
+	return m_vecGames[iType];
+}
+
 int CGameTypeManager::LookupGametype(const char *pchGame)
 {
 	FOR_EACH_VEC(m_vecGames, i)

@@ -10,6 +10,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+enum
+{
+	MAX_AIS = 256
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: RecvProxy that converts the Team's player UtlVector to entindexes
 //-----------------------------------------------------------------------------
@@ -62,12 +67,11 @@ IMPLEMENT_CLIENTCLASS_DT_NOBASE(C_Team, DT_Team, CTeam)
 		0, 
 		"player_array"),
 
-	RecvPropArray2(
+	RecvPropVirtualArray(
 		RecvProxyArrayLength_TeamNPCs,
+		MAX_AIS,
 		RecvPropInt("team_npc_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_TeamNPCList),
-		1024,
-		0,
-		"team_npc_array"),
+		team_npc_array),
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_Team )

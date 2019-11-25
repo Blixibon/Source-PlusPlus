@@ -1681,7 +1681,7 @@ void CAI_PlayerAlly::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 
 	if ( m_hPotentialSpeechTarget )
 	{
-		set.AppendCriteria( "speechtarget", m_hPotentialSpeechTarget->GetClassname() );
+		set.AppendCriteria( "speechtarget", m_hPotentialSpeechTarget->GetResponseClassname(this));
 		set.AppendCriteria( "speechtargetname", STRING(m_hPotentialSpeechTarget->GetEntityName()) );
 		set.AppendCriteria( "randomnum", UTIL_VarArgs("%d", m_iQARandomNumber) );
 	}

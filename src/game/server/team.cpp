@@ -56,7 +56,7 @@ int SendProxyArrayLength_TeamNPCs(const void *pStruct, int objectID)
 {
 	CTeam *pTeam = (CTeam*)pStruct;
 	int iNPCs = pTeam->GetNumNPCs();
-	Assert(iNPCs <= 1024);
+	Assert(iNPCs <= CAI_Manager::MAX_AIS);
 	return iNPCs;
 }
 
@@ -76,12 +76,11 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE(CTeam, DT_Team)
 		"player_array"
 	),
 
-	SendPropArray2(
+	SendPropVirtualArray(
 		SendProxyArrayLength_TeamNPCs,
+		CAI_Manager::MAX_AIS,
 		SendPropInt("team_npc_array_element", 0, SIZEOF_IGNORE, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED, SendProxy_TeamNPCList),
-		1024,
-		0,
-		"team_npc_array"
+		team_npc_array
 	),
 END_SEND_TABLE()
 

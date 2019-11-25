@@ -161,7 +161,7 @@ public:
 //-----------------------------------------------------------------------------
 // Purpose: Drivable four wheel physics vehicles
 //-----------------------------------------------------------------------------
-class CPropVehicleDriveable : public CPropVehicle, public IDrivableVehicle, public INPCPassengerCarrier
+class CPropVehicleDriveable : public CPropVehicle, public IPassengerVehicle, public INPCPassengerCarrier
 {
 	DECLARE_CLASS( CPropVehicleDriveable, CPropVehicle );
 	DECLARE_SERVERCLASS();
@@ -182,6 +182,20 @@ public:
 	virtual void	Think( void );
 	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual void	Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+
+	//to make non passenger vehicles back compatible
+	virtual CBaseEntity* GetPassenger(int iRole)
+	{
+		if (iRole == VEHICLE_ROLE_DRIVER)
+			return GetDriver();
+
+		return nullptr;
+	}
+	virtual int			GetNumPassengers(void)
+	{
+		return GetDriver() ? 1 : 0;
+	}
+	virtual void		PassengerEnterVehicle(CBasePlayer* pPlayer, int nRole);
 
 	// Vehicle handling
 	virtual void	VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );

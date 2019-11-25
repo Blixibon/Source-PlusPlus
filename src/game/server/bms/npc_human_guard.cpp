@@ -33,6 +33,7 @@
 #include "bms_utils.h"
 #include "Sprite.h"
 #include "hlss_weapon_id.h"
+#include "peter/population_manager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -196,21 +197,39 @@ END_DATADESC()
 
 colleagueModel_t CNPC_HumanGuard::gm_Models[] =
 {
-	{ HGUARD_MODEL,	"models/humans/guard_hurt.mdl" },
-	{ HGUARD_MODEL2,	"models/humans/guard_hurt.mdl" },
+	// Blue Shift
+	{ HGUARD_MODEL,	"models/humans/guard_hurt.mdl", 0, 15 },
+	{ HGUARD_MODEL2,	"models/humans/guard_hurt_02.mdl", 1, 7 },
+	// First Response
+	{ "models/humans/ranked_security/rank2_guard.mdl",	"models/humans/ranked_security/rank2_guard_hurt.mdl", 0, 15 },
+	{ "models/humans/ranked_security/rank2_guard_02.mdl",	"models/humans/ranked_security/rank2_guard_hurt_02.mdl", 1, 7 },
+	// Rank 3
+	{ "models/humans/ranked_security/rank3_guard.mdl",	"models/humans/ranked_security/rank3_guard_hurt.mdl", 0, 15 },
+	{ "models/humans/ranked_security/rank3_guard_02.mdl",	"models/humans/ranked_security/rank3_guard_hurt_02.mdl", 1, 7 },
+	// Rank 4
+	{ "models/humans/ranked_security/rank4_guard.mdl",	"models/humans/ranked_security/rank4_guard_hurt.mdl", 0, 15 },
+	{ "models/humans/ranked_security/rank4_guard_02.mdl",	"models/humans/ranked_security/rank4_guard_hurt_02.mdl", 1, 7 },
 };
 
+const char* pBMSGRDPopTypes[] =
+{
+	"blue_shift",
+	"first_response",
+	"rank3",
+	"rank4"
+};
+
+CPopulationDefinition g_bmsSecurityPop("human_security", pBMSGRDPopTypes, ARRAYSIZE(pBMSGRDPopTypes));
+
+#define NUM_MODELSETS_PER_RANK 2
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_HumanGuard::SelectModel()
 {
-	/*if (RandomFloat() >= 0.75f)
-		SetModelName(AllocPooledString(HGUARD_MODEL2));
-	else
-		SetModelName(AllocPooledString(HGUARD_MODEL));*/
+	int iFirstIndex = g_bmsSecurityPop.GetRandom() * NUM_MODELSETS_PER_RANK;
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(gm_Models)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(&gm_Models[iFirstIndex], NUM_MODELSETS_PER_RANK)));
 }
 
 void CNPC_HumanGuard::Activate()
@@ -294,7 +313,7 @@ void CNPC_HumanGuard::Spawn(void)
 
 	SetUse(&CNPC_HumanGuard::CommanderUse); 
 
-	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+	m_nSkin = gm_iLastChosenSkin;
 	if (RandomFloat() >= 0.75f)
 		EnableHelmet();
 

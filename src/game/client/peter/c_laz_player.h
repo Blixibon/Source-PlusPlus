@@ -37,6 +37,7 @@ public:
 	virtual int DrawModel(int flags);
 
 	virtual CStudioHdr* OnNewModel(void);
+	virtual void CalculateIKLocks(float currentTime);
 
 	// Shadows
 	virtual ShadowType_t ShadowCastType(void);

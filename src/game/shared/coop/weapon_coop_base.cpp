@@ -453,7 +453,8 @@ acttable_t CWeaponCoopBase::s_acttableSMG1[] =
 		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1,	false },
 		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SMG1,			false },
 		{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SMG1,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SMG1,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SMG1,					false}, 
+		{ACT_HL2MP_SIT, ACT_HL2MP_SIT_SMG1, false},
 		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SMG1,					false },
 };
 acttable_t CWeaponCoopBase::s_acttablePistol[] =
@@ -525,7 +526,8 @@ acttable_t CWeaponCoopBase::s_acttablePistol[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PISTOL,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_PISTOL,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_PISTOL,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_PISTOL, false},
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_PISTOL,				false },
 };
 acttable_t CWeaponCoopBase::s_acttableMelee[] =
@@ -542,7 +544,8 @@ acttable_t CWeaponCoopBase::s_acttableMelee[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_MELEE,			false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_MELEE,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_MELEE,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_MELEE, false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableCrossbow[] =
@@ -603,7 +606,8 @@ acttable_t CWeaponCoopBase::s_acttableCrossbow[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_CROSSBOW,				false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_CROSSBOW,			false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_CROSSBOW,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_CROSSBOW,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_CROSSBOW, false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_CROSSBOW,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableShotgun[] =
@@ -665,7 +669,8 @@ acttable_t CWeaponCoopBase::s_acttableShotgun[] =
 		{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SHOTGUN,	false },
 		{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SHOTGUN,		false },
 		{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SHOTGUN,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SHOTGUN,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SHOTGUN,					false}, 
+		{ACT_HL2MP_SIT, ACT_HL2MP_SIT_SHOTGUN, false},
 		{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_SHOTGUN,				false },
 };
 acttable_t CWeaponCoopBase::s_acttableGrenade[] =
@@ -706,6 +711,7 @@ acttable_t CWeaponCoopBase::s_acttableGrenade[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_GRENADE,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_GRENADE,		false },
 		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_GRENADE,					false},
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_GRENADE, false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_GRENADE,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableRPG[] =
@@ -733,7 +739,8 @@ acttable_t CWeaponCoopBase::s_acttableRPG[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_RPG,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_RPG,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_RPG, false},
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_RPG,				false },
 };
 acttable_t CWeaponCoopBase::s_acttablePhysgun[] =
@@ -746,6 +753,7 @@ acttable_t CWeaponCoopBase::s_acttablePhysgun[] =
 	{ ACT_HL2MP_GESTURE_RELOAD, ACT_HL2MP_GESTURE_RELOAD_PHYSGUN, false },
 	{ ACT_HL2MP_JUMP, ACT_HL2MP_JUMP_PHYSGUN, false },
 	{ ACT_HL2MP_SWIM, ACT_HL2MP_SWIM_PHYSGUN, false },
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_PHYSGUN, false},
 	{ ACT_HL2MP_WALK, ACT_HL2MP_WALK_PHYSGUN, false },
 };
 acttable_t CWeaponCoopBase::s_acttableSlam[] =
@@ -758,7 +766,8 @@ acttable_t CWeaponCoopBase::s_acttableSlam[] =
 	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_SLAM,			false },
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_SLAM,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_SLAM,		false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SLAM,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_SLAM,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_SLAM, false},
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_SLAM,					false },
 };
 acttable_t CWeaponCoopBase::s_acttableMelee2[] =
@@ -776,7 +785,8 @@ acttable_t CWeaponCoopBase::s_acttableMelee2[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE2,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_MELEE2,			false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_MELEE2,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_MELEE2,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_MELEE2,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_MELEE2, false},
 };
 acttable_t CWeaponCoopBase::s_acttablePython[] =
 {
@@ -847,7 +857,8 @@ acttable_t CWeaponCoopBase::s_acttablePython[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_REVOLVER,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_REVOLVER,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_REVOLVER,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_REVOLVER,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_REVOLVER,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_REVOLVER, false},
 };
 acttable_t CWeaponCoopBase::s_acttableAR2[] =
 {
@@ -911,7 +922,8 @@ acttable_t CWeaponCoopBase::s_acttableAR2[] =
 			{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2,	false },
 			{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_AR2,		false },
 			{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_AR2,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_AR2,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_AR2,					false}, 
+		{ACT_HL2MP_SIT, ACT_HL2MP_SIT_AR2, false},
 			{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_AR2,				false },
 };
 // BMS
@@ -1244,7 +1256,8 @@ acttable_t CWeaponCoopBase::s_acttableDeagle[] =
 	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_REVOLVER,	false },
 	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PISTOL,		false },
 	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_REVOLVER,					false },
-		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_REVOLVER,					false},
+		{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_REVOLVER,					false}, 
+	{ACT_HL2MP_SIT, ACT_HL2MP_SIT_REVOLVER, false},
 };
 
 acttable_t CWeaponCoopBase::s_acttablePortalgun[] =

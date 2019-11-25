@@ -2638,7 +2638,10 @@ void CNPC_MetroPolice::AlertSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::DeathSound( const CTakeDamageInfo &info )
 {
-	BaseClass::DeathSound(info);
+	if (!IsUnique())
+	{
+		PlaySentence("METROPOLICE_DIE", 0.f);
+	}
 }
 
 
