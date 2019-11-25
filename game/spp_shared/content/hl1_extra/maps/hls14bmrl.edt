@@ -1,0 +1,20 @@
+"hls14bmrl"
+{
+	"edit"
+	{
+		"message"	"nihilanth/nil_alone.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_ALONE"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_thelast.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_THELAST"
+		}
+	}
+}

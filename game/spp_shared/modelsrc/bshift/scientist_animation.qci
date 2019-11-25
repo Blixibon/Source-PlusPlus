@@ -1,0 +1,255 @@
+
+$PoseParameter "mouth" 0 90 loop 0
+$PoseParameter "head_yaw" -90 90 loop 0
+
+$IKChain "lfoot" "Bip01 L Foot" knee 0.716 0.698 0
+$IKChain "rfoot" "Bip01 R Foot" knee 0.715 0.699 0
+
+$Sequence "cower_chat_die" {
+	"scientist_anims\cower_chat_die"
+	{ event 1000 1 }
+	{ event 1003 69 "die" }
+	fps 10
+}
+$Sequence "dead_in_truck" {
+	"scientist_anims\dead_in_truck"
+	{ event 1000 1 }
+	fps 30
+	loop
+}
+$Sequence "cower_chat" {
+	"scientist_anims\cower_chat"
+	fps 5
+	loop
+}
+$Sequence "boost" {
+	"scientist_anims\boost"
+	fps 26
+}
+$Sequence "boost_idle" {
+	"scientist_anims\boost_idle"
+	fps 20
+	loop
+}
+$Sequence "rose_glance" {
+	"scientist_anims\rose_glance"
+	fps 15
+}
+$Sequence "elev_dead1" {
+	"scientist_anims\elev_dead1"
+	{ event 1000 1 }
+	fps 30
+	loop
+}
+$Sequence "elev_dead2" {
+	"scientist_anims\elev_dead2"
+	{ event 1000 1 }
+	fps 30
+	loop
+}
+$Sequence "tap_idle" {
+	"scientist_anims\tap_idle"
+	fps 15
+	loop
+}
+$Sequence "tap_down" {
+	"scientist_anims\tap_down"
+	fps 15
+}
+$Sequence "railing_chat1" {
+	"scientist_anims\railing_chat1"
+	fps 10
+	loop
+}
+$Sequence "railing_chat2" {
+	"scientist_anims\railing_chat2"
+	fps 10
+	loop
+}
+$Sequence "telework1" {
+	"scientist_anims\telework1"
+	fps 14
+	loop
+}
+$Sequence "telework1_stand" {
+	"scientist_anims\telework1_stand"
+	fps 12.5
+}
+$Sequence "telework2" {
+	"scientist_anims\telework2"
+	fps 14
+	loop
+}
+$Sequence "telework3" {
+	"scientist_anims\telework3"
+	fps 7
+	loop
+}
+$Sequence "wallwork1" {
+	"scientist_anims\wallwork1"
+	fps 12.5
+}
+$Sequence "wallwork2" {
+	"scientist_anims\wallwork2"
+	fps 12.5
+}
+$Sequence "wallwork3" {
+	"scientist_anims\wallwork3"
+	fps 15
+	loop
+}
+$Sequence "wallwork4" {
+	"scientist_anims\wallwork4"
+	fps 7.5
+	loop
+}
+$Sequence "wallwork5" {
+	"scientist_anims\wallwork5"
+	fps 9
+}
+$Sequence "rose_console1" {
+	"scientist_anims\rose_console1"
+	{ event 1003 10 "button1" }
+	{ event 1003 13 "button2" }
+	{ event 1003 16 "button3" }
+	{ event 1003 19 "button4" }
+	{ event 1003 21 "button5" }
+	{ event 1003 27 "button6" }
+	{ event 1003 47 "button7" }
+	{ event 1003 53 "button8" }
+	{ event 1003 58 "button9" }
+	{ event 1003 61 "button10" }
+	fps 10
+	loop
+}
+$Sequence "rose_console2" {
+	"scientist_anims\rose_console2"
+	{ event 1003 10 "button1b" }
+	{ event 1003 13 "button2b" }
+	{ event 1003 16 "button3b" }
+	{ event 1003 19 "button4b" }
+	{ event 1003 21 "button5b" }
+	{ event 1003 27 "button6b" }
+	{ event 1003 89 "button7b" }
+	{ event 1003 92 "button8b" }
+	{ event 1003 95 "button9b" }
+	{ event 1003 98 "button10b" }
+	{ event 1003 101 "button11b" }
+	{ event 1003 103 "button12b" }
+	{ event 1003 107 "button13b" }
+	fps 12
+}
+$Sequence "rose_console3" {
+	"scientist_anims\rose_console3"
+	fps 28
+}
+$Sequence "tele_jump1" {
+	"scientist_anims\tele_jump1"
+	{ event 1003 71 "jumped1" }
+	fps 18
+}
+$Sequence "tele_jump2" {
+	"scientist_anims\tele_jump2"
+	{ event 1003 116 "jumped2" }
+	fps 19
+}
+$Sequence "handscan" {
+	"scientist_anims\handscan"
+	{ event 1003 20 "handscan" }
+	fps 28
+}
+$Sequence "eating" {
+	"scientist_anims\eating"
+	fps 10
+}
+$Sequence "working_console" {
+	"scientist_anims\working_console"
+	fps 17
+}
+$Sequence "ponder_console" {
+	"scientist_anims\ponder_console"
+	fps 7
+}
+$Sequence "cower_vents" {
+	"scientist_anims\cower_vents"
+	fps 7
+	loop
+}
+$Sequence "ponder_teleporter" {
+	"scientist_anims\ponder_teleporter"
+	fps 10
+	loop
+}
+$Sequence "power_pipes" {
+	"scientist_anims\power_pipes"
+	fps 11
+}
+$Sequence "in_theory" {
+	"scientist_anims\in_theory"
+	fps 8
+}
+$Sequence "you_go" {
+	"scientist_anims\you_go"
+	fps 10
+}
+$Sequence "sim_ack" {
+	"scientist_anims\sim_ack"
+	fps 25
+}
+$Sequence "sim_lever" {
+	"scientist_anims\sim_lever"
+	{ event 1003 20 "mgr_main_power" }
+	fps 30
+}
+$Sequence "hambone" {
+	"scientist_anims\hambone"
+	fps 8
+}
+$Sequence "rose_signal" {
+	"scientist_anims\rose_signal"
+	fps 25
+}
+$Sequence "chum_walk" {
+	"scientist_anims\chum_walk"
+	fps 15
+	loop
+	LX
+}
+$Sequence "chum_idle" {
+	"scientist_anims\chum_idle"
+	fps 15
+	loop
+}
+$Sequence "crowbar_swing" {
+	"scientist_anims\crowbar_swing"
+	{ event 1003 22 "crowbar_hit" }
+	{ event 1003 33 "crowbar_hit2" }
+	fps 30
+	loop
+}
+$Sequence "open_gate" {
+	"scientist_anims\open_gate"
+	{ event 1003 7 "booty_ack" }
+	{ event 1003 115 "booty_ack" }
+	fps 15
+	LX
+}
+$Sequence "work_jeep" {
+	"scientist_anims\work_jeep"
+	fps 10
+	loop
+}
+$Sequence "drive_jeep1" {
+	"scientist_anims\drive_jeep1"
+	fps 5
+	loop
+}
+$Sequence "drive_jeep2" {
+	"scientist_anims\drive_jeep2"
+	fps 5
+	loop
+}
+$Sequence "rose_outro" {
+	"scientist_anims\rose_outro"
+	fps 30
+}

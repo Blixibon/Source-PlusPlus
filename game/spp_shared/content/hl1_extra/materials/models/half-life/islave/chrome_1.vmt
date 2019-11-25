@@ -1,0 +1,12 @@
+"VertexLitGeneric"
+{
+	"$envmap" "models/half-life/islave/Chrome_1"
+	//"$envmapsphere" 1
+	//"$multipass" 1
+	
+	//"$envmaptint" "[.3 .3 .3]"
+	//"$envmapcontrast" 1
+	//"$envmapsaturation" .5
+}
+
+

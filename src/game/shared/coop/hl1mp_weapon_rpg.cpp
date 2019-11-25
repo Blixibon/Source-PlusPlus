@@ -86,6 +86,8 @@ void CRpgRocket::Precache( void )
 
 	PrecacheScriptSound( "HL1Weapon_RPG.RocketIgnite" );
 
+	PrecacheParticleSystem("rpg_firetrail");
+
 	m_iTrail = PrecacheModel("sprites/smoke.vmt");
 }
 

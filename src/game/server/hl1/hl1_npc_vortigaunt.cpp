@@ -66,7 +66,7 @@ void CNPC_HL1Vortigaunt::Spawn()
 {
 	Precache( );
 
-	SetModel( "models/islave.mdl" );
+	SetModel( "models/half-life/islave.mdl" );
 	
 	SetRenderColor( 255, 255, 255, 255 );
 
@@ -108,7 +108,7 @@ void CNPC_HL1Vortigaunt::Precache()
 {
 	BaseClass::Precache();
 
-	PrecacheModel("models/islave.mdl");
+	PrecacheModel("models/half-life/islave.mdl");
 	PrecacheModel("sprites/lgtning.vmt");
 
 	PrecacheScriptSound( "Vortigaunt.Pain" );

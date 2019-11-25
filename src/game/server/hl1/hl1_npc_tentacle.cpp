@@ -324,6 +324,8 @@ void CNPC_Tentacle::Spawn( )
 
 	UTIL_SetOrigin( this, GetAbsOrigin() );
 
+	SetBoneCacheFlags(BCF_NO_ANIMATION_SKIP);
+
 	CreateVPhysics();
 
 	AddEffects( EF_NOSHADOW );
@@ -483,7 +485,7 @@ void CNPC_Tentacle::Cycle( void )
 	//NDebugOverlay::Cross3D( EarPosition(), 32, 255, 0, 0, false, 0.1 );
 
 	// ALERT( at_console, "%s %.2f %d %d\n", STRING( pev->targetname ), pev->origin.z, m_MonsterState, m_IdealMonsterState );
-	SetNextThink( gpGlobals->curtime + TICKS_TO_TIME(2) );
+	SetNextThink( gpGlobals->curtime + TICKS_TO_TIME(1) );
 
 	// ALERT( at_console, "%s %d %d %d %f %f\n", STRING( pev->targetname ), pev->sequence, m_iGoalAnim, m_iDir, pev->framerate, pev->health );
 
@@ -505,7 +507,7 @@ void CNPC_Tentacle::Cycle( void )
 	CSound *pSound = NULL;
 
 	GetSenses()->Listen();
-	m_BoneFollowerManager.UpdateBoneFollowers(this);
+	m_BoneFollowerManager.UpdateBoneFollowers(this, TICK_INTERVAL);
 
 	// Listen will set this if there's something in my sound list
 	if ( HeardAnything() )
@@ -518,7 +520,7 @@ void CNPC_Tentacle::Cycle( void )
 		//NDebugOverlay::Line( EarPosition(), pSound->GetSoundOrigin(), 0, 255, 0, false, 0.2 );
 
 		Vector vecDir;
-		if ( gpGlobals->curtime - m_flPrevSoundTime < 0.5 )
+		if ( gpGlobals->curtime - m_flPrevSoundTime < 0.5f )
 		{
 			float dt = gpGlobals->curtime - m_flPrevSoundTime;
 			vecDir = pSound->GetSoundOrigin() + (pSound->GetSoundOrigin() - m_vecPrevSound) / dt - GetAbsOrigin();

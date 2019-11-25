@@ -11,6 +11,7 @@
 #include "iefx.h"
 #include "c_te_legacytempents.h"
 #include "basegrenade_shared.h"
+#include "particle_property.h"
 
 
 class C_RpgRocket : public C_BaseGrenade
@@ -25,6 +26,7 @@ public:
 
 public:
 	void	CreateLightEffects( void );
+	CNewParticleEffect* m_pRocketFlare;
 };
 
 
@@ -43,6 +45,12 @@ void C_RpgRocket::CreateLightEffects( void )
 		dl->radius = 200;
 		dl->die = gpGlobals->curtime + 0.001;
 
-		tempents->RocketFlare( GetAbsOrigin() );
+		if (!m_pRocketFlare)
+			m_pRocketFlare = ParticleProp()->Create("rpg_firetrail", PATTACH_ABSORIGIN_FOLLOW);
+	}
+	else if (m_pRocketFlare)
+	{
+		ParticleProp()->StopEmission(m_pRocketFlare);
+		m_pRocketFlare = nullptr;
 	}
 }

@@ -141,7 +141,7 @@ bool CBoneFollowerManager::CreatePhysicsFollower( CBaseAnimating *pParentEntity,
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CBoneFollowerManager::UpdateBoneFollowers( CBaseAnimating *pParentEntity )
+void CBoneFollowerManager::UpdateBoneFollowers( CBaseAnimating *pParentEntity, float flInterval)
 {
 	if ( m_iNumBones )
 	{
@@ -155,7 +155,7 @@ void CBoneFollowerManager::UpdateBoneFollowers( CBaseAnimating *pParentEntity )
 
 			pParentEntity->GetBoneTransform( m_physBones[i].boneIndex, boneToWorld );
 			MatrixAngles( boneToWorld, boneAngles, bonePosition );
-			m_physBones[i].hFollower->UpdateFollower( bonePosition, boneAngles, 0.1 );
+			m_physBones[i].hFollower->UpdateFollower( bonePosition, boneAngles, flInterval );
 		}
 	}
 }

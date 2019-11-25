@@ -1,0 +1,38 @@
+"hls14amrl"
+{
+	"edit"
+	{
+		"message"	"nihilanth/nil_win.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_WIN"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_done.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_DONE"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_comes.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_COMES"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_die.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_DIE"
+		}
+	}
+}

@@ -77,4 +77,17 @@ particles_manifest
 	//Cleanser_edge_1	128x0 	small effect
 	//Cleanser_edge_2	128x0 	large effect
 	//portal_cleanser	128x128 fill effect
+	
+	// HL:R
+	"file"		"particles/blood_impact_blue.pcf"
+	"file"		"particles/alien_slave.pcf"
+	"file"		"particles/flame_gargantua.pcf"
+	"file"		"particles/shocktrooper.pcf"
+	"file"		"particles/tor.pcf"
+	"file"		"particles/tor_2.pcf"
+	"file"		"particles/tor_3.pcf"
+	"file"		"particles/tor_4.pcf"
+	"file"		"particles/tor_5.pcf"
+	"file"		"particles/vman_explosion.pcf"
+	"file"		"particles/rpg_firetrail.pcf"
 }

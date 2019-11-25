@@ -11,6 +11,7 @@
 		"hl1"
 		{
 			"vpk"	"hl1_pak"
+			custom custom
 		}
 	}
 }

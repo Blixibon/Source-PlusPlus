@@ -1,0 +1,47 @@
+"hls14cmrl"
+{
+	"edit"
+	{
+		"message"	"nihilanth/nil_freeman.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_FREEMAN"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_deceive.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_DECEIVE"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_alone.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_ALONE"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_thetruth.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_THETRUTH"
+		}
+	}
+	
+	"edit"
+	{
+		"message"	"nihilanth/nil_now_die.wav"
+		"values"
+		{
+			"message"	"NPC_Nihilanth.NIL_NOW_DIE"
+		}
+	}
+}

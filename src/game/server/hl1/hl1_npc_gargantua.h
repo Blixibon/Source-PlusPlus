@@ -18,6 +18,7 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	Class_T  Classify ( void );
+	void	OnRestore();
 
 	virtual bool		ShowInDeathnotice() { return true; }
 
@@ -60,7 +61,7 @@ public:
 	void FlameUpdate( void );
 	void FlameControls( float angleX, float angleY );
 	void FlameDestroy( void );
-	inline BOOL FlameIsOn( void ) { return m_pFlame[0] != NULL; }
+	inline BOOL FlameIsOn( void ) { return m_bFlame; }
 
 	void FlameDamage( Vector vecStart, Vector vecEnd, CBaseEntity *pevInflictor, CBaseEntity *pevAttacker, float flDamage, int iClassIgnore, int bitsDamageType );
 
@@ -72,7 +73,8 @@ private:
 	CBaseEntity* GargantuaCheckTraceHullAttack(float flDist, int iDamage, int iDmgType);
 
 	CSprite		*m_pEyeGlow;		// Glow around the eyes
-	CBeam		*m_pFlame[4];		// Flame beams
+	//CBeam		*m_pFlame[4];		// Flame beams
+	bool		m_bFlame;
 
 	int			m_eyeBrightness;	// Brightness target
 	float		m_seeTime;			// Time to attack (when I see the enemy, I set this)

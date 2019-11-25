@@ -37,6 +37,7 @@
 #include	"gib.h"
 #include	"func_break.h"
 #include	"hl1_shareddefs.h"
+#include	"particle_parse.h"
 
 
 extern short	g_sModelIndexFireball;
@@ -97,11 +98,11 @@ BEGIN_DATADESC( CNPC_Gargantua )
 	DEFINE_FIELD( m_seeTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flameTime, FIELD_TIME ),
 	DEFINE_FIELD( m_streakTime, FIELD_TIME ),
-	DEFINE_ARRAY( m_pFlame, FIELD_CLASSPTR, 4 ),
 	DEFINE_FIELD( m_flameX, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flameY, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flDmgTime, FIELD_TIME ),
 	DEFINE_FIELD( m_painSoundTime, FIELD_TIME ),
+	DEFINE_FIELD(m_bFlame, FIELD_BOOLEAN),
 END_DATADESC()
 
 static void MoveToGround( Vector *position, CBaseEntity *ignore, const Vector &mins, const Vector &maxs )
@@ -272,7 +273,7 @@ void CNPC_Gargantua::Spawn()
 {
 	Precache( );
 
-	SetModel( "models/garg.mdl" );
+	SetModel( "models/gargantua.mdl" );
 
 	SetNavType(NAV_GROUND);
 	SetSolid( SOLID_BBOX );
@@ -316,7 +317,7 @@ void CNPC_Gargantua::Spawn()
 //=========================================================
 void CNPC_Gargantua::Precache()
 {
-	PrecacheModel("models/garg.mdl");
+	PrecacheModel("models/gargantua.mdl");
 	PrecacheModel( GARG_EYE_SPRITE_NAME );
 	PrecacheModel( GARG_BEAM_SPRITE_NAME );
 	PrecacheModel( GARG_BEAM_SPRITE2 );
@@ -333,12 +334,24 @@ void CNPC_Gargantua::Precache()
 	PrecacheScriptSound( "Garg.BeamAttackRun" );
 	PrecacheScriptSound( "Garg.BeamAttackOff" );
 	PrecacheScriptSound( "Garg.StompSound" );
+
+	PrecacheParticleSystem("flame_gargantua");
 }
 
 
 Class_T  CNPC_Gargantua::Classify ( void )
 {
 	return CLASS_ALIEN_MONSTER;
+}
+
+void CNPC_Gargantua::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	if (FlameIsOn())
+	{
+		FlameCreate();
+	}
 }
 
 void CNPC_Gargantua::PrescheduleThink( void )
@@ -714,45 +727,13 @@ void CNPC_Gargantua::RunTask( const Task_t *pTask )
 void CNPC_Gargantua::FlameCreate( void )
 {
 	int			i;
-	Vector		posGun;
-	QAngle angleGun;
 
-	trace_t trace;
+	m_bFlame = true;
 
-	Vector	vForward;
-
-	AngleVectors( GetAbsAngles(), &vForward );
-
- 	for ( i = 0; i < 4; i++ )
+ 	for ( i = 0; i < 2; i++ )
 	{
-		if ( i < 2 )
-			m_pFlame[i] = CBeam::BeamCreate( GARG_BEAM_SPRITE_NAME, 24.0 );
-		else
-			m_pFlame[i] = CBeam::BeamCreate( GARG_BEAM_SPRITE2, 14.0 );
-		if ( m_pFlame[i] )
-		{
-			int attach = i%2;
-			// attachment is 0 based in GetAttachment
-			GetAttachment( attach+1, posGun, angleGun );
 
-			Vector vecEnd = ( vForward * GARG_FLAME_LENGTH) + posGun;
-			//UTIL_TraceLine( posGun, vecEnd, dont_ignore_monsters, edict(), &trace );
-
-			UTIL_TraceLine ( posGun, vecEnd, MASK_SOLID, this, COLLISION_GROUP_NONE, &trace);
-//			NDebugOverlay::Line( posGun, vecEnd, 255, 255, 255, false, 10.0f );
-
-			m_pFlame[i]->PointEntInit( trace.endpos, this );
-			if ( i < 2 )
-				m_pFlame[i]->SetColor( 255, 130, 90 );
-			else
-				m_pFlame[i]->SetColor( 0, 120, 255 );
-			m_pFlame[i]->SetBrightness( 190 );
-			m_pFlame[i]->SetBeamFlags( FBEAM_SHADEIN );
-			m_pFlame[i]->SetScrollRate( 20 );
-			// attachment is 1 based in SetEndAttachment
-			m_pFlame[i]->SetEndAttachment( attach + 2 );
-			CSoundEnt::InsertSound( SOUND_COMBAT, posGun, 384, 0.3 );
-		}
+		DispatchParticleEffect("flame_gargantua", PATTACH_POINT_FOLLOW, this, i + 2);
 	}
 
 	CPASAttenuationFilter filter4( this );
@@ -789,25 +770,25 @@ void CNPC_Gargantua::FlameUpdate( void )
 	QAngle			angleGun;
 	BOOL			streaks = FALSE;
 
-	Vector			vForward;
+	Vector			vForward, vRight;
 
 	for ( i = 0; i < 2; i++ )
 	{
-		if ( m_pFlame[i] )
+		//if ( m_pFlame[i] )
 		{
 			QAngle vecAim = GetAbsAngles();
 			vecAim.x += -m_flameX;
 			vecAim.y += m_flameY;
 
-			AngleVectors( vecAim, &vForward );
+			AngleVectors( vecAim, &vForward, &vRight, nullptr );
 
 			GetAttachment( i + 2, vecStart, angleGun );
-			Vector vecEnd = vecStart + ( vForward * GARG_FLAME_LENGTH); //  - offset[i] * gpGlobals->v_right;
+			Vector vecEnd = vecStart + ( vForward * GARG_FLAME_LENGTH) - offset[i] * vRight;
 
 			UTIL_TraceLine ( vecStart, vecEnd, MASK_SOLID, this, COLLISION_GROUP_NONE, &trace);
 
-			m_pFlame[i]->SetStartPos( trace.endpos );
-			m_pFlame[i+2]->SetStartPos( (vecStart * 0.6) + (trace.endpos * 0.4) );
+			//m_pFlame[i]->SetStartPos( trace.endpos );
+			//m_pFlame[i+2]->SetStartPos( (vecStart * 0.6) + (trace.endpos * 0.4) );
 
 			if ( trace.fraction != 1.0 && gpGlobals->curtime > m_streakTime )
 			{
@@ -912,19 +893,20 @@ void CNPC_Gargantua::FlameDamage( Vector vecStart, Vector vecEnd, CBaseEntity *p
 
 void CNPC_Gargantua::FlameDestroy( void )
 {
-	int i;
-
 	CPASAttenuationFilter filter4( this );
 	EmitSound( filter4, entindex(), "Garg.BeamAttackOff" );
 
-	for ( i = 0; i < 4; i++ )
+	StopParticleEffects(this);
+	m_bFlame = false;
+
+	/*for ( i = 0; i < 4; i++ )
 	{
 		if ( m_pFlame[i] )
 		{
 			UTIL_Remove( m_pFlame[i] );
 			m_pFlame[i] = NULL;
 		}
-	}
+	}*/
 }
 
 

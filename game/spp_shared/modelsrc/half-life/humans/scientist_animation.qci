@@ -1563,3 +1563,5 @@ $Sequence "scientist_neckturn" {
 	fadeout 0.2
 	fps 30
 }
+
+$IncludeModel "bshift/scientist_animations.mdl"

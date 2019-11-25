@@ -1,0 +1,5 @@
+"VertexLitGeneric"
+{
+	"$baseTexture" "models/Tor/TorSkin_70"
+	$envmapmask "models/Tor/eye_specular"
+}

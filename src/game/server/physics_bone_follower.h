@@ -45,7 +45,7 @@ public:
 	void AddBoneFollower( CBaseAnimating *pParentEntity, const char *pFollowerBoneName, solid_t *pSolid = NULL );	// Adds a single bone follower
 
 	// Call this after you move your bones
-	void UpdateBoneFollowers( CBaseAnimating *pParentEntity );
+	void UpdateBoneFollowers( CBaseAnimating *pParentEntity, float flInterval = 0.1f );
 
 	// Call this when your entity's removed
 	void DestroyBoneFollowers( void );
