@@ -1627,6 +1627,19 @@ CPolyhedron *ClipLinkedGeometry( GeneratePolyhedronFromPlanes_UnorderedPolygonLL
 					Assert_DumpPolyhedron( (pWorkPoint == pStartPoint) ||
 											(pGapLines[0]->pLine->bCut == false) || 
 											(pWorkPolygon->bMissingASide == true) ); //if we're not done fixing, and if the shared line was cut, the next polygon must be missing a side
+					// This just deletes
+					if (pWorkPolygon == pLastWorkPolygon)
+					{
+#ifdef _DEBUG
+						for (int i = DebugCutHistory.Count(); --i >= 0; )
+						{
+							if (DebugCutHistory[i])
+								DebugCutHistory[i]->Release();
+						}
+						DebugCutHistory.RemoveAll();
+#endif
+						return nullptr;
+					}
 				}
 				else
 				{
