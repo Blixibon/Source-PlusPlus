@@ -85,7 +85,14 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( EMISSIVEBLENDTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "self-illumination map" )
 		SHADER_PARAM( EMISSIVEBLENDTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "Self-illumination tint" )
 		SHADER_PARAM( EMISSIVEBLENDFLOWTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "flow map" )
+		SHADER_PARAM(EMISSIVEBLENDCORRECTFLOW, SHADER_PARAM_TYPE_BOOL, "", "uses same code as water flow")
 		SHADER_PARAM( TIME, SHADER_PARAM_TYPE_FLOAT, "0.0", "Needs CurrentTime Proxy" )
+
+		// New flow params
+		SHADER_PARAM(FLOW_UVSCALE, SHADER_PARAM_TYPE_FLOAT, "", "")
+		SHADER_PARAM(FLOW_TIMEINTERVALINSECONDS, SHADER_PARAM_TYPE_FLOAT, "", "")
+		SHADER_PARAM(FLOW_UVSCROLLDISTANCE, SHADER_PARAM_TYPE_FLOAT, "", "")
+		SHADER_PARAM(FLOW_TIMESCALE, SHADER_PARAM_TYPE_FLOAT, "", "")
 
 		// Cloak Pass
 		SHADER_PARAM( CLOAKPASSENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enables cloak render in a second pass" )
@@ -298,6 +305,30 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		info.m_nEmissiveTexture = EMISSIVEBLENDTEXTURE;
 		info.m_nEmissiveTint = EMISSIVEBLENDTINT;
 		info.m_nEmissiveScrollVector = EMISSIVEBLENDSCROLLVECTOR;
+		info.m_nEmissiveScrollCorrectedFlow = EMISSIVEBLENDCORRECTFLOW;
+
+		info.m_nFlowUVScale = FLOW_UVSCALE;
+		info.m_nFlowTimeIntervalInSeconds = FLOW_TIMEINTERVALINSECONDS;
+		info.m_nFlowUVDistance = FLOW_UVSCROLLDISTANCE;
+		info.m_nFlowTimeScale = FLOW_TIMESCALE;
+
+		info.m_nTreeSway = TREESWAY;
+		info.m_nTreeSwayHeight = TREESWAYHEIGHT;
+		info.m_nTreeSwayStartHeight = TREESWAYSTARTHEIGHT;
+		info.m_nTreeSwayRadius = TREESWAYRADIUS;
+		info.m_nTreeSwayStartRadius = TREESWAYSTARTRADIUS;
+		info.m_nTreeSwaySpeed = TREESWAYSPEED;
+		info.m_nTreeSwaySpeedHighWindMultiplier = TREESWAYSPEEDHIGHWINDMULTIPLIER;
+		info.m_nTreeSwayStrength = TREESWAYSTRENGTH;
+		info.m_nTreeSwayScrumbleSpeed = TREESWAYSCRUMBLESPEED;
+		info.m_nTreeSwayScrumbleStrength = TREESWAYSCRUMBLESTRENGTH;
+		info.m_nTreeSwayScrumbleFrequency = TREESWAYSCRUMBLEFREQUENCY;
+		info.m_nTreeSwayFalloffExp = TREESWAYFALLOFFEXP;
+		info.m_nTreeSwayScrumbleFalloffExp = TREESWAYSCRUMBLEFALLOFFEXP;
+		info.m_nTreeSwaySpeedLerpStart = TREESWAYSPEEDLERPSTART;
+		info.m_nTreeSwaySpeedLerpEnd = TREESWAYSPEEDLERPEND;
+		info.m_nTreeSwayWindVector = TREESWAYWINDVECTOR;
+
 		info.m_nTime = TIME;
 	}
 

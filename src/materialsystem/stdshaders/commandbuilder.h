@@ -435,6 +435,44 @@ public:
 		m_Storage.PutInt( state.m_bSinglePassFlashlight );
 	}
 
+	FORCEINLINE void SetFlashLightColorFromState(FlashlightState_t const& state, IShaderDynamicAPI* pShaderAPI, int nPSRegister = 28, bool bFlashlightNoLambert = false)
+	{
+		// Old code
+		//float flToneMapScale = ( pShaderAPI->GetToneMappingScaleLinear() ).x;
+		//float flFlashlightScale = 1.0f / flToneMapScale;
+
+		// Fix to old code to keep flashlight from ever getting brighter than 1.0
+		//float flToneMapScale = ( pShaderAPI->GetToneMappingScaleLinear() ).x;
+		//if ( flToneMapScale < 1.0f )
+		//	flToneMapScale = 1.0f;
+		//float flFlashlightScale = 1.0f / flToneMapScale;
+
+		// Force flashlight to 25% bright always
+		float flFlashlightScale = 0.25f;
+
+		if (!g_pHardwareConfig->GetHDREnabled())
+		{
+			// Non-HDR path requires 2.0 flashlight
+			flFlashlightScale = 2.0f;
+		}
+
+		// DX10 requires some hackery due to sRGB/blend ordering change from DX9
+		if (g_pHardwareConfig->UsesSRGBCorrectBlending())
+		{
+			flFlashlightScale *= 2.5f; // Magic number that works well on the NVIDIA 8800
+		}
+
+		// Generate pixel shader constant
+		float const* pFlashlightColor = state.m_Color;
+		float vPsConst[4] = { flFlashlightScale * pFlashlightColor[0], flFlashlightScale * pFlashlightColor[1], flFlashlightScale * pFlashlightColor[2], pFlashlightColor[3] };
+		vPsConst[3] = bFlashlightNoLambert ? 2.0f : 0.0f; // This will be added to N.L before saturate to force a 1.0 N.L term
+
+		// Red flashlight for testing
+		//vPsConst[0] = 0.5f; vPsConst[1] = 0.0f; vPsConst[2] = 0.0f;
+
+		SetPixelShaderConstant(nPSRegister, (float*)vPsConst);
+	}
+
 	FORCEINLINE void SetPixelShaderUberLightState( int iEdge0Const, float* edge0Data, int iEdge1Const, float* edge1Data, int iEdgeOOWConst, float* edgeOOWData,
 												   int iShearRoundConst, float* roundConst, int iAABBConst, float* aabbData, int iWorldToLightConst, float* worldToLightMatrix )
 	{

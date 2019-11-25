@@ -29,6 +29,30 @@ struct EmissiveScrollBlendedPassVars_t
 	int m_nEmissiveTexture;
 	int m_nEmissiveTint;
 	int m_nEmissiveScrollVector;
+	int m_nEmissiveScrollCorrectedFlow;
+
+	int m_nFlowUVScale;
+	int m_nFlowTimeIntervalInSeconds;
+	int m_nFlowUVDistance;
+	int m_nFlowTimeScale;
+
+	int m_nTreeSway;
+	int m_nTreeSwayHeight;
+	int m_nTreeSwayStartHeight;
+	int m_nTreeSwayRadius;
+	int m_nTreeSwayStartRadius;
+	int m_nTreeSwaySpeed;
+	int m_nTreeSwaySpeedHighWindMultiplier;
+	int m_nTreeSwayStrength;
+	int m_nTreeSwayScrumbleSpeed;
+	int m_nTreeSwayScrumbleStrength;
+	int m_nTreeSwayScrumbleFrequency;
+	int m_nTreeSwayFalloffExp;
+	int m_nTreeSwayScrumbleFalloffExp;
+	int m_nTreeSwaySpeedLerpStart;
+	int m_nTreeSwaySpeedLerpEnd;
+	int m_nTreeSwayWindVector;
+
 	int m_nTime;
 };
 

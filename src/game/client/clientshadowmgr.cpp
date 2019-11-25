@@ -4966,7 +4966,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		view->UpdateShadowDepthTexture( m_DummyColorTexture, shadowDepthTexture, shadowView );
 
 		shadow.m_ShadowDepthTexture = shadowDepthTexture;
-		//flashlightState.m_flShadowMapResolution = shadowDepthTexture->GetActualWidth();
+		flashlightState.m_flShadowMapResolution = shadowDepthTexture->GetActualWidth();
 		g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(flashlightState, shadowDepthTexture);
 		shadowmgr->UpdateFlashlightState( shadow.m_ShadowHandle, flashlightState );
 

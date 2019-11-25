@@ -11,6 +11,7 @@
 			"$emissiveBlendTint"         "[10 10 10]"
 			"$emissiveBlendStrength"     "1.0" // Set by game code
 			"$emissiveBlendScrollVector" "[0.11 0.124]"
+			"$emmisiveBlendCorrectFlow"		"1"
 			"Proxies"
 			{
 				"VortEmissive" // For setting $selfillumstrength
@@ -29,6 +30,13 @@
 			SHADER_PARAM( EMISSIVEBLENDTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "self-illumination map" )
 			SHADER_PARAM( EMISSIVEBLENDTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "Self-illumination tint" )
 			SHADER_PARAM( EMISSIVEBLENDFLOWTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "", "flow map" )
+			SHADER_PARAM( EMISSIVEBLENDCORRECTFLOW, SHADER_PARAM_TYPE_BOOL, "", "uses same code as water flow" )
+
+			// New flow params
+			SHADER_PARAM(FLOW_UVSCALE, SHADER_PARAM_TYPE_FLOAT, "", "")
+			SHADER_PARAM(FLOW_TIMEINTERVALINSECONDS, SHADER_PARAM_TYPE_FLOAT, "", "")
+			SHADER_PARAM(FLOW_UVSCROLLDISTANCE, SHADER_PARAM_TYPE_FLOAT, "", "")
+			SHADER_PARAM(FLOW_TIMESCALE, SHADER_PARAM_TYPE_FLOAT, "", "")
 
 		Add this above SHADER_INIT_PARAMS()
 			// Emissive Scroll Pass
@@ -40,6 +48,12 @@
 				info.m_nEmissiveTexture = EMISSIVEBLENDTEXTURE;
 				info.m_nEmissiveTint = EMISSIVEBLENDTINT;
 				info.m_nEmissiveScrollVector = EMISSIVEBLENDSCROLLVECTOR;
+				info.m_nEmissiveScrollCorrectedFlow = EMISSIVEBLENDCORRECTFLOW;
+
+				info.m_nFlowUVScale = FLOW_UVSCALE;
+				info.m_nFlowTimeIntervalInSeconds = FLOW_TIMEINTERVALINSECONDS;
+				info.m_nFlowUVDistance = FLOW_UVSCROLLDISTANCE;
+				info.m_nFlowTimeScale = FLOW_TIMESCALE;
 			}
 
 		In SHADER_INIT_PARAMS()
@@ -102,6 +116,7 @@
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
 
+ConVar emissive_flow_debug("mat_debug_emissiveblend_flow", "0", FCVAR_CHEAT|FCVAR_DONTRECORD);
 
 void InitParamsEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, EmissiveScrollBlendedPassVars_t &info )
 {
@@ -122,6 +137,13 @@ void InitParamsEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar**
 		params[info.m_nEmissiveTint]->SetVecValue( kDefaultEmissiveTint, 4 );
 	}
 
+	SET_PARAM_INT_IF_NOT_DEFINED(info.m_nEmissiveScrollCorrectedFlow, 0);
+
+	InitFloatParam(info.m_nFlowUVScale, params, 1.0f);
+	InitFloatParam(info.m_nFlowTimeIntervalInSeconds, params, 0.4f);
+	InitFloatParam(info.m_nFlowUVDistance, params, 0.2f);
+	InitFloatParam(info.m_nFlowTimeScale, params, 1.0f);
+
 	SET_PARAM_FLOAT_IF_NOT_DEFINED( info.m_nTime, 0.0f );
 }
 
@@ -136,6 +158,10 @@ void InitEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
 								   IShaderShadow* pShaderShadow, EmissiveScrollBlendedPassVars_t &info, VertexCompressionType_t vertexCompression )
 {
+	int nTreeSwayMode = clamp(GetIntParam(info.m_nTreeSway, params, 0), 0, 2);
+	bool bCorrectFlow = GetIntParam(info.m_nEmissiveScrollCorrectedFlow, params, 0) != 0;
+	bool bFlowDebug = bCorrectFlow && emissive_flow_debug.GetBool();
+
 	SHADOW_STATE
 	{
 		// Reset shadow state manually since we're drawing from two materials
@@ -153,17 +179,20 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 		{
 			// Vertex Shader
 			DECLARE_STATIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs20 );
+			SET_STATIC_VERTEX_SHADER_COMBO(TREESWAY, nTreeSwayMode);
 			SET_STATIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs20 );
 
 			// Pixel Shader
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
 				DECLARE_STATIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20b );
+				SET_STATIC_PIXEL_SHADER_COMBO(CORRECTED_FLOW, bCorrectFlow);
 				SET_STATIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20b );
 			}
 			else
 			{
 				DECLARE_STATIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20 );
+				SET_STATIC_PIXEL_SHADER_COMBO(CORRECTED_FLOW, bCorrectFlow);
 				SET_STATIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20 );
 			}
 		}
@@ -175,9 +204,11 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 				SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
 
 			DECLARE_STATIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs30 );
+			SET_STATIC_VERTEX_SHADER_COMBO(TREESWAY, nTreeSwayMode);
 			SET_STATIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs30 );
 
 			DECLARE_STATIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps30 );
+			SET_STATIC_PIXEL_SHADER_COMBO(CORRECTED_FLOW, bCorrectFlow);
 			SET_STATIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps30 );
 		}
 #endif
@@ -208,6 +239,7 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 			DECLARE_DYNAMIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs20 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO(MORPHING, 0);
 			SET_DYNAMIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs20 );
 
 			// Set Vertex Shader Constants 
@@ -217,11 +249,13 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
 				DECLARE_DYNAMIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, bFlowDebug);
 				SET_DYNAMIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20b );
 			}
 			else
 			{
 				DECLARE_DYNAMIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20 );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, bFlowDebug);
 				SET_DYNAMIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps20 );
 			}
 		}
@@ -240,6 +274,7 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 			SET_DYNAMIC_VERTEX_SHADER( pp_emissive_scroll_blended_pass_vs30 );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO(FLOW_DEBUG, bFlowDebug);
 			SET_DYNAMIC_PIXEL_SHADER( pp_emissive_scroll_blended_pass_ps30 );
 		}
 #endif
@@ -280,6 +315,55 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 
 		// Self illum tint
 		pShaderAPI->SetPixelShaderConstant( 2, IS_PARAM_DEFINED( info.m_nEmissiveTint ) ? params[info.m_nEmissiveTint]->GetVecValue() : kDefaultEmissiveTint, 1 );
+
+		if (bCorrectFlow)
+		{
+			float vFlowConst1[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+			vFlowConst1[0] = GetFloatParam(info.m_nFlowTimeIntervalInSeconds, params, 0.4f);
+			vFlowConst1[1] = 1.0f / GetFloatParam(info.m_nFlowUVScale, params, 1.0f);
+			vFlowConst1[2] = GetFloatParam(info.m_nFlowUVDistance, params, 0.2f);
+			vFlowConst1[3] = GetFloatParam(info.m_nFlowTimeScale, params, 1.0f);
+			pShaderAPI->SetPixelShaderConstant(3, vFlowConst1, 1);
+		}
+
+		if (nTreeSwayMode != 0)
+		{
+			float flParams[4];
+
+			flParams[0] = IS_PARAM_DEFINED(info.m_nTime) && params[info.m_nTime]->GetFloatValue() > 0.0f ? params[info.m_nTime]->GetFloatValue() : pShaderAPI->CurrentTime();
+			Vector windDir;
+			params[info.m_nTreeSwayWindVector]->GetVecValue(windDir.Base(), 3);
+			if (windDir == vec3_invalid)
+				windDir = pShaderAPI->GetVectorRenderingParameter(VECTOR_RENDERPARM_WIND_DIRECTION);
+			flParams[1] = windDir.x;
+			flParams[2] = windDir.y;
+			flParams[3] = 0.0f;
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_2, flParams);
+
+			flParams[0] = GetFloatParam(info.m_nTreeSwayScrumbleFalloffExp, params, 1.0f);
+			flParams[1] = GetFloatParam(info.m_nTreeSwayFalloffExp, params, 1.0f);
+			flParams[2] = GetFloatParam(info.m_nTreeSwayScrumbleSpeed, params, 3.0f);
+			flParams[3] = GetFloatParam(info.m_nTreeSwaySpeedHighWindMultiplier, params, 2.0f);
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_3, flParams);
+
+			flParams[0] = GetFloatParam(info.m_nTreeSwayHeight, params, 1000.0f);
+			flParams[1] = GetFloatParam(info.m_nTreeSwayStartHeight, params, 0.1f);
+			flParams[2] = GetFloatParam(info.m_nTreeSwayRadius, params, 300.0f);
+			flParams[3] = GetFloatParam(info.m_nTreeSwayStartRadius, params, 0.2f);
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, flParams);
+
+			flParams[0] = GetFloatParam(info.m_nTreeSwaySpeed, params, 1.0f);
+			flParams[1] = GetFloatParam(info.m_nTreeSwayStrength, params, 10.0f);
+			flParams[2] = GetFloatParam(info.m_nTreeSwayScrumbleFrequency, params, 12.0f);
+			flParams[3] = GetFloatParam(info.m_nTreeSwayScrumbleStrength, params, 10.0f);
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_5, flParams);
+
+			flParams[0] = GetFloatParam(info.m_nTreeSwaySpeedLerpStart, params, 3.0f);
+			flParams[1] = GetFloatParam(info.m_nTreeSwaySpeedLerpEnd, params, 6.0f);
+			flParams[2] = 0.0f;
+			flParams[3] = 0.0f;
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_9, flParams);
+		}
 	}
 	pShader->Draw();
 }

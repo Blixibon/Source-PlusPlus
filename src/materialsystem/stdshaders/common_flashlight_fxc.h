@@ -233,8 +233,8 @@ float DoShadowNvidiaPCF5x5Gaussian( sampler DepthSampler, const float4 shadowMap
 #if defined( NEW_SHADOW_FILTERS )
 	float fEpsilonX    = vShadowTweaks.x;
 	float fTwoEpsilonX = 2.0f * fEpsilonX;
-	float fEpsilonY    = vShadowTweaks.y;
-	float fTwoEpsilonY = 2.0f * fEpsilonY;
+	float fEpsilonY    = fEpsilonX;
+	float fTwoEpsilonY = fTwoEpsilonX;;
 #else
 	float fEpsilonX    = 1.0 / 512.0;
 	float fTwoEpsilonX = 2.0f * fEpsilonX;

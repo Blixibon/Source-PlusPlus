@@ -11,6 +11,8 @@
 #include "convar.h"
 #include "cpp_shader_constant_register_map.h"
 #include "commandbuilder.h"
+#include "../IShaderSystem.h"
+#include "../shaderlib/shaderDLL_Global.h"
 
 #include "pp_watercheap_vs20.inc"
 #include "pp_watercheap_ps20.inc"
@@ -527,24 +529,61 @@ inline void DrawReflectionRefraction(IMaterialVar** params, IShaderShadow* pShad
 			bool bFlashlightShadows = false;
 			if (hasFlashlight)
 			{
-				VMatrix tmp;
-				bFlashlightShadows = pShaderAPI->GetFlashlightState(tmp).m_bEnableShadows;
+				VMatrix worldToTexture;
+				ITexture* pFlashlightDepthTexture;
+				FlashlightState_t flashlightState = pShaderAPI->GetFlashlightStateEx(worldToTexture, &pFlashlightDepthTexture);
 
-				DynamicCmdsOut.SetVertexShaderFlashlightState(VERTEX_SHADER_SHADER_SPECIFIC_CONST_4);
+				if (pFlashlightDepthTexture == NULL)
+				{
+					pFlashlightDepthTexture = GetDepthTextureFromState(flashlightState);
+				}
 
-				CBCmdSetPixelShaderFlashlightState_t state;
-				state.m_LightSampler = SHADER_SAMPLER6; // FIXME . . don't want this here.
-				state.m_DepthSampler = SHADER_SAMPLER7;
-				state.m_ShadowNoiseSampler = SHADER_SAMPLER8;
-				state.m_nColorConstant = PSREG_FLASHLIGHT_COLOR;
-				state.m_nAttenConstant = 15;
-				state.m_nOriginConstant = 16;
-				state.m_nDepthTweakConstant = 21;
-				state.m_nScreenScaleConstant = PSREG_FLASHLIGHT_SCREEN_SCALE;
-				state.m_nWorldToTextureConstant = -1;
-				state.m_bFlashlightNoLambert = false;
-				state.m_bSinglePassFlashlight = true;
-				DynamicCmdsOut.SetPixelShaderFlashlightState(state);
+				DynamicCmdsOut.SetFlashLightColorFromState(flashlightState, pShaderAPI);
+
+				ShaderAPITextureHandle_t hSpotlight = GetShaderSystem()->GetShaderAPITextureBindHandle(flashlightState.m_pSpotlightTexture, flashlightState.m_nSpotlightTextureFrame);
+				DynamicCmdsOut.BindTexture(SHADER_SAMPLER6, hSpotlight);
+
+				if (pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows)
+				{
+					bFlashlightShadows = true;
+
+					ShaderAPITextureHandle_t hDepth = GetShaderSystem()->GetShaderAPITextureBindHandle(pFlashlightDepthTexture, 0);
+
+					DynamicCmdsOut.BindTexture(SHADER_SAMPLER7, hDepth);
+					DynamicCmdsOut.BindStandardTexture(SHADER_SAMPLER5, TEXTURE_SHADOW_NOISE_2D);
+
+					// Tweaks associated with a given flashlight
+					float tweaks[4];
+					tweaks[0] = ShadowFilterFromState(flashlightState);
+					tweaks[1] = ShadowAttenFromState(flashlightState);
+					HashShadow2DJitter(flashlightState.m_flShadowJitterSeed, &tweaks[2], &tweaks[3]);
+					DynamicCmdsOut.SetPixelShaderConstant(PSREG_CONSTANT_21, tweaks, 1);
+
+					// Dimensions of screen, used for screen-space noise map sampling
+					float vScreenScale[4] = { 1280.0f / 32.0f, 720.0f / 32.0f, 0, 0 };
+					int nWidth, nHeight;
+					pShaderAPI->GetBackBufferDimensions(nWidth, nHeight);
+					vScreenScale[0] = static_cast<float>(nWidth) / 32.0f;
+					vScreenScale[1] = static_cast<float>(nHeight) / 32.0f;
+					DynamicCmdsOut.SetPixelShaderConstant(PSREG_FLASHLIGHT_SCREEN_SCALE, vScreenScale, 1);
+				}
+
+				float atten[4];										// Set the flashlight attenuation factors
+				atten[0] = flashlightState.m_fConstantAtten;
+				atten[1] = flashlightState.m_fLinearAtten;
+				atten[2] = flashlightState.m_fQuadraticAtten;
+				atten[3] = flashlightState.m_FarZ;
+				DynamicCmdsOut.SetPixelShaderConstant(PSREG_CONSTANT_15, atten, 1);
+
+				float lightPos[4];
+				lightPos[0] = flashlightState.m_vecLightOrigin[0];
+				lightPos[1] = flashlightState.m_vecLightOrigin[1];
+				lightPos[2] = flashlightState.m_vecLightOrigin[2];
+				lightPos[3] = 1.0f;
+				DynamicCmdsOut.SetPixelShaderConstant(PSREG_CONSTANT_16, lightPos, 1);
+
+				DynamicCmdsOut.SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, worldToTexture.Base(), 4);
+				DynamicCmdsOut.SetPixelShaderConstant(PSREG_CONSTANT_17, worldToTexture.Base(), 4);
 
 				DynamicCmdsOut.SetPixelShaderConstant(10, FLASHLIGHTTINT);
 			}

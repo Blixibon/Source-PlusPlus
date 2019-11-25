@@ -1,20 +1,47 @@
 #include "shaderlib/cshader.h"
 class pp_emissive_scroll_blended_pass_vs20_Static_Index
 {
+private:
+	int m_nTREESWAY;
+#ifdef _DEBUG
+	bool m_bTREESWAY;
+#endif
+public:
+	void SetTREESWAY( int i )
+	{
+		Assert( i >= 0 && i <= 2 );
+		m_nTREESWAY = i;
+#ifdef _DEBUG
+		m_bTREESWAY = true;
+#endif
+	}
+	void SetTREESWAY( bool i )
+	{
+		m_nTREESWAY = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bTREESWAY = true;
+#endif
+	}
 public:
 	pp_emissive_scroll_blended_pass_vs20_Static_Index( )
 	{
+#ifdef _DEBUG
+		m_bTREESWAY = false;
+#endif // _DEBUG
+		m_nTREESWAY = 0;
 	}
 	int GetIndex()
 	{
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
+		bool bAllStaticVarsDefined = m_bTREESWAY;
+		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return 0;
+		return ( 4 * m_nTREESWAY ) + 0;
 	}
 };
-#define shaderStaticTest_pp_emissive_scroll_blended_pass_vs20 0
+#define shaderStaticTest_pp_emissive_scroll_blended_pass_vs20 vsh_forgot_to_set_static_TREESWAY + 0
 class pp_emissive_scroll_blended_pass_vs20_Dynamic_Index
 {
 private:
@@ -59,6 +86,27 @@ public:
 		m_bSKINNING = true;
 #endif
 	}
+private:
+	int m_nMORPHING;
+#ifdef _DEBUG
+	bool m_bMORPHING;
+#endif
+public:
+	void SetMORPHING( int i )
+	{
+		Assert( i >= 0 && i <= 0 );
+		m_nMORPHING = i;
+#ifdef _DEBUG
+		m_bMORPHING = true;
+#endif
+	}
+	void SetMORPHING( bool i )
+	{
+		m_nMORPHING = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bMORPHING = true;
+#endif
+	}
 public:
 	pp_emissive_scroll_blended_pass_vs20_Dynamic_Index()
 	{
@@ -70,16 +118,20 @@ public:
 		m_bSKINNING = false;
 #endif // _DEBUG
 		m_nSKINNING = 0;
+#ifdef _DEBUG
+		m_bMORPHING = false;
+#endif // _DEBUG
+		m_nMORPHING = 0;
 	}
 	int GetIndex()
 	{
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllDynamicVarsDefined = m_bCOMPRESSED_VERTS && m_bSKINNING;
+		bool bAllDynamicVarsDefined = m_bCOMPRESSED_VERTS && m_bSKINNING && m_bMORPHING;
 		Assert( bAllDynamicVarsDefined );
 #endif // _DEBUG
-		return ( 1 * m_nCOMPRESSED_VERTS ) + ( 2 * m_nSKINNING ) + 0;
+		return ( 1 * m_nCOMPRESSED_VERTS ) + ( 2 * m_nSKINNING ) + ( 4 * m_nMORPHING ) + 0;
 	}
 };
-#define shaderDynamicTest_pp_emissive_scroll_blended_pass_vs20 vsh_forgot_to_set_dynamic_COMPRESSED_VERTS + vsh_forgot_to_set_dynamic_SKINNING + 0
+#define shaderDynamicTest_pp_emissive_scroll_blended_pass_vs20 vsh_forgot_to_set_dynamic_COMPRESSED_VERTS + vsh_forgot_to_set_dynamic_SKINNING + vsh_forgot_to_set_dynamic_MORPHING + 0
