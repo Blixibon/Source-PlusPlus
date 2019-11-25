@@ -27,6 +27,8 @@
 
 "ModEvents"
 {
+	
+
 	"intro_finish"
 	{
 		"player"	"short"		// entindex of the player
@@ -380,13 +382,6 @@
 		"alert_type"		"short"		// which alert type is this (scramble, etc)?
 	}
 
-	"training_complete"		
-	{
-		"next_map"	"string"	// next map (if any)
-		"map"		"string"	// the name of the map this screen is on.
-		"text"		"string"	// text to show	
-	}
-
 	"show_freezepanel"
 	{
 		"killer"	"short"		// entindex of the killer entity
@@ -408,34 +403,8 @@
 	{
 		"score"		"short"
 	}
-
-	"localplayer_changeclass"
-	{
-	}
 	
 	"localplayer_respawn"
-	{
-	}
-		
-	"building_info_changed"
-	{
-		"building_type"		"byte"
-		"object_mode"		"byte"
-		"remove"			"byte"
-	}
-
-	"localplayer_changedisguise"
-	{
-		"disguised"		"bool"
-	}
-	
-	"player_account_changed"
-	{
-		"old_value"		"short"
-		"new_value"		"short"
-	}
-	
-	"spy_pda_reset"
 	{
 	}
 
@@ -451,70 +420,6 @@
 	}
 	"playing_commentary"
 	{
-	}
-	
-	"player_chargedeployed"
-	{
-		"userid"	"short"		// user ID of medic who deployed charge
-		"targetid"	"short"		// user ID of who the medic charged
-	}
-
-	//
-	// Objects built by players (sentry gun, teleporter, etc.)
-	//
-	// Some object events have "object" and some have "objecttype".
-	//   We can't change them as there are third-party
-	//   scripts that listen for these events.
-	//
-	"player_builtobject"
-	{
-		"userid"		"short"		// user ID of the builder
-		"object"		"short"		// type of object built
-		"index"			"short"		// index of the object
-	}
-
-	"player_upgradedobject"
-	{
-		"userid"		"short"		// user ID of the builder
-		"object"		"short"		// type of object built
-		"index"			"short"		// index of the object
-		"isbuilder"		"bool"
-	}
-
-	"player_carryobject"
-	{
-		"userid"		"short"		// user ID of the builder
-		"object"		"short"		// type of object built
-		"index"			"short"		// index of the object
-	}
-
-	"player_dropobject"
-	{
-		"userid"		"short"		// user ID of the builder
-		"object"		"short"		// type of object built
-		"index"			"short"		// index of the object
-	}
-
-	"object_removed"
-	{
-		"userid"		"short"		// user ID of the object owner
-		"objecttype"	"short"		// type of object removed
-		"index"			"short"		// index of the object removed
-	}
-	
-	"object_destroyed"
-	{			
-		"userid"	"short"			// user ID who died
-		"attacker"	"short"			// user ID who killed
-		"assister"	"short"			// user ID of assister
-		"weapon"	"string" 		// weapon name killer used 
-		"weaponid"	"short"			// id of the weapon used
-		"objecttype"	"short"		// type of object destroyed
-		"index"		"short"			// index of the object destroyed
-		"was_building"	"bool"		// object was being built when it died
-		"victim_index"		"short"		// entindex who died
-		"attacker_index"	"short"		// entindex that killed
-		"assister_index"	"short"		// entindex of assister
 	}
 
 	"npc_death"
@@ -536,13 +441,6 @@
 		"show_notice"		"bool"	// show in deathnotice
 	}
 
-	"object_detonated"
-	{
-		"userid"		"short"		// user ID of the object owner
-		"objecttype"	"short"		// type of object removed
-		"index"			"short"		// index of the object removed
-	}
-
 	"achievement_earned"
 	{
 		"player"	"byte"		// entindex of the player
@@ -553,72 +451,8 @@
 	{
 	}
 
-	"tournament_stateupdate"
-	{
-		"userid"	"short"		// user ID on server
-		"namechange"	"bool"
-		"readystate"	"short"
-		"newname"	"string"	// players new name
-	}
-
-	"tournament_enablecountdown"
-	{
-	}
-	
-	"player_calledformedic"
-	{
-		"userid"	"short"
-	}
-
 	"localplayer_becameobserver"
 	{
-	}
-	
-	"player_ignited_inv"		// sent when a player is ignited by a pyro who is being invulned, only to the medic who's doing the invulning
-	{
-		"pyro_entindex"		"byte"		// entindex of the pyro who ignited the victim
-		"victim_entindex"	"byte"		// entindex of the player ignited by the pyro
-		"medic_entindex"	"byte"		// entindex of the medic releasing the invuln
-	}
-	"player_ignited"			// sent when a player is ignited, only to the two players involved
-	{
-		"pyro_entindex"		"byte"		// entindex of the pyro who ignited the victim
-		"victim_entindex"	"byte"		// entindex of the player ignited by the pyro
-		"weaponid"			"byte"		// weaponid of the weapon used
-	}
-	
-	"player_extinguished"		// sent when a burning player is extinguished by a medic
-	{
-		"victim"	"byte"		// entindex of the player that was extinguished
-		"healer"	"byte"		// entindex of the player who did the extinguishing
-	}
-	
-	"player_teleported"
-	{
-		"userid"	"short"		// userid of the player
-		"builderid"	"short"		// userid of the player who built the teleporter
-		"dist"		"float"		// distance the player was teleported
-	}
-	
-	// client only
-	"player_healedmediccall"	// local player heals someone who called for medic.
-	{
-		"userid"	"short"		// userid of person who got healed
-	}
-	
-	// client only
-	"localplayer_chargeready"		// local player has full medic charge
-	{
-	}
-	
-	"localplayer_winddown"		// local player minigun winddown
-	{
-	}
-	
-	"player_invulned"
-	{
-		"userid"	"short"
-		"medic_userid"	"short"
 	}
 	
 	"escort_speed"
@@ -653,28 +487,6 @@
 	{
 		"player"	"byte"
 		"points"	"byte"
-	}
-
-	"player_healonhit"
-	{
-		"amount"		"short"
-		"entindex"		"byte"
-	}
-	
-	"player_stealsandvich"
-	{
-		"owner"			"short"
-		"target"		"short"
-	}
-	
-	"show_class_layout"
-	{
-		"show"	"bool"
-	}	
-	
-	"show_vs_panel"
-	{
-		"show"	"bool"
 	}
 
 	"player_damaged"
@@ -712,157 +524,6 @@
         "weaponid" "short"
 	}
 	
-	"arena_player_notification"
-	{
-		"player"	"byte"
-		"message"	"byte"
-	}
-
-	"arena_match_maxstreak"
-	{
-		"team"	"byte"
-		"streak"	"byte"
-	}
-
-	"arena_round_start"			// called when round is active, players can move
-	{
-		// nothing for now
-	}
-	"arena_win_panel"		
-	{
-		"panel_style"		"byte"		// for client to determine layout		
-		"winning_team"		"byte"		
-		"winreason"		"byte"		// the reason the team won
-		"cappers"		"string"	// string where each character is a player index of someone that capped
-		"flagcaplimit"		"short"		// if win reason was flag cap limit, the value of the flag cap limit
-		"blue_score"		"short"		// red team score
-		"red_score"		"short"		// blue team score
-		"blue_score_prev"	"short"		// previous red team score
-		"red_score_prev"	"short"		// previous blue team score
-		"round_complete"	"short"		// is this a complete round, or the end of a mini-round
-		"player_1"		"short"
-		"player_1_damage"	"short"
-		"player_1_healing"	"short"
-		"player_1_lifetime"	"short"
-		"player_1_kills"	"short"
-		"player_2"		"short"
-		"player_2_damage"	"short"
-		"player_2_healing"	"short"
-		"player_2_lifetime"	"short"
-		"player_2_kills"	"short"
-		"player_3"		"short"
-		"player_3_damage"	"short"
-		"player_3_healing"	"short"
-		"player_3_lifetime"	"short"
-		"player_3_kills"	"short"
-		"player_4"		"short"
-		"player_4_damage"	"short"
-		"player_4_healing"	"short"
-		"player_4_lifetime"	"short"
-		"player_4_kills"	"short"
-		"player_5"		"short"
-		"player_5_damage"	"short"
-		"player_5_healing"	"short"
-		"player_5_lifetime"	"short"
-		"player_5_kills"	"short"
-		"player_6"		"short"
-		"player_6_damage"	"short"
-		"player_6_healing"	"short"
-		"player_6_lifetime"	"short"
-		"player_6_kills"	"short"
-	}
-	
-	"pve_win_panel"		
-	{
-		"panel_style"		"byte"		// for client to determine layout		
-		"winning_team"		"byte"		
-		"winreason"		"byte"		// the reason the team won
-	}
-	
-	"air_dash"
-	{
-		"player"	"byte"
-	}
-	
-	"landed"
-	{
-		"player"	"byte"
-	}
-	
-	"player_damage_dodged"
-	{
-		"damage"	"short"
-	}
-	
-	"player_stunned"
-	{
-		"stunner"	"short"
-		"victim"	"short"
-		"victim_capping"	"bool"
-		"big_stun"	"bool"
-	}
-	
-	"scout_grand_slam"
-	{
-		"scout_id"	"short"
-		"target_id"	"short"
-	}
-	
-	"scout_slamdoll_landed"
-	{
-		"target_index" "short"
-		"x"	"float"
-		"y"	"float"
-		"z"	"float"
-	}
-
-	"scout_slamdoll_landed"
-	{
-		"target_index" "short"
-		"x"	"float"
-		"y"	"float"
-		"z"	"float"
-	}
-
-	"arrow_impact"
-	{
-		"attachedEntity" "short"
-		"shooter" "short"
-		"boneIndexAttached" "short"
-		"bonePositionX" "float"
-		"bonePositionY" "float"
-		"bonePositionZ" "float"
-		"boneAnglesX" "float"
-		"boneAnglesY" "float"
-		"boneAnglesZ" "float"
-		"projectileType" "short"
-		"isCrit" 	"bool"
-	}
-	
-	"player_jarated"			// sent when a player is jarated, only to the two players involved
-	{
-		"thrower_entindex"	"byte"		// entindex of the player who threw the jarate
-		"victim_entindex"	"byte"		// entindex of the player receiving it
-	}
-	"player_jarated_fade"			// sent when a player is jarated, only to the two players involved
-	{
-		"thrower_entindex"	"byte"		// entindex of the player who threw the jarate
-		"victim_entindex"	"byte"		// entindex of the player receiving it
-	}
-	"player_shield_blocked"			// sent when a player is jarated, only to the two players involved
-	{
-		"attacker_entindex"	"byte"		// entindex of the player who threw the jarate
-		"blocker_entindex"	"byte"		// entindex of the player receiving it
-	}
-	"player_pinned"
-	{
-		"pinned"	"byte"
-	}
-	"player_healedbymedic"
-	{
-		"medic"		"byte"
-	}
-	
 	"player_spawn"
 	{
 		"userid"	"short"		// user ID who spawned
@@ -870,75 +531,10 @@
 		"class"		"short"		// class they spawned as
 	}	
 	
-	"player_sapped_object"
-	{
-		"userid"	"short"		// user ID of the spy
-		"ownerid"	"short"		// user ID of the building owner
-		"object"	"byte"
-		"sapperid"	"short"		// index of the sapper
-	}
-	
-	"item_found"
-	{
-		"player"		"byte"		// entindex of the player
-		"quality"		"byte"		// quality of the item
-		"method"		"byte"		// method by which we acquired the item
-		"itemdef"		"long"		// the item definition index
-	}
-
-	"show_annotation"
-	{
-		"worldPosX" "float"
-		"worldPosY" "float"
-		"worldPosZ" "float"
-		"worldNormalX" "float"
-		"worldNormalY" "float"
-		"worldNormalZ" "float"
-		"id" "long"
-		"text"		"string"	// name (unlocalized)
-		"lifetime"	"float"
-		"visibilityBitfield"	"long" // bitfield of the players that can see this
-		"follow_entindex"	"long" // if this is set, follow this entity
-		"show_distance"		"bool"
-		"play_sound"		"string"
-		"show_effect"		"bool"
-	}
-
-	"hide_annotation"
-	{
-		"id" "long"
-	}
-	
-	"post_inventory_application"	// sent when a player gets a whole new set of items
-	{
-		"userid"	"short"
-	}
-	
 	"controlpoint_unlock_updated"
 	{
 		"index"	"short"		// index of the cap being updated
 		"time"	"float"		// time
-	}
-	
-	"deploy_buff_banner"
-	{
-		"buff_type"		"byte"		// type of buff (skin index)
-		"buff_owner"	"short"		// user ID of the person who gets the banner
-	}
-	
-	"player_buff"
-	{
-		"userid"		"short"   	// user ID of the player the buff is being applied to
-		"buff_owner"	"short"		// user ID of the player with the banner
-		"buff_type"		"byte"		// type of buff
-	}
-	
-	"medic_death"
-	{
-		"userid"	"short"   	// user ID who died				
-		"attacker"	"short"	 	// user ID who killed
-		"healing"	"short"		// amount healed in this life
-		"charged"	"bool"		// had a full ubercharge?
 	}
 	
 	"overtime_nag"
@@ -948,69 +544,10 @@
 	"teams_changed"
 	{
 	}
-	
-	"halloween_pumpkin_grab"
-	{
-		"userid"	"short"
-	}
-
-	"rocket_jump"
-	{
-		"userid"	"short"
-		"playsound"	"bool"
-	}
-	
-	"rocket_jump_landed"
-	{
-		"userid"	"short"
-	}
-	
-	"sticky_jump"
-	{
-		"userid"	"short"	
-		"playsound"	"bool"
-	}
-	
-	"sticky_jump_landed"
-	{
-		"userid"	"short"	
-	}
-
-	"medic_defended"
-	{
-		"userid"	"short"	
-		"medic"		"short"	
-	}
 
 	"localplayer_healed"
 	{
 		"amount"	"short"
-	}
-	
-	"player_destroyed_pipebomb"
-	{
-		"userid"	"short"	
-	}
-	
-	"object_deflected"
-	{
-		"userid"	"short"		// player who deflected the object
-		"ownerid"	"short"		// owner of the object
-		"weaponid"	"short"		// weapon id (0 means the player in ownerid was pushed)
-		"object_entindex" "short"	// entindex of the object that got deflected
-	}
-	
-	"player_mvp"
-	{
-		"player"	"short"
-	}
-	
-	"raid_spawn_mob"
-	{
-	}
-	
-	"raid_spawn_squad"
-	{
 	}
 	
 	"nav_blocked"
@@ -1028,28 +565,6 @@
 	{
 		"index"		"short"		// index of the trigger
 		"count"		"byte"		// number of cappers (-1 for blocked)
-	}
-	
-	"player_regenerate"
-	{
-	}
-	
-	"update_status_item"
-	{
-		"index"		"byte"
-		"object"	"byte"
-	}
-	
-	"stats_resetround"
-	{
-	}
-
-	"scorestats_accumulated_update"
-	{
-	}
-
-	"scorestats_accumulated_reset"
-	{
 	}
 	
 	"achievement_earned_local"
@@ -1071,196 +586,16 @@
 		"amount"	"short"
 	}
 	
-	"building_healed"
-	{
-		"building"	"short"
-		"healer"	"short"
-		"amount"	"short"
-	}
-	
 	"item_pickup"
 	{
 		"userid"	"short"
 		"item"		"string"
 	}
 	
-	"duel_status"
-	{
-		"killer"			"short"
-		"score_type"		"short"	
-		"initiator"			"short"
-		"target"			"short"
-		"initiator_score"	"short"
-		"target_score"		"short"
-	}
-	
-	// clone of "player_death"
-	"fish_notice"
-	{
-		"userid"	"short"   	// user ID who died				
-		"victim_entindex"	"long"
-		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killer used 
-		"weaponid"	"short"		// ID of weapon killed used
-		"damagebits"	"long"		// bits of type of damage
-		"customkill"	"short"		// type of custom kill
-		"assister"	"short"		// user ID of assister
-		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
-		"stun_flags"	"short"	// victim's stun flags at the moment of death
-		"death_flags"	"short" //death flags.
-		"silent_kill"	"bool"
-		"assister_fallback"	"string"	// contains a string to use if "assister" is -1
-	}
-	
-	// clone of "fish_notice" (...clone of "player_death")
-	"fish_notice__arm"
-	{
-		"userid"	"short"   	// user ID who died				
-		"victim_entindex"	"long"
-		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killer used 
-		"weaponid"	"short"		// ID of weapon killed used
-		"damagebits"	"long"		// bits of type of damage
-		"customkill"	"short"		// type of custom kill
-		"assister"	"short"		// user ID of assister
-		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
-		"stun_flags"	"short"	// victim's stun flags at the moment of death
-		"death_flags"	"short" //death flags.
-		"silent_kill"	"bool"
-		"assister_fallback"	"string"	// contains a string to use if "assister" is -1
-	}
-	
-	// clone of "player_death" with added counts
-	"throwable_hit"
-	{
-		"userid"	"short"   	// user ID who died				
-		"victim_entindex"	"long"
-		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killer used 
-		"weaponid"	"short"		// ID of weapon killed used
-		"damagebits"	"long"		// bits of type of damage
-		"customkill"	"short"		// type of custom kill
-		"assister"	"short"		// user ID of assister
-		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
-		"stun_flags"	"short"	// victim's stun flags at the moment of death
-		"death_flags"	"short" //death flags.
-		"silent_kill"	"bool"
-		"assister_fallback"	"string"	// contains a string to use if "assister" is -1
-		"totalhits"		"short"	// Number of hits his player has done
-	}
-
-	"pumpkin_lord_summoned"
-	{
-	}
-
-	"pumpkin_lord_killed"
-	{
-	}
-
-	"merasmus_summoned"
-	{
-		"level" "short"
-	}
-
-	"merasmus_killed"
-	{
-		"level" "short"
-	}
-
-	"merasmus_escape_warning"
-	{
-		"level" "short"
-		"time_remaining"	"byte"
-	}
-
-	"merasmus_escaped"
-	{
-		"level" "short"
-	}
-	
-	"eyeball_boss_summoned"
-	{
-		"level" "short"
-	}
-
-	"eyeball_boss_stunned"
-	{
-		"level" "short"
-		"player_entindex"	"byte"
-	}
-	
-	"eyeball_boss_killed"
-	{
-		"level" "short"
-	}
-
-	"eyeball_boss_killer"
-	{
-		"level" "short"
-		"player_entindex"	"byte"
-	}
-
-	"eyeball_boss_escape_imminent"
-	{
-		"level" "short"
-		"time_remaining"	"byte"
-	}
-	
-	"eyeball_boss_escaped"
-	{
-		"level" "short"
-	}
-	
 	"controlpoint_timer_updated"
 	{
 		"index"	"short"		// index of the cap being updated
 		"time"	"float"		// time
-	}
-
-	"player_highfive_start"
-	{
-		"entindex"		"byte"
-	}
-	"player_highfive_cancel"
-	{
-		"entindex"		"byte"
-	}
-	"player_highfive_success"
-	{
-		"initiator_entindex"	"byte"
-		"partner_entindex"	"byte"
-	}
-
-	"player_bonuspoints"
-	{
-		"points"		"short"	
-		"player_entindex"	"short"
-		"source_entindex"	"short"
-	}
-
-	"player_upgraded"
-	{
-	}
-
-	"player_buyback"
-	{
-		"player"		"short"
-		"cost"			"short"
-	}
-
-	"player_used_powerup_bottle"
-	{
-		"player"		"short"
-		"type"			"short"
-		"time"			"float"	
-	}
-
-	"christmas_gift_grab"
-	{
-		"userid"	"short"
 	}
 	
 	"player_killed_achievement_zone"
@@ -1269,267 +604,10 @@
 		"victim"	"short"		// entindex of the victim
 		"zone_id"	"short"		// type of area (0 for general, 1 for capture zone)
 	}
-	"party_updated"
-	{
-	}
-	"lobby_updated"
-	{
-	}
-	
-	"mvm_mission_update"
-	{
-		"class"		"short"
-		"count"		"short"
-	}
-
-	"recalculate_holidays"
-	{
-	}
-	
-	"player_currency_changed"
-	{
-		"currency"		"short"
-	}
-
-	"doomsday_rocket_open"
-	{
-		"team"		"byte"		// which team opened the rocket
-	}
-
-	"remove_nemesis_relationships"
-	{
-		"player"		"short"		// entindex of the player who should reset
-	}
-
-	"mvm_creditbonus_wave"
-	{
-	}
-
-	"mvm_creditbonus_all"
-	{
-	}
-
-	"mvm_creditbonus_all_advanced"
-	{
-	}
-
-	"mvm_quick_sentry_upgrade"
-	{
-		"player"		"short"		// entindex of the player
-	}
-
-	"mvm_tank_destroyed_by_players"
-	{
-	}
-
-	"mvm_kill_robot_delivering_bomb"
-	{
-		"player"		"short"		// entindex of the player
-	}
-
-	"mvm_pickup_currency"
-	{
-		"player"		"short"		// entindex of the player
-		"currency"		"short"
-	}
-
-	"mvm_bomb_carrier_killed"
-	{
-		"level"			"short"		// upgrade level of the carrier
-	}
-
-	"mvm_sentrybuster_detonate"
-	{
-		"player"		"short"		// entindex of the target player
-		"det_x"			"float"		// origin of the sentry buster
-		"det_y"			"float"
-		"det_z"			"float"
-	}
-
-	"mvm_scout_marked_for_death"
-	{
-		"player"		"short"		// entindex of the player
-	}
-
-	"mvm_medic_powerup_shared"
-	{
-		"player"		"short"		// entindex of the player
-	}
-
-	"mvm_begin_wave"
-	{
-		"wave_index"	"short"
-		"max_waves"		"short"
-		"advanced"		"short"		
-	}
-	
-	"mvm_wave_complete"
-	{
-		"advanced"		"bool"		// is this an advanced popfile
-	}
-
-	"mvm_mission_complete"
-	{
-		"mission"		"string"
-	}
-
-	"mvm_bomb_reset_by_player"
-	{
-		"player"		"short"
-	}
-
-	"mvm_bomb_alarm_triggered"
-	{
-	}
-
-	"mvm_bomb_deploy_reset_by_player"
-	{
-		"player"		"short"
-	}
-
-	"mvm_wave_failed"
-	{
-	}
-
-	"mvm_reset_stats"
-	{
-	}
-
-	"damage_resisted"
-	{
-		"entindex"		"byte"
-	}
-
-	"revive_player_notify"
-	{
-		"entindex"			"short"
-		"marker_entindex"	"short"
-	}
-
-	"revive_player_stopped"
-	{
-		"entindex"	"short"
-	}
-
-	"revive_player_complete"
-	{
-		"entindex"			"short"		// entindex of the medic
-	}
-
-	"player_turned_to_ghost"
-	{
-		"userid"	"short"		// user ID of the player who changed to a ghost
-	}
-
-	"medigun_shield_blocked_damage"
-	{
-		"userid"	"short"		// user ID of the player using the shield
-		"damage"	"float"		// damage that was blocked
-	}
-
-	"mvm_adv_wave_complete_no_gates"
-	{
-		"index"		"short"		// wave index
-	}
-
-	"mvm_sniper_headshot_currency"
-	{
-		"userid"	"short"		// user ID of the player 
-		"currency"	"short"		// currency collected
-	}
-
-	"mvm_mannhattan_pit"
-	{
-	}
-
-	"flag_carried_in_detection_zone"
-	{
-	}
-
-	"mvm_adv_wave_killed_stun_radio"
-	{
-	}
-
-	"player_directhit_stun"
-	{
-		"attacker"	"short"		// entindex of the attacker
-		"victim"	"short"		// entindex of the victim
-	}
-
-	"mvm_sentrybuster_killed"
-	{
-		"sentry_buster"	"short"	// entindex
-	}
-
-	"upgrades_file_changed"
-	{
-		"path"		"string"
-	}
-
-	"rd_team_points_changed"
-	{
-		"points"			"short"	
-		"team"				"byte"
-		"method"			"byte"
-	}
-
-	"rd_rules_state_changed"
-	{
-	}
-
-	"rd_robot_killed"
-	{
-		// this extends the original player_death 
-		"userid"	"short"   	// user ID who died				
-		"victim_entindex"	"long"
-		"inflictor_entindex"	"long"	// ent index of inflictor (a sentry, for example)
-		"attacker"	"short"	 	// user ID who killed
-		"weapon"	"string" 	// weapon name killer used 
-		"weaponid"	"short"		// ID of weapon killed used
-		"damagebits"	"long"		// bits of type of damage
-		"customkill"	"short"		// type of custom kill
-		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
-	}
-
-	"rd_robot_impact"
-	{
-		"entindex" "short"
-		"impulse_x" "float"
-		"impulse_y"	"float"
-		"impulse_z"	"float"
-	}
 
 	"teamplay_pre_round_time_left"
 	{
 		"time"		"short"
-	}
-
-	"parachute_deploy"
-	{
-		"index"	"short"		// entindex of the player
-	}
-
-	"parachute_holster"
-	{
-		"index"	"short"		// entindex of the player
-	}
-
-	"kill_refills_meter"
-	{
-		"index"	"short"		// entindex of the player
-	}
-
-	"rps_taunt_event"
-	{
-		"winner"		"short"		// entindex of the winning player
-		"winner_rps"	"byte"		// winner's selection 
-		"loser"			"short"		// entindex of the losing player
-		"loser_rps"		"byte"		// loser's selection 
-	}
-
-	"conga_kill"
-	{
-		"index"	"short"		// entindex of the player
 	}
 
 	"player_initial_spawn"
@@ -1537,32 +615,6 @@
 		"index"	"short"		// entindex of the player
 	}
 
-	"competitive_victory"		
-	{
-	}
-
-	"competitive_skillrating_update"
-	{
-		"index"		"short"		// entindex of the player
-		"rating"	"short"		// skillrating
-		"delta"		"short"		// skillrating adjustment
-	}
-
-	"minigame_win"
-	{
-		"team"		"byte"		// which team won the minigame
-		"type"		"byte"		// what type of minigame was won
-	}
-
-	"sentry_on_go_active"
-	{
-		"index"		"short"
-	}
-	
-	"duck_xp_level_up"
-	{
-		"level"		"short"		// leveled up to what
-	}
 
 	// put new events here
 	"antlionguard_spawned"
@@ -1595,6 +647,17 @@
 
 	"strider_killed"
 	{
+	}
+	
+	"portal_player_touchedground"	// player landed
+	{
+		"userid"	"short"		// user ID on server
+	}
+	
+	"portal_player_portaled"		// player traveled through a portal
+	{
+		"userid"	"short"		// user ID on server
+		"portal2"	"bool"		// false for portal1 (blue)
 	}
 	
 	"turret_hit_turret"
