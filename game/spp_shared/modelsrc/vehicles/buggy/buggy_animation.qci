@@ -1,0 +1,973 @@
+
+$PoseParameter "vehicle_weapon_yaw" -120 120 loop 0
+$PoseParameter "vehicle_weapon_pitch" -60 60 loop 0
+$PoseParameter "vehicle_guage" 0 1 loop 0
+$PoseParameter "vehicle_steer" -1 1 loop 0
+$PoseParameter "vehicle_wheel_fl_height" 0 1 loop 0
+$PoseParameter "vehicle_wheel_fr_height" 0 1 loop 0
+$PoseParameter "vehicle_wheel_rl_height" 0 1 loop 0
+$PoseParameter "vehicle_wheel_rr_height" 0 1 loop 0
+$PoseParameter "vehicle_wheel_fl_spin" -180 180 loop 360
+$PoseParameter "vehicle_wheel_fr_spin" -180 180 loop 360
+$PoseParameter "vehicle_wheel_rl_spin" -180 180 loop 360
+$PoseParameter "vehicle_wheel_rr_spin" -180 180 loop 360
+$PoseParameter "gun_spin" -180 180 loop 360
+
+$WeightList "weights_tau_removed" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 1
+	 "Rig_Buggy.Gun" 1
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 1
+}
+
+$WeightList "weights_aim_all" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 1
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 1
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_gun_spinning" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 1
+}
+
+$WeightList "weights_speedometer" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 1
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_turning" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 1
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 1
+	 "Rig_Buggy.Wheel_FR_Rotate" 1
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 1
+	 "Rig_Buggy.Wheel_FL_Rotate" 1
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 1
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_fr_suspension" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 1
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 1
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 1
+	 "Rig_Buggy.Shock_FR_Piston" 1
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_fr_spin" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 1
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_fl_suspension" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 1
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 1
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 1
+	 "Rig_Buggy.Shock_FL_Piston" 1
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_fl_spin" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 1
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_rr_suspension" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 1
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 1
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 1
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_rr_spin" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 1
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_rl_suspension" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 1
+	 "Rig_Buggy.Wheel_RL" 0
+	 "Rig_Buggy.Shock_RL_Piston" 1
+	 "Rig_Buggy.Shock_RL_Sleeve" 1
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$WeightList "weights_wheel_rl_spin" {
+	 "Rig_Buggy.Frame" 0
+	 "Rig_Buggy.Shock_RR_Sleeve" 0
+	 "Rig_Buggy.Shock_FR_Sleeve" 0
+	 "Rig_Buggy.Axel_RR" 0
+	 "Rig_Buggy.Wheel_RR" 0
+	 "Rig_Buggy.Shock_RR_Piston" 0
+	 "Rig_Buggy.Steer_Arm" 0
+	 "Rig_Buggy.Shock_FL_Sleeve" 0
+	 "Rig_Buggy.Axel_RL" 0
+	 "Rig_Buggy.Wheel_RL" 1
+	 "Rig_Buggy.Shock_RL_Piston" 0
+	 "Rig_Buggy.Shock_RL_Sleeve" 0
+	 "Rig_Buggy.view" 0
+	 "Rig_Buggy.Gun_Base" 0
+	 "Rig_Buggy.Gun_Parent" 0
+	 "Rig_Buggy.Gun" 0
+	 "Rig_Buggy.Speedo" 0
+	 "Rig_Buggy.Wheel_FR_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FR_Turn" 0
+	 "Rig_Buggy.Wheel_FR_Rotate" 0
+	 "Rig_Buggy.Axel_FR" 0
+	 "Rig_Buggy.Shock_FR_Piston" 0
+	 "Rig_Buggy.Wheel_FL_Turn_parent" 0
+	 "Rig_Buggy.Wheel_FL_Turn" 0
+	 "Rig_Buggy.Wheel_FL_Rotate" 0
+	 "Rig_Buggy.Axel_FL" 0
+	 "Rig_Buggy.Shock_FL_Piston" 0
+	 "Rig_Buggy.Steer_Wheel" 0
+	 "Rig_Buggy.lid" 0
+	 "Rig_Buggy.latch" 0
+	 "Rig_Buggy.gun_cylinders" 0
+}
+
+$Animation "a_tau_removed" "buggy_anims\a_tau_removed.smd" {
+	fps 30
+	weightlist "weights_tau_removed"
+}
+
+$Animation "neutral" "buggy_anims\neutral.smd" {
+	fps 30
+}
+
+$Animation "down_left" "buggy_anims\down_left.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "down_center" "buggy_anims\down_center.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "down_right" "buggy_anims\down_right.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "mid_left" "buggy_anims\mid_left.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "mid_center" "buggy_anims\mid_center.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "mid_right" "buggy_anims\mid_right.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "up_left" "buggy_anims\up_left.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "up_center" "buggy_anims\up_center.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "up_right" "buggy_anims\up_right.smd" {
+	fps 30
+	weightlist "weights_aim_all"
+}
+
+$Animation "gun_spin0" "buggy_anims\gun_spin0.smd" {
+	fps 30
+	weightlist "weights_gun_spinning"
+}
+
+$Animation "gun_spin120" "buggy_anims\gun_spin120.smd" {
+	fps 30
+	weightlist "weights_gun_spinning"
+}
+
+$Animation "gun_spin240" "buggy_anims\gun_spin240.smd" {
+	fps 30
+	weightlist "weights_gun_spinning"
+}
+
+$Animation "slow" "buggy_anims\slow.smd" {
+	fps 30
+	weightlist "weights_speedometer"
+}
+
+$Animation "mid" "buggy_anims\mid.smd" {
+	fps 30
+	weightlist "weights_speedometer"
+}
+
+$Animation "fast" "buggy_anims\fast.smd" {
+	fps 30
+	weightlist "weights_speedometer"
+}
+
+$Animation "turn_left" "buggy_anims\turn_left.smd" {
+	fps 30
+	weightlist "weights_turning"
+}
+
+$Animation "turn_right" "buggy_anims\turn_right.smd" {
+	fps 30
+	weightlist "weights_turning"
+}
+
+$Animation "wheel_fr_low" "buggy_anims\wheel_fr_low.smd" {
+	fps 30
+	weightlist "weights_wheel_fr_suspension"
+}
+
+$Animation "wheel_fr_high" "buggy_anims\wheel_fr_high.smd" {
+	fps 30
+	weightlist "weights_wheel_fr_suspension"
+}
+
+$Animation "wheel_fr_spin0" "buggy_anims\wheel_fr_spin0.smd" {
+	fps 30
+	weightlist "weights_wheel_fr_spin"
+}
+
+$Animation "wheel_fr_spin120" "buggy_anims\wheel_fr_spin120.smd" {
+	fps 30
+	weightlist "weights_wheel_fr_spin"
+}
+
+$Animation "wheel_fr_spin240" "buggy_anims\wheel_fr_spin240.smd" {
+	fps 30
+	weightlist "weights_wheel_fr_spin"
+}
+
+$Animation "wheel_fl_low" "buggy_anims\wheel_fl_low.smd" {
+	fps 30
+	weightlist "weights_wheel_fl_suspension"
+}
+
+$Animation "wheel_fl_high" "buggy_anims\wheel_fl_high.smd" {
+	fps 30
+	weightlist "weights_wheel_fl_suspension"
+}
+
+$Animation "wheel_fl_spin0" "buggy_anims\wheel_fl_spin0.smd" {
+	fps 30
+	weightlist "weights_wheel_fl_spin"
+}
+
+$Animation "wheel_fl_spin120" "buggy_anims\wheel_fl_spin120.smd" {
+	fps 30
+	weightlist "weights_wheel_fl_spin"
+}
+
+$Animation "wheel_fl_spin240" "buggy_anims\wheel_fl_spin240.smd" {
+	fps 30
+	weightlist "weights_wheel_fl_spin"
+}
+
+$Animation "wheel_rr_low" "buggy_anims\wheel_rr_low.smd" {
+	fps 30
+	weightlist "weights_wheel_rr_suspension"
+}
+
+$Animation "wheel_rr_high" "buggy_anims\wheel_rr_high.smd" {
+	fps 30
+	weightlist "weights_wheel_rr_suspension"
+}
+
+$Animation "wheel_rr_spin0" "buggy_anims\wheel_rr_spin0.smd" {
+	fps 30
+	weightlist "weights_wheel_rr_spin"
+}
+
+$Animation "wheel_rr_spin120" "buggy_anims\wheel_rr_spin120.smd" {
+	fps 30
+	weightlist "weights_wheel_rr_spin"
+}
+
+$Animation "wheel_rr_spin240" "buggy_anims\wheel_rr_spin240.smd" {
+	fps 30
+	weightlist "weights_wheel_rr_spin"
+}
+
+$Animation "wheel_rl_low" "buggy_anims\wheel_rl_low.smd" {
+	fps 30
+	weightlist "weights_wheel_rl_suspension"
+}
+
+$Animation "wheel_rl_high" "buggy_anims\wheel_rl_high.smd" {
+	fps 30
+	weightlist "weights_wheel_rl_suspension"
+}
+
+$Animation "wheel_rl_spin0" "buggy_anims\wheel_rl_spin0.smd" {
+	fps 30
+	weightlist "weights_wheel_rl_spin"
+}
+
+$Animation "wheel_rl_spin120" "buggy_anims\wheel_rl_spin120.smd" {
+	fps 30
+	weightlist "weights_wheel_rl_spin"
+}
+
+$Animation "wheel_rl_spin240" "buggy_anims\wheel_rl_spin240.smd" {
+	fps 30
+	weightlist "weights_wheel_rl_spin"
+}
+
+$Sequence "idle" {
+	"buggy_anims\idle.smd"
+	activity "ACT_IDLE" 1
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "turn" {
+	"buggy_anims\turn.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "suspension" {
+	"buggy_anims\suspension.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "spin" {
+	"buggy_anims\spin.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "aim" {
+	"buggy_anims\aim.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "gun_spin" {
+	"buggy_anims\gun_spin.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "speedo" {
+	"buggy_anims\speedo.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "enter1" {
+	"buggy_anims\enter1.smd"
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 60
+}
+
+$Sequence "exit1" {
+	"buggy_anims\exit1.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "enter2" {
+	"buggy_anims\enter2.smd"
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 60
+}
+
+$Sequence "exit2" {
+	"buggy_anims\exit2.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "enter3" {
+	"buggy_anims\enter3.smd"
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 60
+}
+
+$Sequence "exit3" {
+	"buggy_anims\exit3.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "enter4" {
+	"buggy_anims\enter4.smd"
+	fadein 0.2
+	fadeout 0.2
+	snap
+	fps 60
+}
+
+$Sequence "exit4" {
+	"buggy_anims\exit4.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "exit5" {
+	"buggy_anims\exit5.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "exit6" {
+	"buggy_anims\exit6.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "exit7" {
+	"buggy_anims\exit7.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "exit8" {
+	"buggy_anims\exit8.smd"
+	fadein 0.2
+	fadeout 0
+	fps 60
+}
+
+$Sequence "ammo_open" {
+	"buggy_anims\ammo_open.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "ammo_close" {
+	"buggy_anims\ammo_close.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "tau_levitate" {
+	"buggy_anims\tau_levitate.smd"
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+}
+
+$Sequence "tau_removed" {
+	"a_tau_removed"
+	fadein 0.2
+	fadeout 0.2
+	hidden
+}
+
+$Sequence "exit_tauremoved" {
+	"buggy_anims\exit_tauremoved.smd"
+	fadein 0.2
+	fadeout 0.2
+	addlayer "tau_removed"
+	fps 30
+}
+
+$Sequence "aim_all" {
+	"down_left"
+	"down_center"
+	"down_right"
+	"mid_left"
+	"mid_center"
+	"mid_right"
+	"up_left"
+	"up_center"
+	"up_right"
+	autoplay
+	blend "vehicle_weapon_yaw" -120 120
+	blend "vehicle_weapon_pitch" -60 60
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "gun_spinning" {
+	"gun_spin0"
+	"gun_spin120"
+	"gun_spin240"
+	"gun_spin0"
+	autoplay
+	blend "gun_spin" -180 180
+	blendwidth 4
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "speedometer" {
+	"slow"
+	"mid"
+	"fast"
+	autoplay
+	blend "vehicle_guage" 0 1
+	blendwidth 3
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "turning" {
+	"turn_left"
+	"turn_right"
+	autoplay
+	blend "vehicle_steer" -1 1
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_fr_suspension" {
+	"wheel_fr_low"
+	"wheel_fr_high"
+	autoplay
+	blend "vehicle_wheel_fr_height" 0 1
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_fr_spin" {
+	"wheel_fr_spin0"
+	"wheel_fr_spin120"
+	"wheel_fr_spin240"
+	"wheel_fr_spin0"
+	autoplay
+	blend "vehicle_wheel_fr_spin" -180 180
+	blendwidth 4
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_fl_suspension" {
+	"wheel_fl_low"
+	"wheel_fl_high"
+	autoplay
+	blend "vehicle_wheel_fl_height" 0 1
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_fl_spin" {
+	"wheel_fl_spin0"
+	"wheel_fl_spin120"
+	"wheel_fl_spin240"
+	"wheel_fl_spin0"
+	autoplay
+	blend "vehicle_wheel_fl_spin" -180 180
+	blendwidth 4
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_rr_suspension" {
+	"wheel_rr_low"
+	"wheel_rr_high"
+	autoplay
+	blend "vehicle_wheel_rr_height" 0 1
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_rr_spin" {
+	"wheel_rr_spin0"
+	"wheel_rr_spin120"
+	"wheel_rr_spin240"
+	"wheel_rr_spin0"
+	autoplay
+	blend "vehicle_wheel_rr_spin" -180 180
+	blendwidth 4
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_rl_suspension" {
+	"wheel_rl_low"
+	"wheel_rl_high"
+	autoplay
+	blend "vehicle_wheel_rl_height" 0 1
+	blendwidth 2
+	delta
+	fadein 0.2
+	fadeout 0.2
+}
+
+$Sequence "wheel_rl_spin" {
+	"wheel_rl_spin0"
+	"wheel_rl_spin120"
+	"wheel_rl_spin240"
+	"wheel_rl_spin0"
+	autoplay
+	blend "vehicle_wheel_rl_spin" -180 180
+	blendwidth 4
+	delta
+	fadein 0.2
+	fadeout 0.2
+}

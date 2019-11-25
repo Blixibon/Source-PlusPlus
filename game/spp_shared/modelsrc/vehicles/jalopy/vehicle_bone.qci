@@ -1,0 +1,30 @@
+
+$DefineBone "Rig_Buggy.Frame" "" 0 35.485321 34.0466 0 0 89.999982 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_RR_Sleeve" "Rig_Buggy.Frame" -23.022341 8.40532 -65.041862 -11.542923 -101.067812 6.890963 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_FR_Sleeve" "Rig_Buggy.Frame" -21.389791 8.021282 83.477676 -2.858601 159.447051 -12.691704 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Axel_RR" "Rig_Buggy.Frame" 0.000008 -14.37205 -51.954159 -0.000036 -180.000005 180.000005 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_RR" "Rig_Buggy.Axel_RR" 38.362362 0.000018 0.339007 0.000036 180.000005 180.000005 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_RR_Piston" "Rig_Buggy.Axel_RR" 28.92576 -7.402312 6.807235 -13.844761 101.549873 174.883374 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Axel_RL" "Rig_Buggy.Frame" 0.000008 -14.37205 -52.293156 0 0 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_RL" "Rig_Buggy.Axel_RL" 35.839706 0.000001 -0.000001 -0.000036 -180.000005 180.000005 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_RL_Piston" "Rig_Buggy.Axel_RL" 28.925745 -7.402332 -6.468227 13.853204 100.842293 -1.927487 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_RL_Sleeve" "Rig_Buggy.Frame" 23.022341 8.40532 -65.041862 -11.542867 -78.932214 1.588239 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.view" "Rig_Buggy.Frame" 17.649115 13.1 4 -89.999982 -89.999982 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Speedo" "Rig_Buggy.Frame" 30.007692 16.053953 38.950901 24.059816 27.827068 -25.281361 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Speedo2" "Rig_Buggy.Frame" 29.891632 12.032869 41.798649 16.861346 15.211111 -25.177372 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_FR_Turn_parent" "Rig_Buggy.Frame" -38.465004 -17.402895 77.096237 0 0 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_FR_Turn" "Rig_Buggy.Wheel_FR_Turn_parent" 0.5 0 0.000001 0 0 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_FR_Rotate" "Rig_Buggy.Wheel_FR_Turn" -0.5 0 0.000001 0 0 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_FR_Piston" "Rig_Buggy.Wheel_FR_Turn_parent" 6.146599 -2.756694 -0.416732 16.978916 -17.203116 13.382632 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.FR_Top_Strut" "Rig_Buggy.Wheel_FR_Turn_parent" 3.98637 7.728779 -0.008186 -0.75957 27.457226 0.006417 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_FL_Turn_parent" "Rig_Buggy.Frame" 38.465004 -17.402927 77.096237 0.000036 180.000005 180.000005 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_FL_Turn" "Rig_Buggy.Wheel_FL_Turn_parent" 0.500001 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Wheel_FL_Rotate" "Rig_Buggy.Wheel_FL_Turn" 0.000001 0 0 0 0 0 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_FL_Piston" "Rig_Buggy.Wheel_FL_Turn_parent" 6.14663 -2.756808 0.416379 12.866842 162.91583 -165.60198 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.FL_Top_Suspension" "Rig_Buggy.Wheel_FL_Turn_parent" 3.986371 7.728779 0.008185 5.728776 27.457284 161.134749 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.air_filter" "Rig_Buggy.Frame" 0.243564 10.541042 72.466728 0 0 5.732614 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Shock_FL_Sleeve" "Rig_Buggy.Frame" 21.459555 8.754425 83.556168 8.566293 22.505724 -167.30465 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.Steer_Wheel" "Rig_Buggy.Frame" 17.475136 6.636702 27.31485 0 0 -66.937514 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.FR_Top_Strut_Base" "Rig_Buggy.Frame" -18.317291 -1.276392 77.329521 -0.75957 27.457226 2.926898 0 0 0 0 0 0
+$DefineBone "Rig_Buggy.FL_Body_Top_Suspension" "Rig_Buggy.Frame" 18.317289 -1.276392 78.915184 5.728776 -27.457284 86.494394 0 0 0 0 0 0
+

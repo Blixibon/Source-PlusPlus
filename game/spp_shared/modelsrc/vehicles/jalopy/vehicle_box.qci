@@ -1,0 +1,16 @@
+
+$CBox 0 0 0 0 0 0
+
+$BBox -90 -160.116 -13.953 90 114.515 164.047
+
+$HBoxSet "default"
+$HBox 0 "Rig_Buggy.Frame" -32 -24 51 32 8 119 ""
+$HBox 1 "Rig_Buggy.Frame" 1 -7 -12 25 23 12 ""
+$HBox 5 "Rig_Buggy.Frame" -32 0 -95 35 32 -50 ""
+$HBox 0 "Rig_Buggy.Frame" -27 -24 -65 27 24 -11 ""
+$HBoxSet "entryboxes"
+$HBox 0 "Rig_Buggy.Frame" 20 -48 -40 90 68 60 ""
+$HBox 1 "Rig_Buggy.Frame" -90 -48 -40 -20 68 60 ""
+$HBox 2 "Rig_Buggy.Frame" -70 -48 40 70 90 150 ""
+$HBox 3 "Rig_Buggy.Frame" -40 70 -55 40 130 25 ""
+$SkipBoneInBBox

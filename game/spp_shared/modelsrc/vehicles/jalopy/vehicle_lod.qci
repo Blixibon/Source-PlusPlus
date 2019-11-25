@@ -1,0 +1,29 @@
+
+$LOD 30
+{
+	replacemodel "Vehicle_reference.smd" "Vehicle_reference_lod1.smd"
+	replacemodel "radar.smd" "radar_lod1.smd"
+	replacemodel "magnusson_holder.smd" "magnusson_holder_lod1.smd"
+	replacemodel "car_bar.smd" "car_bar_lod1.smd"
+}
+$LOD 45
+{
+	replacemodel "Vehicle_reference.smd" "Vehicle_reference_lod2.smd"
+	replacemodel "radar.smd" "radar_lod2.smd"
+	replacemodel "magnusson_holder.smd" "magnusson_holder_lod2.smd"
+	replacemodel "car_bar.smd" "car_bar_lod2.smd"
+}
+$LOD 70
+{
+	replacemodel "Vehicle_reference.smd" "Vehicle_reference_lod3.smd"
+	replacemodel "radar.smd" "radar_lod3.smd"
+	replacemodel "magnusson_holder.smd" "magnusson_holder_lod3.smd"
+	replacemodel "car_bar.smd" "car_bar_lod3.smd"
+}
+$ShadowLOD
+{
+	replacemodel "Vehicle_reference.smd" "Vehicle_reference_lod4.smd"
+	replacemodel "radar.smd" "radar_lod4.smd"
+	replacemodel "magnusson_holder.smd" "magnusson_holder_lod4.smd"
+	replacemodel "car_bar.smd" "car_bar_lod4.smd"
+}

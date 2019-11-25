@@ -1,0 +1,12 @@
+
+$CollisionModel "buggy_physics.smd"
+{
+	$mass 800
+	$inertia 1
+	$damping 0
+	$rotdamping 0
+	$rootbone " "
+	$concave
+	$maxconvexpieces 9
+
+}

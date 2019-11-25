@@ -1,0 +1,26 @@
+
+$LOD 18
+{
+	replacemodel "buggy_reference.smd" "buggy_reference_lod1.smd"
+	replacemodel "buggy_tau_reference.smd" "buggy_tau_reference_lod1.smd"
+}
+$LOD 40
+{
+	replacemodel "buggy_reference.smd" "buggy_reference_lod2.smd"
+	replacemodel "buggy_tau_reference.smd" "buggy_tau_reference_lod2.smd"
+}
+$LOD 80
+{
+	replacemodel "buggy_reference.smd" "buggy_reference_lod3.smd"
+	replacemodel "buggy_tau_reference.smd" "buggy_tau_reference_lod3.smd"
+}
+$LOD 110
+{
+	replacemodel "buggy_reference.smd" "buggy_reference_lod4.smd"
+	replacemodel "buggy_tau_reference.smd" "buggy_tau_reference_lod4.smd"
+}
+$ShadowLOD
+{
+	replacemodel "buggy_reference.smd" "buggy_reference_lod5.smd"
+	replacemodel "buggy_tau_reference.smd" "buggy_tau_reference_lod5.smd"
+}
