@@ -2995,7 +2995,7 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 		}
 
 
-		virtual CBaseEntity* CreateNextEntity( const char *pClassname )
+		virtual CBaseEntity* CreateNextEntity( const char *pClassname, char* pClassnameWriteBack, int iMaxWrite)
 		{
 			if ( m_iIterator == g_MapEntityRefs.InvalidIndex() )
 			{

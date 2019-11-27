@@ -1050,6 +1050,9 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 			if ( pOldLevel )
 			{
 				MapEntity_ParseAllEntities( pMapEntities );
+
+				// Now call the mod specific parse
+				LevelInit_ParseAllEntities(pMapEntities);
 			}
 			else
 			{
@@ -2728,7 +2731,7 @@ bool CMapLoadEntityFilter::ShouldCreateEntity( const char *pClassname )
 	return true;
 }
 
-CBaseEntity* CMapLoadEntityFilter::CreateNextEntity( const char *pClassname )
+CBaseEntity* CMapLoadEntityFilter::CreateNextEntity( const char *pClassname, char* pClassnameWriteBack, int iMaxWrite)
 {
 	CBaseEntity *pRet = CreateEntityByName( pClassname );
 

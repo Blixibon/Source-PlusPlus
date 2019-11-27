@@ -7554,7 +7554,7 @@ namespace EntCreate_Internal
 	class CEntCreateClassFilter : public IMapEntityFilter
 	{
 	public:
-		virtual CBaseEntity* CreateNextEntity(const char *pClassname) { return nullptr; }
+		virtual CBaseEntity* CreateNextEntity(const char *pClassname, char* pClassnameWriteBack, int iMaxWrite) { return nullptr; }
 		virtual bool ShouldCreateEntity(const char *pClassname)
 		{
 			if (!Q_strncasecmp("npc_", pClassname, 4) || !Q_strncasecmp("monster_", pClassname, 8) || !Q_strncasecmp("item_", pClassname, 5) || !Q_strncasecmp("weapon_", pClassname, 7))

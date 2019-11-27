@@ -113,7 +113,7 @@
 
 @BaseClass base(PlayerFollower) = CombatSupplier
 [
-	ammosupply(choices) : "Ammo to Resupply (if spawnflag set)" : "SMG1" =
+	ammosupply(choices) : "Ammo to Resupply (if spawnflag set)" : "Current" =
 	[
 		"Pistol" : "Pistol"
 		"SMG1" : "SMG1"

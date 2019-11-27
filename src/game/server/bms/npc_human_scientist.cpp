@@ -78,8 +78,6 @@ public:
 
 	virtual void Precache()
 	{
-		// Prevents a warning
-		SelectModel();
 		BaseClass::Precache();
 		UTIL_PrecacheOther("item_syringe");
 	}
@@ -95,15 +93,9 @@ public:
 
 	void HandleAnimEvent(animevent_t *pEvent);
 
-	void			GatherConditions();
-	void			PredictPlayerPush();
-	void			BuildScheduleTestBits();
-
-	int 			SelectSchedulePriorityAction();
-	int 			SelectScheduleHeal();
+	virtual int		TranslateSchedule(int nSchedule);
 
 	bool 			CanHeal();
-	bool 			ShouldHealTarget(CBaseEntity *pTarget, bool bActiveUse = false);
 	void 			Heal();
 
 	void			UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
@@ -113,19 +105,6 @@ public:
 	//void OnChangeRunningBehavior(CAI_BehaviorBase *pOldBehavior, CAI_BehaviorBase *pNewBehavior);
 
 	void DeathSound(const CTakeDamageInfo &info);
-	//void GatherConditions();
-	/*void UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void 			CommanderUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	bool			CanJoinPlayerSquad();
-	void			AddToPlayerSquad();
-	void			RemoveFromPlayerSquad();
-	void 			TogglePlayerSquadState();
-	void 			FixupPlayerSquad();
-	void 			ClearFollowTarget();
-
-	void		ModifyOrAppendCriteria(AI_CriteriaSet& set);
-
-	CAI_BaseNPC *	GetSquadCommandRepresentative();*/
 
 	WeaponProficiency_t CalcWeaponProficiency(CBaseCombatWeapon *pWeapon)
 	{
@@ -139,17 +118,9 @@ public:
 
 protected:
 
-	float			m_flPlayerHealTime;
-	float			m_flAllyHealTime;
-
-	float			m_flTimePlayerStare;	// The game time at which the player started staring at me.
-	float			m_flTimeNextHealStare;	// Next time I'm allowed to heal a player who is staring at me.
-
 	enum
 	{
 		SCHED_SCIENTIST_HEAL_ALLY = BaseClass::NEXT_SCHEDULE,
-
-		COND_SCI_PLAYERHEALREQUEST = BaseClass::NEXT_CONDITION,
 	};
 
 	static colleagueModel_t gm_Models[];
@@ -210,7 +181,7 @@ void CNPC_BaseScientist::SelectModel()
 	else
 		SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(gm_Models, 2)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(gm_Models, 2, m_nSkin.GetForModify())));
 }
 
 #define SCI_MAX_GLASSES 6
@@ -220,8 +191,6 @@ void CNPC_BaseScientist::SelectModel()
 //-----------------------------------------------------------------------------
 void CNPC_BaseScientist::Spawn(void)
 {
-	Precache();
-
 	m_iHealth = 80;
 
 
@@ -238,7 +207,7 @@ void CNPC_BaseScientist::Spawn(void)
 
 	SetUse(&CNPC_BaseScientist::CommanderUse);
 
-	m_nSkin = gm_iLastChosenSkin;
+	//m_nSkin = gm_iLastChosenSkin;
 	int iGlasses = FindBodygroupByName("glasses");
 	SetBodygroup(iGlasses, RandomInt(0, SCI_MAX_GLASSES));
 }
@@ -297,6 +266,20 @@ void CNPC_BaseScientist::HandleAnimEvent(animevent_t *pEvent)
 	}*/
 }
 
+int CNPC_BaseScientist::TranslateSchedule(int nSchedule)
+{
+	switch (nSchedule)
+	{
+	case SCHED_SUPPLIER_HEAL:
+	case SCHED_SUPPLIER_HEAL_TOSS:
+		return SCHED_SCIENTIST_HEAL_ALLY;
+		break;
+	default:
+		return BaseClass::TranslateSchedule(nSchedule);
+		break;
+	}
+}
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 void CNPC_BaseScientist::DeathSound(const CTakeDamageInfo &info)
@@ -324,76 +307,9 @@ bool CNPC_BaseScientist::CanHeal()
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_BaseScientist::ShouldHealTarget(CBaseEntity *pTarget, bool bActiveUse)
-{
-	if (!pTarget || (IRelationType(pTarget) < D_LI) || pTarget->GetFlags() & FL_NOTARGET)
-		return false;
-
-	// Don't heal if I'm in the middle of talking
-	if (IsSpeaking())
-		return false;
-
-	bool bTargetIsPlayer = pTarget->IsPlayer();
-
-	// Don't heal or give ammo to targets in vehicles
-	CBaseCombatCharacter *pCCTarget = pTarget->MyCombatCharacterPointer();
-	if (pCCTarget != NULL && pCCTarget->IsInAVehicle())
-		return false;
-
-	if (IsMedic())
-	{
-		Vector toPlayer = (pTarget->GetAbsOrigin() - GetAbsOrigin());
-		if ((bActiveUse || !HaveCommandGoal() || toPlayer.Length() < HEAL_TARGET_RANGE)
-#ifdef HL2_EPISODIC
-			&& fabs(toPlayer.z) < HEAL_TARGET_RANGE_Z
-#endif
-			)
-		{
-			if (pTarget->m_iHealth > 0)
-			{
-				if (bActiveUse)
-				{
-					// Ignore heal requests if we're going to heal a tiny amount
-					float timeFullHeal = m_flPlayerHealTime;
-					float timeRecharge = sk_citizen_heal_player_delay.GetFloat();
-					float maximumHealAmount = sk_citizen_heal_player.GetFloat();
-					float healAmt = (maximumHealAmount * (1.0 - (timeFullHeal - gpGlobals->curtime) / timeRecharge));
-					if (healAmt > pTarget->m_iMaxHealth - pTarget->m_iHealth)
-						healAmt = pTarget->m_iMaxHealth - pTarget->m_iHealth;
-					if (healAmt < sk_citizen_heal_player_min_forced.GetFloat())
-						return false;
-
-					return (pTarget->m_iMaxHealth > pTarget->m_iHealth);
-				}
-
-				// Are we ready to heal again?
-				bool bReadyToHeal = ((bTargetIsPlayer && m_flPlayerHealTime <= gpGlobals->curtime) ||
-					(!bTargetIsPlayer && m_flAllyHealTime <= gpGlobals->curtime));
-
-				// Only heal if we're ready
-				if (bReadyToHeal)
-				{
-					int requiredHealth;
-
-					if (bTargetIsPlayer)
-						requiredHealth = pTarget->GetMaxHealth() - sk_citizen_heal_player.GetFloat();
-					else
-						requiredHealth = pTarget->GetMaxHealth() * sk_citizen_heal_player_min_pct.GetFloat();
-
-					if ((pTarget->m_iHealth <= requiredHealth) && IRelationType(pTarget) == D_LI)
-						return true;
-				}
-			}
-		}
-	}
-	return false;
-}
-
 void CNPC_BaseScientist::UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value)
 {
-	if (HasCondition(COND_SCI_PLAYERHEALREQUEST))
+	if (HasCondition(COND_SUPPLIER_PLAYERHEALREQUEST))
 		return;
 
 	CBasePlayer *pPlayer = pActivator->IsPlayer() ? (CBasePlayer *)pActivator : GetBestPlayer();
@@ -401,7 +317,7 @@ void CNPC_BaseScientist::UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	{
 		if (ShouldHealTarget(pPlayer, true))
 		{
-			SetCondition(COND_SCI_PLAYERHEALREQUEST);
+			SetCondition(COND_SUPPLIER_PLAYERHEALREQUEST);
 			return;
 		}
 	}
@@ -409,151 +325,7 @@ void CNPC_BaseScientist::UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, 
 	BaseClass::UseFunc(pActivator, pCaller, useType, value);
 }
 
-void CNPC_BaseScientist::PredictPlayerPush()
-{
-	if (!AI_IsSinglePlayer())
-		return;
 
-	if (HasCondition(COND_SCI_PLAYERHEALREQUEST))
-		return;
-
-	bool bHadPlayerPush = HasCondition(COND_PLAYER_PUSHING);
-
-	BaseClass::PredictPlayerPush();
-
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-	if (!bHadPlayerPush && HasCondition(COND_PLAYER_PUSHING) &&
-		pPlayer->FInViewCone(this) && CanHeal())
-	{
-		if (ShouldHealTarget(pPlayer, true))
-		{
-			ClearCondition(COND_PLAYER_PUSHING);
-			SetCondition(COND_SCI_PLAYERHEALREQUEST);
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-// Determine if citizen should perform heal action.
-//-----------------------------------------------------------------------------
-int CNPC_BaseScientist::SelectScheduleHeal()
-{
-
-	if (CanHeal())
-	{
-		CBaseEntity *pEntity = PlayerInRange(GetLocalOrigin(), HEAL_MOVE_RANGE);
-		if (pEntity && ShouldHealTarget(pEntity, HasCondition(COND_SCI_PLAYERHEALREQUEST)))
-		{
-			SetTarget(pEntity);
-			return SCHED_SCIENTIST_HEAL_ALLY;
-		}
-
-		if (m_pSquad)
-		{
-			pEntity = NULL;
-			float distClosestSq = HEAL_MOVE_RANGE*HEAL_MOVE_RANGE;
-			float distCurSq;
-
-			AISquadIter_t iter;
-			CAI_BaseNPC *pSquadmate = m_pSquad->GetFirstMember(&iter);
-			while (pSquadmate)
-			{
-				if (pSquadmate != this)
-				{
-					distCurSq = (GetAbsOrigin() - pSquadmate->GetAbsOrigin()).LengthSqr();
-					if (distCurSq < distClosestSq && ShouldHealTarget(pSquadmate))
-					{
-						distClosestSq = distCurSq;
-						pEntity = pSquadmate;
-					}
-				}
-
-				pSquadmate = m_pSquad->GetNextMember(&iter);
-			}
-
-			if (pEntity)
-			{
-				SetTarget(pEntity);
-				return SCHED_SCIENTIST_HEAL_ALLY;
-			}
-		}
-	}
-	/*else
-	{
-		if (HasCondition(COND_CIT_PLAYERHEALREQUEST))
-			DevMsg("Would say: sorry, need to recharge\n");
-	}*/
-
-	return SCHED_NONE;
-
-
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-int CNPC_BaseScientist::SelectSchedulePriorityAction()
-{
-	int schedule = SelectScheduleHeal();
-	if (schedule != SCHED_NONE)
-		return schedule;
-
-	schedule = BaseClass::SelectSchedulePriorityAction();
-	if (schedule != SCHED_NONE)
-		return schedule;
-
-
-
-	return SCHED_NONE;
-}
-
-void CNPC_BaseScientist::GatherConditions()
-{
-	BaseClass::GatherConditions();
-
-	// If the player is standing near a medic and can see the medic, 
-	// assume the player is 'staring' and wants health.
-	if (CanHeal())
-	{
-		CBasePlayer *pPlayer = GetBestPlayer();
-
-		if (!pPlayer)
-		{
-			m_flTimePlayerStare = FLT_MAX;
-			return;
-		}
-
-		float flDistSqr = (GetAbsOrigin() - pPlayer->GetAbsOrigin()).Length2DSqr();
-		float flStareDist = sk_citizen_player_stare_dist.GetFloat();
-		float flPlayerDamage = pPlayer->GetMaxHealth() - pPlayer->GetHealth();
-
-		if (pPlayer->IsAlive() && flPlayerDamage > 0 && (flDistSqr <= flStareDist * flStareDist) && pPlayer->FInViewCone(this) && pPlayer->FVisible(this))
-		{
-			if (m_flTimePlayerStare == FLT_MAX)
-			{
-				// Player wasn't looking at me at last think. He started staring now.
-				m_flTimePlayerStare = gpGlobals->curtime;
-			}
-
-			// Heal if it's been long enough since last time I healed a staring player.
-			if (gpGlobals->curtime - m_flTimePlayerStare >= sk_citizen_player_stare_time.GetFloat() && gpGlobals->curtime > m_flTimeNextHealStare && !IsCurSchedule(SCHED_SCIENTIST_HEAL_ALLY))
-			{
-				if (ShouldHealTarget(pPlayer, true))
-				{
-					SetCondition(COND_SCI_PLAYERHEALREQUEST);
-				}
-				else
-				{
-					m_flTimeNextHealStare = gpGlobals->curtime + sk_citizen_stare_heal_time.GetFloat() * .5f;
-					ClearCondition(COND_SCI_PLAYERHEALREQUEST);
-				}
-			}
-		}
-		else
-		{
-			m_flTimePlayerStare = FLT_MAX;
-		}
-	}
-}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -612,37 +384,7 @@ void CNPC_BaseScientist::Heal()
 	}
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Allows for modification of the interrupt mask for the current schedule.
-//			In the most cases the base implementation should be called first.
-//-----------------------------------------------------------------------------
-void CNPC_BaseScientist::BuildScheduleTestBits()
-{
-	BaseClass::BuildScheduleTestBits();
 
-	if (IsMedic() && IsCustomInterruptConditionSet(COND_HEAR_MOVE_AWAY))
-	{
-		if (!IsCurSchedule(SCHED_RELOAD, false))
-		{
-			// Since schedule selection code prioritizes reloading over requests to heal
-			// the player, we must prevent this condition from breaking the reload schedule.
-			SetCustomInterruptCondition(COND_SCI_PLAYERHEALREQUEST);
-		}
-
-		//SetCustomInterruptCondition(COND_CIT_COMMANDHEAL);
-	}
-
-	if (IsMedic() && m_AssaultBehavior.IsRunning() && !IsMoving())
-	{
-		if (!IsCurSchedule(SCHED_RELOAD, false))
-		{
-			SetCustomInterruptCondition(COND_SCI_PLAYERHEALREQUEST);
-		}
-
-		//SetCustomInterruptCondition(COND_CIT_COMMANDHEAL);
-	}
-
-}
 
 //-----------------------------------------------------------------------------
 //
@@ -653,8 +395,6 @@ void CNPC_BaseScientist::BuildScheduleTestBits()
 AI_BEGIN_CUSTOM_NPC(npc_human_scientist, CNPC_BaseScientist)
 
 DECLARE_ANIMEVENT(AE_HEAL)
-
-DECLARE_CONDITION(COND_SCI_PLAYERHEALREQUEST)
 
 DEFINE_SCHEDULE
 (
@@ -702,6 +442,8 @@ void CNPC_FemScientist::Spawn()
 {
 	BaseClass::Spawn();
 
+	m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
+
 	int iHair = FindBodygroupByName("hair");
 
 	switch (m_nSkin)
@@ -731,8 +473,6 @@ void CNPC_FemScientist::Spawn()
 	}
 
 	SetBodygroup(0, RandomInt(0, 1));
-
-
 }
 
 LINK_ENTITY_TO_CLASS(npc_human_scientist_female, CNPC_FemScientist);

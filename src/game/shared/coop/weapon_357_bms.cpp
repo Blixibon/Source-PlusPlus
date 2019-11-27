@@ -47,13 +47,27 @@ public:
 	CBMSWeapon357( void );
 
 	void	PrimaryAttack( void );
-	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	
+#ifndef CLIENT_DLL
+	void	Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCharacter* pOperator);
+	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+#endif
 
 	virtual bool			IsSniper() { return true; }
 
 	float	WeaponAutoAimScale()	{ return 0.6f; }
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_357; }
+
+	virtual int	GetMinBurst()
+	{
+		return 1;
+	}
+
+	virtual int	GetMaxBurst()
+	{
+		return 1;
+	}
 
 	DECLARE_NETWORKCLASS();
     DECLARE_PREDICTABLE();
@@ -98,38 +112,39 @@ CBMSWeapon357::CBMSWeapon357( void )
 	m_bFiresUnderwater	= false;
 }
 
+#ifndef CLIENT_DLL
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CBMSWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CBMSWeapon357::Operator_HandleAnimEvent(animevent_t* pEvent, CBaseCombatCharacter* pOperator)
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-
-	switch( pEvent->event )
+	switch (pEvent->event)
 	{
-		case EVENT_WEAPON_RELOAD:
-			{
-				CEffectData data;
+	case EVENT_WEAPON_PISTOL_FIRE:
+	{
+		Vector vecShootOrigin, vecShootDir;
+		vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-				// Emit six spent shells
-				for ( int i = 0; i < 6; i++ )
-				{
-					data.m_vOrigin = pOwner->WorldSpaceCenter() + RandomVector( -4, 4 );
-					data.m_vAngles = QAngle( 90, random->RandomInt( 0, 360 ), 0 );
+		CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+		ASSERT(npc != NULL);
 
-                    #ifndef CLIENT_DLL
-					data.m_nEntIndex = entindex();
-                    #else
-                    data.m_hEntity = this;
-                    #endif
+		vecShootDir = npc->GetActualShootTrajectory(vecShootOrigin);
 
-					DispatchEffect( "ShellEject", data );
-				}
+		CSoundEnt::InsertSound(SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy());
 
-				break;
-			}
+		WeaponSound(SINGLE_NPC);
+		pOperator->FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2);
+		pOperator->DoMuzzleFlash();
+		m_iClip1 = m_iClip1 - 1;
+	}
+	break;
+	default:
+		BaseClass::Operator_HandleAnimEvent(pEvent, pOperator);
+		break;
 	}
 }
+#endif // !CLIENT_DLL
+
 
 //-----------------------------------------------------------------------------
 // Purpose:

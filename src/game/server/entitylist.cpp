@@ -1398,7 +1398,7 @@ public:
 		return Q_stricmp( pClassname, "worldspawn" ) != 0;
 	}
 
-	virtual CBaseEntity* CreateNextEntity( const char *pClassname )
+	virtual CBaseEntity* CreateNextEntity( const char *pClassname, char* pClassnameWriteBack, int iMaxWrite)
 	{
 		return CreateEntityByName( pClassname );
 	}

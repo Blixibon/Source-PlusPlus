@@ -771,7 +771,7 @@
 ]
 
 // BMS
-@BaseClass base(PlayerCompanion) = BaseColleague
+@BaseClass base(CombatSupplier) = BaseColleague
 [
 	expressiontype(choices) : "Expression Type" : "Random" =
 	[

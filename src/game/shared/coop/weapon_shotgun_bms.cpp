@@ -369,6 +369,10 @@ bool CBMSWeaponShotgun::StartReload( void )
 	pOwner->m_flNextAttack = gpGlobals->curtime;
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 
+	CHL2_Player* pPlayer = ToHL2Player(pOwner);
+	if (pPlayer)
+		pPlayer->DoAnimationEvent(PLAYERANIMEVENT_RELOAD);
+
 	m_bInReload = true;
 	return true;
 }

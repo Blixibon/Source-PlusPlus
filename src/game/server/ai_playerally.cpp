@@ -345,7 +345,7 @@ BEGIN_DATADESC( CAI_PlayerAlly )
 	DEFINE_EMBEDDED_AUTO_ARRAY(m_ConceptCategoryTimers),
 
 	DEFINE_KEYFIELD( m_bGameEndAlly, FIELD_BOOLEAN, "GameEndAlly" ),
-	DEFINE_FIELD( m_bCanSpeakWhileScripting, FIELD_BOOLEAN ),
+	DEFINE_KEYFIELD( m_bCanSpeakWhileScripting, FIELD_BOOLEAN, "CanSpeakWhileScripting" ),
 
 	DEFINE_FIELD( m_flHealthAccumulator, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flTimeLastRegen, FIELD_TIME ),
@@ -763,7 +763,7 @@ bool CAI_PlayerAlly::SelectQuestionAndAnswerSpeech( AISpeechSelection_t *pSelect
 		return false;
 
 	// if there is a friend nearby to speak to, play sentence, set friend's response time, return
-	CBaseCombatCharacter* pFriend = dynamic_cast<CBaseCombatCharacter*>(FindSpeechTarget(AIST_NPCS | AIST_PLAYERS));
+	CBaseCombatCharacter* pFriend = dynamic_cast<CBaseCombatCharacter*>(FindSpeechTarget(g_pGameRules->IsMultiplayer() ? (AIST_NPCS | AIST_PLAYERS) : AIST_NPCS));
 	if ( pFriend && !pFriend->IsMoving() && (pFriend->IsPlayer() || !pFriend->HasSpawnFlags(SF_NPC_GAG)) )
 		return SelectQuestionFriend( pFriend, pSelection );
 
@@ -773,7 +773,7 @@ bool CAI_PlayerAlly::SelectQuestionAndAnswerSpeech( AISpeechSelection_t *pSelect
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response &response )
+void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response *response )
 {
 //#ifdef HL2_EPISODIC
 	CAI_AllySpeechManager *pSpeechManager = GetAllySpeechManager();

@@ -99,7 +99,7 @@ CStudioHdr *CNPC_BaseColleague::OnNewModel()
 	{
 #ifndef CLIENT_DLL
 		// Server-side seed generation.
-		int iSeed = SeedFileLineHash(entindex(), hdr->pszName(), gpGlobals->curtime);
+		int iSeed = SeedFileLineHash(GetRefEHandle().GetSerialNumber(), hdr->pszName(), 0);
 		m_iHeadRndSeed = iSeed;
 
 		DevMsg(2, "ENT %d %s seed: %d\n", entindex(), (IsServer() ? "SERVER" : "CLIENT"), iSeed);

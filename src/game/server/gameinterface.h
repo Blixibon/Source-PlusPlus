@@ -190,7 +190,7 @@ class CMapLoadEntityFilter : public IMapEntityFilter
 public:
 	virtual bool ShouldCreateEntity( const char *pClassname ) OVERRIDE;
 
-	virtual CBaseEntity* CreateNextEntity( const char *pClassname ) OVERRIDE;
+	virtual CBaseEntity* CreateNextEntity( const char *pClassname, char* pClassnameWriteBack, int iMaxWrite) OVERRIDE;
 };
 
 bool IsEngineThreaded();

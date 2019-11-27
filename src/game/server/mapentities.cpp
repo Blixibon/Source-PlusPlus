@@ -578,7 +578,7 @@ const char *MapEntity_ParseEntity(CBaseEntity *&pEntity, const char *pEntData, I
 		// Construct via the LINK_ENTITY_TO_CLASS factory.
 		//
 		if ( pFilter )
-			pEntity = pFilter->CreateNextEntity( className );
+			pEntity = pFilter->CreateNextEntity( className, className, MAPKEY_MAXLENGTH );
 		else
 			pEntity = CreateEntityByName(className);
 

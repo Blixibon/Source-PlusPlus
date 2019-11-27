@@ -89,9 +89,9 @@ void CNPC_BaseColleague::Precache()
 	}
 }
 
-int CNPC_BaseColleague::gm_iLastChosenSkin = 0;
+//int CNPC_BaseColleague::gm_iLastChosenSkin = 0;
 
-const char *CNPC_BaseColleague::ChooseColleagueModel(colleagueModel_t * models, int iNumModels)
+const char *CNPC_BaseColleague::ChooseColleagueModel(colleagueModel_t * models, int iNumModels, int& nSkin)
 {
 	int iNumSkins = 0;
 	for (int i = 0; i < iNumModels; i++)
@@ -100,19 +100,19 @@ const char *CNPC_BaseColleague::ChooseColleagueModel(colleagueModel_t * models, 
 		iNumSkins += mdl.iNumSkins;
 	}
 
-	gm_iLastChosenSkin = RandomInt(0, iNumSkins - 1);
+	nSkin = RandomInt(0, iNumSkins - 1);
 
 	colleagueModel_t outMDL = models[0];
 	for (int i = 0; i < iNumModels; i++)
 	{
 		colleagueModel_t& mdl = models[i];
-		if (gm_iLastChosenSkin >= mdl.iNumSkins)
+		if (nSkin >= mdl.iNumSkins)
 		{
-			gm_iLastChosenSkin -= mdl.iNumSkins;
+			nSkin -= mdl.iNumSkins;
 		}
 		else
 		{
-			gm_iLastChosenSkin += mdl.iFirstSkin;
+			nSkin += mdl.iFirstSkin;
 			outMDL = mdl;
 			break;
 		}

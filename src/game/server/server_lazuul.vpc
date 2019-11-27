@@ -24,6 +24,7 @@ $Project "Server (Lazuul)"
 	$Folder "Source Files"
 	{
 		-$File	"$SRCDIR\game\shared\achievements_hlx.cpp"
+		-$File	"base_gameinterface.cpp"
 
 		$Folder "Navigation Mesh"
 		{
@@ -71,6 +72,7 @@ $Project "Server (Lazuul)"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.cpp"
 			$File "$SRCDIR\game\shared\peter\laz_gamemovement.h"
 			$File "peter\laz_hltvdirector.cpp"
+			$File "peter\laz_gameinterface.cpp"
 		}
 
 		$Folder "TF"

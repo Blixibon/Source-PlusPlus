@@ -67,12 +67,7 @@ public:
 	//DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	virtual void Precache()
-	{
-		// Prevents a warning
-		SelectModel();
-		BaseClass::Precache();
-	}
+	CNPC_HumanGuard();
 
 	void	Spawn(void);
 	void	Activate();
@@ -81,6 +76,8 @@ public:
 	void	Weapon_Equip(CBaseCombatWeapon *pWeapon);
 
 	virtual void EnableHelmet() { SetBodygroup(2, 1); }
+
+	virtual bool	IsAmmoResupplier() { return true; }
 
 	//bool CreateBehaviors(void);
 #ifdef HGUARD_AE
@@ -229,7 +226,7 @@ void CNPC_HumanGuard::SelectModel()
 {
 	int iFirstIndex = g_bmsSecurityPop.GetRandom() * NUM_MODELSETS_PER_RANK;
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(&gm_Models[iFirstIndex], NUM_MODELSETS_PER_RANK)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(&gm_Models[iFirstIndex], NUM_MODELSETS_PER_RANK, m_nSkin.GetForModify())));
 }
 
 void CNPC_HumanGuard::Activate()
@@ -271,13 +268,19 @@ void CNPC_HumanGuard::InitRandomFlexes()
 	m_bFlexInit = true;
 }
 
+CNPC_HumanGuard::CNPC_HumanGuard()
+{
+	m_iszAmmoSupply = AllocPooledString("Current");
+	m_iAmmoAmount = 15;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_HumanGuard::Spawn(void)
 {
-	Precache();
-	InitRandomFlexes();
+	//Precache();
+	//InitRandomFlexes();
 
 	m_iHealth = 80;
 
@@ -313,7 +316,7 @@ void CNPC_HumanGuard::Spawn(void)
 
 	SetUse(&CNPC_HumanGuard::CommanderUse); 
 
-	m_nSkin = gm_iLastChosenSkin;
+	//m_nSkin = gm_iLastChosenSkin;
 	if (RandomFloat() >= 0.75f)
 		EnableHelmet();
 
@@ -386,12 +389,6 @@ Class_T	CNPC_HumanGuard::Classify(void)
 void CNPC_HumanGuard::Weapon_Equip(CBaseCombatWeapon *pWeapon)
 {
 	BaseClass::Weapon_Equip(pWeapon);
-
-	if (hl2_episodic.GetBool() && FClassnameIs(pWeapon, "weapon_ar2"))
-	{
-		// Allow Barney to defend himself at point-blank range in c17_05.
-		pWeapon->m_fMinRange1 = 0.0f;
-	}
 }
 
 //---------------------------------------------------------
@@ -512,6 +509,8 @@ void CNPC_FemSecurity::SelectModel()
 void CNPC_FemSecurity::Spawn()
 {
 	BaseClass::Spawn();
+
+	m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
 
 	int iHair = FindBodygroupByName("head");
 

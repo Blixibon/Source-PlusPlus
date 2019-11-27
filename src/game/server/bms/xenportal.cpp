@@ -43,6 +43,8 @@ DEFINE_KEYFIELD(m_PortalData.iSize, FIELD_INTEGER, "size"),
 DEFINE_OUTPUT(m_PortalData.m_StartPortal, "OnStartPortal"),
 DEFINE_OUTPUT(m_PortalData.m_EndPortal, "OnFinishPortal"),
 
+DEFINE_INPUTFUNC(FIELD_VOID, "StartPortal", InputSpawnNPC),
+
 END_DATADESC()
 
 IMPLEMENT_SERVERCLASS_ST(CXenPortal, DT_XenPortal)
@@ -231,7 +233,9 @@ DEFINE_THINKFUNC(QueuedSpawnThink),
 
 DEFINE_UTLVECTOR(m_DelayedSpawns, FIELD_EMBEDDED),
 
-END_DATADESC()
+DEFINE_INPUTFUNC(FIELD_VOID, "StartPortal", InputSpawnNPC),
+
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 

@@ -5,12 +5,6 @@ class CNPC_HumanMainT : public CNPC_BaseColleague
 {
 	DECLARE_CLASS(CNPC_HumanMainT, CNPC_BaseColleague);
 public:
-	virtual void Precache()
-	{
-		// Prevents a warning
-		SelectModel();
-		BaseClass::Precache();
-	}
 
 	void	Spawn(void);
 	void	SelectModel();
@@ -34,7 +28,7 @@ Class_T	CNPC_HumanMainT::Classify(void)
 //-----------------------------------------------------------------------------
 void CNPC_HumanMainT::Spawn(void)
 {
-	Precache();
+	//Precache();
 
 	m_iHealth = 80;
 
@@ -47,7 +41,7 @@ void CNPC_HumanMainT::Spawn(void)
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
 
-	m_nSkin = gm_iLastChosenSkin;
+	//m_nSkin = gm_iLastChosenSkin;
 	int iHelmet = FindBodygroupByName("helmet");
 	SetBodygroup(iHelmet, RandomInt(0, GetBodygroupCount(iHelmet) - 1));
 }
@@ -67,19 +61,13 @@ void CNPC_HumanMainT::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel, 2)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel, 2, m_nSkin.GetForModify())));
 }
 
 class CNPC_HumanEngie : public CNPC_BaseColleague
 {
 	DECLARE_CLASS(CNPC_HumanEngie, CNPC_BaseColleague);
 public:
-	virtual void Precache()
-	{
-		// Prevents a warning
-		SelectModel();
-		BaseClass::Precache();
-	}
 
 	void	Spawn(void);
 	void	SelectModel();
@@ -102,7 +90,7 @@ Class_T	CNPC_HumanEngie::Classify(void)
 //-----------------------------------------------------------------------------
 void CNPC_HumanEngie::Spawn(void)
 {
-	Precache();
+	//Precache();
 
 	m_iHealth = 80;
 
@@ -115,7 +103,7 @@ void CNPC_HumanEngie::Spawn(void)
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
 
-	m_nSkin = gm_iLastChosenSkin;
+	//m_nSkin = gm_iLastChosenSkin;
 	int iHelmet = FindBodygroupByName("helmet");
 	SetBodygroup(iHelmet, RandomInt(0, GetBodygroupCount(iHelmet) - 1));
 }
@@ -135,19 +123,13 @@ void CNPC_HumanEngie::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel, 2)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel, 2, m_nSkin.GetForModify())));
 }
 
 class CNPC_HumanOffice : public CNPC_BaseColleague
 {
 	DECLARE_CLASS(CNPC_HumanOffice, CNPC_BaseColleague);
 public:
-	virtual void Precache()
-	{
-		// Prevents a warning
-		SelectModel();
-		BaseClass::Precache();
-	}
 
 	void	Spawn(void);
 	void	SelectModel();
@@ -170,7 +152,7 @@ Class_T	CNPC_HumanOffice::Classify(void)
 //-----------------------------------------------------------------------------
 void CNPC_HumanOffice::Spawn(void)
 {
-	Precache();
+	//Precache();
 
 	m_iHealth = 80;
 
@@ -183,7 +165,7 @@ void CNPC_HumanOffice::Spawn(void)
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
 
-	m_nSkin = gm_iLastChosenSkin;
+	//m_nSkin = gm_iLastChosenSkin;
 	int iGlasses = FindBodygroupByName("glasses");
 	SetBodygroup(iGlasses, RandomInt(0, GetBodygroupCount(iGlasses)-1));
 }
@@ -203,5 +185,5 @@ void CNPC_HumanOffice::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel, 2)));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel, 2, m_nSkin.GetForModify())));
 }

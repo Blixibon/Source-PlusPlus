@@ -19,7 +19,7 @@ abstract_class IMapEntityFilter
 {
 public:
 	virtual bool ShouldCreateEntity( const char *pClassname ) = 0;
-	virtual CBaseEntity* CreateNextEntity( const char *pClassname ) = 0;
+	virtual CBaseEntity* CreateNextEntity( const char *pClassname, char *pClassnameWriteBack, int iMaxWrite ) = 0;
 };
 
 // Use the filter so you can prevent certain entities from being created out of the map.

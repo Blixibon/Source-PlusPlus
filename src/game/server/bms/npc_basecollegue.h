@@ -2,7 +2,7 @@
 #define BASECOLLEGUE_H
 
 #include "ai_behavior_functank.h"
-#include "peter/npc_playerfollower.h"
+#include "peter/npc_combatsupplier.h"
 #include "bms_utils.h"
 
 #define SF_COLLEGUE_DONT_FOLLOW			( 1 << 16 )	//65536
@@ -30,10 +30,10 @@ typedef struct
 	int iNumSkins;
 } colleagueModel_t;
 
-class CNPC_BaseColleague : public CNPC_PlayerFollower
+class CNPC_BaseColleague : public CNPC_CombatSupplier
 {
 public:
-	DECLARE_CLASS(CNPC_BaseColleague, CNPC_PlayerFollower);
+	DECLARE_CLASS(CNPC_BaseColleague, CNPC_CombatSupplier);
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
@@ -101,8 +101,8 @@ public:
 
 	
 
-	static const char *ChooseColleagueModel(colleagueModel_t * models, int iNumModels);
-	static int gm_iLastChosenSkin;
+	static const char *ChooseColleagueModel(colleagueModel_t * models, int iNumModels, int &nSkin);
+	//static int gm_iLastChosenSkin;
 
 protected:
 	CNetworkVar(int, m_iHeadRndSeed);
