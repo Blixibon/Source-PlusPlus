@@ -9,6 +9,8 @@
 	
 	GameData	"lazuul.fgd"
 	
+	"icon"		"resource/game"
+	
 	content
 	{
 		citizen2		1	// The Citizen Returns
