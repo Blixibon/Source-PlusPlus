@@ -16,6 +16,11 @@ $Configuration
 		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\bms;.\bms"
 		$PreprocessorDefinitions		"$BASE;HL2_LAZUL"
 	}
+
+	$Linker
+	{
+		$AdditionalDependencies				"$BASE WSock32.lib" [$WIN32]
+	}
 }
 
 $Project "Client (Lazuul)"
@@ -57,6 +62,7 @@ $Project "Client (Lazuul)"
 			$File "peter\laz_hud_chat.cpp"
 			$File "peter\laz_hud_chat.h"
 			$File "peter\laz_hud_player.cpp"
+			$File "peter\laz_presence.cpp"
 
 			$Folder "HUD"
 			{
@@ -110,5 +116,11 @@ $Project "Client (Lazuul)"
 			$File	"Human_Error\c_npc_aliencontroller.cpp"
 			$File	"Human_Error\c_npc_mantaray.cpp"
 		}
+	}
+
+	$Folder	"Link Libraries"
+	{
+		$Lib	discord-rpc		[$WIN32]
+		$Lib	libdiscord-rpc	[$LINUXALL]
 	}
 }

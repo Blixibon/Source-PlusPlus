@@ -115,6 +115,7 @@ abstract_class CGameRules : public CAutoGameSystemPerFrame
 {
 public:
 	DECLARE_CLASS_GAMEROOT( CGameRules, CAutoGameSystemPerFrame );
+	DECLARE_NETWORKCLASS_NOBASE()
 
 	virtual char const *Name() { return "CGameRules"; }
 
@@ -392,7 +393,7 @@ public:
 
 	virtual bool CanEntityBeUsePushed( CBaseEntity *pEnt ) { return true; }
 
-	virtual void CreateCustomNetworkStringTables( void ) { }
+	virtual void CreateCustomNetworkStringTables(void);
 
 	// Game Achievements (server version)
 	virtual void MarkAchievement ( IRecipientFilter& filter, char const *pchAchievementName );
@@ -421,9 +422,14 @@ public:
 
 	virtual bool IsManualMapChangeOkay( const char **pszReason ){ return true; }
 
+
+	CNetworkVar(int, m_nServerPort);
+	CNetworkVar(int, m_nHLTVPort);
+
 #ifndef CLIENT_DLL
 private:
 	float m_flNextVerboseLogOutput;
+#else
 #endif // CLIENT_DLL
 };
 

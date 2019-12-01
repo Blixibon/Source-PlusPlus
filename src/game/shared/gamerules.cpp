@@ -10,6 +10,8 @@
 #include "tier0/vprof.h"
 #include "KeyValues.h"
 #include "iachievementmgr.h"
+#include "iserver.h"
+#include "ihltv.h"
 
 #ifdef CLIENT_DLL
 
@@ -27,6 +29,7 @@
 	#include "player_resource.h"
 	#include "tactical_mission.h"
 	#include "gamestats.h"
+	#include "hltvdirector.h"
 
 #endif
 
@@ -67,9 +70,69 @@ CGameRulesProxy *CGameRulesProxy::s_pGameRulesProxy = NULL;
 
 IMPLEMENT_NETWORKCLASS_ALIASED( GameRulesProxy, DT_GameRulesProxy )
 
-// Don't send any of the CBaseEntity stuff..
-BEGIN_NETWORK_TABLE_NOBASE( CGameRulesProxy, DT_GameRulesProxy )
+#ifndef CLIENT_DLL
+void SendProxy_ServerPort(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	IServer *pServer = engine->GetIServer();
+
+	pOut->m_Int = pServer->GetUDPPort();
+}
+
+void SendProxy_TVPort(const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID)
+{
+	IHLTVServer *pHLTV = HLTVDirector()->GetHLTVServer();
+	if (pHLTV)
+	{
+		IServer* pServer = pHLTV->GetBaseServer();
+
+		pOut->m_Int = pServer->GetUDPPort();
+	}
+	else
+	{
+		pOut->m_Int = -1;
+	}
+}
+#endif
+
+BEGIN_NETWORK_TABLE_NOBASE(CGameRules, DT_GameRules)
+#ifdef CLIENT_DLL
+RecvPropInt(RECVINFO(m_nServerPort)),
+RecvPropInt(RECVINFO(m_nHLTVPort)),
+#else
+SendPropInt(SENDINFO(m_nServerPort)),
+SendPropInt(SENDINFO(m_nHLTVPort)),
+#endif
 END_NETWORK_TABLE()
+
+#ifdef CLIENT_DLL
+void RecvProxy_GameRules(const RecvProp* pProp, void** pOut, void* pData, int objectID)
+{
+	CGameRules* pRules = (GameRules());
+	Assert(pRules);
+	*pOut = pRules;
+}
+
+BEGIN_RECV_TABLE(CGameRulesProxy, DT_GameRulesProxy)
+RecvPropDataTable("base_game_data", 0, 0, &REFERENCE_RECV_TABLE(DT_GameRules), RecvProxy_GameRules)
+END_RECV_TABLE()
+
+#else
+void* SendProxy_GameRules(const SendProp* pProp, const void* pStructBase, const void* pData, CSendProxyRecipients* pRecipients, int objectID)
+{
+	CGameRules* pRules = (GameRules());
+	Assert(pRules);
+	pRecipients->SetAllRecipients();
+	return pRules;
+}
+
+BEGIN_SEND_TABLE(CGameRulesProxy, DT_GameRulesProxy)
+SendPropDataTable("base_game_data", 0, &REFERENCE_SEND_TABLE(DT_GameRules), SendProxy_GameRules)
+END_SEND_TABLE()
+#endif
+
+// Don't send any of the CBaseEntity stuff..
+//BEGIN_NETWORK_TABLE_NOBASE( CGameRulesProxy, DT_GameRulesProxy )
+//END_NETWORK_TABLE()
 
 
 CGameRulesProxy::CGameRulesProxy()
@@ -875,6 +938,25 @@ void CGameRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 CTacticalMissionManager *CGameRules::TacticalMissionManagerFactory( void )
 {
 	return new CTacticalMissionManager;
+}
+
+void CGameRules::CreateCustomNetworkStringTables(void)
+{
+	IServer* pServer = engine->GetIServer();
+
+	m_nServerPort = pServer->GetUDPPort();
+
+	IHLTVServer* pHLTV = HLTVDirector()->GetHLTVServer();
+	if (pHLTV)
+	{
+		IServer* pServer = pHLTV->GetBaseServer();
+
+		m_nHLTVPort = pServer->GetUDPPort();
+	}
+	else
+	{
+		m_nHLTVPort = -1;
+	}
 }
 
 #endif
