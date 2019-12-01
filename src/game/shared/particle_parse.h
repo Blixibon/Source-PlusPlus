@@ -83,6 +83,7 @@ void DispatchParticleEffect( const char *pszParticleName, const Vector& vecOrigi
 void DispatchParticleEffect( const char *pszParticleName, const Vector& vecStart, ParticleAttachment_t iAttachType, CBaseEntity *pEntity, const char *pszAttachmentName, bool bResetAllParticlesOnEntity = false );
 
 void StopParticleEffects( CBaseEntity *pEntity );
+void StopParticleEffectsNamed(CBaseEntity* pEntity, const char* pszParticleName);
 
 
 #endif // PARTICLE_PARSE_H

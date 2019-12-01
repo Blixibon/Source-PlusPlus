@@ -279,3 +279,23 @@ void ParticleEffectStopCallback(const CEffectData &data)
 }
 
 DECLARE_CLIENT_EFFECT( "ParticleEffectStop", ParticleEffectStopCallback );
+
+
+void ParticleEffectStopNamedCallback(const CEffectData& data)
+{
+	if (SuppressingParticleEffects())
+		return; // this needs to be before using data.m_nHitBox, since that may be a serialized value that's past the end of the current particle system string table
+
+	const char* pszName = GetParticleSystemNameFromIndex(data.m_nHitBox);
+
+	if (data.m_hEntity.Get())
+	{
+		C_BaseEntity* pEnt = C_BaseEntity::Instance(data.m_hEntity);
+		if (pEnt)
+		{
+			pEnt->ParticleProp()->StopParticlesNamed(pszName);
+		}
+	}
+}
+
+DECLARE_CLIENT_EFFECT("ParticleEffectStopNamed", ParticleEffectStopNamedCallback);

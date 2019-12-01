@@ -515,7 +515,7 @@ void C_Prop_Portal::UpdateOnRemove( void )
 
 void C_Prop_Portal::OnNewParticleEffect( const char *pszParticleName, CNewParticleEffect *pNewParticleEffect )
 {
-	if ( Q_stricmp( pszParticleName, "portal_1_overlap" ) == 0 || Q_stricmp( pszParticleName, "portal_2_overlap" ) == 0 )
+	if ( Q_stricmp( pszParticleName, "portal_1_overlap" ) == 0 || Q_stricmp( pszParticleName, "portal_2_overlap" ) == 0 || Q_stricmp(pszParticleName, "portal_x_overlap") == 0)
 	{
 		float fClosestDistanceSqr = -1.0f;
 		Vector vClosestPosition;
@@ -549,11 +549,12 @@ void C_Prop_Portal::OnNewParticleEffect( const char *pszParticleName, CNewPartic
 	}
 	else if (Q_stricmp(pszParticleName, "portal_2_tint_edge") == 0 || Q_stricmp(pszParticleName, "portal_1_tint_edge") == 0)
 	{
-		pNewParticleEffect->SetControlPoint(1, GetPortalTint());
+		pNewParticleEffect->SetControlPoint(1, GetPortalTint() + Vector(10.f / 255.f));
 	}
-	else if (Q_stristr(pszParticleName, "portal_x") == pszParticleName)
+	
+	if (Q_stristr(pszParticleName, "portal_x") != 0)
 	{
-		pNewParticleEffect->SetControlPoint(2, GetPortalTint());
+		pNewParticleEffect->SetControlPoint(2, GetPortalTint() + Vector(10.f / 255.f));
 	}
 }
 

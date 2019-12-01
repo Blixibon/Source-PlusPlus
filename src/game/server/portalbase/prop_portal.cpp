@@ -533,21 +533,21 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 		case PORTAL_FIZZLE_BAD_VOLUME:
 			//DispatchEffect( "PortalFizzleBadVolume", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_badvolume" : ( ( m_bIsPortal2 ) ? ( "portal_2_badvolume" ) : ( "portal_1_badvolume" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_badvolume" : ( ( m_bIsPortal2 ) ? ( "portal_2_badvolume" ) : ( "portal_1_badvolume" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 
 		case PORTAL_FIZZLE_BAD_SURFACE:
 			//DispatchEffect( "PortalFizzleBadSurface", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_badsurface" : ( ( m_bIsPortal2 ) ? ( "portal_2_badsurface" ) : ( "portal_1_badsurface" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_badsurface" : ( ( m_bIsPortal2 ) ? ( "portal_2_badsurface" ) : ( "portal_1_badsurface" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 
 		case PORTAL_FIZZLE_KILLED:
 			//DispatchEffect( "PortalFizzleKilled", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_close" : ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_close" : ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			ep.m_pSoundName = "Portal.fizzle_moved";
 			break;
 
@@ -561,7 +561,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 		case PORTAL_FIZZLE_CLOSE:
 			//DispatchEffect( "PortalFizzleKilled", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_close" : ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_close" : ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			ep.m_pSoundName = ( ( m_bIsPortal2 ) ? ( "Portal.close_red" ) : ( "Portal.close_blue" ) );
 			break;
 
@@ -584,7 +584,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 			//DispatchEffect( "PortalFizzleNear", fxData );
 			AngleVectors( fxData.m_vAngles, &vForward, &vUp, NULL );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_near" : ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_near" : ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 		}
@@ -608,14 +608,14 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 			//DispatchEffect( "PortalFizzleNear", fxData );
 			AngleVectors( fxData.m_vAngles, &vForward, &vUp, NULL );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_near" : ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_near" : ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 		}
 
 		case PORTAL_FIZZLE_SUCCESS:
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_success" : ( ( m_bIsPortal2 ) ? ( "portal_2_success" ) : ( "portal_1_success" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_success" : ( ( m_bIsPortal2 ) ? ( "portal_2_success" ) : ( "portal_1_success" ) ), fxData.m_vOrigin, fxData.m_vAngles, this);
 			// Don't make a sound!
 			return;
 
@@ -643,7 +643,16 @@ void CProp_Portal::FizzleThink( void )
 		controller.SoundChangeVolume( m_pAmbientSound, 0.0, 0.0 );
 	}
 
-	StopParticleEffects( this );
+	{
+		StopParticleEffectsNamed(this,"portal_1_particles");
+		StopParticleEffectsNamed(this, "portal_2_particles");
+		StopParticleEffectsNamed(this, "portal_1_edge");
+		StopParticleEffectsNamed(this, "portal_2_edge");
+
+		//PrecacheParticleSystem("portal_x_particles");
+		StopParticleEffectsNamed(this, "portal_1_tint_edge");
+		StopParticleEffectsNamed(this, "portal_2_tint_edge");
+	}
 
 	m_bActivated = false;
 	m_hLinkedPortal = NULL;
@@ -2105,13 +2114,24 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 		controller.SoundChangeVolume( m_pAmbientSound, 0.4, 0.1 );
 	}
 
+	{
+		StopParticleEffectsNamed(this, "portal_1_particles");
+		StopParticleEffectsNamed(this, "portal_2_particles");
+		StopParticleEffectsNamed(this, "portal_1_edge");
+		StopParticleEffectsNamed(this, "portal_2_edge");
+
+		//PrecacheParticleSystem("portal_x_particles");
+		StopParticleEffectsNamed(this, "portal_1_tint_edge");
+		StopParticleEffectsNamed(this, "portal_2_tint_edge");
+	}
+
 	if (GetLinkageGroup() > 0)
 	{
-		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_tint_edge") : ("portal_1_tint_edge")), PATTACH_POINT_FOLLOW, this, "particlespin", true);
+		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_tint_edge") : ("portal_1_tint_edge")), PATTACH_POINT_FOLLOW, this, "particlespin", false);
 	}
 	else
 	{
-		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_particles") : ("portal_1_particles")), PATTACH_POINT_FOLLOW, this, "particles_2", true);
+		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_particles") : ("portal_1_particles")), PATTACH_POINT_FOLLOW, this, "particles_2", false);
 		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_edge") : ("portal_1_edge")), PATTACH_POINT_FOLLOW, this, "particlespin");
 	}
 

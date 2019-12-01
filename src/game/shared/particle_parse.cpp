@@ -623,6 +623,46 @@ void StopParticleEffects( CBaseEntity *pEntity )
 #endif
 }
 
+void StopParticleEffectsNamed(CBaseEntity* pEntity, const char* pszParticleName)
+{
+	CEffectData	data;
+	data.m_nHitBox = GetParticleSystemIndex(pszParticleName);
+
+	if (pEntity)
+	{
+#ifdef CLIENT_DLL
+		C_BaseCombatWeapon* pWpn = dynamic_cast<C_BaseCombatWeapon*>(pEntity);
+		if (pWpn && pWpn->ShouldDrawUsingViewModel())
+		{
+			C_BasePlayer* player = ToBasePlayer(pWpn->GetOwner());
+
+			// Use GetRenderedWeaponModel() instead?
+			C_BaseViewModel* pViewModel = player ? player->GetViewModel(0) : NULL;
+			if (pViewModel)
+			{
+				pEntity = pViewModel;
+			}
+		}
+
+		data.m_hEntity = pEntity;
+#else
+		data.m_nEntIndex = pEntity->entindex();
+#endif
+		data.m_fFlags |= PARTICLE_DISPATCH_FROM_ENTITY;
+	}
+
+#ifdef GAME_DLL
+	{
+		CBroadcastRecipientFilter filter;
+		DispatchEffect("ParticleEffectStopNamed", data, filter);
+	}
+#else
+	{
+		DispatchEffect("ParticleEffectStopNamed", data);
+	}
+#endif
+}
+
 #ifndef CLIENT_DLL
 
 	extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
