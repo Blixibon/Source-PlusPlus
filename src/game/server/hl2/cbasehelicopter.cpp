@@ -193,6 +193,8 @@ void CBaseHelicopter::Spawn( void )
 
 	AddFlag( FL_NPC );
 
+	CapabilitiesAdd(bits_CAP_SIMPLE_VISIBILITY);
+
 	m_flMaxSpeed = BASECHOPPER_MAX_SPEED;
 	m_flMaxSpeedFiring = BASECHOPPER_MAX_FIRING_SPEED;
 	m_takedamage = DAMAGE_AIM;

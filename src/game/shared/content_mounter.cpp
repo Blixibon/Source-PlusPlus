@@ -15,6 +15,8 @@
 
 #ifdef _WIN32
 #include "winlite.h"
+#elif __linux__
+#include <stdlib.h>
 #endif
 
 #include "tier3/tier3.h"
@@ -512,6 +514,13 @@ namespace Mounter
 				AssertMsgAlways(false, (const tchar*)CFmtStr("MountExtraContent Registry Error: %s", error));
 				return false;
 			}
+#elif __linux__
+			const char *pchHome = getenv("HOME");
+			if (!pchHome)
+				return false;
+			
+			V_ComposeFileName(pchHome, ".steam/steam/steamapps/sourcemods", pchFolder, cchFolderBufferSize);
+			return true;
 #else
 #pragma warning "Not implemented!"
 			return false;

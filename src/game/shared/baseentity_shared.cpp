@@ -1755,7 +1755,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 			// Half of the shotgun pellets are hulls that make it easier to hit targets with the shotgun.
 #ifdef PORTAL
 			Ray_t rayBullet;
-			rayBullet.Init( info.m_vecSrc, vecEnd );
+			rayBullet.Init( info.m_vecSrc, vecEnd, Vector(-3, -3, -3), Vector(3, 3, 3));
 			pShootThroughPortal = UTIL_Portal_FirstAlongRay( rayBullet, fPortalFraction );
 			if ( !UTIL_Portal_TraceRay_Bullets( pShootThroughPortal, rayBullet, MASK_SHOT, &traceFilter, &tr ) )
 			{
