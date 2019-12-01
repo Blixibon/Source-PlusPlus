@@ -440,7 +440,7 @@ void CNPC_HGrunt::PrescheduleThink(void)
 
 Class_T	CNPC_HGrunt::Classify(void)
 {
-	return CLASS_HUMAN_MILITARY;
+	return CLASS_HECU;
 }
 
 //=========================================================
@@ -2577,7 +2577,7 @@ class CNPC_DeadHGrunt : public CAI_BaseNPC
 	DECLARE_CLASS(CNPC_DeadHGrunt, CAI_BaseNPC);
 public:
 	void Spawn(void);
-	Class_T	Classify(void) { return	CLASS_HUMAN_MILITARY; }
+	Class_T	Classify(void) { return	CLASS_HECU; }
 	float MaxYawSpeed(void) { return 8.0f; }
 
 	bool KeyValue(const char *szKeyName, const char *szValue);

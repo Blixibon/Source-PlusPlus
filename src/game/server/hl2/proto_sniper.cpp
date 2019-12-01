@@ -33,6 +33,7 @@
 #include "effect_color_tables.h"
 #include "npc_rollermine.h"
 #include "eventqueue.h"
+#include "peter/gametypes.h"
 
 #include "effect_dispatch_data.h"
 #include "te_effect_dispatch.h"
@@ -1197,6 +1198,9 @@ Class_T	CProtoSniper::Classify( void )
 {
 	if( m_fEnabled )
 	{
+		if (g_pGameTypeSystem->GetCurrentGameType() == MOD_BMS)
+			return CLASS_HECU;
+
 		return	CLASS_PROTOSNIPER;
 	}
 	else

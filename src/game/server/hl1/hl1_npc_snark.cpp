@@ -136,7 +136,7 @@ Class_T	CSnark::Classify( void )
 		{
 			case CLASS_PLAYER:
 			case CLASS_HUMAN_PASSIVE:
-			case CLASS_HUMAN_MILITARY:
+			case CLASS_HECU:
 				m_iMyClass = CLASS_NONE;
 				return CLASS_ALIEN_MILITARY; // barney's get mad, grunts get mad at it
 		}

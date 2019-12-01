@@ -1,0 +1,44 @@
+response ZombiePlayerResponsePain
+{
+	speak		"Zombie.Pain"
+}
+
+response ZombiePlayerResponseDeath
+{
+	speak		"Zombie.Die" noscene
+}
+
+rule ZombiePlayerPain
+{
+	criteria	ConceptPlayerPain IsPlayer IsPlayerVoiceZombie
+	response	ZombiePlayerResponsePain
+}
+
+rule ZombiePlayerDie
+{
+	criteria	ConceptPlayerDied IsPlayer IsPlayerVoiceZombie
+	response	ZombiePlayerResponseDeath
+}
+
+response ZombiePlayerAttacking
+{
+	speak		"Zombie.Attack"
+}
+
+rule ZombiePlayerAttacking
+{
+	criteria		IsPlayer IsPlayerVoiceZombie ConceptPlayerAttacking
+	response		ZombiePlayerAttacking
+}
+
+// TLK_PLAYER_ENEMY
+response ZombiePlayerEnemy
+{
+	speak		"Zombie.Alert"
+}
+
+rule ZombiePlayerEnemy
+{
+	criteria	ConceptPlayerEnemy IsPlayer IsPlayerVoiceZombie
+	response ZombiePlayerEnemy
+}

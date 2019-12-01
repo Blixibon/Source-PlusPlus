@@ -913,7 +913,7 @@ bool CNPC_Hgrunt::OverrideMoveFacing(const AILocalMoveGoal_t &move, float flInte
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Hgrunt::Classify(void)
 {
-	return CLASS_COMBINE;
+	return CLASS_HECU;
 }
 
 

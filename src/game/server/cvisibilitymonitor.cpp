@@ -450,7 +450,7 @@ namespace VismonDefaultCallback
 				if (pNPC->GetAbsOrigin().DistToSqr(pVisibleEntity->WorldSpaceCenter()) > Sqr(pProp->GetExplosiveRadius()))
 					continue;
 
-				if (pNPC->IRelationType(pViewingPlayer) != D_HT)
+				if (pViewingPlayer->IRelationType(pNPC) >= D_LI)
 					continue;
 
 				if (!pNPC->FVisible(pVisibleEntity))

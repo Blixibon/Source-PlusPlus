@@ -1063,7 +1063,7 @@ response PoliceDeployManhack
 
 rule PoliceDeployManhack
 {
-	criteria	IsPlayer IsMetropolice
+	criteria	IsMetropolice
 	concept "TLK_METROPOLICE_DEPLOY_MANHACK"
 	response PoliceDeployManhack
 }

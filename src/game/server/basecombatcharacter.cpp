@@ -244,7 +244,7 @@ bool CBaseCombatCharacter::HasHumanGibs( void )
 
 #elif defined( HL1_DLL )
 	Class_T myClass = Classify();
-	if (	myClass == CLASS_HUMAN_MILITARY		||
+	if (	myClass == CLASS_HECU		||
 			myClass == CLASS_PLAYER_ALLY		||
 			myClass == CLASS_HUMAN_PASSIVE		||
 			myClass == CLASS_PLAYER )

@@ -209,7 +209,7 @@ int CNPC_HAssassin::GetSoundInterests( void )
 
 Class_T	CNPC_HAssassin::Classify ( void )
 {
-	return CLASS_HUMAN_MILITARY;
+	return CLASS_HECU;
 }
 
 //=========================================================

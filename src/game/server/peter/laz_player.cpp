@@ -154,7 +154,7 @@ void CLaz_Player::Spawn(void)
 	{
 		rndModel_t *variant = &m_MPModel.models.Random();
 		SetModel(variant->szModelName);
-		m_nSkin = variant->skin;
+		m_nSkin = RandomInt(variant->skin, variant->skinMax);
 		for (int i = 0; i < variant->bodygroups.Count(); i++)
 		{
 			int iGroup = FindBodygroupByName(variant->bodygroups[i].szName);
@@ -507,7 +507,7 @@ void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo
 	if (g_pGameRules->PlayerRelationship(this, pVictim) == GR_TEAMMATE)
 		return;
 
-	//if (pVictim->IsNPC())
+	if (pVictim->IsNPC() || pVictim->IsPlayer())
 	{
 		CFmtStrN<128> modifiers("playerenemy:%s", pVictim->GetResponseClassname(this));
 		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_TAUNTS, modifiers);
@@ -1604,8 +1604,8 @@ void CLaz_Player::PlayerDeathThink(void)
 
 Class_T CLaz_Player::Classify()
 {
-	if (GetTeamNumber() == TEAM_COMBINE)
-		return CLASS_COMBINE_PLAYER;
+	if (GetTeam())
+		return g_aTeamPlayerClasses[GetTeamNumber()];
 
 	return CLASS_PLAYER;
 }
@@ -1794,11 +1794,11 @@ const char* CLaz_Player::GetResponseClassname(CBaseEntity* pCaller)
 {
 	if (pCaller != this)
 	{
-		if (m_iszResponseClassname != gm_iszDefaultAbility)
+		if (m_iszResponseClassname != gm_iszDefaultAbility && m_iszResponseClassname != NULL_STRING)
 		{
 			return STRING(m_iszResponseClassname);
 		}
-		else if (m_iszVoiceType != gm_iszDefaultAbility)
+		else if (m_iszVoiceType != gm_iszDefaultAbility && m_iszVoiceType != NULL_STRING)
 		{
 			static CFmtStr str;
 			str.Clear();

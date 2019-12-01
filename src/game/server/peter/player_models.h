@@ -28,6 +28,7 @@ typedef struct rndModel_s
 {
 	char szModelName[MAX_PATH];
 	short skin;
+	short skinMax;
 	CCopyableUtlVector<bodygroup_t> bodygroups;
 } rndModel_t;
 

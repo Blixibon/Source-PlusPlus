@@ -49,7 +49,7 @@ public:
 	void Precache( void );
 
 	int  BloodColor( void ) { return DONT_BLEED; }
-	Class_T  Classify( void ) { return CLASS_HUMAN_MILITARY; };
+	Class_T  Classify( void ) { return CLASS_HECU; };
 	void InitializeRotorSound( void );
 	void LaunchRocket( Vector &viewDir, int damage, int radius, Vector vecLaunchPoint );
 

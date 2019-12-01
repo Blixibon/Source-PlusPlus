@@ -442,4 +442,44 @@
 			"response_class"	"npc_combine_s"
 		}
 	}
+
+	"zombie_classic"
+	{
+		"needs_suit"	"0"
+		"team"			"Zombies"
+		"games"
+		{
+			"game"	"none"
+		}
+
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/zombie_classic.mdl"
+			"bodygroups"
+			{
+				"headcrab1"	"1"
+			}
+			"skin"		"0 6"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_rebel.mdl"
+			"skin"		"8"
+			"bodygroups"
+			{
+				"gloves" "2"
+			}
+		}
+		
+		"abilities"
+		{
+			"voice"				"zombie"
+			"suit"				"none"
+			"response_class"	"npc_zombie"
+		}
+	}
 }

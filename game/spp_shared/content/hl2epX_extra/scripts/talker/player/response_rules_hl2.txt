@@ -5,6 +5,7 @@ criterion	"IsPlayerVoiceCombineSoldier"	"voice" "combine_soldier" required
 criterion	"IsPlayerVoiceCombineElite"	"voice" "combine_elite" required
 criterion	"IsPlayerVoiceMetroPolice"	"voice" "metropolice" required
 criterion	"IsPlayerVoiceCitizen"	"voice" "citizen" required
+criterion	"IsPlayerVoiceZombie"	"voice"	"zombie" required
 criterion	"IsPlayerVoiceZoey"	"voice" "zoey" required
 criterion	"IsPlayerVoiceBill"	"voice" "bill" required
 criterion	"IsPlayerVoiceDefault"	"voice"	"none"	required
@@ -49,6 +50,8 @@ criterion "PlayerEnemyIsAZombie" required
 
 #include "talker/player/combine_soldier.txt"
 #include "talker/player/metropolice.txt"
+
+#include "talker/player/zombie.txt"
 
 #include "talker/player/l4d_zoey.talker"
 #include "talker/player/l4d_bill.talker"

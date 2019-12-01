@@ -53,7 +53,19 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 				{
 					rndModel_t& hModel = player.models.Element(player.models.AddToTail());
 					Q_strncpy(hModel.szModelName, pkvModelDef->GetString("name"), MAX_PATH);
-					hModel.skin = pkvModelDef->GetInt("skin");
+					//hModel.skin = pkvModelDef->GetInt("skin");
+					if (V_strrchr(pkvModelDef->GetString("skin"), ' ') != 0)
+					{
+						int iBodies[2];
+						UTIL_StringToIntArray(iBodies, 2, pkvModelDef->GetString("skin"));
+						hModel.skin = iBodies[0];
+						hModel.skinMax = iBodies[1];
+					}
+					else
+					{
+						hModel.skin = hModel.skinMax = pkvModelDef->GetInt("skin");
+					}
+
 					KeyValues* pkvBodyGroups = pkvModelDef->FindKey("bodygroups");
 					if (pkvBodyGroups)
 					{

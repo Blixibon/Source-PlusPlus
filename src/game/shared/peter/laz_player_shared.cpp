@@ -342,6 +342,16 @@ bool CLaz_Player::ShouldCollide(int collisionGroup, int contentsMask) const
 				if (!(contentsMask & CONTENTS_COMBINETEAM))
 					return false;
 				break;
+
+			case TF_TEAM_GREEN:
+				if (!(contentsMask & CONTENTS_GREENTEAM))
+					return false;
+				break;
+
+			case TF_TEAM_YELLOW:
+				if (!(contentsMask & CONTENTS_YELLOWTEAM))
+					return false;
+				break;
 			}
 		}
 	}

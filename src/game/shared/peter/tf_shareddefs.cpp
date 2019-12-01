@@ -13,12 +13,27 @@
 //-----------------------------------------------------------------------------
 // Teams.
 //-----------------------------------------------------------------------------
+#ifndef CLIENT_DLL
+Class_T g_aTeamPlayerClasses[TF_TEAM_COUNT] =
+{
+	CLASS_NONE,
+	CLASS_NONE,
+	CLASS_COMBINE_PLAYER,
+	CLASS_PLAYER,
+	CLASS_HECU_PLAYER,
+	CLASS_ZOMBIE_PLAYER
+};
+#endif // !CLIENT_DLL
+
+
 const char *g_aTeamNames[TF_TEAM_COUNT] =
 {
 	"Unassigned",
 	"Spectator",
 	"Combine",
-	"Rebels"
+	"Rebels",
+	"Military",
+	"Zombies"
 };
 
 const char *g_aTeamNamesShort[TF_TEAM_COUNT] =
@@ -26,7 +41,9 @@ const char *g_aTeamNamesShort[TF_TEAM_COUNT] =
 	"red", // Unassigned
 	"red", // Spectator
 	"blu",
-	"red"
+	"red",
+	"grn",
+	"ylw"
 };
 
 const char *g_aTeamParticleNames[TF_TEAM_COUNT] =
@@ -35,6 +52,8 @@ const char *g_aTeamParticleNames[TF_TEAM_COUNT] =
 	"red",
 	"blue",
 	"red",
+	"green",
+	"yellow"
 };
 
 const char *GetTeamParticleName( int iTeam, bool bDeathmatchOverride /*= false*/ )
@@ -61,6 +80,8 @@ color32 g_aTeamColors[TF_TEAM_COUNT] =
 	{ 0, 0, 0, 0 }, // Spectator
 	{ 0, 0, 255, 0 }, // Blue
 	{ 255, 0, 0, 0 }, // Red
+	{153, 255, 153, 0},
+	{255, 178, 0, 0},
 };
 
 bool IsGameTeam( int iTeam )

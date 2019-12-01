@@ -70,13 +70,23 @@ unsigned int C_AI_BaseNPC::PhysicsSolidMaskForEntity( void ) const
 		switch (GetTeamNumber())
 		{
 		case TF_TEAM_RED:
-			uMask = CONTENTS_COMBINETEAM;
+			uMask = MASK_REDTEAMSOLID;
 			break;
+
 		case TF_TEAM_BLUE:
-			uMask = CONTENTS_REDTEAM;
+			uMask = MASK_BLUETEAMSOLID;
 			break;
+
+		case TF_TEAM_GREEN:
+			uMask |= MASK_GREENTEAMSOLID;
+			break;
+
+		case TF_TEAM_YELLOW:
+			uMask |= MASK_YELLOWTEAMSOLID;
+			break;
+
 		default:
-			uMask = CONTENTS_COMBINETEAM | CONTENTS_REBELTEAM;
+			uMask = MASK_ALLTEAMS;
 			break;
 		}
 #endif
@@ -103,6 +113,16 @@ bool C_AI_BaseNPC::ShouldCollide(int collisionGroup, int contentsMask) const
 
 			case TF_TEAM_BLUE:
 				if (!(contentsMask & CONTENTS_COMBINETEAM))
+					return false;
+				break;
+
+			case TF_TEAM_GREEN:
+				if (!(contentsMask & CONTENTS_GREENTEAM))
+					return false;
+				break;
+
+			case TF_TEAM_YELLOW:
+				if (!(contentsMask & CONTENTS_YELLOWTEAM))
 					return false;
 				break;
 			}

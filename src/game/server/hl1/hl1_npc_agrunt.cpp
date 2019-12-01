@@ -165,7 +165,7 @@ END_DATADESC()
 int CNPC_HL1AlienGrunt::IRelationPriority( CBaseEntity *pTarget )
 {
 	//I hate grunts more than anything.
-	if ( pTarget->Classify() == CLASS_HUMAN_MILITARY )
+	if ( pTarget->Classify() == CLASS_HECU )
 	{
 		if ( FClassnameIs( pTarget, "monster_human_grunt" ) )
 		{

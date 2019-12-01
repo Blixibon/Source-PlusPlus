@@ -290,7 +290,7 @@ void CNPC_HWGrunt::UpdateSweepTargets()
 
 Class_T CNPC_HWGrunt::Classify(void)
 {
-	return CLASS_HUMAN_MILITARY;
+	return CLASS_HECU;
 }
 
 Vector CNPC_HWGrunt::Weapon_ShootPosition(void)

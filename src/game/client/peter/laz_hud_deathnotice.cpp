@@ -627,6 +627,12 @@ Color CLazHudDeathNotice::GetTeamColor( int iTeamNumber, bool bLocalPlayerInvolv
 	case TF_TEAM_RED:
 		return m_clrRedText;
 		break;
+	case TF_TEAM_GREEN:
+		return m_clrGreenText;
+		break;
+	case TF_TEAM_YELLOW:
+		return m_clrYellowText;
+		break;
 	case TEAM_UNASSIGNED:		
 		return bLocalPlayerInvolved ? Color(0, 0, 0, 255) : Color(255, 255, 255, 255);
 		break;

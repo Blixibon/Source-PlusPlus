@@ -1,0 +1,41 @@
+
+$LOD 40
+{
+	replacemodel "Zombie_reference.smd" "Zombie_reference_lod1.smd"
+	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod1.smd"
+	replacemodel "zombie_cop_vest_reference.smd" "zombie_cop_vest_reference_lod1.smd"
+	replacemodel "zombie_rebel_reference.smd" "zombie_rebel_reference_lod1.smd"
+	replacemodel "zombie_medic_reference.smd" "zombie_medic_reference_lod1.smd"
+	replacemodel "zombie_cop_reference.smd" "zombie_cop_reference_lod1.smd"
+	NoFacial
+}
+$LOD 70
+{
+	replacemodel "Zombie_reference.smd" "Zombie_reference_lod2.smd"
+	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod2.smd"
+	replacemodel "zombie_cop_vest_reference.smd" "zombie_cop_vest_reference_lod2.smd"
+	replacemodel "zombie_rebel_reference.smd" "zombie_rebel_reference_lod2.smd"
+	replacemodel "zombie_medic_reference.smd" "zombie_medic_reference_lod2.smd"
+	replacemodel "zombie_cop_reference.smd" "zombie_cop_reference_lod2.smd"
+	NoFacial
+}
+$LOD 120
+{
+	replacemodel "Zombie_reference.smd" "Zombie_reference_lod3.smd"
+	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod3.smd"
+	replacemodel "zombie_cop_vest_reference.smd" "zombie_cop_vest_reference_lod3.smd"
+	replacemodel "zombie_rebel_reference.smd" "zombie_rebel_reference_lod3.smd"
+	replacemodel "zombie_medic_reference.smd" "zombie_medic_reference_lod3.smd"
+	replacemodel "zombie_cop_reference.smd" "zombie_cop_reference_lod3.smd"
+	NoFacial
+}
+$ShadowLOD
+{
+	replacemodel "Zombie_reference.smd" "Zombie_reference_lod4.smd"
+	replacemodel "Headcrab_reference.smd" "Headcrab_reference_lod4.smd"
+	replacemodel "zombie_cop_vest_reference.smd" "zombie_cop_vest_reference_lod4.smd"
+	replacemodel "zombie_rebel_reference.smd" "zombie_rebel_reference_lod4.smd"
+	replacemodel "zombie_medic_reference.smd" "zombie_medic_reference_lod4.smd"
+	replacemodel "zombie_cop_reference.smd" "zombie_cop_reference_lod4.smd"
+	NoFacial
+}

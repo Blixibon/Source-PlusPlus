@@ -255,7 +255,8 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 						const_cast<char *>(pszLineEnd)[0] = 0;
 
 					char mapname[MAX_PATH];
-					V_snprintf(mapname, sizeof(mapname), "maps/%s.bsp", szMapName);
+					V_ComposeFileName("maps/", szMapName, mapname, MAX_PATH);
+					V_SetExtension(mapname, ".bsp", MAX_PATH);
 
 					if (filesystem->FileExists(mapname, "GAME"))
 					{

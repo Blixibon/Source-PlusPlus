@@ -1214,14 +1214,23 @@ unsigned int CAI_BaseNPC::PhysicsSolidMaskForEntity( void ) const
 	switch (GetTeamNumber())
 	{
 	case TF_TEAM_RED:
-		uMask = CONTENTS_COMBINETEAM;
+		uMask = MASK_REDTEAMSOLID;
 		break;
 
 	case TF_TEAM_BLUE:
-		uMask = CONTENTS_REDTEAM;
+		uMask = MASK_BLUETEAMSOLID;
 		break;
+
+	case TF_TEAM_GREEN:
+		uMask |= MASK_GREENTEAMSOLID;
+		break;
+
+	case TF_TEAM_YELLOW:
+		uMask |= MASK_YELLOWTEAMSOLID;
+		break;
+
 	default:
-		uMask = CONTENTS_COMBINETEAM | CONTENTS_REBELTEAM;
+		uMask = MASK_ALLTEAMS;
 		break;
 	}
 #endif
@@ -11924,17 +11933,15 @@ void CAI_BaseNPC::ChangeTeam(int iTeamNum)
 void CAI_BaseNPC::UpdateTeam()
 {
 #ifdef HL2_LAZUL
-	if (FindClassRelationship(CLASS_PLAYER)->disposition == D_LI)
+	ChangeTeam(TEAM_UNASSIGNED);
+
+	for (int i = FIRST_GAME_TEAM; i < TF_TEAM_COUNT; i++)
 	{
-		ChangeTeam(TEAM_REBELS);
-	}
-	else if (FindClassRelationship(CLASS_COMBINE_PLAYER)->disposition == D_LI)
-	{
-		ChangeTeam(TEAM_COMBINE);
-	}
-	else
-	{
-		ChangeTeam(TEAM_UNASSIGNED);
+		if (FindClassRelationship(g_aTeamPlayerClasses[i])->disposition == D_LI)
+		{
+			ChangeTeam(i);
+			break;
+		}
 	}
 #endif
 }
@@ -11943,10 +11950,10 @@ Disposition_t CAI_BaseNPC::IRelationType(CBaseEntity* pTarget)
 {
 	if (pTarget)
 	{
-#ifdef HL2_LAZUL
-		if (pTarget->Classify() == CLASS_PLAYER && pTarget->GetTeamNumber() == TEAM_COMBINE)
-			return FindClassRelationship(CLASS_COMBINE_PLAYER)->disposition;
-#endif
+//#ifdef HL2_LAZUL
+//		if (pTarget->Classify() == CLASS_PLAYER && pTarget->GetTeamNumber() == TEAM_COMBINE)
+//			return FindClassRelationship(CLASS_COMBINE_PLAYER)->disposition;
+//#endif
 		return FindEntityRelationship(pTarget)->disposition;
 	}
 	return D_NU;
@@ -11956,10 +11963,10 @@ int CAI_BaseNPC::IRelationPriority(CBaseEntity* pTarget)
 {
 	if (pTarget)
 	{
-#ifdef HL2_LAZUL
-		if (pTarget->Classify() == CLASS_PLAYER && pTarget->GetTeamNumber() == TEAM_COMBINE)
-			return FindClassRelationship(CLASS_COMBINE_PLAYER)->priority;
-#endif
+//#ifdef HL2_LAZUL
+//		if (pTarget->Classify() == CLASS_PLAYER && pTarget->GetTeamNumber() == TEAM_COMBINE)
+//			return FindClassRelationship(CLASS_COMBINE_PLAYER)->priority;
+//#endif
 		return FindEntityRelationship(pTarget)->priority;
 	}
 	return 0;
@@ -13575,6 +13582,15 @@ bool CAI_BaseNPC::ShouldCollide(int collisionGroup, int contentsMask) const
 
 			case TF_TEAM_BLUE:
 				if (!(contentsMask & CONTENTS_COMBINETEAM))
+					return false;
+				break;
+			case TF_TEAM_GREEN:
+				if (!(contentsMask & CONTENTS_GREENTEAM))
+					return false;
+				break;
+
+			case TF_TEAM_YELLOW:
+				if (!(contentsMask & CONTENTS_YELLOWTEAM))
 					return false;
 				break;
 			}

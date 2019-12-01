@@ -22,11 +22,19 @@ unsigned int CLazGameMovement::PlayerSolidMask(bool brushOnly)
 		switch (player->GetTeamNumber())
 		{
 		case TF_TEAM_RED:
-			uMask = CONTENTS_COMBINETEAM;
+			uMask = MASK_REDTEAMSOLID;
 			break;
 
 		case TF_TEAM_BLUE:
-			uMask = CONTENTS_REDTEAM;
+			uMask = MASK_BLUETEAMSOLID;
+			break;
+
+		case TF_TEAM_GREEN:
+			uMask |= MASK_GREENTEAMSOLID;
+			break;
+
+		case TF_TEAM_YELLOW:
+			uMask |= MASK_YELLOWTEAMSOLID;
 			break;
 		}
 	}

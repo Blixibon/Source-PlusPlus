@@ -1,0 +1,37 @@
+"Models"
+{
+    "bms_human_grunt"
+	{
+		"needs_suit"	"0"
+		"team"			"Military"
+		"games"
+		{
+			"game"	"none"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/marine.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0 14"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_combine.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"			"NPC_CombineS"
+			"voice"				"marine"
+			"suit"				"pcv_hev"
+			"response_class"	"npc_human_grunt"
+		}
+	}
+}
