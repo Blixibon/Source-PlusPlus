@@ -206,6 +206,7 @@ SendPropFloat(SENDINFO(m_fCanPlacePortal2OnThisSurface)),
 SendPropFloat(SENDINFO(m_fEffectsMaxSize1)), // HACK HACK! Used to make the gun visually change when going through a cleanser!
 SendPropFloat(SENDINFO(m_fEffectsMaxSize2)),
 SendPropInt(SENDINFO(m_EffectState)),
+SendPropInt(SENDINFO(m_iPortalLinkageGroupID), -1, SPROP_UNSIGNED),
 #else
 RecvPropBool(RECVINFO(m_bCanFirePortal1)),
 RecvPropBool(RECVINFO(m_bCanFirePortal2)),
@@ -216,6 +217,7 @@ RecvPropFloat(RECVINFO(m_fCanPlacePortal2OnThisSurface)),
 RecvPropFloat(RECVINFO(m_fEffectsMaxSize1)), // HACK HACK! Used to make the gun visually change when going through a cleanser!
 RecvPropFloat(RECVINFO(m_fEffectsMaxSize2)),
 RecvPropInt(RECVINFO(m_EffectState)),
+RecvPropInt(RECVINFO(m_iPortalLinkageGroupID), SPROP_UNSIGNED),
 #endif // !CLIENT_DLL
 
 END_NETWORK_TABLE()
@@ -315,6 +317,8 @@ void CWeaponPortalgun::Precache()
 	PrecacheParticleSystem( "portal_1_projectile_stream_pedestal" );
 	PrecacheParticleSystem( "portal_2_projectile_stream" );
 	PrecacheParticleSystem( "portal_2_projectile_stream_pedestal" );
+	PrecacheParticleSystem("portal_x_projectile_stream");
+	PrecacheParticleSystem("portal_x_projectile_stream_pedestal");
 	PrecacheParticleSystem( "portal_1_charge" );
 	PrecacheParticleSystem( "portal_2_charge" );
 #endif
@@ -669,11 +673,11 @@ Vector C_WeaponPortalgun::GetEffectColor(int iPalletIndex)
 	}
 	else */if (m_iLastFiredPortal == 1)
 	{
-		color = UTIL_Portal_Color(1);
+		color = UTIL_Portal_Color(1, m_iPortalLinkageGroupID);
 	}
 	else if (m_iLastFiredPortal == 2)
 	{
-		color = UTIL_Portal_Color(2);
+		color = UTIL_Portal_Color(2, m_iPortalLinkageGroupID);
 	}
 	else
 	{
@@ -952,6 +956,7 @@ void CWeaponPortalgun::DoEffectBlast(bool bPortal2, int iPlacedBy, const Vector&
 	fxData.m_vAngles = qStartAngles;
 	fxData.m_nColor = ((bPortal2) ? (2) : (1));
 	fxData.m_nDamageType = iPlacedBy;
+	fxData.m_nHitBox = m_iPortalLinkageGroupID;
 	DispatchEffect("PortalBlast", fxData);
 }
 
@@ -1097,7 +1102,7 @@ float CWeaponPortalgun::TraceFirePortal(bool bPortal2, const Vector& vTraceStart
 			rayDoor.Init(vTraceStart, vTraceStart + (vDirection * m_fMaxRange1));
 
 			trace_t trDoor;
-			pRotatingDoor->TestCollision(rayDoor, 0, trDoor);
+			pRotatingDoor->TestCollision(rayDoor, MASK_ALL, trDoor);
 
 			if (trDoor.DidHit())
 			{
@@ -1168,7 +1173,7 @@ float CWeaponPortalgun::TraceFirePortal(bool bPortal2, const Vector& vTraceStart
 			rayDoor.Init(vTraceStart, vTraceStart + (vDirection * m_fMaxRange1));
 
 			trace_t trDoor;
-			pRotatingDoor->TestCollision(rayDoor, 0, trDoor);
+			pRotatingDoor->TestCollision(rayDoor, MASK_ALL, trDoor);
 
 			if (trDoor.DidHit())
 			{

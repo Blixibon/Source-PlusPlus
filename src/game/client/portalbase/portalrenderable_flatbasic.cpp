@@ -37,9 +37,13 @@ CLIENTEFFECT_MATERIAL( "models/portals/portal_2_renderfix_dynamicmesh" )
 CLIENTEFFECT_MATERIAL( "models/portals/portal_depthdoubler" )
 CLIENTEFFECT_MATERIAL( "models/portals/portalstaticoverlay_1" )
 CLIENTEFFECT_MATERIAL( "models/portals/portalstaticoverlay_2" )
+CLIENTEFFECT_MATERIAL("models/portals/portalstaticoverlay_tinted")
 CLIENTEFFECT_MATERIAL( "models/portals/portal_stencil_hole" )
 CLIENTEFFECT_MATERIAL( "models/portals/portal_refract_1" )
 CLIENTEFFECT_MATERIAL( "models/portals/portal_refract_2" )
+CLIENTEFFECT_MATERIAL("models/portals/portalstaticoverlay_1_noz")
+CLIENTEFFECT_MATERIAL("models/portals/portalstaticoverlay_2_noz")
+CLIENTEFFECT_MATERIAL("models/portals/portalstaticoverlay_noz")
 //CLIENTEFFECT_MATERIAL( "effects/flashlight001" ) //light transfers disabled indefinitely
 CLIENTEFFECT_REGISTER_END()
 
@@ -56,9 +60,13 @@ public:
 		m_Materials.m_PortalDepthDoubler.Init( "models/portals/portal_depthdoubler", TEXTURE_GROUP_CLIENT_EFFECTS );
 		m_Materials.m_PortalStaticOverlay[0].Init( "models/portals/portalstaticoverlay_1", TEXTURE_GROUP_CLIENT_EFFECTS );
 		m_Materials.m_PortalStaticOverlay[1].Init( "models/portals/portalstaticoverlay_2", TEXTURE_GROUP_CLIENT_EFFECTS );
+		m_Materials.m_PortalStaticOverlay[2].Init("models/portals/portalstaticoverlay_tinted", TEXTURE_GROUP_CLIENT_EFFECTS);
 		m_Materials.m_Portal_Stencil_Hole.Init( "models/portals/portal_stencil_hole", TEXTURE_GROUP_CLIENT_EFFECTS );
 		m_Materials.m_Portal_Refract[0].Init( "models/portals/portal_refract_1", TEXTURE_GROUP_CLIENT_EFFECTS );
 		m_Materials.m_Portal_Refract[1].Init( "models/portals/portal_refract_2", TEXTURE_GROUP_CLIENT_EFFECTS );
+		m_Materials.m_PortalGhostOverlay[0].Init("models/portals/portalstaticoverlay_1_noz", TEXTURE_GROUP_CLIENT_EFFECTS);
+		m_Materials.m_PortalGhostOverlay[1].Init("models/portals/portalstaticoverlay_2_noz", TEXTURE_GROUP_CLIENT_EFFECTS);
+		m_Materials.m_PortalGhostOverlay[2].Init("models/portals/portalstaticoverlay_noz", TEXTURE_GROUP_CLIENT_EFFECTS);
 		//m_Materials.m_PortalLightTransfer_ShadowTexture.Init( "effects/flashlight001", TEXTURE_GROUP_OTHER ); //light transfers disabled indefinitely
 
 		m_Materials.m_pDepthDoubleViewMatrixVar = m_Materials.m_PortalDepthDoubler->FindVar( "$alternateviewmatrix", NULL, false );
@@ -414,8 +422,6 @@ bool CPortalRenderable_FlatBasic::CalcFrustumThroughPortal( const Vector &ptCurr
 	return true;
 }
 
-
-
 void CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer( CViewRender *pViewRender, const CNewViewSetup &cameraView )
 {
 	VPROF( "CPortalRenderable_FlatBasic::RenderPortalViewToBackBuffer" );
@@ -679,7 +685,7 @@ void CPortalRenderable_FlatBasic::DrawPostStencilFixes( void )
 	pRenderContext->ClearBuffersObeyStencil( false, true );
 
 	//replace the fog we overwrote
-	RenderFogQuad();
+	//RenderFogQuad();
 
 	//replace depth
 	DrawSimplePortalMesh( g_pPortalRender->m_MaterialsAccess.m_WriteZ_Model, 0.0f );
@@ -1175,7 +1181,13 @@ void CPortalRenderable_FlatBasic::DrawPortal( void )
 				}
 			}
 
-			DrawSimplePortalMesh( m_Materials.m_PortalStaticOverlay[((m_bIsPortal2)?(1):(0))] );
+			if (ShouldPortalUseTint())
+			{
+				DrawSimplePortalMesh(m_Materials.m_PortalStaticOverlay[2]);
+			}
+			else
+				DrawSimplePortalMesh( m_Materials.m_PortalStaticOverlay[((m_bIsPortal2)?(1):(0))] );
+
 			DrawRenderFixMesh( g_pPortalRender->m_MaterialsAccess.m_WriteZ_Model );
 		}
 		else if( g_pPortalRender->GetCurrentViewExitPortal() != this )
@@ -1196,7 +1208,12 @@ void CPortalRenderable_FlatBasic::DrawPortal( void )
 			}
 			else
 			{
-				DrawSimplePortalMesh( m_Materials.m_PortalStaticOverlay[((m_bIsPortal2)?(1):(0))] );
+				if (ShouldPortalUseTint())
+				{
+					DrawSimplePortalMesh(m_Materials.m_PortalStaticOverlay[2]);
+				}
+				else
+					DrawSimplePortalMesh( m_Materials.m_PortalStaticOverlay[((m_bIsPortal2)?(1):(0))] );
 			}
 		}
 	}

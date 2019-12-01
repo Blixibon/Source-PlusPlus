@@ -45,6 +45,9 @@ public:
 	virtual void			Activate( void );
 	virtual void			ClientThink( void );
 
+	virtual Vector	GetPortalTint();
+	virtual bool		ShouldPortalUseTint();
+
 	virtual void			Simulate();
 
 	virtual void			UpdateOnRemove( void );
@@ -71,6 +74,10 @@ public:
 	virtual int				DrawModel( int flags );
 	void					UpdateOriginPlane( void );
 	void					UpdateGhostRenderables( void );
+
+	// This reproduces a behavior in Portal 2,
+	// where you can see your portals through walls.
+	int						DrawPortalLocationOverlay();
 
 	void					SetIsPortal2( bool bValue );
 

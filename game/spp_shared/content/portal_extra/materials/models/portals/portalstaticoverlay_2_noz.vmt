@@ -1,0 +1,10 @@
+PP_PortalStaticOverlay
+{
+$staticblendtexture "models/portals/dummy-orange"
+$ALPHAMASKTEXTURE "models/portals/dummy-gray"
+$ghostoverlay 2
+$additive 1
+$NoCull 1
+$model 1
+$staticamount "0.3"
+}

@@ -23,9 +23,10 @@ struct FlatBasicPortalRenderingMaterials_t
 	CMaterialReference	m_PortalMaterials[2];
 	CMaterialReference	m_PortalRenderFixMaterials[2];
 	CMaterialReference	m_PortalDepthDoubler;
-	CMaterialReference	m_PortalStaticOverlay[2];
+	CMaterialReference	m_PortalStaticOverlay[3];
 	CMaterialReference	m_Portal_Stencil_Hole;
 	CMaterialReference	m_Portal_Refract[2];
+	CMaterialReference	m_PortalGhostOverlay[3];
 	//CTextureReference	m_PortalLightTransfer_ShadowTexture; //light transfers disabled indefinitely
 
 	IMaterialVar		*m_pDepthDoubleViewMatrixVar;
@@ -77,6 +78,9 @@ public:
 
 	virtual CPortalRenderable *GetLinkedPortal() const { return m_pLinkedPortal; };
 	bool			CalcFrustumThroughPortal( const Vector &ptCurrentViewOrigin, Frustum OutputFrustum );
+
+	virtual bool		ShouldPortalUseTint() { return false; }
+	virtual Vector	GetPortalTint() { return Vector(1); }
 
 protected:
 	void			ClipFixToBoundingAreaAndDraw( PortalMeshPoint_t *pVerts, const IMaterial *pMaterial );

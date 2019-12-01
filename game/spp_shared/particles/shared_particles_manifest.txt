@@ -66,6 +66,8 @@ particles_manifest
 	//portal_1_projectile_stream	projectile effect
 	//portal_1_projectile_trail	projectile effect
 	//portal_2_* 		copies of portal1
+	
+	"file"		"particles/portal_projectile_tint.pcf"
 
 	"file"		"particles/portals.pcf"
 	//portal_1_edge		swirl effect

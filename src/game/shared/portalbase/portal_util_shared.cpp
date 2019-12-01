@@ -150,21 +150,55 @@ const matrix3x4_t* CTransformedCollideable::GetRootParentToWorldTransform() cons
 	return &m_ReferencedVars.m_matRootParentToWorldTransform;
 }
 
-Color UTIL_Portal_Color( int iPortal )
+Color UTIL_Portal_Color( int iPortal, int iLinkageID )
 {
-	switch ( iPortal )
+	if (iPortal == 0)
 	{
+		// GRAVITY BEAM
+		return Color(242, 202, 167, 255);
+	}
+	else
+	{
+		switch (iLinkageID)
+		{
 		case 0:
-			// GRAVITY BEAM
-			return Color( 242, 202, 167, 255 );
-
+		default:
+			if (iPortal == 2)
+			{
+				// PORTAL 2
+				return Color(255, 160, 32, 255);
+			}
+			else
+			{
+				// PORTAL 1
+				return Color(64, 160, 255, 255);
+			}
+			break;
 		case 1:
-			// PORTAL 1
-			return Color( 64, 160, 255, 255 );
-
+			if (iPortal == 2)
+			{
+				// PORTAL 2
+				return Color(0.075 * 255, 0, 0.824 * 255, 255);
+			}
+			else
+			{
+				// PORTAL 1
+				return Color(0.125 * 255, 0.500 * 255, 0.824 * 255, 255);
+			}
+			break;
 		case 2:
-			// PORTAL 2
-			return Color( 255, 160, 32, 255 );
+			if (iPortal == 2)
+			{
+				// PORTAL 2
+				return Color(0.225 * 255, 0.010 * 255, 0.010 * 255, 255);
+			}
+			else
+			{
+				// PORTAL 1
+				return Color(255, 0.705 * 255, 0.125 * 255, 255);
+			}
+			break;
+		}
 	}
 
 	return Color( 255, 255, 255, 255 );

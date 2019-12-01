@@ -1,0 +1,21 @@
+PP_PortalStaticOverlay
+{
+$staticblendtexture "models/portals/dummy-gray"
+$ALPHAMASKTEXTURE "models/portals/dummy-gray"
+$ghostoverlay 1
+$Additive 1
+$NoCull 1
+$model 1
+$staticamount "0.3"
+
+    $PortalTintEnabled "1"
+    $PortalTintColor "[1 1 1]"
+
+    Proxies
+    {
+        PortalColor
+        {
+            resultVar $PortalTintColor
+        }
+    }
+}

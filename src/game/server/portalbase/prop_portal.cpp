@@ -226,6 +226,18 @@ void CProp_Portal::Precache( void )
 	PrecacheParticleSystem( "portal_1_success" );
 	PrecacheParticleSystem( "portal_2_success" );
 
+	//PrecacheParticleSystem("portal_x_particles");
+	PrecacheParticleSystem("portal_1_tint_edge");
+	PrecacheParticleSystem("portal_2_tint_edge");
+	PrecacheParticleSystem("portal_x_nofit");
+	PrecacheParticleSystem("portal_x_overlap");
+	PrecacheParticleSystem("portal_x_badvolume");
+	PrecacheParticleSystem("portal_x_badsurface");
+	PrecacheParticleSystem("portal_x_close");
+	PrecacheParticleSystem("portal_x_cleanser");
+	PrecacheParticleSystem("portal_x_near");
+	PrecacheParticleSystem("portal_x_success");
+
 	BaseClass::Precache();
 }
 
@@ -498,7 +510,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 			//DispatchEffect( "PortalFizzleCantFit", fxData );
 			//ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_nofit" ) : ( "portal_1_nofit" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
+			DispatchParticleEffect( (GetLinkageGroup() > 0) ? "portal_x_nofit" : ( ( m_bIsPortal2 ) ? ( "portal_2_nofit" ) : ( "portal_1_nofit" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
 			break;
 
 		case PORTAL_FIZZLE_OVERLAPPED_LINKED:
@@ -513,7 +525,7 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 
 			//DispatchEffect( "PortalFizzleOverlappedLinked", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_overlap" ) : ( "portal_1_overlap" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_overlap" : ( ( m_bIsPortal2 ) ? ( "portal_2_overlap" ) : ( "portal_1_overlap" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 		}
@@ -521,41 +533,41 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 		case PORTAL_FIZZLE_BAD_VOLUME:
 			//DispatchEffect( "PortalFizzleBadVolume", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_badvolume" ) : ( "portal_1_badvolume" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_badvolume" : ( ( m_bIsPortal2 ) ? ( "portal_2_badvolume" ) : ( "portal_1_badvolume" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 
 		case PORTAL_FIZZLE_BAD_SURFACE:
 			//DispatchEffect( "PortalFizzleBadSurface", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_badsurface" ) : ( "portal_1_badsurface" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_badsurface" : ( ( m_bIsPortal2 ) ? ( "portal_2_badsurface" ) : ( "portal_1_badsurface" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 
 		case PORTAL_FIZZLE_KILLED:
 			//DispatchEffect( "PortalFizzleKilled", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_close" : ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			ep.m_pSoundName = "Portal.fizzle_moved";
 			break;
 
 		case PORTAL_FIZZLE_CLEANSER:
 			//DispatchEffect( "PortalFizzleCleanser", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_cleanser" ) : ( "portal_1_cleanser" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_cleanser" : ( ( m_bIsPortal2 ) ? ( "portal_2_cleanser" ) : ( "portal_1_cleanser" ) ), fxData.m_vOrigin, fxData.m_vAngles, this );
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 
 		case PORTAL_FIZZLE_CLOSE:
 			//DispatchEffect( "PortalFizzleKilled", fxData );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_close" : ( ( m_bIsPortal2 ) ? ( "portal_2_close" ) : ( "portal_1_close" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			ep.m_pSoundName = ( ( m_bIsPortal2 ) ? ( "Portal.close_red" ) : ( "Portal.close_blue" ) );
 			break;
 
 		case PORTAL_FIZZLE_NEAR_BLUE:
 		{
-			if ( !m_bIsPortal2 )
+			if ( !m_bIsPortal2 && m_hLinkedPortal)
 			{
 				Vector vLinkedForward;
 				m_hLinkedPortal->GetVectors( &vLinkedForward, NULL, NULL );
@@ -572,14 +584,14 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 			//DispatchEffect( "PortalFizzleNear", fxData );
 			AngleVectors( fxData.m_vAngles, &vForward, &vUp, NULL );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_near" : ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 		}
 
 		case PORTAL_FIZZLE_NEAR_RED:
 		{
-			if ( m_bIsPortal2 )
+			if ( m_bIsPortal2 && m_hLinkedPortal)
 			{
 				Vector vLinkedForward;
 				m_hLinkedPortal->GetVectors( &vLinkedForward, NULL, NULL );
@@ -596,14 +608,14 @@ void CProp_Portal::DoFizzleEffect( int iEffect, bool bDelayedPos /*= true*/ )
 			//DispatchEffect( "PortalFizzleNear", fxData );
 			AngleVectors( fxData.m_vAngles, &vForward, &vUp, NULL );
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_near" : ( ( m_bIsPortal2 ) ? ( "portal_2_near" ) : ( "portal_1_near" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			ep.m_pSoundName = "Portal.fizzle_invalid_surface";
 			break;
 		}
 
 		case PORTAL_FIZZLE_SUCCESS:
 			VectorAngles( vUp, vForward, fxData.m_vAngles );
-			DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_success" ) : ( "portal_1_success" ) ), fxData.m_vOrigin, fxData.m_vAngles );
+			DispatchParticleEffect((GetLinkageGroup() > 0) ? "portal_x_success" : ( ( m_bIsPortal2 ) ? ( "portal_2_success" ) : ( "portal_1_success" ) ), fxData.m_vOrigin, fxData.m_vAngles );
 			// Don't make a sound!
 			return;
 
@@ -2093,8 +2105,15 @@ void CProp_Portal::NewLocation( const Vector &vOrigin, const QAngle &qAngles )
 		controller.SoundChangeVolume( m_pAmbientSound, 0.4, 0.1 );
 	}
 
-	DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_particles" ) : ( "portal_1_particles" ) ), PATTACH_POINT_FOLLOW, this, "particles_2", true );
-	DispatchParticleEffect( ( ( m_bIsPortal2 ) ? ( "portal_2_edge" ) : ( "portal_1_edge" ) ), PATTACH_POINT_FOLLOW, this, "particlespin" );
+	if (GetLinkageGroup() > 0)
+	{
+		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_tint_edge") : ("portal_1_tint_edge")), PATTACH_POINT_FOLLOW, this, "particlespin", true);
+	}
+	else
+	{
+		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_particles") : ("portal_1_particles")), PATTACH_POINT_FOLLOW, this, "particles_2", true);
+		DispatchParticleEffect(((m_bIsPortal2) ? ("portal_2_edge") : ("portal_1_edge")), PATTACH_POINT_FOLLOW, this, "particlespin");
+	}
 
 	//if the other portal should be static, let's not punch stuff resting on it
 	bool bOtherShouldBeStatic = false;

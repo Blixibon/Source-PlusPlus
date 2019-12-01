@@ -144,4 +144,46 @@ void CPortalOpenAmountProxy::OnBind( void *pBind )
 
 EXPOSE_INTERFACE( CPortalOpenAmountProxy, IMaterialProxy, "PortalOpenAmount" IMATERIAL_PROXY_INTERFACE_VERSION );
 
+class CPortalColorProxy : public CPortalStaticProxy
+{
+public:
+	virtual void OnBind(void* pBind);
+};
+
+void CPortalColorProxy::OnBind(void* pBind)
+{
+	if (pBind == NULL)
+		return;
+
+	Vector vecPortalColor;
+	IClientRenderable* pRenderable = (IClientRenderable*)pBind;
+	CPortalRenderable* pRecordedPortal = g_pPortalRender->FindRecordedPortal(pRenderable);
+
+	if (pRecordedPortal)
+	{
+		CPortalRenderable_FlatBasic* pRecordedFlatBasic = dynamic_cast<CPortalRenderable_FlatBasic*>(pRecordedPortal);
+		if (!pRecordedFlatBasic)
+			return;
+
+		vecPortalColor = pRecordedFlatBasic->GetPortalTint();
+	}
+	else
+	{
+		CPortalRenderable_FlatBasic* pFlatBasic = dynamic_cast<CPortalRenderable_FlatBasic*>(pRenderable);
+		if (!pFlatBasic)
+			return;
+
+		vecPortalColor = pFlatBasic->GetPortalTint();
+	}
+
+	m_StaticOutput->SetVecValue(vecPortalColor.Base(), 3);
+
+	if (ToolsEnabled())
+	{
+		ToolFramework_RecordMaterialParams(GetMaterial());
+	}
+}
+
+EXPOSE_INTERFACE(CPortalColorProxy, IMaterialProxy, "PortalColor" IMATERIAL_PROXY_INTERFACE_VERSION);
+
 

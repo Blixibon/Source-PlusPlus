@@ -135,7 +135,7 @@ private:
 	CNetworkVar(float, m_fCanPlacePortal2OnThisSurface);	// Tells the gun if it can place on the surface it's pointing at
 
 public:
-	unsigned char m_iPortalLinkageGroupID; //which portal linkage group this gun is tied to, usually set by mapper, or inherited from owning player's index
+	CNetworkVar(unsigned char, m_iPortalLinkageGroupID); //which portal linkage group this gun is tied to, usually set by mapper, or inherited from owning player's index
 
 	// HACK HACK! Used to make the gun visually change when going through a cleanser!
 	CNetworkVar(float, m_fEffectsMaxSize1);

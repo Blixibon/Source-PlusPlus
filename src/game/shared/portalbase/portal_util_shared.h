@@ -26,7 +26,7 @@ extern bool g_bBulletPortalTrace;
 	class CBeam;
 #endif
 
-Color UTIL_Portal_Color( int iPortal );
+Color UTIL_Portal_Color( int iPortal, int iLinkageID = 0);
 
 void UTIL_Portal_Trace_Filter( class CTraceFilterSimpleClassnameList *traceFilterPortalShot );
 

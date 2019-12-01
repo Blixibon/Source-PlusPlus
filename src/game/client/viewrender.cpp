@@ -57,9 +57,10 @@
 #include "ShaderEditor/ShaderEditorSystem.h"
 
 #ifdef PORTAL
-//#include "C_Portal_Player.h"
+#include "c_portal_player.h"
 #include "portal_render_targets.h"
 #include "PortalRender.h"
+#include "weapon_portalgun.h"
 #endif
 //#if defined( HL2_CLIENT_DLL ) || defined( CSTRIKE_DLL )
 #define USE_MONITORS
@@ -1118,10 +1119,6 @@ void CViewRender::DrawViewModels( const CNewViewSetup &view, bool drawViewmodel 
 {
 	VPROF( "CViewRender::DrawViewModel" );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
-
-#ifdef PORTAL //in portal, we'd like a copy of the front buffer without the gun in it for use with the depth doubler
-	g_pPortalRender->UpdateDepthDoublerTexture( view );
-#endif
 
 	bool bShouldDrawPlayerViewModel = ShouldDrawViewModel( drawViewmodel );
 	bool bShouldDrawToolViewModels = ToolsEnabled();
@@ -2403,6 +2400,10 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			}
 		}
 
+#ifdef PORTAL //in portal, we'd like a copy of the front buffer without the gun in it for use with the depth doubler
+		g_pPortalRender->UpdateDepthDoublerTexture(view);
+#endif
+
 		if (!IsInFreezeCam())
 		{
 			Vector vecToneMapScale;
@@ -2422,6 +2423,14 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 				pRenderContext->SetToneMappingScaleLinear(vecToneMapScale);
 				pRenderContext.SafeRelease();
 			}
+
+#ifdef PORTAL
+			if (whatToDraw & RENDERVIEW_DRAWHUD)
+			{
+				DrawPortalGhostOverlays();
+			}
+#endif // PORTAL
+
 		}
 
 		// Now actually draw the viewmodel
@@ -3217,6 +3226,23 @@ void CViewRender::Draw3dSkyboxworld_Portal( const CNewViewSetup &view, int &nCle
 	if ( ( bDrew3dSkybox = pSkyView->Setup( view, &nClearFlags, &nSkyboxVisible, pRenderTarget ) ) == true )
 	{
 		AddViewToScene( pSkyView );
+	}
+}
+
+void CViewRender::DrawPortalGhostOverlays()
+{
+	C_Portal_Player* pPlayer = C_Portal_Player::GetLocalPortalPlayer();
+	C_WeaponPortalgun *pPortalGun = (C_WeaponPortalgun*)pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_PORTALGUN);
+	if (pPortalGun)
+	{
+		const CUtlVector<CProp_Portal*>*pPortals = C_Prop_Portal::GetPortalLinkageGroup(pPortalGun->m_iPortalLinkageGroupID);
+		if (pPortals)
+		{
+			for (auto pThisPortal : *pPortals)
+			{
+				pThisPortal->DrawPortalLocationOverlay();
+			}
+		}
 	}
 }
 

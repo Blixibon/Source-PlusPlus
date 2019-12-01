@@ -86,6 +86,10 @@ $Project
 
 		$File	"eye_refract.cpp"
 		$File	"eye_refract_helper.cpp"
+
+		$File	"portalstaticoverlay.cpp"
+		$File	"portal_refract.cpp"
+		$File	"portal_refract_helper.cpp"
 	}
 
 	$Folder	"Header Files"

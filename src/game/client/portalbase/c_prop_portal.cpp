@@ -22,6 +22,7 @@
 #include "rendertexture.h"
 #include "prop_portal_shared.h"
 #include "particles_new.h"
+#include "weapon_portalgun.h"
 
 #include "C_Portal_Player.h"
 
@@ -252,6 +253,23 @@ void C_Prop_Portal::ClientThink( void )
 	{
 		SetNextClientThink( CLIENT_THINK_NEVER );
 	}
+}
+
+Vector C_Prop_Portal::GetPortalTint()
+{
+	Vector vecRet;
+	Color clrPortal = UTIL_Portal_Color(m_bIsPortal2 ? 2 : 1, GetLinkageGroup());
+	vecRet.x = clrPortal.r() / 255.f;
+	vecRet.y = clrPortal.g() / 255.f;
+	vecRet.z = clrPortal.b() / 255.f;
+	//vecRet *= clrPortal.a();
+
+	return vecRet;
+}
+
+bool C_Prop_Portal::ShouldPortalUseTint()
+{
+	return GetLinkageGroup() > 0;
 }
 
 void C_Prop_Portal::Simulate()
@@ -528,6 +546,14 @@ void C_Prop_Portal::OnNewParticleEffect( const char *pszParticleName, CNewPartic
 		{
 			pNewParticleEffect->SetControlPoint( 1, vClosestPosition );
 		}
+	}
+	else if (Q_stricmp(pszParticleName, "portal_2_tint_edge") == 0 || Q_stricmp(pszParticleName, "portal_1_tint_edge") == 0)
+	{
+		pNewParticleEffect->SetControlPoint(1, GetPortalTint());
+	}
+	else if (Q_stristr(pszParticleName, "portal_x") == pszParticleName)
+	{
+		pNewParticleEffect->SetControlPoint(2, GetPortalTint());
 	}
 }
 
@@ -948,6 +974,25 @@ void C_Prop_Portal::UpdateOriginPlane( void )
 				m_plane_Origin.type = PLANE_ANYZ;
 		}
 	}
+}
+
+int C_Prop_Portal::DrawPortalLocationOverlay()
+{
+	//C_Portal_Player* pPlayer = C_Portal_Player::GetLocalPortalPlayer();
+	//C_WeaponPortalgun* pPortalgun = (C_WeaponPortalgun*)pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_PORTALGUN);
+	if (m_bActivated /*&& pPortalgun && pPortalgun->m_iPortalLinkageGroupID == GetLinkageGroup()*/)
+	{
+		if (ShouldPortalUseTint())
+		{
+			DrawSimplePortalMesh(m_Materials.m_PortalGhostOverlay[2], 1.2f);
+		}
+		else
+			DrawSimplePortalMesh(m_Materials.m_PortalGhostOverlay[((m_bIsPortal2) ? (1) : (0))], 1.2f);
+
+		return 1;
+	}
+
+	return 0;
 }
 
 void C_Prop_Portal::SetIsPortal2( bool bValue )
