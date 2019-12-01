@@ -52,7 +52,7 @@
 
 	"precache_file"		"scripts/npc_sounds_tentacle.txt"
 	"precache_file"		"scripts/npc_sounds_walker.txt"
-	"precache_file"		"scripts/npc_sounds_zombie.txt"
+	"precache_file"		"scripts/npc_sounds_zombiebms.txt"
 
 	"precache_file"		"scripts/npc_sounds_scifemale.txt"
 	"precache_file"		"scripts/npc_sounds_scimale.txt"

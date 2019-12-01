@@ -9,7 +9,7 @@
 #include "doors.h"
 
 #include "simtimer.h"
-#include "npc_BaseZombie.h"
+#include "npc_Basezombie.h"
 #include "ai_hull.h"
 #include "ai_navigator.h"
 #include "ai_memory.h"
@@ -134,10 +134,10 @@ LINK_ENTITY_TO_CLASS(npc_zombie_torso, CZombieBMSBase);
 //---------------------------------------------------------
 const char *CZombieBMSBase::pMoanSounds[] =
 {
-	 "NPC_BaseZombie.Moan1",
-	 "NPC_BaseZombie.Moan2",
-	 "NPC_BaseZombie.Moan3",
-	 "NPC_BaseZombie.Moan4",
+	 "npc_zombie_bms.Moan1",
+	 "npc_zombie_bms.Moan2",
+	 "npc_zombie_bms.Moan3",
+	 "npc_zombie_bms.Moan4",
 };
 
 //=========================================================
@@ -199,23 +199,23 @@ void CZombieBMSBase::Precache(void)
 	PrecacheModel("models/zombie/classic_torso.mdl");
 	PrecacheModel("models/zombie/classic_legs.mdl");
 
-	PrecacheScriptSound("Zombie.FootstepRight");
-	PrecacheScriptSound("Zombie.FootstepLeft");
-	PrecacheScriptSound("Zombie.FootstepLeft");
-	PrecacheScriptSound("Zombie.ScuffRight");
-	PrecacheScriptSound("Zombie.ScuffLeft");
-	PrecacheScriptSound("Zombie.AttackHit");
-	PrecacheScriptSound("Zombie.AttackMiss");
-	PrecacheScriptSound("Zombie.Pain");
-	PrecacheScriptSound("Zombie.Die");
-	PrecacheScriptSound("Zombie.Alert");
-	PrecacheScriptSound("Zombie.Idle");
-	PrecacheScriptSound("Zombie.Attack");
+	PrecacheScriptSound("npc_zombie_bms.FootstepRight");
+	PrecacheScriptSound("npc_zombie_bms.FootstepLeft");
+	PrecacheScriptSound("npc_zombie_bms.FootstepLeft");
+	PrecacheScriptSound("npc_zombie_bms.ScuffRight");
+	PrecacheScriptSound("npc_zombie_bms.ScuffLeft");
+	PrecacheScriptSound("npc_zombie_bms.AttackHit");
+	PrecacheScriptSound("npc_zombie_bms.AttackMiss");
+	PrecacheScriptSound("npc_zombie_bms.Pain");
+	PrecacheScriptSound("npc_zombie_bms.Die");
+	PrecacheScriptSound("npc_zombie_bms.Alert");
+	PrecacheScriptSound("npc_zombie_bms.Idle");
+	PrecacheScriptSound("npc_zombie_bms.Attack");
 
-	PrecacheScriptSound("NPC_BaseZombie.Moan1");
-	PrecacheScriptSound("NPC_BaseZombie.Moan2");
-	PrecacheScriptSound("NPC_BaseZombie.Moan3");
-	PrecacheScriptSound("NPC_BaseZombie.Moan4");
+	PrecacheScriptSound("npc_zombie_bms.Moan1");
+	PrecacheScriptSound("npc_zombie_bms.Moan2");
+	PrecacheScriptSound("npc_zombie_bms.Moan3");
+	PrecacheScriptSound("npc_zombie_bms.Moan4");
 }
 
 //-----------------------------------------------------------------------------
@@ -224,7 +224,7 @@ void CZombieBMSBase::Spawn(void)
 {
 	Precache();
 
-	if (FClassnameIs(this, "npc_zombie") || FClassnameIs(this, "npc_zombie_scientist") || FClassnameIs(this, "npc_zombie_security") || FClassnameIs(this, "npc_zombie_grunt"))
+	if (FClassnameIs(this, "npc_zombie") || FClassnameIs(this, "npc_zombie_scientist") || FClassnameIs(this, "npc_zombie_security") || FClassnameIs(this, "npc_zombie_grunt") || FClassnameIs(this, "npc_zombie_hev"))
 	{
 		m_fIsTorso = false;
 	}
@@ -295,11 +295,11 @@ void CZombieBMSBase::FootstepSound(bool fRightFoot)
 {
 	if (fRightFoot)
 	{
-		EmitSound("Zombie.FootstepRight");
+		EmitSound("npc_zombie_bms.FootstepRight");
 	}
 	else
 	{
-		EmitSound("Zombie.FootstepLeft");
+		EmitSound("npc_zombie_bms.FootstepLeft");
 	}
 }
 
@@ -310,11 +310,11 @@ void CZombieBMSBase::FootscuffSound(bool fRightFoot)
 {
 	if (fRightFoot)
 	{
-		EmitSound("Zombie.ScuffRight");
+		EmitSound("npc_zombie_bms.ScuffRight");
 	}
 	else
 	{
-		EmitSound("Zombie.ScuffLeft");
+		EmitSound("npc_zombie_bms.ScuffLeft");
 	}
 }
 
@@ -323,7 +323,7 @@ void CZombieBMSBase::FootscuffSound(bool fRightFoot)
 //-----------------------------------------------------------------------------
 void CZombieBMSBase::AttackHitSound(void)
 {
-	EmitSound("Zombie.AttackHit");
+	EmitSound("npc_zombie_bms.AttackHit");
 }
 
 //-----------------------------------------------------------------------------
@@ -332,7 +332,7 @@ void CZombieBMSBase::AttackHitSound(void)
 void CZombieBMSBase::AttackMissSound(void)
 {
 	// Play a random attack miss sound
-	EmitSound("Zombie.AttackMiss");
+	EmitSound("npc_zombie_bms.AttackMiss");
 }
 
 //-----------------------------------------------------------------------------
@@ -346,14 +346,14 @@ void CZombieBMSBase::PainSound(const CTakeDamageInfo &info)
 		return;
 	}
 
-	EmitSound("Zombie.Pain");
+	EmitSound("npc_zombie_bms.Pain");
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CZombieBMSBase::DeathSound(const CTakeDamageInfo &info)
 {
-	EmitSound("Zombie.Die");
+	EmitSound("npc_zombie_bms.Die");
 }
 
 //-----------------------------------------------------------------------------
@@ -361,14 +361,14 @@ void CZombieBMSBase::DeathSound(const CTakeDamageInfo &info)
 //-----------------------------------------------------------------------------
 void CZombieBMSBase::AlertSound(void)
 {
-	EmitSound("Zombie.Alert");
+	EmitSound("npc_zombie_bms.Alert");
 
 	// Don't let a moan sound cut off the alert sound.
 	m_flNextMoanSound += random->RandomFloat(2.0, 4.0);
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Returns a moan sound for this class of zombie.
+// Purpose: Returns a moan sound for this class of npc_zombie_bms.
 //-----------------------------------------------------------------------------
 const char *CZombieBMSBase::GetMoanSound(int nSound)
 {
@@ -392,7 +392,7 @@ void CZombieBMSBase::IdleSound(void)
 		return;
 	}
 
-	EmitSound("Zombie.Idle");
+	EmitSound("npc_zombie_bms.Idle");
 	MakeAISpookySound(360.0f);
 }
 
@@ -401,7 +401,7 @@ void CZombieBMSBase::IdleSound(void)
 //-----------------------------------------------------------------------------
 void CZombieBMSBase::AttackSound(void)
 {
-	EmitSound("Zombie.Attack");
+	EmitSound("npc_zombie_bms.Attack");
 }
 
 //-----------------------------------------------------------------------------
@@ -487,7 +487,7 @@ bool CZombieBMSBase::ShouldBecomeTorso(const CTakeDamageInfo &info, float flDama
 {
 	if (IsSlumped())
 	{
-		// Never break apart a slouched zombie. This is because the most fun
+		// Never break apart a slouched npc_zombie_bms. This is because the most fun
 		// slouched zombies to kill are ones sleeping leaning against explosive
 		// barrels. If you break them in half in the blast, the force of being
 		// so close to the explosion makes the body pieces fly at ridiculous 
@@ -1121,6 +1121,119 @@ void CNPC_ZombieGrunt::SetZombieModel(void)
 }
 
 LINK_ENTITY_TO_CLASS(npc_zombie_grunt, CNPC_ZombieGrunt);
+
+class CNPC_ZombieHEV : public CZombieBMSBase
+{
+public:
+	DECLARE_CLASS(CNPC_ZombieHEV, CZombieBMSBase);
+
+	virtual const char* GetLegsModel(void);
+	virtual const char* GetTorsoModel(void);
+	void SetZombieModel(void);
+
+	void SetHeadcrab(CBaseAnimating* pAnim, bool bVis)
+	{
+		pAnim->SetBodygroup(ZOMBIE_BODYGROUP_HEADCRAB, !bVis);
+	}
+
+	void Precache();
+
+	void DeathSound(const CTakeDamageInfo& info);
+	void IdleSound(void);
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_ZombieHEV::Precache(void)
+{
+	BaseClass::Precache();
+
+	PrecacheModel("models/zombies/zombie_hev.mdl");
+	PrecacheModel("models/zombies/zombie_hev_torso.mdl");
+	//PrecacheModel("models/zombie/classic_legs.mdl");
+
+	PrecacheScriptSound("npc_zombie_hev.Flatline");
+	PrecacheScriptSound("npc_zombie_hev.Idle");
+}
+
+void CNPC_ZombieHEV::DeathSound(const CTakeDamageInfo& info)
+{
+	BaseClass::DeathSound(info);
+	EmitSound("npc_zombie_hev.Flatline");
+}
+
+void CNPC_ZombieHEV::IdleSound(void)
+{
+	if (GetState() == NPC_STATE_IDLE && random->RandomFloat(0, 1) == 0)
+	{
+		// Moan infrequently in IDLE state.
+		return;
+	}
+
+	if (IsSlumped())
+	{
+		// Sleeping zombies are quiet.
+		return;
+	}
+
+	EmitSound("npc_zombie_hev.Idle");
+	MakeAISpookySound(360.0f);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+const char* CNPC_ZombieHEV::GetLegsModel(void)
+{
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+const char* CNPC_ZombieHEV::GetTorsoModel(void)
+{
+	return "models/zombies/zombie_hev_torso.mdl";
+}
+
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+void CNPC_ZombieHEV::SetZombieModel(void)
+{
+	Hull_t lastHull = GetHullType();
+
+	if (m_fIsTorso)
+	{
+		SetModel("models/zombies/zombie_hev_torso.mdl");
+		SetHullType(HULL_TINY);
+	}
+	else
+	{
+		SetModel("models/zombies/zombie_hev.mdl");
+		SetHullType(HULL_HUMAN);
+	}
+
+	SetHeadcrab(this, !m_fIsHeadless);
+
+	SetHullSizeNormal(true);
+	SetDefaultEyeOffset();
+	SetActivity(ACT_IDLE);
+
+	// hull changed size, notify vphysics
+	// UNDONE: Solve this generally, systematically so other
+	// NPCs can change size
+	if (lastHull != GetHullType())
+	{
+		if (VPhysicsGetObject())
+		{
+			SetupVPhysicsHull();
+		}
+	}
+}
+
+LINK_ENTITY_TO_CLASS(npc_zombie_hev, CNPC_ZombieHEV);
+LINK_ENTITY_TO_CLASS(npc_zombie_hev_torso, CNPC_ZombieHEV);
 
 
 //=============================================================================

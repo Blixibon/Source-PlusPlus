@@ -1,0 +1,209 @@
+"npc_zombie_bms.PoundDoor"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"wave"			"npc/zombiebms/pound_door1.wav"
+}
+
+"npc_zombie_bms.Swat"
+{
+}
+
+"npc_zombie_bms.Attack"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"			"npc/zombiebms/attack1.wav"
+		"wave"			"npc/zombiebms/attack02.wav"
+		"wave"			"npc/zombiebms/attack03.wav"
+		"wave"			"npc/zombiebms/attack04.wav"
+		"wave"			"npc/zombiebms/attack05.wav"
+		"wave"			"npc/zombiebms/attack06.wav"
+	}
+}
+
+"npc_zombie_bms.AttackHit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/claw_strike1.wav"
+		"wave"	"npc/zombiebms/claw_strike2.wav"
+		"wave"	"npc/zombiebms/claw_strike3.wav"
+	}
+}
+
+"npc_zombie_bms.Alert"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/alert1.wav"
+		"wave"	"npc/zombiebms/alert2.wav"
+		"wave"	"npc/zombiebms/alert05.wav"
+		"wave"	"npc/zombiebms/alert06.wav"
+		"wave"	"npc/zombiebms/alert07.wav"
+		"wave"	"npc/zombiebms/alert08.wav"
+	}
+}
+
+"npc_zombie_bms.AttackMiss"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/claw_miss1.wav"
+		"wave"	"npc/zombiebms/claw_miss2.wav"
+		"wave"	"npc/zombiebms/claw_miss3.wav"
+	}
+}
+
+"npc_zombie_bms.Die"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/die1.wav"
+		"wave"	"npc/zombiebms/die2.wav"
+		"wave"	"npc/zombiebms/die3.wav"
+		"wave"	"npc/zombiebms/die4.wav"
+	}
+}
+
+
+"npc_zombie_bms.Footstep"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/foot1.wav"
+		"wave"	"npc/zombiebms/foot2.wav"
+		"wave"	"npc/zombiebms/foot3.wav"
+	}
+}
+
+"npc_zombie_bms.Footscuff"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/slide1.wav"
+		"wave"	"npc/zombiebms/slide2.wav"
+		"wave"	"npc/zombiebms/slide3.wav"
+	}
+}
+
+"npc_zombie_bms.Idle"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"1"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/idle1.wav"
+		"wave"	"npc/zombiebms/idle2.wav"
+		"wave"	"npc/zombiebms/idle3.wav"
+		"wave"	"npc/zombiebms/idle4.wav"
+		"wave"	"npc/zombiebms/idle5.wav"
+		"wave"	"npc/zombiebms/idle6.wav"
+	}
+}
+
+"npc_zombie_bms.Moan0"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_100dB"
+	"wave"			"npc/zombiebms/moan1.wav"
+}
+
+"npc_zombie_bms.Moan1"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_100dB"
+	"wave"			"npc/zombiebms/moan1.wav"
+}
+
+"npc_zombie_bms.Moan2"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_100dB"
+	"wave"			"npc/zombiebms/moan2.wav"
+}
+
+"npc_zombie_bms.Moan3"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_100dB"
+	"wave"			"npc/zombiebms/moan3.wav"
+}
+
+"npc_zombie_bms.Moan4"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_100dB"
+	"wave"			"npc/zombiebms/moan4.wav"
+}
+
+"npc_zombie_bms.Moan5"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_100dB"
+	"wave"			"npc/zombiebms/moan5.wav"
+}
+
+"npc_zombie_bms.Pain"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"VOL_NORM"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/pain1.wav"
+		"wave"	"npc/zombiebms/pain2.wav"
+		"wave"	"npc/zombiebms/pain3.wav"
+		"wave"	"npc/zombiebms/pain4.wav"
+		"wave"	"npc/zombiebms/pain5.wav"
+		"wave"	"npc/zombiebms/pain07.wav"
+		"wave"	"npc/zombiebms/pain08.wav"
+		"wave"	"npc/zombiebms/pain09.wav"
+		"wave"	"npc/zombiebms/pain10.wav"
+	}
+}

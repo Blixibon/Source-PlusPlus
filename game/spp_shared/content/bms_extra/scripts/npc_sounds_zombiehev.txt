@@ -1,0 +1,60 @@
+//--------------------------------------
+//HEV ZOMBIE SOUNDS --- HEV VOICE   THIS IS STILL WIP
+//------------------------------------
+
+"npc_zombie_hev.Idle"
+{
+	"channel"		"CHAN_VOICE"
+	"volume"		"0.5"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"		"SNDLVL_70dB"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebmshev/hzv01.wav"
+		"wave"	"npc/zombiebmshev/hzv02.wav"
+		"wave"	"npc/zombiebmshev/hzv03.wav"
+		"wave"	"npc/zombiebmshev/hzv04.wav"
+		"wave"	"npc/zombiebmshev/hzv05.wav"
+		"wave"	"npc/zombiebmshev/hzv06.wav"
+		"wave"	"npc/zombiebmshev/hzv07.wav"
+		"wave"	"npc/zombiebmshev/hzv08.wav"
+		"wave"	"npc/zombiebmshev/hzv09.wav"
+		"wave"	"npc/zombiebmshev/hzv10.wav"
+		"wave"	"npc/zombiebmshev/hzv11.wav"
+		"wave"	"npc/zombiebmshev/hzv12.wav"
+		"wave"	"npc/zombiebmshev/hzv13.wav"
+		"wave"	"npc/zombiebmshev/hzv14.wav"
+		"wave"	"npc/zombiebms/idle1.wav"
+		"wave"	"npc/zombiebms/idle2.wav"
+		"wave"	"npc/zombiebms/idle3.wav"
+		"wave"	"npc/zombiebms/idle4.wav"
+		"wave"	"npc/zombiebms/idle5.wav"
+		"wave"	"npc/zombiebms/idle6.wav"
+	}
+}
+
+"npc_zombie_hev.Idle2"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.5"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"		"SNDLVL_70dB"
+	"rndwave"
+	{
+		"wave"	"npc/zombiebms/idle1.wav"
+		"wave"	"npc/zombiebms/idle2.wav"
+		"wave"	"npc/zombiebms/idle3.wav"
+		"wave"	"npc/zombiebms/idle4.wav"
+		"wave"	"npc/zombiebms/idle5.wav"
+		"wave"	"npc/zombiebms/idle6.wav"
+	}
+}
+
+"npc_zombie_hev.Flatline"
+{
+	"channel"		"CHAN_BODY"
+	"volume"		"0.5"
+	"pitch"			"PITCH_NORM"
+	"soundlevel"		"SNDLVL_70dB"
+	"wave"	"hev_vox/flatline.wav"
+}
