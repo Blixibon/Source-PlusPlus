@@ -392,6 +392,31 @@ void CWeaponPortalgun::OnPickedUp(CBaseCombatCharacter* pNewOwner)
 		Assert((m_iPortalLinkageGroupID >= 0) && (m_iPortalLinkageGroupID < 256));
 	}
 
+	if (pNewOwner && pNewOwner->IsPlayer())
+	{
+		CBasePlayer* pOwner = ToBasePlayer(pNewOwner);
+		if (CanFirePortal1())
+		{
+			IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_enabled");
+			if (pEvent)
+			{
+				pEvent->SetInt("userid", pOwner->GetUserID());
+				pEvent->SetBool("leftportal", true);
+				gameeventmanager->FireEvent(pEvent);
+			}
+		}
+		if (CanFirePortal2())
+		{
+			IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_enabled");
+			if (pEvent)
+			{
+				pEvent->SetInt("userid", pOwner->GetUserID());
+				pEvent->SetBool("leftportal", false);
+				gameeventmanager->FireEvent(pEvent);
+			}
+		}
+	}
+
 	BaseClass::OnPickedUp(pNewOwner);
 }
 
@@ -1245,7 +1270,13 @@ float CWeaponPortalgun::FirePortal(bool bPortal2, Vector* pVector /*= 0*/, bool 
 
 		if (!bTest && pPlayer)
 		{
-			pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY, 0);
+			IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_fired");
+			if (pEvent)
+			{
+				pEvent->SetInt("userid", pPlayer->GetUserID());
+				pEvent->SetBool("leftportal", !bPortal2);
+				gameeventmanager->FireEvent(pEvent);
+			}
 		}
 
 		Vector forward, right, up;
@@ -1988,6 +2019,7 @@ void CWeaponPortalgun::DryFire( void )
 
 void CWeaponPortalgun::SetCanFirePortal1( bool bCanFire /*= true*/ )
 {
+	bool bOldCanFire = m_bCanFirePortal1;
 	m_bCanFirePortal1 = bCanFire;
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -2001,15 +2033,26 @@ void CWeaponPortalgun::SetCanFirePortal1( bool bCanFire /*= true*/ )
 		DoEffect( EFFECT_READY );
 	}
 
+	if (!bOldCanFire && bCanFire)
+	{
+		IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_enabled");
+		if (pEvent)
+		{
+			pEvent->SetInt("userid", pOwner->GetUserID());
+			pEvent->SetBool("leftportal", true);
+			gameeventmanager->FireEvent(pEvent);
+		}
+	}
+
 	// TODO: Remove muzzle flash when there's an upgrade animation
-	pOwner->DoMuzzleFlash();
+	//pOwner->DoMuzzleFlash();
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.25f;
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.25f;
 
 	// player "shoot" animation
-	pOwner->SetAnimation( PLAYER_ATTACK1 );
+	//pOwner->SetAnimation( PLAYER_ATTACK1 );
 
 	pOwner->ViewPunch( QAngle( random->RandomFloat( -1, -0.5f ), random->RandomFloat( -1, 1 ), 0 ) );
 
@@ -2018,6 +2061,7 @@ void CWeaponPortalgun::SetCanFirePortal1( bool bCanFire /*= true*/ )
 
 void CWeaponPortalgun::SetCanFirePortal2( bool bCanFire /*= true*/ )
 {
+	bool bOldCanFire = m_bCanFirePortal2;
 	m_bCanFirePortal2 = bCanFire;
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -2031,15 +2075,26 @@ void CWeaponPortalgun::SetCanFirePortal2( bool bCanFire /*= true*/ )
 		DoEffect( EFFECT_READY );
 	}
 
+	if (!bOldCanFire && bCanFire)
+	{
+		IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_enabled");
+		if (pEvent)
+		{
+			pEvent->SetInt("userid", pOwner->GetUserID());
+			pEvent->SetBool("leftportal", false);
+			gameeventmanager->FireEvent(pEvent);
+		}
+	}
+
 	// TODO: Remove muzzle flash when there's an upgrade animation
-	pOwner->DoMuzzleFlash();
+	//pOwner->DoMuzzleFlash();
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
 
 	// player "shoot" animation
-	pOwner->SetAnimation( PLAYER_ATTACK1 );
+	//pOwner->SetAnimation( PLAYER_ATTACK1 );
 
 	pOwner->ViewPunch( QAngle( random->RandomFloat( -1, -0.5f ), random->RandomFloat( -1, 1 ), 0 ) );
 
@@ -2057,7 +2112,7 @@ void CWeaponPortalgun::PrimaryAttack( void )
 		return;
 
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CPortal_Player* pPlayer = ToPortalPlayer(GetOwner());
 
 	if (!pPlayer)
 	{
@@ -2073,6 +2128,8 @@ void CWeaponPortalgun::PrimaryAttack( void )
 	FirePortal1();
 
 	pPlayer->DoMuzzleFlash();
+
+	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();
@@ -2092,7 +2149,7 @@ void CWeaponPortalgun::SecondaryAttack( void )
 		return;
 
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CPortal_Player *pPlayer = ToPortalPlayer( GetOwner() );
 
 	if (!pPlayer)
 	{
@@ -2107,6 +2164,8 @@ void CWeaponPortalgun::SecondaryAttack( void )
 	FirePortal2();
 
 	pPlayer->DoMuzzleFlash();
+
+	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
 
 	// Don't fire again until fire animation has completed
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;//SequenceDuration();

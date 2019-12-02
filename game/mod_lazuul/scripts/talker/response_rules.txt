@@ -180,3 +180,4 @@
 #include "talker/player/response_rules_base.txt"
 #include "talker/player/response_rules_hl2.txt"
 #include "talker/player/response_rules_hlss.txt"
+#include "talker/player/bms_rules.txt"

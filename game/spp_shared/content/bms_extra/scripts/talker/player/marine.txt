@@ -1,0 +1,125 @@
+rule player_hgrunt_alert_startcombat
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy
+	response hgrunt_alert_startcombat
+}
+
+rule player_hgrunt_alert_player
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy PlayerEnemyIsPlayer
+	response hgrunt_alert_player
+}
+
+rule player_hgrunt_charge
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerGo
+	response hgrunt_charge
+}
+
+rule player_hgrunt_cover
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerHelp
+	response hgrunt_cover
+}
+
+rule player_hgrunt_cover_fm
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerHelp PlayerEnemyIsPlayer tenpercentchance
+	response hgrunt_cover_fm
+}
+
+rule player_hgrunt_hit
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerPain
+	response hgrunt_hit
+}
+
+rule player_hgrunt_hurtarm
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerPain
+	response hgrunt_hurtarm
+}
+
+rule player_hgrunt_hurtleg
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerPain
+	response hgrunt_hurtleg
+}
+
+rule player_hgrunt_monster_headcrab
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyisheadcrab
+	response hgrunt_monster
+}
+
+rule player_hgrunt_monster_zombie_guard
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyiszombieguard
+	response hgrunt_monster
+}
+
+rule player_hgrunt_monster_zombie_scientist
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyiszombiescientist
+	response hgrunt_monster
+}
+
+rule  hgrunt_monster_aliengrunt
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyisaliengrunt
+	response hgrunt_monster
+}
+
+rule player_hgrunt_monster_alienslave
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyisalienslave
+	response hgrunt_monster
+}
+
+rule player_hgrunt_monster_bullsquid
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyisbullsquid
+	response hgrunt_monster
+}
+
+rule player_hgrunt_monster_houndeye
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyishoundeye
+	response hgrunt_monster
+}
+
+rule player_hgrunt_monster_gargantua
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerEnemy playerenemyisgargantua
+	response hgrunt_monster
+}
+
+rule player_hgrunt_taunt_generic
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerAttacking
+	response hgrunt_taunt_generic
+}
+
+rule player_hgrunt_taunt_player
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerAttacking PlayerEnemyIsPlayer tenpercentchance
+	response hgrunt_taunt_player
+}
+
+rule player_hgrunt_gren
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerIncoming
+	response hgrunt_gren
+}
+
+// ============================================================================================
+// ============================================================================================
+Response PlayerMarineIdleExpression
+{
+	scene "scenes/Expressions/colleague_angry_combat_01.vcd"
+}
+Rule PlayerMarineIdleExpression
+{
+	criteria IsPlayer IsPlayerVoiceMarine ConceptPlayerExpression
+	Response PlayerMarineIdleExpression
+}

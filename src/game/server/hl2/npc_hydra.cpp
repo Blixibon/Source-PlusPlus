@@ -308,7 +308,7 @@ void CNPC_Hydra::Spawn()
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
-	SetBloodColor( BLOOD_COLOR_RED );
+	SetBloodColor( BLOOD_COLOR_BLUE );
 	ClearEffects();
 	m_iHealth			= 20;
 	m_flFieldOfView		= -1.0;// indicates the width of this NPC's forward view cone ( as a dotproduct result )

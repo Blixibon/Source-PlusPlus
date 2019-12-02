@@ -969,7 +969,7 @@ void CNPC_MetroPolice::SpeakSentence( int nSentenceType )
 				{
 					if ( !HasMemory(bits_MEMORY_PLAYER_HURT) ) 
 					{
-						if ( Speak("TLK_METROPOLICE_PLAYERHIT") )
+						if ( m_pSquad && Speak("TLK_METROPOLICE_PLAYERHIT") )
 						{
 							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
 						}

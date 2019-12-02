@@ -1,0 +1,364 @@
+//--------------------------------------------------------
+//
+// This file contains all the scripted lessons used by 
+// the game instructor.
+//
+//
+// PRIORITY LEVELS
+// 200 Return to Hub
+// 165 Unzoom
+// 160 Zoom
+// 151 Create Left Portal
+// 150 Create Right Portal
+// 145 Movement
+// 140 Push Button
+// 135 Partner View
+// 130 Countdown Timer
+// 120 Air Taunt
+// 100 New Taunt
+//
+// NOTE: Zero priority lessons are NOT affected by priority, but NEVER affect priority
+// 00
+//
+//
+//
+// INSTANCE TYPES
+//
+// 0 = multiple lessons of same type can be open at once
+// 1 = only one of each lesson type can be open at once
+// 2 = replace lesson of the same type and "replace_key" at a fixed amount "fixed_instances_max"
+// 3 = only one instance will display at a time (but all instances will be open)
+//
+//
+// FLAGS (use these to build an integer)
+//
+//#define LOCATOR_ICON_FX_NONE			0x00000000
+//#define LOCATOR_ICON_FX_PULSE_SLOW		0x00000001
+//#define LOCATOR_ICON_FX_PULSE_FAST		0x00000002
+//#define LOCATOR_ICON_FX_PULSE_URGENT		0x00000004
+//
+// 
+// CAPTION COLOR - supply a string in the format "rrr,ggg,bbb"  ex. "255,255,255" for white
+//
+//--------------------------------------------------------
+
+// PAINT instructor conventions
+// 
+// painttype (int)
+// 0 = JUMP_PAINT
+// 1 = STICK_PAINT
+// 2 = SPEED_PAINT
+// 3 = ERASE_PAINT
+//
+//
+// surfacedir (int)
+// 0 = floor
+// 1 = wall
+// 2 = ceiling
+//
+//
+// paintcount (int)
+// 0 = The paint gun has no paint powers equipped
+// 1 = The paint gun has the NO_POWER (erase paint) only
+// 2 = The paint gun has erase paint + 1 paint power
+// 3 = The paint gun has erase paint + 2 paint powers
+// 4 = The paint gun has erase paint + 3 paint powers
+//
+
+"instructor_lessons"
+{
+	"version number"
+	{
+		"priority"			"0"
+		"success_limit"		"1"	// increase this number to force a reset counts for everyone
+	}
+	
+	"Jump"
+	{
+		"priority"			"160"
+		"instance_type"		"1"
+		
+		"display_limit"		"3"
+		
+		"binding"			"+jump"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#Instructor_Jump"
+		
+		"timeout"			"20.0"
+		
+		"open"
+		{
+			"jump_hint_visible"
+			{
+				// Init
+				"icon_target set"		"player local_player"
+			}
+		}
+	}
+	
+	"Create Left Portal"
+	{
+		"priority"			"151"
+		"instance_type"		"1"
+		
+		"success_limit"		"1"
+		
+		"onscreen_icon"		"use_binding"
+		
+		"once_learned_never_open"	"1"
+		
+		"open"
+		{
+			"portal_enabled"
+			{
+				"local_player is"		"player userid"
+				"integer2 set"			"bool leftportal"
+
+				// Init
+				"icon_target set"		"player local_player"
+				"binding set"			"string +attack"
+				"caption set"			"string #Instructor_Create_Blue_Portal"
+			}
+		}
+		
+		// "onopen"
+		// {
+			// "Left Orange"
+			// {
+				// "void is multiplayer"	"void"
+				// "local_player team is"	"int 2"
+				// "caption set"			"string #Instructor_Create_Orange_Portal"
+			// }
+		// }
+		
+		"close"
+		{
+			"portal_fired"
+			{
+				"local_player is"		"player userid"
+				"integer1 set"			"bool leftportal"
+				"integer1 is"			"bool 1"
+			}
+		}
+		
+		"success"
+		{
+			"portal_fired"
+			{
+				"local_player is"		"player userid"
+				"integer1 set"			"bool leftportal"
+				"integer1 is"			"bool 1"
+			}
+		}
+	}
+	
+	"Create Right Portal"
+	{
+		"priority"			"150"
+		"instance_type"		"1"
+		
+		"success_limit"		"1"
+		
+		"onscreen_icon"		"use_binding"
+		
+		"once_learned_never_open"	"1"
+		
+		"open"
+		{			
+			"portal_enabled"
+			{
+				"local_player is"		"player userid"
+				"integer2 set"			"bool leftportal"
+				"integer2 is"			"bool 0"
+
+				// Init
+				"icon_target set"		"player local_player"
+				"binding set"			"string +attack2"
+				"caption set"			"string #Instructor_Create_Orange_Portal"
+			}
+		}
+		
+		// "onopen"
+		// {
+			// "Right Red"
+			// {
+				// "void is multiplayer"	"void"
+				// "local_player team is"	"int 2"
+				// "caption set"			"string #Instructor_Create_Red_Portal"
+			// }
+			
+			// "Right Purple"
+			// {
+				// "void is multiplayer"	"void"
+				// "local_player team is"	"int 3"
+				// "caption set"			"string #Instructor_Create_Purple_Portal"
+			// }
+		// }
+		
+		"close"
+		{
+			"portal_fired"
+			{
+				"local_player is"		"player userid"
+				"integer1 set"			"bool leftportal"
+				"integer1 is"			"bool 0"
+			}
+		}
+		
+		"success"
+		{
+			"portal_fired"
+			{
+				"local_player is"		"player userid"
+				"integer1 set"			"bool leftportal"
+				"integer1 is"			"bool 0"
+			}
+		}
+	}
+	
+	"Drop Object"
+	{
+		"priority"			"142"
+		"instance_type"		"1"
+		
+		"success_limit"		"3"
+		
+		"binding"			"+use"
+		"onscreen_icon"		"use_binding"
+		"caption"			"#Instructor_Drop"
+		"range"				"convar sv_portal2_pickup_hint_range"
+		
+		"open"
+		{
+			"player_use"
+			{
+				"local_player is"		"player userid"
+				"entity1 set"			"entity entity"
+				"entity1 classname is"	"string prop_weighted_cube"
+
+				// Init
+				"icon_target set"		"player local_player"
+			}
+		}
+		
+		"close"
+		{
+			"player_use"
+			{
+				"local_player !is"		"player userid"
+				"icon_target is"		"entity entity"
+			}
+
+			"player_drop"
+			{
+				"entity1 is"			"entity entity"
+			}
+		}
+		
+		"success"
+		{			
+			"player_drop"
+			{
+				"local_player is"		"player userid"
+			}
+		}
+
+		"update"
+		{
+			"Lost our object"
+			{
+				"entity1 is"			"entity NULL"
+				"void close"			"void"
+			}
+		}
+	}
+	
+	"Pick Up Object"
+	{
+		"priority"			"140"
+		"instance_type"		"2"
+		
+		"success_limit"		"3"
+		
+		"binding"			"+use"
+		"onscreen_icon"		"use_binding"
+		"offscreen_icon"	"icon_interact"
+		"caption"			"#Instructor_Pick_Up"
+		"range"				"convar sk_instructor_hint_range"
+		
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"		"player userid"
+				"string1 set"			"string classname"
+				"string1 is"			"string prop_weighted_cube"
+
+				// Init
+				"icon_target set"		"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"player_use"
+			{
+				"icon_target is"		"entity entity"
+			}
+		}
+		
+		"success"
+		{			
+			"player_use"
+			{
+				"local_player is"		"player userid"
+				"icon_target is"		"entity entity"
+			}
+		}
+	}
+	
+	"Push Button"
+	{
+		"priority"			"140"
+		"instance_type"		"1"
+		
+		"success_limit"		"1"
+		
+		"binding"			"+use"
+		"onscreen_icon"		"use_binding"
+		"offscreen_icon"	"icon_button"
+		"caption"			"#Instructor_Push_Button"
+		"icon_offset"		"50.0"
+		"range"				"convar sk_instructor_hint_range"
+		
+		"open"
+		{
+			"entity_visible"
+			{
+				"local_player is"		"player userid"
+				"string1 set"			"string classname"
+				"string1 is"			"string prop_button"
+
+				// Init
+				"icon_target set"		"entity subject"
+			}
+		}
+		
+		"close"
+		{
+			"player_use"
+			{
+				"icon_target is"		"entity entity"
+			}
+		}
+		
+		"success"
+		{			
+			"player_use"
+			{
+				"local_player is"		"player userid"
+				"icon_target is"		"entity entity"
+			}
+		}
+	}
+}

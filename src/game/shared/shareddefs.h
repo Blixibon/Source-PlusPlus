@@ -543,6 +543,8 @@ enum
 	BLOOD_COLOR_ZOMBIE,			// FIXME: Move to Base HL2
 	BLOOD_COLOR_ANTLION_WORKER,
 #endif // HL2_EPISODIC
+
+	BLOOD_COLOR_BLUE,
 };
 
 //-----------------------------------------------------------------------------

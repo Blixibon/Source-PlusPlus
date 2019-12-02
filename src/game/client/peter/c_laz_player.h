@@ -111,6 +111,7 @@ protected:
 	CBitVec<MAXSTUDIOBONES> m_bitLeftArm;
 	CBitVec<MAXSTUDIOBONES> m_bitRightArm;
 	CBitVec<MAXSTUDIOBONES> m_bitHair;
+	int						m_iHeadBone;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

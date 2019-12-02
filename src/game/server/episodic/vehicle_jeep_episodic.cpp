@@ -461,7 +461,7 @@ void CPropJeepEpisodic::Spawn( void )
 
 	SetBlocksLOS( false );
 
-	CBasePlayer	*pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer	*pPlayer = AI_GetSinglePlayer();
 	if ( pPlayer != NULL )
 	{
 		pPlayer->m_Local.m_iHideHUD |= HIDEHUD_VEHICLE_CROSSHAIR;

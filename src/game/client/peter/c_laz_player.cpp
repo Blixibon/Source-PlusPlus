@@ -800,12 +800,15 @@ CStudioHdr* C_Laz_Player::OnNewModel(void)
 
 	if (hdr)
 	{
-		int iHead = LookupBone("ValveBiped.Bip01_Head1");
-		if (iHead >= 0)
+		m_iHeadBone = LookupBone("ValveBiped.Bip01_Head1");
+		if (m_iHeadBone < 0)
+			m_iHeadBone = LookupBone("ValveBiped.HC_Body_Bone");
+
+		if (m_iHeadBone >= 0)
 		{
 			m_bitLeftArm.Set(LookupBone("ValveBiped.Bip01_L_Upperarm"));
 			m_bitRightArm.Set(LookupBone("ValveBiped.Bip01_R_Upperarm"));
-			m_bitHair.Set(iHead);
+			m_bitHair.Set(m_iHeadBone);
 		}
 
 		for (int i = 0; i < hdr->numbones(); i++)
@@ -1165,13 +1168,19 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 	// If we aren't drawing the player anyway, don't mess with the bones. This can happen in Portal.
 	if ((IsLocalPlayer() && ShouldDrawThisPlayer()) || !cl_legs_enable.GetBool())
 	{
+		if (GetModelPtr() && m_iHeadBone >= 0 && GetModelPtr()->numbones() > m_iHeadBone)
+		{
+			mstudiobone_t* pBone = GetModelPtr()->pBone(m_iHeadBone);
+			pchHeadBoneName = pBone->pszName();
+		}
+
 		BaseClass::BuildFirstPersonMeathookTransformations(hdr, pos, q, cameraTransform, boneMask, boneComputed, pchHeadBoneName);
 		return;
 	}
 
 	m_BoneAccessor.SetWritableBones(BONE_USED_BY_ANYTHING);
 
-	int iHead = LookupBone(pchHeadBoneName);
+	int iHead = m_iHeadBone;
 	if (iHead == -1)
 	{
 		return;

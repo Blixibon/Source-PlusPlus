@@ -1,0 +1,20 @@
+
+criterion	"IsPlayerVoiceMarine"	"voice" "marine" required
+
+criterion	"PlayerEnemyIsPlayer"		"playerenemy" "player" required weight 2
+criterion PlayerEnemyIsGargantua "playerenemy" "npc_gargantua" required weight 2
+criterion PlayerEnemyIsZombieGuard "playerenemy" "npc_zombie_security" required weight 2
+criterion PlayerEnemyIsZombieScientist "playerenemy" "npc_zombie_scientist" required weight 2
+criterion PlayerEnemyIsAlienController "playerenemy" "npc_alien_controller" required weight 2
+criterion PlayerEnemyIsAlienGrunt "playerenemy" "npc_alien_grunt" required weight 2
+criterion PlayerEnemyIsAlienSlave "playerenemy" "npc_alien_slave" required weight 2
+criterion PlayerEnemyIsBarnacle "playerenemy" "npc_barnacle" required weight 2
+criterion PlayerEnemyIsBullsquid "playerenemy" "npc_bullsquid" required weight 2
+criterion PlayerEnemyIsHoundeye "playerenemy" "npc_houndeye" required weight 2
+criterion PlayerEnemyIsSentryCeiling "playerenemy" "npc_sentry_ceiling" required weight 2
+criterion PlayerEnemyIsSentryGround "playerenemy" "npc_sentry_ground" required weight 2
+criterion PlayerEnemyIsHumanGrunt_Generic "playerenemy" "npc_human_grunt" required weight 2
+criterion PlayerEnemyIsHumanGrunt_Medic "playerenemy" "npc_human_medic" required weight 2
+criterion PlayerEnemyIsHumanGrunt_Commander "playerenemy" "npc_human_commander" required weight 2
+
+#include "talker/player/marine.txt"

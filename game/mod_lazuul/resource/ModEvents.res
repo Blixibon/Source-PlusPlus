@@ -660,6 +660,18 @@
 		"portal2"	"bool"		// false for portal1 (blue)
 	}
 	
+	"portal_enabled"
+	{
+		"userid" "short"
+		"leftportal" "bool"
+	}
+	
+	"portal_fired"
+	{
+		"userid" "short"
+		"leftportal" "bool"
+	}
+	
 	"turret_hit_turret"
 	{
 	}

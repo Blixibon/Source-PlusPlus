@@ -135,6 +135,11 @@ void CLaz_Player::Spawn(void)
 
 	BaseClass::Spawn();
 
+	if (GetTeamNumber() == TEAM_ZOMBIES)
+		SetBloodColor(BLOOD_COLOR_ZOMBIE);
+	else
+		SetBloodColor(BLOOD_COLOR_RED);
+
 	// Kind of lame, but CBasePlayer::Spawn resets a lot of the state that we initially want on.
 	// So if we're in the welcome state, call its enter function to reset 
 	if (m_iPlayerState == STATE_WELCOME)

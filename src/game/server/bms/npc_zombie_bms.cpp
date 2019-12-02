@@ -125,11 +125,6 @@ private:
 	Vector				 m_vPositionCharged;
 };
 
-LINK_ENTITY_TO_CLASS(npc_zombie, CZombieBMSBase);
-LINK_ENTITY_TO_CLASS(npc_zombie_torso, CZombieBMSBase);
-
-
-
 //---------------------------------------------------------
 //---------------------------------------------------------
 const char *CZombieBMSBase::pMoanSounds[] =
@@ -199,11 +194,10 @@ void CZombieBMSBase::Precache(void)
 	PrecacheModel("models/zombie/classic_torso.mdl");
 	PrecacheModel("models/zombie/classic_legs.mdl");
 
-	PrecacheScriptSound("npc_zombie_bms.FootstepRight");
-	PrecacheScriptSound("npc_zombie_bms.FootstepLeft");
-	PrecacheScriptSound("npc_zombie_bms.FootstepLeft");
-	PrecacheScriptSound("npc_zombie_bms.ScuffRight");
-	PrecacheScriptSound("npc_zombie_bms.ScuffLeft");
+	PrecacheScriptSound("Zombie.FootstepRight");
+	PrecacheScriptSound("Zombie.FootstepLeft");
+	PrecacheScriptSound("Zombie.ScuffRight");
+	PrecacheScriptSound("Zombie.ScuffLeft");
 	PrecacheScriptSound("npc_zombie_bms.AttackHit");
 	PrecacheScriptSound("npc_zombie_bms.AttackMiss");
 	PrecacheScriptSound("npc_zombie_bms.Pain");
@@ -295,11 +289,11 @@ void CZombieBMSBase::FootstepSound(bool fRightFoot)
 {
 	if (fRightFoot)
 	{
-		EmitSound("npc_zombie_bms.FootstepRight");
+		EmitSound("Zombie.FootstepRight");
 	}
 	else
 	{
-		EmitSound("npc_zombie_bms.FootstepLeft");
+		EmitSound("Zombie.FootstepLeft");
 	}
 }
 
@@ -310,11 +304,11 @@ void CZombieBMSBase::FootscuffSound(bool fRightFoot)
 {
 	if (fRightFoot)
 	{
-		EmitSound("npc_zombie_bms.ScuffRight");
+		EmitSound("Zombie.ScuffRight");
 	}
 	else
 	{
-		EmitSound("npc_zombie_bms.ScuffLeft");
+		EmitSound("Zombie.ScuffLeft");
 	}
 }
 
@@ -1126,6 +1120,7 @@ class CNPC_ZombieHEV : public CZombieBMSBase
 {
 public:
 	DECLARE_CLASS(CNPC_ZombieHEV, CZombieBMSBase);
+	DECLARE_SERVERCLASS();
 
 	virtual const char* GetLegsModel(void);
 	virtual const char* GetTorsoModel(void);
@@ -1141,6 +1136,10 @@ public:
 	void DeathSound(const CTakeDamageInfo& info);
 	void IdleSound(void);
 };
+
+IMPLEMENT_SERVERCLASS_ST(CNPC_ZombieHEV, DT_ZombieHEV)
+
+END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: 

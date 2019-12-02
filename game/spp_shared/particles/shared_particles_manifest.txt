@@ -16,6 +16,7 @@ particles_manifest
 	"file"		"particles/boom_barrel.pcf"
 	"file"		"particles/npc_garg.pcf"
 	"file"		"particles/npc_zombies.pcf"
+	"file"		"particles/fx_blood.pcf"
 	
 	"file"		"particles/hl2mmod_weaponeffects.pcf"
 	"file"		"!particles/hl2mmod_muzzleflashes.pcf"
