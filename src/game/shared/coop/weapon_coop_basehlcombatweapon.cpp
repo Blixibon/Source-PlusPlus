@@ -90,6 +90,9 @@ END_DATADESC();
 //================================================================================
 bool CWeaponCoopBaseHLCombat::WeaponShouldBeLowered( void )
 {
+	if (IsIronsighted())
+		return false;
+
 	// Can't be in the middle of another animation
   	if ( GetIdealActivity() != ACT_VM_IDLE_LOWERED && GetIdealActivity() != ACT_VM_IDLE &&
 		 GetIdealActivity() != ACT_VM_IDLE_TO_LOWERED && GetIdealActivity() != ACT_VM_LOWERED_TO_IDLE )
@@ -192,8 +195,24 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 	{
 		m_bHasBeenDeployed = true;
 	}
+
+	CHL2_Player* pPlayer = ToHL2Player(GetOwner());
+	if (pPlayer && pPlayer->IsSprinting())
+	{
+		// Move to lowered position if we're not there yet
+		if (GetActivity() != GetSprintActivity() && GetActivity() != ACT_VM_SPRINT_ENTER
+			&& GetActivity() != ACT_TRANSITION)
+		{
+			SendWeaponAnim(GetSprintActivity());
+		}
+		else if (HasWeaponIdleTimeElapsed())
+		{
+			// Keep idling low
+			SendWeaponAnim(GetSprintActivity());
+		}
+	}
 	//See if we should idle high or low
-	if ( WeaponShouldBeLowered() )
+	else if ( WeaponShouldBeLowered() )
 	{
 		// Move to lowered position if we're not there yet
 		if ( GetActivity() != ACT_VM_IDLE_LOWERED && GetActivity() != ACT_VM_IDLE_TO_LOWERED 
@@ -210,7 +229,7 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 	else
 	{
 		// See if we need to raise immediately
-		if ( m_flRaiseTime < gpGlobals->curtime && GetActivity() == ACT_VM_IDLE_LOWERED ) 
+		if ( (m_flRaiseTime < gpGlobals->curtime && GetActivity() == ACT_VM_IDLE_LOWERED) || GetActivity() == GetSprintActivity())
 		{
 			SendWeaponAnim( ACT_VM_IDLE );
 		}

@@ -56,6 +56,7 @@ public:
     //DECLARE_ACTTABLE();
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_GLOCK_BMS; }
+	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT_IDLE; }
 
 	void	Precache( void );
 	void	ItemPostFrame( void );

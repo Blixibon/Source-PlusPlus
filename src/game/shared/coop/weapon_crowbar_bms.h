@@ -42,6 +42,7 @@ public:
 	void		SecondaryAttack( void )	{	return;	}
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_CROWBAR_BMS; }
+	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT_IDLE; }
 
 	// Animation event
     #ifndef CLIENT_DLL

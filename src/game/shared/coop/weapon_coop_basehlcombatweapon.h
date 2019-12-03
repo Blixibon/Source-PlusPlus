@@ -49,6 +49,8 @@ public:
 	virtual Activity		ActivityOverride(Activity baseAct, bool *pRequired);
 	static acttable_t s_acttableLowered[];
 
+	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT; }
+
 protected:
     CNetworkVar(bool, m_bLowered);			// Whether the viewmodel is raised or lowered
 	CNetworkVar(float, m_flRaiseTime);		// If lowered, the time we should raise the viewmodel

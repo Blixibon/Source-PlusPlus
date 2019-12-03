@@ -7,14 +7,14 @@ WeaponData
 	"viewmodel"			"models/weapons/v_portalgun.mdl"
 	"playermodel"			"models/weapons/w_portalgun.mdl"
 	"anim_prefix"			"portalgun"
-	"bucket"			"0"
+	"bucket"			"5"
 	"bucket_position"		"2"
 
 	"clip_size"			"1"
 	"primary_ammo"			"None"
 	"secondary_ammo"		"None"
 
-	"weight"			"4"
+	"weight"			"10"
 	"item_flags"			"0"
 	"damage"			"9"
 	

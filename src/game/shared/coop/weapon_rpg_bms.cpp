@@ -14,6 +14,7 @@ public:
 	DECLARE_PREDICTABLE();
 
 	bool	Deploy(void);
+	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT_IDLE; }
 
 	virtual void 			GetControlPanelInfo( int nPanelIndex, const char *&pPanelName );
 };

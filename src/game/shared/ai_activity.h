@@ -547,6 +547,7 @@ typedef enum
 	ACT_VM_SPRINT_ENTER,
 	ACT_VM_SPRINT_IDLE,
 	ACT_VM_SPRINT_LEAVE,
+	ACT_VM_SPRINT,
 
 	// Looping weapon firing
 	ACT_FIRE_START,
