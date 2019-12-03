@@ -1152,6 +1152,9 @@ void CNPC_ZombieHEV::Precache(void)
 	PrecacheModel("models/zombies/zombie_hev_torso.mdl");
 	//PrecacheModel("models/zombie/classic_legs.mdl");
 
+	PrecacheModel("sprites/glow_test02.vmt");
+	PrecacheModel("sprites/light_glow03.vmt");
+
 	PrecacheScriptSound("npc_zombie_hev.Flatline");
 	PrecacheScriptSound("npc_zombie_hev.Idle");
 }

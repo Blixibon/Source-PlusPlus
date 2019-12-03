@@ -14656,7 +14656,7 @@ void CAI_BaseNPC::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	// Append time since seen player
 	if ( m_flLastSawPlayerTime )
 	{
-		set.AppendCriteria( "timesinceseenplayer", UTIL_VarArgs( "%f", gpGlobals->curtime - m_flLastSawPlayerTime ) );
+		set.AppendCriteria( "timesinceseenplayer", CFmtStr( "%f", gpGlobals->curtime - m_flLastSawPlayerTime ) );
 	}
 	else
 	{
@@ -14666,7 +14666,7 @@ void CAI_BaseNPC::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	// Append distance to my enemy
 	if ( GetEnemy() )
 	{
-		set.AppendCriteria( "distancetoenemy", UTIL_VarArgs( "%f", EnemyDistance(GetEnemy()) ) );
+		set.AppendCriteria( "distancetoenemy", CFmtStr( "%f", EnemyDistance(GetEnemy()) ) );
 	}
 	else
 	{

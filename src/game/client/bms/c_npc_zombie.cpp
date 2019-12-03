@@ -225,14 +225,14 @@ void C_NPC_ZombieHEV::ClientThink()
 			m_pBeam->SetBrightness(flColor * flScale);
 			m_pBeam->SetNoise(0);
 			m_pBeam->SetWidth(8.0f);	// On low end TVs these lasers are very hard to see at a distance
-			m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
+			m_pBeam->SetEndWidth((32.0f * flScale) + 8.0f);
 			m_pBeam->SetScrollRate(0);
 			m_pBeam->SetFadeLength(0);
 			m_pBeam->SetHaloTexture(PrecacheModel("sprites/light_glow03.vmt"));
 			m_pBeam->SetHaloScale(6.0f);
 			m_pBeam->SetCollisionGroup(COLLISION_GROUP_NONE);
 			m_pBeam->SetBeamFlag(FBEAM_SHADEOUT | FBEAM_NOTILE);
-			m_pBeam->PointsInit(vecOrigin, vecOrigin + (vecDir * 64));
+			m_pBeam->PointsInit(vecOrigin, vecOrigin + (vecDir * 40));
 			m_pBeam->SetType(BEAM_ENTPOINT);
 			m_pBeam->SetStartEntity(this);
 			m_pBeam->SetEndPos(vecOrigin + (vecDir * 64));
@@ -245,9 +245,9 @@ void C_NPC_ZombieHEV::ClientThink()
 			m_pBeam->RemoveEffects(EF_NODRAW);
 			m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
 			m_pBeam->SetBrightness(flColor * flScale);
-			m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
+			m_pBeam->SetEndWidth((32.f * flScale) + 8.0f);
 
-			m_pBeam->SetEndPos(vecOrigin + (vecDir * 64));
+			m_pBeam->SetEndPos(vecOrigin + (vecDir * 40));
 			m_pBeam->RelinkBeam();
 		}
 	}

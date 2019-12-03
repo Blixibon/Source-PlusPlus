@@ -494,14 +494,7 @@ public:
 
 	virtual void			BoneMergeFastCullBloat( Vector &localMins, Vector &localMaxs, const Vector &thisEntityMins, const Vector &thisEntityMaxs  ) const;
 
-	virtual bool			OnFireEvent( C_BaseViewModel *pViewModel, const Vector& origin, const QAngle& angles, int event, const char *options ) 
-	{ 
-#if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC_CLIENT )
-		return BaseClass::OnFireEvent( pViewModel, origin, angles, event, options );
-#else
-		return false; 
-#endif
-	}
+	virtual bool			OnFireEvent(C_BaseViewModel* pViewModel, const Vector& origin, const QAngle& angles, int event, const char* options);
 
 	// Should this object cast shadows?
 	virtual ShadowType_t	ShadowCastType();

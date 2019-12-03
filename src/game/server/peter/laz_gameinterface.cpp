@@ -25,7 +25,7 @@ public:
 	virtual bool ShouldCreateEntity(const char* pClassname)
 	{
 		// Create everything but the world
-		return Q_strnicmp(pClassname, "item_weapon", 11) >= 0;
+		return Q_strnicmp(pClassname, "item_weapon", 11) == 0;
 	}
 
 	virtual CBaseEntity* CreateNextEntity(const char* pClassname, char* pClassnameWriteBack, int iMaxWrite)

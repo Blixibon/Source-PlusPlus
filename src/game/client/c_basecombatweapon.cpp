@@ -17,6 +17,8 @@
 #include "toolframework/itoolframework.h"
 #include "toolframework_client.h"
 #include "viewrender.h"
+#include "prediction.h"
+#include "eventlist.h"
 #ifdef PORTAL
 #include "PortalRender.h"
 #include "c_portal_player.h"
@@ -517,6 +519,26 @@ int C_BaseCombatWeapon::DrawModel( int flags )
 	return BaseClass::DrawModel( flags );
 }
 
+bool C_BaseCombatWeapon::OnFireEvent(C_BaseViewModel* pViewModel, const Vector& origin, const QAngle& angles, int event, const char* options)
+{
+	C_BasePlayer* localplayer = C_BasePlayer::GetLocalPlayer();
+	if (localplayer &&
+		localplayer == GetOwner() &&
+		!ShouldDrawUsingViewModel())
+	{
+		if (event == AE_MUZZLEFLASH)
+		{
+			FireEvent(origin, angles, AE_NPC_MUZZLEFLASH, options);
+			return true;
+		}
+	}
+
+#if defined ( USES_ECON_ITEMS ) || defined ( TF_CLASSIC_CLIENT )
+	return BaseClass::OnFireEvent(pViewModel, origin, angles, event, options);
+#else
+	return false;
+#endif
+}
 
 //-----------------------------------------------------------------------------
 // Allows the client-side entity to override what the network tells it to use for
@@ -529,7 +551,8 @@ int C_BaseCombatWeapon::CalcOverrideModelIndex()
 	C_BasePlayer *localplayer = C_BasePlayer::GetLocalPlayer();
 	if ( localplayer && 
 		localplayer == GetOwner() &&
-		ShouldDrawUsingViewModel() 
+		/*ShouldDrawUsingViewModel() &&*/
+		prediction->InPrediction()
 		)
 	{
 #if defined(TF_CLASSIC_CLIENT) || defined(HL2_LAZUL)

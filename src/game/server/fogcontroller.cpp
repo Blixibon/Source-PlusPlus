@@ -117,6 +117,9 @@ void CFogController::Spawn( void )
 
 	m_fog.colorPrimaryLerpTo = m_fog.colorPrimary;
 	m_fog.colorSecondaryLerpTo = m_fog.colorSecondary;
+	m_fog.startLerpTo = m_fog.start;
+	m_fog.endLerpTo = m_fog.end;
+	m_fog.maxdensityLerpTo = m_fog.maxdensity;
 }
 
 //-----------------------------------------------------------------------------
@@ -320,7 +323,7 @@ void CFogController::InputStartFogTransition(inputdata_t &data)
 {
 	SetThink( &CFogController::SetLerpValues );
 
-	m_fog.lerptime = gpGlobals->curtime + m_fog.duration + 0.1;
+	m_fog.lerptime = gpGlobals->curtime + m_fog.duration + 0.1f;
     SetNextThink( gpGlobals->curtime + m_fog.duration );
 }
 
