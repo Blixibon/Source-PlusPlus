@@ -190,7 +190,7 @@ public:
 
 	// Flashlight
 	void	Flashlight( void );
-	void	UpdateFlashlight( void );
+	virtual void	UpdateFlashlight( void );
 
 	// Weapon selection code
 	virtual bool				IsAllowedToSwitchWeapons( void ) { return !IsObserver(); }

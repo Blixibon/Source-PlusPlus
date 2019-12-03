@@ -17,12 +17,12 @@ class CFlashlightEffectBase
 {
 public:
 
-	CFlashlightEffectBase(int nEntIndex = 0);
+	CFlashlightEffectBase(bool bLocalPlayer = false);
 	virtual ~CFlashlightEffectBase();
 
-	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance);
-	void TurnOn();
-	void TurnOff();
+	virtual void UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp, int nDistance, float flScale = 1.0f) = 0;
+	virtual void TurnOn();
+	virtual void TurnOff();
 	bool IsOn( void ) { return m_bIsOn;	}
 
 	ClientShadowHandle_t GetFlashlightHandle( void ) { return m_FlashlightHandle; }
@@ -30,21 +30,37 @@ public:
 	
 protected:
 
+	void InitSpotlightTexture(const char* pszLightTexture);
+
 	virtual void UpdateLightProjection( ClientFlashlightState_t &state );
 
 	virtual void LightOff();
-	void LightOffNew();
-
-	void UpdateLightNew(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp);
 
 	bool m_bIsOn;
-	int m_nEntIndex;
+	bool m_bIsLocalPlayerLight;
 	ClientShadowHandle_t m_FlashlightHandle;
 
 	float m_flDistMod;
 
 	// Texture for flashlight
 	CTextureReference m_FlashlightTexture;
+};
+
+class CFlashlightEffect : public CFlashlightEffectBase
+{
+public:
+	CFlashlightEffect(int iEntIndex, bool bIsNVG);
+	~CFlashlightEffect();
+
+	virtual void UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp, int nDistance, float flScale = 1.0f)
+	{
+		UpdateLightNew(vecPos, vecDir, vecRight, vecUp);
+	}
+
+	void UpdateLightNew(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp);
+protected:
+	int m_nEntIndex;
+	bool m_bIsNVG;
 };
 
 class CHeadlightEffect : public CFlashlightEffectBase
@@ -54,7 +70,7 @@ public:
 	CHeadlightEffect();
 	~CHeadlightEffect();
 
-	virtual void UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance);
+	virtual void UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp, int nDistance, float flScale = 1.0f);
 };
 
 class CSpotlightEffect : public CFlashlightEffectBase
@@ -85,14 +101,5 @@ protected:
 	Vector m_vecOrigin;
 };
 
-//class CMuzzleFlashEffect : public CFlashlightEffectBase
-//{
-//public:
-//
-//	CMuzzleFlashEffect();
-//	~CMuzzleFlashEffect();
-//
-//	virtual void UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp);
-//};
-
+void ProjectMuzzleFlashLight(ClientEntityHandle_t hEntity, int attachmentIndex, ColorRGBExp32 clrColor);
 #endif // FLASHLIGHTEFFECT_H

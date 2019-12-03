@@ -4387,11 +4387,9 @@ void CClientShadowMgr::AddShadowToReceiver( ClientShadowHandle_t handle,
 		return;
 
 	int flags = SHADOW_FLAGS_PROJECTED_TEXTURE_TYPE_MASK;
-	extern ClientShadowHandle_t g_hFlashlightHandle[MAX_PLAYERS + 1];
+	extern CUtlVector< ClientShadowHandle_t > g_hFlashlightHandle;
 	for ( const ClientShadowHandle_t& flashlight_handle : g_hFlashlightHandle )
 	{
-		if ( &g_hFlashlightHandle[0] == &flashlight_handle )
-			continue;
 		if ( flashlight_handle == handle )
 		{
 			flags |= SHADOW_FLAGS_PLAYER_FLASHLIGHT;

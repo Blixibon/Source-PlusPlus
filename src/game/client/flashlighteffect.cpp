@@ -33,6 +33,7 @@ extern ConVar r_flashlightdepthtexture;
 static ConVar r_swingflashlight( "r_swingflashlight", "1", FCVAR_CHEAT );
 static ConVar r_flashlightlockposition( "r_flashlightlockposition", "0", FCVAR_CHEAT );
 static ConVar r_flashlightfov( "r_flashlightfov", "45.0", FCVAR_CHEAT );
+static ConVar r_nvgfov("r_nvgfov", "100", FCVAR_CHEAT); // Breadman - Changed for NVG effect
 static ConVar r_flashlightoffsetx( "r_flashlightoffsetx", "10.0", FCVAR_CHEAT );
 static ConVar r_flashlightoffsety( "r_flashlightoffsety", "-20.0", FCVAR_CHEAT );
 static ConVar r_flashlightoffsetz( "r_flashlightoffsetz", "24.0", FCVAR_CHEAT );
@@ -48,7 +49,7 @@ static ConVar r_flashlightladderdist( "r_flashlightladderdist", "40.0", FCVAR_CH
 static ConVar mat_slopescaledepthbias_shadowmap( "mat_slopescaledepthbias_shadowmap", "16", FCVAR_CHEAT );
 static ConVar mat_depthbias_shadowmap(	"mat_depthbias_shadowmap", "0.0005", FCVAR_CHEAT  );
 
-ClientShadowHandle_t g_hFlashlightHandle[MAX_PLAYERS + 1] = { CLIENTSHADOW_INVALID_HANDLE };
+CUtlVector< ClientShadowHandle_t > g_hFlashlightHandle;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -56,22 +57,22 @@ ClientShadowHandle_t g_hFlashlightHandle[MAX_PLAYERS + 1] = { CLIENTSHADOW_INVAL
 //			vecPos - The position of the light emitter.
 //			vecDir - The direction of the light emission.
 //-----------------------------------------------------------------------------
-CFlashlightEffectBase::CFlashlightEffectBase(int nEntIndex)
+CFlashlightEffectBase::CFlashlightEffectBase(bool bLocalPlayer)
 {
 	m_FlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
-	m_nEntIndex = nEntIndex;
 
 	m_bIsOn = false;
-	g_hFlashlightHandle[nEntIndex] = CLIENTSHADOW_INVALID_HANDLE;
+	m_bIsLocalPlayerLight = bLocalPlayer;
 
-	if ( g_pMaterialSystemHardwareConfig->SupportsBorderColor() )
+	/*if ( g_pMaterialSystemHardwareConfig->SupportsBorderColor() )
 	{
 		m_FlashlightTexture.Init( "effects/flashlight_border", TEXTURE_GROUP_OTHER, true );
 	}
 	else
 	{
 		m_FlashlightTexture.Init( "effects/flashlight001", TEXTURE_GROUP_OTHER, true );
-	}
+	}*/
+
 }
 
 
@@ -83,6 +84,10 @@ CFlashlightEffectBase::~CFlashlightEffectBase()
 	LightOff();
 }
 
+void CFlashlightEffectBase::InitSpotlightTexture(const char* pszLightTexture)
+{
+	m_FlashlightTexture.Init(pszLightTexture, TEXTURE_GROUP_OTHER, true);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -103,6 +108,56 @@ void CFlashlightEffectBase::TurnOff()
 	{
 		m_bIsOn = false;
 		LightOff();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CFlashlightEffectBase::UpdateLightProjection(ClientFlashlightState_t& state)
+{
+	if (m_FlashlightHandle == CLIENTSHADOW_INVALID_HANDLE)
+	{
+		m_FlashlightHandle = g_pClientShadowMgr->CreateFlashlight(state);
+		if (m_bIsLocalPlayerLight)
+			g_hFlashlightHandle.AddToTail(m_FlashlightHandle);
+	}
+	else
+	{
+		if (!r_flashlightlockposition.GetBool())
+		{
+			g_pClientShadowMgr->UpdateFlashlightState(m_FlashlightHandle, state);
+		}
+	}
+
+	g_pClientShadowMgr->UpdateProjectedTexture(m_FlashlightHandle, true);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CFlashlightEffectBase::LightOff()
+{
+#ifndef NO_TOOLFRAMEWORK
+	if (clienttools->IsInRecordingMode())
+	{
+		KeyValues* msg = new KeyValues("FlashlightState");
+		msg->SetFloat("time", gpGlobals->curtime);
+		msg->SetInt("flashlightHandle", m_FlashlightHandle);
+		msg->SetPtr("flashlightState", NULL);
+		ToolFramework_PostToolMessage(HTOOLHANDLE_INVALID, msg);
+		msg->deleteThis();
+	}
+#endif
+
+	// Clear out the light
+	if (m_FlashlightHandle != CLIENTSHADOW_INVALID_HANDLE)
+	{
+		if (m_bIsLocalPlayerLight)
+			g_hFlashlightHandle.FindAndRemove(m_FlashlightHandle);
+
+		g_pClientShadowMgr->DestroyFlashlight(m_FlashlightHandle);
+		m_FlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
 	}
 }
 
@@ -132,14 +187,57 @@ public:
 	}
 };
 
+CFlashlightEffect::CFlashlightEffect(int iEntIndex, bool bIsNVG) : CFlashlightEffectBase(true)
+{
+	m_nEntIndex = iEntIndex;
+	m_bIsNVG = bIsNVG;
+
+	if (bIsNVG)
+	{
+		if (g_pMaterialSystemHardwareConfig->SupportsBorderColor())
+		{
+			InitSpotlightTexture("effects/Ez_MetroVision_border");
+		}
+		else
+		{
+			InitSpotlightTexture("effects/Ez_MetroVision");
+		}
+	}
+	else
+	{
+		if (g_pMaterialSystemHardwareConfig->SupportsBorderColor())
+		{
+			InitSpotlightTexture("effects/flashlight_border");
+		}
+		else
+		{
+			InitSpotlightTexture("effects/flashlight001");
+		}
+	}
+}
+
+CFlashlightEffect::~CFlashlightEffect()
+{
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Do the headlight
 //-----------------------------------------------------------------------------
-void CFlashlightEffectBase::UpdateLightNew(const Vector &vecPos, const Vector &vecForward, const Vector &vecRight, const Vector &vecUp )
+void CFlashlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecForward, const Vector &vecRight, const Vector &vecUp )
 {
 	VPROF_BUDGET( "CFlashlightEffectBase::UpdateLightNew", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
 	ClientFlashlightState_t state;
+	float flFov;
+
+	if (m_bIsNVG)
+	{
+		flFov = r_nvgfov.GetFloat();
+	}
+	else
+	{
+		flFov = r_flashlightfov.GetFloat();
+	}
 
 	C_BasePlayer* pl = UTIL_PlayerByIndex( m_nEntIndex );
 	
@@ -293,8 +391,8 @@ void CFlashlightEffectBase::UpdateLightNew(const Vector &vecPos, const Vector &v
 				state.m_fLinearAtten = r_flashlightlinear.GetFloat() * flScale + 1.5f * flNoise;
 			}
 
-			state.m_fHorizontalFOVDegrees = r_flashlightfov.GetFloat() - ( 16.0f * (1.0f-flScale) );
-			state.m_fVerticalFOVDegrees = r_flashlightfov.GetFloat() - ( 16.0f * (1.0f-flScale) );
+			state.m_fHorizontalFOVDegrees = flFov - ( 16.0f * (1.0f-flScale) );
+			state.m_fVerticalFOVDegrees = flFov - ( 16.0f * (1.0f-flScale) );
 			
 			bFlicker = true;
 		}
@@ -304,8 +402,8 @@ void CFlashlightEffectBase::UpdateLightNew(const Vector &vecPos, const Vector &v
 	if ( bFlicker == false )
 	{
 		state.m_fLinearAtten = r_flashlightlinear.GetFloat();
-		state.m_fHorizontalFOVDegrees = r_flashlightfov.GetFloat();
-		state.m_fVerticalFOVDegrees = r_flashlightfov.GetFloat();
+		state.m_fHorizontalFOVDegrees = flFov;
+		state.m_fVerticalFOVDegrees = flFov;
 	}
 
 	state.m_fConstantAtten = r_flashlightconstant.GetFloat();
@@ -341,81 +439,16 @@ void CFlashlightEffectBase::UpdateLightNew(const Vector &vecPos, const Vector &v
 #endif
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Do the headlight
-//-----------------------------------------------------------------------------
-void CFlashlightEffectBase::UpdateLight(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance)
+CHeadlightEffect::CHeadlightEffect() 
 {
-	if ( !m_bIsOn )
+	if (g_pMaterialSystemHardwareConfig->SupportsBorderColor())
 	{
-		return;
-	}
-	
-	UpdateLightNew( vecPos, vecDir, vecRight, vecUp );
-}
-
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CFlashlightEffectBase::LightOffNew()
-{
-#ifndef NO_TOOLFRAMEWORK
-	if ( clienttools->IsInRecordingMode() )
-	{
-		KeyValues *msg = new KeyValues( "FlashlightState" );
-		msg->SetFloat( "time", gpGlobals->curtime );
-		msg->SetInt( "entindex", m_nEntIndex );
-		msg->SetInt( "flashlightHandle", m_FlashlightHandle );
-		msg->SetPtr( "flashlightState", NULL );
-		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		msg->deleteThis();
-	}
-#endif
-
-	// Clear out the light
-	if( m_FlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
-	{
-		g_pClientShadowMgr->DestroyFlashlight( m_FlashlightHandle );
-		m_FlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
-	}
-	
-	g_hFlashlightHandle[m_nEntIndex] = CLIENTSHADOW_INVALID_HANDLE;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CFlashlightEffectBase::UpdateLightProjection(ClientFlashlightState_t& state )
-{
-	if( m_FlashlightHandle == CLIENTSHADOW_INVALID_HANDLE )
-	{
-		m_FlashlightHandle = g_pClientShadowMgr->CreateFlashlight( state );
+		InitSpotlightTexture("effects/flashlight_border");
 	}
 	else
 	{
-		if( !r_flashlightlockposition.GetBool() )
-		{
-			g_pClientShadowMgr->UpdateFlashlightState( m_FlashlightHandle, state );
-		}
+		InitSpotlightTexture("effects/flashlight001");
 	}
-	
-	g_pClientShadowMgr->UpdateProjectedTexture( m_FlashlightHandle, true );
-	
-	g_hFlashlightHandle[m_nEntIndex] = m_FlashlightHandle;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CFlashlightEffectBase::LightOff()
-{
-	LightOffNew();
-}
-
-CHeadlightEffect::CHeadlightEffect() 
-{
-
 }
 
 CHeadlightEffect::~CHeadlightEffect()
@@ -423,7 +456,7 @@ CHeadlightEffect::~CHeadlightEffect()
 	
 }
 
-void CHeadlightEffect::UpdateLight( const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance )
+void CHeadlightEffect::UpdateLight( const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, int nDistance, float flScale)
 {
 	if ( IsOn() == false )
 		 return;
@@ -546,6 +579,15 @@ CSpotlightEffect::CSpotlightEffect()
 	m_vecOrigin = vec3_origin;
 
 	g_SpotlightLod.AddSpotlight(this);
+
+	if (g_pMaterialSystemHardwareConfig->SupportsBorderColor())
+	{
+		InitSpotlightTexture("effects/flashlight_border");
+	}
+	else
+	{
+		InitSpotlightTexture("effects/flashlight001");
+	}
 }
 
 CSpotlightEffect::~CSpotlightEffect()
@@ -558,13 +600,13 @@ CSpotlightEffect::~CSpotlightEffect()
 //-----------------------------------------------------------------------------
 void CSpotlightEffect::LightOffOld()
 {
-	if (m_pDynamicLight && (m_pDynamicLight->key == m_nEntIndex))
+	if (m_pDynamicLight )
 	{
 		m_pDynamicLight->die = gpGlobals->curtime;
 		m_pDynamicLight = NULL;
 	}
 
-	if (m_pSpotlightEnd && (m_pSpotlightEnd->key == -m_nEntIndex))
+	if (m_pSpotlightEnd )
 	{
 		m_pSpotlightEnd->die = gpGlobals->curtime;
 		m_pSpotlightEnd = NULL;
@@ -577,7 +619,7 @@ void CSpotlightEffect::LightOffOld()
 void CSpotlightEffect::LightOff()
 {
 	LightOffOld();
-	LightOffNew();
+	CFlashlightEffectBase::LightOff();
 }
 
 //-----------------------------------------------------------------------------
@@ -710,10 +752,10 @@ void CSpotlightEffect::UpdateLightOld(const Vector &vecPos, const Vector &vecDir
 	VectorCopy(vecDir, m_pDynamicLight->m_Direction);
 #endif
 
-	if (!m_pSpotlightEnd || (m_pSpotlightEnd->key != -m_nEntIndex))
+	if (!m_pSpotlightEnd)
 	{
 		// Set up the environment light
-		m_pSpotlightEnd = effects->CL_AllocDlight(-m_nEntIndex);
+		m_pSpotlightEnd = effects->CL_AllocDlight(0);
 	}
 
 	// For bumped lighting
@@ -736,7 +778,7 @@ void CSpotlightEffect::UpdateLightOld(const Vector &vecPos, const Vector &vecDir
 	render->TouchLight(m_pSpotlightEnd);
 
 	// kill the new flashlight if we have one
-	LightOffNew();
+	CFlashlightEffectBase::LightOff();
 }
 
 void CSpotlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecDir, const Vector &vecRight, const Vector &vecUp, float flScale)
@@ -821,3 +863,184 @@ void CSpotlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecDir
 
 	UpdateLightProjection(state);
 }
+
+class CMuzzleFlashEffect : public CFlashlightEffectBase
+{
+public:
+
+	CMuzzleFlashEffect(ColorRGBExp32 clrColor);
+	~CMuzzleFlashEffect();
+
+	virtual void UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp, int nDistance, float flScale = 1.0f);
+
+	float m_flCreationTime;
+	int m_iCreationFrame;
+
+protected:
+	Vector m_vecColor;
+};
+
+CMuzzleFlashEffect::CMuzzleFlashEffect(ColorRGBExp32 clrColor) : CFlashlightEffectBase(true)
+{
+	m_iCreationFrame = gpGlobals->framecount;
+	m_flCreationTime = gpGlobals->curtime;
+
+	ColorRGBExp32ToVector(clrColor, m_vecColor);
+	m_vecColor /= 255.f;
+
+	InitSpotlightTexture("effects/muzzleflash_light");
+}
+
+CMuzzleFlashEffect::~CMuzzleFlashEffect()
+{
+	LightOff();
+}
+
+void CMuzzleFlashEffect::UpdateLight(const Vector& vecPos, const Vector& vecDir, const Vector& vecRight, const Vector& vecUp, int nDistance, float flScale)
+{
+	if (IsOn() == false)
+		return;
+
+	ClientFlashlightState_t state;
+	Vector basisX, basisY, basisZ;
+	basisX = vecDir;
+	basisY = vecRight;
+	basisZ = vecUp;
+	VectorNormalize(basisX);
+	VectorNormalize(basisY);
+	VectorNormalize(basisZ);
+
+	BasisToQuaternion(basisX, basisY, basisZ, state.m_quatOrientation);
+
+	state.m_vecLightOrigin = vecPos;
+
+	state.m_fHorizontalFOVDegrees = 100.f;
+	state.m_fVerticalFOVDegrees = 100.f;
+	state.m_fQuadraticAtten = r_flashlightquadratic.GetFloat();
+	state.m_fLinearAtten = r_flashlightlinear.GetFloat();
+	state.m_fConstantAtten = r_flashlightconstant.GetFloat();
+	
+	m_vecColor.CopyToArray(state.m_Color);
+
+	state.m_Color[3] = r_flashlightambient.GetFloat();
+	state.m_NearZ = r_flashlightnear.GetFloat();
+	state.m_FarZ = r_flashlightfar.GetFloat();
+	state.m_bEnableShadows = true;
+	state.m_pSpotlightTexture = m_FlashlightTexture;
+	state.m_nSpotlightTextureFrame = 0;
+
+	UpdateLightProjection(state);
+}
+
+class CMuzzleFlashSystem : public CAutoGameSystemPerFrame
+{
+public:
+	CMuzzleFlashSystem() : CAutoGameSystemPerFrame("MuzzleFlashSystem")
+	{}
+
+	// Gets called each frame
+	virtual void Update(float frametime);
+	virtual void LevelShutdownPreEntity();
+
+	void		AddLight(CMuzzleFlashEffect* pLight, ClientEntityHandle_t hEntity, int attachmentIndex);
+
+protected:
+	typedef struct {
+		CMuzzleFlashEffect* pLight;
+		EHANDLE hEntity;
+		int iAttachment;
+	} muzzleFlash_t;
+
+	CUtlVector<muzzleFlash_t> m_Flashes;
+};
+
+extern void FormatViewModelAttachment(Vector& vOrigin, bool bInverse);
+
+void CMuzzleFlashSystem::Update(float frametime)
+{
+	if (engine->IsInGame() && C_BasePlayer::GetLocalPlayer())
+	{
+		for (int i = m_Flashes.Count() - 1; i >= 0; i--)
+		{
+			muzzleFlash_t& flash = m_Flashes[i];
+			if (flash.pLight && flash.hEntity && (gpGlobals->curtime - flash.pLight->m_flCreationTime <= 0.066f || gpGlobals->framecount - flash.pLight->m_iCreationFrame <= 2))
+			{
+				C_BaseEntity* pEnt = flash.hEntity.Get();
+				matrix3x4_t matAttachment;
+				if (pEnt->GetAttachment(flash.iAttachment, matAttachment))
+				{
+					Vector vecOrigin, vecForward, vecLeft, vecUp;
+					MatrixGetColumn(matAttachment, 0, vecForward);
+					MatrixGetColumn(matAttachment, 1, vecLeft);
+					MatrixGetColumn(matAttachment, 2, vecUp);
+					MatrixGetTranslation(matAttachment, vecOrigin);
+
+					flash.pLight->UpdateLight(vecOrigin, vecForward, -vecLeft, vecUp, 100);
+				}
+			}
+			else
+			{
+				if (flash.pLight)
+				{
+					flash.pLight->TurnOff();
+					delete flash.pLight;
+				}
+
+				m_Flashes.FastRemove(i);
+			}
+		}
+	}
+}
+
+void CMuzzleFlashSystem::LevelShutdownPreEntity()
+{
+	for (int i = m_Flashes.Count() - 1; i >= 0; i--)
+	{
+		muzzleFlash_t& flash = m_Flashes[i];
+
+		if (flash.pLight)
+		{
+			flash.pLight->TurnOff();
+			delete flash.pLight;
+		}
+	}
+
+	m_Flashes.Purge();
+}
+
+void CMuzzleFlashSystem::AddLight(CMuzzleFlashEffect* pLight, ClientEntityHandle_t hEntity, int attachmentIndex)
+{
+	if (pLight && hEntity.IsValid())
+	{
+		muzzleFlash_t flash;
+		flash.pLight = pLight;
+		flash.hEntity = hEntity;
+		flash.iAttachment = attachmentIndex;
+
+		C_BaseEntity* pEnt = flash.hEntity.Get();
+		matrix3x4_t matAttachment;
+		pEnt->GetAttachment(flash.iAttachment, matAttachment);
+		Vector vecOrigin, vecForward, vecLeft, vecUp;
+		MatrixGetColumn(matAttachment, 0, vecForward);
+		MatrixGetColumn(matAttachment, 1, vecLeft);
+		MatrixGetColumn(matAttachment, 2, vecUp);
+		MatrixGetTranslation(matAttachment, vecOrigin);
+
+		flash.pLight->TurnOn();
+		flash.pLight->UpdateLight(vecOrigin, vecForward, -vecLeft, vecUp, 100);
+
+		m_Flashes.AddToTail(flash);
+	}
+}
+
+CMuzzleFlashSystem g_MuzzleFlashSystem;
+
+void ProjectMuzzleFlashLight(ClientEntityHandle_t hEntity, int attachmentIndex, ColorRGBExp32 clrColor)
+{
+	if (hEntity.IsValid())
+	{
+		CMuzzleFlashEffect* pEffect = new CMuzzleFlashEffect(clrColor);
+		g_MuzzleFlashSystem.AddLight(pEffect, hEntity, attachmentIndex);
+	}
+}
+

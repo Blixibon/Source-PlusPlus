@@ -35,6 +35,7 @@
 #include "c_te_effect_dispatch.h"
 #include "c_props.h"
 #include "c_basedoor.h"
+#include "flashlighteffect.h"
 
 // NOTE: Always include this last!
 #include "tier0/memdbgon.h"
@@ -1827,44 +1828,90 @@ void CTempEnts::MuzzleFlash( int type, ClientEntityHandle_t hEntity, int attachm
 		//FIXME: We should really use a named attachment for this
 		if (pEnt)
 		{
-			Vector vAttachment, vAng;
-			QAngle angles;
-			pEnt->GetAttachment(attachmentIndex, vAttachment, angles);
+			if (firstPerson)
+			{
+				Vector vAttachment, vAng;
+				QAngle angles;
+				pEnt->GetAttachment(attachmentIndex, vAttachment, angles);
 
-			AngleVectors(angles, &vAng);
-			vAttachment += vAng * 2;
+				AngleVectors(angles, &vAng);
+				vAttachment += vAng * 2;
 
 #ifdef DEFERRED
-			if (!GetLightingManager())
-				return;
+				if (!GetLightingManager())
+					return;
 
-			def_light_temp_t *dl = new def_light_temp_t(0.05f);
-			if (!dl)
-				return;
+				def_light_temp_t* dl = new def_light_temp_t(0.05f);
+				if (!dl)
+					return;
 
-			int exponent = 5;
+				int exponent = 5;
 
-			dl->iLighttype = DEFLIGHTTYPE_POINT;
-			dl->iFlags = (DEFLIGHT_COOKIE_ENABLED | DEFLIGHT_SHADOW_ENABLED/*|DEFLIGHT_VOLUMETRICS_ENABLED*/);
-			dl->pos = vAttachment;
-			dl->flRadius = random->RandomInt(32, 64);
-			ColorRGBExp32ToVector(clrMuzLight, dl->col_diffuse);
-			dl->flFalloffPower = exponent;
-			//dl->decay = decay;
+				dl->iLighttype = DEFLIGHTTYPE_POINT;
+				dl->iFlags = (DEFLIGHT_COOKIE_ENABLED | DEFLIGHT_SHADOW_ENABLED/*|DEFLIGHT_VOLUMETRICS_ENABLED*/);
+				dl->pos = vAttachment;
+				dl->flRadius = random->RandomInt(32, 64);
+				ColorRGBExp32ToVector(clrMuzLight, dl->col_diffuse);
+				dl->flFalloffPower = exponent;
+				//dl->decay = decay;
 
-			GetLightingManager()->AddTempLight(dl);
+				GetLightingManager()->AddTempLight(dl);
 #else
-			// Create a "Dynamic" light that will illuminate the world
-			dlight_t *dl = effects->CL_AllocDlight(LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex());
-			if (!dl)
-				return;
+				// Create a "Dynamic" light that will illuminate the world
+				dlight_t* dl = effects->CL_AllocElight(LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex());
+				if (!dl)
+					return;
 
-			dl->origin = vAttachment;
-			dl->color = clrMuzLight;
-			dl->die = gpGlobals->curtime + 0.05f;
-			dl->radius = random->RandomInt(245, 256);
-			dl->decay = 512.0f;
+				dl->origin = vAttachment;
+				dl->color = clrMuzLight;
+				dl->die = gpGlobals->curtime + 0.05f;
+				dl->radius = random->RandomInt(245, 256);
+				dl->decay = 512.0f;
+
+				ProjectMuzzleFlashLight(hEntity, attachmentIndex, clrMuzLight);
 #endif
+			}
+			else
+			{
+				Vector vAttachment, vAng;
+				QAngle angles;
+				pEnt->GetAttachment(attachmentIndex, vAttachment, angles);
+
+				AngleVectors(angles, &vAng);
+				vAttachment += vAng * 2;
+
+#ifdef DEFERRED
+				if (!GetLightingManager())
+					return;
+
+				def_light_temp_t* dl = new def_light_temp_t(0.05f);
+				if (!dl)
+					return;
+
+				int exponent = 5;
+
+				dl->iLighttype = DEFLIGHTTYPE_POINT;
+				dl->iFlags = (DEFLIGHT_COOKIE_ENABLED | DEFLIGHT_SHADOW_ENABLED/*|DEFLIGHT_VOLUMETRICS_ENABLED*/);
+				dl->pos = vAttachment;
+				dl->flRadius = random->RandomInt(32, 64);
+				ColorRGBExp32ToVector(clrMuzLight, dl->col_diffuse);
+				dl->flFalloffPower = exponent;
+				//dl->decay = decay;
+
+				GetLightingManager()->AddTempLight(dl);
+#else
+				// Create a "Dynamic" light that will illuminate the world
+				dlight_t* dl = effects->CL_AllocDlight(LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex());
+				if (!dl)
+					return;
+
+				dl->origin = vAttachment;
+				dl->color = clrMuzLight;
+				dl->die = gpGlobals->curtime + 0.05f;
+				dl->radius = random->RandomInt(245, 256);
+				dl->decay = 512.0f;
+#endif
+			}
 		}
 	}
 }

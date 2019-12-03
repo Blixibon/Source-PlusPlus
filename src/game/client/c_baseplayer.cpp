@@ -1248,7 +1248,7 @@ void C_BasePlayer::UpdateFlashlight()
 		#ifdef DEFERRED
 			m_pFlashlight = new CFlashlightEffectDeferred(index);
 		#else
-			m_pFlashlight = new CFlashlightEffectBase(index);
+			m_pFlashlight = new CFlashlightEffect(index, false);
 		#endif
 
 			if (!m_pFlashlight)
@@ -2722,12 +2722,16 @@ void C_BasePlayer::GetPredictionErrorSmoothingVector( Vector &vOffset )
 
 bool C_BasePlayer::IsRenderingMyFlashlight()
 {
-	if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE && m_pFlashlight && m_pFlashlight->IsOn())
+	extern CUtlVector< ClientShadowHandle_t > g_hFlashlightHandle;
+	if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE && g_hFlashlightHandle.Count())
 	{
 		ShadowHandle_t hActive = g_pClientShadowMgr->GetActiveDepthTextureHandle();
-		ShadowHandle_t hMine = g_pClientShadowMgr->GetShadowHandle(m_pFlashlight->GetFlashlightHandle());
-		if (hActive == hMine)
-			return true;
+		for (auto hclMine : g_hFlashlightHandle)
+		{
+			ShadowHandle_t hMine = g_pClientShadowMgr->GetShadowHandle(hclMine);
+			if (hActive == hMine)
+				return true;
+		}
 	}
 
 	return false;
@@ -2787,8 +2791,6 @@ void C_BasePlayer::FogControllerChanged( bool bSnap )
 		m_Local.m_PlayerFog.m_flNewMaxDensity = pFogParams.maxdensity;
 		m_Local.m_PlayerFog.m_flNewHDRColorScale = pFogParams.HDRColorScale;
 		m_Local.m_PlayerFog.m_flNewFarZ = pFogParams.farz;
-
-		m_Local.m_PlayerFog.m_flTransitionTime = bSnap ? -1 : gpGlobals->curtime;
 
 		m_Local.m_PlayerFog.m_flTransitionTime = bSnap ? -1 : gpGlobals->curtime;
 
