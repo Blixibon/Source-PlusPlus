@@ -4,10 +4,62 @@
 #include "fmtstr.h"
 #include "KeyValues.h"
 #include "utlvector.h"
+#include "bspfile.h"
 
 #include "memdbgon.h"
 
 #pragma region HELPERS
+bool LoadLumpFile(const char* pszFileName, CUtlBuffer& buf)
+{
+	lumpfileheader_t header;
+	memset(&header, 0, sizeof(header));
+
+	FileHandle_t hLump = g_pFullFileSystem->OpenEx(pszFileName, "rb");
+	if (hLump == FILESYSTEM_INVALID_HANDLE && g_pFullFileSystem->FileExists(pszFileName))
+	{
+		Warning("MAPEDIT LoadLumpFile: File %s exists but can't be read!\n", pszFileName);
+		return false;
+	}
+
+	g_pFullFileSystem->Read(&header, sizeof(lumpfileheader_t), hLump);
+	if (header.lumpID < 0 || header.lumpID >= HEADER_LUMPS)
+	{
+		g_pFullFileSystem->Close(hLump);
+		Warning("MAPEDIT LoadLumpFile: Lump file %s has invalid identifier!\n", pszFileName);
+		return false;
+	}
+
+	if (header.lumpID != LUMP_ENTITIES)
+	{
+		g_pFullFileSystem->Close(hLump);
+		Warning("MAPEDIT LoadLumpFile: Lump file %s is not an entities lump!\n", pszFileName);
+		return false;
+	}
+
+	int nLumpSize = header.lumpLength;
+	int nLumpOffset = header.lumpOffset;
+
+	if (!nLumpSize)
+	{
+		g_pFullFileSystem->Close(hLump);
+		Warning("MAPEDIT LoadLumpFile: Lump file %s is empty!\n", pszFileName);
+		return false;
+	}
+
+	int nFileSize = g_pFullFileSystem->Size(hLump);
+	void* pData = malloc(nFileSize);
+	g_pFullFileSystem->Seek(hLump, 0, FILESYSTEM_SEEK_HEAD);
+	g_pFullFileSystem->Read(pData, nFileSize, hLump);
+
+	buf.Clear();
+	buf.PutString((char *)pData + nLumpOffset);
+
+	g_pFullFileSystem->Close(hLump);
+	free(pData);
+	
+	return true;
+}
+
 // key / value pair sizes
 #define	MAX_KEY		32
 #define	MAX_VALUE	1024
@@ -538,8 +590,8 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 		
 		for (int i = 0; i < vecVariants.Count() + 1; i++)
 		{
-			Map_t map;
-			MapEdit_ExtractEnts(&map, bufIntermediate.String());
+			Map_t *pMap = new Map_t;
+			MapEdit_ExtractEnts(pMap, bufIntermediate.String());
 
 			CUtlString strFilePath;
 			if (i == 0)
@@ -592,17 +644,40 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 						creationBuf.PutChar('}');
 						creationBuf.PutChar('\n');
 					}
+					else if (StrEq(pchName, "clearandreplace"))
+					{
+						if (i == 0)
+						{
+							CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+							if (LoadLumpFile(pkvSub->GetString("lumpfile"), buf))
+							{
+								delete pMap;
+								pMap = new Map_t;
+								MapEdit_ExtractEnts(pMap, buf.String());
+							}
+							else
+							{
+								Warning("MAPEDIT[clearandreplace] - Error: Unable to load lump file %s!\n", pkvSub->GetString("lumpfile"));
+							}
+						}
+						else
+						{
+							Warning("MAPEDIT: Command [clearandreplace] can only be used in the primary mapedit script!\n");
+						}
+					}
 				}
 
-				MapEdit_RunCommandList(&map, &vecCommands);
-				MapEdit_BuildEntBuffer(&map);
+				MapEdit_RunCommandList(pMap, &vecCommands);
+				MapEdit_BuildEntBuffer(pMap);
 
 				bufIntermediate.Clear();
-				bufIntermediate.Put(map.entitiesBuffer, map.entitiesBufferSize);
+				bufIntermediate.Put(pMap->entitiesBuffer, pMap->entitiesBufferSize);
 				bufIntermediate.Put(creationBuf.Base(), creationBuf.TellPut());
 
-				free(map.entitiesBuffer);
-				map.entitiesBuffer = nullptr;
+				free(pMap->entitiesBuffer);
+				pMap->entitiesBuffer = nullptr;
+
+				delete pMap;
 			}
 		}
 
