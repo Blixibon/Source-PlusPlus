@@ -106,6 +106,11 @@ bool ShaderEditorHandler::Init()
 		shaderEdit->PrecacheData();
 	}
 
+	if (iEnableSkymask != SKYMASK_OFF)
+	{
+		m_pSkyMask.Init(materials->FindTexture("_rt_SEdit_Skymask", TEXTURE_GROUP_RENDER_TARGET));
+	}
+
 	return true;
 }
 
@@ -128,6 +133,8 @@ CON_COMMAND( sedit_debug_toggle_ppe, "" )
 
 void ShaderEditorHandler::Shutdown()
 {
+	m_pSkyMask.Shutdown();
+
 	if ( shaderEdit )
 		shaderEdit->Shutdown();
 	if ( shaderEditorModule )
@@ -176,10 +183,138 @@ void ShaderEditorHandler::CustomViewRender( int *viewId, const VisibleFogVolumeI
 	if ( IsReady() )
 		shaderEdit->OnSceneRender();
 }
+
+// Updates _rt_SEdit_Skymask
+// We're doing this ourselves now.
 void ShaderEditorHandler::UpdateSkymask( bool bCombineMode, int x, int y, int w, int h )
 {
+#if 0
 	if ( IsReady() )
 		shaderEdit->OnUpdateSkymask( bCombineMode, x, y, w, h );
+#else
+	if (IsReady() && m_pSkyMask.IsValid())
+	{
+		//SetFramebufferCopyTexOverride(NULL);
+
+		//UpdateFramebufferTexture( true );
+
+		ITexture* pSkyMask = m_pSkyMask.Get();
+
+		if (IsErrorTexture(pSkyMask))
+			return;
+
+		ITexture* pFrameBuffer = GetFullFrameFrameBufferTexture(0);
+		if (!pFrameBuffer)
+			return;
+
+		static CMaterialReference pMatSkyDraw = NULL;
+		static CMaterialReference pMatScreenRestore = NULL;
+		static CMaterialReference pMatCombineMasks = NULL;
+#ifdef SHADER_EDITOR_DLL_2006
+		pMatSkyDraw = materials->FindMaterial("postprocessing/skymask_fill_0", TEXTURE_GROUP_OTHER);
+		pMatCombineMasks = materials->FindMaterial("postprocessing/skymask_fill_1", TEXTURE_GROUP_OTHER);
+		pMatScreenRestore = materials->FindMaterial("postprocessing/fb_restore", TEXTURE_GROUP_OTHER);
+#else
+		if (!pMatSkyDraw)
+		{
+			KeyValues* params = new KeyValues("PP_FILL_SKYMASK");
+			params->SetInt("$COMBINEMODE", 0);
+			pMatSkyDraw.Init("__sedit_skyfill", TEXTURE_GROUP_CLIENT_EFFECTS, params);
+			//pMatSkyDraw->Refresh();
+			//pKV->Clear();
+			Assert(pMatSkyDraw);
+		}
+		if (!pMatScreenRestore)
+		{
+			KeyValues* params = new KeyValues("FULLSCREENQUAD_WRITEA");
+			params->SetString("$BASETEXTURE", pFrameBuffer->GetName());
+			params->SetInt("$COMBINEMODE", 0);
+			pMatScreenRestore.Init("__sedit_fbrestore", TEXTURE_GROUP_CLIENT_EFFECTS, params);
+			//pMatScreenRestore->Refresh();
+			//pKV->Clear();
+			Assert(pMatScreenRestore);
+		}
+		if (!pMatCombineMasks)
+		{
+			const char* skymaskname = pSkyMask->GetName();
+			KeyValues* params = new KeyValues("PP_FILL_SKYMASK");
+			params->SetString("$BASETEXTURE", skymaskname);
+			params->SetInt("$COMBINEMODE", 1);
+			pMatCombineMasks.Init("__sedit_skycombine", TEXTURE_GROUP_CLIENT_EFFECTS, params);
+			//pMatCombineMasks->Refresh();
+			//pKV->Clear();
+			Assert(pMatCombineMasks);
+		}
+#endif
+
+		// _rt_SEdit_Skymask
+		CMatRenderContextPtr pRenderContext(materials);
+
+		IMaterial* pOperation = pMatSkyDraw;
+		if (bCombineMode)
+			pOperation = pMatCombineMasks;
+
+		int dest_width = w;
+		int dest_height = h;
+		float src_x1 = w - 1;
+		float src_y1 = h - 1;
+
+#ifdef SHADER_EDITOR_DLL_2006
+		Frustum frustum;
+		CViewSetup setup;
+		setup.angles = _MainView.angles;
+		setup.origin = _MainView.origin;
+		setup.x = _MainView.x;
+		setup.y = _MainView.y;
+		setup.width = _MainView.width;
+		setup.height = _MainView.height;
+		setup.fov = _MainView.fov;
+		setup.context = 0;
+		setup.m_bOrtho = false;
+		setup.m_flAspectRatio = _MainView.m_flAspectRatio;
+		setup.m_vUnreflectedOrigin = setup.origin;
+		render->Push3DView(setup, 0, false, NULL, frustum);
+#endif
+
+		pRenderContext->PushRenderTargetAndViewport(NULL);
+		//pRenderContext->Viewport( x, y, w, h );
+		//pRenderContext->DepthRange( 0, 1 );
+		//MaterialHeightClipMode_t hClipLast = pRenderContext->GetHeightClipMode();
+		//pRenderContext->SetHeightClipMode( MATERIAL_HEIGHTCLIPMODE_DISABLE );
+		//const bool bEnableClipping = pRenderContext->EnableClipping( false );
+
+#ifndef SHADER_EDITOR_DLL_2006
+		UpdateScreenEffectTexture(pFrameBuffer, x, y, w, h);
+		//pRenderContext->CopyRenderTargetToTexture( GetFBTex() );
+#endif
+
+	// do ops
+		pRenderContext->DrawScreenSpaceRectangle(pOperation,
+			x, y, dest_width, dest_height,
+			x, y, src_x1, src_y1,
+			w, h);
+
+		// store to mask
+		UpdateScreenEffectTexture(pSkyMask, x, y, w, h, true);
+		//pRenderContext->CopyRenderTargetToTexture( pSkyMask );
+
+		// restore fb
+#ifndef SHADER_EDITOR_DLL_2006
+		pRenderContext->DrawScreenSpaceRectangle(pMatScreenRestore,
+			x, y, w, h,
+			x, y, w - 1, h - 1,
+			w, h);
+#endif
+
+		//pRenderContext->EnableClipping( bEnableClipping );
+		//pRenderContext->SetHeightClipMode( hClipLast );
+		pRenderContext->PopRenderTargetAndViewport();
+
+#ifdef SHADER_EDITOR_DLL_2006
+		render->PopView(frustum);
+#endif
+	}
+#endif
 }
 void ShaderEditorHandler::CustomPostRender()
 {

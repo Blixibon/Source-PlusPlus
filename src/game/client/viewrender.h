@@ -74,11 +74,12 @@ enum view_id_t
 	VIEW_INTRO_CAMERA = 6,
 	VIEW_SHADOW_DEPTH_TEXTURE = 7,
 	VIEW_SSAO = 8,
+	VIEW_WATER_INTERSECTION,
 
 #ifdef DEFERRED
 	// @Deferred - Biohazard
-	VIEW_DEFERRED_GBUFFER = 8,
-	VIEW_DEFERRED_SHADOW = 9,
+	VIEW_DEFERRED_GBUFFER,
+	VIEW_DEFERRED_SHADOW,
 #endif
 
 	VIEW_VGUI3D, // A vgui panel wants to render an entity. The entity should cooperate.

@@ -55,6 +55,7 @@
 #include "client_virtualreality.h"
 #include "ShaderEditor/Grass/CGrassCluster.h"
 #include "ShaderEditor/ShaderEditorSystem.h"
+#include "shadereditor/ivshadereditor.h"
 
 #ifdef PORTAL
 #include "c_portal_player.h"
@@ -2368,6 +2369,8 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 
 		DisableFog();
 
+		g_ShaderEditorSystem->UpdateSkymask(bDrew3dSkybox, view.x, view.y, view.width, view.height);
+
 		// Finish scene
 		render->SceneEnd();
 
@@ -2436,7 +2439,7 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 		// Now actually draw the viewmodel
 		DrawViewModels( view, whatToDraw & RENDERVIEW_DRAWVIEWMODEL );
 
-		g_ShaderEditorSystem->UpdateSkymask(bDrew3dSkybox, view.x, view.y, view.width, view.height);
+		g_ShaderEditorSystem->UpdateSkymask(true, view.x, view.y, view.width, view.height);
 
 		DrawUnderwaterOverlay();
 
@@ -2481,6 +2484,18 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			}
 			pRenderContext.SafeRelease();
 		}
+
+		/*if (g_ShaderEditorSystem->IsReady())
+		{
+			static int iSunBeamsIndex = shaderEdit->GetPPEIndex("ppe_sunrays");
+			if (iSunBeamsIndex >= 0)
+			{
+				if (cl_sunbeams.GetBool() && !building_cubemaps.GetBool() && nSkyboxVisible != SKYBOX_NOT_VISIBLE)
+					shaderEdit->SetPPEEnabled(iSunBeamsIndex, true);
+				else
+					shaderEdit->SetPPEEnabled(iSunBeamsIndex, false);
+			}
+		}*/
 
 		GetClientModeNormal()->DoPostScreenSpaceEffects(&view);
 		g_ShaderEditorSystem->CustomPostRender();
@@ -6339,7 +6354,7 @@ void CAboveWaterView::CIntersectionView::Draw()
 
 	SetFogVolumeState( GetOuter()->m_fogInfo, true );
 	SetClearColorToFogColor( );
-	DrawExecute( GetOuter()->m_fogInfo.m_flWaterHeight, VIEW_NONE, 0 );
+	DrawExecute( GetOuter()->m_fogInfo.m_flWaterHeight, VIEW_WATER_INTERSECTION, 0 );
 	CMatRenderContextPtr pRenderContext( materials );
 	pRenderContext->ClearColor4ub( 0, 0, 0, 255 );
 }

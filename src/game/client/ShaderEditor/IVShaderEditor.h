@@ -113,7 +113,8 @@ public:
 
 	// post processing effect manipulation (precached effects accessible)
 	// the index becomes invalid when editing the precache list
-	virtual int			GetPPEIndex( const char *pszName ) = 0; // returns -1 when not found, case insensitive
+	// returns -1 when not found, case insensitive
+	virtual int			GetPPEIndex( const char *pszName ) = 0;
 	virtual bool		IsPPEEnabled( const int &index ) = 0;
 	virtual void		SetPPEEnabled( const int &index, const bool &bEnabled ) = 0;
 	virtual IMaterial	*GetPPEMaterial( const int &index, const char *pszNodeName ) = 0;

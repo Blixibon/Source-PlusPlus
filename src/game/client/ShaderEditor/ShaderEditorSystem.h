@@ -54,6 +54,8 @@ private:
 #ifndef SOURCE_2006
 	WaterRenderInfo_t m_tWaterRenderInfo;
 #endif
+
+	CTextureReference m_pSkyMask;
 };
 
 extern ShaderEditorHandler *g_ShaderEditorSystem;

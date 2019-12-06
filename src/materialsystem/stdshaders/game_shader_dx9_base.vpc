@@ -90,6 +90,8 @@ $Project
 		$File	"portalstaticoverlay.cpp"
 		$File	"portal_refract.cpp"
 		$File	"portal_refract_helper.cpp"
+
+		$File	"SkyMask.cpp"
 	}
 
 	$Folder	"Header Files"

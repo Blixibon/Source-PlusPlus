@@ -1146,7 +1146,7 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 	// If we're in first-person view rendering the main view and using the viewmodel, we shouldn't have even got here!
 	// If we're in first-person view rendering the main view(s), meathook and headless.
 	// If we're in first-person view rendering shadowbuffers/reflections, don't do anything special either (we could do meathook but with a head?)
-	if (IsAboutToRagdoll())
+	if (m_hRagdoll.Get())
 	{
 		// We're re-animating specifically to set up the ragdoll.
 		// Meathook can push the player through the floor, which makes the ragdoll fall through the world, which is no good.
@@ -1160,7 +1160,7 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 	}
 
 	int iView = CurrentViewID();
-	if (iView != VIEW_MAIN && iView != VIEW_REFRACTION)
+	if (iView != VIEW_MAIN && iView != VIEW_REFRACTION && iView != VIEW_WATER_INTERSECTION)
 	{
 		return;
 	}
