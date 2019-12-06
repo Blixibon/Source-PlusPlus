@@ -151,6 +151,10 @@ public:
 
 	virtual void		PlayerDeathThink(void);
 
+	void				FlashlightTurnOn(void);
+	void				FlashlightTurnOff(void);
+	bool				IsIlluminatedByFlashlight(CBaseEntity* pEntity, float* flReturnDot);
+
 	//virtual CStudioHdr *OnNewModel(void);
 
 	bool				ChooseEnemy();
@@ -228,6 +232,7 @@ protected:
 	string_t			m_iszResponseClassname;
 
 	static string_t		gm_iszDefaultAbility;
+	static HSOUNDSCRIPTHANDLE gm_hsFlashLightSoundHandles[2 * FLASHLIGHT_TYPE_COUNT]; // First half is on sounds, second is off
 
 	LAZPlayerState m_iPlayerState;
 	CLAZPlayerStateInfo *m_pCurStateInfo;
@@ -268,8 +273,12 @@ protected:
 
 	int					m_iDesiredPermissions;
 
+	CNetworkVar(int, m_nFlashlightType);
+
 	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
 	CNetworkString(m_strMinionClass, 32);
+
+	friend void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
 public:
 	CNetworkVar(bool, m_bHasLongJump);
 };

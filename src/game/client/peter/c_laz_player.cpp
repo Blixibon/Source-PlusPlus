@@ -29,6 +29,8 @@ static ConVar cl_laz_mp_suit("cl_laz_mp_suit", "1", FCVAR_USERINFO | FCVAR_ARCHI
 extern ConVar cl_meathook_neck_pivot_ingame_up;
 extern ConVar cl_meathook_neck_pivot_ingame_fwd;
 
+#define FLASHLIGHT_DISTANCE		1000
+
 ConVar	cl_legs_enable("cl_legs_enable", "1", FCVAR_ARCHIVE, "0 hides the legs, 1 shows the legs, 2 shows the legs and hair", true, 0.f, true, 2.f);
 
 IMPLEMENT_NETWORKCLASS_ALIASED(Laz_Player, DT_Laz_Player);
@@ -38,6 +40,7 @@ RecvPropInt(RECVINFO(m_bHasLongJump)),
 RecvPropInt(RECVINFO(m_iPlayerSoundType)),
 
 RecvPropBool(RECVINFO(m_fIsWalking)),
+RecvPropInt(RECVINFO(m_nFlashlightType)),
 END_RECV_TABLE();
 
 BEGIN_PREDICTION_DATA(C_Laz_Player)
@@ -1091,6 +1094,43 @@ void C_Laz_Player::CalculateIKLocks(float currentTime)
 
 	CBaseEntity::PopEnableAbsRecomputations();
 	partition->SuppressLists(curSuppressed, true);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Creates, destroys, and updates the flashlight effect as needed.
+//-----------------------------------------------------------------------------
+void C_Laz_Player::UpdateFlashlight()
+{
+	// The dim light is the flashlight.
+	if (IsEffectActive(EF_DIMLIGHT))
+	{
+		if (!m_pFlashlight)
+		{
+			// Turned on the headlight; create it.
+#ifdef DEFERRED
+			m_pFlashlight = new CFlashlightEffectDeferred(index);
+#else
+			m_pFlashlight = new CFlashlightEffect(index, m_nFlashlightType == FLASHLIGHT_NVG);
+#endif
+
+			if (!m_pFlashlight)
+				return;
+
+			m_pFlashlight->TurnOn();
+		}
+
+		Vector vecForward, vecRight, vecUp;
+		EyeVectors(&vecForward, &vecRight, &vecUp);
+
+		// Update the light with the new position and direction.		
+		m_pFlashlight->UpdateLight(EyePosition(), vecForward, vecRight, vecUp, FLASHLIGHT_DISTANCE);
+	}
+	else if (m_pFlashlight)
+	{
+		// Turned off the flashlight; delete it.
+		delete m_pFlashlight;
+		m_pFlashlight = NULL;
+	}
 }
 
 bool C_Laz_Player::IsInReload()

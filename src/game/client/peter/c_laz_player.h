@@ -24,6 +24,8 @@ public:
 	virtual void			ClientThink();
 	virtual float GetFOV( void );
 
+	virtual void	UpdateFlashlight(void);
+
 	//bool	IsInReload();
 	//int		GetHideBits();
 	void		UpdateOnRemove();
@@ -112,6 +114,8 @@ protected:
 	CBitVec<MAXSTUDIOBONES> m_bitRightArm;
 	CBitVec<MAXSTUDIOBONES> m_bitHair;
 	int						m_iHeadBone;
+
+	int					m_nFlashlightType;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

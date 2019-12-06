@@ -51,6 +51,18 @@ const char *g_pszSpecialAttacks[SPECIAL_ATTACK_COUNT] = {
 	"olivia"
 };
 
+const char* g_pszFlashlightTypes[FLASHLIGHT_TYPE_COUNT] = {
+	"suit",
+	"nvg",
+	"weapon"
+};
+
+const char* g_pszFlashLightSounds[FLASHLIGHT_TYPE_COUNT] = {
+	"HL2Player.FlashLight%s",
+	"HL2Player.NightVision%s",
+	"HL2Player.FlashLight%s"
+};
+
 LINK_ENTITY_TO_CLASS(info_player_combine, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_player_rebel, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_player_terrorist, CPointEntity);
@@ -76,11 +88,14 @@ DEFINE_INPUTFUNC(FIELD_INTEGER, "AnswerQuestion", InputAnswerQuestion),
 DEFINE_FIELD(m_iszExpressionScene, FIELD_STRING),
 DEFINE_FIELD(m_hExpressionSceneEnt, FIELD_EHANDLE),
 DEFINE_FIELD(m_flNextRandomExpressionTime, FIELD_TIME),
+
+DEFINE_FIELD(m_nFlashlightType, FIELD_INTEGER),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
 SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iPlayerSoundType), MAX_FOOTSTEP_STRING_BITS + 1),
+SendPropInt(SENDINFO(m_nFlashlightType)),
 END_SEND_TABLE();
 
 #define MODEL_CHANGE_INTERVAL 5.0f
@@ -88,13 +103,82 @@ END_SEND_TABLE();
 
 #define HL2MPPLAYER_PHYSDAMAGE_SCALE 4.0f
 
+void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
+{
+	// This code is only for singleplayer
+	if (g_pGameRules->IsMultiplayer())
+		return;
+
+	if (!pPlayer || pPlayer->GetHealth() <= 0 || !pPlayer->IsAlive())
+		return;
+
+
+
+
+	//pHands->NetworkStateChanged();
+
+	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentGameType(), pPlayer->IsSuitEquipped());
+
+	pPlayer->SetModel(modelType->models.Head().szModelName);
+	pPlayer->m_nSkin = modelType->models.Head().skin;
+	for (int i = 0; i < modelType->models.Head().bodygroups.Count(); i++)
+	{
+		int iGroup = pPlayer->FindBodygroupByName(modelType->models.Head().bodygroups[i].szName);
+		pPlayer->SetBodygroup(iGroup, modelType->models.Head().bodygroups[i].body);
+	}
+
+	for (int i = 0; i < MAX_VIEWMODELS; i++)
+	{
+		CBaseViewModel* pHands = pPlayer->GetViewModel(i);
+		if (pHands)
+		{
+			pHands->SetHandsModel(modelType->szArmModel, modelType->armSkin);
+
+			for (int i = 0; i < modelType->armbodys.Count(); i++)
+			{
+				pHands->SetHandsBodygroupByName(modelType->armbodys[i].szName, modelType->armbodys[i].body);
+			}
+		}
+	}
+
+	CLaz_Player* pHLMS = assert_cast<CLaz_Player*> (pPlayer);
+
+	KeyValues* pkvAbillites = modelType->kvAbilities;
+	if (pkvAbillites != nullptr)
+	{
+		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_ABILITY);
+		const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_ABILITY);
+		pHLMS->SetVoiceType(pchVoice, pchSuit);
+
+		const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_ABILITY);
+		pHLMS->SetFootsteps(pchFootSound);
+
+		const char* pchClassname = pkvAbillites->GetString("response_class", DEFAULT_ABILITY);
+		pHLMS->SetResponseClassname(pchClassname);
+
+		pHLMS->m_nFlashlightType = UTIL_StringFieldToInt(pkvAbillites->GetString("flashlight"), g_pszFlashlightTypes, FLASHLIGHT_TYPE_COUNT);
+	}
+	else
+	{
+		pHLMS->SetVoiceType(DEFAULT_ABILITY, DEFAULT_ABILITY);
+		pHLMS->SetFootsteps(DEFAULT_ABILITY);
+		pHLMS->SetResponseClassname(DEFAULT_ABILITY);
+		pHLMS->m_nFlashlightType = FLASHLIGHT_SUIT;
+	}
+}
+
 EHANDLE CLaz_Player::gm_hLastRandomSpawn = nullptr;
 string_t		CLaz_Player::gm_iszDefaultAbility = NULL_STRING;
+HSOUNDSCRIPTHANDLE CLaz_Player::gm_hsFlashLightSoundHandles[] = { SOUNDEMITTER_INVALID_HANDLE };
+
+extern CSuitPowerDevice SuitDeviceFlashlight;
+bool Flashlight_UseLegacyVersion(void);
 
 CLaz_Player::CLaz_Player()
 {
 	m_nSpecialAttack = -1;
 	m_iPlayerSoundType = INVALID_STRING_INDEX;
+	m_nFlashlightType = FLASHLIGHT_SUIT;
 }
 
 void CLaz_Player::Precache(void)
@@ -107,6 +191,12 @@ void CLaz_Player::Precache(void)
 	PrecacheScriptSound("TFPlayer.FreezeCam");
 	PrecacheScriptSound("JumpLand.HighVelocityImpact");
 	PrecacheScriptSound("PortalPlayer.FallRecover");
+
+	for (int i = 0; i < FLASHLIGHT_TYPE_COUNT; i++)
+	{
+		gm_hsFlashLightSoundHandles[i] = PrecacheScriptSound(CFmtStr(g_pszFlashLightSounds[i], "On"));
+		gm_hsFlashLightSoundHandles[i+ FLASHLIGHT_TYPE_COUNT] = PrecacheScriptSound(CFmtStr(g_pszFlashLightSounds[i], "Off"));
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -194,6 +284,7 @@ void CLaz_Player::Spawn(void)
 			SetResponseClassname(pchClassname);
 
 			m_nSpecialAttack = UTIL_StringFieldToInt(pkvAbillites->GetString("special"), g_pszSpecialAttacks, SPECIAL_ATTACK_COUNT);
+			m_nFlashlightType = UTIL_StringFieldToInt(pkvAbillites->GetString("flashlight"), g_pszFlashlightTypes, FLASHLIGHT_TYPE_COUNT);
 		}
 		else
 		{
@@ -201,6 +292,7 @@ void CLaz_Player::Spawn(void)
 			SetFootsteps(DEFAULT_ABILITY);
 			SetResponseClassname(DEFAULT_ABILITY);
 			m_nSpecialAttack = -1;
+			m_nFlashlightType = FLASHLIGHT_NONE;
 		}
 	}
 	else
@@ -913,10 +1005,10 @@ void CLaz_Player::ReleaseManhack(void)
 	}
 
 	// Place him into our squad so we can communicate
-	if (GetPlayerSquad())
+	/*if (GetPlayerSquad())
 	{
 		GetPlayerSquad()->AddToSquad(pManhack);
-	}
+	}*/
 }
 
 bool CLaz_Player::ShouldRunRateLimitedCommand(const CCommand &args)
@@ -1316,6 +1408,111 @@ void CLaz_Player::Special()
 	default:
 		break;
 	}
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CLaz_Player::FlashlightTurnOn(void)
+{
+	if (m_bFlashlightDisabled)
+		return;
+
+	if (Flashlight_UseLegacyVersion() && m_nFlashlightType == FLASHLIGHT_SUIT)
+	{
+		if (!SuitPower_AddDevice(SuitDeviceFlashlight))
+			return;
+	}
+
+	if (m_nFlashlightType == FLASHLIGHT_NONE || (m_nFlashlightType == FLASHLIGHT_SUIT && !IsSuitEquipped()))
+		return;
+
+
+	AddEffects(EF_DIMLIGHT);
+	EmitSound(CFmtStr(g_pszFlashLightSounds[m_nFlashlightType], "On"), gm_hsFlashLightSoundHandles[m_nFlashlightType]);
+
+	variant_t flashlighton;
+	flashlighton.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+	FirePlayerProxyOutput("OnFlashlightOn", flashlighton, this, this);
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CLaz_Player::FlashlightTurnOff(void)
+{
+	if (Flashlight_UseLegacyVersion() && m_nFlashlightType == FLASHLIGHT_SUIT)
+	{
+		if (!SuitPower_RemoveDevice(SuitDeviceFlashlight))
+			return;
+	}
+	else
+		SuitPower_RemoveDevice(SuitDeviceFlashlight);
+
+	RemoveEffects(EF_DIMLIGHT);
+	EmitSound(CFmtStr(g_pszFlashLightSounds[m_nFlashlightType], "Off"), gm_hsFlashLightSoundHandles[m_nFlashlightType + FLASHLIGHT_TYPE_COUNT]);
+
+	variant_t flashlightoff;
+	flashlightoff.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+	FirePlayerProxyOutput("OnFlashlightOff", flashlightoff, this, this);
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+#define FLASHLIGHT_RANGE	Square(600)
+bool CLaz_Player::IsIlluminatedByFlashlight(CBaseEntity* pEntity, float* flReturnDot)
+{
+	// Other people can't see your nightvision
+	if (!FlashlightIsOn() || m_nFlashlightType == FLASHLIGHT_NVG)
+		return false;
+
+	if (pEntity->Classify() == CLASS_BARNACLE && pEntity->GetEnemy() == this)
+	{
+		// As long as my flashlight is on, the barnacle that's pulling me in is considered illuminated.
+		// This is because players often shine their flashlights at Alyx when they are in a barnacle's 
+		// grasp, and wonder why Alyx isn't helping. Alyx isn't helping because the light isn't pointed
+		// at the barnacle. This will allow Alyx to see the barnacle no matter which way the light is pointed.
+		return true;
+	}
+
+	// Within 50 feet?
+	float flDistSqr = GetAbsOrigin().DistToSqr(pEntity->GetAbsOrigin());
+	if (flDistSqr > FLASHLIGHT_RANGE)
+		return false;
+
+	// Within 45 degrees?
+	Vector vecSpot = pEntity->WorldSpaceCenter();
+	Vector los;
+
+	// If the eyeposition is too close, move it back. Solves problems
+	// caused by the player being too close the target.
+	if (flDistSqr < (128 * 128))
+	{
+		Vector vecForward;
+		EyeVectors(&vecForward);
+		Vector vecMovedEyePos = EyePosition() - (vecForward * 128);
+		los = (vecSpot - vecMovedEyePos);
+	}
+	else
+	{
+		los = (vecSpot - EyePosition());
+	}
+
+	VectorNormalize(los);
+	Vector facingDir = EyeDirection3D();
+	float flDot = DotProduct(los, facingDir);
+
+	if (flReturnDot)
+	{
+		*flReturnDot = flDot;
+	}
+
+	if (flDot < 0.92387f)
+		return false;
+
+	if (!FVisible(pEntity))
+		return false;
+
+	return true;
 }
 
 #define SUITUPDATETIME	3.5

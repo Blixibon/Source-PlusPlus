@@ -32,6 +32,7 @@
 			"voice"				"marine"
 			"suit"				"pcv_hev"
 			"response_class"	"npc_human_grunt"
+			"flashlight"	"weapon"
 		}
 	}
 }

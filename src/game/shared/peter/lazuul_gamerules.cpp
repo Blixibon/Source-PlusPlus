@@ -207,6 +207,7 @@ CEconItemInitializerSystem g_EconInitializer;
 #ifdef CLIENT_DLL
 #define MOD_HL2BETA 9
 #define MOD_HLSS 10
+#define MOD_EZ1 11
 
 void CHud::MsgFunc_ResetHUD(bf_read& msg)
 {
@@ -378,7 +379,7 @@ CLazuul::~CLazuul()
 
 int CLazuul::GetProtaganistTeam()
 {
-	if (m_iMapGameType == MOD_HLSS)
+	if (m_iMapGameType == MOD_HLSS || m_iMapGameType == MOD_EZ1)
 		return TEAM_COMBINE;
 
 	return TEAM_REBELS;
@@ -5103,66 +5104,5 @@ LINK_ENTITY_TO_CLASS(objective_resource, CTeamObjectiveResource);
 void CTeamObjectiveResource::Spawn(void)
 {
 	BaseClass::Spawn();
-}
-
-void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
-{
-	// This code is only for singleplayer
-	if (g_pGameRules->IsMultiplayer())
-		return;
-
-	if (!pPlayer || pPlayer->GetHealth() <= 0 || !pPlayer->IsAlive())
-		return;
-
-	
-
-	
-	//pHands->NetworkStateChanged();
-
-	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentGameType(), pPlayer->IsSuitEquipped());
-
-	pPlayer->SetModel(modelType->models.Head().szModelName);
-	pPlayer->m_nSkin = modelType->models.Head().skin;
-	for (int i = 0; i < modelType->models.Head().bodygroups.Count(); i++)
-	{
-		int iGroup = pPlayer->FindBodygroupByName(modelType->models.Head().bodygroups[i].szName);
-		pPlayer->SetBodygroup(iGroup, modelType->models.Head().bodygroups[i].body);
-	}
-
-	for (int i = 0; i < MAX_VIEWMODELS; i++)
-	{
-		CBaseViewModel* pHands = pPlayer->GetViewModel(i);
-		if (pHands)
-		{
-			pHands->SetHandsModel(modelType->szArmModel, modelType->armSkin);
-
-			for (int i = 0; i < modelType->armbodys.Count(); i++)
-			{
-				pHands->SetHandsBodygroupByName(modelType->armbodys[i].szName, modelType->armbodys[i].body);
-			}
-		}
-	}
-
-	CLaz_Player* pHLMS = assert_cast<CLaz_Player*> (pPlayer);
-
-	KeyValues* pkvAbillites = modelType->kvAbilities;
-	if (pkvAbillites != nullptr)
-	{
-		const char* pchVoice = pkvAbillites->GetString("voice", DEFAULT_ABILITY);
-		const char* pchSuit = pkvAbillites->GetString("suit", DEFAULT_ABILITY);
-		pHLMS->SetVoiceType(pchVoice, pchSuit);
-
-		const char* pchFootSound = pkvAbillites->GetString("footsteps", DEFAULT_ABILITY);
-		pHLMS->SetFootsteps(pchFootSound);
-
-		const char* pchClassname = pkvAbillites->GetString("response_class", DEFAULT_ABILITY);
-		pHLMS->SetResponseClassname(pchClassname);
-	}
-	else
-	{
-		pHLMS->SetVoiceType(DEFAULT_ABILITY, DEFAULT_ABILITY);
-		pHLMS->SetFootsteps(DEFAULT_ABILITY);
-		pHLMS->SetResponseClassname(DEFAULT_ABILITY);
-	}
 }
 #endif

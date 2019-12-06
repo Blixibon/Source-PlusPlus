@@ -21,6 +21,15 @@ enum LAZPlayerState
 	NUM_PLAYER_STATES
 };
 
+enum LAZFlashlightType
+{
+	FLASHLIGHT_NONE = -1,
+	FLASHLIGHT_SUIT,
+	FLASHLIGHT_NVG,
+	FLASHLIGHT_WEAPON,
+
+	FLASHLIGHT_TYPE_COUNT
+};
 
 #if defined( CLIENT_DLL )
 #define CLaz_Player C_Laz_Player

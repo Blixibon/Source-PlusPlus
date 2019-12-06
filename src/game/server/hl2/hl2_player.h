@@ -312,7 +312,7 @@ protected:
 
 	virtual CMultiPlayerAnimState* GetAnimState() OVERRIDE;
 
-private:
+protected:
 	bool				CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &goal, CAI_BaseNPC **Allies, int numAllies );
 
 	void				OnSquadMemberKilled( inputdata_t &data );
@@ -338,6 +338,7 @@ protected:	// Jeep: Portal_Player needs access to this variable to overload Play
 	bool				m_bPlayUseDenySound;		// Signaled by PlayerUse, but can be unset by HL2 ladder code...
 	CHL2PlayerAnimState m_AnimState;
 
+	bool				m_bFlashlightDisabled;
 private:
 
 	CAI_Squad *			m_pPlayerAISquad;
@@ -366,7 +367,6 @@ private:
 
 	EHANDLE				m_hPlayerProxy;
 
-	bool				m_bFlashlightDisabled;
 	bool				m_bUseCappedPhysicsDamageTable;
 	
 	float				m_flArmorReductionTime;

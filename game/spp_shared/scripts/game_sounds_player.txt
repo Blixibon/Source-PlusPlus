@@ -36,6 +36,26 @@
 	"wave" "items/flashlight1.wav"
 }
 
+"HL2Player.NightVisionOn"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.8"
+	"soundlevel"    "SNDLVL_75dB"
+	"pitch"	"PITCH_NORM"
+
+	"wave" "items/nvg_on.wav"
+}
+
+"HL2Player.NightVisionOff"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"0.8"
+	"soundlevel"  "SNDLVL_75dB"
+	"pitch"	"PITCH_NORM"
+
+	"wave" "items/nvg_off.wav"
+}
+
 "HL2Player.PickupWeapon"
 {
 	"channel"	"CHAN_ITEM"

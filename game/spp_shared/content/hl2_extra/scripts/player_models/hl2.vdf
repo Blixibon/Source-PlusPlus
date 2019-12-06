@@ -53,6 +53,7 @@
 		"abilities"
 		{
 			"suit"		"hev5"
+			"flashlight"	"suit"
 		}
 	}
 	
@@ -134,6 +135,7 @@
 		"abilities"
 		{
 			"suit"		"hev4"
+			"flashlight"	"suit"
 		}
 	}
 
@@ -166,6 +168,7 @@
 		"abilities"
 		{
 			"suit"		"hev5"
+			"flashlight"	"suit"
 		}
 	}
 	
@@ -298,6 +301,7 @@
 		"abilities"
 		{
 			"voice"		"citizen"
+			"flashlight"	"weapon"
 		}
 	}
 	
@@ -332,6 +336,7 @@
 		{
 			"voice"		"citizen"
 			"suit"		"hev5"
+			"flashlight"	"suit"
 		}
 	}
 	
@@ -369,6 +374,8 @@
 			"voice"			"metropolice"
 			"suit"			"pcv_hev"
 			"special"		"manhack"
+			"response_class"	"npc_metropolice"
+			"flashlight"	"nvg"
 		}
 	}
 	
@@ -404,6 +411,7 @@
 			"voice"				"combine_soldier"
 			"suit"				"pcv_hev"
 			"response_class"	"npc_combine_s"
+			"flashlight"	"nvg"
 		}
 	}
 	
@@ -440,6 +448,7 @@
 			"voice"				"combine_elite"
 			"suit"				"pcv_hev"
 			"response_class"	"npc_combine_s"
+			"flashlight"	"nvg"
 		}
 	}
 
@@ -480,6 +489,45 @@
 			"voice"				"zombie"
 			"suit"				"none"
 			"response_class"	"npc_zombie"
+		}
+	}
+
+	"metropolice_silent"
+	{
+		"needs_suit"	"0"
+		//"team"			"Combine"
+		//"maxplayers"	"4"
+		"games"
+		{
+			"game"	"entropy"
+			"game"	"human"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/police.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+				"manhack"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/dpfilms/weapons/v_arms_metropolice.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"		"NPC_MetroPolice"
+			"voice"			"none"
+			"suit"			"pcv_hev"
+			"response_class"	"npc_metropolice"
+			"flashlight"	"nvg"
 		}
 	}
 }
