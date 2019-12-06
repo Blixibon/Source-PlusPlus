@@ -197,7 +197,7 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 	}
 
 	CHL2_Player* pPlayer = ToHL2Player(GetOwner());
-	if (pPlayer && pPlayer->IsSprinting())
+	if (pPlayer && pPlayer->IsSprinting() && pPlayer->GetAbsVelocity().IsLengthGreaterThan(32.f))
 	{
 		// Move to lowered position if we're not there yet
 		if (GetActivity() != GetSprintActivity() && GetActivity() != ACT_VM_SPRINT_ENTER
