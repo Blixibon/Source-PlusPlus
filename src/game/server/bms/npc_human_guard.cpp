@@ -271,7 +271,7 @@ void CNPC_HumanGuard::InitRandomFlexes()
 CNPC_HumanGuard::CNPC_HumanGuard()
 {
 	m_iszAmmoSupply = AllocPooledString("Current");
-	m_iAmmoAmount = 15;
+	m_iAmmoAmount = -1;
 }
 
 //-----------------------------------------------------------------------------

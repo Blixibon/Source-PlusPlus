@@ -158,8 +158,8 @@ public:
 	// Should this object receive shadows?
 	virtual bool			ShouldReceiveProjectedTextures( int flags )
 	{
-		if (flags & SHADOW_FLAGS_PLAYER_FLASHLIGHT)
-			return false;
+		/*if (flags & SHADOW_FLAGS_PLAYER_FLASHLIGHT)
+			return false;*/
 
 		return true;
 	}

@@ -1737,7 +1737,8 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 	// Emit sound
 	if ( actor )
 	{
-		CPASAttenuationFilter filter( actor );
+		// This used to be an attenuation filter, but that broke NPCs on monitors in multiplayer
+		CPASFilter filter( actor->GetSoundEmissionOrigin() );
 
 		if ( m_pRecipientFilter )
 		{

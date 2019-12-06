@@ -270,21 +270,33 @@ bool CNPC_CombatSupplier::ShouldHealTarget(CBaseEntity* pTarget, bool bActiveUse
 		if (m_flPlayerGiveAmmoTime <= gpGlobals->curtime)
 		{
 			int iAmmoType = -1;
+			int iAmmoCount = m_iAmmoAmount;
 			if (m_iszAmmoSupply == gm_iszCurrentAmmo)
 			{
 				if (GetActiveWeapon())
+				{
 					iAmmoType = GetActiveWeapon()->GetPrimaryAmmoType();
+					if (iAmmoCount < 0)
+						iAmmoCount = GetActiveWeapon()->GetMaxClip1();
+				}
 			}
 			else if (m_iszAmmoSupply == gm_iszAutoAmmo)
 			{
 				CBaseCombatCharacter* pBCC = pTarget->MyCombatCharacterPointer();
 				if (pBCC && pBCC->GetActiveWeapon())
+				{
 					iAmmoType = pBCC->GetActiveWeapon()->GetPrimaryAmmoType();
+					if (iAmmoCount < 0)
+						iAmmoCount = pBCC->GetActiveWeapon()->GetMaxClip1();
+				}
 			}
 			else
 			{
 				iAmmoType = GetAmmoDef()->Index(STRING(m_iszAmmoSupply));
 			}
+
+			if (iAmmoCount < 0)
+				iAmmoCount = 1;
 
 			if (iAmmoType == -1)
 			{
@@ -295,7 +307,7 @@ bool CNPC_CombatSupplier::ShouldHealTarget(CBaseEntity* pTarget, bool bActiveUse
 				// Does the player need the ammo we can give him?
 				int iMax = GetAmmoDef()->MaxCarry(iAmmoType);
 				int iCount = ((CBasePlayer*)pTarget)->GetAmmoCount(iAmmoType);
-				if (!iCount || ((iMax - iCount) >= m_iAmmoAmount))
+				if (!iCount || ((iMax - iCount) >= iAmmoCount))
 				{
 					// Only give the player ammo if he has a weapon that uses it
 					if (((CBasePlayer*)pTarget)->Weapon_GetWpnForAmmo(iAmmoType))
@@ -578,21 +590,33 @@ void CNPC_CombatSupplier::Heal()
 		if (pTarget->IsPlayer())
 		{
 			int iAmmoType = -1;
+			int iAmmoCount = m_iAmmoAmount;
 			if (m_iszAmmoSupply == gm_iszCurrentAmmo)
 			{
 				if (GetActiveWeapon())
+				{
 					iAmmoType = GetActiveWeapon()->GetPrimaryAmmoType();
+					if (iAmmoCount < 0)
+						iAmmoCount = GetActiveWeapon()->GetMaxClip1();
+				}
 			}
 			else if (m_iszAmmoSupply == gm_iszAutoAmmo)
 			{
 				CBaseCombatCharacter* pBCC = pTarget->MyCombatCharacterPointer();
 				if (pBCC && pBCC->GetActiveWeapon())
+				{
 					iAmmoType = pBCC->GetActiveWeapon()->GetPrimaryAmmoType();
+					if (iAmmoCount < 0)
+						iAmmoCount = pBCC->GetActiveWeapon()->GetMaxClip1();
+				}
 			}
 			else
 			{
 				iAmmoType = GetAmmoDef()->Index(STRING(m_iszAmmoSupply));
 			}
+
+			if (iAmmoCount < 0)
+				iAmmoCount = 1;
 
 			if (iAmmoType == -1)
 			{
@@ -600,7 +624,7 @@ void CNPC_CombatSupplier::Heal()
 			}
 			else
 			{
-				((CBasePlayer*)pTarget)->GiveAmmo(m_iAmmoAmount, iAmmoType, false);
+				((CBasePlayer*)pTarget)->GiveAmmo(iAmmoCount, iAmmoType, false);
 			}
 
 			m_flPlayerGiveAmmoTime = gpGlobals->curtime + sk_citizen_giveammo_player_delay.GetFloat();

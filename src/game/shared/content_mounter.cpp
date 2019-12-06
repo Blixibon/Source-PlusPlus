@@ -369,6 +369,12 @@ namespace Mounter
 			if (FStrEq(pMount->GetName(), "sentence_files"))
 				continue;
 
+			if (FStrEq(pMount->GetName(), "needs_app"))
+				continue;
+
+			if (FStrEq(pMount->GetName(), "needs_mod"))
+				continue;
+
 			if (!GetDirPath(steamApps, pFileSystem, pMount->GetName(), path))
 				continue;
 
@@ -391,6 +397,37 @@ namespace Mounter
 			KeyValuesAD pMounts("Mount");
 			if (pMounts->LoadFromFile(pFileSystem, path, PATHID_SHARED))
 			{
+				char szModsPath[MAX_PATH];
+				bool bGotMods = steamApps->GetSourceModsDir(szModsPath, MAX_PATH);
+				bool bInvalidated = false;
+				for (KeyValues* pkvCommand = pMounts->GetFirstValue(); pkvCommand != nullptr; pkvCommand = pkvCommand->GetNextValue())
+				{
+					if (FStrEq(pkvCommand->GetName(), "needs_app"))
+					{
+						if (!steamApps->BIsAppInstalled(pkvCommand->GetInt()))
+							bInvalidated = true;
+					}
+
+					if (FStrEq(pkvCommand->GetName(), "needs_mod"))
+					{
+						if (!bGotMods)
+							bInvalidated = true;
+						else
+						{
+							char szTestPath[MAX_PATH];
+							V_ComposeFileName(szModsPath, CFmtStr("%s" CORRECT_PATH_SEPARATOR_S "gameinfo.txt", pkvCommand->GetString()), szTestPath, MAX_PATH);
+							if (!pFileSystem->FileExists(szTestPath))
+								bInvalidated = true;
+						}
+					}
+
+					if (bInvalidated)
+						break;
+				}
+
+				if (bInvalidated)
+					continue;
+
 				KeyValues *pkvSentences = pMounts->FindKey("sentence_files");
 				if (pkvSentences)
 				{

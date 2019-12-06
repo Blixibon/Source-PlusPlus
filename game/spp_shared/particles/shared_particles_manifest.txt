@@ -41,6 +41,9 @@ particles_manifest
 	"file"		"particles/first_person_fx.pcf"
 	"file"		"particles/misc.pcf"
 	
+	// Episode One
+	"file"		"particles/ep1_fx.pcf"
+	
 	// SPP
 	"file"		"!particles/spp_tracers.pcf"
 	

@@ -594,7 +594,7 @@ public:
 		}
 
 #ifndef CLIENT_DLL
-		CRecipientFilter procFilter;
+		/*CRecipientFilter procFilter;
 		if (filter.IsInitMessage())
 			procFilter.MakeInitMessage();
 		if (filter.IsReliable())
@@ -613,7 +613,7 @@ public:
 			}
 		}
 
-		filter = procFilter;
+		filter = procFilter;*/
 #endif // !CLIENT_DLL
 
 
@@ -698,7 +698,7 @@ public:
 #endif
 
 #ifndef CLIENT_DLL
-			CRecipientFilter procFilter;
+			/*CRecipientFilter procFilter;
 			if (filter.IsInitMessage())
 				procFilter.MakeInitMessage();
 			if (filter.IsReliable())
@@ -717,7 +717,7 @@ public:
 				}
 			}
 
-			filter = procFilter;
+			filter = procFilter;*/
 #endif // !CLIENT_DLL
 
 

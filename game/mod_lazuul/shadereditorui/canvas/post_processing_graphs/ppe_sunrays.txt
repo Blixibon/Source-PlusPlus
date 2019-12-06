@@ -26,17 +26,17 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"9"
+					"iTarget_node"		"8"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"5"
+					"iTarget_node"		"4"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_03"
 				{
-					"iTarget_node"		"4"
+					"iTarget_node"		"13"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -45,8 +45,16 @@
 			"iPushTg"		"1"
 			"iSHEETHINT_enable_tg"		"1"
 			"iSHEETHINT_enable_src"		"1"
+			"iDst_x"		"0"
+			"iDst_y"		"0"
+			"iDst_w"		"0"
+			"iDst_h"		"0"
+			"flSrcUV_x0"		"0.000000"
+			"flSrcUV_y0"		"0.000000"
 			"flSrcUV_x"		"0.000000"
 			"flSrcUV_y"		"0.000000"
+			"iSrc_w"		"0"
+			"iSrc_h"		"0"
 		}
 		"Node_001"
 		{
@@ -66,17 +74,17 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"6"
+					"iTarget_node"		"5"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"4"
+					"iTarget_node"		"13"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_03"
 				{
-					"iTarget_node"		"5"
+					"iTarget_node"		"4"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -85,8 +93,16 @@
 			"iPushTg"		"1"
 			"iSHEETHINT_enable_tg"		"1"
 			"iSHEETHINT_enable_src"		"1"
+			"iDst_x"		"0"
+			"iDst_y"		"0"
+			"iDst_w"		"0"
+			"iDst_h"		"0"
+			"flSrcUV_x0"		"0.000000"
+			"flSrcUV_y0"		"0.000000"
 			"flSrcUV_x"		"0.000000"
 			"flSrcUV_y"		"0.000000"
+			"iSrc_w"		"0"
+			"iSrc_h"		"0"
 		}
 		"Node_002"
 		{
@@ -120,7 +136,7 @@
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"4"
+					"iTarget_node"		"13"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -129,21 +145,18 @@
 			"iPushTg"		"1"
 			"iSHEETHINT_enable_tg"		"1"
 			"iSHEETHINT_enable_src"		"0"
+			"iDst_x"		"0"
+			"iDst_y"		"0"
+			"iDst_w"		"0"
+			"iDst_h"		"0"
+			"flSrcUV_x0"		"0.000000"
+			"flSrcUV_y0"		"0.000000"
 			"flSrcUV_x"		"0.000000"
 			"flSrcUV_y"		"0.000000"
+			"iSrc_w"		"0"
+			"iSrc_h"		"0"
 		}
 		"Node_004"
-		{
-			"iType"		"2009"
-			"szName"		"_rt_fbquarter_0"
-			"pos_x"		"-579.521973"
-			"pos_y"		"-250.991974"
-			"size_x"		"96.000000"
-			"size_y"		"-80.000000"
-			"iPreview"		"1"
-			"szRTName"		"_rt_fbquarter_0"
-		}
-		"Node_005"
 		{
 			"iType"		"2009"
 			"szName"		"_rt_fbquarter_1"
@@ -154,7 +167,7 @@
 			"iPreview"		"1"
 			"szRTName"		"_rt_fbquarter_1"
 		}
-		"Node_006"
+		"Node_005"
 		{
 			"iType"		"2010"
 			"szName"		"mat blur y"
@@ -167,7 +180,7 @@
 			"szVMTString_num_strings"		"1"
 			"szVMTString_partial_00"		"\'EDITOR_SHADER\'\r\n{\r\n	\'$SHADERNAME\'	\'gauss_blur_5_y\'\r\n\r\n	\'$basetexture\'	\'_rt_fbquarter_1\'\r\n}"
 		}
-		"Node_007"
+		"Node_006"
 		{
 			"iType"		"2004"
 			"pos_x"		"56.956039"
@@ -184,7 +197,7 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"11"
+					"iTarget_node"		"9"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -193,10 +206,18 @@
 			"iPushTg"		"0"
 			"iSHEETHINT_enable_tg"		"0"
 			"iSHEETHINT_enable_src"		"0"
+			"iDst_x"		"0"
+			"iDst_y"		"0"
+			"iDst_w"		"0"
+			"iDst_h"		"0"
+			"flSrcUV_x0"		"0.000000"
+			"flSrcUV_y0"		"0.000000"
 			"flSrcUV_x"		"0.000000"
 			"flSrcUV_y"		"0.000000"
+			"iSrc_w"		"0"
+			"iSrc_h"		"0"
 		}
-		"Node_008"
+		"Node_007"
 		{
 			"iType"		"2002"
 			"pos_x"		"211.028748"
@@ -208,12 +229,12 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"7"
+					"iTarget_node"		"6"
 					"iTarget_jack"		"0"
 				}
 			}
 		}
-		"Node_009"
+		"Node_008"
 		{
 			"iType"		"2010"
 			"szName"		"mat blur x"
@@ -225,6 +246,19 @@
 			"iInline"		"1"
 			"szVMTString_num_strings"		"1"
 			"szVMTString_partial_00"		"\'EDITOR_SHADER\'\r\n{\r\n	\'$SHADERNAME\'	\'gauss_blur_5_x\'\r\n\r\n	\'$basetexture\'	\'_rt_fbquarter_0\'\r\n}"
+		}
+		"Node_009"
+		{
+			"iType"		"2010"
+			"szName"		"add"
+			"pos_x"		"-112.357910"
+			"pos_y"		"-534.670959"
+			"size_x"		"80.000000"
+			"size_y"		"-17.000000"
+			"iPreview"		"0"
+			"iInline"		"1"
+			"szVMTString_num_strings"		"1"
+			"szVMTString_partial_00"		"\'unlitgeneric\'\r\n{\r\n	\'$basetexture\'		\'_rt_fbquarter_0\'\r\n	\'$additive\'			1\r\n	\'$ignorez\'			1\r\n	\'$nofog\'			1\r\n}"
 		}
 		"Node_010"
 		{
@@ -242,28 +276,39 @@
 		"Node_011"
 		{
 			"iType"		"2010"
-			"szName"		"add"
-			"pos_x"		"-112.357910"
-			"pos_y"		"-534.670959"
-			"size_x"		"80.000000"
-			"size_y"		"-17.000000"
-			"iPreview"		"0"
-			"iInline"		"1"
-			"szVMTString_num_strings"		"1"
-			"szVMTString_partial_00"		"\'unlitgeneric\'\r\n{\r\n	\'$basetexture\'		\'_rt_fbquarter_0\'\r\n	\'$additive\'			1\r\n	\'$ignorez\'			1\r\n	\'$nofog\'			1\r\n}"
-		}
-		"Node_012"
-		{
-			"iType"		"2010"
 			"szName"		"dbg"
-			"pos_x"		"-103.265686"
-			"pos_y"		"-610.516968"
+			"pos_x"		"-218.053833"
+			"pos_y"		"-618.433411"
 			"size_x"		"80.000000"
 			"size_y"		"-17.000000"
 			"iPreview"		"0"
 			"iInline"		"1"
 			"szVMTString_num_strings"		"1"
 			"szVMTString_partial_00"		"\'unlitgeneric\'\r\n{\r\n	\'$basetexture\'		\'_rt_fbquarter_0\'\r\n	\'$ignorez\'			1\r\n	\'$nofog\'			1\r\n}"
+		}
+		"Node_012"
+		{
+			"iType"		"2010"
+			"szName"		"skymask"
+			"pos_x"		"-62.522720"
+			"pos_y"		"-623.140686"
+			"size_x"		"80.000000"
+			"size_y"		"-17.000000"
+			"iPreview"		"0"
+			"iInline"		"1"
+			"szVMTString_num_strings"		"1"
+			"szVMTString_partial_00"		"\'UnlitGeneric\'\r\n{\r\n	\'$basetexture\'	\'_rt_SEdit_Skymask\'\r\n}"
+		}
+		"Node_013"
+		{
+			"iType"		"2009"
+			"szName"		"_rt_fbquarter_0"
+			"pos_x"		"-579.521973"
+			"pos_y"		"-250.991974"
+			"size_x"		"96.000000"
+			"size_y"		"-80.000000"
+			"iPreview"		"1"
+			"szRTName"		"_rt_fbquarter_0"
 		}
 	}
 }

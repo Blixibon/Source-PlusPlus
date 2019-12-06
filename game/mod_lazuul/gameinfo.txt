@@ -15,6 +15,7 @@
 	{
 		citizen2		1	// The Citizen Returns
 		citizen			1	// The Citizen
+		"entropy-zero"	1	// Entropy Zero 1
 		human_error		1	// Human Error + Human Error: Coop
 		"hl1_low"		1	// Half-Life: Source
 		"bms_low"		1	// Black Mesa: Source mod and retail
