@@ -117,6 +117,9 @@ public:
 	virtual void		FreeBeam( Beam_t *pBeam ) { BeamFree( pBeam ); }
 	virtual void		UpdateBeamInfo( Beam_t *pBeam, BeamInfo_t &beamInfo );
 
+	virtual void	AddBeamListener(IBeamRemovedCallback* pListener);
+	virtual void	RemoveBeamListener(IBeamRemovedCallback* pListener);
+
 private:
 	void					FreeDeadTrails( BeamTrail_t **trail );
 	void					UpdateBeam( Beam_t *pbeam, float frametime );
@@ -170,6 +173,8 @@ private:
 	BeamTrail_t				*m_pActiveTrails;
 	BeamTrail_t				*m_pFreeTrails;
 	int						m_nNumBeamTrails;
+
+	CUtlVector<IBeamRemovedCallback*> m_beamListeners;
 };
 
 // Expose interface to rest of client .dll
@@ -533,6 +538,10 @@ void CViewRenderBeams::ClearBeams( void )
 	for( ; m_pActiveBeams; m_pActiveBeams = next )
 	{
 		next = m_pActiveBeams->next;
+		for (auto pListener : m_beamListeners)
+		{
+			pListener->OnBeamFreed(m_pActiveBeams);
+		}
 		delete m_pActiveBeams;
 	}
 
@@ -572,6 +581,8 @@ void CViewRenderBeams::ShutdownBeams( void )
 		m_pFreeTrails = NULL;
 		m_nNumBeamTrails = 0;
 	}
+
+	m_beamListeners.Purge();
 }
 
 //-----------------------------------------------------------------------------
@@ -618,6 +629,11 @@ Beam_t *CViewRenderBeams::BeamAlloc( bool bRenderable )
 //-----------------------------------------------------------------------------
 void CViewRenderBeams::BeamFree( Beam_t* pBeam )
 {
+	for (auto pListener : m_beamListeners)
+	{
+		pListener->OnBeamFreed(pBeam);
+	}
+
 	// Free particles that have died off.
 	FreeDeadTrails( &pBeam->trail );
 
@@ -2064,6 +2080,17 @@ void CViewRenderBeams::UpdateBeamInfo( Beam_t *pBeam, BeamInfo_t &beamInfo )
 	Assert( pBeam->delta.IsValid() );
 
 	SetBeamAttributes( pBeam, beamInfo );
+}
+
+void CViewRenderBeams::AddBeamListener(IBeamRemovedCallback* pListener)
+{
+	if (m_beamListeners.Find(pListener) == m_beamListeners.InvalidIndex())
+		m_beamListeners.AddToTail(pListener);
+}
+
+void CViewRenderBeams::RemoveBeamListener(IBeamRemovedCallback* pListener)
+{
+	m_beamListeners.FindAndRemove(pListener);
 }
 
 

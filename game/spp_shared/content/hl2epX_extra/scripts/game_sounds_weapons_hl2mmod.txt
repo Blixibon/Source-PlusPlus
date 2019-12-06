@@ -223,6 +223,26 @@
 	"wave"	"weapons/stunstick/stunstick_deploy.wav"
 }
 
+"Weapon_StunStick.Charge"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"			"95,102"
+
+	"wave"			"weapons/stunstick/stunstick_chargeup.wav"
+}
+
+"Weapon_StunStick.Charged_Hit"
+{
+	"channel"		"CHAN_WEAPON"
+	"volume"		"0.7"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"			"95,102"
+
+	"wave"			"weapons/stunstick/stunstick_chargedhit1.wav"
+}
+
 "Weapon_Crossbow.Draw"
 {
 	"channel"	"CHAN_AUTO"

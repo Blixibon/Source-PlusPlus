@@ -263,8 +263,8 @@ $Project
 			//$File	"hl2\weapon_rpg.h"
 			//$File	"hl2\weapon_shotgun.cpp"
 			//$File	"hl2\weapon_smg1.cpp"
-			$File	"hl2\weapon_stunstick.cpp"
-			$File	"hl2\weapon_stunstick.h"
+			//$File	"hl2\weapon_stunstick.cpp"
+			//$File	"hl2\weapon_stunstick.h"
 			$File	"hl2\func_bulletshield.cpp"
 			$File	"hl2\func_bulletshield.h"
 

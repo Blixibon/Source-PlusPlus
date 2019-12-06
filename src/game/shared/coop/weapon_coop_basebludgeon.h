@@ -38,8 +38,8 @@ public:
 
     bool ImpactWater( const Vector &start, const Vector &end );
 	void Swing( int bIsSecondary );
-	void Hit( trace_t &traceHit, Activity nHitActivity );
-	Activity ChooseIntersectionPointAndActivity( trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner );
+	virtual void Hit( trace_t &traceHit, Activity nHitActivity );
+	virtual Activity ChooseIntersectionPointAndActivity( trace_t &hitTrace, const Vector &mins, const Vector &maxs, CBasePlayer *pOwner );
 
     //Functions to select animation sequences 
 	virtual Activity GetPrimaryAttackActivity( void )	{	return	ACT_VM_HITCENTER;	}

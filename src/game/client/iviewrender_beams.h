@@ -104,6 +104,12 @@ struct BeamInfo_t
 	}
 };
 
+class IBeamRemovedCallback
+{
+public:
+	virtual void OnBeamFreed(Beam_t*) = 0;
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: Declare client .dll beam entity interface
 //-----------------------------------------------------------------------------
@@ -164,6 +170,9 @@ public:
 	virtual void	CreateBeamFollow( int startEnt, int modelIndex, int haloIndex, float haloScale,  
 							float life, float width, float m_nEndWidth, float m_nFadeLength, float r, float g, float b, 
 							float brightness ) = 0;
+
+	virtual void	AddBeamListener(IBeamRemovedCallback*) = 0;
+	virtual void	RemoveBeamListener(IBeamRemovedCallback*) = 0;
 };
 
 extern IViewRenderBeams *beams;
