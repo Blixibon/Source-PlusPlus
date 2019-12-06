@@ -53,7 +53,8 @@ bool CGameTypeManager::Init()
 		"bms",
 		"portal",
 		"hl2beta",
-		"human"
+		"human",
+		"entropy"
 	};
 
 	m_vecGames.CopyArray(gwCodedGames, MAX_CODE_GAMETYPES);

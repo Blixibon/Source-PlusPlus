@@ -45,6 +45,7 @@
 		"dwn"			"ep2"
 		"yla_"			"ep2"
 		"hls"			"hl1"
+		"az_"			"entropy"
 	}
 	
 	"Areas"

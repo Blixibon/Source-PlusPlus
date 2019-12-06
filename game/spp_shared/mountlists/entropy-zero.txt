@@ -1,0 +1,14 @@
+"Mount"
+{
+	"needs_app"	"714070"
+
+	714070
+	{
+		"head"	"0"
+		
+		"Entropy Zero/EntropyZero"
+		{
+			
+		}
+	}
+}
