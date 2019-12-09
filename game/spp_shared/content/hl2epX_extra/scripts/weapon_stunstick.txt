@@ -18,6 +18,13 @@ WeaponData
 	"item_flags"			"0"
 	
 	"MeleeWeapon"			"1"
+	
+	"activities"
+	{
+		firstdraw	"ACT_VM_PICKUP"
+		sprint		"ACT_VM_SPRINT"
+		fidget		"ACT_VM_INSPECT"
+	}
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData

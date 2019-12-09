@@ -7,6 +7,7 @@ $Sequence "idle1" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
+	node "Ready"
 	loop
 }
 
@@ -16,6 +17,7 @@ $Sequence "idle2" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
+	node "Ready"
 	loop
 }
 
@@ -26,6 +28,7 @@ $Sequence "idle_fidget" {
 	fadein 0.2
 	fadeout 0.2
 	fps 30
+	node "Ready"
 	loop
 }
 
@@ -38,6 +41,7 @@ $Sequence "gun_reload" {
 	{ event 3110 23 "" }
 	fadein 0.2
 	fadeout 0.2
+	node "Ready"
 	fps 30
 }
 
@@ -49,6 +53,7 @@ $Sequence "fire1" {
 	fadein 0.2
 	fadeout 0.2
 	snap
+	node "Ready"
 	fps 30
 }
 
@@ -60,6 +65,7 @@ $Sequence "fire2" {
 	fadein 0.2
 	fadeout 0.2
 	snap
+	node "Ready"
 	fps 30
 }
 
@@ -69,6 +75,7 @@ $Sequence "holster" {
 	fadein 0.2
 	fadeout 0.2
 	snap
+	node "Ready"
 	fps 30
 }
 
@@ -78,6 +85,7 @@ $Sequence "draw1" {
 	fadein 0.2
 	fadeout 0.2
 	snap
+	node "Ready"
 	fps 30
 }
 
@@ -89,6 +97,7 @@ $Sequence "draw_admire" {
 	{ event AE_CL_PLAYSOUND 0 "weapon_rpg_bms.DrawAdmire" }
 	fadein 0.2
 	fadeout 0.2
+	node "Ready"
 	fps 30
 }
 
@@ -97,7 +106,7 @@ $Sequence "idletolow" {
 	activity "ACT_VM_LOWERED_TO_IDLE" 1
 	fadein 0.2
 	fadeout 0.2
-	transition "0" "1"
+	transition "Ready" "Low"
 	fps 30
 }
 
@@ -106,7 +115,7 @@ $Sequence "lowidle1" {
 	activity "ACT_VM_LOWERED" 1
 	fadein 0.2
 	fadeout 0.2
-	node "1"
+	node "Low"
 	fps 30
 }
 
@@ -115,7 +124,7 @@ $Sequence "lowtoidle" {
 	activity "ACT_VM_IDLE_TO_LOWERED" 1
 	fadein 0.2
 	fadeout 0.2
-	transition "1" "0"
+	transition "Low" "Ready"
 	fps 30
 }
 
@@ -124,7 +133,7 @@ $Sequence "idletosprint" {
 	activity "ACT_VM_SPRINT_ENTER" 1
 	fadein 0.2
 	fadeout 0.2
-	transition "0" "1"
+	transition "Ready" "Sprint"
 	fps 30
 }
 
@@ -133,7 +142,7 @@ $Sequence "sprinttoidle" {
 	activity "ACT_VM_SPRINT_LEAVE" 1
 	fadein 0.2
 	fadeout 0.2
-	transition "1" "0"
+	transition "Sprint" "Ready"
 	fps 30
 }
 
@@ -142,7 +151,7 @@ $Sequence "sprintidle1" {
 	activity "ACT_VM_SPRINT_IDLE" 1
 	fadein 0.2
 	fadeout 0.2
-	node "1"
+	node "Sprint"
 	fps 30
 	loop
 }

@@ -26,6 +26,7 @@ $Sequence "idle_fidget" {
 	activity "ACT_VM_FIDGET" 1
 	fadein 0.2
 	fadeout 0.2
+	node "Ready"
 	fps 30
 }
 
@@ -156,7 +157,7 @@ $Sequence "idletosprint" {
 	activity "ACT_VM_SPRINT_ENTER" 1
 	fadein 0.2
 	fadeout 0.2
-	transition "0" "1"
+	transition "Ready" "Sprint"
 	fps 30
 }
 
@@ -165,7 +166,7 @@ $Sequence "sprinttoidle" {
 	activity "ACT_VM_SPRINT_LEAVE" 1
 	fadein 0.2
 	fadeout 0.2
-	transition "1" "0"
+	transition "Sprint" "Ready"
 	fps 30
 }
 
@@ -174,7 +175,7 @@ $Sequence "sprintidle1" {
 	activity "ACT_VM_SPRINT_IDLE" 1
 	fadein 0.2
 	fadeout 0.2
-	node "1"
+	node "Sprint"
 	fps 30
 	loop
 }

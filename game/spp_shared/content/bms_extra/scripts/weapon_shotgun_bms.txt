@@ -11,7 +11,13 @@ WeaponData
 	weight		"4"
 	anim_prefix	"shotgun"
 	ViewModelFOV		"60"
-	firstdraw_act	"ACT_VM_DRAW_DEPLOYED"
+	
+	"activities"
+	{
+		firstdraw	"ACT_VM_DRAW_DEPLOYED"
+		sprint		"ACT_VM_SPRINT_IDLE"
+		fidget		"ACT_VM_FIDGET"
+	}
 
 	SoundData
 	{
