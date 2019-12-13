@@ -106,13 +106,13 @@ enum
 };
 
 combineModelSet_t g_CombineModels[MAX_COMBINE_MODELS] = {
-	{"models/combine_soldier.mdl", 0, "models/combine_elite_soldier.mdl", 0, "models/combine_soldier_shotgun.mdl", 0, "models/combine_super_shotgunner.mdl", 0},
-	{"models/combine_soldier_prisonguard.mdl", 0, "models/combine_elite_guard.mdl", 0, "models/combine_soldier_prisonguard_shotgun.mdl", 0, nullptr, 0},
-	{"models/combine_super_elite_soldier.mdl", 0, "models/combine_super_soldier.mdl", 0, nullptr, 0, nullptr, 0},
-	{ "models/combine_hunter_soldier.mdl", 0, "models/combine_hunter.mdl", 0, nullptr, 0, nullptr, 0 },
+	{"models/combine_soldier.mdl", 0, "models/combine_ground.mdl", 0, "models/combine_soldier_shotgun.mdl", 0, "models/combine_shotgun.mdl", 0},
+	{"models/combine_soldier_prisonguard.mdl", 0, "models/combine_prison.mdl", 0, "models/combine_soldier_prisonguard_shotgun.mdl", 0, nullptr, 0},
+	{"models/combine_super_s.mdl", 0, "models/combine_super_soldier.mdl", 0, nullptr, 0, nullptr, 0},
+	{ "models/combine_hunter_s.mdl", 0, "models/combine_hunter.mdl", 0, nullptr, 0, nullptr, 0 },
 	{ "models/combine_outland.mdl", 0, "models/combine_super_outland.mdl", 0, "models/combine_outland_shotgun.mdl", 0, nullptr, 0 },
 	{ "models/combine_outland_prisonguard.mdl", 0, "models/combine_super_outland.mdl", 0, "models/combine_outland_prisonguard_shotgun.mdl", 0, nullptr, 0 },
-	{ "models/combine_advisor_guard_soldier.mdl", 0, "models/combine_advisor_guard.mdl", 0, nullptr, 0, nullptr, 0 },
+	{ "models/combine_advisor_s.mdl", 0, "models/combine_advisor.mdl", 0, nullptr, 0, nullptr, 0 },
 	{ "models/cmb_synth_soldier.mdl", 0, "models/cmb_synth_elite.mdl", 0, nullptr, 0, nullptr, 0 },
 	{ "models/protoguard/protoguard.mdl", 0, nullptr, 0, nullptr, 0, nullptr, 0 },
 };

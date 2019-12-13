@@ -10,6 +10,7 @@
 #include "filesystem.h"
 #include "utldict.h"
 #include "ammodef.h"
+#include "activitylist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -353,7 +354,8 @@ FileWeaponInfo_t::FileWeaponInfo_t()
 	bBodyHideArmR = true;
 	bViewModelUseArms = true;
 
-	bHasFirstDraw = false;
+	for (int i = 0; i < NUM_VM_ACTIVITIES; i++)
+		bHasActivity[i] = false;
 }
 
 #ifdef CLIENT_DLL
@@ -419,11 +421,31 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 		flIronsightFOVOffset = 0.0f;
 	}
 
-	if (pKeyValuesData->FindKey("firstdraw_act"))
+	KeyValues* pkvActivities = pKeyValuesData->FindKey("activities");
+	if (pkvActivities)
 	{
-		bHasFirstDraw = true;
+		const char* ppszKeyNames[NUM_VM_ACTIVITIES] = {
+			"firstdraw",
+			"sprint",
+			"fidget",
+		};
 
-		Q_strncpy(szFirstDrawAct, pKeyValuesData->GetString("firstdraw_act"), MAX_WEAPON_STRING);
+		for (int i = 0; i < NUM_VM_ACTIVITIES; i++)
+		{
+			if (pkvActivities->FindKey(ppszKeyNames[i]))
+			{
+				bHasActivity[i] = true;
+				iScriptedVMActivities[i] = ActivityList_IndexForName(pkvActivities->GetString(ppszKeyNames[i]));
+			}
+		}
+	}
+	else
+	{
+		if (pKeyValuesData->FindKey("firstdraw_act"))
+		{
+			bHasActivity[VM_ACTIVITY_FIRSTDRAW] = true;
+			iScriptedVMActivities[VM_ACTIVITY_FIRSTDRAW] = ActivityList_IndexForName(pKeyValuesData->GetString("firstdraw_act"));
+		}
 	}
 
 	bViewModelUseArms = pKeyValuesData->GetBool("viewmodel_arms", true);

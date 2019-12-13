@@ -2162,7 +2162,11 @@ void CBaseEntity::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 
 		int blood = BloodColor();
 		
-		if ( blood != DONT_BLEED )
+#if defined(GAME_DLL)
+		if (blood != DONT_BLEED && DamageFilterAllowsBlood(info))
+#else
+		if (blood != DONT_BLEED)
+#endif
 		{
 			SpawnBlood( vecOrigin, vecDir, blood, info.GetDamage() );// a little surface blood.
 			TraceBleed( info.GetDamage(), vecDir, ptr, info.GetDamageType() );

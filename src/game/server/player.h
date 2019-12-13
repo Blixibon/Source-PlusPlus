@@ -706,7 +706,7 @@ virtual CAI_Senses *GetSenses() {
 	audioparams_t			&GetAudioParams() { return m_Local.m_audio; }
 	tonemap_params_t		&GetToneMapParams() { return m_Local.m_TonemapParams; }
 
-	virtual void 			ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set );
+	virtual void 			ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set, bool bEnemy = false );
 
 	const QAngle& GetPunchAngle();
 	void SetPunchAngle( const QAngle &punchAngle );

@@ -853,31 +853,19 @@ AI_Waypoint_t* CAI_Pathfinder::FindShortRandomPath(int startID, float minPathLen
 //			 startID node.
 //------------------------------------------------------------------------------
 
-bool CAI_Pathfinder::IsLinkUsable(CAI_Link *pLink, int startID)
+bool CAI_Pathfinder::IsLinkUsable(CAI_Link* pLink, int startID)
 {
 	// --------------------------------------------------------------------------
 	// Skip if link turned off
 	// --------------------------------------------------------------------------
-	if (pLink->m_LinkInfo & bits_LINK_OFF)
+	if (pLink->m_pDynamicLink)
 	{
-		CAI_DynamicLink *pDynamicLink = pLink->m_pDynamicLink;
-
-		if ( !pDynamicLink || pDynamicLink->m_strAllowUse == NULL_STRING )
+		if (!pLink->m_pDynamicLink->UseAllowed(GetOuter(), startID == pLink->m_pDynamicLink->m_nDestID))
 			return false;
-
-		const char *pszAllowUse = STRING( pDynamicLink->m_strAllowUse );
-		if ( pDynamicLink->m_bInvertAllow )
-		{
-			// Exlude only the specified entity name or classname
-			if ( GetOuter()->NameMatches(pszAllowUse) || GetOuter()->ClassMatches( pszAllowUse ) )
-				return false;
-		}
-		else
-		{
-			// Exclude everything but the allowed entity name or classname
-			if ( !GetOuter()->NameMatches( pszAllowUse) && !GetOuter()->ClassMatches( pszAllowUse ) )
-				return false;
-		}
+	}
+	else if (pLink->m_LinkInfo & bits_LINK_OFF)
+	{
+		return false;
 	}
 
 	// --------------------------------------------------------------------------			
@@ -889,26 +877,26 @@ bool CAI_Pathfinder::IsLinkUsable(CAI_Link *pLink, int startID)
 	// Make sure I have the ability to do the type of movement specified by the link
 	// --------------------------------------------------------------------------
 	int linkMoveTypes = pLink->m_iAcceptedMoveTypes[GetHullType()];
-	int moveType = ( linkMoveTypes & CapabilitiesGet() );
+	int moveType = (linkMoveTypes & CapabilitiesGet());
 
-	CAI_Node *pStartNode,*pEndNode;
+	CAI_Node* pStartNode, * pEndNode;
 
 	pStartNode = GetNetwork()->GetNode(startID);
 	pEndNode = GetNetwork()->GetNode(endID);
 
-	if ( (linkMoveTypes & bits_CAP_MOVE_JUMP) && !moveType )
+	if ((linkMoveTypes & bits_CAP_MOVE_JUMP) && !moveType)
 	{
-		CAI_Hint *pStartHint = pStartNode->GetHint();
-		CAI_Hint *pEndHint = pEndNode->GetHint();
-		if ( pStartHint && pEndHint )
+		CAI_Hint* pStartHint = pStartNode->GetHint();
+		CAI_Hint* pEndHint = pEndNode->GetHint();
+		if (pStartHint && pEndHint)
 		{
-			if ( pStartHint->HintType() == HINT_JUMP_OVERRIDE && 
-				 pEndHint->HintType() == HINT_JUMP_OVERRIDE &&
-				 ( ( ( pStartHint->GetSpawnFlags() | pEndHint->GetSpawnFlags() ) & SF_ALLOW_JUMP_UP ) || pStartHint->GetAbsOrigin().z > pEndHint->GetAbsOrigin().z ) )
+			if (pStartHint->HintType() == HINT_JUMP_OVERRIDE &&
+				pEndHint->HintType() == HINT_JUMP_OVERRIDE &&
+				(((pStartHint->GetSpawnFlags() | pEndHint->GetSpawnFlags()) & SF_ALLOW_JUMP_UP) || pStartHint->GetAbsOrigin().z > pEndHint->GetAbsOrigin().z))
 			{
-				if ( !pStartNode->IsLocked() )
+				if (!pStartNode->IsLocked())
 				{
-					if ( pStartHint->GetTargetNode() == -1 || pStartHint->GetTargetNode() == endID )
+					if (pStartHint->GetTargetNode() == -1 || pStartHint->GetTargetNode() == endID)
 						moveType = bits_CAP_MOVE_JUMP;
 				}
 			}
@@ -926,16 +914,16 @@ bool CAI_Pathfinder::IsLinkUsable(CAI_Link *pLink, int startID)
 	if (GetOuter()->IsUnusableNode(endID, pEndNode->GetHint()))
 	{
 		return false;
-	}	
+	}
 
 	// --------------------------------------------------------------------------
 	// If a jump make sure the jump is within NPC's legal parameters for jumping
 	// --------------------------------------------------------------------------
 	if (moveType == bits_CAP_MOVE_JUMP)
-	{	
-		if (!GetOuter()->IsJumpLegal(pStartNode->GetPosition(GetHullType()), 
-									 pEndNode->GetPosition(GetHullType()),
-									 pEndNode->GetPosition(GetHullType())))
+	{
+		if (!GetOuter()->IsJumpLegal(pStartNode->GetPosition(GetHullType()),
+			pEndNode->GetPosition(GetHullType()),
+			pEndNode->GetPosition(GetHullType())))
 		{
 			return false;
 		}
@@ -951,6 +939,11 @@ bool CAI_Pathfinder::IsLinkUsable(CAI_Link *pLink, int startID)
 		{
 			return false;
 		}
+	}
+
+	if (pLink->m_pDynamicLink)
+	{
+		return pLink->m_pDynamicLink->FinalUseAllowed(GetOuter(), startID == pLink->m_pDynamicLink->m_nDestID);
 	}
 	return true;
 }

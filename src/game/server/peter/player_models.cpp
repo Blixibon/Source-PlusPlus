@@ -20,6 +20,8 @@ bool CPlayerModels::Init()
 		fileName = g_pFullFileSystem->FindNext(findHandle);
 	}
 
+	g_pFullFileSystem->FindClose(findHandle);
+
 	return true;
 }
 

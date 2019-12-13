@@ -36,6 +36,7 @@ $Project
 			$File	"hl2\hud_radar.cpp"
 			$File	"hl2\hud_radar.h"
 			$File	"episodic\c_npc_puppet.cpp"
+			$File	"episodic\c_npc_hunter.cpp"
 		}
 	}
 	

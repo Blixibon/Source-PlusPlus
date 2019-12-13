@@ -63,6 +63,7 @@
 #include "weapon_striderbuster.h"
 #include "monstermaker.h"
 #include "weapon_rpg.h"
+#include "peter/gametypes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -1142,6 +1143,8 @@ class CNPC_Hunter : public CAI_BaseActor
 	DECLARE_CLASS( CNPC_Hunter, CAI_BaseActor );
 
 public:
+	DECLARE_SERVERCLASS();
+
 	CNPC_Hunter();
 	~CNPC_Hunter();
 
@@ -1159,6 +1162,8 @@ public:
 	bool			CanBecomeRagdoll();
 	Activity		GetDeathActivity();
 	void			StopLoopingSounds();
+
+	virtual void ModifyEmitSoundParams(EmitSound_t& params);
 
 	virtual bool		ShowInDeathnotice() { return true; }
 
@@ -1477,6 +1482,11 @@ private:
 	bool m_bFlashlightInEyes;	// The player is shining the flashlight on our eyes.
 	float m_flPupilDilateTime;	// When to dilate our pupils if the flashlight is no longer on our eyes.
 
+	CNetworkVar(bool, m_bVortControlled);
+	CSprite* m_pEyeSprites[2];
+
+	CNetworkVar(bool, m_bAngry);
+
 	Vector m_vecEnemyLastSeen;
 	Vector m_vecLastCanPlantHerePos;
 	Vector m_vecStaggerDir;
@@ -1547,97 +1557,106 @@ private:
 LINK_ENTITY_TO_CLASS( npc_hunter, CNPC_Hunter );
 
 
-BEGIN_DATADESC( CNPC_Hunter )
+BEGIN_DATADESC(CNPC_Hunter)
 
-	DEFINE_KEYFIELD( m_iszFollowTarget, FIELD_STRING, "FollowTarget" ),
+DEFINE_KEYFIELD(m_iszFollowTarget, FIELD_STRING, "FollowTarget"),
+DEFINE_KEYFIELD(m_bVortControlled, FIELD_BOOLEAN, "VortControlled"),
 
-	DEFINE_FIELD( m_aimYaw,				FIELD_FLOAT ),
-	DEFINE_FIELD( m_aimPitch,				FIELD_FLOAT ),
+DEFINE_FIELD(m_aimYaw, FIELD_FLOAT),
+DEFINE_FIELD(m_aimPitch, FIELD_FLOAT),
 
-	DEFINE_FIELD( m_flShootAllowInterruptTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextChargeTime, FIELD_TIME ),
-	//DEFINE_FIELD( m_flNextDamageTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextSideStepTime, FIELD_TIME ),
+DEFINE_FIELD(m_flShootAllowInterruptTime, FIELD_TIME),
+DEFINE_FIELD(m_flNextChargeTime, FIELD_TIME),
+//DEFINE_FIELD( m_flNextDamageTime, FIELD_TIME ),
+DEFINE_FIELD(m_flNextSideStepTime, FIELD_TIME),
 
-	DEFINE_EMBEDDED( m_HeavyDamageDelay ),
-	DEFINE_EMBEDDED( m_FlinchTimer ),
+DEFINE_EMBEDDED(m_HeavyDamageDelay),
+DEFINE_EMBEDDED(m_FlinchTimer),
 
-	DEFINE_FIELD( m_eEyeState, FIELD_INTEGER ),
+DEFINE_FIELD(m_eEyeState, FIELD_INTEGER),
 
-	DEFINE_FIELD( m_bTopMuzzle, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bEnableSquadShootDelay, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIsBleeding, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bTopMuzzle, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bEnableSquadShootDelay, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsBleeding, FIELD_BOOLEAN),
 
-	DEFINE_FIELD( m_bDisableShooting, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bFlashlightInEyes, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flPupilDilateTime, FIELD_TIME ),
+DEFINE_FIELD(m_bDisableShooting, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bFlashlightInEyes, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flPupilDilateTime, FIELD_TIME),
 
-	DEFINE_FIELD( m_vecEnemyLastSeen, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecLastCanPlantHerePos, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecStaggerDir, FIELD_VECTOR ),
+DEFINE_FIELD(m_vecEnemyLastSeen, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vecLastCanPlantHerePos, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vecStaggerDir, FIELD_VECTOR),
 
-	DEFINE_FIELD( m_bPlanted, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bLastCanPlantHere, FIELD_BOOLEAN ),
-	//DEFINE_FIELD( m_bMissLeft, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bEnableUnplantedShooting, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bPlanted, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bLastCanPlantHere, FIELD_BOOLEAN),
+//DEFINE_FIELD( m_bMissLeft, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bEnableUnplantedShooting, FIELD_BOOLEAN),
 
-	DEFINE_FIELD( m_nKillingDamageType, FIELD_INTEGER ),
-	DEFINE_FIELD( m_eDodgeActivity, FIELD_INTEGER ),
-	DEFINE_EMBEDDED( m_RundownDelay ),
-	DEFINE_EMBEDDED( m_IgnoreVehicleTimer ),
+DEFINE_FIELD(m_nKillingDamageType, FIELD_INTEGER),
+DEFINE_FIELD(m_eDodgeActivity, FIELD_INTEGER),
+DEFINE_EMBEDDED(m_RundownDelay),
+DEFINE_EMBEDDED(m_IgnoreVehicleTimer),
 
-	DEFINE_FIELD( m_flNextMeleeTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flTeslaStopTime, FIELD_TIME ),
+DEFINE_FIELD(m_flNextMeleeTime, FIELD_TIME),
+DEFINE_FIELD(m_flTeslaStopTime, FIELD_TIME),
 
-	// (auto saved by AI)
-	//DEFINE_FIELD( m_EscortBehavior, FIELD_EMBEDDED ),
+// (auto saved by AI)
+//DEFINE_FIELD( m_EscortBehavior, FIELD_EMBEDDED ),
 
-	DEFINE_FIELD( m_iszCurrentExpression, FIELD_STRING ),
+DEFINE_FIELD(m_iszCurrentExpression, FIELD_STRING),
 
-	DEFINE_FIELD( m_fCorneredTimer, FIELD_TIME),
+DEFINE_FIELD(m_fCorneredTimer, FIELD_TIME),
 
-	DEFINE_EMBEDDED( m_CheckHintGroupTimer ),
+DEFINE_EMBEDDED(m_CheckHintGroupTimer),
 
-	// (Recomputed in Precache())
-	//DEFINE_FIELD( m_bInLargeOutdoorMap, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeSawEnemyAgain, FIELD_TIME ),
+// (Recomputed in Precache())
+//DEFINE_FIELD( m_bInLargeOutdoorMap, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_flTimeSawEnemyAgain, FIELD_TIME),
 
-	//DEFINE_SOUNDPATCH( m_pGunFiringSound ),
+//DEFINE_SOUNDPATCH( m_pGunFiringSound ),
 
-	//DEFINE_UTLVECTOR( m_pSiegeTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iszSiegeTargetName, FIELD_STRING ),
-	DEFINE_FIELD( m_flTimeNextSiegeTargetAttack, FIELD_TIME ),
-	DEFINE_FIELD( m_hCurrentSiegeTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hHitByVehicle, FIELD_EHANDLE ),
+//DEFINE_UTLVECTOR( m_pSiegeTarget, FIELD_EHANDLE ),
+DEFINE_FIELD(m_iszSiegeTargetName, FIELD_STRING),
+DEFINE_FIELD(m_flTimeNextSiegeTargetAttack, FIELD_TIME),
+DEFINE_FIELD(m_hCurrentSiegeTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_hHitByVehicle, FIELD_EHANDLE),
 
-	DEFINE_EMBEDDED( m_BeginFollowDelay ),
-	DEFINE_EMBEDDED( m_EyeSwitchTimer ),
+DEFINE_EMBEDDED(m_BeginFollowDelay),
+DEFINE_EMBEDDED(m_EyeSwitchTimer),
 
-	DEFINE_FIELD( m_nFlechettesQueued, FIELD_INTEGER ),
-	DEFINE_FIELD( m_nClampedShots, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flNextRangeAttack2Time, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextFlechetteTime, FIELD_TIME ),
-	DEFINE_UTLVECTOR( m_hAttachedBusters, FIELD_EHANDLE ),
-	DEFINE_UTLVECTOR( m_pSiegeTargets, FIELD_EHANDLE ),
+DEFINE_FIELD(m_nFlechettesQueued, FIELD_INTEGER),
+DEFINE_FIELD(m_nClampedShots, FIELD_INTEGER),
+DEFINE_FIELD(m_flNextRangeAttack2Time, FIELD_TIME),
+DEFINE_FIELD(m_flNextFlechetteTime, FIELD_TIME),
+DEFINE_UTLVECTOR(m_hAttachedBusters, FIELD_EHANDLE),
+DEFINE_UTLVECTOR(m_pSiegeTargets, FIELD_EHANDLE),
 
-	// inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Dodge", InputDodge ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "FlankEnemy", InputFlankEnemy ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "DisableShooting", InputDisableShooting ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "EnableShooting", InputEnableShooting ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "FollowStrider", InputFollowStrider ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "UseSiegeTargets", InputUseSiegeTargets ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableSquadShootDelay", InputEnableSquadShootDelay ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableSquadShootDelay", InputDisableSquadShootDelay ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableUnplantedShooting", InputEnableUnplantedShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableUnplantedShooting", InputDisableUnplantedShooting ),
+DEFINE_FIELD(m_bAngry, FIELD_BOOLEAN),
+DEFINE_AUTO_ARRAY(m_pEyeSprites, FIELD_CLASSPTR),
 
-	// Function Pointers
-	DEFINE_THINKFUNC( TeslaThink ),
-	DEFINE_THINKFUNC( BleedThink ),
-	DEFINE_THINKFUNC( JostleVehicleThink ),
+// inputs
+DEFINE_INPUTFUNC(FIELD_VOID, "Dodge", InputDodge),
+DEFINE_INPUTFUNC(FIELD_VOID, "FlankEnemy", InputFlankEnemy),
+DEFINE_INPUTFUNC(FIELD_STRING, "DisableShooting", InputDisableShooting),
+DEFINE_INPUTFUNC(FIELD_STRING, "EnableShooting", InputEnableShooting),
+DEFINE_INPUTFUNC(FIELD_STRING, "FollowStrider", InputFollowStrider),
+DEFINE_INPUTFUNC(FIELD_STRING, "UseSiegeTargets", InputUseSiegeTargets),
+DEFINE_INPUTFUNC(FIELD_VOID, "EnableSquadShootDelay", InputEnableSquadShootDelay),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableSquadShootDelay", InputDisableSquadShootDelay),
+DEFINE_INPUTFUNC(FIELD_VOID, "EnableUnplantedShooting", InputEnableUnplantedShooting),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisableUnplantedShooting", InputDisableUnplantedShooting),
 
-END_DATADESC()
+// Function Pointers
+DEFINE_THINKFUNC(TeslaThink),
+DEFINE_THINKFUNC(BleedThink),
+DEFINE_THINKFUNC(JostleVehicleThink),
+
+END_DATADESC();
+
+IMPLEMENT_SERVERCLASS_ST(CNPC_Hunter, DT_Hunter)
+SendPropBool(SENDINFO(m_bAngry)),
+SendPropBool(SENDINFO(m_bVortControlled)),
+END_SEND_TABLE();
 
 //-----------------------------------------------------------------------------
 
@@ -1690,6 +1709,22 @@ void CNPC_Hunter::Precache()
 {
 	PrecacheModel( "models/hunter.mdl" );
 	PropBreakablePrecacheAll( MAKE_STRING("models/hunter.mdl") );
+
+	if (m_bVortControlled)
+	{
+		PrecacheModel("sprites/glow03.vmt");
+
+		PrecacheScriptSound("NPC_VortiHunter.Idle");
+		PrecacheScriptSound("NPC_VortiHunter.Scan");
+		PrecacheScriptSound("NPC_VortiHunter.Alert");
+		PrecacheScriptSound("NPC_VortiHunter.Pain");
+		PrecacheScriptSound("NPC_VortiHunter.TackleAnnounce");
+		PrecacheScriptSound("NPC_VortiHunter.FoundEnemy");
+		PrecacheScriptSound("NPC_VortiHunter.FoundEnemyAck");
+		PrecacheScriptSound("NPC_VortiHunter.Death");
+		PrecacheScriptSound("NPC_VortiHunter.FlankAnnounce");
+		PrecacheScriptSound("NPC_VortiHunter.MeleeAnnounce");
+	}
 
 	PrecacheScriptSound( "NPC_Hunter.Idle" );
 	PrecacheScriptSound( "NPC_Hunter.Scan" );
@@ -1748,6 +1783,12 @@ void CNPC_Hunter::Precache()
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::Spawn()
 {
+	if (g_pGameTypeSystem->GetCurrentGameType() == MOD_EZ1)
+	{
+		m_bVortControlled = true;
+		m_nSkin = 1;
+	}
+
 	Precache();
 
 	SetModel( "models/hunter.mdl" );
@@ -1789,6 +1830,26 @@ void CNPC_Hunter::Spawn()
 		CapabilitiesAdd( bits_CAP_MOVE_JUMP );
 	}
 
+	if (m_bVortControlled && g_pGameTypeSystem->GetCurrentGameType() != MOD_EZ1)
+	{
+		// Start up the eye glow
+		m_pEyeSprites[0] = CSprite::SpriteCreate("sprites/glow03.vmt", GetLocalOrigin(), false);
+		if (m_pEyeSprites[0] != NULL)
+		{
+			m_pEyeSprites[0]->SetAttachment(this, LookupAttachment("top_eye"));
+			m_pEyeSprites[0]->SetTransparency(kRenderWorldGlow, 0, 255, 0, 200, kRenderFxNone);
+			m_pEyeSprites[0]->SetScale(0.3f);
+		}
+
+		m_pEyeSprites[1] = CSprite::SpriteCreate("sprites/glow03.vmt", GetLocalOrigin(), false);
+		if (m_pEyeSprites[1] != NULL)
+		{
+			m_pEyeSprites[1]->SetAttachment(this, LookupAttachment("bottom_eye"));
+			m_pEyeSprites[1]->SetTransparency(kRenderWorldGlow, 0, 255, 0, 200, kRenderFxNone);
+			m_pEyeSprites[1]->SetScale(0.3f);
+		}
+	}
+
 	NPCInit();
 
 	m_bEnableSquadShootDelay = true;
@@ -1817,6 +1878,8 @@ void CNPC_Hunter::Spawn()
 	//	m_pGunFiringSound = controller.SoundCreate( filter, entindex(), "NPC_Hunter.FlechetteShootLoop" );
 	//	controller.Play( m_pGunFiringSound, 0.0, 100 );
 	//}
+
+	m_bAngry = false;
 }
 
 
@@ -1891,6 +1954,21 @@ void CNPC_Hunter::StopLoopingSounds()
 	//}
 }
 
+void CNPC_Hunter::ModifyEmitSoundParams(EmitSound_t& params)
+{
+	if (m_bVortControlled.Get())
+	{
+		if (FStrEq(params.m_pSoundName, "NPC_Hunter.TackleAnnounce"))
+			params.m_pSoundName = "NPC_VortiHunter.TackleAnnounce";
+		else if (FStrEq(params.m_pSoundName, "NPC_Hunter.FoundEnemy"))
+			params.m_pSoundName = "NPC_VortiHunter.FoundEnemy";
+		else if (FStrEq(params.m_pSoundName, "NPC_Hunter.FoundEnemyAck"))
+			params.m_pSoundName = "NPC_VortiHunter.FoundEnemyAck";
+	}
+
+	BaseClass::ModifyEmitSoundParams(params);
+}
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -1913,11 +1991,11 @@ void CNPC_Hunter::IdleSound()
 {
 	if ( HasCondition( COND_LOST_ENEMY ) )
 	{
-		EmitSound( "NPC_Hunter.Scan" );
+		EmitSound(m_bVortControlled.Get() ? "NPC_VortiHunter.Scan" : "NPC_Hunter.Scan" );
 	}
 	else
 	{
-		EmitSound( "NPC_Hunter.Idle" );
+		EmitSound( m_bVortControlled.Get() ? "NPC_VortiHunter.Idle" : "NPC_Hunter.Idle" );
 	}
 }
 
@@ -2039,6 +2117,9 @@ void CNPC_Hunter::UpdateOnRemove()
 //-----------------------------------------------------------------------------
 Class_T CNPC_Hunter::Classify()
 {
+	if (m_bVortControlled)
+		return CLASS_VORTIGAUNT;
+
 	return CLASS_COMBINE_HUNTER;
 }
 
@@ -2222,6 +2303,8 @@ void CNPC_Hunter::PrescheduleThink()
 			}
 		}
 	}
+
+	m_bAngry = (IsRunningDynamicInteraction() || GetActivity() == ACT_HUNTER_ANGRY || IsCurSchedule(SCHED_HUNTER_CHARGE_ENEMY) || HealthFraction() < 0.3f || IsStriderBuster(GetEnemy()));
 }
 
 
@@ -3394,7 +3477,7 @@ void CNPC_Hunter::StartTask( const Task_t *pTask )
 
 		case TASK_HUNTER_ANNOUNCE_FLANK:
 		{
-			EmitSound( "NPC_Hunter.FlankAnnounce" );
+			EmitSound(m_bVortControlled.Get() ? "NPC_VortiHunter.FlankAnnounce" : "NPC_Hunter.FlankAnnounce" );
 			TaskComplete();
 			break;
 		}
@@ -4301,7 +4384,7 @@ void CNPC_Hunter::HandleAnimEvent( animevent_t *pEvent )
 
 	if ( pEvent->event == AE_HUNTER_MELEE_ANNOUNCE )
 	{
-		EmitSound( "NPC_Hunter.MeleeAnnounce" );
+		EmitSound(m_bVortControlled.Get() ? "NPC_VortiHunter.MeleeAnnounce" : "NPC_Hunter.MeleeAnnounce" );
 		return;
 	}
 
@@ -5316,7 +5399,7 @@ bool CNPC_Hunter::IsInLargeOutdoorMap()
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::AlertSound()
 {
-	EmitSound( "NPC_Hunter.Alert" );
+	EmitSound(m_bVortControlled.Get() ? "NPC_VortiHunter.Alert" : "NPC_Hunter.Alert" );
 }
 
 
@@ -5326,7 +5409,7 @@ void CNPC_Hunter::PainSound( const CTakeDamageInfo &info )
 {
 	if ( gpGlobals->curtime > m_flNextDamageTime )
 	{
-		EmitSound( "NPC_Hunter.Pain" );
+		EmitSound(m_bVortControlled.Get() ? "NPC_VortiHunter.Pain" : "NPC_Hunter.Pain" );
 		m_flNextDamageTime = gpGlobals->curtime + random->RandomFloat( 0.5, 1.2 );
 	}
 }
@@ -5336,7 +5419,7 @@ void CNPC_Hunter::PainSound( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::DeathSound( const CTakeDamageInfo &info )
 {
-	EmitSound( "NPC_Hunter.Death" );
+	EmitSound(m_bVortControlled.Get() ? "NPC_VortiHunter.Death" : "NPC_Hunter.Death" );
 }
 
 
@@ -5839,6 +5922,20 @@ void CNPC_Hunter::Event_Killed( const CTakeDamageInfo &info )
 	SetContextThink( NULL, 0, HUNTER_BLEED_THINK );
 
 	StopParticleEffects( this );
+
+	if (m_bVortControlled)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			if (m_pEyeSprites[i])
+			{
+				m_pEyeSprites[i]->SetScale(0.1f, 5.0f);
+				m_pEyeSprites[i]->SetBrightness(0, 5.0f);
+				m_pEyeSprites[i]->SetParent(nullptr);
+				m_pEyeSprites[i] = nullptr;
+			}
+		}
+	}
 
 	BaseClass::Event_Killed( info );
 }

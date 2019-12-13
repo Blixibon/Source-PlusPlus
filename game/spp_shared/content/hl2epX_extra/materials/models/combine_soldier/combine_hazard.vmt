@@ -1,0 +1,21 @@
+
+"VertexLitGeneric"
+{
+	"$baseTexture" 		"Models/combine_soldier/combine_hazard"
+	"$bumpmap" "models/combine_soldier/combine_elite_normal"
+	"$phongexponenttexture" "models/combine_soldier/combine_phong"
+	"$selfillummask" 	"Models/Combine_soldier/combine_elite_selfillummask"
+	"$model" "1"
+	"$selfillum" "1"
+	//"$selfillumtint" "[2 1 1]"
+	"$phong" "1"
+	"$phongboost" "5"
+	"$halflambert" "1"
+	"$phongalbedotint" "1"										
+	"$phongfresnelranges"	"[.1 .5  1]"
+
+}
+
+
+
+

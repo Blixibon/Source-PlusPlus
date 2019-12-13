@@ -213,7 +213,6 @@ bool CAI_ExpresserWithFollowup::Speak( AIConcept_t &concept, const char *modifie
 	concept.SetSpeaker(GetOuter());
 	AI_CriteriaSet criteria;
 	GatherCriteria(&criteria, concept, modifiers);
-	GetOuter()->ModifyOrAppendDerivedCriteria(criteria);
 	AI_Response result;
 	if ( !FindResponse( result, concept, &criteria ) )
 	{

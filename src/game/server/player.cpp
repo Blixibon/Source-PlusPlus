@@ -925,7 +925,7 @@ void CBasePlayer::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &v
 			//  If an NPC check if friendly fire is disallowed
 			// --------------------------------------------------
 			CAI_BaseNPC *pNPC = info.GetAttacker()->MyNPCPointer();
-			if ( pNPC && (pNPC->CapabilitiesGet() & bits_CAP_NO_HIT_PLAYER) && pNPC->IRelationType( this ) != D_HT )
+			if ( pNPC && (pNPC->CapabilitiesGet() & bits_CAP_NO_HIT_PLAYER) && pNPC->IRelationType( this ) > D_FR)
 				return;
 
 			// Prevent team damage here so blood doesn't appear
@@ -964,11 +964,14 @@ void CBasePlayer::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &v
 			break;
 		}
 
+		// Damage filter bleed control needs to exist on all DLLs
+		bool bShouldBleed =
 #ifdef HL2_EPISODIC
-		// If this damage type makes us bleed, then do so
-		bool bShouldBleed = !g_pGameRules->Damage_ShouldNotBleed( info.GetDamageType() );
-		if ( bShouldBleed )
+			!g_pGameRules->Damage_ShouldNotBleed(info.GetDamageType()) &&
 #endif
+			DamageFilterAllowsBlood(info);
+
+		if (bShouldBleed)
 		{
 			SpawnBlood(ptr->endpos, vecDir, BloodColor(), info.GetDamage());// a little surface blood.
 			TraceBleed( info.GetDamage(), vecDir, ptr, info.GetDamageType() );
@@ -8647,34 +8650,66 @@ void CBasePlayer::SetDefaultFOV( int FOV )
 // Purpose: // static func
 // Input  : set -
 //-----------------------------------------------------------------------------
-void CBasePlayer::ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set )
+void CBasePlayer::ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set, bool bEnemy)
 {
-	// Append our health
-	set.AppendCriteria( "playerhealth", UTIL_VarArgs( "%i", GetHealth() ) );
-	float healthfrac = 0.0f;
-	if ( GetMaxHealth() > 0 )
+	if (!bEnemy)
 	{
-		healthfrac = (float)GetHealth() / (float)GetMaxHealth();
-	}
+		// Append our health
+		set.AppendCriteria("playerhealth", CFmtStr("%i", GetHealth()));
+		float healthfrac = 0.0f;
+		if (GetMaxHealth() > 0)
+		{
+			healthfrac = (float)GetHealth() / (float)GetMaxHealth();
+		}
 
-	set.AppendCriteria( "playerhealthfrac", UTIL_VarArgs( "%.3f", healthfrac ) );
+		set.AppendCriteria("playerhealthfrac", CFmtStr("%.3f", healthfrac));
 
-	CBaseCombatWeapon *weapon = GetActiveWeapon();
-	if ( weapon )
-	{
-		set.AppendCriteria( "playerweapon", weapon->GetClassname() );
+		CBaseCombatWeapon* weapon = GetActiveWeapon();
+		if (weapon)
+		{
+			set.AppendCriteria("playerweapon", weapon->GetClassname());
+		}
+		else
+		{
+			set.AppendCriteria("playerweapon", "none");
+		}
+
+		// Append current activity name
+		set.AppendCriteria("playeractivity", CAI_BaseNPC::GetActivityName(GetActivity()));
+
+		set.AppendCriteria("playerspeed", CFmtStr("%.3f", GetAbsVelocity().Length()));
+
+		AppendContextToCriteria(set, "player");
 	}
 	else
 	{
-		set.AppendCriteria( "playerweapon", "none" );
+		// Append our health
+		set.AppendCriteria("enemyplayerhealth", CFmtStr("%i", GetHealth()));
+		float healthfrac = 0.0f;
+		if (GetMaxHealth() > 0)
+		{
+			healthfrac = (float)GetHealth() / (float)GetMaxHealth();
+		}
+
+		set.AppendCriteria("enemyplayerhealthfrac", CFmtStr("%.3f", healthfrac));
+
+		CBaseCombatWeapon* weapon = GetActiveWeapon();
+		if (weapon)
+		{
+			set.AppendCriteria("enemyplayerweapon", weapon->GetClassname());
+		}
+		else
+		{
+			set.AppendCriteria("enemyplayerweapon", "none");
+		}
+
+		// Append current activity name
+		set.AppendCriteria("enemyplayeractivity", CAI_BaseNPC::GetActivityName(GetActivity()));
+
+		set.AppendCriteria("enemyplayerspeed", CFmtStr("%.3f", GetAbsVelocity().Length()));
+
+		AppendContextToCriteria(set, "enemyplayer");
 	}
-
-	// Append current activity name
-	set.AppendCriteria( "playeractivity", CAI_BaseNPC::GetActivityName( GetActivity() ) );
-
-	set.AppendCriteria( "playerspeed", UTIL_VarArgs( "%.3f", GetAbsVelocity().Length() ) );
-
-	AppendContextToCriteria( set, "player" );
 }
 
 

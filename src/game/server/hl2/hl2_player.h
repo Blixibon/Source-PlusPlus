@@ -108,7 +108,7 @@ public:
 	virtual void		OnRestore();
 	virtual void		StopLoopingSounds( void );
 	virtual void		Splash( void );
-	virtual void 		ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set );
+	virtual void 		ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set, bool bEnemy);
 
 	virtual void		CreateViewModel(int viewmodelindex = 0);
 

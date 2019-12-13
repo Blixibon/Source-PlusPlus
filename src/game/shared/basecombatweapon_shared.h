@@ -113,6 +113,24 @@ namespace vgui2
 	typedef unsigned long HFont;
 }
 
+// ------------------
+// Weapon classes
+// ------------------
+// I found myself in situations where this is useful.
+// Their purpose is similar to Class_T on NPCs.
+
+enum WeaponClass_t
+{
+	WEPCLASS_INVALID = 0,
+
+	WEPCLASS_HANDGUN,
+	WEPCLASS_RIFLE,
+	WEPCLASS_SHOTGUN,
+	WEPCLASS_HEAVY,
+
+	WEPCLASS_MELEE,
+};
+
 // -----------------------------------------
 //	Vector cones
 // -----------------------------------------
@@ -202,6 +220,11 @@ public:
 	virtual void			SetSubType( int iType ) { m_iSubType = iType; }
 
 	virtual int GetWeaponID(void) const { return -1; }
+
+	virtual WeaponClass_t	WeaponClassify();
+	static WeaponClass_t	WeaponClassFromString(const char* str);
+
+	virtual bool			SupportsBackupActivity(Activity activity);
 
 	virtual void			Equip( CBaseCombatCharacter *pOwner );
 	virtual void			Drop( const Vector &vecVelocity );

@@ -1,0 +1,9 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/combine_armored/chestplate_nebula_s"
+	"$bumpmap" "models/combine_armored/chestplate_nmb"
+	"$phong"     "1"
+	"$phongexponent"  "5"
+	"$phongboost"   "0.5"
+	"$phongfresnelranges"	"[0.5 0.5 5]"
+}

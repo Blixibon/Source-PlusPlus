@@ -61,18 +61,21 @@ BEGIN_NETWORK_TABLE(CWeaponCoopBaseHLCombat, DT_WeaponCoopBaseHLCombat)
 SendPropTime(SENDINFO(m_flRaiseTime)),
 SendPropTime(SENDINFO(m_flHolsterTime)),
 SendPropBool(SENDINFO(m_bLowered)),
+SendPropTime(SENDINFO(m_flTimeLastAction)),
 #else
 RecvPropTime(RECVINFO(m_flRaiseTime)),
 RecvPropTime(RECVINFO(m_flHolsterTime)),
 RecvPropBool(RECVINFO(m_bLowered)),
+RecvPropTime(RECVINFO(m_flTimeLastAction)),
 #endif
 END_NETWORK_TABLE()
 
 BEGIN_PREDICTION_DATA(CWeaponCoopBaseHLCombat)
 #ifdef CLIENT_DLL
 DEFINE_PRED_FIELD(m_bLowered, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE),
-DEFINE_PRED_FIELD(m_flRaiseTime, FIELD_TIME, FTYPEDESC_INSENDTABLE),
-DEFINE_PRED_FIELD(m_flHolsterTime, FIELD_TIME, FTYPEDESC_INSENDTABLE),
+DEFINE_PRED_FIELD(m_flRaiseTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE),
+DEFINE_PRED_FIELD(m_flHolsterTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE),
+DEFINE_PRED_FIELD(m_flTimeLastAction, FIELD_FLOAT, FTYPEDESC_INSENDTABLE),
 #endif
 END_PREDICTION_DATA()
 
@@ -84,6 +87,7 @@ BEGIN_DATADESC(CWeaponCoopBaseHLCombat)
 DEFINE_FIELD(m_bLowered, FIELD_BOOLEAN),
 DEFINE_FIELD(m_flRaiseTime, FIELD_TIME),
 DEFINE_FIELD(m_flHolsterTime, FIELD_TIME),
+DEFINE_FIELD(m_flTimeLastAction, FIELD_TIME),
 END_DATADESC();
 
 //================================================================================
@@ -126,6 +130,7 @@ bool CWeaponCoopBaseHLCombat::Ready( void )
 
 	m_bLowered = false;	
 	m_flRaiseTime = gpGlobals->curtime + 0.5f;
+	m_flTimeLastAction = gpGlobals->curtime;
 	return true;
 }
 
@@ -138,6 +143,7 @@ bool CWeaponCoopBaseHLCombat::Lower( void )
 		return false;
 
 	m_bLowered = true;
+	m_flTimeLastAction = gpGlobals->curtime;
 	return true;
 }
 
@@ -145,6 +151,8 @@ bool CWeaponCoopBaseHLCombat::Lower( void )
 //================================================================================
 bool CWeaponCoopBaseHLCombat::Deploy( void )
 {
+	m_flTimeLastAction = gpGlobals->curtime;
+
 	// If we should be lowered, deploy in the lowered position
 	// We have to ask the player if the last time it checked, the weapon was lowered
 	if ( m_bHasBeenDeployed && GetOwner() && GetOwner()->IsPlayer() )
@@ -197,18 +205,20 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 	}
 
 	CHL2_Player* pPlayer = ToHL2Player(GetOwner());
-	if (pPlayer && pPlayer->IsSprinting() && pPlayer->GetAbsVelocity().IsLengthGreaterThan(32.f))
+	if (CanSprint() && pPlayer && pPlayer->IsSprinting() && pPlayer->GetAbsVelocity().IsLengthGreaterThan(90.f))
 	{
 		// Move to lowered position if we're not there yet
 		if (GetActivity() != GetSprintActivity() && GetActivity() != ACT_VM_SPRINT_ENTER
 			&& GetActivity() != ACT_TRANSITION)
 		{
 			SendWeaponAnim(GetSprintActivity());
+			m_flTimeLastAction = gpGlobals->curtime;
 		}
 		else if (HasWeaponIdleTimeElapsed())
 		{
 			// Keep idling low
 			SendWeaponAnim(GetSprintActivity());
+			m_flTimeLastAction = gpGlobals->curtime;
 		}
 	}
 	//See if we should idle high or low
@@ -219,11 +229,13 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 			 && GetActivity() != ACT_TRANSITION )
 		{
 			SendWeaponAnim( ACT_VM_IDLE_LOWERED );
+			m_flTimeLastAction = gpGlobals->curtime;
 		}
 		else if ( HasWeaponIdleTimeElapsed() )
 		{
 			// Keep idling low
 			SendWeaponAnim( ACT_VM_IDLE_LOWERED );
+			m_flTimeLastAction = gpGlobals->curtime;
 		}
 	}
 	else
@@ -232,6 +244,12 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 		if ( (m_flRaiseTime < gpGlobals->curtime && GetActivity() == ACT_VM_IDLE_LOWERED) || GetActivity() == GetSprintActivity())
 		{
 			SendWeaponAnim( ACT_VM_IDLE );
+			m_flTimeLastAction = gpGlobals->curtime;
+		}
+		else if (HasFidget() && gpGlobals->curtime - m_flTimeLastAction > 15.f && random->RandomFloat(0, 1) <= 0.9)
+		{
+			SendWeaponAnim(GetWpnData().iScriptedVMActivities[VM_ACTIVITY_FIDGET]);
+			m_flTimeLastAction = gpGlobals->curtime;
 		}
 		else if ( HasWeaponIdleTimeElapsed() ) 
 		{
@@ -295,16 +313,16 @@ float CWeaponCoopBaseHLCombat::CalcViewmodelBob( void )
 	lastbobtime = gpGlobals->curtime;
 
 	//Calculate the vertical bob
-	cycle = bobtime - (int)(bobtime/HL2_BOB_CYCLE_MAX)*HL2_BOB_CYCLE_MAX;
-	cycle /= HL2_BOB_CYCLE_MAX;
+	cycle = bobtime - (int)(bobtime/ cl_bobcycle.GetFloat())* cl_bobcycle.GetFloat();
+	cycle /= cl_bobcycle.GetFloat();
 
-	if ( cycle < HL2_BOB_UP )
+	if ( cycle < cl_bobup.GetFloat())
 	{
-		cycle = M_PI * cycle / HL2_BOB_UP;
+		cycle = M_PI * cycle / cl_bobup.GetFloat();
 	}
 	else
 	{
-		cycle = M_PI + M_PI*(cycle-HL2_BOB_UP)/(1.0 - HL2_BOB_UP);
+		cycle = M_PI + M_PI*(cycle- cl_bobup.GetFloat())/(1.0 - cl_bobup.GetFloat());
 	}
 	
 	g_verticalBob = speed*0.005f;
@@ -313,16 +331,16 @@ float CWeaponCoopBaseHLCombat::CalcViewmodelBob( void )
 	g_verticalBob = clamp( g_verticalBob, -7.0f, 4.0f );
 
 	//Calculate the lateral bob
-	cycle = bobtime - (int)(bobtime/HL2_BOB_CYCLE_MAX*2)*HL2_BOB_CYCLE_MAX*2;
-	cycle /= HL2_BOB_CYCLE_MAX*2;
+	cycle = bobtime - (int)(bobtime/ cl_bobcycle.GetFloat() *2)* cl_bobcycle.GetFloat() *2;
+	cycle /= cl_bobcycle.GetFloat() *2;
 
-	if ( cycle < HL2_BOB_UP )
+	if ( cycle < cl_bobup.GetFloat())
 	{
-		cycle = M_PI * cycle / HL2_BOB_UP;
+		cycle = M_PI * cycle / cl_bobup.GetFloat();
 	}
 	else
 	{
-		cycle = M_PI + M_PI*(cycle-HL2_BOB_UP)/(1.0 - HL2_BOB_UP);
+		cycle = M_PI + M_PI*(cycle- cl_bobup.GetFloat())/(1.0 - cl_bobup.GetFloat());
 	}
 
 	g_lateralBob = speed*0.005f;
@@ -341,6 +359,9 @@ float CWeaponCoopBaseHLCombat::CalcViewmodelBob( void )
 //-----------------------------------------------------------------------------
 void CWeaponCoopBaseHLCombat::AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles )
 {
+	if (viewmodel->GetSequenceActivity(viewmodel->GetSequence()) == GetSprintActivity())
+		return;
+
 	Vector	forward, right;
 	AngleVectors( angles, &forward, &right, NULL );
 
@@ -476,4 +497,19 @@ Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequ
 	}
 
 	return BaseClass::ActivityOverride(baseAct, pRequired);
+}
+
+bool CWeaponCoopBaseHLCombat::CanSprint()
+{
+	return (GetSprintActivity() != ACT_INVALID && SelectWeightedSequence(GetSprintActivity()) != ACT_INVALID);
+}
+
+bool CWeaponCoopBaseHLCombat::HasFidget()
+{
+	if (!GetWpnData().bHasActivity[VM_ACTIVITY_FIDGET])
+		return false;
+
+	int iActivity = GetWpnData().iScriptedVMActivities[VM_ACTIVITY_FIDGET];
+
+	return (iActivity != ACT_INVALID && SelectWeightedSequence((Activity)iActivity) != ACT_INVALID);
 }

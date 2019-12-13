@@ -47,7 +47,6 @@ public:
 
 	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_SHOTGUN; }
 	virtual bool			IsShotgun() { return false; }
-	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT_IDLE; }
 
 private:
 	CNetworkVar( bool,	m_bNeedPump );		// When emptied completely

@@ -170,6 +170,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 EHANDLE CLaz_Player::gm_hLastRandomSpawn = nullptr;
 string_t		CLaz_Player::gm_iszDefaultAbility = NULL_STRING;
 HSOUNDSCRIPTHANDLE CLaz_Player::gm_hsFlashLightSoundHandles[] = { SOUNDEMITTER_INVALID_HANDLE };
+int			CLaz_Player::gm_iGordonFreemanModel = -1;
 
 extern CSuitPowerDevice SuitDeviceFlashlight;
 bool Flashlight_UseLegacyVersion(void);
@@ -186,6 +187,7 @@ void CLaz_Player::Precache(void)
 	BaseClass::Precache();
 
 	gm_iszDefaultAbility = AllocPooledString_StaticConstantStringPointer(DEFAULT_ABILITY);
+	gm_iGordonFreemanModel = PrecacheModel("models/sirgibs/ragdolls/gordon_survivor_player.mdl");
 
 	PrecacheFootStepSounds();
 	PrecacheScriptSound("TFPlayer.FreezeCam");
@@ -531,6 +533,25 @@ void CLaz_Player::DoMuzzleFlash()
 				m_AnnounceAttackTimer.Set(10, 30);
 			}
 		}
+	}
+}
+
+void CLaz_Player::ModifyOrAppendPlayerCriteria(AI_CriteriaSet& set, bool bEnemy)
+{
+	BaseClass::ModifyOrAppendPlayerCriteria(set, bEnemy);
+
+	bool bFreeman = (GetModelIndex() == gm_iGordonFreemanModel);
+	bool bSuit = IsSuitEquipped() && m_iszSuitVoice != gm_iszDefaultAbility; // Will give zero for rebels and zombies
+
+	if (!bEnemy)
+	{
+		set.AppendCriteria("playerfreeman", bFreeman ? "1" : "0");
+		set.AppendCriteria("playersuit", bSuit ? "1" : "0");
+	}
+	else
+	{
+		set.AppendCriteria("enemyplayerfreeman", bFreeman ? "1" : "0");
+		set.AppendCriteria("enemyplayersuit", bSuit ? "1" : "0");
 	}
 }
 

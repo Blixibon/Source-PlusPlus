@@ -49,12 +49,19 @@ public:
 	virtual Activity		ActivityOverride(Activity baseAct, bool *pRequired);
 	static acttable_t s_acttableLowered[];
 
-	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT; }
+	virtual Activity		GetSprintActivity() 
+	{
+		return GetWpnData().bHasActivity[VM_ACTIVITY_SPRINT] ? (Activity)GetWpnData().iScriptedVMActivities[VM_ACTIVITY_SPRINT] : ACT_INVALID;
+	}
+
+	bool CanSprint();
+	bool HasFidget();
 
 protected:
     CNetworkVar(bool, m_bLowered);			// Whether the viewmodel is raised or lowered
 	CNetworkVar(float, m_flRaiseTime);		// If lowered, the time we should raise the viewmodel
 	CNetworkVar(float, m_flHolsterTime);	// When the weapon was holstered
+	CNetworkVar(float, m_flTimeLastAction);
 
 private:
     CWeaponCoopBaseHLCombat( const CWeaponCoopBaseHLCombat & );

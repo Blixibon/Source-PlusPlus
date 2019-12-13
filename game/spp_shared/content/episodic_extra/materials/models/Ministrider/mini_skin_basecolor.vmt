@@ -1,0 +1,49 @@
+"PP_VertexLitGeneric"
+{
+	"$basetexture" "models/ministrider/mini_skin_basecolor"
+	"$bumpmap" "models/ministrider/mini_skin_normal"
+	// "$halflambert" 1
+	"$nodecal" "1"
+	"$model" "1"
+	//"$selfillum" "1"
+	//"$selfillumtint" "[4 4 4]"
+	"$color2"	"[1 0 1]"
+	
+	"$blendtintbybasealpha" "1"
+	
+	"$emissiveblendenabled" "1"
+	"$emissiveblendbasetexture"	"models/ministrider/mini_skin_emissivemask"
+	"$emissiveblendtexture"	"vgui/white"
+	"$emissiveblendflowtexture" "vgui/white"
+	"$emissiveblendstrength"	"1"
+	"$emissiveblendtint"	"[1 0 1]"
+	// -- From here down is new stuff which will only be applied if $phong is set to 1 --
+
+	"$phong"     "1"
+	// "$phongexponent" "35"
+	"$phongexponenttexture" "models/ministrider/mini_skin_exponent"
+	"$phongboost"   "5"
+	"$phongfresnelranges" "[.4 0.8 1]"
+	// "$lightwarptexture" "models/ministrider/mini_warp"
+	"Proxies"
+	{
+		"IsNPC"
+		{
+			"scale" "1.0"
+			"resultvar" "$emissiveblendstrength"
+		}
+		
+		"HunterEyeColor"
+		{
+			"resultvar"	"$color2"
+		}
+		
+		"Equals"
+		{
+			"srcVar1"	"$color2"
+			"resultvar"	"$emissiveblendtint"
+		}
+	}
+}
+
+

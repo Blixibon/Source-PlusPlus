@@ -66,6 +66,11 @@ public:
 
 	int							ObjectCaps();
 
+	virtual bool				UseAllowed(CAI_BaseNPC *pNPC, bool bFromEnd);
+
+	// Called after we know the NPC meets all of the node's criteria
+	virtual bool				FinalUseAllowed(CAI_BaseNPC *pNPC, bool bFromEnd) { return true; }
+
 	// ----------------
 	//	Inputs
 	// ----------------
@@ -84,7 +89,7 @@ class CAI_DynamicLinkController : public CServerOnlyEntity
 {
 	DECLARE_CLASS( CAI_DynamicLinkController, CServerOnlyEntity );
 public:
-	void GenerateLinksFromVolume();
+	virtual	void GenerateLinksFromVolume();
 
 	// ----------------
 	//	Inputs

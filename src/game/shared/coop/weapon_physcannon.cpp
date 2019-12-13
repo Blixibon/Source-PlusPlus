@@ -2808,19 +2808,16 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 //-----------------------------------------------------------------------------
 void CWeaponPhysCannon::WeaponIdle( void )
 {
-	if ( HasWeaponIdleTimeElapsed() )
+	if (m_bActive)
 	{
-		if ( m_bActive )
+		if (HasWeaponIdleTimeElapsed())
 		{
 			//Shake when holding an item
-			SendWeaponAnim( ACT_VM_RELOAD );
-		}
-		else
-		{
-			//Otherwise idle simply
-			SendWeaponAnim( ACT_VM_IDLE );
+			SendWeaponAnim(ACT_VM_RELOAD);
 		}
 	}
+	else
+		BaseClass::WeaponIdle();
 }
 
 #ifndef CLIENT_DLL

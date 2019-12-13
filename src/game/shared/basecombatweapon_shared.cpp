@@ -1051,6 +1051,60 @@ void CBaseCombatWeapon::SetPickupTouch( void )
 #endif
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+WeaponClass_t CBaseCombatWeapon::WeaponClassify()
+{
+	// For now, check how we map our "angry idle" activity.
+	// The function is virtual, so derived weapons can override this.
+	Activity idleact = ActivityOverride(ACT_IDLE_ANGRY, NULL);
+	switch (idleact)
+	{
+	case ACT_IDLE_ANGRY_PISTOL:		return WEPCLASS_HANDGUN;
+	case ACT_IDLE_ANGRY_SMG1:		return WEPCLASS_RIFLE;
+	//case ACT_IDLE_ANGRY_AR2:		return WEPCLASS_RIFLE;
+	case ACT_IDLE_ANGRY_SHOTGUN:	return WEPCLASS_SHOTGUN;
+	case ACT_IDLE_ANGRY_RPG:		return WEPCLASS_HEAVY;
+
+	case ACT_IDLE_ANGRY_MELEE:		return WEPCLASS_MELEE;
+	}
+	return WEPCLASS_INVALID;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+WeaponClass_t CBaseCombatWeapon::WeaponClassFromString(const char* str)
+{
+	if (FStrEq(str, "WEPCLASS_HANDGUN"))
+		return WEPCLASS_HANDGUN;
+	else if (FStrEq(str, "WEPCLASS_RIFLE"))
+		return WEPCLASS_RIFLE;
+	else if (FStrEq(str, "WEPCLASS_SHOTGUN"))
+		return WEPCLASS_SHOTGUN;
+	else if (FStrEq(str, "WEPCLASS_HEAY"))
+		return WEPCLASS_HEAVY;
+
+	else if (FStrEq(str, "WEPCLASS_MELEE"))
+		return WEPCLASS_MELEE;
+
+	return WEPCLASS_INVALID;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CBaseCombatWeapon::SupportsBackupActivity(Activity activity)
+{
+	// Derived classes should override this.
+
+	// Pistol and melee users should not use SMG animations for missing pistol activities.
+	if (WeaponClassify() == WEPCLASS_HANDGUN || IsMeleeWeapon())
+		return false;
+
+	return true;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Become a child of the owner (MOVETYPE_FOLLOW)
@@ -1549,9 +1603,9 @@ bool CBaseCombatWeapon::Deploy( )
 
 Activity CBaseCombatWeapon::GetDrawActivity( void )
 {
-	if (GetWpnData().bHasFirstDraw && !m_bHasBeenDeployed)
+	if (GetWpnData().bHasActivity[VM_ACTIVITY_FIRSTDRAW] && !m_bHasBeenDeployed)
 	{
-		Activity act = (Activity)ActivityList_IndexForName(GetWpnData().szFirstDrawAct);
+		Activity act = (Activity)GetWpnData().iScriptedVMActivities[VM_ACTIVITY_FIRSTDRAW];
 		if (act != ACT_INVALID && SelectWeightedSequence(act) != ACT_INVALID)
 		{
 			return act;

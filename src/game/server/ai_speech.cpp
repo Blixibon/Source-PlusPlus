@@ -426,12 +426,14 @@ void CAI_Expresser::GatherCriteria( AI_CriteriaSet * RESTRICT outputSet, const A
 #endif
 
 	// Append local player criteria to set, but not if this is a player doing the talking
-	if ( !GetOuter()->IsPlayer() )
+	if ( !GetOuter()->IsNPC() && !GetOuter()->IsPlayer())
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+		CBasePlayer* pPlayer = AI_GetSinglePlayer();
 		if( pPlayer )
 			pPlayer->ModifyOrAppendPlayerCriteria( *outputSet );
 	}
+
+	GetOuter()->ModifyOrAppendDerivedCriteria(*outputSet);
 }
 
 //-----------------------------------------------------------------------------
@@ -982,7 +984,6 @@ bool CAI_Expresser::Speak( AIConcept_t &concept, AI_CriteriaSet * RESTRICT crite
 		return false;
 	}
 
-	GetOuter()->ModifyOrAppendDerivedCriteria(*criteria);
 	AI_Response result;
 	if ( !FindResponse( result, concept, criteria ) )
 	{
@@ -1337,12 +1338,13 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 	static const char *pStateNames[] = { "None", "Idle", "Alert", "Combat", "Scripted", "PlayDead", "Dead" };
 	if ( (int)pSpeaker->m_NPCState < ARRAYSIZE(pStateNames) )
 	{
-		set.AppendCriteria( "npcstate", UTIL_VarArgs( "[NPCState::%s]", pStateNames[pSpeaker->m_NPCState] ) );
+		set.AppendCriteria( "npcstate", CFmtStr( "[NPCState::%s]", pStateNames[pSpeaker->m_NPCState] ) );
 	}
 
 	if ( pSpeaker->GetEnemy() )
 	{
 		set.AppendCriteria( "enemy", pSpeaker->GetEnemy()->GetResponseClassname(pSpeaker) );
+		set.AppendCriteria("enemyactual", pSpeaker->GetEnemy()->GetClassname());
 		set.AppendCriteria( "timesincecombat", "-1" );
 	}
 	else
@@ -1350,10 +1352,10 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 		if ( pSpeaker->GetLastEnemyTime() == 0.0 )
 			set.AppendCriteria( "timesincecombat", "999999.0" );
 		else
-			set.AppendCriteria( "timesincecombat", UTIL_VarArgs( "%f", gpGlobals->curtime - pSpeaker->GetLastEnemyTime() ) );
+			set.AppendCriteria( "timesincecombat", CFmtStr( "%f", gpGlobals->curtime - pSpeaker->GetLastEnemyTime() ) );
 	}
 
-	set.AppendCriteria( "speed", UTIL_VarArgs( "%.3f", pSpeaker->GetSmoothedVelocity().Length() ) );
+	set.AppendCriteria( "speed", CFmtStr( "%.3f", pSpeaker->GetSmoothedVelocity().Length() ) );
 
 	CBaseCombatWeapon *weapon = pSpeaker->GetActiveWeapon();
 	if ( weapon )
@@ -1370,12 +1372,12 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 	{
 		Vector distance = pPlayer->GetAbsOrigin() - pSpeaker->GetAbsOrigin();
 
-		set.AppendCriteria( "distancetoplayer", UTIL_VarArgs( "%f", distance.Length() ) );
+		set.AppendCriteria( "distancetoplayer", CFmtStr( "%f", distance.Length() ) );
 
 	}
 	else
 	{
-		set.AppendCriteria( "distancetoplayer", UTIL_VarArgs( "%i", MAX_COORD_RANGE ) );
+		set.AppendCriteria( "distancetoplayer", CFmtStr( "%i", MAX_COORD_RANGE ) );
 	}
 
 	if ( pSpeaker->HasCondition( COND_SEE_PLAYER ) )
@@ -1395,6 +1397,9 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 	{
 		set.AppendCriteria( "seenbyplayer", "0" );
 	}
+
+	if (pPlayer)
+		pPlayer->ModifyOrAppendPlayerCriteria(set);
 }
 
 //-----------------------------------------------------------------------------

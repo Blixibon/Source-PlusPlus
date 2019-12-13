@@ -316,6 +316,8 @@ struct UnreachableEnt_t
 #define SCNPC_FLAG_DONT_TELEPORT_AT_END_ME		( 1 << 6 )
 #define SCNPC_FLAG_DONT_TELEPORT_AT_END_THEM	( 1 << 7 )
 
+#define SCNPC_FLAG_TEST_END_POSITION			( 1 << 9 )
+
 // -----------------------------------------
 //	Scripted NPC interaction trigger methods
 // -----------------------------------------
@@ -402,6 +404,7 @@ struct ScriptedNPCInteraction_t
 	Vector		vecRelativeOrigin;			// (forward, right, up)
 	QAngle		angRelativeAngles;				
 	Vector		vecRelativeVelocity;		// Desired relative velocity of the other NPC
+	Vector		vecRelativeEndPos;			// Relative position that the NPC must fit in
 	float		flDelay;					// Delay before interaction can be used again
 	float		flDistSqr;					// Max distance sqr from the relative origin the NPC is allowed to be to trigger
 	string_t	iszMyWeapon;				// Classname of the weapon I'm holding, if any
@@ -974,6 +977,10 @@ public:
 	
 	Activity			TranslateActivity( Activity idealActivity, Activity *pIdealWeaponActivity = NULL );
 	Activity			NPC_TranslateActivity( Activity eNewActivity );
+
+	Activity			TranslateCrouchActivity(Activity baseAct);
+	virtual Activity	NPC_BackupActivity(Activity eNewActivity);
+
 	Activity			GetActivity( void ) { return m_Activity; }
 	virtual void		SetActivity( Activity NewActivity );
 	Activity			GetIdealActivity( void ) { return m_IdealActivity; }
@@ -1915,6 +1922,7 @@ public:
 	int					m_cAmmoLoaded;				// how much ammo is in the weapon (used to trigger reload anim sequences)
 	float				m_flDistTooFar;				// if enemy farther away than this, bits_COND_ENEMY_TOOFAR set in GatherEnemyConditions
 	string_t			m_spawnEquipment;
+	int					m_spawnEquipmentItem;
 
 	bool				m_fNoDamageDecal;
 

@@ -1614,9 +1614,8 @@ void CNPC_PlayerCompanion::HandleAnimEvent( animevent_t *pEvent )
 
 		return;
 	}
-
 	// Start the flare up with proper fanfare
-	if ( pEvent->event == AE_COMPANION_LIGHT_FLARE )
+	else if ( pEvent->event == AE_COMPANION_LIGHT_FLARE )
 	{
 		if ( m_hFlare != NULL )
 		{
@@ -1625,9 +1624,8 @@ void CNPC_PlayerCompanion::HandleAnimEvent( animevent_t *pEvent )
 
 		return;
 	}
-
 	// Drop the flare to the ground
-	if ( pEvent->event == AE_COMPANION_RELEASE_FLARE )
+	else if ( pEvent->event == AE_COMPANION_RELEASE_FLARE )
 	{
 		// Detach
 		m_hFlare->SetParent( NULL );
@@ -1656,23 +1654,36 @@ void CNPC_PlayerCompanion::HandleAnimEvent( animevent_t *pEvent )
 		return;
 	}
 #endif // HL2_EPISODIC
-
-	switch( pEvent->event )
+	/*else if (pEvent->event == AE_NPC_RESPONSE)
 	{
-	case EVENT_WEAPON_RELOAD:
-		if ( GetActiveWeapon() )
+		if (!IsSpeaking())
+			Speak(pEvent->options);
+		return;
+	}
+	else if (pEvent->event == AE_NPC_RESPONSE_FORCED)
+	{
+		Speak(pEvent->options);
+		return;
+	}*/
+	else
+	{
+		switch (pEvent->event)
 		{
-			GetActiveWeapon()->WeaponSound( RELOAD_NPC );
-			GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1();
-			ClearCondition(COND_LOW_PRIMARY_AMMO);
-			ClearCondition(COND_NO_PRIMARY_AMMO);
-			ClearCondition(COND_NO_SECONDARY_AMMO);
-		}
-		break;
+		case EVENT_WEAPON_RELOAD:
+			if (GetActiveWeapon())
+			{
+				GetActiveWeapon()->WeaponSound(RELOAD_NPC);
+				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1();
+				ClearCondition(COND_LOW_PRIMARY_AMMO);
+				ClearCondition(COND_NO_PRIMARY_AMMO);
+				ClearCondition(COND_NO_SECONDARY_AMMO);
+			}
+			break;
 
-	default:
-		BaseClass::HandleAnimEvent( pEvent );
-		break;
+		default:
+			BaseClass::HandleAnimEvent(pEvent);
+			break;
+		}
 	}
 }
 

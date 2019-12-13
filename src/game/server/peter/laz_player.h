@@ -75,6 +75,8 @@ public:
 
 	virtual void DoMuzzleFlash();
 
+	virtual void 		ModifyOrAppendPlayerCriteria(AI_CriteriaSet& set, bool bEnemy);
+
 	LazSpecialtyStatus_e GetPlayerPrivilegeLevel();
 	int					GetPlayerPermissions();
 
@@ -233,6 +235,8 @@ protected:
 
 	static string_t		gm_iszDefaultAbility;
 	static HSOUNDSCRIPTHANDLE gm_hsFlashLightSoundHandles[2 * FLASHLIGHT_TYPE_COUNT]; // First half is on sounds, second is off
+
+	static int			gm_iGordonFreemanModel;
 
 	LAZPlayerState m_iPlayerState;
 	CLAZPlayerStateInfo *m_pCurStateInfo;

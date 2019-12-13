@@ -2035,6 +2035,7 @@ void CWeaponPortalgun::SetCanFirePortal1( bool bCanFire /*= true*/ )
 
 	if (!bOldCanFire && bCanFire)
 	{
+#ifndef CLIENT_DLL
 		IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_enabled");
 		if (pEvent)
 		{
@@ -2042,6 +2043,8 @@ void CWeaponPortalgun::SetCanFirePortal1( bool bCanFire /*= true*/ )
 			pEvent->SetBool("leftportal", true);
 			gameeventmanager->FireEvent(pEvent);
 		}
+#endif // !CLIENT_DLL
+
 	}
 
 	// TODO: Remove muzzle flash when there's an upgrade animation
@@ -2077,6 +2080,7 @@ void CWeaponPortalgun::SetCanFirePortal2( bool bCanFire /*= true*/ )
 
 	if (!bOldCanFire && bCanFire)
 	{
+#ifndef CLIENT_DLL
 		IGameEvent* pEvent = gameeventmanager->CreateEvent("portal_enabled");
 		if (pEvent)
 		{
@@ -2084,6 +2088,8 @@ void CWeaponPortalgun::SetCanFirePortal2( bool bCanFire /*= true*/ )
 			pEvent->SetBool("leftportal", false);
 			gameeventmanager->FireEvent(pEvent);
 		}
+#endif // !CLIENT_DLL
+
 	}
 
 	// TODO: Remove muzzle flash when there's an upgrade animation

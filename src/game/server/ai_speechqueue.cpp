@@ -371,7 +371,6 @@ bool CResponseQueue::DispatchOneResponse_ThenANY( CDeferredResponse &response, A
 		AI_CriteriaSet characterCriteria;
 		pEx->GatherCriteria(&characterCriteria, response.m_concept, NULL);
 		characterCriteria.Merge( pDeferredCriteria );
-		pTarget->ModifyOrAppendDerivedCriteria( characterCriteria );
 		if ( pIssuer )
 		{
 			characterCriteria.AppendCriteria( "dist_from_issuer",  CFmtStr( "%f", sqrtf(distIssuerToTargetSq) ) );

@@ -69,8 +69,6 @@ public:
 		return 1;
 	}
 
-	virtual Activity		GetSprintActivity() { return ACT_VM_SPRINT_IDLE; }
-
 	DECLARE_NETWORKCLASS();
     DECLARE_PREDICTABLE();
 	DECLARE_DATADESC();

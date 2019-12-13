@@ -915,6 +915,12 @@ protected:
 	bool ContextExpired( int index ) const;
 	int FindContextByName( const char *name ) const;
 public:
+	bool	HasContext(const char* name, const char* value) const;
+	bool	HasContext(string_t name, string_t value) const; // NOTE: string_t version only compares pointers!
+	bool	HasContext(const char* nameandvalue) const;
+	const char* GetContextValue(const char* contextName) const;
+	void	RemoveContext(const char* nameandvalue);
+
 	void	AddContext( const char *nameandvalue );
 	void AddContext(const char* pKey, const char* pValue, float duration);
 
@@ -961,6 +967,10 @@ public:
 	// Call this to do a TraceAttack on an entity, performs filtering. Don't call TraceAttack() directly except when chaining up to base class
 	void			DispatchTraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator = NULL );
 	virtual bool	PassesDamageFilter( const CTakeDamageInfo &info );
+	// Special filter functions made for the "damage" family of filters, including filter_damage_transfer.
+	bool			PassesFinalDamageFilter(const CTakeDamageInfo& info);
+	bool			DamageFilterAllowsBlood(const CTakeDamageInfo& info);
+	bool			DamageFilterDamageMod(CTakeDamageInfo& info);
 
 
 protected:

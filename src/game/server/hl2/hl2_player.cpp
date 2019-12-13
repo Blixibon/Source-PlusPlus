@@ -2349,7 +2349,7 @@ void CHL2_Player::NotifyFriendsOfDamage( CBaseEntity *pAttackerEntity )
 			const float NEAR_Z = 12*12;
 			const float NEAR_XY_SQ = Square( 50*12 );
 			CAI_BaseNPC *pNpc = g_AI_Manager.AccessAIs()[i];
-			if ( pNpc->IsPlayerAlly() )
+			if ( pNpc->IsPlayerAlly(this) )
 			{
 				const Vector &originNpc = pNpc->GetAbsOrigin();
 				if ( fabsf( originNpc.z - origin.z ) < NEAR_Z )
@@ -3827,11 +3827,11 @@ void CHL2_Player::StopLoopingSounds( void )
 }
 
 //-----------------------------------------------------------------------------
-void CHL2_Player::ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set )
+void CHL2_Player::ModifyOrAppendPlayerCriteria( AI_CriteriaSet& set, bool bEnemy)
 {
-	BaseClass::ModifyOrAppendPlayerCriteria( set );
+	BaseClass::ModifyOrAppendPlayerCriteria( set, bEnemy );
 
-	if ( GlobalEntity_GetIndex( "gordon_precriminal" ) == -1 )
+	if (!bEnemy && GlobalEntity_GetIndex( "gordon_precriminal" ) == -1 )
 	{
 		set.AppendCriteria( "gordon_precriminal", "0" );
 	}

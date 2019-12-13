@@ -45,6 +45,15 @@ typedef enum {
 	NUM_SHOOT_SOUND_TYPES,
 } WeaponSound_t;
 
+enum WeaponActivity_e
+{
+	VM_ACTIVITY_FIRSTDRAW = 0,
+	VM_ACTIVITY_SPRINT,
+	VM_ACTIVITY_FIDGET,
+
+	NUM_VM_ACTIVITIES
+};
+
 int GetWeaponSoundFromString( const char *pszString );
 
 #define MAX_SHOOT_SOUNDS	16			// Maximum number of shoot sounds per shoot type
@@ -113,8 +122,8 @@ public:
 	bool					m_bAllowFlipping;	// False to disallow flipping the model, regardless of whether
 												// it is built left or right handed.
 
-	char					szFirstDrawAct[MAX_WEAPON_STRING];
-	bool					bHasFirstDraw;
+	bool					bHasActivity[NUM_VM_ACTIVITIES];
+	int						iScriptedVMActivities[NUM_VM_ACTIVITIES];
 
 	Vector					vecIronsightPosOffset;
 	QAngle					angIronsightAngOffset;

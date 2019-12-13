@@ -63,6 +63,7 @@
 #include "tier1/utlstring.h"
 #include "utlhashtable.h"
 #include "ent_create_completion.h"
+#include "mapbase/matchers.h"
 
 #if defined( TF_DLL ) || defined ( TF_CLASSIC )
 #include "tf_gamerules.h"
@@ -1540,13 +1541,13 @@ int CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 		}
 	}
 
-	// Make sure our damage filter allows the damage.
-	if ( !PassesDamageFilter( inputInfo ))
+	if( !g_pGameRules->AllowDamage(this, inputInfo) )
 	{
 		return 0;
 	}
 
-	if( !g_pGameRules->AllowDamage(this, inputInfo) )
+	// Make sure our damage filter allows the damage.
+	if (!PassesFinalDamageFilter(inputInfo))
 	{
 		return 0;
 	}
@@ -1569,6 +1570,9 @@ int CBaseEntity::TakeDamage( const CTakeDamageInfo &inputInfo )
 		info.ScaleDamage( GetReceivedDamageScale( info.GetAttacker() ) );
 
 		//Msg("%s took %.2f Damage, at %.2f\n", GetClassname(), info.GetDamage(), gpGlobals->curtime );
+
+		// Modify damage if we have a filter that does that
+		DamageFilterDamageMod(info);
 
 		return OnTakeDamage( info );
 	}
@@ -3061,42 +3065,66 @@ bool CBaseEntity::PassesDamageFilter( const CTakeDamageInfo &info )
 	return true;
 }
 
-FORCEINLINE bool NamesMatch( const char *pszQuery, string_t nameToMatch )
+//-----------------------------------------------------------------------------
+// Purpose: A damage filter pass for when this is most certainly the part where we might actually take damage.
+// Made for the "damage" family of filters, including filter_damage_transfer.
+//-----------------------------------------------------------------------------
+bool CBaseEntity::PassesFinalDamageFilter(const CTakeDamageInfo& info)
 {
-	if ( nameToMatch == NULL_STRING )
-		return (!pszQuery || *pszQuery == 0 || *pszQuery == '*');
+	if (!PassesDamageFilter(info))
+		return false;
 
-	const char *pszNameToMatch = STRING(nameToMatch);
-
-	// If the pointers are identical, we're identical
-	if ( pszNameToMatch == pszQuery )
-		return true;
-
-	while ( *pszNameToMatch && *pszQuery )
+	if (m_hDamageFilter)
 	{
-		unsigned char cName = *pszNameToMatch;
-		unsigned char cQuery = *pszQuery;
-		// simple ascii case conversion
-		if ( cName == cQuery )
-			;
-		else if ( cName - 'A' <= (unsigned char)'Z' - 'A' && cName - 'A' + 'a' == cQuery )
-			;
-		else if ( cName - 'a' <= (unsigned char)'z' - 'a' && cName - 'a' + 'A' == cQuery )
-			;
-		else
-			break;
-		++pszNameToMatch;
-		++pszQuery;
+		CBaseFilter* pFilter = (CBaseFilter*)(m_hDamageFilter.Get());
+		if (!pFilter->PassesFinalDamageFilter(this, info))
+		{
+			return false;
+		}
 	}
 
-	if ( *pszQuery == 0 && *pszNameToMatch == 0 )
-		return true;
+	return true;
+}
 
-	// @TODO (toml 03-18-03): Perhaps support real wildcards. Right now, only thing supported is trailing *
-	if ( *pszQuery == '*' )
-		return true;
+//-----------------------------------------------------------------------------
+// Purpose: A hack for damage transfers.
+//-----------------------------------------------------------------------------
+bool CBaseEntity::DamageFilterAllowsBlood(const CTakeDamageInfo& info)
+{
+	if (m_hDamageFilter)
+	{
+		CBaseFilter* pFilter = (CBaseFilter*)(m_hDamageFilter.Get());
+		if (!pFilter->BloodAllowed(this, info))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Modifies damage taken. Returns true if damage was successfully modded.
+//-----------------------------------------------------------------------------
+bool CBaseEntity::DamageFilterDamageMod(CTakeDamageInfo& info)
+{
+	if (m_hDamageFilter)
+	{
+		CBaseFilter* pFilter = (CBaseFilter*)(m_hDamageFilter.Get());
+		if (pFilter->DamageMod(this, info))
+		{
+			return true;
+		}
+	}
 
 	return false;
+}
+
+FORCEINLINE bool NamesMatch( const char *pszQuery, string_t nameToMatch )
+{
+	// NamesMatch has been turned into Matcher_NamesMatch in matchers.h
+	// for a wider range of accessibility and flexibility.
+	return Matcher_NamesMatch(pszQuery, STRING(nameToMatch));
 }
 
 bool CBaseEntity::NameMatchesComplex( const char *pszNameOrWildcard )
@@ -6556,6 +6584,118 @@ int CBaseEntity::FindContextByName( const char *name ) const
 }
 
 //-----------------------------------------------------------------------------
+// Purpose: Searches entity for named context string and/or value.
+//          Intended to be called by entities rather than the conventional response system.
+// Input  : *name - Context name.
+//          *value - Context value. (optional)
+// Output : bool
+//-----------------------------------------------------------------------------
+bool CBaseEntity::HasContext(const char* name, const char* value) const
+{
+	int c = m_ResponseContexts.Count();
+	for (int i = 0; i < c; i++)
+	{
+		if (Matcher_NamesMatch(name, STRING(m_ResponseContexts[i].m_iszName)))
+		{
+			if (value == NULL)
+				return true;
+			else
+				return Matcher_Compare(STRING(m_ResponseContexts[i].m_iszValue), value);
+		}
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Searches entity for named context string and/or value.
+//          Intended to be called by entities rather than the conventional response system.
+// Input  : *name - Context name.
+//          *value - Context value. (optional)
+// Output : bool
+//-----------------------------------------------------------------------------
+bool CBaseEntity::HasContext(string_t name, string_t value) const
+{
+	int c = m_ResponseContexts.Count();
+	for (int i = 0; i < c; i++)
+	{
+		if (name == m_ResponseContexts[i].m_iszName)
+		{
+			if (value == NULL_STRING)
+				return true;
+			else
+				return value == m_ResponseContexts[i].m_iszValue;
+		}
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Searches entity for named context string and/or value.
+//          Intended to be called by entities rather than the conventional response system.
+// Input  : *nameandvalue - Context name and value.
+// Output : bool
+//-----------------------------------------------------------------------------
+bool CBaseEntity::HasContext(const char* nameandvalue) const
+{
+	char key[128];
+	char value[128];
+
+	const char* p = nameandvalue;
+	while (p)
+	{
+		p = SplitContext(p, key, sizeof(key), value, sizeof(value), NULL, nameandvalue);
+
+		return HasContext(key, value);
+	}
+
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : index - 
+// Output : const char
+//-----------------------------------------------------------------------------
+const char* CBaseEntity::GetContextValue(const char* contextName) const
+{
+	int idx = FindContextByName(contextName);
+	if (idx == -1)
+		return NULL;
+
+	return m_ResponseContexts[idx].m_iszValue.ToCStr();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Internal method or removing contexts and can remove multiple contexts in one call
+// Input  : *contextName - 
+//-----------------------------------------------------------------------------
+void CBaseEntity::RemoveContext(const char* contextName)
+{
+	char key[128];
+	char value[128];
+	float duration;
+
+	const char* p = contextName;
+	while (p)
+	{
+		duration = 0.0f;
+		p = SplitContext(p, key, sizeof(key), value, sizeof(value), &duration, contextName);
+		if (duration)
+		{
+			duration += gpGlobals->curtime;
+		}
+
+		int iIndex = FindContextByName(key);
+		if (iIndex != -1)
+		{
+			m_ResponseContexts.Remove(iIndex);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : inputdata - 
 //-----------------------------------------------------------------------------
@@ -6778,7 +6918,7 @@ void CBaseEntity::DispatchResponse( const char *conceptName )
 	ModifyOrAppendCriteria( set );
 
 	// Append local player criteria to set,too
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer *pPlayer = AI_GetSinglePlayer();
 	if( pPlayer )
 		pPlayer->ModifyOrAppendPlayerCriteria( set );
 

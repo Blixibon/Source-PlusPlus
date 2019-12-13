@@ -67,6 +67,8 @@ public:
 	bool			IsNPCOnTeam(CAI_BaseNPC *pNPC) const;
 	int				GetNumNPCs(void);
 	CAI_BaseNPC		*GetNPC(int num);
+	CAI_BaseNPC* GetFirstNPC();
+	CAI_BaseNPC* GetNextNPC(CAI_BaseNPC* pNPC);
 
 	//-----------------------------------------------------------------------------
 	// Scoring

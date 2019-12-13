@@ -84,6 +84,8 @@ public:
 	{
 		return !m_iszPopulationTag ? nullptr : STRING(m_iszPopulationTag);
 	}
+
+	int		GetMapVersion() { return m_nMapVersion; }
 protected:
 	void SetWorldFlag(int iFlag, bool bValue);
 	bool GetWorldFlag(int iFlag, bool *bDefined = nullptr) const;

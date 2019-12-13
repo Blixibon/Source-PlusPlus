@@ -37,6 +37,7 @@ public:
     #endif
 
 	virtual int GetWeaponID(void) const;
+	virtual WeaponClass_t	WeaponClassify();
 
 	virtual const char	*GetTracerType(void) { return "TracerNew"; }
 

@@ -3293,25 +3293,6 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 
 	switch (newActivity)
 	{
-	case ACT_RUN_AIM_SHOTGUN:
-		return ACT_RUN_AIM_RIFLE;
-		break;
-	case ACT_WALK_AIM_SHOTGUN:
-		return ACT_WALK_AIM_RIFLE;
-		break;
-	case ACT_IDLE_ANGRY_SHOTGUN:
-		return ACT_IDLE_ANGRY_SMG1;
-		break;
-	case ACT_RANGE_ATTACK_SHOTGUN_LOW:
-		return ACT_RANGE_ATTACK_SMG1_LOW;
-		break;
-
-		/*case ACT_GESTURE_RANGE_ATTACK1:
-			{
-			if (SelectWeightedSequence( ACT_GESTURE_RANGE_ATTACK1 ) == ACTIVITY_NOT_AVAILABLE )
-				return ACT_GESTURE_RANGE_ATTACK_SMG1;
-			}
-			break;*/
 	case ACT_PICKUP_RACK:
 	{
 		if (SelectWeightedSequence(ACT_PICKUP_RACK) == ACTIVITY_NOT_AVAILABLE)
@@ -3320,66 +3301,22 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 	break;
 	}
 
-
-	//THIS STUFF IS PRETTY AWFUL BUT HEY YOU GOTTA HAVE A SHOTGUN, RIGHT???
-	if (!IsUnique())
+	if (IsUnique())
 	{
 		switch (newActivity)
 		{
-		case ACT_GESTURE_RANGE_ATTACK_SHOTGUN:
-		{
-			//if (SelectWeightedSequence( ACT_GESTURE_RANGE_ATTACK_SHOTGUN ) == ACTIVITY_NOT_AVAILABLE )
-			return ACT_GESTURE_RANGE_ATTACK_SMG1;
-		}
-		break;
-
-		case ACT_GESTURE_RANGE_ATTACK_AR2:
-		{
-			//if (SelectWeightedSequence( ACT_GESTURE_RANGE_ATTACK_AR2 ) == ACTIVITY_NOT_AVAILABLE )
-			return ACT_GESTURE_RANGE_ATTACK_SMG1;
-		}
-		break;
-
-		case ACT_RANGE_ATTACK_SHOTGUN:
-		{
-			//if (SelectWeightedSequence( ACT_RANGE_ATTACK_SHOTGUN ) == ACTIVITY_NOT_AVAILABLE )
-			return ACT_RANGE_ATTACK_SMG1;
-		}
-		break;
-
-		case ACT_RANGE_ATTACK_AR2:
-		{
-			//if (SelectWeightedSequence( ACT_RANGE_ATTACK_AR2) == ACTIVITY_NOT_AVAILABLE )
-			return ACT_RANGE_ATTACK_SMG1;
-		}
-		break;
-
-		case ACT_IDLE_SHOTGUN_RELAXED:
-		case ACT_IDLE_SHOTGUN_STIMULATED:
-		case ACT_IDLE_SHOTGUN_AGITATED:
-		{
+		case ACT_RUN_AIM_SHOTGUN:
+			return ACT_RUN_AIM_RIFLE;
+			break;
+		case ACT_WALK_AIM_SHOTGUN:
+			return ACT_WALK_AIM_RIFLE;
+			break;
+		case ACT_IDLE_ANGRY_SHOTGUN:
 			return ACT_IDLE_ANGRY_SMG1;
-		}
-		break;
-
-		//case ACT_RELOAD_AR2:
-		case ACT_RELOAD_SHOTGUN:
-		{
-			return ACT_RELOAD_SMG1;
-		}
-		break;
-
-		case ACT_RELOAD_SHOTGUN_LOW:
-		{
-			return ACT_RELOAD_SMG1_LOW;
-		}
-		break;
-
-		/*default:
-		{
-			DevMsg("Activity id, %d\n", newActivity);
-		}
-		break;*/
+			break;
+		case ACT_RANGE_ATTACK_SHOTGUN_LOW:
+			return ACT_RANGE_ATTACK_SMG1_LOW;
+			break;
 		}
 	}
 

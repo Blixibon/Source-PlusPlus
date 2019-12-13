@@ -431,3 +431,21 @@ CAI_BaseNPC *CTeam::GetNPC(int iIndex)
 	Assert(iIndex >= 0 && iIndex < m_aNPCs.Count());
 	return m_aNPCs[iIndex];
 }
+
+CAI_BaseNPC* CTeam::GetFirstNPC()
+{
+	return m_aNPCs.Head();
+}
+
+CAI_BaseNPC* CTeam::GetNextNPC(CAI_BaseNPC* pNPC)
+{
+	int iIndex = m_aNPCs.Find(pNPC);
+	if (iIndex == m_aNPCs.InvalidIndex())
+		return nullptr;
+
+	iIndex++;
+	if (iIndex >= m_aNPCs.Count())
+		return nullptr;
+
+	return m_aNPCs[iIndex];
+}

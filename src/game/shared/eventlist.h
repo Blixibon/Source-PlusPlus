@@ -107,6 +107,9 @@ typedef enum
 	AE_METROPOLICE_START_DEPLOY,
 	AE_METROPOLICE_DEPLOY_MANHACK,
 
+	AE_NPC_RESPONSE,	// Play a response system concept if we're not speaking
+	AE_NPC_RESPONSE_FORCED,		// Always play a response system concept
+
 	LAST_SHARED_ANIMEVENT,
 } Animevent;
 

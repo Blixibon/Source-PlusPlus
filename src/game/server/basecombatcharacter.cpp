@@ -77,6 +77,9 @@ ConVar ai_use_visibility_cache( "ai_use_visibility_cache", "1" );
 #define ShouldUseVisibilityCache() true
 #endif
 
+extern acttable_t* GetSMG1Acttable();
+extern int GetSMG1ActtableCount();
+
 BEGIN_DATADESC( CBaseCombatCharacter )
 
 #ifdef INVASION_DLL
@@ -2327,6 +2330,46 @@ bool CBaseCombatCharacter::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 	}
 
 	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:	Uses an activity from a different weapon when the activity we were originally looking for does not exist on this character.
+//			Created to give NPCs the ability to use weapons they are not otherwise allowed to use.
+//			Right now, everyone falls back to the SMG act table.
+//-----------------------------------------------------------------------------
+Activity CBaseCombatCharacter::Weapon_BackupActivity(Activity activity, bool weaponTranslationWasRequired, CBaseCombatWeapon* pSpecificWeapon)
+{
+	CBaseCombatWeapon* pWeapon = pSpecificWeapon ? pSpecificWeapon : GetActiveWeapon();
+	if (!pWeapon)
+		return activity;
+
+	// Make sure the weapon allows this activity to have a backup.
+	if (!pWeapon->SupportsBackupActivity(activity))
+		return activity;
+
+	// Sometimes, the NPC is supposed to use the default activity. Return that if the weapon translation was "not required" and we have an original activity.
+	if (!weaponTranslationWasRequired && GetModelPtr()->HaveSequenceForActivity(activity))
+	{
+		return activity;
+	}
+
+	acttable_t* pTable = GetSMG1Acttable();
+	int actCount = GetSMG1ActtableCount();
+	for (int i = 0; i < actCount; i++, pTable++)
+	{
+		if (activity == pTable->baseAct)
+		{
+			// Don't pick SMG animations we don't actually have an animation for.
+			if (GetModelPtr() ? !GetModelPtr()->HaveSequenceForActivity(pTable->weaponAct) : false)
+			{
+				return activity;
+			}
+
+			return (Activity)pTable->weaponAct;
+		}
+	}
+
+	return activity;
 }
 
 //-----------------------------------------------------------------------------
