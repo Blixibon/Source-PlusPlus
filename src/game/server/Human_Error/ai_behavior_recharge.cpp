@@ -11,6 +11,7 @@
 #include "ai_squad.h"
 #include "npc_unique_metropolice.h"
 #include "ammodef.h"
+#include "team.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -177,6 +178,12 @@ bool CRechargePoint::FindRechagerNPC()
 			pEntity = CNPC_UniqueMetrocop::GetUniqueMetrocopList();
 			break;
 		}
+
+		case ST_TEAMNUM:
+		{
+			pEntity = GetTeam() ? GetTeam()->GetFirstNPC() : nullptr;
+			break;
+		}
 	}
 
 	CAI_BaseNPC *pNPC = NULL;
@@ -246,6 +253,12 @@ bool CRechargePoint::FindRechagerNPC()
 			case ST_UNIQUECOPS:
 			{
 				pEntity = static_cast<CNPC_UniqueMetrocop*> (pEntity)->m_pNext;
+				break;
+			}
+
+			case ST_TEAMNUM:
+			{
+				pEntity = GetTeam() ? GetTeam()->GetNextNPC(pEntity->MyNPCPointer()) : nullptr;
 				break;
 			}
 		}

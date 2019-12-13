@@ -174,8 +174,8 @@ void C_GameInstructor::Shutdown()
 //=========================================================
 void C_GameInstructor::UpdateHiddenByOtherElements()
 {
-	//bool bHidden = Mod_HiddenByOtherElements();
-	bool bHidden = false;
+	bool bHidden = Mod_HiddenByOtherElements();
+	//bool bHidden = false;
 
 	if (bHidden && !m_bHiddenDueToOtherElements)
 		StopAllLessons();

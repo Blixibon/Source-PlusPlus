@@ -4453,7 +4453,7 @@ public:
 	void		Event_Killed(const CTakeDamageInfo &info);
 	void		OnListened();
 
-	void		ModifyOrAppendCriteria(AI_CriteriaSet& set);
+	void		ModifyOrAppendDerivedCriteria(AI_CriteriaSet& set);
 
 	void		ClearAttackConditions(void);
 
@@ -4629,14 +4629,16 @@ void CNPC_Human_Grunt::Precache()
 	UTIL_PrecacheOther("prop_physics_override", "models/humans/props/marine_beret.mdl");
 }
 
-void CNPC_Human_Grunt::ModifyOrAppendCriteria(AI_CriteriaSet& set)
+void CNPC_Human_Grunt::ModifyOrAppendDerivedCriteria(AI_CriteriaSet& set)
 {
-	BaseClass::ModifyOrAppendCriteria(set);
+	BaseClass::ModifyOrAppendDerivedCriteria(set);
 
-	if (HasSpawnFlags(SF_HGRUNT_NO_FREEMAN_SPEECH))
-		set.AppendCriteria("freemanlines", "0");
-	else
+	int iIndex = set.FindCriterionIndex("enemyplayerfreeman");
+
+	if (!HasSpawnFlags(SF_HGRUNT_NO_FREEMAN_SPEECH) && iIndex > -1 && atoi(set.GetValue(iIndex)) > 0)
 		set.AppendCriteria("freemanlines", "1");
+	else
+		set.AppendCriteria("freemanlines", "0");
 }
 
 

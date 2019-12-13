@@ -83,6 +83,7 @@ private:
 		ST_ENTNAME,
 		ST_CLASSNAME,
 		ST_UNIQUECOPS,
+		ST_TEAMNUM,
 	};
 
 	string_t				m_iszActor;

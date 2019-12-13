@@ -578,8 +578,8 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 	}
 
 //#ifdef HL2_EPISODIC
-	if ( (GetState() == NPC_STATE_IDLE || GetState() == NPC_STATE_ALERT) 
-		 && !HasCondition(COND_RECEIVED_ORDERS) && !IsInAScript() )
+	if ( (GetState() == NPC_STATE_IDLE || GetState() == NPC_STATE_ALERT || (GetState() == NPC_STATE_SCRIPT && CanSpeakWhileScripting())) 
+		 && !HasCondition(COND_RECEIVED_ORDERS) && (!IsInAScript() || CanSpeakWhileScripting()) && !IsRunningScriptedSceneWithSpeechAndNotPaused(this))
 	{
 		if ( m_flNextIdleSpeechTime && m_flNextIdleSpeechTime < gpGlobals->curtime )
 		{
@@ -782,7 +782,7 @@ void CAI_PlayerAlly::PostSpeakDispatchResponse( AIConcept_t concept, AI_Response
 	{
 		bool bSaidHelloToNPC = !Q_strcmp(concept.GetStringConcept(), "TLK_HELLO_NPC");
 
-		float duration = GetExpresser()->GetSemaphoreAvailableTime(this) - gpGlobals->curtime;
+		float duration = GetExpresser()->GetTimeSpeechComplete() - gpGlobals->curtime;
 
 		if ( rr_debug_qa.GetBool() )
 		{
@@ -1359,10 +1359,10 @@ bool CAI_PlayerAlly::IsValidSpeechTarget( int flags, CBaseEntity *pEntity )
 	if ( pNPC )
 	{
 		// If not a NPC for some reason, or in a script.
-		if ( (pNPC->m_NPCState == NPC_STATE_SCRIPT || pNPC->m_NPCState == NPC_STATE_PRONE))
+		if (pNPC->m_NPCState == NPC_STATE_PRONE)
 			return false;
-
-		if ( pNPC->IsInAScript() )
+		CAI_PlayerAlly* pAlly = dynamic_cast<CAI_PlayerAlly*>(pNPC);
+		if ( (pNPC->IsInAScript() || pNPC->m_NPCState == NPC_STATE_SCRIPT) && (!pAlly || !pAlly->CanSpeakWhileScripting()))
 			return false;
 
 		// Don't bother people who don't want to be bothered
@@ -1682,8 +1682,18 @@ void CAI_PlayerAlly::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	if ( m_hPotentialSpeechTarget )
 	{
 		set.AppendCriteria( "speechtarget", m_hPotentialSpeechTarget->GetResponseClassname(this));
+		set.AppendCriteria("speechtargetactual", m_hPotentialSpeechTarget->GetClassname());
 		set.AppendCriteria( "speechtargetname", STRING(m_hPotentialSpeechTarget->GetEntityName()) );
 		set.AppendCriteria( "randomnum", UTIL_VarArgs("%d", m_iQARandomNumber) );
+
+		if (m_hPotentialSpeechTarget->IsPlayer())
+			ToBasePlayer(m_hPotentialSpeechTarget)->ModifyOrAppendPlayerCriteria(set);
+	}
+
+	if (GetEnemy() && GetEnemy()->IsPlayer())
+	{
+		CBasePlayer* pPlayer = ToBasePlayer(GetEnemy());
+		pPlayer->ModifyOrAppendPlayerCriteria(set, true);
 	}
 
 	// Do we have a speech filter? If so, append it's criteria too

@@ -1,0 +1,12 @@
+"az_c4_3"
+{
+	"delete"
+	{
+		"targetname" "hunter_tempsprite"
+	}
+	
+	"delete"
+	{
+		"targetname" "hunter_tempsprite2"
+	}
+}

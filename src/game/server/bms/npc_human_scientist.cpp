@@ -301,7 +301,7 @@ bool CNPC_BaseScientist::CanHeal()
 	if (GetActiveWeapon() && m_NPCState == NPC_STATE_COMBAT)
 		return false;
 
-	if (IsInAScript() || (m_NPCState == NPC_STATE_SCRIPT))
+	if (IsInAScript() || (m_NPCState == NPC_STATE_SCRIPT) || IsRunningScriptedScene(this))
 		return false;
 
 	return true;

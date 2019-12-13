@@ -593,8 +593,7 @@ void TextMessageInit( void )
 		//byte *pMemFile = nullptr;
 
 		char fullpath[MAX_PATH];
-		Q_snprintf(fullpath, sizeof(fullpath), "%s%s", path, "scripts/titles.txt");
-		Q_FixSlashes(fullpath);
+		V_ComposeFileName(path, "scripts/titles.txt", fullpath, MAX_PATH);
 
 		FileHandle_t hFile = filesystem->Open(fullpath, "r");
 		if (hFile)
@@ -615,7 +614,7 @@ void TextMessageInit( void )
 
 client_textmessage_t *TextMessageGet( const char *pName )
 {
-#if 0
+#if 1
 	if (!Q_stricmp(pName, DEMO_MESSAGE) || !Q_stricmp(pName, NETWORK_MESSAGE1) || !Q_stricmp(pName, NETWORK_MESSAGE2) ||
 		!Q_stricmp(pName, NETWORK_MESSAGE3) || !Q_stricmp(pName, NETWORK_MESSAGE4) || !Q_stricmp(pName, NETWORK_MESSAGE5) ||
 		!Q_stricmp(pName, NETWORK_MESSAGE6))

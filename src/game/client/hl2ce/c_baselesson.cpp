@@ -2619,13 +2619,13 @@ bool CScriptedIconLesson::ProcessElementAction(int iAction, bool bNot, const cha
 bool CScriptedIconLesson::ProcessElementAction(int iAction, bool bNot, const char *pchVarName, EHANDLE &hVar, const CGameInstructorSymbol *pchParamName, float fParam, C_BaseEntity *pParam, const char *pchParam)
 {
 	// First try to let the mod act on the action
-	/*bool bModHandled = false;
+	bool bModHandled = false;
 	bool bModReturn = Mod_ProcessElementAction( iAction, bNot, pchVarName, hVar, pchParamName, fParam, pParam, pchParam, bModHandled );
 
 	if ( bModHandled )
 	{
-	return bModReturn;
-	}*/
+		return bModReturn;
+	}
 
 	C_BaseEntity *pVar = hVar.Get();
 
@@ -3853,5 +3853,5 @@ void CScriptedIconLesson::PreReadLessonsFromFile()
 	CScriptedIconLesson::LessonActionMap.Insert("get potential use target", LESSON_ACTION_GET_POTENTIAL_USE_TARGET);
 
 	// Add mod actions to the map
-	//Mod_PreReadLessonsFromFile();
+	Mod_PreReadLessonsFromFile();
 }

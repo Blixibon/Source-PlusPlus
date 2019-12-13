@@ -1,0 +1,65 @@
+"bm_c1a0a"
+{
+	delete
+	{
+		targetname HEV_maker
+	}
+	
+	delete
+	{
+		targetname HEV_prop
+	}
+	
+	delete
+	{
+		nodeid	419
+	}
+	
+	edit
+	{
+		"targetname"	"bm_c1a0a_lunchbet_scene"
+		"values"
+		{
+			"SceneFile"	"scenes/c1a0a/networkroom_lunchbetv2.vcd" 
+		}
+	}
+	
+	edit
+	{
+		"targetname"	"SCI10_NetworkRoom"
+		"values"
+		{
+			"angles"	"0 248 0"
+			"origin"	"211 1384 493"
+			"hintlimiting" "0"
+		}
+	}
+	
+	create
+	{
+		classname	info_target
+		targetname	sci10_target01
+		origin		"292 1556 457"
+	}
+	
+	create
+	{
+		classname	info_target
+		targetname	sci10_target01a
+		origin		"379 1473 457"
+	}
+	
+	create
+	{
+		classname	info_target
+		targetname	sci10_target01b
+		origin		"264 1524 457"
+	}
+	
+	create
+	{
+		classname	info_target
+		targetname	sci10_target02
+		origin		"504 1436 457"
+	}
+}

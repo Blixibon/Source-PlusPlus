@@ -7,6 +7,8 @@
 		0 : "Any"
 		2 : "Combine"
 		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
 	]
 	input SetTeam(integer) : "Changes the entity's team."
 ]
@@ -472,6 +474,8 @@
 		-1 : "Everyone"
 		2 : "Combine"
 		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
 	]
 	
 	affectsFlow(choices) : "Affects Flow?" : 0 : "Does this func_nav_blocker block flow in the level? Only func_nav_blockers with this enabled will cause flow recomputation on blocking/unblocking." =
@@ -490,6 +494,8 @@
 		-2 : "Everyone"
 		2 : "Combine"
 		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
 	]
 
 	start_disabled(choices) : "Start Disabled" : 0 =
@@ -512,6 +518,8 @@
 		-2 : "Everyone"
 		2 : "Combine"
 		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
 	]
 
 	start_disabled(choices) : "Start Disabled" : 0 =
@@ -691,7 +699,7 @@
 [
 ]
 
-@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/hlss_recharger.vmt") studio("models/editor/scriptedsequence.mdl") sphere(max_distance) = hlss_recharge_point : "Recharge point for recharge behavior." 
+@PointClass base(Targetname, Parentname, Angles, TeamNum) iconsprite("editor/hlss_recharger.vmt") studio("models/editor/scriptedsequence.mdl") sphere(max_distance) = hlss_recharge_point : "Recharge point for recharge behavior." 
 [
 	spawnflags(flags) =
 	[
@@ -708,6 +716,7 @@
 		0 : "Entity Name"
 		1 : "Classname"
 		2 : "Unique Metrocops"
+		3 : "Team NPCs"
 	]
 	ammo_crate(target_destination) : "Ammo Crate" : "" : "Targetname of the Ammo Crate where NPCs should run to get AR2 ammo if the SF is set." 
 

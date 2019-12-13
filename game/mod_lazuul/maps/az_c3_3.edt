@@ -1,0 +1,11 @@
+"az_c3_3"
+{
+	"edit"
+	{
+		"classname" "prop_vehicle_prisoner_pod"
+		"values"
+		{
+			"model"	"models/nova/chair_wood01.mdl"
+		}
+	}
+}

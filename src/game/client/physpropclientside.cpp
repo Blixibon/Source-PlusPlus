@@ -708,46 +708,93 @@ void C_PhysPropClientside::ParseAllEntities(const char *pMapData)
 	}
 }
 
+C_BaseAnimating* BreakModelCreate_Ragdoll(C_BaseEntity* pOwner, breakmodel_t* pModel, const Vector& position, const QAngle& angles)
+{
+	C_ClientRagdoll* pRagdoll = new C_ClientRagdoll(false);
+	if (pRagdoll->InitializeAsClientEntity(pModel->modelName, RENDER_GROUP_OPAQUE_ENTITY) == false)
+	{
+		pRagdoll->Release();
+		return NULL;
+	}
+
+	// We need to take these from the entity
+	pRagdoll->SetAbsOrigin(position);
+	pRagdoll->SetAbsAngles(angles);
+
+	if (pOwner && pOwner->GetBaseAnimating())
+	{
+		pRagdoll->IgniteRagdoll(pOwner->GetBaseAnimating());
+		pRagdoll->TransferDissolveFrom(pOwner->GetBaseAnimating());
+	}
+	pRagdoll->InitModelEffects();
+	{
+		s_RagdollLRU.MoveToTopOfLRU(pRagdoll, false);
+		pRagdoll->m_bFadeOut = true;
+	}
+
+	return pRagdoll;
+}
+
 CBaseEntity *BreakModelCreateSingle( CBaseEntity *pOwner, breakmodel_t *pModel, const Vector &position, 
 	const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, int nSkin, const breakablepropparams_t &params )
 {
-	C_PhysPropClientside *pEntity = C_PhysPropClientside::CreateNew();
-
-	if ( !pEntity )
-		return NULL;
+	C_BaseAnimating* pEntity = nullptr;
 
 	// UNDONE: Allow .qc to override spawnflags for child pieces
 	C_PhysPropClientside *pBreakableOwner = dynamic_cast<C_PhysPropClientside *>(pOwner);
 
-	// Inherit the base object's damage modifiers
-	if ( pBreakableOwner )
+	if (!pModel->isRagdoll)
 	{
-		pEntity->SetEffects( pBreakableOwner->GetEffects() );
+		C_PhysPropClientside *pProp = C_PhysPropClientside::CreateNew();
+		if (!pProp)
+			return nullptr;
 
-		pEntity->m_spawnflags = pBreakableOwner->m_spawnflags;
+		// Inherit the base object's damage modifiers
+		if (pBreakableOwner)
+		{
+			pProp->SetEffects(pBreakableOwner->GetEffects());
 
-		// We never want to be motion disabled
-		pEntity->m_spawnflags &= ~SF_PHYSPROP_MOTIONDISABLED;
-		
-		pEntity->SetDmgModBullet( pBreakableOwner->GetDmgModBullet() );
-		pEntity->SetDmgModClub( pBreakableOwner->GetDmgModClub() );
-		pEntity->SetDmgModExplosive( pBreakableOwner->GetDmgModExplosive() );
+			pProp->m_spawnflags = pBreakableOwner->m_spawnflags;
 
-		// FIXME: If this was created from a client-side entity which was in the
-		// middle of ramping the fade scale, we're screwed.
-		pEntity->CopyFadeFrom( pBreakableOwner );
+			// We never want to be motion disabled
+			pProp->m_spawnflags &= ~SF_PHYSPROP_MOTIONDISABLED;
+
+			pProp->SetDmgModBullet(pBreakableOwner->GetDmgModBullet());
+			pProp->SetDmgModClub(pBreakableOwner->GetDmgModClub());
+			pProp->SetDmgModExplosive(pBreakableOwner->GetDmgModExplosive());
+
+			// FIXME: If this was created from a client-side entity which was in the
+			// middle of ramping the fade scale, we're screwed.
+			pProp->CopyFadeFrom(pBreakableOwner);
+		}
+
+		pProp->SetModelName(AllocPooledString(pModel->modelName));
+		pProp->SetLocalOrigin(position);
+		pProp->SetLocalAngles(angles);
+		pProp->SetOwnerEntity(pOwner);
+		pProp->SetPhysicsMode(PHYSICS_MULTIPLAYER_CLIENTSIDE);
+
+		if (!pProp->Initialize())
+		{
+			pProp->Release();
+			return NULL;
+		}
+
+		pEntity = pProp;
+
+		if (pModel->fadeTime > 0)
+		{
+			pProp->StartFadeOut(pModel->fadeTime);
+		}
+
+		if (pModel->fadeMinDist > 0 && pModel->fadeMaxDist >= pModel->fadeMinDist)
+		{
+			pProp->SetFadeMinMax(pModel->fadeMinDist, pModel->fadeMaxDist);
+		}
 	}
-	
-	pEntity->SetModelName( AllocPooledString( pModel->modelName ) );
-	pEntity->SetLocalOrigin( position );
-	pEntity->SetLocalAngles( angles );
-	pEntity->SetOwnerEntity( pOwner );
-	pEntity->SetPhysicsMode( PHYSICS_MULTIPLAYER_CLIENTSIDE );
-
-	if ( !pEntity->Initialize() )
+	else
 	{
-		pEntity->Release();
-		return NULL;
+		pEntity = BreakModelCreate_Ragdoll(pOwner, pModel, position, angles);
 	}
 
 	pEntity->m_nSkin = nSkin;
@@ -767,32 +814,25 @@ CBaseEntity *BreakModelCreateSingle( CBaseEntity *pOwner, breakmodel_t *pModel, 
 			pEntity->SetCollisionGroup( COLLISION_GROUP_NONE );
 		}
 	}
-	
-	if ( pModel->fadeTime > 0 )
-	{
-		pEntity->StartFadeOut( pModel->fadeTime );
-	}
 
-	if ( pModel->fadeMinDist > 0 && pModel->fadeMaxDist >= pModel->fadeMinDist )
-	{
-		pEntity->SetFadeMinMax( pModel->fadeMinDist, pModel->fadeMaxDist );
-	}
-
-	if ( pModel->isRagdoll )
+	/*if ( pModel->isRagdoll )
 	{
 		DevMsg( "BreakModelCreateSingle: clientside doesn't support ragdoll breakmodels.\n" );
-	}
+	}*/
 
 
-	IPhysicsObject *pPhysicsObject = pEntity->VPhysicsGetObject();
-
-	if( pPhysicsObject )
+	IPhysicsObject* pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
+	int count = pEntity->VPhysicsGetObjectList(pList, ARRAYSIZE(pList));
+	if (count)
 	{
-		// randomize velocity by 5%
-		float rndf = RandomFloat( -0.025, 0.025 );
-		Vector rndVel = velocity + rndf*velocity;
+		for (int i = 0; i < count; i++)
+		{
+			// randomize velocity by 5%
+			float rndf = RandomFloat(-0.025, 0.025);
+			Vector rndVel = velocity + rndf * velocity;
 
-		pPhysicsObject->AddVelocity( &rndVel, &angVelocity );
+			pList[i]->AddVelocity(&rndVel, &angVelocity);
+		}
 	}
 	else
 	{

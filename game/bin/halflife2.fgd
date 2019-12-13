@@ -1112,6 +1112,18 @@
 	"A smaller, faster, strider that can pursue the player into buildings."
 [
 	FollowTarget(target_destination) : "Strider to Follow" : "" : "The name of the strider that this hunter should follow."
+
+	VortControlled(choices) : "Vortigaunt Possesed" : 0 : "Whether or not the hunter is being controlled by vortigaunts." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	skin(choices) : "Hunter Skin" : 0 : "The visual appearance of the hunter." =
+	[
+		0 : "Outland"
+		1 : "Arctic"
+	]
 	
     // Inputs
     input FollowStrider(target_destination) : "Sets the name of the strider that this hunter should follow."

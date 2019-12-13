@@ -92,7 +92,7 @@ public:
 	virtual void LevelShutdownPostEntity( void );
 
 	// Read in the data from the anim data file
-	void ParseAnimDataFile( void );
+	void ParseAnimDataFile( const char *pszFileName );
 
 	// Parse a keyvalues section into an act busy anim
 	bool ParseActBusyFromKV( busyanim_t *pAnim, KeyValues *pSection );
@@ -113,7 +113,20 @@ CActBusyAnimData g_ActBusyAnimDataSystem;
 //-----------------------------------------------------------------------------
 void CActBusyAnimData::LevelInitPostEntity( void )
 {
-	ParseAnimDataFile();
+	FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
+	const char* fileName = "scripts/actbusy/*.txt";
+	fileName = g_pFullFileSystem->FindFirstEx(fileName, "GAME", &findHandle);
+	while (fileName)
+	{
+		char path[MAX_PATH];
+		Q_snprintf(path, sizeof(path), "scripts/actbusy/%s", fileName);
+
+		ParseAnimDataFile(path);
+
+		fileName = g_pFullFileSystem->FindNext(findHandle);
+	}
+
+	g_pFullFileSystem->FindClose(findHandle);
 }
 
 //-----------------------------------------------------------------------------
@@ -127,11 +140,13 @@ void CActBusyAnimData::LevelShutdownPostEntity( void )
 //-----------------------------------------------------------------------------
 // Clear out the stats + their history
 //-----------------------------------------------------------------------------
-void CActBusyAnimData::ParseAnimDataFile( void )
+void CActBusyAnimData::ParseAnimDataFile(const char* pszFileName)
 {
 	KeyValues *pKVAnimData = new KeyValues( "ActBusyAnimDatafile" );
-	if ( pKVAnimData->LoadFromFile( filesystem, "scripts/actbusy.txt" ) )
+	if ( pKVAnimData->LoadFromFile( filesystem, pszFileName) )
 	{
+		DevMsg("ACTBUSY: Parsing actbusy from %s\n", pszFileName);
+
 		// Now try and parse out each act busy anim
 		KeyValues *pKVAnim = pKVAnimData->GetFirstSubKey();
 		while ( pKVAnim )

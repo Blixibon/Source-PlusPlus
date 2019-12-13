@@ -38,6 +38,12 @@ criterion "RGroupMore90"            "randomnum"               ">90"   required
 //============================================================================================================
 response "CitizenHello"
 {
+	scene "scenes/npc/$gender01/hi01.vcd"
+	scene "scenes/npc/$gender01/hi02.vcd"
+}
+
+response "CitizenHelloFM"
+{
 	scene "scenes/npc/$gender01/abouttime01.vcd"
 	scene "scenes/npc/$gender01/abouttime02.vcd"
 	scene "scenes/npc/$gender01/ahgordon01.vcd"
@@ -49,8 +55,13 @@ response "CitizenHello"
 	scene "scenes/npc/$gender01/hellodrfm02.vcd"
 	scene "scenes/npc/$gender01/heydoc01.vcd"
 	scene "scenes/npc/$gender01/heydoc02.vcd"
-	scene "scenes/npc/$gender01/hi01.vcd"
-	scene "scenes/npc/$gender01/hi02.vcd"
+	response CitizenHello weight 2
+}
+
+rule CitizenHelloFM
+{
+	criteria		IsCitizen ConceptTalkHello PlayerNear SeePlayer NotInPanic IsPlayerFreeman
+	response		CitizenHelloFM
 }
 
 rule CitizenHello
@@ -62,11 +73,6 @@ rule CitizenHello
 //------------------------------------------------------------------------------------------------------------
 response "CitizenTalkPlayerPushed"
 {
-   scene "scenes/npc/$gender01/sorryfm01.vcd"
-   scene "scenes/npc/$gender01/sorryfm02.vcd"
-   scene "scenes/npc/$gender01/sorrydoc01.vcd"
-   scene "scenes/npc/$gender01/sorrydoc02.vcd"
-   scene "scenes/npc/$gender01/sorrydoc04.vcd"
    scene "scenes/npc/$gender01/excuseme01.vcd"
    scene "scenes/npc/$gender01/excuseme02.vcd"
    scene "scenes/npc/$gender01/pardonme01.vcd"
@@ -77,6 +83,22 @@ response "CitizenTalkPlayerPushed"
    scene "scenes/npc/$gender01/outofyourway01.vcd"
    scene "scenes/npc/$gender01/outofyourway02.vcd"
    scene "scenes/npc/$gender01/whoops01.vcd"
+}
+
+response "CitizenTalkPlayerPushedFM"
+{
+   scene "scenes/npc/$gender01/sorryfm01.vcd"
+   scene "scenes/npc/$gender01/sorryfm02.vcd"
+   scene "scenes/npc/$gender01/sorrydoc01.vcd"
+   scene "scenes/npc/$gender01/sorrydoc02.vcd"
+   scene "scenes/npc/$gender01/sorrydoc04.vcd"
+   response CitizenTalkPlayerPushed weight 10
+}
+
+rule CitizenTalkPlayerPushedFM
+{
+	criteria		IsCitizen  ConceptTalkPlayerPushed SeenByPlayer NoRecentCombat IsPlayerFreeman
+	response		CitizenTalkPlayerPushedFM
 }
 
 rule CitizenTalkPlayerPushed
@@ -111,7 +133,6 @@ rule CitizenTalkStare
 //Put back in, still fits in with the story
 response "CitizenQuestion"
 {
-	sequential
 	scene "scenes/npc/$gender01/question01.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question02.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question03.vcd" respeakdelay 60
@@ -119,7 +140,7 @@ response "CitizenQuestion"
 	scene "scenes/npc/$gender01/question05.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question06.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question07.vcd" respeakdelay 60
-	scene "scenes/npc/$gender01/question08.vcd" respeakdelay 60
+	//scene "scenes/npc/$gender01/question08.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question09.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question10.vcd" respeakdelay 60
 	scene "scenes/npc/$gender01/question11.vcd" respeakdelay 60
@@ -144,10 +165,29 @@ response "CitizenQuestion"
 
 }
 
+response CitizenQuestionHL2
+{
+	response CitizenQuestion weight 29
+	scene "scenes/npc/$gender01/question08.vcd" respeakdelay 60
+}
+
+response CitizenQuestionEpisodic
+{
+	response CitizenQuestion weight 29
+	response CitizensKillingTime weight 19
+}
+
 rule CitizenQuestion
 {
-	criteria		IsCitizen ConceptTalkQuestion PlayerAlive NotInPanic 
-	response 		CitizenQuestion
+	criteria		IsCitizen ConceptTalkQuestion PlayerAlive NotInPanic
+	episodic "!=1" required
+	response 		CitizenQuestionHL2
+}
+
+rule CitizenQuestionEpisodic
+{
+	criteria		IsCitizen ConceptTalkQuestion PlayerAlive NotInPanic IsEpisodic
+	response 		CitizenQuestionEpisodic
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -486,7 +526,7 @@ rule CitizenAnswerHelloAlyx
 // Citizen Mourning the player's death
 //============================================================================================================
 
-response "CitizenMournQ"
+response "CitizenMournQFM"
 {
 	scene "scenes/npc/$gender01/gordead_ques01.vcd"
 	scene "scenes/npc/$gender01/gordead_ques02.vcd"
@@ -508,15 +548,15 @@ response "CitizenMournQ"
 	scene "scenes/npc/$gender01/gordead_ques17.vcd"
 }
 
-rule CitizenMournQ
+rule CitizenMournQFM
 {
-	criteria 		IsCitizen ConceptTalkQuestion IsGordonCriminal PlayerDead
-	response 		CitizenMournQ
+	criteria 		IsCitizen ConceptTalkQuestion IsGordonCriminal PlayerDead IsPlayerFreeman
+	response 		CitizenMournQFM
 	matchonce
 }
 
 //------------------------------------------------------------------------------------------------------------
-response "CitizenMournA"
+response "CitizenMournAFM"
 {
 	scene "scenes/npc/$gender01/gordead_ans01.vcd"
 	scene "scenes/npc/$gender01/gordead_ans02.vcd"
@@ -540,23 +580,23 @@ response "CitizenMournA"
 	scene "scenes/npc/$gender01/gordead_ans20.vcd"
 }
 
-rule CitizenMournA
+rule CitizenMournAFM
 {
-	criteria 		IsCitizen ConceptTalkAnswer IsGordonCriminal PlayerDead
-	response 		CitizenMournA
+	criteria 		IsCitizen ConceptTalkAnswer IsGordonCriminal PlayerDead IsPlayerFreeman
+	response 		CitizenMournAFM
 	matchonce
 }
 
-response "CitizenMournAll"
+response "CitizenMournAllFM"
 {
-   response CitizenMournQ
-   response CitizenMournA
+   response CitizenMournQFM
+   response CitizenMournAFM
 }
 
-rule CitizenMourn
+rule CitizenMournFM
 {
-	criteria 		IsCitizen ConceptPlayerDead IsGordonCriminal PlayerDead
-	response 		CitizenMournAll
+	criteria 		IsCitizen ConceptPlayerDead IsGordonCriminal PlayerDead IsPlayerFreeman
+	response 		CitizenMournAllFM
 	matchonce
 }
 
@@ -578,17 +618,28 @@ rule CitizenHeal
 //---------------------------
 response "CitizenGiveAmmo"
 {
-	scene "scenes/npc/$gender01/ammo01.vcd" delay 1
-	scene "scenes/npc/$gender01/ammo02.vcd" delay 1
 	scene "scenes/npc/$gender01/ammo03.vcd" delay 1
 	scene "scenes/npc/$gender01/ammo04.vcd" delay 1
 	scene "scenes/npc/$gender01/ammo05.vcd" delay 1
+}
+
+response "CitizenGiveAmmoFM"
+{
+	scene "scenes/npc/$gender01/ammo01.vcd" delay 1
+	scene "scenes/npc/$gender01/ammo02.vcd" delay 1
+	response CitizenGiveAmmo weight 3
 }
 
 rule CitizenGiveAmmo
 {
 	criteria		IsCitizen ConceptTalkGiveAmmo
 	response		CitizenGiveAmmo
+}
+
+rule CitizenGiveAmmoFM
+{
+	criteria		IsCitizen ConceptTalkGiveAmmo IsPlayerFreeman
+	response		CitizenGiveAmmoFM
 }
 
 //============================================================================================================
@@ -728,7 +779,7 @@ response CitizenPlayerReload
 
 rule CitizenStartPlayerReload
 {
-	criteria		ConceptPlayerReload IsCitizen PlayerNear SeePlayer
+	criteria		ConceptPlayerReload IsCitizen PlayerNear SeePlayer IsPlayerFreeman
 	response		CitizenPlayerReload
 }
 
@@ -875,10 +926,23 @@ rule CitizenShotGut
 //------------------------------------------------------------------------------------------------------------
 response CitizenWatchOut
 {
-	scene "scenes/npc/$gender01/lookoutfm01.vcd"
-	scene "scenes/npc/$gender01/lookoutfm02.vcd"
+	//scene "scenes/npc/$gender01/lookoutfm01.vcd"
+	//scene "scenes/npc/$gender01/lookoutfm02.vcd"
 	scene "scenes/npc/$gender01/watchout.vcd"
 	scene "scenes/episode_1/npc/$gender01/cit_evac_enemies01.vcd"
+}
+
+response CitizenWatchOutFM
+{
+	scene "scenes/npc/$gender01/lookoutfm01.vcd"
+	scene "scenes/npc/$gender01/lookoutfm02.vcd"
+	response CitizenWatchOut weight 2
+}
+
+rule CitizenWatchOutFM
+{
+	criteria		IsCitizen  ConceptTalkWatchout IsPlayerFreeman
+	response		CitizenWatchOutFM
 }
 
 rule CitizenWatchOut
@@ -950,7 +1014,7 @@ response "CitizenEnemyDead"
 	scene "scenes/episode_1/npc/$gender01/cit_kill15.vcd"  respeakdelay 10
 	scene "scenes/episode_1/npc/$gender01/cit_kill16.vcd"  respeakdelay 10
 	scene "scenes/episode_1/npc/$gender01/cit_kill17.vcd"  respeakdelay 10
-	scene "scenes/episode_1/npc/$gender01/cit_kill18.vcd"  respeakdelay 10
+	//scene "scenes/episode_1/npc/$gender01/cit_kill18.vcd"  respeakdelay 10
 	scene "scenes/episode_1/npc/$gender01/cit_kill19.vcd"  respeakdelay 10
 	scene "scenes/episode_1/npc/$gender01/cit_kill20.vcd"  respeakdelay 10
 	scene "scenes/npc/$gender01/gotone01.vcd"  respeakdelay 10
@@ -959,6 +1023,18 @@ response "CitizenEnemyDead"
 	// Imported Beta Lines
 	scene "scenes/npc/$gender01/likethemapples.vcd" respeakdelay 10
 	speak "npc_citizen.seehowyoulikeit" respeakdelay 10
+}
+
+response "CitizenEnemyDeadFM"
+{
+	scene "scenes/episode_1/npc/$gender01/cit_kill18.vcd"  respeakdelay 10
+	response "CitizenEnemyDead" weight 24
+}
+
+rule CitizenEnemyDeadFM
+{
+	criteria		IsCitizen ConceptEnemyDead IsPlayerFreeman
+	response		CitizenEnemyDeadFM
 }
 
 rule CitizenEnemyDead
@@ -1309,7 +1385,7 @@ response "CitizenFiringRPG"
 
 rule CitizenFiringRPG
 {
-	criteria		IsCitizen IsRPGUser
+	criteria		IsCitizen IsRPGUser ConceptTalkAttacking
 	response		CitizenFiringRPG
 }
 

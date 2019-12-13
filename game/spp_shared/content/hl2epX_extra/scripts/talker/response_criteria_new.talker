@@ -2,6 +2,8 @@ criterion "IsInASquad" "squadsize" ">1" "required"
 criterion "IsNotInASquad"	"squadsize" "<2" "required"
 criterion "IsSquadLeader" "isleader" "1" required
 criterion "IsNotSquadLeader" "isleader" "!=1" required
+criterion "IsPlayerFreeman"	"playerfreeman" "!=0" required
+criterion "IsEnemyPlayerFreeman"	"enemyplayerfreeman" "!=0" required
 
 criterion "ConceptTalkFtApproach" "Concept" "TLK_FT_APPROACH" required
 criterion "ConceptTalkFtMount" "Concept" "TLK_FT_MOUNT" required
@@ -44,3 +46,5 @@ criterion "EnemyIsClassEarthFauna" "enemyclass" "CLASS_EARTH_FAUNA" required wei
 criterion "EnemyIsClassPlayerAlly" "enemyclass" "CLASS_PLAYER_ALLY" required weight 3
 criterion "EnemyIsClassPlayerAllyVital" "enemyclass" "CLASS_PLAYER_ALLY_VITAL" required weight 3
 criterion "EnemyIsClassHackedRollermine" "enemyclass" "CLASS_HACKED_ROLLERMINE" required weight 3
+
+#include "talker/dynamic_interactions.txt"
