@@ -15,6 +15,18 @@ $IKChain "lfoot" "ValveBiped.Bip01_L_Foot" knee 0.707 -0.707 0
 $IKAutoPlayLock "rfoot" 1 0.1
 $IKAutoPlayLock "lfoot" 1 0.1
 
+$Sequence "DI_02_Zombie_to_Guard" {
+	"guard_hurt_anims\DI_02_Zombie_to_Guard.smd"
+	{ event AE_NPC_WEAPON_FIRE 120 "" }
+	fadein 0.2
+	fadeout 0.2
+	fps 30
+	ikrule "rhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 125 125 target 0
+	ikrule "lhand" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 125 125 target 1
+	ikrule "rfoot" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 125 125 target 2
+	ikrule "lfoot" release contact 0 fakeorigin 0 0 0 fakerotate 0 0 0 floor 0 height 0 radius 0 range 0 0 125 125 target 3
+}
+
 $BoneSaveFrame "ValveBiped.Bip01_Pelvis" position rotation
 $BoneSaveFrame "ValveBiped.Bip01_Spine" rotation
 $BoneSaveFrame "ValveBiped.Bip01_Spine1" rotation

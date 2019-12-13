@@ -171,6 +171,59 @@
 	input Color(color255) : "Set the sprite's color (R G B)."
 ]
 
+@BaseClass = DamageTypes
+[
+	damagetype(choices) : "Damage Type" : 0 : "The type(s) of damage associated with this entity." =
+	[
+		0 : "[0] GENERIC/None"
+		1 : "[1] CRUSH"
+		2 : "[2] BULLET"
+		4 : "[4] SLASH"
+		8 : "[8] BURN"
+		//16 : "[16] FREEZE" // This does not appear to exist.
+		16 : "[16] VEHICLE"
+		32 : "[32] FALL"
+		64 : "[64] BLAST"
+		128 : "[128] CLUB"
+		256 : "[256] SHOCK"
+		512 : "[512] SONIC"
+		1024 : "[1024] ENERGYBEAM"
+		16384: "[16384] DROWN"
+		32768 : "[32768] PARALYSE"
+		65536 : "[65536] NERVEGAS"
+		131072 : "[131072] POISON"
+		262144 : "[262144] RADIATION"
+		524288 : "[524288] DROWNRECOVER"
+		1048576 : "[1048576] ACID"
+		2097152 : "[2097152] SLOWBURN"
+		//4194304 : "[4194304] SLOWFREEZE" // This does not appear to exist.
+		4194304 : "[4194304] REMOVENORAGDOLL"
+		16777216 : "[16777216] PLASMA"
+		33554432 : "[33554432] AIRBOAT (gun)"
+		67108864 : "[67108864] DISSOLVE"
+		134217728 : "[134217728] BLAST_SURFACE"
+		268435456 : "[268435456] DIRECT"
+		536870912 : "[536870912] BUCKSHOT"
+	]
+	
+	damagepresets(choices) : "Damage Presets" : 0 : "User-friendly 'presets' based on combined damage types. This is accompanied by the damage type and damage or, if they are specified." = 
+	[
+		0 : "None"
+		268435464 : "[268435464] Ignite Damage (BURN + DIRECT)"
+		134217792 : "[134217792] All Blast Types (BLAST + BLAST_SURFACE)"
+	]
+	
+	damageor(choices) : "Damage Or" : 0 : "Optional flags that can accompany the damage type." = 
+	[
+		0 : "None"
+		2048 : "[2048] PREVENT_PHYSICS_FORCE (no physics force)"
+		4096 : "[4096] NEVERGIB (no gibs)"
+		8192 : "[8192] ALWAYSGIB (always gib if possible)"
+		4194304 : "[4194304] REMOVENORAGDOLL (no ragdoll on death)"
+		134217728 : "[134217728] BLAST_SURFACE (no damage underwater)"
+		268435456 : "[268435456] DIRECT (With burn, NPCs treat as being on fire)"
+	]
+]
 
 // Inherit from this to get the ability to only include an object in a range of dx levels.
 // NOTE!!: MAKE SURE THAT YOU DON'T USE THIS WITH ANYTHING THAT WILL BREAK SAVE-GAMES SWITCHING
@@ -470,6 +523,8 @@
 	]
 
 	physdamagescale(float) : "Physics Impact Damage Scale" : "1.0" : "Scales damage energy when this character is hit by a physics object. With a value of 0 the NPC will take no damage from physics."
+
+	additionalequipment_econitem(integer) : "Weapon Econ Item" : -1 : "Econ Item ID of the weapon this character should spawn with. If set, overrides the Weapons keyvalue."
 
 	// Outputs
 	output OnDamaged(void) : "Fired when this NPC takes damage."
@@ -1417,6 +1472,51 @@
 
 	input SetCycleType(integer) : "0 - random, 1 - forward, 2 - backward"
 	input SetNoListRepeat(bool) : "Sets if lists can be randomly picked twice in a row."
+]
+
+@PointClass base(Targetname, Angles, Parentname) studio("models/editor/axis_helper_thick.mdl") = vgui_movie_display : "Movie Display"
+[
+	displaytext(string) : "Display Text" : ""
+	moviefilename(string) : "Movie Filename" : "media/"
+	groupname(string) : "Group Name" : ""
+
+	looping(choices) : "Loop Movie" : 0 = 
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	stretch(choices) : "Stretch to Fill" : 0 = 
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	forcedslave(choices) : "Forced slave" : 0 = 
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	forceprecache(choices) : "Force precache" : 0 : "Precache the movie referred to by Movie Filename on entity spawn." = 
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	width(integer) : "Panel width" : 256 : "Width of the panel in units."
+	height(integer) : "Panel height" : 128 : "Height of the panel in units."
+
+	input Enable(void) : "Make movie visible."
+	input Disable(void) : "Make movie invisible."
+
+	input SetDisplayText(string) : "Sets the display text."
+	input SetMovie(string) : "Sets the movie to display."
+	
+	input SetUseCustomUVs(bool) : "Use custom UVs."
+	input TakeOverAsMaster(void) : "Start using this video as the master of it's group."
+
+	input SetUMin(float) : "Set the minimum U."
+	input SetUMax(float) : "Set the maximum U."
+	input SetVMin(float) : "Set the minimum V."
+	input SetVMax(float) : "Set the maximum V."
 ]
 
 //-------------------------------------------------------------------------
@@ -2897,7 +2997,8 @@
 [
 ]
 
-@PointClass base(Targetname) color(220 180 0) size(-8 -8 -8, 8 8 8) line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link :
+// size(-8 -8 -8, 8 8 8)
+@PointClass base(Targetname) color(220 180 0) iconsprite("editor/info_node_link.vmt") line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link :
 	"A dynamic connection between two navigation nodes. You specify the node IDs of the start and end nodes, and then you can use entity I/O " +
 	"to turn on and off the connection. This could be used to create or destroy a connection in the nodegraph because of some event in your map " +
 	"(a bridge being created/destroyed, etc)."
@@ -2917,8 +3018,8 @@
 		4 : "Fly"
 		8 : "Climb"
 	]
-	AllowUse(string) : "Allow Pass When Off" : : "Entity or class to allow passage even when node is off"
-	InvertAllow(choices) : "Invert exclusion rules" : 0 : "Allowed entity is the only entity NOT allowed when this is set to 'yes'" =
+	AllowUse(target_name_or_class) : "Allow Pass When Off" : : "Entity or class to allow passage even when node is off"
+	InvertAllow(choices) : "Invert exclusion rules" : 0 : "Allowed entity is the only entity NOT allowed when this is set to 'yes'. The link must still be disabled for exclusion rules to apply." =
 	[
 		0 : "No"
 		1 : "Yes"
@@ -2943,6 +3044,48 @@
 	input TurnOff(void) : "Turn the link off."
 ]
 
+@PointClass base(info_node_link) color(220 180 0) iconsprite("editor/info_node_link.vmt") line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link_oneway :
+	"A variant of info_node_link that only works from one direction. " +
+	"Navigation requests from the start node to the end node will always pass, but requests from the end node to the start node will not be allowed. " +
+	"If the link is disabled, the link will work from neither direction. Exclusion rules still apply and excluded NPCs will be able to cross from the opposite direction."
+[
+    StartNode(node_dest) : "Start node ID" : : "The node ID that will always be allowed to pass."
+    EndNode(node_dest) : "End node ID" : : "The node ID that will not be allowed to pass unless the NPC follows exclusion rules."
+	
+	AllowUse(target_name_or_class) : "Allow Pass When Off" : : "Entity or class to allow passage regardless of which node they're coming from."
+	
+	Usage(choices) : "Usage" : 0 : "Causes the link to use slightly different behavior." =
+	[
+		0 : "Enabled is one-way, disabled turns off link"
+		1 : "Enabled is two-way, disabled is one-way"
+	]
+]
+
+@PointClass base(info_node_link) color(220 180 0) iconsprite("editor/info_node_link.vmt") line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link_filtered :
+	"A variant of info_node_link that uses an entity filter. " +
+	"Only entities that pass the specified filter can use this link. While disabled, the filter is disregarded and filtering is handed to the regular exclusion rules."
+[
+    damagefilter(filterclass) : "Link Filter" : "" : "Name of the filter entity that controls which entities can use this link."
+	
+	Usage(choices) : "Usage" : 0 : "Causes the link to use slightly different behavior." =
+	[
+		0 : "Enabled uses filter, disabled hands to exclusion rules"
+		1 : "Enabled is free-to-use, disabled uses filter"
+	]
+	
+	// Inputs
+	input SetLinkFilter(target_destination) : "Sets the link's filter."
+]
+
+@PointClass base(info_node_link) color(220 180 0) iconsprite("editor/info_node_link.vmt") line(255 255 255, nodeid, StartNode, nodeid, EndNode) = info_node_link_logic :
+	"A variant of info_node_link that fires outputs when a NPC tries to use it. " +
+	"Otherwise functions identically to a regular info_node_link."
+[
+	// Outputs
+	output OnUsageAccepted(void) : "Fires when a NPC uses this link after meeting all of the requirements."
+	output OnUsageAcceptedWhileDisabled(void) : "Fires when a NPC that meets all of the requirements tries to use this link, but it's disabled."
+]
+
 @PointClass wirebox(mins, maxs) base(Targetname) = info_node_link_controller :
 	"An entity that controls all connections between nodes that intersect the controller's volume. "+
 	"This allows for mass enabling/disabling of all node connections through a volume."
@@ -2962,7 +3105,7 @@
 		1 : "Yes"
 	]
 	
-	AllowUse(string) : "Allow Pass When Off" : : "Entity or class to allow passage even when node is off"
+	AllowUse(target_name_or_class) : "Allow Pass When Off" : : "Entity or class to allow passage even when node is off"
 	InvertAllow(choices) : "Invert exclusion rules" : 0 : "Allowed entity is the only entity NOT allowed when this is set to 'yes'" =
 	[
 		0 : "No"
@@ -2972,8 +3115,16 @@
 	// Inputs
 	input TurnOn(void) : "Turn the link on."
 	input TurnOff(void) : "Turn the link off."
-	input SetAllowed(string) : "Change the allowed pass when off"
+	input SetAllowed(target_destination) : "Change the allowed pass when off"
 	input SetInvert(integer) : "Change the invert exclusion rule"
+]
+
+@PointClass wirebox(mins, maxs) base(info_node_link_controller) = info_template_link_controller :
+	"An entity that controls all connections between nodes that intersect the controller's volume. "+
+	"This allows for mass enabling/disabling of all node connections through a volume.\n\n"+
+	"NOTE: Due to the way this works, using info_node_link_logic may cause several identical instances of the outputs to be fired instead of one. One way to remedy this by passing your action through a relay with fast refire disabled."
+[
+	ReferenceTemplate(target_destination) : "Reference Template" : : "The point_template whose first template would be used as a reference for all of this controller's links. The first template MUST be info_node_link or an entity derived from it, like info_node_link_filtered."
 ]
 
 @PointClass sphere(radius) base(Targetname, Parentname) = info_radial_link_controller :
@@ -4628,13 +4779,26 @@
 		0 : "Allow entities that match criteria"
 		1 : "Disallow entities that match criteria"
 	]
+	
+	PassCallerWhenTested(choices) : "Pass caller when tested" : 0 : "When tested with TestActivator or TestEntity, this causes the OnPass and OnFail outputs to use either this filter as the caller or the entity that called the test as the caller." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
 
 	// Inputs
-	input TestActivator(void) : "Test the activator against the filter and fires OnPass or OnFail output."
+	input TestActivator(void) : "Tests the activator against the filter and fires the OnPass or OnFail output."
+	input TestEntity(target_destination) : "Tests the target entity against the specified entity and fires the OnPass or OnFail output."
+	input SetField(string) : "Sets this filter's primary test criteria. (e.g. the name to test against the activator)"
 
 	// Outputs
 	output OnPass(void) : "Fired in response to TestActivator input if the activator passes the filter."
 	output OnFail(void) : "Fired in response to TestActivator input if the activator fails to pass the filter."
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_generic.vmt") = filter_base :
+	"A filter that literally just passes as true every single time. Useful for when you...uh...want to pass something as true every single time?"
+[
 ]
 
 @FilterClass base(BaseFilter) iconsprite("editor/filter_multiple.vmt") = filter_multi :
@@ -4686,33 +4850,48 @@
 		"all entities EXCEPT those whose mass is greater than the given float will pass the filter."
 ]
 
-@FilterClass base(BaseFilter) = filter_damage_type :
+@FilterClass base(BaseFilter, DamageTypes) = filter_damage_type :
 	"A damage filter that filters by the type of damage inflicted. This can only be used as a damage filter, not as an activator filter."
 [
-	damagetype(choices) : "Damage type" : 64 : "The damage type to filter by. If the filter mode is Allow, only damage types that "+
-		"match will pass the filter. If the filter mode is Disallow, all damage types EXCEPT those who match will pass the filter." =
+	filtertype(choices) : "Logic Type" : 1 : "Most of these are only relevant if more than one damage type is a factor." =
 	[
-		0 : "GENERIC"
-		1 : "CRUSH"
-		2 : "BULLET"
-		4 : "SLASH"
-		8 : "BURN"
-		16 : "FREEZE"
-		32 : "FALL"
-		64 : "BLAST"
-		128 : "CLUB"
-		256 : "SHOCK"
-		512 : "SONIC"
-		1024 : "ENERGYBEAM"
-		16384: "DROWN"
-		32768 : "PARALYSE"
-		65536 : "NERVEGAS"
-		131072 : "POISON"
-		262144 : "RADIATION"
-		524288 : "DROWNRECOVER"
-		1048576 : "CHEMICAL"
-		2097152 : "SLOWBURN"
-		4194304 : "SLOWFREEZE"
+		0 : "EQUAL TO (input and damage type must be equal)"
+		1 : "AND (input must contain all bits in damage type)"
+		2 : "OR (input must contain any bit in damage type)"
+	]
+
+	damagetype(choices) : "Damage Type" : 0 : "The type(s) of damage associated with this entity." =
+	[
+		0 : "[0] GENERIC"
+		1 : "[1] CRUSH"
+		2 : "[2] BULLET"
+		4 : "[4] SLASH"
+		8 : "[8] BURN"
+		//16 : "[16] FREEZE" // This does not appear to exist.
+		16 : "[16] VEHICLE"
+		32 : "[32] FALL"
+		64 : "[64] BLAST"
+		128 : "[128] CLUB"
+		256 : "[256] SHOCK"
+		512 : "[512] SONIC"
+		1024 : "[1024] ENERGYBEAM"
+		16384: "[16384] DROWN"
+		32768 : "[32768] PARALYSE"
+		65536 : "[65536] NERVEGAS"
+		131072 : "[131072] POISON"
+		262144 : "[262144] RADIATION"
+		524288 : "[524288] DROWNRECOVER"
+		1048576 : "[1048576] ACID"
+		2097152 : "[2097152] SLOWBURN"
+		//4194304 : "[4194304] SLOWFREEZE" // This does not appear to exist.
+		4194304 : "[4194304] REMOVENORAGDOLL"
+		16777216 : "[16777216] PLASMA"
+		33554432 : "[33554432] AIRBOAT (gun)"
+		67108864 : "[67108864] DISSOLVE"
+		134217728 : "[134217728] BLAST_SURFACE"
+		268435456 : "[268435456] DIRECT"
+		536870912 : "[536870912] BUCKSHOT"
+		268435464 : "Ignite Damage (BURN + DIRECT) [268435464]"
 	]
 ]
 
@@ -4733,8 +4912,326 @@
 	
 	spawnflags(Flags) =
 	[
-		1 : "Do not lose target if already aquired but filter failed." : 0
+		1 : "[1] Do not lose target if already aquired but filter failed." : 0
 	]
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_model.vmt") = filter_activator_model :
+	"A filter that filters by the model of the activator."
+[
+	filtermodel(studio) : "Filter Model" : : "The model to filter by. If the filter mode is Allow, only entities whose "+
+		"model matches the given string will pass the filter. If the filter mode is Disallow, "+
+		"all entities EXCEPT those whose model matches the given string will pass the filter."
+		
+	skin(string) : "Skin" : -1 : "Some models have multiple versions of their textures, called skins. Use this if you want to filter by skins as well. If you want any skin to be allowed, be sure to leave this at -1! It might automatically change when you choose a model."
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_context.vmt") = filter_activator_context :
+	"A filter that filters by the response contexts of the activator."
+[
+	ResponseContext(string) : "Filter Context" : : "The context(s) to filter by. Syntax is 'key:value,key:value'. "+
+		"Values in this field can use wilcards. For example, if this filter contains 'lastname:*', it will pass any entity with the context 'lastname', regardless of its value. "+
+		"Wildcards do not apply to context names and you cannot define the same context multiple times, but inputs like AddContext or RemoveContext can be used to add to the filter context."
+		
+	any(choices) : "Pass if entity has any of these contexts" : 0 : "Should this filter only pass if the entity contains all of these contexts or can it pass if the entity has at least one of them?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+		
+	// Inputs
+	input AddContext(string) : "Adds a context to this fitler's list of response contexts. The format should be 'key:value'."
+	input RemoveContext(string) : "Remove a context from this filter's list of response contexts. The name should match the 'key' of a previously added context."
+	input ClearContext(void) : "Removes all contexts in this filter's list of response contexts."
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_generic2.vmt") = filter_activator_squad :
+	"A filter that filters by the squad of the activator."
+[
+	filtername(string) : "Filter Squad" : : "The squad name to filter by. If the filter mode is Allow, only entities who are "+
+		"in the squad of the given string will pass the filter. If the filter mode is Disallow, "+
+		"all entities EXCEPT those who are in the squad of the given string will pass the filter."
+	
+	allowsilentmembers(choices) : "Allow Silent Members" : 1 : "Allows silent squad members to pass the filter. Silent squad members are enemy finders and vital allies in player_squad." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_generic2.vmt") = filter_activator_hintgroup :
+	"A filter that filters by the hintgroup of the activator."
+[
+	filtername(string) : "Filter Hintgroup" : : "The hintgroup to filter by. If the filter mode is Allow, only entities who have "+
+		"the given hintgroup will pass the filter. If the filter mode is Disallow, "+
+		"all entities EXCEPT those who have the given hintgroup will pass the filter."
+		
+	hintlimiting(choices) : "Hint Limit Nav" : 2 : "If set to Yes, only entities who are limiting navigation to their hintgroup will be allowed. "+
+			"If set to No, only entities who are *not* limiting navigation to their hintgroup will be allowed. "+
+			"If set to Don't Care, entities will pass regardless of the their navigational limits as long as they match the hintgroup."=
+	[
+		0 : "No"
+		1 : "Yes"
+		2 : "Don't Care"
+	]
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_keyfield.vmt") = filter_activator_keyfield :
+	"A filter that filters by the activator's keyfields."
+[
+	keyname(string) : "Key" : : "The key name to filter by. Please note that certain keyvalues, particularly "+
+		"targetnames and base values related to clientside rendering (e.g. render mode), cannot be found by this filter."
+		
+	value(string) : "Value (Optional)" : : "The key value to filter by. If empty, the filter will pass if the entity just has the keyfield."
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_relationship.vmt") = filter_activator_relationship :
+	"A filter that filters by the activator's relationship with another entity. Please note that any entity incapable of supporting relationships is automatically passed if this filter is set to 'Neutral'."
+[
+	target(target_destination) : "Subject" : : "The entity whose relationships we should test with. If empty, the entity using the filter will be used."
+	
+	rank(string) : "Priority" : : "The priority the subject should have with the target. If empty, priority will be disregarded."
+	disposition(choices) : "Disposition" : 3 : "What relationship the subject should have with the activator." =
+	[
+		1 : "Hate"
+		2 : "Fear"
+		3 : "Like"
+		4 : "Neutral"
+	]
+	
+	inverttarget(choices) : "Invert Subject" : 0 : "Should we use the activator's relationship to the subject instead?"  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	Reciprocal(choices) : "Reciprocal" : 0 : "Should we only pass if both entities have the same relationship with each other? Makes 'Invert Subject' useless."  =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_classify.vmt") = filter_activator_classify :
+	"A filter that filters by the Class_T of the activator."
+[
+	filterclassify(choices) : "Filter Classify" : 0 : "The class to filter by. If the filter mode is Allow, only entities whose "+
+		"class matches the given class will pass the class filter. If the filter mode is Disallow, "+
+		"all entities EXCEPT those whose class matches the given class will pass the class filter." =
+	[
+		0 : "CLASS_NONE"
+		1 : "CLASS_PLAYER"
+		2 : "CLASS_PLAYER_ALLY (Citizens)"
+		3 : "CLASS_PLAYER_ALLY_VITAL (Alyx, Dr. Kleiner, GameEndAlly vorts, etc.)"
+		4 : "CLASS_ANTLION"
+		5 : "CLASS_BARNACLE"
+		6 : "CLASS_BULLSEYE (npc_bullseyes)"
+		7 : "CLASS_BULLSQUID"
+		8 : "CLASS_CITIZEN_PASSIVE (pre-criminal citizens)"
+		9 : "CLASS_CITIZEN_REBEL (Unused)"
+		10 : "CLASS_COMBINE (Soldiers, turrets, etc.)"
+		11 : "CLASS_COMBINE_GUNSHIP (Gunships, helicopters, dropships)"
+		12 : "CLASS_CONSCRIPT (Unused)"
+		13 : "CLASS_HEADCRAB"
+		14 : "CLASS_HOUNDEYE"
+		15 : "CLASS_MANHACK"
+		16 : "CLASS_METROPOLICE"
+		17 : "CLASS_MILITARY (Unused)"
+		18 : "CLASS_SCANNER"
+		19 : "CLASS_STALKER"
+		20 : "CLASS_VORTIGAUNT (Non-vital vortigaunts only)"
+		21 : "CLASS_ZOMBIE"
+		22 : "CLASS_PROTOSNIPER (npc_snipers)"
+		23 : "CLASS_MISSILE"
+		24 : "CLASS_FLARE"
+		25 : "CLASS_EARTH_FAUNA (crows, seagulls, etc.)"
+		26 : "CLASS_HACKED_ROLLERMINE"
+		27 : "CLASS_COMBINE_HUNTER"
+		28 : "CLASS_MACHINE"
+		29 : "CLASS_MACHINE_HL1"
+		30 : "CLASS_HUMAN_PASSIVE (hl1 scientists)"
+		31 : "CLASS_HECU"
+		32 : "CLASS_ALIEN_MILITARY"
+		33 : "CLASS_ALIEN_MONSTER"
+		34 : "CLASS_ALIEN_PREY"
+		35 : "CLASS_ALIEN_PREDATOR"
+		36 : "CLASS_INSECT"
+		39 : "CLASS_ALIENGRUNT"
+		40 : "CLASS_ALIENCONTROLLER"
+		41 : "CLASS_BEE"
+		42 : "CLASS_COMBINE_HACKED"
+		43 : "CLASS_MILITARY_HACKED"
+		44 : "CLASS_AIR_DEFENSE"
+		45 : "CLASS_AIR_DEFENSE_HACKED"
+		46 : "CLASS_MANTARAY_TELEPORTER"
+		47 : "CLASS_COMBINE_VITAL"
+		48 : "CLASS_COMBINE_PLAYER"
+		49 : "CLASS_HECU_PLAYER"
+		50 : "CLASS_ZOMBIE_PLAYER"
+	]
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_involume.vmt") = filter_activator_involume :
+	"A filter that tests whether the activator is within a volume."
+[
+	target(target_destination) : "Volume" : : "The volume to be tested with. This filter passes if the activator is within this volume. Intended to be a brush entity. (e.g. a trigger)"
+	
+	tester(target_destination) : "Volume Tester" : "!activator" : "Who should be in the volume for the filter to pass?"
+]
+
+@FilterClass base(BaseFilter) iconsprite("editor/filter_generic.vmt") = filter_activator_surfacedata :
+	"A filter that tests the activator's surface data."
+[
+	filtersurfaceprop(choices) : "Surface" : : "The surface to test with." =
+	[
+		"metal" : "Metal"
+		"metalgrate" : "Metal Grate"
+		"metalvent" : "Metal Vent"
+	]
+	
+	SurfaceType(choices) : "Type" : 1 : "What to actually filter by."  =
+	[
+		0 : "Surface Prop"
+		1 : "Game Material"
+	]
+]
+
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+
+@BaseClass base(BaseFilter) = BaseRedirectFilter
+[
+	damagefilter(filterclass) : "Target Filter" : "" : "The filter to pass to. You can also use the 'SetField' input."
+	input SetField(target_destination) : "Sets the filter to pass to."
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_redirect.vmt") = filter_redirect_inflictor :
+	"A filter that passes the inflictor of damage (e.g. the crossbow bolt instead of the crossbow user) to a separate filter."
+[
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_redirect.vmt") = filter_redirect_weapon :
+	"A filter that passes the activator's weapon OR the weapon causing damage to a separate filter, depending on what this filter is filtering."
+[
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_redirect.vmt") = filter_redirect_owner :
+	"A filter that passes the activator's owner entity to a separate filter."
+[
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_damage_transfer.vmt") = filter_damage_transfer :
+	"Whenever an entity using this as a damage filter takes damage, that damage is transferred to another entity. The entity using this filter will not take the damage unless a secondary filter is specified and passed or caller damage is allowed. All damage information including force, type, attacker, etc. should be retained during the transfer and it obeys the target entity's own damage filters."
+[
+	target(target_destination) : "Transfer Target" : "" : "The name of the entity/entities that will receive the damage. Please note that this complies with their own damage filters."
+	input SetTarget(target_destination) : "Sets the transfer target."
+	
+	AdjustDamagePosition(choices) : "Adjust Damage Position" : 0 : "Adjusts the damage position to be relative to the target entity." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	MaxEntities(integer) : "Max Entities" : 1 : "The maximum number of entities matching the criteria who can be damaged. 0 = no limit. (0 is actually changed to 2048 internally, but don't worry about that)"
+	
+	CallerDamageAllowed(choices) : "Caller Damage Allowed" : 0 : "Sets whether the caller using this filter is allowed to take the transferred damage as well." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	damagefilter(filterclass) : "Secondary Filter" : "" : "A secondary filter that can be used for certain things. See the Secondary Filter Mode for different ways you can use this. This is optional."
+	SecondaryFilterMode(choices) : "Secondary Filter Mode" : 0 : "How should the secondary filter be used?" =
+	[
+		0 : "Must pass to damage caller (if damage is allowed)"
+		1 : "Must pass to transfer damage to targets"
+		2 : "Each transfer target must pass"
+	]
+	
+	input SetField(target_destination) : "Sets the secondary filter."
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_blood_control.vmt") = filter_blood_control :
+	"A filter that controls the blood an entity emits. Must be used as a damage filter to work properly."
+[
+	BloodDisabled(choices) : "Blood Disabled" : 0 : "Sets whether blood shouldn't be produced by damage. Overrides the secondary filter, if any." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	damagefilter(filterclass) : "Secondary Filter" : "" : "An optional secondary filter that can be used for either whose damage could produce blood or as a real damage filter for whether any damage should be taken at all."
+	SecondaryFilterMode(choices) : "Secondary filter is damage filter" : 0 : "Sets whether the secondary filter should be treated as a redirected damage filter (must pass to take actual damage) instead of just permitting blood." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	
+	input SetField(target_destination) : "Sets the secondary filter."
+	
+	input DisableBlood(void) : "Disables blood."
+	input EnableBlood(void) : "Enables blood if it was previously disabled."
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_damage_mod.vmt") = filter_damage_mod :
+	"A filter that modifies damage taken by an entity."
+[
+	SetDamageMultiplier(float) : "Damage Multiplier" : "1.0" : "Multiplies the damage by this scale."
+	SetDamageAddend(float) : "Damage Addend" : "0" : "Adds to or subtracts the damage by this number. This is done after the damage is multiplied by the damage scale."
+
+	NewAttacker(string) : "New Attacker" : : "If specified, the damage will be credited to this entity instead of the original attacker."
+	NewInflictor(string) : "New Inflictor" : : "If specified, the damage's inflictor will be changed to this entity instead of the original inflictor."
+	NewWeapon(string) : "New Weapon" : : "If specified, the damage's weapon will be changed to this entity instead of the original weapon."
+
+	damagefilter(filterclass) : "Secondary Filter" : "" : "An optional secondary filter that can be used for either whose damage could be modified or as a real damage filter for whether any damage should be taken at all."
+	SecondaryFilterMode(choices) : "Secondary Filter Mode" : 0 : "Sets whether the secondary filter should be treated as a redirected damage filter (must pass to take actual damage) instead of just permitting modification." =
+	[
+		0 : "Must pass to damage caller (and therefore mod damage)"
+		1 : "Must pass to modify damage (others use the original damage)"
+		2 : "Attackers must pass to modify damage"
+	]
+	
+	input SetDamageMultiplier(float) : "Sets the damage multiplier."
+	input SetDamageAddend(float) : "Sets the damage addend."
+	
+	input SetNewAttacker(target_destination) : "Sets the new attacker."
+	input SetNewInflictor(target_destination) : "Sets the new inflictor."
+	input SetNewWeapon(target_destination) : "Sets the new weapon."
+	
+	input SetField(target_destination) : "Sets the secondary filter."
+]
+
+@FilterClass base(BaseRedirectFilter) iconsprite("editor/filter_damage_logic.vmt") = filter_damage_logic :
+	"A filter that fires outputs based on received damage information."
+[
+	damagefilter(filterclass) : "Secondary Filter" : "" : "An optional secondary filter that can be used as an actual damage filter, which damage to operate with, etc."
+	SecondaryFilterMode(choices) : "Secondary Filter Mode" : 0 : "Sets how the secondary filter should be treated." =
+	[
+		0 : "Use as a regular damage filter; must pass to fire outputs"
+		1 : "Use as a regular damage filter, but fire outputs even if it fails"
+		2 : "Use only to permit outputs, failed damage is dealt anyway"
+	]
+	
+	input SetField(target_destination) : "Sets the secondary filter."
+	
+	// Outputs
+	output OutInflictor(ehandle) : "Outputs the damage inflictor."
+	output OutAttacker(ehandle) : "Outputs the damage attacker."
+	output OutWeapon(ehandle) : "Outputs the damage weapon."
+	
+	output OutDamage(float) : "Outputs the damage."
+	output OutMaxDamage(float) : "Outputs the max damage."
+	output OutBaseDamage(float) : "Outputs the base damage."
+	
+	output OutDamageType(integer) : "Outputs the damage type."
+	output OutDamageCustom(integer) : "Outputs the damage custom."
+	output OutDamageStats(integer) : "Outputs the damage stats."
+	output OutAmmoType(integer) : "Outputs the ammo type."
+	
+	output OutDamageForce(vector) : "Outputs the damage force."
+	output OutDamagePosition(vector) : "Outputs the damage position."
+	
+	output OutForceFriendlyFire(bool) : "Outputs whether the damage info forces friendly fire."
 ]
 
 //-------------------------------------------------------------------------
