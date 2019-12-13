@@ -105,6 +105,8 @@ $Project
 
 		$File	"ent_create_completion.cpp"
 
+		$File	"movie_display.cpp"
+
 		$Folder	"Peter"
 		{
 			$File	"peter\gametypes.cpp"
