@@ -103,7 +103,7 @@ server.dylib.dSYM/
 config.cfg
 game/*/save/*
 game/*/screenshots/*
-game/*/maps/edt_cache/*
+game/*/edt_cache/*
 
 # shader files
 *.tmp
