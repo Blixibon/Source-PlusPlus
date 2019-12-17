@@ -1,0 +1,5 @@
+PP_SplineRope
+{
+$basetexture "cable\black"
+$shadowdepth 1
+}

@@ -120,7 +120,7 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 			pShaderAPI->GetViewports( &viewport, 1 );
 
 			float c7[4]={ 0.0f, 0.0f, 0.0f, 0.0f };
-			if ( !g_pHardwareConfig->IsAAEnabled() )
+			//if ( !g_pHardwareConfig->IsAAEnabled() )
 			{
 				float flMinPixelDiameter = rope_min_pixel_diameter.GetFloat() / ( float )viewport.m_nWidth;
 				c7[0]= c7[1] = c7[2] = c7[3] = flMinPixelDiameter;

@@ -56,6 +56,8 @@ $Project
 
 		$File	"Bloom.cpp"
 		$File	"screenspace_general.cpp"
+
+		//$File	"cable_dx9.cpp"
 		
 		$File	"cloak_blended_pass_helper.cpp"
 		$File	"emissive_scroll_blended_pass_helper.cpp"
@@ -80,6 +82,8 @@ $Project
 		$File	"object_motion_blur_dx9.cpp"
 		$File	"pbr_dx9.cpp"
 		$File	"pbr_dx9_helper.cpp"
+
+		$File	"SplineRope.cpp"
 
 		$File	"detail_grass.cpp"
 		$File	"ssgi.cpp"

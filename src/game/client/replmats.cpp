@@ -43,13 +43,15 @@ static const char * const pszShaderReplaceDict[][2] = {
 	"EyeRefract",				"PP_EyeRefract",
 	//"Cable",					"PP_Cable",
 	"DepthWrite",				"PP_DepthWrite",
-	//"SplineRope",				"PP_SplineRope",
+	"SplineRope",				"PP_SplineRope",
 	"Refract",					"PP_Refract",
 	"Shadow",					"PP_Shadow",
 	"ShadowBuild",				"PP_ShadowBuild",
 	"ShadowModel",				"PP_ShadowModel",
 	"Water",					"PP_Water",
-	"TEMP",						"PP_TEMP"
+	"TEMP",						"PP_TEMP",
+
+	"Cable",					"PP_SplineRope"
 };
 static const int iNumShaderReplaceDict = ARRAYSIZE( pszShaderReplaceDict );
 
