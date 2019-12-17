@@ -2,7 +2,7 @@
 //exec default.cfg
 
 // Setup custom controller
-exec joystick.cfg
+exec modsettings.cfg
 
 // run a user script file if present
 exec autoexec.cfg
