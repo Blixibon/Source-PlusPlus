@@ -31,6 +31,17 @@ enum LAZFlashlightType
 	FLASHLIGHT_TYPE_COUNT
 };
 
+enum PlayerColors_e
+{
+	PLRCOLOR_CLOTHING = 0,
+	PLRCOLOR_CLOTHING_GLOW,
+	PLRCOLOR_WEAPON,
+	PLRCOLOR_PORTAL1,
+	PLRCOLOR_PORTAL2,
+
+	NUM_PLAYER_COLORS
+};
+
 #if defined( CLIENT_DLL )
 #define CLaz_Player C_Laz_Player
 #endif

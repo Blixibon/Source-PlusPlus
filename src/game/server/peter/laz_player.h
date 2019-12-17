@@ -248,6 +248,7 @@ protected:
 	void OnAnimEventDeployManhack(animevent_t *pEvent);
 	void OnAnimEventStartDeployManhack(void);
 	void		ReleaseManhack(void);
+	void UpdatePlayerColor(void);
 
 	bool ShouldRunRateLimitedCommand(const CCommand &args);
 
@@ -282,7 +283,10 @@ protected:
 	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
 	CNetworkString(m_strMinionClass, 32);
 
+	Vector		m_vecPlayerColors[NUM_PLAYER_COLORS];
+
 	friend void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
+	friend class CLAZPlayerResource;
 public:
 	CNetworkVar(bool, m_bHasLongJump);
 };

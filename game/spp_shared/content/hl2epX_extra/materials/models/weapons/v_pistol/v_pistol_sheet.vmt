@@ -29,5 +29,13 @@
 	"$rimlightexponent"			"100"
 	"$rimlightboost"			".5"
 	"$rimmask"			"1"
+	
+	"Proxies"
+	{
+		"PlayerWeaponColor"
+		{
+			resultVar	"$selfillumtint"
+		}
+	}
 }
 

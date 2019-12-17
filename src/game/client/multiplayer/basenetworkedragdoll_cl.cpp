@@ -411,6 +411,14 @@ void C_BaseNetworkedRagdoll::OnDataChanged(DataUpdateType_t type)
 	}
 }
 
+int C_BaseNetworkedRagdoll::GetPlayerEntIndex() const
+{
+	if (m_hPlayer)
+		return m_hPlayer->entindex();
+
+	return 0;
+}
+
 IRagdoll* C_BaseNetworkedRagdoll::GetIRagdoll() const
 {
 	return m_pRagdoll;

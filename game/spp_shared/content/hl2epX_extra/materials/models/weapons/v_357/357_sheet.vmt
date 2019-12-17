@@ -33,5 +33,11 @@ $phongexponenttexture "models\Weapons\v_357\357_sheet_phong"
     "$envmapfresnel"			"0"
 	"$nocull"				"1"
 
-
+	"Proxies"
+	{
+		"PlayerWeaponColor"
+		{
+			resultVar	"$selfillumtint"
+		}
+	}
 }

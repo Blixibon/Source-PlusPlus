@@ -21,4 +21,12 @@ $envmapfresnel 1
 $envmapFresnelMinMaxExp "[0 5 .4]"
 $envmaptint "[.25 .25 .25]"
 $phongalbedotint 1
+
+    "Proxies"
+	{
+		"PlayerWeaponColor"
+		{
+			resultVar	"$selfillumtint"
+		}
+	}
 }

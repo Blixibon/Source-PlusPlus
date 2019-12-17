@@ -20,6 +20,14 @@
 #else
 	#include "c_portal_player.h"
 #endif
+#ifdef HL2_LAZUL
+#ifndef CLIENT_DLL
+#include "peter/laz_player_resource.h"
+#else
+#include "peter/c_laz_player_resource.h"
+#endif
+#endif // HL2_LAZUL
+
 #include "PortalSimulation.h"
 
 #ifdef CLIENT_DLL
@@ -159,10 +167,51 @@ Color UTIL_Portal_Color( int iPortal, int iLinkageID )
 	}
 	else
 	{
-		switch (iLinkageID)
+		if (gpGlobals->maxClients < 3)
 		{
-		case 0:
-		default:
+			switch (iLinkageID)
+			{
+			case 0:
+			default:
+				if (iPortal == 2)
+				{
+					// PORTAL 2
+					return Color(255, 160, 32, 255);
+				}
+				else
+				{
+					// PORTAL 1
+					return Color(64, 160, 255, 255);
+				}
+				break;
+			case 1:
+				if (iPortal == 2)
+				{
+					// PORTAL 2
+					return Color(0.075 * 255, 0, 0.824 * 255, 255);
+				}
+				else
+				{
+					// PORTAL 1
+					return Color(0.125 * 255, 0.500 * 255, 0.824 * 255, 255);
+				}
+				break;
+			case 2:
+				if (iPortal == 2)
+				{
+					// PORTAL 2
+					return Color(0.225 * 255, 0.010 * 255, 0.010 * 255, 255);
+				}
+				else
+				{
+					// PORTAL 1
+					return Color(255, 0.705 * 255, 0.125 * 255, 255);
+				}
+				break;
+			}
+		}
+		else if (iLinkageID == 0)
+		{
 			if (iPortal == 2)
 			{
 				// PORTAL 2
@@ -173,31 +222,18 @@ Color UTIL_Portal_Color( int iPortal, int iLinkageID )
 				// PORTAL 1
 				return Color(64, 160, 255, 255);
 			}
-			break;
-		case 1:
-			if (iPortal == 2)
-			{
-				// PORTAL 2
-				return Color(0.075 * 255, 0, 0.824 * 255, 255);
-			}
-			else
-			{
-				// PORTAL 1
-				return Color(0.125 * 255, 0.500 * 255, 0.824 * 255, 255);
-			}
-			break;
-		case 2:
-			if (iPortal == 2)
-			{
-				// PORTAL 2
-				return Color(0.225 * 255, 0.010 * 255, 0.010 * 255, 255);
-			}
-			else
-			{
-				// PORTAL 1
-				return Color(255, 0.705 * 255, 0.125 * 255, 255);
-			}
-			break;
+		}
+		else
+		{
+#ifdef HL2_LAZUL
+#ifndef CLIENT_DLL
+			CLAZPlayerResource* pLazRes = (CLAZPlayerResource*)g_pPlayerResource;
+#else
+			C_LAZ_PlayerResource* pLazRes = (C_LAZ_PlayerResource*)g_PR;
+#endif // !CLIENT_DLL
+			if (pLazRes)
+				return pLazRes->GetPlayerColor(iLinkageID, (iPortal == 2) ? PLRCOLOR_PORTAL2 : PLRCOLOR_PORTAL1);
+#endif // HL2_LAZUL
 		}
 	}
 

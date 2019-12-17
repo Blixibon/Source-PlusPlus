@@ -19,6 +19,7 @@
 #include "hltvdirector.h"
 #include "game.h"
 #include "team_control_point_master.h"
+#include "peter/laz_player_resource.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -699,6 +700,7 @@ static const char* s_LazPreserveEnts[] =
 	"objective_resource",
 	"team_manager",
 	"player_manager",
+	"laz_player_manager",
 	//"info_player_teamspawn",
 	"", // END Marker
 };
@@ -1104,26 +1106,51 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 
 	if (addDefault)
 	{
-		pPlayer->GiveAmmo(255, "Pistol");
-		pPlayer->GiveAmmo(45, "SMG1");
-		pPlayer->GiveAmmo(1, "grenade");
-		pPlayer->GiveAmmo(6, "Buckshot");
-		pPlayer->GiveAmmo(6, "357");
-
-		if (pPlayer->GetTeamNumber() == TEAM_COMBINE)
+		switch (pPlayer->GetTeamNumber())
 		{
+		case TEAM_ZOMBIES:
+		{
+			pPlayer->GiveAmmo(2, "Snark");
+			pPlayer->GiveNamedItem("weapon_snark");
+		}
+		break;
+		case TEAM_MILITARY:
+		{
+			pPlayer->GiveAmmo(255, "9mm");
+			pPlayer->GiveAmmo(6, "Buckshot");
+			pPlayer->GiveAmmo(1, "grenade");
+			pPlayer->GiveNamedItem("weapon_crowbar_bms");
+			pPlayer->GiveNamedItem("weapon_glock_bms");
+			pPlayer->GiveNamedItem("weapon_mp5_bms");
+			pPlayer->GiveNamedItem("weapon_frag_bms");
+		}
+		break;
+		case TEAM_COMBINE:
+		{
+			pPlayer->GiveAmmo(255, "Pistol");
+			pPlayer->GiveAmmo(45, "SMG1");
+			pPlayer->GiveAmmo(6, "Buckshot");
+			pPlayer->GiveAmmo(1, "grenade");
 			pPlayer->GiveNamedItem("weapon_stunstick");
+			pPlayer->GiveNamedItem("weapon_pistol");
+			pPlayer->GiveNamedItem("weapon_smg1");
+			pPlayer->GiveNamedItem("weapon_frag");
 		}
-		else
+		break;
+		case TEAM_REBELS:
+		default:
 		{
+			pPlayer->GiveAmmo(255, "Pistol");
+			pPlayer->GiveAmmo(45, "SMG1");
+			pPlayer->GiveAmmo(6, "357");
+			pPlayer->GiveAmmo(1, "grenade");
 			pPlayer->GiveNamedItem("weapon_crowbar");
+			pPlayer->GiveNamedItem("weapon_pistol");
+			pPlayer->GiveNamedItem("weapon_smg1");
+			pPlayer->GiveNamedItem("weapon_frag");
 		}
-
-		pPlayer->GiveNamedItem("weapon_pistol");
-		pPlayer->GiveNamedItem("weapon_smg1");
-		pPlayer->GiveNamedItem("weapon_frag");
-		if (!pPlayer->IsBot())
-			pPlayer->GiveNamedItem("weapon_physcannon");
+		break;
+		}
 	}
 
 	CLaz_Player* pLaz = assert_cast<CLaz_Player*> (pPlayer);
@@ -4795,12 +4822,13 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 //-----------------------------------------------------------------------------
 void CLazuul::CreateStandardEntities()
 {
-#if 0
+#if 1
 	// Create the player resource
-	g_pPlayerResource = (CPlayerResource*)CBaseEntity::Create("tf_player_manager", vec3_origin, vec3_angle);
+	g_pPlayerResource = (CPlayerResource*)CBaseEntity::Create("laz_player_manager", vec3_origin, vec3_angle);
+	g_pPlayerResource->AddEFlags(EFL_KEEP_ON_RECREATE_ENTITIES);
 
 	// Create the objective resource
-	g_pObjectiveResource = (CTFObjectiveResource*)CBaseEntity::Create("tf_objective_resource", vec3_origin, vec3_angle);
+	g_pObjectiveResource = (CBaseTeamObjectiveResource*)CBaseEntity::Create("objective_resource", vec3_origin, vec3_angle);
 #else
 	BaseClass::CreateStandardEntities();
 

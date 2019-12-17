@@ -126,4 +126,12 @@ inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)
 	return dynamic_cast<C_Laz_Player*>(pEntity);
 }
 
+class IPlayerColorConvars
+{
+public:
+	virtual ConVar* GetColorConVar(int iColor) = 0;
+};
+
+extern IPlayerColorConvars* g_pColorConvars;
+
 #endif

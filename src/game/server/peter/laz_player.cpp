@@ -302,6 +302,8 @@ void CLaz_Player::Spawn(void)
 		m_nSpecialAttack = -1;
 	}
 
+	UpdatePlayerColor();
+
 	if (!IsObserver())
 	{
 		pl.deadflag = false;
@@ -590,6 +592,9 @@ void CLaz_Player::PreThink(void)
 {
 	BaseClass::PreThink();
 	State_PreThink();
+
+	if (!g_pGameRules->IsMultiplayer())
+		UpdatePlayerColor();
 }
 
 //-----------------------------------------------------------------------------
@@ -1030,6 +1035,24 @@ void CLaz_Player::ReleaseManhack(void)
 	{
 		GetPlayerSquad()->AddToSquad(pManhack);
 	}*/
+}
+
+void CLaz_Player::UpdatePlayerColor(void)
+{
+	if (!IsFakeClient())
+	{
+		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
+		{
+			CFmtStr str("cl_laz_player_color%i", i);
+			const char* pszValue = engine->GetClientConVarValue(entindex(), str.Access());
+			UTIL_StringToVector(m_vecPlayerColors[i].Base(), pszValue);
+		}
+	}
+	else
+	{
+		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
+			m_vecPlayerColors[i] = RandomVector(0.f, 1.f);
+	}
 }
 
 bool CLaz_Player::ShouldRunRateLimitedCommand(const CCommand &args)

@@ -69,11 +69,6 @@ C_PlayerResource::C_PlayerResource()
 	m_Colors[TEAM_COMBINE] = COLOR_BLUE;
 	m_Colors[TEAM_REBELS] = COLOR_RED;
 	m_Colors[TEAM_UNASSIGNED] = COLOR_YELLOW;
-#elif HL2_LAZUL
-	m_Colors[TEAM_COMBINE] = COLOR_BLUE;
-	m_Colors[TEAM_REBELS] = COLOR_RED;
-	m_Colors[TEAM_ZOMBIES] = COLOR_YELLOW;
-	m_Colors[TEAM_MILITARY] = COLOR_GREEN;
 #endif
 
 	g_PR = this;

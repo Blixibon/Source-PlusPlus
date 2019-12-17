@@ -63,6 +63,7 @@ $Project "Client (Lazuul)"
 			$File "peter\laz_hud_chat.h"
 			$File "peter\laz_hud_player.cpp"
 			$File "peter\laz_presence.cpp"
+			$File "peter\c_laz_player_resource.cpp"
 
 			$Folder "HUD"
 			{

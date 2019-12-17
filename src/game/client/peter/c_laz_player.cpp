@@ -14,6 +14,11 @@
 #include "PortalRender.h"
 #include "iclientvehicle.h"
 #include "bone_setup.h"
+#include "functionproxy.h"
+#include "c_laz_player_resource.h"
+#include "multiplayer/basenetworkedragdoll_cl.h"
+#include "C_PortalGhostRenderable.h"
+#include "fmtstr.h"
 
 static Vector TF_TAUNTCAM_HULL_MIN(-9.0f, -9.0f, -9.0f);
 static Vector TF_TAUNTCAM_HULL_MAX(9.0f, 9.0f, 9.0f);
@@ -46,6 +51,181 @@ END_RECV_TABLE();
 BEGIN_PREDICTION_DATA(C_Laz_Player)
 DEFINE_PRED_FIELD(m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE),
 END_PREDICTION_DATA();
+
+class CPlayerColorConvarSystem : public CAutoGameSystem, public IPlayerColorConvars
+{
+public:
+	CPlayerColorConvarSystem() : CAutoGameSystem("PlayerColorConvarSystem")
+	{
+		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
+		{
+			m_pConvars[i] = nullptr;
+		}
+	}
+
+	virtual bool Init()
+	{
+		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
+		{
+			CFmtStr str("cl_laz_player_color%i", i);
+			m_pszConvarNames[i] = V_strdup(str.Access());
+
+			m_pConvars[i] = new ConVar(m_pszConvarNames[i], "0 1 1", FCVAR_ARCHIVE | FCVAR_USERINFO);
+		}
+
+		return true;
+	}
+
+	virtual void Shutdown()
+	{
+		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
+		{
+			if (m_pConvars[i])
+			{
+				g_pCVar->UnregisterConCommand(m_pConvars[i]);
+				delete m_pConvars[i];
+				m_pConvars[i] = nullptr;
+				delete m_pszConvarNames[i];
+				m_pszConvarNames[i] = nullptr;
+			}
+		}
+	}
+
+	virtual ConVar* GetColorConVar(int iColor)
+	{
+		if (iColor < 0 || iColor >= NUM_PLAYER_COLORS)
+			return nullptr;
+
+		return m_pConvars[iColor];
+	}
+
+protected:
+	ConVar* m_pConvars[NUM_PLAYER_COLORS];
+	const char* m_pszConvarNames[NUM_PLAYER_COLORS];
+};
+
+CPlayerColorConvarSystem g_ColorConvarSystem;
+IPlayerColorConvars* g_pColorConvars = &g_ColorConvarSystem;
+
+class CLazPlayerColorProxy : public CResultProxy
+{
+public:
+	virtual bool Init(IMaterial* pMaterial, KeyValues* pKeyValues);
+	virtual void OnBind(void*);
+
+protected:
+	virtual int GetPlayerColor() { return PLRCOLOR_CLOTHING; }
+	Vector GetDefaultColor();
+	IMaterialVar* m_pSrc1;
+};
+
+Vector CLazPlayerColorProxy::GetDefaultColor()
+{
+	if (m_pSrc1)
+	{
+		Vector vRet;
+		V_memcpy(vRet.Base(), m_pSrc1->GetVecValue(), sizeof(vec_t) * 3);
+	}
+
+	return Vector(62 / 255, 88 / 255, 106 / 255);
+}
+
+bool CLazPlayerColorProxy::Init(IMaterial* pMaterial, KeyValues* pKeyValues)
+{
+	if (!CResultProxy::Init(pMaterial, pKeyValues))
+		return false;
+
+	char const* pSrcVar1 = pKeyValues->GetString("defaultColorVar", nullptr);
+	if (pSrcVar1)
+	{
+		bool foundVar;
+		m_pSrc1 = pMaterial->FindVar(pSrcVar1, &foundVar, true);
+		if (!foundVar)
+			return false;
+	}
+	else
+	{
+		m_pSrc1 = nullptr;
+	}
+
+	return true;
+}
+
+void CLazPlayerColorProxy::OnBind(void* pRend)
+{
+	C_BaseEntity* pEnt = BindArgToEntity(pRend);
+	if (pEnt)
+	{
+		int iEntIndex = 0;
+
+		C_PortalGhostRenderable* pGhostAnim = dynamic_cast<C_PortalGhostRenderable*> (pEnt);
+		if (pGhostAnim)
+			pEnt = pGhostAnim->m_pGhostedRenderable;
+
+		//C_BasePlayer* pPlayer = ToBasePlayer(pEnt);
+		if (pEnt->IsPlayer())
+		{
+			iEntIndex = pEnt->entindex();
+		}
+		else
+		{
+			C_BaseNetworkedRagdoll* pRagdoll = dynamic_cast<C_BaseNetworkedRagdoll*> (pEnt);
+			if (pRagdoll)
+				iEntIndex = pRagdoll->GetPlayerEntIndex();
+			else
+			{
+				C_BaseCombatWeapon* pWeapon = dynamic_cast<C_BaseCombatWeapon*> (pEnt);
+				if (pWeapon)
+				{
+					CBaseCombatCharacter* pOwner = pWeapon->GetOwner();
+					if (pOwner && pOwner->IsPlayer())
+					{
+						iEntIndex = pOwner->entindex();
+					}
+				}
+				else
+				{
+					C_BaseViewModel* pViewModel = dynamic_cast<C_BaseViewModel*> (pEnt);
+					if (pViewModel)
+					{
+						C_BaseEntity* pPlayer = pViewModel->GetOwner();
+						if (pPlayer)
+							iEntIndex = pPlayer->entindex();
+					}
+				}
+			}
+		}
+
+		if (iEntIndex > 0)
+		{
+			C_LAZ_PlayerResource* pLazRes = (C_LAZ_PlayerResource*)g_PR;
+			if (pLazRes)
+			{
+				Vector vecColor = pLazRes->GetPlayerColorVector(iEntIndex, GetPlayerColor());
+				m_pResult->SetVecValue(vecColor.Base(), 3);
+				return;
+			}
+		}
+	}
+
+	m_pResult->SetVecValue(GetDefaultColor().Base(), 3);
+}
+
+class CLazPlayerGlowColorProxy : public CLazPlayerColorProxy
+{
+protected:
+	virtual int GetPlayerColor() { return PLRCOLOR_CLOTHING_GLOW; }
+};
+
+class CLazPlayerWeaponColorProxy : public CLazPlayerColorProxy
+{
+protected:
+	virtual int GetPlayerColor() { return PLRCOLOR_WEAPON; }
+};
+
+EXPOSE_INTERFACE(CLazPlayerColorProxy, IMaterialProxy, "PlayerColor" IMATERIAL_PROXY_INTERFACE_VERSION);
+EXPOSE_INTERFACE(CLazPlayerWeaponColorProxy, IMaterialProxy, "PlayerWeaponColor" IMATERIAL_PROXY_INTERFACE_VERSION);
+EXPOSE_INTERFACE(CLazPlayerGlowColorProxy, IMaterialProxy, "PlayerGlowColor" IMATERIAL_PROXY_INTERFACE_VERSION);
 
 #define	HL2_WALK_SPEED 150
 #define	HL2_NORM_SPEED 190
@@ -787,7 +967,7 @@ int C_Laz_Player::DrawModel(int flags)
 	if (IsRenderingMyFlashlight())
 		return 0;
 
-	if (CurrentViewID() == VIEW_REFLECTION)
+	if (CurrentViewID() == VIEW_REFLECTION && !g_pPortalRender->IsRenderingPortal())
 		return 0;
 
 	return BaseClass::DrawModel(flags);
@@ -1194,7 +1374,7 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 		return;
 	}
 
-	if (g_pPortalRender->IsRenderingPortal())
+	if (g_pPortalRender->IsRenderingPortal() || m_bForceNormalBoneSetup)
 	{
 		return;
 	}
