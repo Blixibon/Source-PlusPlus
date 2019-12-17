@@ -2404,11 +2404,11 @@ void CBaseEntity::FollowEntity( CBaseEntity *pBaseEntity, bool bBoneMerge )
 	}
 }
 
-void CBaseEntity::SetEffectEntity( CBaseEntity *pEffectEnt )
+void CBaseEntity::SetEffectEntity(CBaseEntity* pEffectEnt, int iEnt)
 {
-	if ( m_hEffectEntity.Get() != pEffectEnt )
+	if (m_hEffectEntity[iEnt].Get() != pEffectEnt)
 	{
-		m_hEffectEntity = pEffectEnt;
+		m_hEffectEntity.GetForModify(iEnt) = pEffectEnt;
 	}
 }
 

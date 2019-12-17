@@ -19,6 +19,7 @@
 #include "c_fire_smoke.h"
 #include "c_entitydissolve.h"
 #include "engine/IEngineSound.h"
+#include "peter/c_entityelectric.h"
 #endif
 
 //SERVER
@@ -26,6 +27,7 @@
 #include "util.h"
 #include "EntityFlame.h"
 #include "EntityDissolve.h"
+#include "peter/env_entity_electric.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -965,7 +967,7 @@ void CRagdollLRURetirement::Update( float frametime ) // EPISODIC VERSION
 
 			next = m_LRU.Next(i);
 			IPhysicsObject *pObject = pRagdoll->VPhysicsGetObject();
-			if ( pRagdoll && (pRagdoll->GetEffectEntity() || ( pObject && !pObject->IsAsleep()) ) )
+			if ( pRagdoll && (pRagdoll->GetEffectEntity(ENT_EFFECT_ANY) || ( pObject && !pObject->IsAsleep()) ) )
 				continue;
 
 			if ( pRagdoll )
@@ -1006,7 +1008,7 @@ void CRagdollLRURetirement::Update( float frametime ) // EPISODIC VERSION
 
 			//Just ignore it until we're done burning/dissolving.
 			IPhysicsObject *pObject = pRagdoll->VPhysicsGetObject();
-			if ( pRagdoll && (pRagdoll->GetEffectEntity() || ( pObject && !pObject->IsAsleep()) ) )
+			if ( pRagdoll && (pRagdoll->GetEffectEntity(ENT_EFFECT_ANY) || ( pObject && !pObject->IsAsleep()) ) )
 				continue;
 
 	#ifdef CLIENT_DLL
@@ -1092,7 +1094,7 @@ void CRagdollLRURetirement::Update( float frametime ) // Non-episodic version
 		CBaseAnimating *pRagdoll = m_LRU[i].Get();
 
 		//Just ignore it until we're done burning/dissolving.
-		if ( pRagdoll && pRagdoll->GetEffectEntity() )
+		if ( pRagdoll && pRagdoll->GetEffectEntity(ENT_EFFECT_ANY) )
 			continue;
 
 #ifdef CLIENT_DLL
@@ -1199,7 +1201,7 @@ C_EntityDissolve *DissolveEffect( C_BaseEntity *pTarget, float flTime )
 		// Do this last
 		pDissolve->OnDataChanged(DATA_UPDATE_CREATED);
 
-		pTarget->SetEffectEntity( pDissolve );
+		pTarget->SetEffectEntity( pDissolve, ENT_EFFECT_DISSOLVE );
 	}
 
 	return pDissolve;
@@ -1251,9 +1253,39 @@ C_EntityFlame *FireEffect( C_BaseAnimating *pTarget, C_BaseEntity *pServerFire, 
 	return pFire;
 }
 
+C_EntityElectric* ShockEffect(C_BaseEntity* pTarget, float flTime, int iType)
+{
+	C_EntityElectric* pDissolve = new C_EntityElectric;
+
+	if (pDissolve->InitializeAsClientEntity(NULL, RENDER_GROUP_TRANSLUCENT_ENTITY) == false)
+	{
+		pDissolve->Release();
+		return NULL;
+	}
+
+	if (pDissolve != NULL)
+	{
+		pDissolve->SetParent(pTarget);
+		pDissolve->m_flStartTime = flTime;
+		pDissolve->m_nShockType = iType;
+		pDissolve->OnDataChanged(DATA_UPDATE_CREATED);
+		pDissolve->SetAbsOrigin(pTarget->GetAbsOrigin());
+
+
+		pTarget->SetEffectEntity(pDissolve, ENT_EFFECT_SHOCK);
+
+		pDissolve->SetNextClientThink(pDissolve->m_flStartTime + 2.0f);
+	}
+
+	return pDissolve;
+
+}
+
 void C_BaseAnimating::IgniteRagdoll( C_BaseAnimating *pSource )
 {
-	C_BaseEntity *pChild = pSource->GetEffectEntity();
+	m_iFireEffectIndex = pSource->m_iFireEffectIndex;
+
+	C_BaseEntity *pChild = pSource->GetEffectEntity(ENT_EFFECT_FIRE);
 	
 	if ( pChild )
 	{
@@ -1262,7 +1294,7 @@ void C_BaseAnimating::IgniteRagdoll( C_BaseAnimating *pSource )
 
 		if ( pFireChild )
 		{
-			pRagdoll->SetEffectEntity ( FireEffect( pRagdoll, pFireChild, NULL, NULL, NULL ) );
+			pRagdoll->SetEffectEntity ( FireEffect( pRagdoll, pFireChild, NULL, NULL, NULL ), ENT_EFFECT_FIRE );
 		}
 	}
 }
@@ -1271,7 +1303,7 @@ void C_BaseAnimating::IgniteRagdoll( C_BaseAnimating *pSource )
 
 void C_BaseAnimating::TransferDissolveFrom( C_BaseAnimating *pSource )
 {
-	C_BaseEntity *pChild = pSource->GetEffectEntity();
+	C_BaseEntity *pChild = pSource->GetEffectEntity(ENT_EFFECT_DISSOLVE);
 	
 	if ( pChild )
 	{
@@ -1311,6 +1343,37 @@ void C_BaseAnimating::TransferDissolveFrom( C_BaseAnimating *pSource )
 	}
 }
 
+
+void C_BaseAnimating::TransferElectricsFrom(C_BaseAnimating* pSource)
+{
+	C_BaseEntity* pChild = pSource->GetEffectEntity(ENT_EFFECT_SHOCK);
+
+	if (pChild)
+	{
+		C_EntityElectric* pDissolveChild = dynamic_cast<C_EntityElectric*>(pChild);
+
+		if (pDissolveChild)
+		{
+			C_ClientRagdoll* pRagdoll = dynamic_cast<C_ClientRagdoll*> (this);
+
+			if (pRagdoll)
+			{
+				pRagdoll->m_flEffectTime = pDissolveChild->m_flStartTime;
+
+				C_EntityElectric* pDissolve = ShockEffect(pRagdoll, pRagdoll->m_flEffectTime, pDissolveChild->m_nShockType);
+
+				if (pDissolve)
+				{
+					pDissolve->SetRenderMode(pDissolveChild->GetRenderMode());
+					pDissolve->m_nRenderFX = pDissolveChild->m_nRenderFX;
+					pDissolve->SetRenderColor(255, 255, 255, 255);
+					pDissolveChild->SetRenderColorA(0);
+				}
+			}
+		}
+	}
+}
+
 #endif
 
 //SERVER
@@ -1330,7 +1393,7 @@ void CBaseAnimating::TransferDissolveFrom( CBaseAnimating *pAnim )
 		AddFlag( FL_DISSOLVING );
 		m_flDissolveStartTime = pAnim->m_flDissolveStartTime;
 
-		CEntityDissolve *pDissolveFrom = dynamic_cast < CEntityDissolve * > (pAnim->GetEffectEntity());
+		CEntityDissolve *pDissolveFrom = dynamic_cast < CEntityDissolve * > (pAnim->GetEffectEntity(ENT_EFFECT_DISSOLVE));
 
 		if ( pDissolveFrom )
 		{
@@ -1345,6 +1408,30 @@ void CBaseAnimating::TransferDissolveFrom( CBaseAnimating *pAnim )
 				pDissolve->m_flFadeOutModelLength = CORE_DISSOLVE_MODEL_FADE_LENGTH;
 				pDissolve->m_flFadeInLength = CORE_DISSOLVE_FADEIN_LENGTH;
 			}
+		}
+	}
+}
+
+void CBaseAnimating::TransferElectricsFrom(CBaseAnimating* pSource)
+{
+	CBaseEntity* pChild = pSource->GetEffectEntity(ENT_EFFECT_SHOCK);
+
+	if (pChild)
+	{
+		CEntElectric* pDissolveChild = dynamic_cast<CEntElectric*>(pChild);
+
+		if (pDissolveChild)
+		{
+			CEntElectric* pDissolve = CEntElectric::Create(this, pSource);
+
+			if (pDissolve)
+			{
+				pDissolve->SetRenderMode(pDissolveChild->GetRenderMode());
+				pDissolve->m_nRenderFX = pDissolveChild->m_nRenderFX;
+				pDissolve->SetRenderColor(255, 255, 255, 255);
+				pDissolveChild->SetRenderColorA(0);
+			}
+
 		}
 	}
 }

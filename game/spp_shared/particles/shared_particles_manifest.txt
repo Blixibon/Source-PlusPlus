@@ -17,6 +17,10 @@ particles_manifest
 	"file"		"particles/npc_garg.pcf"
 	"file"		"particles/npc_zombies.pcf"
 	"file"		"particles/fx_blood.pcf"
+	"file"		"particles/gib_fx.pcf"
+	"file"		"particles/gib_special_fx.pcf"
+	
+	"file"		"particles/gibs.pcf"
 	
 	"file"		"particles/hl2mmod_weaponeffects.pcf"
 	"file"		"!particles/hl2mmod_muzzleflashes.pcf"

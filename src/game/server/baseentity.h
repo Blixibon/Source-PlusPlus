@@ -553,8 +553,8 @@ public:
 	// FIXME: These are virtual only because of CNodeEnt
 	CBaseEntity				*GetOwnerEntity() const;
 	virtual void			SetOwnerEntity( CBaseEntity* pOwner );
-	void					SetEffectEntity( CBaseEntity *pEffectEnt );
-	CBaseEntity				*GetEffectEntity() const;
+	void					SetEffectEntity(CBaseEntity* pEffectEnt, int iEnt);
+	CBaseEntity* GetEffectEntity(int iEnt) const;
 
 	// Only CBaseEntity implements these. CheckTransmit calls the virtual ShouldTransmit to see if the
 	// entity wants to be sent. If so, it calls SetTransmit, which will mark any dependents for transmission too.
@@ -1709,7 +1709,8 @@ private:
 	CNetworkVarEmbedded( CCollisionProperty, m_Collision );
 
 	CNetworkHandle( CBaseEntity, m_hOwnerEntity );	// only used to point to an edict it won't collide with
-	CNetworkHandle( CBaseEntity, m_hEffectEntity );	// Fire/Dissolve entity.
+	//CNetworkHandle( CBaseEntity, m_hEffectEntity );	// Fire/Dissolve entity.
+	CNetworkArray(EHANDLE, m_hEffectEntity, ENT_EFFECT_MAX);
 
 	CNetworkVar( int, m_CollisionGroup );		// used to cull collision tests
 	IPhysicsObject	*m_pPhysicsObject;	// pointer to the entity's physics object (vphysics.dll)

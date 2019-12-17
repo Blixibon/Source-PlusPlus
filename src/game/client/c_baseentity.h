@@ -324,8 +324,8 @@ public:
 	C_BaseEntity					*GetOwnerEntity( void ) const;
 	void							SetOwnerEntity( C_BaseEntity *pOwner );
 
-	C_BaseEntity					*GetEffectEntity( void ) const;
-	void							SetEffectEntity( C_BaseEntity *pEffectEnt );
+	C_BaseEntity					*GetEffectEntity(int iEffect) const;
+	void							SetEffectEntity( C_BaseEntity *pEffectEnt, int iEffect );
 
 	// This function returns a value that scales all damage done by this entity.
 	// Use CDamageModifier to hook in damage modifiers on a guy.
@@ -1658,7 +1658,7 @@ private:
 
 	// The owner!
 	EHANDLE							m_hOwnerEntity;
-	EHANDLE							m_hEffectEntity;
+	CNetworkArray(EHANDLE, m_hEffectEntity, ENT_EFFECT_MAX);
 	
 	// This is a random seed used by the networking code to allow client - side prediction code
 	//  randon number generators to spit out the same random numbers on both sides for a particular

@@ -126,6 +126,7 @@
 #include "sourcevr/isourcevirtualreality.h"
 #include "client_virtualreality.h"
 #include "mumble.h"
+#include "saverestore_stringtable.h"
 
 // NVNT includes
 #include "hud_macros.h"
@@ -297,6 +298,8 @@ INetworkStringTable *g_pStringTableServerMapCycleMvM = NULL;
 #ifdef HL2_LAZUL
 INetworkStringTable *g_pStringTablePlayerFootSteps = NULL;
 #endif // HL2_LAZUL
+
+CStringTableSaveRestoreOps g_ParticleStringTableOPs;
 
 static CGlobalVarsBase dummyvars( true );
 // So stuff that might reference gpGlobals during DLL initialization won't have a NULL pointer.
@@ -1937,6 +1940,7 @@ void CHLClient::InstallStringTableCallback( const char *tableName )
 		networkstringtable->SetAllowClientSideAddString( g_pStringTableParticleEffectNames, true );
 		// When the particle system list changes, we need to know immediately
 		g_pStringTableParticleEffectNames->SetStringChangedCallback( NULL, OnParticleSystemStringTableChanged );
+		g_ParticleStringTableOPs.Init(g_pStringTableParticleEffectNames);
 	}
 	else if ( !Q_strcasecmp( tableName, "ServerMapCycle" ) )
 	{
@@ -2209,7 +2213,7 @@ void OnRenderStart()
 	// are at the correct location
 	view->OnRenderStart();
 
-	RopeManager()->OnRenderStart();
+	//RopeManager()->OnRenderStart();
 	
 	// This will place all entities in the correct position in world space and in the KD-tree
 	C_BaseAnimating::UpdateClientSideAnimations();

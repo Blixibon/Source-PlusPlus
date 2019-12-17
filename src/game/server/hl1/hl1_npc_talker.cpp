@@ -301,6 +301,8 @@ int CHL1NPCTalker::SelectSchedule ( void )
 
 void CHL1NPCTalker::Precache()
 {
+	PrecacheParticleSystem("burning_gib_01");
+
 	BaseClass::Precache();
 
 	PrecacheScriptSound( "Barney.Close" );

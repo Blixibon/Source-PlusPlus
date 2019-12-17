@@ -151,6 +151,8 @@ void CHL1BaseNPC::Precache( void )
 	PrecacheModel( "models/gibs/aghl1.mdl" );
 	PrecacheModel( "models/gibs/hghl1.mdl" );
 
+	PrecacheParticleSystem("burning_gib_01");
+
 	BaseClass::Precache();
 }
 

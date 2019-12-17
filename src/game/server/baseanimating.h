@@ -315,6 +315,7 @@ public:
 	bool Dissolve( const char *pMaterialName, float flStartTime, bool bNPCOnly = true, int nDissolveType = 0, Vector vDissolverOrigin = vec3_origin, int iMagnitude = 0 );
 	bool IsDissolving() { return ( (GetFlags() & FL_DISSOLVING) != 0 ); }
 	void TransferDissolveFrom( CBaseAnimating *pAnim );
+	void TransferElectricsFrom(CBaseAnimating* pSource);
 
 	// animation needs
 	float				m_flGroundSpeed;	// computed linear movement rate for current sequence
@@ -343,6 +344,8 @@ public:
 	inline void	ClearBoneCacheFlags( unsigned short fFlag ) { m_fBoneCacheFlags &= ~fFlag; }
 
 	bool PrefetchSequence( int iSequence );
+
+	virtual void 	DoDamageFX(const CTakeDamageInfo &info);
 
 private:
 	void LockStudioHdr();
@@ -373,6 +376,8 @@ public:
 	void InitStepHeightAdjust( void );
 	void SetIKGroundContactInfo( float minHeight, float maxHeight );
 	void UpdateStepOrigin( void );
+
+	virtual const char* GetBurningParticle() { return "burning_character"; }
 
 protected:
 	float				m_flIKGroundContactTime;
@@ -414,6 +419,8 @@ private:
 
 	CNetworkHandle( CBaseEntity, m_hLightingOrigin );
 	CNetworkHandle( CBaseEntity, m_hLightingOriginRelative );
+
+	CNetworkVar(int, m_iFireEffectIndex);
 
 	string_t m_iszLightingOriginRelative;	// for reading from the file only
 	string_t m_iszLightingOrigin;			// for reading from the file only

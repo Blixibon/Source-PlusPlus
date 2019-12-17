@@ -57,6 +57,7 @@
 #include "peter/shelleject_new.h"
 #include "fmtstr.h"
 #include "networkstringtable_clientdll.h"
+#include "saverestore_stringtable.h"
 
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
@@ -93,6 +94,8 @@ static ConVar dbganimmodel( "dbganimmodel", "" );
 #endif // STAGING_ONLY
 
 extern INetworkStringTable* g_pStringTablePlayerFootSteps;
+
+extern CStringTableSaveRestoreOps g_ParticleStringTableOPs;;
 
 mstudioevent_t *GetEventIndexForSequence( mstudioseqdesc_t &seqdesc );
 
@@ -216,6 +219,8 @@ IMPLEMENT_CLIENTCLASS_DT(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
 	RecvPropFloat( RECVINFO( m_fadeMaxDist ) ), 
 	RecvPropFloat( RECVINFO( m_flFadeScale ) ), 
 
+	RecvPropInt(RECVINFO(m_iFireEffectIndex), SPROP_UNSIGNED),
+
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_BaseAnimating )
@@ -285,6 +290,7 @@ BEGIN_DATADESC( C_ClientRagdoll )
 	DEFINE_FIELD( m_clrRender, FIELD_COLOR32 ),
 	DEFINE_FIELD( m_flEffectTime, FIELD_TIME ),
 	DEFINE_FIELD( m_bFadingOut, FIELD_BOOLEAN ),
+	DEFINE_CUSTOM_FIELD(m_iFireEffectIndex, &g_ParticleStringTableOPs),
 
 	DEFINE_AUTO_ARRAY( m_flScaleEnd, FIELD_FLOAT ),
 	DEFINE_AUTO_ARRAY( m_flScaleTimeStart, FIELD_FLOAT ),
@@ -349,11 +355,11 @@ void C_ClientRagdoll::OnRestore( void )
 	}
 	else if ( GetFlags() & FL_ONFIRE )
 	{
-		C_EntityFlame *pFireChild = dynamic_cast<C_EntityFlame *>( GetEffectEntity() );
+		C_EntityFlame *pFireChild = dynamic_cast<C_EntityFlame *>( GetEffectEntity(ENT_EFFECT_FIRE) );
 		C_EntityFlame *pNewFireChild = FireEffect( this, pFireChild, m_flScaleEnd, m_flScaleTimeStart, m_flScaleTimeEnd );
 
 		//Set the new fire child as the new effect entity.
-		SetEffectEntity( pNewFireChild );
+		SetEffectEntity(pNewFireChild, ENT_EFFECT_FIRE);
 	}
 
 	VPhysicsSetObject( NULL );
@@ -634,11 +640,14 @@ void C_ClientRagdoll::SetupWeights( const matrix3x4_t *pBoneToWorld, int nFlexWe
 
 void C_ClientRagdoll::Release( void )
 {
-	C_BaseEntity *pChild = GetEffectEntity();
-
-	if ( pChild && pChild->IsMarkedForDeletion() == false )
+	for (int i = 0; i < ENT_EFFECT_MAX; i++)
 	{
-		pChild->Release();
+		C_BaseEntity* pChild = GetEffectEntity(i);
+
+		if (pChild && pChild->IsMarkedForDeletion() == false)
+		{
+			pChild->Release();
+		}
 	}
 
 	if ( GetThinkHandle() != INVALID_THINK_HANDLE )
@@ -4999,6 +5008,7 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 
 	pRagdoll->IgniteRagdoll( this );
 	pRagdoll->TransferDissolveFrom( this );
+	pRagdoll->TransferElectricsFrom(this);
 	pRagdoll->InitModelEffects();
 
 	if ( AddRagdollToFadeQueue() == true )

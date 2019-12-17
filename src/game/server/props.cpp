@@ -444,7 +444,7 @@ void CBreakableProp::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 
 	if ( g_pGameRules->ShouldBurningPropsEmitLight() )
 	{
-		GetEffectEntity()->AddEffects( EF_DIMLIGHT );
+		GetEffectEntity(ENT_EFFECT_FIRE)->AddEffects( EF_DIMLIGHT );
 	}
 
 	// Frighten AIs, just in case this is an exploding thing.
@@ -1034,8 +1034,8 @@ void CBreakableProp::BreakablePropTouch( CBaseEntity *pOther )
 		if ( pNPC && pNPC->AllowedToIgnite() && pNPC->IsOnFire() == false )
 		{
 			pNPC->Ignite( 25.0f );
-			if (pNPC->GetEffectEntity() && HasPhysicsAttacker(PROP_FLARE_LIFETIME))
-				pNPC->GetEffectEntity()->SetOwnerEntity(m_hPhysicsAttacker);
+			if (pNPC->GetEffectEntity(ENT_EFFECT_FIRE) && HasPhysicsAttacker(PROP_FLARE_LIFETIME))
+				pNPC->GetEffectEntity(ENT_EFFECT_FIRE)->SetOwnerEntity(m_hPhysicsAttacker);
 
 			KillFlare( this, m_hFlareEnt, PROP_FLARE_IGNITE_SUBSTRACT );
 			IGameEvent *event = gameeventmanager->CreateEvent( "flare_ignite_npc" );
@@ -3423,7 +3423,7 @@ static CBreakableProp *BreakModelCreate_Prop( CBaseEntity *pOwner, breakmodel_t 
 		CBaseAnimating *pAnimating = dynamic_cast<CBreakableProp *>(pOwner);
 		if ( pAnimating && pAnimating->IsOnFire() )
 		{
-			CEntityFlame *pOwnerFlame = dynamic_cast<CEntityFlame*>( pAnimating->GetEffectEntity() );
+			CEntityFlame *pOwnerFlame = dynamic_cast<CEntityFlame*>( pAnimating->GetEffectEntity(ENT_EFFECT_FIRE) );
 
 			if ( pOwnerFlame )
 			{
@@ -6092,9 +6092,14 @@ void CPhysicsPropRespawnable::Event_Killed( const CTakeDamageInfo &info )
 
 	AddEffects( EF_NODRAW );
 
-	if ( IsOnFire() || IsDissolving() )
+	if ( IsOnFire() )
 	{
-		UTIL_Remove( GetEffectEntity() );
+		UTIL_Remove( GetEffectEntity(ENT_EFFECT_FIRE) );
+	}
+
+	if (IsDissolving())
+	{
+		UTIL_Remove(GetEffectEntity(ENT_EFFECT_DISSOLVE));
 	}
 
 	Teleport( &m_vOriginalSpawnOrigin, &m_vOriginalSpawnAngles, NULL );

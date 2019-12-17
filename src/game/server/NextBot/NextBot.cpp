@@ -346,9 +346,10 @@ void NextBotCombatCharacter::Ignite( float flFlameLifetime, CBaseEntity *pAttack
 	if ( pFlame )
 	{
 		pFlame->SetLifetime( flFlameLifetime );
+		pFlame->SetOwnerEntity(pAttacker);
 		AddFlag( FL_ONFIRE );
 
-		SetEffectEntity( pFlame );
+		SetEffectEntity( pFlame, ENT_EFFECT_FIRE );
 	}
 	m_OnIgnite.FireOutput( this, this );
 

@@ -312,7 +312,7 @@ void C_EntityFlame::StopEffect( void )
 	if ( m_hEntAttached )
 	{
 		m_hEntAttached->RemoveFlag( FL_ONFIRE );
-		m_hEntAttached->SetEffectEntity( NULL );
+		m_hEntAttached->SetEffectEntity(NULL, ENT_EFFECT_FIRE);
 		m_hEntAttached->StopSound( "General.BurningFlesh" );
 		m_hEntAttached->StopSound( "General.BurningObject" );
 		
@@ -349,11 +349,15 @@ void C_EntityFlame::CreateEffect( void )
 		m_hEffect = NULL;
 	}
 
-#if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
-	m_hEffect = ParticleProp()->Create( "burningplayer_red", PATTACH_ABSORIGIN_FOLLOW );
-#else
-	m_hEffect = ParticleProp()->Create( "burning_character", PATTACH_ABSORIGIN_FOLLOW );
-#endif
+	const char* pszParticleName = "burning_character";
+	C_BaseAnimating* pAnim = m_hEntAttached->GetBaseAnimating();
+	if (pAnim)
+	{
+		if (pAnim->GetBurningParticleIndex() > 0)
+			pszParticleName = GetParticleSystemNameFromIndex(pAnim->GetBurningParticleIndex());
+	}
+
+	m_hEffect = ParticleProp()->Create(pszParticleName, PATTACH_ABSORIGIN_FOLLOW);
 
 	if ( m_hEffect )
 	{

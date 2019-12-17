@@ -902,8 +902,8 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 				if ( ( info.GetDamageType() & DMG_BLAST) && random->RandomInt( 0, 1 ) == 0 )
 				{
 					Ignite( 5.0 + random->RandomFloat( 0.0, 5.0 ) );
-					if (GetEffectEntity())
-						GetEffectEntity()->SetOwnerEntity(info.GetAttacker());
+					if (GetEffectEntity(ENT_EFFECT_FIRE))
+						GetEffectEntity(ENT_EFFECT_FIRE)->SetOwnerEntity(info.GetAttacker());
 				}
 
 				// For Combine cannon impacts
@@ -913,8 +913,8 @@ int CNPC_BaseZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 					{
 						// Catch on fire.
 						Ignite( 5.0f + random->RandomFloat( 0.0f, 5.0f ) );
-						if (GetEffectEntity())
-							GetEffectEntity()->SetOwnerEntity(info.GetAttacker());
+						if (GetEffectEntity(ENT_EFFECT_FIRE))
+							GetEffectEntity(ENT_EFFECT_FIRE)->SetOwnerEntity(info.GetAttacker());
 					}
 				}
 
@@ -1212,9 +1212,9 @@ void CNPC_BaseZombie::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize
 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
 #ifdef HL2_EPISODIC
-	if ( HL2GameRules()->IsAlyxInDarknessMode() == true && GetEffectEntity() != NULL )
+	if ( GameRules()->ShouldBurningPropsEmitLight() == true && GetEffectEntity(ENT_EFFECT_FIRE) != NULL )
 	{
-		GetEffectEntity()->AddEffects( EF_DIMLIGHT );
+		GetEffectEntity(ENT_EFFECT_FIRE)->AddEffects( EF_DIMLIGHT );
 	}
 #endif // HL2_EPISODIC
 

@@ -456,7 +456,8 @@ BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
 	RecvPropFloat(RECVINFO(m_flElasticity)),
 	RecvPropFloat(RECVINFO(m_flShadowCastDistance)),
 	RecvPropEHandle( RECVINFO(m_hOwnerEntity) ),
-	RecvPropEHandle( RECVINFO(m_hEffectEntity) ),
+	//RecvPropEHandle( RECVINFO(m_hEffectEntity) ),
+	RecvPropArray3(RECVINFO_ARRAY(m_hEffectEntity), RecvPropEHandle(RECVINFO(m_hEffectEntity[0]))),
 	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
 	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
 

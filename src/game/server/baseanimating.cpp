@@ -27,6 +27,12 @@
 #include "datacache/idatacache.h"
 #include "smoke_trail.h"
 #include "props.h"
+#include "peter/env_entity_electric.h"
+#include "networkstringtable_gamedll.h"
+#ifdef HL2_DLL
+#include "vehicle_jeep.h"
+#include "npc_vortigaunt_episodic.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -261,6 +267,8 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
 	SendPropFloat( SENDINFO( m_fadeMaxDist ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
 
+	SendPropInt(SENDINFO(m_iFireEffectIndex), MAX_PARTICLESYSTEMS_STRING_BITS, SPROP_UNSIGNED),
+
 END_SEND_TABLE()
 
 
@@ -305,6 +313,8 @@ void CBaseAnimating::Precache()
 	PrecacheParticleSystem( "burning_character" );
 #endif
 
+	m_iFireEffectIndex = GetParticleSystemIndex(GetBurningParticle());
+
 	BaseClass::Precache();
 }
 
@@ -316,6 +326,8 @@ void CBaseAnimating::Activate()
 	BaseClass::Activate();
 	SetLightingOrigin( m_iszLightingOrigin );
 	SetLightingOriginRelative( m_iszLightingOriginRelative );
+
+	m_iFireEffectIndex = GetParticleSystemIndex(GetBurningParticle());
 
 	// Scaled physics objects (re)create their physics here
 	if ( m_flModelScale != 1.0f && VPhysicsGetObject() )
@@ -857,7 +869,7 @@ bool CBaseAnimating::BecomeRagdollOnClient( const Vector &force )
 		SetThink( &CBaseEntity::SUB_Remove );
 
 		// Remove our flame entity if it's attached to us
-		CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity() );
+		CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity(ENT_EFFECT_FIRE) );
 		if ( pFireChild )
 		{
 			pFireChild->SetThink( &CBaseEntity::SUB_Remove );
@@ -3608,7 +3620,7 @@ void CBaseAnimating::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize,
 		pFlame->SetLifetime( flFlameLifetime );
 		AddFlag( FL_ONFIRE );
 
-		SetEffectEntity( pFlame );
+		SetEffectEntity( pFlame, ENT_EFFECT_FIRE );
 
 		if ( flSize > 0.0f )
 		{
@@ -3624,7 +3636,7 @@ void CBaseAnimating::IgniteLifetime( float flFlameLifetime )
 	if( !IsOnFire() )
 		Ignite( 30, false, 0.0f, true );
 
-	CEntityFlame *pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity() );
+	CEntityFlame *pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity(ENT_EFFECT_FIRE) );
 
 	if ( !pFlame )
 		return;
@@ -3637,7 +3649,7 @@ void CBaseAnimating::IgniteNumHitboxFires( int iNumHitBoxFires )
 	if( !IsOnFire() )
 		Ignite( 30, false, 0.0f, true );
 
-	CEntityFlame *pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity() );
+	CEntityFlame *pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity(ENT_EFFECT_FIRE) );
 
 	if ( !pFlame )
 		return;
@@ -3650,7 +3662,7 @@ void CBaseAnimating::IgniteHitboxFireScale( float flHitboxFireScale )
 	if( !IsOnFire() )
 		Ignite( 30, false, 0.0f, true );
 
-	CEntityFlame *pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity() );
+	CEntityFlame *pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity(ENT_EFFECT_FIRE) );
 
 	if ( !pFlame )
 		return;
@@ -3675,7 +3687,7 @@ bool CBaseAnimating::Dissolve( const char *pMaterialName, float flStartTime, boo
 	CEntityDissolve *pDissolve = CEntityDissolve::Create( this, pMaterialName, flStartTime, nDissolveType, &bRagdollCreated );
 	if (pDissolve)
 	{
-		SetEffectEntity( pDissolve );
+		SetEffectEntity( pDissolve, ENT_EFFECT_DISSOLVE );
 
 		AddFlag( FL_DISSOLVING );
 		m_flDissolveStartTime = flStartTime;
@@ -3825,4 +3837,39 @@ CStudioHdr *CBaseAnimating::OnNewModel()
 	}
 
 	return hdr;
+}
+
+void CBaseAnimating::DoDamageFX(const CTakeDamageInfo& info)
+{
+	if (info.GetDamageType() & DMG_SHOCK)
+	{
+		int iShockType = SHOCK_GENERIC;
+
+#ifdef HL2_DLL
+		bool isHackedRollerAttack = (info.GetAttacker()->Classify() == CLASS_HACKED_ROLLERMINE);
+		bool isControllerAttack = FClassnameIs(info.GetInflictor(), "fireball_missile");
+		bool isVortigauntAttack = (dynamic_cast<CNPC_Vortigaunt*> (info.GetAttacker()) != NULL);
+		bool isJeepGaussAttack = (dynamic_cast<CPropJeep*> (info.GetInflictor()) != NULL);
+
+
+		if (isControllerAttack || isHackedRollerAttack || isJeepGaussAttack)
+		{
+			//DispatchParticleEffect("aliencontroller_zap", PATTACH_ABSORIGIN_FOLLOW, this);
+			iShockType = SHOCK_GAUSSENERGY;
+		}
+		else if (isVortigauntAttack)
+		{
+			//DispatchParticleEffect("vortigaunt_zap", PATTACH_ABSORIGIN_FOLLOW, this);
+			iShockType = SHOCK_VORTIGAUNT;
+		}
+		/*else
+		{
+			DispatchParticleEffect("electrical_zap", PATTACH_ABSORIGIN_FOLLOW, this);
+		}*/
+#endif
+
+		CEntElectric* pElectric = CEntElectric::Create(this, gpGlobals->curtime, iShockType);
+
+		SetEffectEntity(pElectric, ENT_EFFECT_SHOCK);
+	}
 }

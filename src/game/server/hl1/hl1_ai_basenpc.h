@@ -51,6 +51,9 @@ public:
 
 	virtual int		SelectDeadSchedule();
 
+	virtual const char* GetBurningParticle() { return "burning_gib_01"; }
+	virtual	bool		AllowedToIgnite(void) { return true; }
+
 protected:
 	virtual void		PopulatePoseParameters(void);
 };

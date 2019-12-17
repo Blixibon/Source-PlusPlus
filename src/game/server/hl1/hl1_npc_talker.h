@@ -94,6 +94,9 @@ public:
 	// Essentially does the opposite of what it says
 	virtual bool ShouldPlayerAvoid( void ) { return false; }
 
+	virtual const char* GetBurningParticle() { return "burning_gib_01"; }
+	virtual	bool		AllowedToIgnite(void) { return true; }
+
 protected:
 	virtual void 	FollowerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 

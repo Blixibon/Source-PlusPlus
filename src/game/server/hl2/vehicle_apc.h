@@ -51,6 +51,8 @@ public:
 	virtual void UpdateOnRemove( void );
 	virtual void OnRestore( void );
 
+	virtual const char* GetBurningParticle() { return "burning_vehicle"; }
+
 	// CPropVehicle
 	virtual void	CreateServerVehicle( void );
 	virtual void	DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased );

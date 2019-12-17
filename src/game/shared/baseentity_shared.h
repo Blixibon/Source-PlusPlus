@@ -57,6 +57,16 @@ enum InvalidatePhysicsBits_t
 	SEQUENCE_CHANGED	= 0x20,		// Means sequence has changed, only interesting when surrounding bounds depends on sequence
 };
 
+enum EntityEffects_e
+{
+	ENT_EFFECT_ANY = -1,
+	ENT_EFFECT_FIRE = 0,
+	ENT_EFFECT_DISSOLVE,
+	ENT_EFFECT_SHOCK,
+
+	ENT_EFFECT_MAX,
+};
+
 
 #if defined( CLIENT_DLL )
 #include "c_baseentity.h"
@@ -116,9 +126,20 @@ inline CBaseEntity	*CBaseEntity::GetOwnerEntity() const
 	return m_hOwnerEntity.Get();
 }
 
-inline CBaseEntity	*CBaseEntity::GetEffectEntity() const
+inline CBaseEntity* CBaseEntity::GetEffectEntity(int iEnt) const
 {
-	return m_hEffectEntity.Get();
+	if (iEnt == ENT_EFFECT_ANY)
+	{
+		for (int i = 0; i < ENT_EFFECT_MAX; i++)
+		{
+			if (m_hEffectEntity[i].Get())
+				return m_hEffectEntity[i];
+		}
+
+		return nullptr;
+	}
+
+	return m_hEffectEntity[iEnt].Get();
 }
 
 inline int CBaseEntity::GetPredictionRandomSeed( bool bUseUnSyncedServerPlatTime )

@@ -116,6 +116,8 @@ $Project
 			$File	"peter\signon_buffer_hack.cpp"
 			$File	"peter\signon_buffer_hack.h"
 			$File	"shelleject_precache.cpp"
+			$File	"peter\env_entity_electric.cpp"
+			$File	"peter\env_entity_electric.h"
 		}
 		
 		$Folder	"Multiplayer"

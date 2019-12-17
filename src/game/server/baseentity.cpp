@@ -282,7 +282,8 @@ IMPLEMENT_SERVERCLASS_ST_NOBASE( CBaseEntity, DT_BaseEntity )
 	SendPropFloat	(SENDINFO(m_flElasticity), 0, SPROP_COORD),
 	SendPropFloat	(SENDINFO(m_flShadowCastDistance), 12, SPROP_UNSIGNED ),
 	SendPropEHandle (SENDINFO(m_hOwnerEntity)),
-	SendPropEHandle (SENDINFO(m_hEffectEntity)),
+	//SendPropEHandle (SENDINFO(m_hEffectEntity)),
+	SendPropArray3(SENDINFO_ARRAY3(m_hEffectEntity), SendPropEHandle(SENDINFO_ARRAY(m_hEffectEntity))),
 	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
 	SendPropInt		(SENDINFO(m_iParentAttachment), NUM_PARENTATTACHMENT_BITS, SPROP_UNSIGNED),
 
@@ -2040,7 +2041,7 @@ BEGIN_DATADESC_NO_BASE( CBaseEntity )
 	DEFINE_FUNCTION( SUB_CallUseToggle ),
 	DEFINE_THINKFUNC( ShadowCastDistThink ),
 
-	DEFINE_FIELD( m_hEffectEntity, FIELD_EHANDLE ),
+	DEFINE_AUTO_ARRAY( m_hEffectEntity, FIELD_EHANDLE ),
 
 	//DEFINE_FIELD( m_DamageModifiers, FIELD_?? ), // can't save?
 	// DEFINE_FIELD( m_fDataObjectTypes, FIELD_INTEGER ),
@@ -7617,8 +7618,6 @@ void CC_Ent_Create( const CCommand& args )
 	CBaseEntity *entity = dynamic_cast< CBaseEntity * >( CreateEntityByName(args[1]) );
 	if (entity)
 	{
-		entity->Precache();
-
 		// Pass in any additional parameters.
 		for ( int i = 2; i + 1 < args.ArgC(); i += 2 )
 		{
@@ -7626,6 +7625,8 @@ void CC_Ent_Create( const CCommand& args )
 			const char *pValue = args[i+1];
 			entity->KeyValue( pKeyName, pValue );
 		}
+
+		entity->Precache();
 
 		DispatchSpawn(entity);
 

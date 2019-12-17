@@ -40,6 +40,7 @@
 #include "nav_mesh.h"
 #include "rope.h"
 #include "players_system.h"
+#include "peter/env_entity_electric.h"
 
 #ifdef NEXT_BOT
 #include "NextBot/NextBotManager.h"
@@ -811,6 +812,8 @@ void CBaseCombatCharacter::Precache()
 	PrecacheScriptSound( "BaseCombatCharacter.StopWeaponSounds" );
 	PrecacheScriptSound( "BaseCombatCharacter.AmmoPickup" );
 
+	UTIL_PrecacheOther("entityshock");
+
 	for ( int i = m_Relationship.Count() - 1; i >= 0 ; i--) 
 	{
 		if ( !m_Relationship[i].entity && m_Relationship[i].classType == CLASS_NONE ) 
@@ -1463,19 +1466,30 @@ Vector CBaseCombatCharacter::CalcDamageForceVector( const CTakeDamageInfo &info 
 //-----------------------------------------------------------------------------
 void CBaseCombatCharacter::FixupBurningServerRagdoll( CBaseEntity *pRagdoll )
 {
+	// Move the fire effects entity to the ragdoll
+	CEntElectric* pZapChild = dynamic_cast<CEntElectric*>(GetEffectEntity(ENT_EFFECT_SHOCK));
+	if (pZapChild)
+	{
+		SetEffectEntity(NULL, ENT_EFFECT_SHOCK);
+		pZapChild->SetAbsOrigin(pRagdoll->GetAbsOrigin());
+		pZapChild->AttachToEntity(pRagdoll);
+		pZapChild->AddEFlags(EFL_FORCE_CHECK_TRANSMIT);
+		pRagdoll->SetEffectEntity(pZapChild, ENT_EFFECT_SHOCK);
+	}
+
 	if ( !IsOnFire() )
 		return;
 
 	// Move the fire effects entity to the ragdoll
-	CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity() );
+	CEntityFlame *pFireChild = dynamic_cast<CEntityFlame *>( GetEffectEntity(ENT_EFFECT_FIRE) );
 	if ( pFireChild )
 	{
-		SetEffectEntity( NULL );
+		SetEffectEntity( NULL, ENT_EFFECT_FIRE );
 		pRagdoll->AddFlag( FL_ONFIRE );
 		pFireChild->SetAbsOrigin( pRagdoll->GetAbsOrigin() );
 		pFireChild->AttachToEntity( pRagdoll );
 		pFireChild->AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
- 		pRagdoll->SetEffectEntity( pFireChild );
+ 		pRagdoll->SetEffectEntity( pFireChild, ENT_EFFECT_FIRE );
 
 		color32 color = GetRenderColor();
 		pRagdoll->SetRenderColor( color.r, color.g, color.b );
@@ -1493,6 +1507,7 @@ bool CBaseCombatCharacter::BecomeRagdollBoogie( CBaseEntity *pKiller, const Vect
 	CBaseEntity *pRagdoll = CreateServerRagdoll( this, 0, info, COLLISION_GROUP_INTERACTIVE_DEBRIS, true );
 
 	pRagdoll->SetCollisionBounds( CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs() );
+	FixupBurningServerRagdoll(pRagdoll);
 
 	CRagdollBoogie::Create( pRagdoll, 200, gpGlobals->curtime, duration, flags );
 
@@ -2453,6 +2468,8 @@ int CBaseCombatCharacter::OnTakeDamage( const CTakeDamageInfo &info )
 		g_pEffects->Sparks( info.GetDamagePosition(), 2, 2 );
 		UTIL_Smoke( info.GetDamagePosition(), random->RandomInt( 10, 15 ), 10 );
 	}
+
+	DoDamageFX(info);
 
 	// track damage history
 	if ( info.GetAttacker() )

@@ -291,6 +291,8 @@ $Project
 		{
 			$File	"peter\shelleject_new.cpp"
 			$File	"peter\shelleject_new.h"
+			$File	"peter\c_entityelectric.cpp"
+			$File	"peter\c_entityelectric.h"
 		}
 
 		$File	"estranged_system_caps.cpp"

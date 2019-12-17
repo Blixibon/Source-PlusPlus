@@ -79,36 +79,36 @@ static const char *s_pGibModelName[APC_MAX_GIBS] =
 LINK_ENTITY_TO_CLASS( prop_vehicle_apc, CPropAPC );
 
 
-BEGIN_DATADESC( CPropAPC )
+BEGIN_DATADESC(CPropAPC)
 
-	DEFINE_FIELD( m_flDangerSoundTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_flHandbrakeTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_bInitialHandbrake,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_nSmokeTrailCount,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_flMachineGunTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_iMachineGunBurstLeft,	FIELD_INTEGER ),
+DEFINE_FIELD(m_flDangerSoundTime, FIELD_TIME),
+DEFINE_FIELD(m_flHandbrakeTime, FIELD_TIME),
+DEFINE_FIELD(m_bInitialHandbrake, FIELD_BOOLEAN),
+DEFINE_FIELD(m_nSmokeTrailCount, FIELD_INTEGER),
+DEFINE_FIELD(m_flMachineGunTime, FIELD_TIME),
+DEFINE_FIELD(m_iMachineGunBurstLeft, FIELD_INTEGER),
 //	DEFINE_FIELD( m_nMachineGunMuzzleAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nMachineGunBaseAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_vecBarrelPos,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_bInFiringCone,		FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bInFiringCone, FIELD_BOOLEAN),
 //	DEFINE_FIELD( m_hLaserDot,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hRocketTarget,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iRocketSalvoLeft,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_flRocketTime,		FIELD_TIME ),
+DEFINE_FIELD(m_hRocketTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_iRocketSalvoLeft, FIELD_INTEGER),
+DEFINE_FIELD(m_flRocketTime, FIELD_TIME),
 //	DEFINE_FIELD( m_nRocketAttachment,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_nRocketSide,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_hSpecificRocketTarget, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_strMissileHint,	FIELD_STRING, "missilehint" ),
+DEFINE_FIELD(m_nRocketSide, FIELD_INTEGER),
+DEFINE_FIELD(m_hSpecificRocketTarget, FIELD_EHANDLE),
+DEFINE_KEYFIELD(m_strMissileHint, FIELD_STRING, "missilehint"),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Destroy", InputDestroy ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "FireMissileAt", InputFireMissileAt ),
+DEFINE_INPUTFUNC(FIELD_VOID, "Destroy", InputDestroy),
+DEFINE_INPUTFUNC(FIELD_STRING, "FireMissileAt", InputFireMissileAt),
 
-	DEFINE_OUTPUT( m_OnDeath,				"OnDeath" ),
-	DEFINE_OUTPUT( m_OnFiredMissile,		"OnFiredMissile" ),
-	DEFINE_OUTPUT( m_OnDamaged,				"OnDamaged" ),
-	DEFINE_OUTPUT( m_OnDamagedByPlayer,		"OnDamagedByPlayer" ),
+DEFINE_OUTPUT(m_OnDeath, "OnDeath"),
+DEFINE_OUTPUT(m_OnFiredMissile, "OnFiredMissile"),
+DEFINE_OUTPUT(m_OnDamaged, "OnDamaged"),
+DEFINE_OUTPUT(m_OnDamagedByPlayer, "OnDamagedByPlayer"),
 
-END_DATADESC()
+END_DATADESC();
 
 
 //-----------------------------------------------------------------------------
@@ -132,6 +132,8 @@ void CPropAPC::Precache( void )
 	PrecacheScriptSound( "Weapon_AR2.Single" );
 	PrecacheScriptSound( "PropAPC.FireRocket" );
 	PrecacheScriptSound( "combine.door_lock" );
+
+	PrecacheParticleSystem("burning_vehicle");
 }
 
 
