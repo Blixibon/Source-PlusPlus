@@ -413,7 +413,7 @@ response DI_MetroPolice_HunterPanic_Group
 }
 rule DI_MetroPolice_HunterPanic
 {
-	criteria ConceptDI_Hunter01_Panic IsMetroPolice
+	criteria ConceptDI_Hunter01_Panic IsMetropolice
 	response DI_MetroPolice_HunterPanic_Group
 }
 
@@ -423,12 +423,12 @@ response DI_MetroPolice_HunterPain_Group
 }
 rule DI_MetroPolice_HunterPain1
 {
-	criteria ConceptDI_Hunter01_Pain1 IsMetroPolice
+	criteria ConceptDI_Hunter01_Pain1 IsMetropolice
 	response DI_MetroPolice_HunterPain_Group
 }
 rule DI_MetroPolice_HunterPain2
 {
-	criteria ConceptDI_Hunter01_Pain2 IsMetroPolice
+	criteria ConceptDI_Hunter01_Pain2 IsMetropolice
 	response DI_MetroPolice_HunterPain_Group
 }
 

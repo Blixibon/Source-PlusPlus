@@ -46,5 +46,3 @@ criterion "EnemyIsClassEarthFauna" "enemyclass" "CLASS_EARTH_FAUNA" required wei
 criterion "EnemyIsClassPlayerAlly" "enemyclass" "CLASS_PLAYER_ALLY" required weight 3
 criterion "EnemyIsClassPlayerAllyVital" "enemyclass" "CLASS_PLAYER_ALLY_VITAL" required weight 3
 criterion "EnemyIsClassHackedRollermine" "enemyclass" "CLASS_HACKED_ROLLERMINE" required weight 3
-
-#include "talker/dynamic_interactions.txt"

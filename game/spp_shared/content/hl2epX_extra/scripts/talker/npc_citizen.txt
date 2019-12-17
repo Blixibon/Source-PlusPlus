@@ -173,6 +173,7 @@ response CitizenQuestionHL2
 
 response CitizenQuestionEpisodic
 {
+	permitrepeats
 	response CitizenQuestion weight 29
 	response CitizensKillingTime weight 19
 }

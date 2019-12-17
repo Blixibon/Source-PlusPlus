@@ -161,20 +161,22 @@
 #include "talker/nags_Alyx.talker"
 #include "talker/npc_alyx_vehicle.talker"
 #include "talker/pa_system.talker"
+#include "talker/npc_fisherman.txt"
+#include "talker/npc_personality_core.talker"
+#include "talker/npc_conscript.txt"
+#include "talker/npc_metropolice.talker"
+#include "talker/dynamic_interactions.txt"
+
+// Rule Groups
+#include "talker/hlss_rules.talker"
+#include "talker/bms_rules.talker"
+
 #include "talker/hazard_course_scenes.txt"
 #include "talker/t0a0_scenes.txt"
 #include "talker/t0a1_scenes.txt"
 #include "talker/t0a1a_scenes.txt"
 #include "talker/t0a2_scenes.txt"
 #include "talker/t0a3_scenes.txt"
-#include "talker/npc_fisherman.txt"
-#include "talker/npc_personality_core.talker"
-#include "talker/npc_conscript.txt"
-#include "talker/npc_metropolice.talker"
-
-// Rule Groups
-#include "talker/hlss_rules.talker"
-#include "talker/bms_rules.talker"
 
 // Player Rules
 #include "talker/player/response_rules_base.txt"
