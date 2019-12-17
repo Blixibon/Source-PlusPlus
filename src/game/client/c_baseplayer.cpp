@@ -2722,15 +2722,18 @@ void C_BasePlayer::GetPredictionErrorSmoothingVector( Vector &vOffset )
 
 bool C_BasePlayer::IsRenderingMyFlashlight()
 {
-	extern CUtlVector< ClientShadowHandle_t > g_hFlashlightHandle;
-	if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE && g_hFlashlightHandle.Count())
+	if (IsLocalPlayer())
 	{
-		ShadowHandle_t hActive = g_pClientShadowMgr->GetActiveDepthTextureHandle();
-		for (auto hclMine : g_hFlashlightHandle)
+		extern CUtlVector< ClientShadowHandle_t > g_hFlashlightHandle;
+		if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE && g_hFlashlightHandle.Count())
 		{
-			ShadowHandle_t hMine = g_pClientShadowMgr->GetShadowHandle(hclMine);
-			if (hActive == hMine)
-				return true;
+			ShadowHandle_t hActive = g_pClientShadowMgr->GetActiveDepthTextureHandle();
+			for (auto hclMine : g_hFlashlightHandle)
+			{
+				ShadowHandle_t hMine = g_pClientShadowMgr->GetShadowHandle(hclMine);
+				if (hActive == hMine)
+					return true;
+			}
 		}
 	}
 

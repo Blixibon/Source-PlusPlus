@@ -1,0 +1,51 @@
+ep2_outland_06a
+{
+
+	create //Spawn a new ent, similar to the VMF format
+	{
+	"id" "20310"
+	"classname" "weapon_stunstick"
+	"angles" "0 305.5 0"
+	"fademaxdist" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"targetname" "ass1"
+	"origin" "-3010 -9784 -1690"
+	}
+
+	create //Spawn a new ent, similar to the VMF format
+	{
+	"classname" "infodecal"
+	"angles" "0 0 0"
+	"LowPriority" "0"
+	"targetname" "ass2"
+	"texture" "decals/bloodstain_002"
+	"origin" "-3001 -9830 -1694"
+	}
+
+	create //Spawn a new ent, similar to the VMF format
+	{
+	"id" "20350"
+	"classname" "prop_ragdoll"
+	"angles" "-63.2548 194.569 -13.067"
+	"disableshadows" "0"
+	"fademaxdist" "0"
+	"fademindist" "-1"
+	"fadescale" "1"
+	"maxdxlevel" "0"
+	"mindxlevel" "0"
+	"model" "models/police.mdl"
+	"modelscale" "1.0"
+	"skin" "0"
+	"spawnflags" "4"
+	"StartDisabled" "0"
+	"targetname" "ass3"
+	"origin" "-3034 -9824 -1694.9"
+	}
+
+	
+
+	
+
+
+}

@@ -1,5 +1,7 @@
 "Mount"
 {
+	needs_mod	Depot
+
 	sourcemods
 	{
 		"head"	"0"

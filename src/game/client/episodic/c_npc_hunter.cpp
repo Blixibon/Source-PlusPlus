@@ -7,6 +7,8 @@ class C_NPC_Hunter : public C_AI_BaseNPC
 	DECLARE_CLASS(C_NPC_Hunter, C_AI_BaseNPC);
 	DECLARE_CLIENTCLASS();
 public:
+	virtual void ModifyEmitSoundParams(EmitSound_t& params);
+
 	bool	IsVortigauntControlled() { return m_bVortControlled; }
 	bool	IsEnraged() { return m_bAngry; }
 protected:
@@ -18,6 +20,21 @@ IMPLEMENT_CLIENTCLASS_DT(C_NPC_Hunter, DT_Hunter, CNPC_Hunter)
 RecvPropBool(RECVINFO(m_bAngry)),
 RecvPropBool(RECVINFO(m_bVortControlled)),
 END_RECV_TABLE();
+
+void C_NPC_Hunter::ModifyEmitSoundParams(EmitSound_t& params)
+{
+	if (m_bVortControlled)
+	{
+		if (FStrEq(params.m_pSoundName, "NPC_Hunter.TackleAnnounce"))
+			params.m_pSoundName = "NPC_VortiHunter.TackleAnnounce";
+		else if (FStrEq(params.m_pSoundName, "NPC_Hunter.FoundEnemy"))
+			params.m_pSoundName = "NPC_VortiHunter.FoundEnemy";
+		else if (FStrEq(params.m_pSoundName, "NPC_Hunter.FoundEnemyAck"))
+			params.m_pSoundName = "NPC_VortiHunter.FoundEnemyAck";
+	}
+
+	BaseClass::ModifyEmitSoundParams(params);
+}
 
 class CHunterEyeColorProxy : public CResultProxy
 {

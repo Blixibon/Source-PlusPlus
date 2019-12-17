@@ -519,6 +519,14 @@ int C_BaseCombatWeapon::DrawModel( int flags )
 	return BaseClass::DrawModel( flags );
 }
 
+void C_BaseCombatWeapon::DoAnimationEvents(CStudioHdr* pStudio)
+{
+	if (IsCarriedByLocalPlayer())
+		return;
+
+	BaseClass::DoAnimationEvents(pStudio);
+}
+
 bool C_BaseCombatWeapon::OnFireEvent(C_BaseViewModel* pViewModel, const Vector& origin, const QAngle& angles, int event, const char* options)
 {
 	C_BasePlayer* localplayer = C_BasePlayer::GetLocalPlayer();

@@ -184,7 +184,9 @@ void CBaseNetworkedPlayer::PostThink()
 
 void CBaseNetworkedPlayer::FireBullets ( const FireBulletsInfo_t &info )
 {
-	lagcompensation->StartLagCompensation( this, LAG_COMPENSATE_HITBOXES );
+	QAngle angles;
+	VectorAngles(info.m_vecDirShooting, angles);
+	lagcompensation->StartLagCompensation( this, LAG_COMPENSATE_HITBOXES_ALONG_RAY, info.m_vecSrc, angles, info.m_flDistance );
 		BaseClass::FireBullets(info);
 	lagcompensation->FinishLagCompensation( this );
 }

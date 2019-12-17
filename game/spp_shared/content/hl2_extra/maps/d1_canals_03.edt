@@ -1,0 +1,11 @@
+d1_canals_03
+{
+	edit
+	{
+		targetname matt_pipetemplate
+		values
+		{
+			classname weapon_pipe
+		}
+	}
+}

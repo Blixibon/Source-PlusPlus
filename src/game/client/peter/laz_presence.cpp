@@ -148,7 +148,7 @@ void CLazPresence::UpdateDiscord(const char* pchLevelName)
 
 	if (engine->IsConnected() && !engine->IsLevelMainMenuBackground())
 	{
-		if (gpGlobals->maxClients > 1)
+		if (engine->GetMaxClients() > 1)
 		{
 			if (!engine->IsInGame())
 			{

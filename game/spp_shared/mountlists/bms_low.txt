@@ -1,5 +1,7 @@
 "Mount"
 {
+	needs_app 362890
+
 	sentence_files
 	{
 		file "scripts/sentences_bms.txt"

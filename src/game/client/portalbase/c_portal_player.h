@@ -48,6 +48,8 @@ public:
 
 	virtual bool ShouldDoPortalRenderCulling() { return true; }
 
+	void	SetIsSettingUpBonesForGhostAnim(bool bBoolean) { m_bForceNormalBoneSetup = bBoolean; }
+
 	QAngle GetAnimEyeAngles( void ) { return m_angEyeAngles; }
 
 	// Used by prediction, sets the view angles for the player
@@ -88,6 +90,9 @@ public:
 	bool IsSuppressingCrosshair() { return m_bSuppressCrosshair; }
 
 	int		GetForceNoDrawInPortalSurface() { return m_iForceNoDrawInPortalSurface; }
+
+protected:
+	bool	m_bForceNormalBoneSetup;
 
 private:
 

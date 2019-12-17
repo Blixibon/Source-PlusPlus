@@ -131,8 +131,33 @@ bool C_PortalGhostRenderable::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMax
 		C_BaseCombatWeapon* m_pWeapon;
 		bool				m_bActive;
 	};
+	class CPlayerBoneSetupHelper
+	{
+	public:
+		CPlayerBoneSetupHelper(bool bActive, C_Portal_Player* pWeapon)
+		{
+			m_bActive = bActive;
+			m_pWeapon = pWeapon;
+			if (m_bActive && m_pWeapon)
+			{
+				m_pWeapon->SetIsSettingUpBonesForGhostAnim(true);
+				m_pWeapon->InvalidateBoneCache();
+			}
+		}
+		~CPlayerBoneSetupHelper()
+		{
+			if (m_bActive && m_pWeapon)
+			{
+				m_pWeapon->SetIsSettingUpBonesForGhostAnim(false);
+			}
+		}
+	private:
+		C_Portal_Player* m_pWeapon;
+		bool				m_bActive;
+	};
 
 	CWeaponModelIndexHelper helper(m_bSourceIsBaseWeapon, m_pGhostedRenderable->MyCombatWeaponPointer());
+	CPlayerBoneSetupHelper plHelper(m_bLocalPlayer, ToPortalPlayer(m_pGhostedRenderable));
 
 	if( m_pGhostedRenderable->SetupBones( pBoneToWorldOut, nMaxBones, boneMask, currentTime ) )
 	{
@@ -279,15 +304,18 @@ int C_PortalGhostRenderable::DrawModel( int flags )
 				// Dead player uses a ragdoll to draw, so don't ghost the dead entity
 				return 0;
 			}
-			else if( g_pPortalRender->GetViewRecursionLevel() == 0 )
+			else if (pPlayer->ShouldDoPortalRenderCulling())
 			{
-				if( pPlayer->m_bEyePositionIsTransformedByPortal )
-					return 0;
-			}
-			else if( g_pPortalRender->GetViewRecursionLevel() == 1 )
-			{
-				if( !pPlayer->m_bEyePositionIsTransformedByPortal )
-					return 0;
+				if (g_pPortalRender->GetViewRecursionLevel() == 0)
+				{
+					if (pPlayer->m_bEyePositionIsTransformedByPortal)
+						return 0;
+				}
+				else if (g_pPortalRender->GetViewRecursionLevel() == 1)
+				{
+					if (!pPlayer->m_bEyePositionIsTransformedByPortal)
+						return 0;
+				}
 			}
 		}
 

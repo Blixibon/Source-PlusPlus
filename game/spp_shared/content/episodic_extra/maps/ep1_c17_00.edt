@@ -1,0 +1,18 @@
+ep1_c17_00
+{
+	"clearandreplace"
+	{
+		"lumpfile"	"maps/ep1_c17_00_l_0.lmp"
+	}
+
+	create
+	{
+		"classname" "weapon_stunstick"
+		"angles" "0 0 0"
+		"fademaxdist" "0"
+		"fademindist" "-1"
+		"fadescale" "1"
+		"targetname" "stunstick"
+		"origin" "4394 -2235 -92"
+	}
+}

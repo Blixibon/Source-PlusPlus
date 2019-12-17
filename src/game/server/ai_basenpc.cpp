@@ -11513,7 +11513,8 @@ void CAI_BaseNPC::Precache( void )
 		pchWeapon = RemapEntityClassForAI(pchWeapon);
 	}
 
-	KeyValue("additionalequipment", pchWeapon);
+	if (pchWeapon != STRING(m_spawnEquipment))
+		KeyValue("additionalequipment", pchWeapon);
 
 	if ( m_spawnEquipment != NULL_STRING && strcmp(STRING(m_spawnEquipment), "0") )
 	{
@@ -14248,6 +14249,9 @@ void CAI_BaseNPC::CheckForScriptedNPCInteractions( void )
 		return;
 	if ( pNPC && !pNPC->CanRunAScriptedNPCInteraction() )
 		return;
+	// Don't initaite against vital allies in singleplayer
+	if (pNPC->IsVitalAlly() && !GameRules()->IsMultiplayer())
+		return;
 
 	for ( int i = 0; i < m_ScriptedInteractions.Count(); i++ )
 	{
@@ -14383,6 +14387,21 @@ void CAI_BaseNPC::CalculateValidEnemyInteractions( void )
 
 		// Script needs the other NPC, so make sure they're not dead
 		if ( !pNPC->IsAlive() )
+			continue;
+
+		// If they have an interaction with the same name, it means we're not supposed to engage with them
+		bool bSame = false;
+		for (int i2 = 0; i2 < pNPC->m_ScriptedInteractions.Count(); i2++)
+		{
+			// These strings are pooled, so this works
+			if (m_ScriptedInteractions[i].iszInteractionName == pNPC->m_ScriptedInteractions[i2].iszInteractionName)
+			{
+				bSame = true;
+				break;
+			}
+		}
+
+		if (bSame)
 			continue;
 
 		// Use sequence? or activity?
@@ -14674,8 +14693,8 @@ bool CAI_BaseNPC::InteractionCouldStart( CAI_BaseNPC *pOtherNPC, ScriptedNPCInte
 	// Finally, make sure the NPC can actually fit at the interaction position
 	// This solves problems with NPCs who are a few units or so above the 
 	// interaction point, and would sink into the ground when playing the anim.
-	CTraceFilterSkipTwoEntities traceFilter( pOtherNPC, this, COLLISION_GROUP_NONE );
-	AI_TraceHull( vecOrigin, vecOrigin, pOtherNPC->GetHullMins(), pOtherNPC->GetHullMaxs(), MASK_SOLID, &traceFilter, &tr );
+	CTraceFilterSkipTwoEntities traceFilter( pOtherNPC, this, COLLISION_GROUP_NPC);
+	AI_TraceHull( vecOrigin, vecOrigin, pOtherNPC->GetHullMins(), pOtherNPC->GetHullMaxs(), PhysicsSolidMaskForEntity(), &traceFilter, &tr );
 	if ( tr.startsolid )
 	{
 		if ( bDebug )
@@ -14694,7 +14713,7 @@ bool CAI_BaseNPC::InteractionCouldStart( CAI_BaseNPC *pOtherNPC, ScriptedNPCInte
 		Vector vecPos = (matLocalToWorld.GetTranslation());
 
 		// Start from the NPC's position.
-		AI_TraceHull(pOtherNPC->GetAbsOrigin(), vecPos, GetHullMins(), GetHullMaxs(), MASK_SOLID, &traceFilter, &tr);
+		AI_TraceHull(pOtherNPC->GetAbsOrigin(), vecPos, GetHullMins(), GetHullMaxs(), PhysicsSolidMaskForEntity(), &traceFilter, &tr);
 		if (tr.fraction != 1.0)
 		{
 			if (bDebug)

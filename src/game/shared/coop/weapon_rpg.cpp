@@ -2652,13 +2652,13 @@ int CLaserDot::DrawModel( int flags )
 		}
 		
 		trace_t tr;
-#ifdef PORTAL
-		Ray_t ray;
-		ray.Init(vecAttachment, vecAttachment + (vecDir * MAX_TRACE_LENGTH));
-		UTIL_Portal_TraceRay(ray, (MASK_SHOT & ~CONTENTS_WINDOW), pOwner, COLLISION_GROUP_NONE, &tr);
-#else
+//#ifdef PORTAL
+//		Ray_t ray;
+//		ray.Init(vecAttachment, vecAttachment + (vecDir * MAX_TRACE_LENGTH));
+//		UTIL_Portal_TraceRay(ray, (MASK_SHOT & ~CONTENTS_WINDOW), pOwner, COLLISION_GROUP_NONE, &tr);
+//#else
 		UTIL_TraceLine(vecAttachment, vecAttachment + (vecDir * MAX_TRACE_LENGTH), (MASK_SHOT & ~CONTENTS_WINDOW), pOwner, COLLISION_GROUP_NONE, &tr);
-#endif // PORTAL
+//#endif // PORTAL
 
 		
 		// Backup off the hit plane

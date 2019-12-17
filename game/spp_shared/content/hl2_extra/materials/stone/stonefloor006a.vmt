@@ -10,6 +10,9 @@
 	"$envmapcontrast" 1
 	"$envmaptint" "[ .6 .6 .6 ]"
 	"$normalmapalphaenvmapmask" 1
+		$phong 1
+		$phongboost 2
+		$phongexponent 20
 
 	"$detail" "detail\noise_detail_01"
 	"$detailscale" "7.345"

@@ -584,10 +584,12 @@ void TextMessageInit( void )
 
 	//pMemFile = COM_LoadFile( "scripts/titles.txt", 5, &fileSize );
 
-	char searchPaths[4096];
-	filesystem->GetSearchPath("GAME", true, searchPaths, sizeof(searchPaths));
 
-	for (char *path = strtok(searchPaths, ";"); path; path = strtok(NULL, ";"))
+	int iBufferSize = filesystem->GetSearchPath("GAME", true, nullptr, 0);
+	char *pszSearchPaths = (char *)stackalloc(iBufferSize);
+	filesystem->GetSearchPath("GAME", true, pszSearchPaths, iBufferSize);
+
+	for (char *path = strtok(pszSearchPaths, ";"); path; path = strtok(NULL, ";"))
 	{
 		//int fileSize = 0;
 		//byte *pMemFile = nullptr;
@@ -610,6 +612,8 @@ void TextMessageInit( void )
 			filesystem->Close(hFile);
 		}
 	}
+
+	stackfree((void*)pszSearchPaths);
 }
 
 client_textmessage_t *TextMessageGet( const char *pName )
@@ -631,7 +635,8 @@ client_textmessage_t *TextMessageGet( const char *pName )
 
 	for ( int i = 0; i < gMessageVector.Count(); i++ )
 	{
-		if ( !Q_stricmp( pName, gMessageVector[i].pName ) )
+		const char* pchMessageName = gMessageVector[i].pName;
+		if ( Q_stricmp( pName, pchMessageName) == 0)
 			return &gMessageVector[i];
 	}
 

@@ -485,7 +485,7 @@ void CWeaponStunStick::Hit( trace_t &traceHit, Activity nHitActivity )
 		// y = 1.5 * (x ^ 2) with a floor of flBaseDamage and a ceiling of 100
 		float flDamage = flBaseDamage * MIN(MAX((m_flChargeAmount * m_flChargeAmount) * 1.5f, 1.0f), 100.0f);
 
-		CTakeDamageInfo info(GetOwner(), GetOwner(), flDamage, DMG_CLUB);
+		CTakeDamageInfo info(GetOwner(), GetOwner(), flDamage, DMG_CLUB|DMG_SHOCK);
 
 		if (pPlayer && pHitEntity->IsNPC())
 		{

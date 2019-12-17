@@ -2568,10 +2568,11 @@ void CHudCloseCaption::InitCaptionDictionary( const char *dbfile )
 
 	g_AsyncCaptionResourceManager.Clear();
 
-	char searchPaths[4096];
-	filesystem->GetSearchPath( "GAME", true, searchPaths, sizeof( searchPaths ) );
+	int iBufferSize = filesystem->GetSearchPath("GAME", true, nullptr, 0);
+	char* pszSearchPaths = (char*)stackalloc(iBufferSize);
+	filesystem->GetSearchPath("GAME", true, pszSearchPaths, iBufferSize);
 
-	for ( char *path = strtok( searchPaths, ";" ); path; path = strtok( NULL, ";" ) )
+	for ( char *path = strtok(pszSearchPaths, ";" ); path; path = strtok( NULL, ";" ) )
 	{
 		if ( IsX360() && ( filesystem->GetDVDMode() == DVDMODE_STRICT ) && !V_stristr( path, ".zip" ) )
 		{
@@ -2625,6 +2626,8 @@ void CHudCloseCaption::InitCaptionDictionary( const char *dbfile )
 	}
 
 	g_AsyncCaptionResourceManager.SetDbInfo( m_AsyncCaptions );
+
+	stackfree((void*)pszSearchPaths);
 }
 
 void CHudCloseCaption::OnFinishAsyncLoad( int nFileIndex, int nBlockNum, AsyncCaptionData_t *pData )

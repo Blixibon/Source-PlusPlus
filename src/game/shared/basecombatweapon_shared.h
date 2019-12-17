@@ -517,6 +517,9 @@ public:
 
 	virtual void			BoneMergeFastCullBloat( Vector &localMins, Vector &localMaxs, const Vector &thisEntityMins, const Vector &thisEntityMaxs  ) const;
 
+	// override in sub-classes
+	virtual void DoAnimationEvents(CStudioHdr* pStudio);
+
 	virtual bool			OnFireEvent(C_BaseViewModel* pViewModel, const Vector& origin, const QAngle& angles, int event, const char* options);
 
 	// Should this object cast shadows?
