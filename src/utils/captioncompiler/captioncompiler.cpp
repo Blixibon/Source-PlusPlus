@@ -32,6 +32,7 @@ using namespace vgui;
 
 bool uselogfile = false;
 bool bX360 = false;
+bool bInPlace = false;
 
 struct AnalysisData
 {
@@ -166,6 +167,7 @@ void printusage( void )
 	vprint( 0, "usage:  captioncompiler closecaptionfile.txt\n\
 		\t-v = verbose output\n\
 		\t-l = log to file log.txt\n\
+		\t-i = compile in place\n\
 		\ne.g.:  kvc -l u:/xbox/game/hl2x/resource/closecaption_english.txt" );
 
 	// Exit app
@@ -508,6 +510,9 @@ int CCompileCaptionsApp::Main()
 			case 'g': // -game
 				++i;
 				break;
+			case 'i':
+				bInPlace = true;
+				break;
 			default:
 				printusage();
 				break;
@@ -542,7 +547,11 @@ int CCompileCaptionsApp::Main()
 	Q_strncat( binaries, "/../bin", MAX_PATH, MAX_PATH );
 
 	char outfile[ 512 ];
-	if ( Q_stristr( worklist[ worklist.Count() - 1 ].String(), gamedir ) )
+	if (bInPlace && Q_IsAbsolutePath(worklist[worklist.Count() - 1].String()))
+	{
+		Q_strncpy(outfile, worklist[worklist.Count() - 1].String(), sizeof(outfile));
+	}
+	else if ( Q_stristr( worklist[ worklist.Count() - 1 ].String(), gamedir ) )
 	{
         Q_strncpy( outfile, &worklist[ worklist.Count() - 1 ].String()[ Q_strlen( gamedir ) ] , sizeof( outfile ) );
 	}

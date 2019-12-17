@@ -616,4 +616,7 @@ IVradStaticPropMgr* StaticPropMgr();
 
 extern float ComputeCoverageFromTexture( float b0, float b1, float b2, int32 hitID );
 
+void SampleSkyboxCubeSSE(FourVectors const& vNormals, FourVectors& vColors);
+void SampleSkyboxCube(const Vector &vNormal, Vector& vColor);
+
 #endif // VRAD_H

@@ -2675,9 +2675,14 @@ static void GatherSampleLightAt4Points( SSE_SampleInfo_t& info, int sampleIdx, i
 
 		for( int n = 0; n < info.m_NormalCount; ++n )
 		{
+			FourVectors vColors;
+			vColors.DuplicateVector(Vector(1.f));
+			if (dl->light.type == emit_skyambient)
+				SampleSkyboxCubeSSE(info.m_PointNormals[n], vColors);
+
 			for ( int i = 0; i < numSamples; i++ )
 			{
-				pLightmaps[n][sampleIdx + i].AddLight( SubFloat( fxdot[n], i ), dl->light.intensity, SubFloat( out.m_flSunAmount, i ) );
+				pLightmaps[n][sampleIdx + i].AddLight( SubFloat( fxdot[n], i ), dl->light.intensity * vColors.Vec(i), SubFloat( out.m_flSunAmount, i ) );
 			}
 		}
 	}
@@ -2747,11 +2752,16 @@ static void ResampleLightAt4Points( SSE_SampleInfo_t& info, int lightStyleIndex,
 		// Compute the contributions to each of the bumped lightmaps
 		// The first sample is for non-bumped lighting.
 		// The other sample are for bumpmapping.
-		for( int i = 0; i < 4; ++i )
+		for (int n = 0; n < info.m_NormalCount; ++n)
 		{
-			for( int n = 0; n < info.m_NormalCount; ++n )
+			FourVectors vColors;
+			vColors.DuplicateVector(Vector(1.f));
+			if (dl->light.type == emit_skyambient)
+				SampleSkyboxCubeSSE(info.m_PointNormals[n], vColors);
+
+			for (int i = 0; i < 4; ++i)
 			{
-				pLightmap[i][n].AddLight( SubFloat( fxdot[n], i ), dl->light.intensity, SubFloat( out.m_flSunAmount, i ) );
+				pLightmap[i][n].AddLight(SubFloat(fxdot[n], i), dl->light.intensity * vColors.Vec(i), SubFloat(out.m_flSunAmount, i));
 			}
 		}
 	}
