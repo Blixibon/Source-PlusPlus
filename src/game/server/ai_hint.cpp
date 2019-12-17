@@ -884,6 +884,7 @@ BEGIN_DATADESC( CAI_Hint )
 	DEFINE_FIELD(	 m_flNextUseTime,	FIELD_TIME),
 	DEFINE_FIELD(	 m_vecForward,		FIELD_VECTOR),
 	DEFINE_KEYFIELD( m_nodeFOV,			FIELD_FLOAT,	"nodeFOV" ),
+	DEFINE_FIELD(m_hHintTarget,			FIELD_EHANDLE),
 
 	DEFINE_THINKFUNC( EnableThink ),
 
@@ -937,6 +938,13 @@ void CAI_Hint::Spawn( void )
 void CAI_Hint::Activate()
 {
 	BaseClass::Activate();
+	if (!m_hHintTarget && m_NodeData.iszTargetEntity != NULL_STRING)
+	{
+		CBaseEntity* pEntity = gEntList.FindEntityByName(nullptr, m_NodeData.iszTargetEntity, this);
+		if (pEntity)
+			m_hHintTarget.Set(pEntity);
+	}
+
 	CAI_HintManager::AddHint( this );
 }
 

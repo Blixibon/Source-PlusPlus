@@ -743,6 +743,8 @@
 	[
 		  0 : "None"
 
+		  17: "Generic"
+
 		  2: "World: Window"
 		 12: "World: Act Busy Hint"
 		 13: "World: Visually Interesting"
@@ -789,6 +791,8 @@
 		1200: "BMS MiniBoss Node"
 	]
 
+	generictype(string) : "Generic Hint" : "" : "String identifying what the hint type is, if generic."
+
 	hintactivity(string) : "Hint Activity" : "" : "Activity associated with this hint node. Various parts of the NPC AI play this activity at times. i.e. Actbusy nodes will play this activity when an NPC acts busy on the node."
 
 	nodeFOV(choices) : "Node FOV" : 180 : "Imagine this node requires that an NPC be in the node's field of view in order to use this hint." =
@@ -831,6 +835,8 @@
 		2 : "Alert"
 		3 : "Combat"
 	]
+
+	NodeEnt(target_destination) : "Node Entity" : : "Another entity associated with this hint node. Usage depends on hint type."
 
 	// Inputs
 	input EnableHint(void) : "Enable hint."
@@ -2954,7 +2960,11 @@
 		64 : "Force tiny_centered permission" : 0
 		128 : "Force large permission" : 0
 		256 : "Force large_centered permission" : 0
-		512 : "Keep editor position" : 0
+		512 : "Force large_tall permission"	: 0
+		1024 : "Force medium_tall permission" : 0
+		2048 : "Force human_centered permission" : 0
+
+		4096 : "Keep editor position" : 0
 	]
 ]
 

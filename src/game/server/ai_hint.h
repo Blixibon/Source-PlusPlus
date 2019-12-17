@@ -58,6 +58,7 @@ enum Hint_e
 	HINT_WORLD_VISUALLY_INTERESTING_DONT_AIM,
 	HINT_WORLD_INHIBIT_COMBINE_MINES,
 	HINT_WORLD_VISUALLY_INTERESTING_STEALTH,
+	HINT_GENERIC,
 
 	HINT_TACTICAL_COVER_MED	= 100,
 	HINT_TACTICAL_COVER_LOW,
@@ -305,6 +306,9 @@ public:
 	int					GetNodeId()	{ return m_NodeData.nNodeID; }
 	int					GetWCId()	{ return m_NodeData.nWCNodeID; }
 
+	string_t			GetGenericType() { return m_NodeData.iszGenericType; }
+	CBaseEntity* GetHintTarget() { return m_hHintTarget; }
+
 	bool				HintMatchesCriteria( CAI_BaseNPC *pNPC, const CHintCriteria &hintCriteria, const Vector &position, float *flNearestDistance, bool bIgnoreLock = false, bool bIgnoreHintType = false );
 	bool				IsInNodeFOV( CBaseEntity *pOther );
 
@@ -331,6 +335,7 @@ private:
 	COutputEHANDLE		m_OnNPCStoppedUsing;	// Triggered when an NPC has finished using this node.
 	float				m_nodeFOV;
 	Vector				m_vecForward;
+	EHANDLE				m_hHintTarget;
 
 	// The next hint in list of all hints
 	friend class CAI_HintManager;

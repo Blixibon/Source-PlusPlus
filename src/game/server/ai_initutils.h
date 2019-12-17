@@ -42,6 +42,8 @@ struct HintNodeData
 	HintIgnoreFacing_t fIgnoreFacing;
 	NPC_STATE	minState;
 	NPC_STATE	maxState;
+	string_t	iszGenericType;
+	string_t	iszTargetEntity;
 
 	int			nWCNodeID;			// Node ID assigned by worldcraft (not same as engine!)
 

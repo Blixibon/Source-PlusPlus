@@ -30,7 +30,7 @@
 #include "tier0/memdbgon.h"
 
 // Increment this to force rebuilding of all networks
-#define	 AINET_VERSION_NUMBER	40
+#define	 AINET_VERSION_NUMBER	41
 
 //-----------------------------------------------------------------------------
 
@@ -284,7 +284,7 @@ void CAI_NetworkManager::SaveNetworkGraph( void )
 		{
 			buf.SeekPut( CUtlBuffer::SEEK_CURRENT, 3 );
 		}
-		buf.PutUnsignedShort( pNode->m_eNodeInfo );
+		buf.PutUnsignedInt( pNode->m_eNodeInfo & ~bits_NODE_UNSAVED_FLAGS);
 		buf.PutShort( pNode->GetZone() );
 
 		for (int link = 0; link < pNode->NumLinks(); link++)
@@ -638,7 +638,7 @@ void CAI_NetworkManager::LoadNetworkGraph( void )
 			buf.SeekGet( CUtlBuffer::SEEK_CURRENT, 3 );
 		}
 
-		new_node->m_eNodeInfo = buf.GetUnsignedShort();
+		new_node->m_eNodeInfo = buf.GetUnsignedInt();
 		new_node->m_zone = buf.GetShort();
 	}
 

@@ -17,6 +17,7 @@
 #include "ai_hint.h"
 #include "ai_initutils.h"
 #include "ai_networkmanager.h"
+#include "world.h"
 
 // to help eliminate node clutter by level designers, this is used to cap how many other nodes
 // any given node is allowed to 'see' in the first stage of graph creation "LinkVisibleNodes()".
@@ -173,6 +174,8 @@ BEGIN_SIMPLE_DATADESC( HintNodeData )
 	DEFINE_KEYFIELD( fIgnoreFacing,		FIELD_INTEGER,	"IgnoreFacing" ),
 	DEFINE_KEYFIELD( minState,			FIELD_INTEGER,	"MinimumState" ),
 	DEFINE_KEYFIELD( maxState,			FIELD_INTEGER,	"MaximumState" ),
+	DEFINE_KEYFIELD(iszGenericType,		FIELD_STRING,	"generictype"),
+	DEFINE_KEYFIELD(iszTargetEntity,	FIELD_STRING,	"NodeEnt"),
 
 END_DATADESC()
 
@@ -310,7 +313,15 @@ int CNodeEnt::Spawn( const char *pMapData )
 		new_node->SetType( NODE_GROUND );
 	}
 
-	new_node->m_eNodeInfo = ( m_spawnflags << NODE_ENT_FLAGS_SHIFT );
+	if (GetWorldEntity()->GetMapVersion() == MV_EXTERNAL_MAP)
+	{
+		bool bHasDrop = HasSpawnFlags(512);
+		RemoveSpawnFlags(512);
+		if (bHasDrop)
+			AddSpawnFlags(4096);
+	}
+	
+	new_node->m_eNodeInfo = (m_spawnflags << NODE_ENT_FLAGS_SHIFT);
 
 	// If changed as part of WC editing process note that network must be rebuilt
 	if (m_debugOverlays & OVERLAY_WC_CHANGE_ENTITY)

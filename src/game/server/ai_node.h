@@ -82,8 +82,11 @@ enum NodeInfoBits_e
 	//bits_TINY_CENTERED_HULL		11
 	//bits_LARGE_HULL				12
 	//bits_LARGE_CENTERED_HULL		13
+	//HULL_LARGE_TALL				14
+	//HULL_MEDIUM_TALL				15
+	//HULL_HUMAN_CENTERED			16
 
-	bits_DONT_DROP				=	( 1 << 14 ),
+	bits_DONT_DROP				=	( 1 << 17 ),
 	
 	/****** NOTE: will need to change node graph save/load code if exceed 16 bits here ******/
 
@@ -94,6 +97,8 @@ enum NodeInfoBits_e
 
 	bits_NODE_WONT_FIT_HULL		=	0x40000000,	// Used only for debug display
 	bits_NODE_FALLEN			=	0x80000000,	// Fell through the world during initialization
+
+	bits_NODE_UNSAVED_FLAGS		= (bits_NODE_WC_NEED_REBUILD& bits_NODE_WC_CHANGED& bits_NODE_WONT_FIT_HULL& bits_NODE_FALLEN),
 };
 
 
