@@ -13,6 +13,11 @@
 
 extern ConVar xc_uncrouch_on_jump;
 
+CLazGameMovement::CLazGameMovement()
+{
+	m_pLazPlayer = nullptr;
+}
+
 unsigned int CLazGameMovement::PlayerSolidMask(bool brushOnly)
 {
 	unsigned int uMask = 0;
@@ -40,6 +45,13 @@ unsigned int CLazGameMovement::PlayerSolidMask(bool brushOnly)
 	}
 
 	return (uMask | BaseClass::PlayerSolidMask(brushOnly));
+}
+
+void CLazGameMovement::ProcessMovement(CBasePlayer* pBasePlayer, CMoveData* pMove)
+{
+	m_pLazPlayer = ToLazuulPlayer(pBasePlayer);
+
+	BaseClass::ProcessMovement(pBasePlayer, pMove);
 }
 
 void CLazGameMovement::PlayerRoughLandingEffects(float fvol, bool bLateral)
@@ -273,6 +285,11 @@ bool CLazGameMovement::CheckJumpButton(void)
 	// Flag that we jumped.
 	mv->m_nOldButtons |= IN_JUMP;	// don't jump again until released
 	return true;
+}
+
+Vector CLazGameMovement::GetPlayerViewOffset(bool ducked) const
+{
+	return ducked ? VEC_DUCK_VIEW_SCALED(m_pLazPlayer) : (m_pLazPlayer->GetPlayerEyeHeight());
 }
 
 // Expose our interface.

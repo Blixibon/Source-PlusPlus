@@ -37,6 +37,7 @@ enum LazPlayerPermissions_e
 {
 	LAZ_PERM_VOICE_BROADCAST = (1 << 0),
 	LAZ_PERM_NOCLIP = (1 << 1),
+	LAZ_PERM_FORCE_MODEL = (1 << 2),
 };
 
 //=============================================================================
@@ -72,6 +73,8 @@ public:
 	virtual void UpdateOnRemove();
 	virtual CBaseEntity		*EntSelectSpawnPoint(void);
 	virtual bool ShouldRegenerateHealth();
+
+	Vector 	GetPlayerEyeHeight(void);
 
 	virtual void DoMuzzleFlash();
 
@@ -287,6 +290,8 @@ protected:
 
 	friend void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer);
 	friend class CLAZPlayerResource;
+
+	CNetworkVar(float, m_flEyeHeightOverride);
 public:
 	CNetworkVar(bool, m_bHasLongJump);
 };

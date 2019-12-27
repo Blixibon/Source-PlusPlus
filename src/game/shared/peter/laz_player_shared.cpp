@@ -358,3 +358,23 @@ bool CLaz_Player::ShouldCollide(int collisionGroup, int contentsMask) const
 
 	return BaseClass::ShouldCollide(collisionGroup, contentsMask);
 }
+
+ConVar testclassviewheight( "testclassviewheight", "0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
+Vector vecTestViewHeight(0,0,0);
+
+//-----------------------------------------------------------------------------
+// Purpose: Return class-specific standing eye height
+//-----------------------------------------------------------------------------
+Vector CLaz_Player::GetPlayerEyeHeight(void)
+{
+	if (testclassviewheight.GetFloat() > 0)
+	{
+		vecTestViewHeight.z = testclassviewheight.GetFloat();
+		return vecTestViewHeight;
+	}
+
+	if (m_flEyeHeightOverride > 0)
+		return (Vector(0, 0, m_flEyeHeightOverride) * GetModelScale());
+
+	return VEC_VIEW_SCALED(this);
+}

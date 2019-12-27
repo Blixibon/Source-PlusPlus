@@ -67,6 +67,8 @@ public:
 
 	CUtlVector<playerModel_t> GetAvailableModelsForTeam(const char *pszTeam);
 
+	playerModel_t FindPlayerModel(const char* pszName);
+
 	bool PlayerGrabModel(const char *pszName);
 	bool PlayerReleaseModel(const char *pszName);
 

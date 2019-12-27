@@ -155,7 +155,7 @@ void CPlayerModels::LevelInitPreEntity()
 	}
 }
 
-ConVar force_pmodel("hlms_forced_player", "", FCVAR_CHEAT);
+ConVar force_pmodel("hlms_forced_player", "", FCVAR_CHEAT, "Forces the game to use a specific player model in singleplayer.");
 
 playerModel_t *CPlayerModels::SelectPlayerModel(int iGame, bool bSuit)
 {
@@ -244,6 +244,17 @@ CUtlVector<playerModel_t> CPlayerModels::GetAvailableModelsForTeam(const char * 
 	}
 
 	return candidates;
+}
+
+playerModel_t CPlayerModels::FindPlayerModel(const char* pszName)
+{
+	for (auto model : m_Models)
+	{
+		if (FStrEq(model.szSectionID, pszName))
+			return model;
+	}
+
+	return playerModel_t();
 }
 
 bool CPlayerModels::PlayerGrabModel(const char * pszName)

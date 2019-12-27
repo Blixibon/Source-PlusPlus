@@ -248,6 +248,8 @@ bool g_bRenderingScreenshot = false;
 #define FREEZECAM_SNAPSHOT_FADE_SPEED 340
 float g_flFreezeFlash = 0.0f;
 
+void InvalidateLocalPlayerGhosts();
+
 void MaybeInvalidateLocalPlayerAnimation()
 {
 	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
@@ -275,6 +277,8 @@ void MaybeInvalidateLocalPlayerAnimation()
 			}
 		}
 #endif // USES_ECON_ITEMS
+
+		InvalidateLocalPlayerGhosts();
 
 	}
 }

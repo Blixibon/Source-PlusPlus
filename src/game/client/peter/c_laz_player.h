@@ -30,6 +30,8 @@ public:
 	//int		GetHideBits();
 	void		UpdateOnRemove();
 
+	Vector 	GetPlayerEyeHeight(void);
+
 	void AvoidPlayers(CUserCmd * pCmd);
 
 	virtual bool CreateMove(float flInputSampleTime, CUserCmd *pCmd);
@@ -116,6 +118,8 @@ protected:
 	int						m_iHeadBone;
 
 	int					m_nFlashlightType;
+
+	float				m_flEyeHeightOverride;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

@@ -90,12 +90,14 @@ DEFINE_FIELD(m_hExpressionSceneEnt, FIELD_EHANDLE),
 DEFINE_FIELD(m_flNextRandomExpressionTime, FIELD_TIME),
 
 DEFINE_FIELD(m_nFlashlightType, FIELD_INTEGER),
+DEFINE_FIELD(m_flEyeHeightOverride, FIELD_FLOAT),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
 SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iPlayerSoundType), MAX_FOOTSTEP_STRING_BITS + 1),
 SendPropInt(SENDINFO(m_nFlashlightType)),
+SendPropFloat(SENDINFO(m_flEyeHeightOverride)),
 END_SEND_TABLE();
 
 #define MODEL_CHANGE_INTERVAL 5.0f
@@ -157,6 +159,8 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		pHLMS->SetResponseClassname(pchClassname);
 
 		pHLMS->m_nFlashlightType = UTIL_StringFieldToInt(pkvAbillites->GetString("flashlight"), g_pszFlashlightTypes, FLASHLIGHT_TYPE_COUNT);
+
+		pHLMS->m_flEyeHeightOverride = pkvAbillites->GetFloat("view_height", -1.f);
 	}
 	else
 	{
@@ -287,6 +291,8 @@ void CLaz_Player::Spawn(void)
 
 			m_nSpecialAttack = UTIL_StringFieldToInt(pkvAbillites->GetString("special"), g_pszSpecialAttacks, SPECIAL_ATTACK_COUNT);
 			m_nFlashlightType = UTIL_StringFieldToInt(pkvAbillites->GetString("flashlight"), g_pszFlashlightTypes, FLASHLIGHT_TYPE_COUNT);
+
+			m_flEyeHeightOverride = pkvAbillites->GetFloat("view_height", -1.f);
 		}
 		else
 		{
@@ -295,6 +301,7 @@ void CLaz_Player::Spawn(void)
 			SetResponseClassname(DEFAULT_ABILITY);
 			m_nSpecialAttack = -1;
 			m_nFlashlightType = FLASHLIGHT_NONE;
+			m_flEyeHeightOverride = -1.f;
 		}
 	}
 	else
@@ -310,6 +317,8 @@ void CLaz_Player::Spawn(void)
 		RemoveSolidFlags(FSOLID_NOT_SOLID);
 
 		RemoveEffects(EF_NODRAW);
+
+		SetViewOffset(GetPlayerEyeHeight());
 	}
 }
 
@@ -577,7 +586,7 @@ int CLaz_Player::GetPlayerPermissions()
 	int iPermissionMask = 0;
 	if (GetPlayerPrivilegeLevel() >= LAZ_STATUS_ADMIN)
 	{
-		iPermissionMask |= LAZ_PERM_VOICE_BROADCAST|LAZ_PERM_NOCLIP;
+		iPermissionMask |= LAZ_PERM_VOICE_BROADCAST | LAZ_PERM_NOCLIP | LAZ_PERM_FORCE_MODEL;
 	}
 
 	return (m_iDesiredPermissions & iPermissionMask);
@@ -843,6 +852,18 @@ void CLaz_Player::SetPlayerModel(void)
 	{
 		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.szSectionID);
 		m_MPModel = { 0 };
+	}
+
+	if (GetPlayerPermissions() & LAZ_PERM_FORCE_MODEL)
+	{
+		const char* pszModel = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
+		playerModel_t model = PlayerModelSystem()->FindPlayerModel(pszModel);
+		if (model.szSectionID[0])
+		{
+			m_MPModel = model;
+			PlayerModelSystem()->PlayerGrabModel(m_MPModel.szSectionID);
+			return;
+		}
 	}
 
 	CUtlVector<playerModel_t> models = PlayerModelSystem()->GetAvailableModelsForTeam(TeamID());

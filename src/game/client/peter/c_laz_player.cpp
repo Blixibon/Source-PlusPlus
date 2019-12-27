@@ -46,6 +46,8 @@ RecvPropInt(RECVINFO(m_iPlayerSoundType)),
 
 RecvPropBool(RECVINFO(m_fIsWalking)),
 RecvPropInt(RECVINFO(m_nFlashlightType)),
+
+RecvPropFloat(RECVINFO(m_flEyeHeightOverride)),
 END_RECV_TABLE();
 
 BEGIN_PREDICTION_DATA(C_Laz_Player)
@@ -1374,15 +1376,35 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 		return;
 	}
 
-	if (g_pPortalRender->IsRenderingPortal() || m_bForceNormalBoneSetup)
+	if (!m_bForceNormalBoneSetup)
 	{
-		return;
-	}
+		if (g_pPortalRender->IsRenderingPortal())
+		{
+			return;
+		}
 
-	int iView = CurrentViewID();
-	if (iView != VIEW_MAIN && iView != VIEW_REFRACTION && iView != VIEW_WATER_INTERSECTION)
+		int iView = CurrentViewID();
+		if (iView != VIEW_MAIN && iView != VIEW_REFRACTION && iView != VIEW_WATER_INTERSECTION && iView != VIEW_SHADOW_DEPTH_TEXTURE)
+		{
+			return;
+		}
+	}
+	else
 	{
-		return;
+		if (g_pPortalRender->GetViewRecursionLevel() == 0)
+		{
+			if (!m_bEyePositionIsTransformedByPortal)
+				return;
+		}
+		else if (g_pPortalRender->GetViewRecursionLevel() == 1)
+		{
+			if (m_bEyePositionIsTransformedByPortal)
+				return;
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	// If we aren't drawing the player anyway, don't mess with the bones. This can happen in Portal.
@@ -1452,6 +1474,9 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 			MatrixSetTranslation(vBonePos, bone);
 		}
 	}
+
+	if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE)
+		return;
 
 	Vector vHeadAdd;
 	VectorRotate(Vector(-128, 128, 0), mHeadTransform, vHeadAdd);

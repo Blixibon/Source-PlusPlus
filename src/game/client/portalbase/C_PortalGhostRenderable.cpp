@@ -11,6 +11,20 @@
 #include "c_portal_player.h"
 #include "model_types.h"
 #include "c_basecombatweapon.h"
+#include "utllinkedlist.h"
+
+CUtlLinkedList< C_PortalGhostRenderable* > g_PortalGhostRenderables;
+
+void InvalidateLocalPlayerGhosts()
+{
+	for (auto pGhost : g_PortalGhostRenderables)
+	{
+		if (pGhost->m_bLocalPlayer)
+		{
+			pGhost->InvalidateBoneCache();
+		}
+	}
+}
 
 C_PortalGhostRenderable::C_PortalGhostRenderable( C_Prop_Portal *pOwningPortal, C_BaseEntity *pGhostSource, RenderGroup_t sourceRenderGroup, const VMatrix &matGhostTransform, float *pSharedRenderClipPlane, bool bLocalPlayer )
 : m_pGhostedRenderable( pGhostSource ), 
@@ -24,10 +38,12 @@ C_PortalGhostRenderable::C_PortalGhostRenderable( C_Prop_Portal *pOwningPortal, 
 
 	cl_entitylist->AddNonNetworkableEntity( GetIClientUnknown() );
 	g_pClientLeafSystem->AddRenderable( this, sourceRenderGroup );
+	g_PortalGhostRenderables.AddToTail(this);
 }
 
 C_PortalGhostRenderable::~C_PortalGhostRenderable( void )
 {
+	g_PortalGhostRenderables.FindAndRemove(this);
 	m_pGhostedRenderable = NULL;
 	g_pClientLeafSystem->RemoveRenderable( RenderHandle() );
 	cl_entitylist->RemoveEntity( GetIClientUnknown()->GetRefEHandle() );
@@ -149,6 +165,7 @@ bool C_PortalGhostRenderable::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMax
 			if (m_bActive && m_pWeapon)
 			{
 				m_pWeapon->SetIsSettingUpBonesForGhostAnim(false);
+				m_pWeapon->InvalidateBoneCache();
 			}
 		}
 	private:
@@ -157,6 +174,7 @@ bool C_PortalGhostRenderable::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMax
 	};
 
 	CWeaponModelIndexHelper helper(m_bSourceIsBaseWeapon, m_pGhostedRenderable->MyCombatWeaponPointer());
+
 	CPlayerBoneSetupHelper plHelper(m_bLocalPlayer, ToPortalPlayer(m_pGhostedRenderable));
 
 	if( m_pGhostedRenderable->SetupBones( pBoneToWorldOut, nMaxBones, boneMask, currentTime ) )
@@ -304,7 +322,7 @@ int C_PortalGhostRenderable::DrawModel( int flags )
 				// Dead player uses a ragdoll to draw, so don't ghost the dead entity
 				return 0;
 			}
-			else if (pPlayer->ShouldDoPortalRenderCulling())
+			else if (pPlayer->ShouldDoPortalRenderCulling() && pPlayer->InFirstPersonView())
 			{
 				if (g_pPortalRender->GetViewRecursionLevel() == 0)
 				{

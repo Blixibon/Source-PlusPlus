@@ -44,6 +44,9 @@ enum PlayerColors_e
 
 #if defined( CLIENT_DLL )
 #define CLaz_Player C_Laz_Player
+#include "peter/c_laz_player.h"
+#else
+#include "peter/laz_player.h"
 #endif
 
 #endif
