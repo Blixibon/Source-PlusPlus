@@ -28,7 +28,10 @@
 
 #define MIN_FLING_SPEED 300
 
-#define PORTAL_HIDE_PLAYER_RAGDOLL 1
+#ifndef HL2_LAZUL
+#define PORTAL_HIDE_PLAYER_RAGDOLL 1  
+#endif // !HL2_LAZUL
+
 
 enum PortalFizzleType_t
 {

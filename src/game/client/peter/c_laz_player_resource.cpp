@@ -46,7 +46,7 @@ Color C_LAZ_PlayerResource::GetPlayerColor(int iIndex, int iColor)
 	if (!IsConnected(iIndex) || iColor < 0 || iColor >= NUM_PLAYER_COLORS)
 		return COLOR_BLACK;
 
-	Vector& vColor = m_vPlayerColors[(iIndex * NUM_PLAYER_COLORS) + iColor];
+	Vector& vColor = m_vPlayerColors[((iIndex-1) * NUM_PLAYER_COLORS) + iColor];
 
 	//Msg("Client %f %f %f\n", m_iColors[iIndex].x, m_iColors[iIndex].y, m_iColors[iIndex].z);
 	return Color(vColor.x * 255.0, vColor.y * 255.0, vColor.z * 255.0, 255);
@@ -57,7 +57,7 @@ Vector C_LAZ_PlayerResource::GetPlayerColorVector(int iIndex, int iColor)
 	if (!IsConnected(iIndex) || iColor < 0 || iColor >= NUM_PLAYER_COLORS)
 		return Vector(0);
 
-	const Vector& vColor = m_vPlayerColors[(iIndex * NUM_PLAYER_COLORS) + iColor];
+	const Vector& vColor = m_vPlayerColors[((iIndex-1) * NUM_PLAYER_COLORS) + iColor];
 
 	return vColor;
 }

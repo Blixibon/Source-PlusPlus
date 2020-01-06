@@ -27,7 +27,7 @@ public:
 	
 protected:
 
-	Vector m_vPlayerColors[(MAX_PLAYERS + 1) * NUM_PLAYER_COLORS];
+	Vector m_vPlayerColors[(MAX_PLAYERS) * NUM_PLAYER_COLORS];
 };
 
 

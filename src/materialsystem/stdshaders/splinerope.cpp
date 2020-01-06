@@ -10,7 +10,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static ConVar rope_min_pixel_diameter( "rope_min_pixel_diameter", "2.0", FCVAR_CHEAT );
+static ConVar rope_min_pixel_diameter( "rope_min_pixel_diameter", "1.0", FCVAR_CHEAT );
+static ConVar rope_min_pixel_diameter_shadowdepth("rope_min_pixel_diameter_shadowdepth", "4.0", FCVAR_CHEAT);
 
 DEFINE_FALLBACK_SHADER( PP_Cable, PP_SplineRope );
 
@@ -120,7 +121,13 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 			pShaderAPI->GetViewports( &viewport, 1 );
 
 			float c7[4]={ 0.0f, 0.0f, 0.0f, 0.0f };
-			//if ( !g_pHardwareConfig->IsAAEnabled() )
+			
+			if (bShadowDepth)
+			{
+				float flMinPixelDiameter = rope_min_pixel_diameter_shadowdepth.GetFloat() / (float)viewport.m_nWidth;
+				c7[0] = c7[1] = c7[2] = c7[3] = flMinPixelDiameter;
+			}
+			else
 			{
 				float flMinPixelDiameter = rope_min_pixel_diameter.GetFloat() / ( float )viewport.m_nWidth;
 				c7[0]= c7[1] = c7[2] = c7[3] = flMinPixelDiameter;

@@ -175,7 +175,7 @@ bool C_PortalGhostRenderable::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMax
 
 	CWeaponModelIndexHelper helper(m_bSourceIsBaseWeapon, m_pGhostedRenderable->MyCombatWeaponPointer());
 
-	CPlayerBoneSetupHelper plHelper(m_bLocalPlayer, ToPortalPlayer(m_pGhostedRenderable));
+	CPlayerBoneSetupHelper plHelper(m_bLocalPlayer, C_Portal_Player::GetLocalPortalPlayer());
 
 	if( m_pGhostedRenderable->SetupBones( pBoneToWorldOut, nMaxBones, boneMask, currentTime ) )
 	{

@@ -39,6 +39,11 @@
 #include "filesystem.h"
 #endif
 
+#ifdef USES_ECON_ITEMS
+#include "econ_wearable.h"
+#endif // USES_ECON_ITEMS
+
+
 #include "debugoverlay_shared.h"
 
 ConVar sv_portal_placement_never_fail("sv_portal_placement_never_fail", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
@@ -380,6 +385,13 @@ void C_Prop_Portal::Simulate()
 					!m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( pWeapon ) )
 					continue;
 			}
+#ifdef HL2_LAZUL
+			else if (pEntity == pLocalPlayer)
+			{
+				if (!m_PortalSimulator.EntityIsInPortalHole(pEntity))
+					continue;
+			}
+#endif // HL2_LAZUL
 			else if( pEntity->IsPlayer() )
 			{
 				if( !m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( (C_BaseAnimating*)pEntity ) )
@@ -427,8 +439,17 @@ void C_Prop_Portal::Simulate()
 
 			bool bIsHeldWeapon = false;
 			C_BaseCombatWeapon *pWeapon = dynamic_cast<C_BaseCombatWeapon*>( pEntity );
-			if ( pWeapon && ToPortalPlayer( pWeapon->GetOwner() ) )
+			if ( pWeapon && pWeapon->GetOwner() == pLocalPlayer)
 				bIsHeldWeapon = true;
+#ifdef USES_ECON_ITEMS
+			else
+			{
+				C_EconWearable* pWearable = dynamic_cast<C_EconWearable*>(pEntity);
+				if (pWearable && pWearable->GetOwnerEntity() == pLocalPlayer)
+					bIsHeldWeapon = true;
+			}
+#endif // USES_ECON_ITEMS
+
 
 			C_PortalGhostRenderable *pNewGhost = new C_PortalGhostRenderable( this,
 																				pRenderable, 

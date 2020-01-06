@@ -1204,20 +1204,34 @@ void CPortal_Player::Event_Killed( const CTakeDamageInfo &info )
 {
 	BaseClass::Event_Killed(info);
 
-#if PORTAL_HIDE_PLAYER_RAGDOLL
-	// Fizzle all portals so they don't see the player disappear
-	int iPortalCount = CProp_Portal_Shared::AllPortals.Count();
-	CProp_Portal **pPortals = CProp_Portal_Shared::AllPortals.Base();
-	for( int i = 0; i != iPortalCount; ++i )
+	if (GameRules()->IsMultiplayer())
 	{
-		CProp_Portal *pTempPortal = pPortals[i];
-
-		if( pTempPortal && pTempPortal->m_bActivated )
+		const CUtlVector< CProp_Portal *> *vPortals = CProp_Portal::GetPortalLinkageGroup(entindex());
+		for (auto pPortal : *vPortals)
 		{
-			pTempPortal->Fizzle();
+			if (pPortal && pPortal->m_bActivated)
+			{
+				pPortal->Fizzle();
+			}
 		}
 	}
+	else
+	{
+#if PORTAL_HIDE_PLAYER_RAGDOLL
+		// Fizzle all portals so they don't see the player disappear
+		int iPortalCount = CProp_Portal_Shared::AllPortals.Count();
+		CProp_Portal** pPortals = CProp_Portal_Shared::AllPortals.Base();
+		for (int i = 0; i != iPortalCount; ++i)
+		{
+			CProp_Portal* pTempPortal = pPortals[i];
+
+			if (pTempPortal && pTempPortal->m_bActivated)
+			{
+				pTempPortal->Fizzle();
+			}
+		}
 #endif // PORTAL_HIDE_PLAYER_RAGDOLL
+	}
 }
 
 int CPortal_Player::OnTakeDamage( const CTakeDamageInfo &inputInfo )

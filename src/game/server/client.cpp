@@ -581,6 +581,9 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 	if ( !inputdata.value.String()[0] )
 		return;
 
+	if (Q_stristr(inputdata.value.String(), "sv_cheats"))
+		return;
+
 	edict_t *pClient = NULL;
 	if ( gpGlobals->maxClients == 1 )
 	{
@@ -641,6 +644,9 @@ void CPointServerCommand::InputCommand( inputdata_t& inputdata )
 		bAllowed = TFGameRules() && TFGameRules()->IsValveMap();
 	}
 #endif // TF_DLL
+
+	if (Q_stristr(inputdata.value.String(), "sv_cheats"))
+		bAllowed = false;
 
 	if ( bAllowed )
 	{

@@ -61,36 +61,35 @@ public:
 	{
 		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
 		{
-			m_pConvars[i] = nullptr;
-		}
-	}
-
-	virtual bool Init()
-	{
-		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
-		{
 			CFmtStr str("cl_laz_player_color%i", i);
 			m_pszConvarNames[i] = V_strdup(str.Access());
 
 			m_pConvars[i] = new ConVar(m_pszConvarNames[i], "0 1 1", FCVAR_ARCHIVE | FCVAR_USERINFO);
 		}
-
-		return true;
 	}
 
-	virtual void Shutdown()
+	~CPlayerColorConvarSystem()
 	{
 		for (int i = 0; i < NUM_PLAYER_COLORS; i++)
 		{
 			if (m_pConvars[i])
 			{
-				g_pCVar->UnregisterConCommand(m_pConvars[i]);
 				delete m_pConvars[i];
 				m_pConvars[i] = nullptr;
 				delete m_pszConvarNames[i];
 				m_pszConvarNames[i] = nullptr;
 			}
 		}
+	}
+
+	virtual bool Init()
+	{
+		return true;
+	}
+
+	virtual void Shutdown()
+	{
+		
 	}
 
 	virtual ConVar* GetColorConVar(int iColor)
@@ -1478,8 +1477,8 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 	if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE)
 		return;
 
-	Vector vHeadAdd;
-	VectorRotate(Vector(-128, 128, 0), mHeadTransform, vHeadAdd);
+	//Vector vHeadAdd;
+	//VectorRotate(Vector(-128, 128, 0), mHeadTransform, vHeadAdd);
 
 	// Then scale the head to zero, but leave its position - forms a "neck stub".
 	// This prevents us rendering junk all over the screen, e.g. inside of mouth, etc.
@@ -1488,12 +1487,9 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 	{
 		for (int iBone = 0; iBone < hdr->numbones(); iBone++)
 		{
-			if (m_bitHair.IsBitSet(iBone))
+			if (m_bitHair.IsBitSet(iBone) && iBone != iHead)
 			{
-				Vector vBonePos;
-				MatrixGetTranslation(GetBoneForWrite(iBone), vBonePos);
-				vBonePos += vHeadAdd;
-				MatrixSetTranslation(vBonePos, GetBoneForWrite(iBone));
+				GetBoneForWrite(iBone) = mHeadTransform;
 			}
 		}
 	}

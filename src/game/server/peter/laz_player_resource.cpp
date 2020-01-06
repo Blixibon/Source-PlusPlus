@@ -40,7 +40,7 @@ void CLAZPlayerResource::UpdatePlayerData( void )
 		{			
 			for (int j = 0; j < NUM_PLAYER_COLORS; j++)
 			{
-				m_vPlayerColors.Set((i * NUM_PLAYER_COLORS) + j, pPlayer->m_vecPlayerColors[j]);
+				m_vPlayerColors.Set(((i-1) * NUM_PLAYER_COLORS) + j, pPlayer->m_vecPlayerColors[j]);
 			}
 		}
 	}
@@ -50,7 +50,7 @@ void CLAZPlayerResource::Spawn( void )
 {
 	int i;
 
-	for ( i = 0; i < MAX_PLAYERS + 1; i++ )
+	for ( i = 0; i < MAX_PLAYERS; i++ )
 	{
 		for (int j = 0; j < NUM_PLAYER_COLORS; j++)
 		{
@@ -69,7 +69,7 @@ Color CLAZPlayerResource::GetPlayerColor(int iIndex, int iColor)
 	if (iIndex < 1 || iIndex > MAX_PLAYERS || iColor < 0 || iColor >= NUM_PLAYER_COLORS)
 		return COLOR_BLACK;
 
-	const Vector& vColor = m_vPlayerColors.Get((iIndex * NUM_PLAYER_COLORS) + iColor);
+	const Vector& vColor = m_vPlayerColors.Get(((iIndex-1) * NUM_PLAYER_COLORS) + iColor);
 
 	//Msg("Client %f %f %f\n", m_iColors[iIndex].x, m_iColors[iIndex].y, m_iColors[iIndex].z);
 	return Color(vColor.x * 255.0, vColor.y * 255.0, vColor.z * 255.0, 255);
