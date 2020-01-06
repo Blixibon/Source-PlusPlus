@@ -100,6 +100,10 @@ $Project "vgui_controls"
 		$File	"WizardPanel.cpp"
 		$File	"WizardSubPanel.cpp"
 		$File   "$SRCDIR/vgui2/src/vgui_key_translation.cpp"
+
+		$File	"CvarNegateCheckButton.cpp"
+		$File	"CvarSlider.cpp"
+		$File	"URLButton.cpp"
 	}
 
 	$Folder	"Public Header Files"

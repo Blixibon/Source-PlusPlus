@@ -14,7 +14,7 @@
 #include <vgui_controls/PropertyPage.h>
 
 class CLabeledCommandComboBox;
-class CCvarToggleCheckButton;
+typedef vgui::CvarToggleCheckButton<ConVarRef> CCvarToggleCheckButton;
 
 namespace vgui
 {

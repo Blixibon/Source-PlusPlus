@@ -5,9 +5,8 @@
 // $NoKeywords: $
 //
 //=============================================================================//
-#include "CvarSlider.h"
+#include <vgui_controls/CvarSlider.h>
 #include <stdio.h>
-#include "EngineInterface.h"
 #include "tier1/KeyValues.h"
 #include "tier1/convar.h"
 #include <vgui/IVGui.h>
@@ -95,7 +94,7 @@ void CCvarSlider::ApplySettings( KeyValues *inResourceData )
 		float minValue = inResourceData->GetFloat( "minvalue", 0 );
 		float maxValue = inResourceData->GetFloat( "maxvalue", 1 );
 		const char *cvarname = inResourceData->GetString( "cvar_name", "" );
-		bool bAllowOutOfRange = inResourceData->GetBool( "allowoutofrange", false );
+		bool bAllowOutOfRange = inResourceData->GetInt( "allowoutofrange", 0 ) != 0;
 		SetupSlider( minValue, maxValue, cvarname, bAllowOutOfRange );
 
 		if ( GetParent() )
@@ -125,7 +124,7 @@ void CCvarSlider::GetSettings( KeyValues *outResourceData )
 		outResourceData->SetFloat( "minvalue", m_flMinValue );
 		outResourceData->SetFloat( "maxvalue", m_flMaxValue );
 		outResourceData->SetString( "cvar_name", m_szCvarName );
-		outResourceData->SetBool( "allowoutofrange", m_bAllowOutOfRange );
+		outResourceData->SetInt( "allowoutofrange", m_bAllowOutOfRange );
 	}
 }
 

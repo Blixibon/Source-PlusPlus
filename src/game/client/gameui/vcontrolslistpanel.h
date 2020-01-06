@@ -16,12 +16,12 @@
 // Purpose: Special list subclass to handle drawing of trap mode prompt on top of
 //			lists client area
 //-----------------------------------------------------------------------------
-class VControlsListPanel : public vgui::SectionedListPanel
+class VControlsListPanelGUI : public vgui::SectionedListPanel
 {
 public:
 	// Construction
-					VControlsListPanel( vgui::Panel *parent, const char *listName );
-	virtual			~VControlsListPanel();
+	VControlsListPanelGUI( vgui::Panel *parent, const char *listName );
+	virtual			~VControlsListPanelGUI();
 
 	// Start/end capturing
 	virtual void	StartCaptureMode(vgui::HCursor hCursor = NULL);
@@ -45,7 +45,7 @@ private:
 	// Font to use for showing the prompt
 	vgui::HFont		m_hFont;
 	// panel used to edit
-	class CInlineEditPanel *m_pInlineEditPanel;
+	class CInlineEditPanelGUI *m_pInlineEditPanel;
 	int m_iMouseX, m_iMouseY;
 
 	typedef vgui::SectionedListPanel BaseClass;

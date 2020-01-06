@@ -4,8 +4,8 @@
 //
 // $NoKeywords: $
 //=============================================================================//
-
-#include "vcontrolslistpanel.h"
+#include "cbase.h"
+#include "VControlsListPanel.h"
 #include "GameUI_Interface.h"
 #include "EngineInterface.h"
 
@@ -25,10 +25,10 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: panel used for inline editing of key bindings
 //-----------------------------------------------------------------------------
-class CInlineEditPanel : public vgui::Panel
+class CInlineEditPanelGUI : public vgui::Panel
 {
 public:
-	CInlineEditPanel() : vgui::Panel(NULL, "InlineEditPanel")
+	CInlineEditPanelGUI() : vgui::Panel(NULL, "InlineEditPanel")
 	{
 	}
 
@@ -70,18 +70,18 @@ public:
 //-----------------------------------------------------------------------------
 // Purpose: Construction
 //-----------------------------------------------------------------------------
-VControlsListPanel::VControlsListPanel( vgui::Panel *parent, const char *listName )	: vgui::SectionedListPanel( parent, listName )
+VControlsListPanelGUI::VControlsListPanelGUI( vgui::Panel *parent, const char *listName )	: vgui::SectionedListPanel( parent, listName )
 {
 	m_bCaptureMode	= false;
 	m_nClickRow		= 0;
-	m_pInlineEditPanel = new CInlineEditPanel();
+	m_pInlineEditPanel = new CInlineEditPanelGUI();
 	m_hFont = INVALID_FONT;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Destructor
 //-----------------------------------------------------------------------------
-VControlsListPanel::~VControlsListPanel()
+VControlsListPanelGUI::~VControlsListPanelGUI()
 {
 	m_pInlineEditPanel->MarkForDeletion();
 }
@@ -89,7 +89,7 @@ VControlsListPanel::~VControlsListPanel()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void VControlsListPanel::ApplySchemeSettings(IScheme *pScheme )
+void VControlsListPanelGUI::ApplySchemeSettings(IScheme *pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 	m_hFont	= pScheme->GetFont("Default", IsProportional() ); 
@@ -98,7 +98,7 @@ void VControlsListPanel::ApplySchemeSettings(IScheme *pScheme )
 //-----------------------------------------------------------------------------
 // Purpose: Start capture prompt display
 //-----------------------------------------------------------------------------
-void VControlsListPanel::StartCaptureMode( HCursor hCursor )
+void VControlsListPanelGUI::StartCaptureMode( HCursor hCursor )
 {
 	m_bCaptureMode = true;
 	EnterEditMode(m_nClickRow, 1, m_pInlineEditPanel);
@@ -119,7 +119,7 @@ void VControlsListPanel::StartCaptureMode( HCursor hCursor )
 //-----------------------------------------------------------------------------
 // Purpose: Finish capture prompt display
 //-----------------------------------------------------------------------------
-void VControlsListPanel::EndCaptureMode( HCursor hCursor )
+void VControlsListPanelGUI::EndCaptureMode( HCursor hCursor )
 {
 	m_bCaptureMode = false;
 	input()->SetMouseCapture(NULL);
@@ -140,7 +140,7 @@ void VControlsListPanel::EndCaptureMode( HCursor hCursor )
 //-----------------------------------------------------------------------------
 // Purpose: Set active row column
 //-----------------------------------------------------------------------------
-void VControlsListPanel::SetItemOfInterest(int itemID)
+void VControlsListPanelGUI::SetItemOfInterest(int itemID)
 {
 	m_nClickRow	= itemID;
 }
@@ -148,7 +148,7 @@ void VControlsListPanel::SetItemOfInterest(int itemID)
 //-----------------------------------------------------------------------------
 // Purpose: Retrieve row, column of interest
 //-----------------------------------------------------------------------------
-int VControlsListPanel::GetItemOfInterest()
+int VControlsListPanelGUI::GetItemOfInterest()
 {
 	return m_nClickRow;
 }
@@ -156,7 +156,7 @@ int VControlsListPanel::GetItemOfInterest()
 //-----------------------------------------------------------------------------
 // Purpose: returns true if we're currently waiting to capture a key
 //-----------------------------------------------------------------------------
-bool VControlsListPanel::IsCapturing( void )
+bool VControlsListPanelGUI::IsCapturing( void )
 {
 	return m_bCaptureMode;
 }
@@ -164,7 +164,7 @@ bool VControlsListPanel::IsCapturing( void )
 //-----------------------------------------------------------------------------
 // Purpose: Forwards mouse pressed message up to keyboard page when in capture
 //-----------------------------------------------------------------------------
-void VControlsListPanel::OnMousePressed(vgui::MouseCode code)
+void VControlsListPanelGUI::OnMousePressed(vgui::MouseCode code)
 {
 	if (IsCapturing())
 	{
@@ -184,7 +184,7 @@ void VControlsListPanel::OnMousePressed(vgui::MouseCode code)
 //-----------------------------------------------------------------------------
 // Purpose: input handler
 //-----------------------------------------------------------------------------
-void VControlsListPanel::OnMouseDoublePressed( vgui::MouseCode code )
+void VControlsListPanelGUI::OnMouseDoublePressed( vgui::MouseCode code )
 {
 	if (IsItemIDValid(GetSelectedItem()))
 	{

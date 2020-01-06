@@ -7,6 +7,8 @@
 //===========================================================================//
 // CScriptObject and CDescription class definitions
 // 
+#include "cbase.h"
+
 #include "ScriptObject.h"
 #include <stdio.h>
 #include <stdlib.h>

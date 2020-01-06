@@ -5,12 +5,14 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+#include "cbase.h"
+
 #include "OptionsSubMouse.h"
 //#include "CommandCheckButton.h"
 #include "KeyToggleCheckButton.h"
-#include "CvarNegateCheckButton.h"
-#include "CvarToggleCheckButton.h"
-#include "CvarSlider.h"
+#include <vgui_controls/CvarNegateCheckButton.h>
+#include <vgui_controls/cvartogglecheckbutton.h>
+#include <vgui_controls/CvarSlider.h>
 
 #include "EngineInterface.h"
 
@@ -37,6 +39,19 @@ COptionsSubMouse::COptionsSubMouse(vgui::Panel *parent) : PropertyPage(parent, N
 		"MouseFilter", 
 		"#GameUI_MouseFilter", 
 		"m_filter" );
+
+	m_pMouseRawCheckBox = new CCvarToggleCheckButton(
+		this,
+		"MouseRaw",
+		"#GameUI_MouseRaw",
+		"m_rawinput"
+	);
+
+	m_pMouseAccelCheckBox = new CheckButton(
+		this,
+		"MouseAccelerationCheckbox",
+		"#GameUI_MouseAcceleration"
+	);
 
 	m_pJoystickCheckBox = new CCvarToggleCheckButton( 
 		this, 
@@ -68,6 +83,12 @@ COptionsSubMouse::COptionsSubMouse(vgui::Panel *parent) : PropertyPage(parent, N
     m_pMouseSensitivityLabel = new TextEntry(this, "SensitivityLabel");
     m_pMouseSensitivityLabel->AddActionSignalTarget(this);
 
+	m_pMouseAccelSlider = new CCvarSlider(this, "MouseAccelerationSlider", "#GameUI_MouseAcceleration",
+		1.0f, 1.4f, "m_customaccel_exponent", true);
+
+	m_pMouseAccelLabel = new TextEntry(this, "MouseAccelerationLabel");
+	m_pMouseAccelLabel->AddActionSignalTarget(this);
+
 	m_pJoyYawSensitivitySlider = new CCvarSlider( this, "JoystickYawSlider", "#GameUI_JoystickYawSensitivity",
 		-0.5f, -7.0f, "joy_yawsensitivity", true );
 	m_pJoyYawSensitivityPreLabel = new Label(this, "JoystickYawSensitivityPreLabel", "#GameUI_JoystickLookSpeedYaw" );
@@ -89,7 +110,18 @@ COptionsSubMouse::COptionsSubMouse(vgui::Panel *parent) : PropertyPage(parent, N
 		m_pMouseSensitivityLabel->SetText(buf);
 	}
 
+	ConVarRef var2("m_customaccel_exponent");
+	if (var2.IsValid())
+	{
+		float sensitivity = var2.GetFloat();
+
+		char buf[64];
+		Q_snprintf(buf, sizeof(buf), " %.1f", sensitivity);
+		m_pMouseAccelLabel->SetText(buf);
+	}
+
 	UpdateJoystickPanels();
+	UpdateAccelPanels();
 }
 
 //-----------------------------------------------------------------------------
@@ -113,6 +145,12 @@ void COptionsSubMouse::OnResetData()
 	m_pReverseJoystickCheckBox->Reset();
 	m_pJoyYawSensitivitySlider->Reset();
 	m_pJoyPitchSensitivitySlider->Reset();
+	m_pMouseRawCheckBox->Reset();
+
+	ConVarRef m_customaccel("m_customaccel");
+	m_pMouseAccelCheckBox->SetSelected(m_customaccel.GetInt() == 3);
+
+	m_pMouseAccelSlider->Reset();
 }
 
 //-----------------------------------------------------------------------------
@@ -129,6 +167,12 @@ void COptionsSubMouse::OnApplyChanges()
 	m_pReverseJoystickCheckBox->ApplyChanges();
 	m_pJoyYawSensitivitySlider->ApplyChanges();
 	m_pJoyPitchSensitivitySlider->ApplyChanges();
+	m_pMouseRawCheckBox->ApplyChanges();
+
+	ConVarRef m_customaccel("m_customaccel");
+	m_customaccel.SetValue(m_pMouseAccelCheckBox->IsSelected() ? 3 : 0);
+	
+	m_pMouseAccelSlider->ApplyChanges();
 
 	engine->ClientCmd_Unrestricted( "joyadvancedupdate" );
 }
@@ -158,6 +202,16 @@ void COptionsSubMouse::OnControlModified(Panel *panel)
 	else if (panel == m_pJoystickCheckBox)
 	{
 		UpdateJoystickPanels();
+	}
+	else if (panel == m_pMouseAccelSlider && m_pMouseAccelSlider->HasBeenModified())
+	{
+		char buf[64];
+		Q_snprintf(buf, sizeof(buf), " %.1f", m_pMouseAccelSlider->GetSliderValue());
+		m_pMouseAccelLabel->SetText(buf);
+	}
+	else if (panel == m_pMouseAccelCheckBox)
+	{
+		UpdateAccelPanels();
 	}
 }
 
@@ -203,4 +257,12 @@ void COptionsSubMouse::UpdateJoystickPanels()
 	m_pJoyYawSensitivityPreLabel->SetEnabled( bEnabled );
 	m_pJoyPitchSensitivitySlider->SetEnabled( bEnabled );
 	m_pJoyPitchSensitivityPreLabel->SetEnabled( bEnabled );
+}
+
+void COptionsSubMouse::UpdateAccelPanels()
+{
+	bool bEnabled = m_pMouseAccelCheckBox->IsSelected();
+
+	m_pMouseAccelSlider->SetEnabled(bEnabled);
+	m_pMouseAccelLabel->SetEnabled(bEnabled);
 }

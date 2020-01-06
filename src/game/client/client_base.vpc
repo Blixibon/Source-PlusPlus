@@ -251,6 +251,7 @@ $Project
 		$Folder "Game UI" [!$TF2CLASSIC]
 		{
 			$File	"gameui\modinfo.cpp"
+			$File	"gameui\ScriptObject.cpp"
 			$File	"peter\base_backgroundpanel.cpp"
 			$File	"peter\base_backgroundpanel.h"
 			$File	"peter\base_mainmenupanel.cpp"
@@ -268,6 +269,37 @@ $Project
 			$File	"peter\base_mainmenu_interface.h"
 			$File	"peter\base_vgui_video.cpp"
 			$File	"peter\base_vgui_video.h"
+			
+			$File	"gameui\CvarTextEntry.cpp"
+			$File	"gameui\LabeledCommandComboBox.cpp"
+			$File	"gameui\panellistpanel.cpp"
+			$File	"gameui\vcontrolslistpanel.cpp"
+
+			$Folder	"Options Dialog"
+			{
+				$File	"gameui\OptionsDialog.cpp"
+				$File	"gameui\OptionsDialog.h"
+				$File	"gameui\OptionsSubAudio.cpp"
+				$File	"gameui\OptionsSubAudio.h"
+				$File	"gameui\OptionsSubDifficulty.cpp"
+				$File	"gameui\OptionsSubDifficulty.h"
+				$File	"gameui\OptionsSubGame.cpp"
+				$File	"gameui\OptionsSubGame.h"
+				$File	"gameui\OptionsSubKeyboard.cpp"
+				$File	"gameui\OptionsSubKeyboard.h"
+				$File	"gameui\OptionsSubMouse.cpp"
+				$File	"gameui\OptionsSubMouse.h"
+				$File	"gameui\OptionsSubMultiplayer.cpp"
+				$File	"gameui\OptionsSubMultiplayer.h"
+				$File	"gameui\OptionsSubPortal.cpp"
+				$File	"gameui\OptionsSubPortal.h"
+				$File	"gameui\OptionsSubVideo.cpp"
+				$File	"gameui\OptionsSubVideo.h"
+				$File	"gameui\OptionsSubVoice.cpp"
+				$File	"gameui\OptionsSubVoice.h"
+
+				$File	"gameui\multiplayeradvanceddialog.cpp"
+			}
 
 			$Folder "Lazuul"
 			{

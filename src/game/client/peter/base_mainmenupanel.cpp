@@ -17,6 +17,7 @@
 #include "vgui/ILocalize.h"
 #include "vgui_controls/ControllerMap.h"
 #include "fmtstr.h"
+#include "gameui/optionsdialog.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1156,7 +1157,17 @@ void CTFMainMenuPanel::OnCommand(const char* command)
 		}
 	}
 	
+	if (!Q_strcmp(command, "OpenOptionsDialogNew"))
+	{
+		if (g_pOptions == nullptr)
+		{
+			new COptionsDialog(nullptr);
+		}
 
+		if (g_pOptions)
+			g_pOptions->Activate();
+	}
+	else
 	{
 		BaseClass::OnCommand(command);
 	}

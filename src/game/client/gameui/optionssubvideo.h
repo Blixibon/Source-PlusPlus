@@ -14,13 +14,11 @@
 #include <vgui_controls/Panel.h>
 #include <vgui_controls/ComboBox.h>
 #include <vgui_controls/PropertyPage.h>
+#include <vgui_controls/CvarSlider.h>
 #include "EngineInterface.h"
 #include "igameuifuncs.h"
 #include "URLButton.h"
 #include "vgui_controls/frame.h"
-
-
-class CCvarSlider;
 
 //-----------------------------------------------------------------------------
 // Purpose: Video Details, Part of OptionsDialog

@@ -20,23 +20,22 @@
 #include "vgui/IVGui.h"
 
 #include "KeyValues.h"
-//#include "OptionsSubKeyboard.h"
-//#include "OptionsSubMouse.h"
-//#include "OptionsSubAudio.h"
-//#include "OptionsSubVideo.h"
-//#include "OptionsSubVoice.h"
-//#include "OptionsSubMultiplayer.h"
+#include "OptionsSubKeyboard.h"
+#include "OptionsSubMouse.h"
+#include "OptionsSubAudio.h"
+#include "OptionsSubVideo.h"
+#include "OptionsSubVoice.h"
+#include "OptionsSubMultiplayer.h"
 #include "OptionsSubDifficulty.h"
-//#include "OptionsSubPortal.h"
+#include "OptionsSubPortal.h"
 #include "ModInfo.h"
-
-#include "..\city17\c17_OptionsSubGameplay.h"
-#include "..\city17\c17_OptionsSubVideo.h"
 
 using namespace vgui;
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+extern void AddCustomPagesToOptions(COptionsDialog* pThis);
 
 COptionsDialog *g_pOptions = NULL;
 
@@ -49,11 +48,7 @@ COptionsDialog::COptionsDialog(vgui::Panel *parent, OptionsDialogTabStyle iTabSt
 
 	SetProportional( false );
 	SetDeleteSelfOnClose( true );
-	SetBounds( 
-		0, 
-		0, 
-		512,
-		512);
+	SetBounds(0, 0, 512, 406);
 	SetSizeable( false );
 	MoveToCenterOfScreen();
 
@@ -64,41 +59,43 @@ COptionsDialog::COptionsDialog(vgui::Panel *parent, OptionsDialogTabStyle iTabSt
 	{
 		SetTitle("#GameUI_Options", true);
 
-		//if ( /*ModInfo().IsSinglePlayerOnly() &&*/ !ModInfo().NoDifficulty() )
+		if ( ModInfo().IsSinglePlayerOnly() && !ModInfo().NoDifficulty() )
 		{
 			AddPage(new COptionsSubDifficulty(this), "#GameUI_Difficulty");
 		}
 
-		/*if ( ModInfo().HasPortals() )
+		if ( ModInfo().HasPortals() )
 		{
 			AddPage(new COptionsSubPortal(this), "#GameUI_Portal");
-		}*/
+		}
 
-		AddPage(new CC17OptionsSubGameplay(this, "GameplayPage"), "#GameUI_C17Options_Gameplay");
-		
+		AddPage(new COptionsSubKeyboard(this), "#GameUI_Keyboard");
+		AddPage(new COptionsSubMouse(this), "#GameUI_Mouse");
 
-		
-		
-		AddPage(new CC17OptionsSubVideo(this, "VideoPage"), "#GameUI_Video");
+		AddPage(new COptionsSubAudio(this), "#GameUI_Audio");
+		m_pOptionsSubVideo = new COptionsSubVideo(this);
+		AddPage(m_pOptionsSubVideo, "#GameUI_Video");
 
-		/*if ( !ModInfo().IsSinglePlayerOnly() ) 
+		if ( !ModInfo().IsSinglePlayerOnly() ) 
 		{
 			AddPage(new COptionsSubVoice(this), "#GameUI_Voice");
-		}*/
+		}
 
 		// add the multiplay page last, if we're combo single/multi or just multi
-		/*if ( (ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()) ||
+		if ( (ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()) ||
 			 (!ModInfo().IsMultiplayerOnly() && !ModInfo().IsSinglePlayerOnly()) )
 		{
 			AddPage(new COptionsSubMultiplayer(this), "#GameUI_Multiplayer");
-		}*/
+		}
+
+		AddCustomPagesToOptions(this);
 	}
-	/*else if ( iTabStyle == OPTIONS_DIALOG_ONLY_BINDING_TABS )
+	else if ( iTabStyle == OPTIONS_DIALOG_ONLY_BINDING_TABS )
 	{
 		SetTitle("#L4D360UI_Controller_Edit_Keys_Buttons", true);
 
 		AddPage(new COptionsSubKeyboard(this), "#GameUI_Console_UserSettings");
-	}*/
+	}
 
 //	double s5 = system()->GetCurrentTime();
 //	Msg("COptionsDialog::COptionsDialog(): %.3fms\n", (float)(s5 - s4) * 1000.0f);
@@ -142,7 +139,7 @@ void COptionsDialog::Run()
 //-----------------------------------------------------------------------------
 void COptionsDialog::OpenGammaDialog()
 {
-	//m_pOptionsSubVideo->OpenGammaDialog();
+	m_pOptionsSubVideo->OpenGammaDialog();
 }
 
 //-----------------------------------------------------------------------------

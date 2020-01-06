@@ -12,13 +12,14 @@
 #endif
 
 #include <vgui_controls/PropertyPage.h>
+#include <vgui_controls/BitmapImagePanel.h>
+#include <vgui_controls/CvarSlider.h>
 
 class CLabeledCommandComboBox;
-class CBitmapImagePanel;
 
-class CCvarToggleCheckButton;
+typedef vgui::CvarToggleCheckButton<ConVarRef> CCvarToggleCheckButton;
 class CCvarTextEntry;
-class CCvarSlider;
+
 
 class CrosshairImagePanel;
 class CMultiplayerAdvancedDialog;
@@ -90,7 +91,7 @@ private:
 
 	void ColorForName(char const *pszColorName, int &r, int &g, int &b);
 
-	CBitmapImagePanel *m_pModelImage;
+	vgui::CBitmapImagePanel *m_pModelImage;
 	CLabeledCommandComboBox *m_pModelList;
 	char m_ModelName[128];
 
@@ -98,8 +99,8 @@ private:
 	CLabeledCommandComboBox *m_pLogoList;
     char m_LogoName[128];
 
-    CCvarSlider *m_pPrimaryColorSlider;
-    CCvarSlider *m_pSecondaryColorSlider;
+    vgui::CCvarSlider *m_pPrimaryColorSlider;
+	vgui::CCvarSlider *m_pSecondaryColorSlider;
 	CCvarToggleCheckButton *m_pHighQualityModelCheckBox;
 
 	// Mod specific general checkboxes
@@ -123,10 +124,10 @@ private:
 
 	// --- advanced crosshair controls
 	AdvancedCrosshairImagePanel *m_pAdvCrosshairImage;
-	CCvarSlider *m_pAdvCrosshairRedSlider;		
-	CCvarSlider *m_pAdvCrosshairBlueSlider;
-	CCvarSlider *m_pAdvCrosshairGreenSlider;
-	CCvarSlider *m_pAdvCrosshairScaleSlider;
+	vgui::CCvarSlider *m_pAdvCrosshairRedSlider;
+	vgui::CCvarSlider *m_pAdvCrosshairBlueSlider;
+	vgui::CCvarSlider *m_pAdvCrosshairGreenSlider;
+	vgui::CCvarSlider *m_pAdvCrosshairScaleSlider;
 	CLabeledCommandComboBox *m_pAdvCrosshairStyle;
 
 	void InitAdvCrosshairStyleList(CLabeledCommandComboBox *cb);
@@ -137,7 +138,7 @@ private:
 	vgui::ComboBox	*m_pDownloadFilterCombo;
 
 	// Begin Spray Import Functions
-	ConversionErrorType ConvertJPEGToTGA(const char *jpgPath, const char *tgaPath);
+	//ConversionErrorType ConvertJPEGToTGA(const char *jpgPath, const char *tgaPath);
 	ConversionErrorType ConvertBMPToTGA(const char *bmpPath, const char *tgaPath);
 	ConversionErrorType ConvertTGA(const char *tgaPath);
 	unsigned char *ReadTGAAsRGBA(const char *tgaPath, int &width, int &height, ConversionErrorType &errcode, TGAHeader &tgaHeader);

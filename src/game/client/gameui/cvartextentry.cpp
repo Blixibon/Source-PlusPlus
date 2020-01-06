@@ -4,7 +4,7 @@
 //
 // $NoKeywords: $
 //=============================================================================//
-
+#include "cbase.h"
 #include "CvarTextEntry.h"
 #include "EngineInterface.h"
 #include <vgui/IVGui.h>
@@ -96,7 +96,7 @@ bool CCvarTextEntry::HasBeenModified()
 	char szText[ MAX_CVAR_TEXT ];
 	GetText( szText, MAX_CVAR_TEXT );
 
-	return stricmp( szText, m_pszStartValue ) != 0 ? true : false;
+	return stricmp( szText, m_pszStartValue );
 }
 
 

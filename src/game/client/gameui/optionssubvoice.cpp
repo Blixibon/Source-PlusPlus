@@ -3,16 +3,17 @@
 // Purpose: 
 //
 //==========================================================================//
+#include "cbase.h"
 
 #include "OptionsSubVoice.h"
-#include "CvarSlider.h"
+#include <vgui_controls/CvarSlider.h>
 #include <vgui/IVGui.h>
 #include <vgui_controls/ImagePanel.h>
 #include <vgui_controls/CheckButton.h>
 #include <vgui_controls/Slider.h>
 #include "EngineInterface.h"
 #include "ivoicetweak.h"
-#include "CvarToggleCheckButton.h"
+#include <vgui_controls/cvartogglecheckbutton.h>
 #include "tier1/KeyValues.h"
 #include "tier1/convar.h"
 
@@ -46,10 +47,13 @@ COptionsSubVoice::COptionsSubVoice(vgui::Panel *parent) : PropertyPage(parent, N
 	m_pMicBoost = new CheckButton(this, "MicBoost", "#GameUI_BoostMicrophone" );
 	m_pMicBoost->AddActionSignalTarget( this );
 
-	// Open mic controls
-	m_pThresholdSliderLabel = new Label(this, "ThresholdLabel", "#GameUI_VoiceThreshold");
-	m_pThresholdVolume = new CCvarSlider( this, "VoiceThreshold", "#GameUI_VoiceThreshold", 0, 16384, "voice_threshold" );
-	m_pOpenMicEnableCheckButton = new CCvarToggleCheckButton( this, "voice_vox", "#GameUI_EnableOpenMic", "voice_vox" );
+#ifdef VOICE_VOX_ENABLE
+    // Open mic controls
+    m_pThresholdSliderLabel = new Label(this, "ThresholdLabel", "#GameUI_VoiceThreshold");
+    m_pThresholdVolume = new CCvarSlider(this, "VoiceThreshold", "#GameUI_VoiceThreshold", 0, 16384, "voice_threshold");
+    m_pOpenMicEnableCheckButton = new CCvarToggleCheckButton(this, "voice_vox", "#GameUI_EnableOpenMic", "voice_vox");
+#endif // VOICE_VOX_ENABLE
+
 
 	m_pTestMicrophoneButton = new Button(this, "TestMicrophone", "#GameUI_TestMicrophone");
 
@@ -65,8 +69,11 @@ COptionsSubVoice::COptionsSubVoice(vgui::Panel *parent) : PropertyPage(parent, N
         m_pVoiceEnableCheckButton->SetEnabled(false);
         m_pMicBoost->SetEnabled(false);
         m_pTestMicrophoneButton->SetEnabled(false);
-		m_pOpenMicEnableCheckButton->SetEnabled(false);
-		m_pThresholdVolume->SetEnabled(false);
+#ifdef VOICE_VOX_ENABLE
+        m_pOpenMicEnableCheckButton->SetEnabled(false);
+        m_pThresholdVolume->SetEnabled(false);
+#endif // VOICE_VOX_ENABLE
+
     }
     else
     {
@@ -106,11 +113,14 @@ void COptionsSubVoice::OnResetData()
     m_pReceiveVolume->Reset();
     m_fReceiveVolume = m_pReceiveVolume->GetSliderValue();
 
+#ifdef VOICE_VOX_ENABLE
     m_pThresholdVolume->Reset();
-	m_nVoiceThresholdValue = m_pThresholdVolume->GetSliderValue();
-	
-	m_pOpenMicEnableCheckButton->Reset();
-	m_bOpenMicSelected = m_pOpenMicEnableCheckButton->IsSelected();
+    m_nVoiceThresholdValue = m_pThresholdVolume->GetSliderValue();
+
+    m_pOpenMicEnableCheckButton->Reset();
+    m_bOpenMicSelected = m_pOpenMicEnableCheckButton->IsSelected();
+#endif // VOICE_VOX_ENABLE
+
 
 	m_pVoiceEnableCheckButton->Reset();
 }
@@ -127,12 +137,15 @@ void COptionsSubVoice::OnSliderMoved( int position )
             PostActionSignal(new KeyValues("ApplyButtonEnable"));
         }
 		
-		if ( m_pThresholdVolume->GetSliderValue() != m_nVoiceThresholdValue )
-		{
-			PostActionSignal(new KeyValues("ApplyButtonEnable"));
-			m_pThresholdVolume->ApplyChanges();
-			m_nVoiceThresholdValue = m_pThresholdVolume->GetSliderValue();
-		}
+#ifdef VOICE_VOX_ENABLE
+        if (m_pThresholdVolume->GetSliderValue() != m_nVoiceThresholdValue)
+        {
+            PostActionSignal(new KeyValues("ApplyButtonEnable"));
+            m_pThresholdVolume->ApplyChanges();
+            m_nVoiceThresholdValue = m_pThresholdVolume->GetSliderValue();
+        }
+#endif // VOICE_VOX_ENABLE
+
     }
 }
 
@@ -149,12 +162,15 @@ void COptionsSubVoice::OnCheckButtonChecked( int state )
             PostActionSignal(new KeyValues("ApplyButtonEnable"));
         }
 		
-		if ( m_pOpenMicEnableCheckButton->IsSelected() != m_bOpenMicSelected )
-		{
-			PostActionSignal(new KeyValues("ApplyButtonEnable"));
-			m_pOpenMicEnableCheckButton->ApplyChanges();
-			m_bOpenMicSelected = m_pOpenMicEnableCheckButton->IsSelected();
-		}
+#ifdef VOICE_VOX_ENABLE
+        if (m_pOpenMicEnableCheckButton->IsSelected() != m_bOpenMicSelected)
+        {
+            PostActionSignal(new KeyValues("ApplyButtonEnable"));
+            m_pOpenMicEnableCheckButton->ApplyChanges();
+            m_bOpenMicSelected = m_pOpenMicEnableCheckButton->IsSelected();
+        }
+#endif // VOICE_VOX_ENABLE
+
     }
 }
 
@@ -176,10 +192,13 @@ void COptionsSubVoice::OnApplyChanges()
     m_pReceiveVolume->ApplyChanges();
     m_fReceiveVolume = m_pReceiveVolume->GetSliderValue();
 
-	m_pThresholdVolume->ApplyChanges();
-	m_nVoiceThresholdValue = m_pThresholdVolume->GetSliderValue();
+#ifdef VOICE_VOX_ENABLE
+    m_pThresholdVolume->ApplyChanges();
+    m_nVoiceThresholdValue = m_pThresholdVolume->GetSliderValue();
 
-	m_pOpenMicEnableCheckButton->ApplyChanges();
+    m_pOpenMicEnableCheckButton->ApplyChanges();
+#endif // VOICE_VOX_ENABLE
+
 
 	m_pVoiceEnableCheckButton->ApplyChanges();
 }
@@ -236,8 +255,11 @@ void COptionsSubVoice::UseCurrentVoiceParameters()
     m_nReceiveSliderValue = m_pReceiveVolume->GetValue();
     m_pReceiveVolume->ApplyChanges();
 
-	m_nVoiceThresholdValue = m_pThresholdVolume->GetValue();
-	m_pThresholdVolume->ApplyChanges();
+#ifdef VOICE_VOX_ENABLE
+    m_nVoiceThresholdValue = m_pThresholdVolume->GetValue();
+    m_pThresholdVolume->ApplyChanges();
+#endif // VOICE_VOX_ENABLE
+
 }
 
 //-----------------------------------------------------------------------------
@@ -348,16 +370,19 @@ void COptionsSubVoice::OnThink()
 			float val = m_pVoiceTweak->GetControlFloat( SpeakingVolume );
 			int nValue = static_cast<int>( val*32768.0f + 0.5f );
 
-			// Throttle this if they're using "open mic" style communication
-			if ( m_pOpenMicEnableCheckButton->IsSelected() )
-			{
-				// Test against it our threshold value
-				float flThreshold = ( (float) m_pThresholdVolume->GetSliderValue() / 32768.0f );
-				if ( val < flThreshold )
-				{
-					nValue = 0;	// Zero the display
-				}
-			}
+#ifdef VOICE_VOX_ENABLE
+            // Throttle this if they're using "open mic" style communication
+            if (m_pOpenMicEnableCheckButton->IsSelected())
+            {
+                // Test against it our threshold value
+                float flThreshold = ((float)m_pThresholdVolume->GetSliderValue() / 32768.0f);
+                if (val < flThreshold)
+                {
+                    nValue = 0;	// Zero the display
+                }
+            }
+#endif // VOICE_VOX_ENABLE
+
 
 			int width = (BAR_WIDTH * nValue) / 32768;
 			width = ((width + (BAR_INCREMENT-1)) / BAR_INCREMENT) * BAR_INCREMENT;  // round to nearest BAR_INCREMENT

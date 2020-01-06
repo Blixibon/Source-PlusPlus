@@ -13,11 +13,103 @@
 #include "vgui_controls/Frame.h"
 #include "vgui_controls/PropertySheet.h"
 #include "vgui_controls/PropertyPage.h"
-
-class VControlsListPanel;
+#include "vgui_controls/ListPanel.h"
+#include "vgui/ISurface.h"
 
 namespace vgui
 {
+
+	//-----------------------------------------------------------------------------
+// Purpose: panel used for inline editing of key bindings
+//-----------------------------------------------------------------------------
+	class CInlineEditPanel : public vgui::Panel
+	{
+		DECLARE_CLASS_SIMPLE(CInlineEditPanel, vgui::Panel);
+
+	public:
+		CInlineEditPanel() : vgui::Panel(NULL, "InlineEditPanel")
+		{
+		}
+		virtual ~CInlineEditPanel() {}
+
+		virtual void Paint()
+		{
+			int wide, tall;
+			GetSize(wide, tall);
+
+			// Draw a white rectangle around that cell
+			vgui::surface()->DrawSetColor(63, 63, 63, 255);
+			vgui::surface()->DrawFilledRect(0, 0, wide, tall);
+
+			vgui::surface()->DrawSetColor(0, 255, 0, 255);
+			vgui::surface()->DrawOutlinedRect(0, 0, wide, tall);
+		}
+
+		virtual void OnKeyCodeTyped(KeyCode code)
+		{
+			// forward up
+			if (GetParent())
+			{
+				GetParent()->OnKeyCodeTyped(code);
+			}
+		}
+
+		virtual void ApplySchemeSettings(IScheme* pScheme)
+		{
+			Panel::ApplySchemeSettings(pScheme);
+			SetBorder(pScheme->GetBorder("DepressedButtonBorder"));
+		}
+
+		void OnMousePressed(vgui::MouseCode code)
+		{
+			// forward up mouse pressed messages to be handled by the key options
+			if (GetParent())
+			{
+				GetParent()->OnMousePressed(code);
+			}
+		}
+	};
+
+	//-----------------------------------------------------------------------------
+	// Purpose: Special list subclass to handle drawing of trap mode prompt on top of
+	//			lists client area
+	//-----------------------------------------------------------------------------
+	class VControlsListPanel : public ListPanel
+	{
+		DECLARE_CLASS_SIMPLE(VControlsListPanel, ListPanel);
+
+	public:
+		// Construction
+		VControlsListPanel(vgui::Panel* parent, const char* listName);
+		virtual			~VControlsListPanel();
+
+		// Start/end capturing
+		virtual void	StartCaptureMode(vgui::HCursor hCursor = NULL);
+		virtual void	EndCaptureMode(vgui::HCursor hCursor = NULL);
+		virtual bool	IsCapturing();
+
+		// Set which item should be associated with the prompt
+		virtual void	SetItemOfInterest(int itemID);
+		virtual int		GetItemOfInterest();
+
+		virtual void	OnMousePressed(vgui::MouseCode code);
+		virtual void	OnMouseDoublePressed(vgui::MouseCode code);
+
+		KEYBINDING_FUNC(clearbinding, KEY_DELETE, 0, OnClearBinding, 0, 0);
+
+	private:
+		void ApplySchemeSettings(vgui::IScheme* pScheme);
+
+		// Are we showing the prompt?
+		bool			m_bCaptureMode;
+		// If so, where?
+		int				m_nClickRow;
+		// Font to use for showing the prompt
+		vgui::HFont		m_hFont;
+		// panel used to edit
+		CInlineEditPanel* m_pInlineEditPanel;
+		int m_iMouseX, m_iMouseY;
+	};
 
 //-----------------------------------------------------------------------------
 // Purpose: Dialog for use in editing keybindings

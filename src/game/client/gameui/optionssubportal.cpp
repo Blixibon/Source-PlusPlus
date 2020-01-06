@@ -5,8 +5,9 @@
 // $NoKeywords: $
 //
 //=============================================================================//
+#include "cbase.h"
 #include "OptionsSubPortal.h"
-#include "CvarToggleCheckButton.h"
+#include <vgui_controls/cvartogglecheckbutton.h>
 #include "vgui_controls/ComboBox.h"
 
 #include "EngineInterface.h"

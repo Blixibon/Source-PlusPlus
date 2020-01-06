@@ -42,7 +42,7 @@ public:
 
 private:
 	//class COptionsSubAudio *m_pOptionsSubAudio;
-	//class COptionsSubVideo *m_pOptionsSubVideo;
+	class COptionsSubVideo *m_pOptionsSubVideo;
 };
 
 

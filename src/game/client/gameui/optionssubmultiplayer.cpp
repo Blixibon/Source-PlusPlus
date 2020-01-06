@@ -4,16 +4,18 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+#include "cbase.h"
 
-#undef fopen
+//#include <stdio.h>
 
 #if !defined( _X360 )
-#include <windows.h> // SRC only!!
+//#include <windows.h> // SRC only!!
+#include "winlite.h"
+#undef fopen
 #endif
 
 #include "OptionsSubMultiplayer.h"
 #include "MultiplayerAdvancedDialog.h"
-#include <stdio.h>
 
 #include <vgui_controls/Button.h>
 #include <vgui_controls/CheckButton.h>
@@ -33,25 +35,19 @@
 #include <vgui_controls/MessageBox.h>
 
 #include "CvarTextEntry.h"
-#include "CvarToggleCheckButton.h"
-#include "CvarSlider.h"
+#include <vgui_controls/CvarToggleCheckButton.h>
+#include <vgui_controls/CvarSlider.h>
 #include "LabeledCommandComboBox.h"
 #include "FileSystem.h"
 #include "EngineInterface.h"
-#include "BitmapImagePanel.h"
+#include <vgui_controls/BitmapImagePanel.h>
 #include "UtlBuffer.h"
 #include "ModInfo.h"
 #include "tier1/convar.h"
 
-
 #include "materialsystem/IMaterial.h"
 #include "materialsystem/IMesh.h"
 #include "materialsystem/imaterialvar.h"
-
-// use the JPEGLIB_USE_STDIO define so that we can read in jpeg's from outside the game directory tree.  For Spray Import.
-#define JPEGLIB_USE_STDIO
-#include "jpeglib/jpeglib.h"
-#undef JPEGLIB_USE_STDIO
 
 #include <setjmp.h>
 
@@ -68,6 +64,7 @@
 
 using namespace vgui;
 
+typedef vgui::CvarToggleCheckButton<ConVarRef> CCvarToggleCheckButton;
 
 #define DEFAULT_SUIT_HUE 30
 #define DEFAULT_PLATE_HUE 6
@@ -449,9 +446,10 @@ COptionsSubMultiplayer::COptionsSubMultiplayer(vgui::Panel *parent) : vgui::Prop
 	RedrawAdvCrosshairImage();
 	//=========
 	
-	m_pDownloadFilterCombo = new ComboBox( this, "DownloadFilterCheck", 3, false );
+	m_pDownloadFilterCombo = new ComboBox( this, "DownloadFilterCheck", 4, false );
 	m_pDownloadFilterCombo->AddItem( "#GameUI_DownloadFilter_ALL", NULL );
 	m_pDownloadFilterCombo->AddItem( "#GameUI_DownloadFilter_NoSounds", NULL );
+	m_pDownloadFilterCombo->AddItem("#GameUI_DownloadFilter_MapsOnly", NULL);
 	m_pDownloadFilterCombo->AddItem( "#GameUI_DownloadFilter_None", NULL );
 
 	//=========
@@ -581,9 +579,9 @@ void COptionsSubMultiplayer::OnCommand( const char *command )
 		if (m_hImportSprayDialog == NULL)
 		{
 			m_hImportSprayDialog = new FileOpenDialog(NULL, "#GameUI_ImportSprayImage", true);
-			m_hImportSprayDialog->AddFilter("*.tga,*.jpg,*.bmp,*.vtf", "#GameUI_All_Images", true);
+			m_hImportSprayDialog->AddFilter("*.tga,*.bmp,*.vtf", "#GameUI_All_Images", true);
 			m_hImportSprayDialog->AddFilter("*.tga", "#GameUI_TGA_Images", false);
-			m_hImportSprayDialog->AddFilter("*.jpg", "#GameUI_JPEG_Images", false);
+			//m_hImportSprayDialog->AddFilter("*.jpg", "#GameUI_JPEG_Images", false);
 			m_hImportSprayDialog->AddFilter("*.bmp", "#GameUI_BMP_Images", false);
 			m_hImportSprayDialog->AddFilter("*.vtf", "#GameUI_VTF_Images", false);
 			m_hImportSprayDialog->AddActionSignalTarget(this);
@@ -647,47 +645,47 @@ void COptionsSubMultiplayer::OnFileSelected(const char *fullpath)
 			++index;
 		} while (_access(tgaPath, 0) != -1);
 
-		if (!stricmp(extension, "jpg") || !stricmp(extension, "jpeg"))
-		{
-			// convert from the jpeg file format to the TGA file format
-			errcode = ConvertJPEGToTGA(fullpath, tgaPath);
-			if (errcode == CE_SUCCESS)
-			{
-				deleteIntermediateTGA = true;
-			}
-			else
-			{
-				failed = true;
-				vgui::MessageBox *errorDialog = NULL;
+		//if (!stricmp(extension, "jpg") || !stricmp(extension, "jpeg"))
+		//{
+		//	// convert from the jpeg file format to the TGA file format
+		//	errcode = ConvertJPEGToTGA(fullpath, tgaPath);
+		//	if (errcode == CE_SUCCESS)
+		//	{
+		//		deleteIntermediateTGA = true;
+		//	}
+		//	else
+		//	{
+		//		failed = true;
+		//		vgui::MessageBox *errorDialog = NULL;
 
-				if (errcode == CE_MEMORY_ERROR)
-				{
-					errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Memory");
-				}
-				else if (errcode == CE_CANT_OPEN_SOURCE_FILE)
-				{
-					errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Reading_Image");
-				}
-				else if (errcode == CE_ERROR_PARSING_SOURCE)
-				{
-					errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Image_File_Corrupt");
-				}
-				else if (errcode == CE_ERROR_WRITING_OUTPUT_FILE)
-				{
-					errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Writing_Temp_Output");
-				}
-				else if (errcode == CE_SOURCE_FILE_FORMAT_NOT_SUPPORTED )
-				{
-					errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Image_Wrong_Size");
-				}
+		//		if (errcode == CE_MEMORY_ERROR)
+		//		{
+		//			errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Memory");
+		//		}
+		//		else if (errcode == CE_CANT_OPEN_SOURCE_FILE)
+		//		{
+		//			errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Reading_Image");
+		//		}
+		//		else if (errcode == CE_ERROR_PARSING_SOURCE)
+		//		{
+		//			errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Image_File_Corrupt");
+		//		}
+		//		else if (errcode == CE_ERROR_WRITING_OUTPUT_FILE)
+		//		{
+		//			errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Error_Writing_Temp_Output");
+		//		}
+		//		else if (errcode == CE_SOURCE_FILE_FORMAT_NOT_SUPPORTED )
+		//		{
+		//			errorDialog = new vgui::MessageBox("#GameUI_Spray_Import_Error_Title", "#GameUI_Spray_Import_Image_Wrong_Size");
+		//		}
 
-				if (errorDialog != NULL)
-				{
-					errorDialog->DoModal();
-				}
-			}
-		}
-		else if (!stricmp(extension, "bmp"))
+		//		if (errorDialog != NULL)
+		//		{
+		//			errorDialog->DoModal();
+		//		}
+		//	}
+		//}
+		if (!stricmp(extension, "bmp"))
 		{
 			// convert from the bmp file format to the TGA file format
 			errcode = ConvertBMPToTGA(fullpath, tgaPath);
@@ -914,7 +912,7 @@ void COptionsSubMultiplayer::OnFileSelected(const char *fullpath)
 	surface()->SetCursor(dc_user);
 #endif
 }
-
+#if 0
 struct ValveJpegErrorHandler_t 
 {
 	// The default manager
@@ -1063,7 +1061,7 @@ ConversionErrorType COptionsSubMultiplayer::ConvertJPEGToTGA(const char *jpegpat
 	return CE_SOURCE_FILE_FORMAT_NOT_SUPPORTED;
 #endif
 }
-
+#endif
 // convert the bmp file given to a TGA file at the given destination path.
 ConversionErrorType COptionsSubMultiplayer::ConvertBMPToTGA(const char *bmpPath, const char *tgaPath)
 {
@@ -1336,7 +1334,8 @@ static void WriteTGAHeader(FILE *outfile, TGAHeader &header)
 // reads in a TGA file and converts it to 32 bit RGBA color values in a memory buffer.
 unsigned char * COptionsSubMultiplayer::ReadTGAAsRGBA(const char *tgaPath, int &width, int &height, ConversionErrorType &errcode, TGAHeader &tgaHeader )
 {
-	FILE *tgaFile = fopen(tgaPath, "rb");
+	FILE* tgaFile = nullptr;
+	fopen_s(&tgaFile, tgaPath, "rb");
 	if (tgaFile == NULL)
 	{
 		errcode = CE_CANT_OPEN_SOURCE_FILE;
@@ -1520,7 +1519,8 @@ ConversionErrorType COptionsSubMultiplayer::ConvertTGA(const char *tgaPath)
 	unsigned char *finalBuffer = (unsigned char *)malloc(paddedImageWidth * paddedImageHeight * 4);
 	PadRGBAImage(resizeBuffer, finalWidth, finalHeight, finalBuffer, paddedImageWidth, paddedImageHeight);
 
-	FILE *outfile = fopen(tgaPath, "wb");
+	FILE* outfile = nullptr;
+	fopen_s(&outfile, tgaPath, "wb");
 	if (outfile == NULL)
 	{
 		free(resizeBuffer);
@@ -1709,7 +1709,8 @@ ConversionErrorType COptionsSubMultiplayer::PadRGBAImage(const unsigned char *sr
 // convert TGA file at the given location to a VTF file of the same root name at the same location.
 ConversionErrorType COptionsSubMultiplayer::ConvertTGAToVTF(const char *tgaPath)
 {
-	FILE *infile = fopen(tgaPath, "rb");
+	FILE* infile = nullptr;
+	fopen_s(&infile, tgaPath, "rb");
 	if (infile == NULL)
 	{
 		return CE_CANT_OPEN_SOURCE_FILE;
@@ -1813,7 +1814,8 @@ ConversionErrorType COptionsSubMultiplayer::WriteSprayVMT(const char *vtfPath)
 	filename[i] = 0;
 
 	// create the vmt file.
-	FILE *vmtFile = fopen(vmtPath, "w");
+	FILE* vmtFile = nullptr;
+	fopen_s(&vmtFile, vmtPath, "w");
 	if (vmtFile == NULL)
 	{
 		return CE_ERROR_WRITING_OUTPUT_FILE;
@@ -2512,7 +2514,11 @@ void COptionsSubMultiplayer::OnResetData()
 
 		if ( Q_stricmp( cl_downloadfilter.GetString(), "none" ) == 0 )
 		{
-			m_pDownloadFilterCombo->ActivateItem( 2 );
+			m_pDownloadFilterCombo->ActivateItem( 3 );
+		}
+		else if (Q_stricmp(cl_downloadfilter.GetString(), "mapsonly") == 0)
+		{
+			m_pDownloadFilterCombo->ActivateItem(2);
 		}
 		else if ( Q_stricmp( cl_downloadfilter.GetString(), "nosounds" ) == 0 )
 		{
@@ -2618,6 +2624,9 @@ void COptionsSubMultiplayer::OnApplyChanges()
 			cl_downloadfilter.SetValue( "nosounds" );
 			break;
 		case 2:
+			cl_downloadfilter.SetValue("mapsonly");
+			break;
+		case 3:
 			cl_downloadfilter.SetValue( "none" );
 			break;
 		}

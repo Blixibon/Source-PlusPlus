@@ -4,7 +4,7 @@
 //
 //=============================================================================
 
-#ifndef GAMEUI_UTIL_H
+#if 0
 #define GAMEUI_UTIL_H
 #ifdef _WIN32
 #pragma once

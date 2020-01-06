@@ -4,21 +4,22 @@
 //
 // $NoKeywords: $
 //=============================================================================//
+#include "cbase.h"
 
 #include "OptionsSubVideo.h"
-#include "CvarSlider.h"
+#include <vgui_controls/CvarSlider.h>
 #include "EngineInterface.h"
-#include "BasePanel.h"
+//#include "BasePanel.h"
 #include "igameuifuncs.h"
 #include "modes.h"
 #include "materialsystem/materialsystem_config.h"
 #include "filesystem.h"
-#include "GameUI_Interface.h"
+//#include "GameUI_Interface.h"
 #include "vgui_controls/CheckButton.h"
 #include "vgui_controls/ComboBox.h"
 #include "vgui_controls/Frame.h"
 #include "vgui_controls/QueryBox.h"
-#include "CvarToggleCheckButton.h"
+#include <vgui_controls/cvartogglecheckbutton.h>
 #include "tier1/KeyValues.h"
 #include "vgui/IInput.h"
 #include "vgui/ILocalize.h"
@@ -66,6 +67,7 @@ int g_DirectXLevels[] =
 	81,
 	90,
 	95,
+	100,
 };
 
 //-----------------------------------------------------------------------------
@@ -276,6 +278,10 @@ public:
 		}
 		pKeyValues->deleteThis();
 
+		m_pDisableD3D9Ex = new ComboBox(this, "D3D9Ex", 2, false);
+		m_pDisableD3D9Ex->AddItem("#gameui_disabled", NULL);
+		m_pDisableD3D9Ex->AddItem("#gameui_enabled", NULL);
+
 		m_pModelDetail = new ComboBox( this, "ModelDetail", 6, false );
 		m_pModelDetail->AddItem("#gameui_low", NULL);
 		m_pModelDetail->AddItem("#gameui_medium", NULL);
@@ -388,7 +394,7 @@ public:
 		{
 			m_pHDR->AddItem("#GameUI_hdr_level2", NULL);
 		}
-#if 0
+#if 1
 		if ( materials->SupportsHDRMode( HDR_TYPE_FLOAT ) )
 		{
 			m_pHDR->AddItem("#GameUI_hdr_level3", NULL);
@@ -524,7 +530,7 @@ public:
 		{
 			ConVarRef mat_hdr_level("mat_hdr_level");
 			Assert( mat_hdr_level.IsValid() );
-			m_pHDR->ActivateItem( clamp( mat_hdr_level.GetInt(), 0, 2 ) );
+			m_pHDR->ActivateItem( clamp( mat_hdr_level.GetInt(), 0, 3 ) );
 		}
 	}
 
@@ -558,6 +564,7 @@ public:
 		int nDXLevel = pKeyValues->GetInt( "ConVar.mat_dxlevel", 0 );
 		int nColorCorrection = pKeyValues->GetInt( "ConVar.mat_colorcorrection", 0 );
 		int nMotionBlur = pKeyValues->GetInt( "ConVar.mat_motion_blur_enabled", 0 );
+		int nAeroExtensions = pKeyValues->GetInt("ConVar.mat_disable_d3d9ex", 0);
 
 		// Only recommend a dxlevel if there is more than one available
 		if ( m_pDXLevel->GetItemCount() > 1 )
@@ -572,6 +579,8 @@ public:
 				}
 			}
 		}
+
+		SetComboItemAsRecommended(m_pDisableD3D9Ex, !nAeroExtensions);
 	
 		SetComboItemAsRecommended( m_pModelDetail, 2 - nRootLOD );
 		SetComboItemAsRecommended( m_pTextureDetail, 2 - nSkipLevels );
@@ -638,7 +647,15 @@ public:
 
 		SetComboItemAsRecommended( m_pVSync, nMatVSync != 0 );
 
-		SetComboItemAsRecommended( m_pHDR, nDXLevel >= 90 ? 2 : 0 );
+		if (nDXLevel >= 90)
+		{
+			if (materials->SupportsHDRMode(HDR_TYPE_FLOAT))
+				SetComboItemAsRecommended(m_pHDR, 3);
+			else
+				SetComboItemAsRecommended(m_pHDR, 2);
+		}
+		else
+			SetComboItemAsRecommended( m_pHDR, 0 );
 
 		SetComboItemAsRecommended( m_pColorCorrection, nColorCorrection );
 
@@ -752,6 +769,8 @@ public:
 		{
 			pFOV->ApplyChanges();
 		}
+
+		ApplyChangesToConVar("mat_disable_d3d9ex", !m_pDisableD3D9Ex->GetActiveItem());
 	}
 
 	virtual void OnResetData()
@@ -774,8 +793,12 @@ public:
 		ConVarRef mat_colorcorrection( "mat_colorcorrection" );
 		ConVarRef mat_motion_blur_enabled( "mat_motion_blur_enabled" );
 		ConVarRef r_shadowrendertotexture( "r_shadowrendertotexture" );
+		ConVarRef mat_queue_mode("mat_queue_mode");
+		ConVarRef mat_disable_d3d9ex("mat_disable_d3d9ex");
 
 		ResetDXLevelCombo();
+
+		m_pDisableD3D9Ex->ActivateItem(!mat_disable_d3d9ex.GetBool());
 
 		m_pModelDetail->ActivateItem( 2 - clamp(r_rootlod.GetInt(), 0, 2) );
 		m_pTextureDetail->ActivateItem( 2 - clamp(mat_picmip.GetInt(), -1, 2) );
@@ -795,7 +818,7 @@ public:
 		}
 
 		m_pShaderDetail->ActivateItem( mat_reducefillrate.GetBool() ? 0 : 1 );
-		m_pHDR->ActivateItem(clamp(mat_hdr_level.GetInt(), 0, 2));
+		m_pHDR->ActivateItem(clamp(mat_hdr_level.GetInt(), 0, 3));
 
 		switch (mat_forceaniso.GetInt())
 		{
@@ -911,11 +934,11 @@ public:
 
 	bool RequiresRestart()
 	{
-		if ( GameUI().IsInLevel() )
+		if ( engine->IsInGame() )
 		{
-			if ( GameUI().IsInBackgroundLevel() )
+			if ( engine->IsLevelMainMenuBackground() )
 				return false;
-			if ( !GameUI().IsInMultiplayer() )
+			if ( engine->GetMaxClients() <= 1 )
 				return false;
 
 			ConVarRef mat_dxlevel( "mat_dxlevel" );
@@ -945,6 +968,7 @@ private:
 	vgui::ComboBox *m_pColorCorrection;
 	vgui::ComboBox *m_pMotionBlur;
 	vgui::ComboBox *m_pDXLevel;
+	vgui::ComboBox* m_pDisableD3D9Ex;
 
 	int m_nNumAAModes;
 	AAMode_t m_nAAModes[16];
@@ -1294,7 +1318,7 @@ void COptionsSubVideo::OpenAdvanced()
 {
 	if ( !m_hOptionsSubVideoAdvancedDlg.Get() )
 	{
-		m_hOptionsSubVideoAdvancedDlg = new COptionsSubVideoAdvancedDlg( BasePanel()->FindChildByName( "OptionsDialog" ) ); // we'll parent this to the OptionsDialog directly
+		m_hOptionsSubVideoAdvancedDlg = new COptionsSubVideoAdvancedDlg( GetParent() ); // we'll parent this to the OptionsDialog directly
 	}
 
 	m_hOptionsSubVideoAdvancedDlg->Activate();

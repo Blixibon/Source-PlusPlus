@@ -15,9 +15,14 @@
 #include <language.h>
 #include "vgui_controls/frame.h"
 #include "vgui/keycode.h"
+#include "vgui_controls/cvartogglecheckbutton.h"
 
 class CLabeledCommandComboBox;
-class CCvarSlider;
+
+namespace vgui
+{
+	class CCvarSlider;
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Audio Details, Part of OptionsDialog
@@ -47,8 +52,8 @@ private:
 
 	vgui::ComboBox				*m_pSpeakerSetupCombo;
 	vgui::ComboBox				*m_pSoundQualityCombo;
-	CCvarSlider					*m_pSFXSlider;
-	CCvarSlider					*m_pMusicSlider;
+	vgui::CCvarSlider					*m_pSFXSlider;
+	vgui::CCvarSlider					*m_pMusicSlider;
 	vgui::ComboBox				*m_pCloseCaptionCombo;
 	bool						   m_bRequireRestart;
    
@@ -57,6 +62,8 @@ private:
    vgui::DHANDLE<class COptionsSubAudioThirdPartyCreditsDlg> m_OptionsSubAudioThirdPartyCreditsDlg;
    ELanguage         m_nCurrentAudioLanguage;
    static char             *m_pchUpdatedAudioLanguage;
+
+   vgui::CvarToggleCheckButton<ConVarRef>* m_pAudioMuteLoseFocusToggle;
 };
 
 

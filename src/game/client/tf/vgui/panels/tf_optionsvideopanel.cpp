@@ -668,7 +668,7 @@ void CTFOptionsVideoPanel::ResetDXLevelCombo()
 	{
 		ConVarRef mat_hdr_level("mat_hdr_level");
 		Assert(mat_hdr_level.IsValid());
-		m_pHDR->ActivateItem(clamp(mat_hdr_level.GetInt(), 0, 2));
+		m_pHDR->ActivateItem(clamp(mat_hdr_level.GetInt(), 0, 3));
 	}
 }
 

@@ -11,11 +11,11 @@
 #endif
 
 #include <vgui_controls/PropertyPage.h>
+#include <vgui_controls/CvarSlider.h>
 
 typedef struct IVoiceTweak_s IVoiceTweak;
 
-class CCvarSlider;
-class CCvarToggleCheckButton;
+typedef vgui::CvarToggleCheckButton<ConVarRef> CCvarToggleCheckButton;
 //-----------------------------------------------------------------------------
 // Purpose: Voice Details, Part of OptionsDialog
 //-----------------------------------------------------------------------------
@@ -56,19 +56,22 @@ private:
     vgui::Label             *m_pMicrophoneSliderLabel;
 	vgui::Slider			*m_pMicrophoneVolume;
     vgui::Label             *m_pReceiveSliderLabel;
-    CCvarSlider             *m_pReceiveVolume;
+    vgui::CCvarSlider             *m_pReceiveVolume;
 	
-	// "Open mic" settings
-	vgui::Label             *m_pThresholdSliderLabel;
-	CCvarSlider             *m_pThresholdVolume;
-	CCvarToggleCheckButton  *m_pOpenMicEnableCheckButton;
+#ifdef VOICE_VOX_ENABLE
+    // "Open mic" settings
+    vgui::Label* m_pThresholdSliderLabel;
+    vgui::CCvarSlider* m_pThresholdVolume;
+    CCvarToggleCheckButton* m_pOpenMicEnableCheckButton;
+    bool					m_bOpenMicSelected;
+    int						m_nVoiceThresholdValue;
+#endif // VOICE_VOX_ENABLE
+
 
     CCvarToggleCheckButton  *m_pVoiceEnableCheckButton;
 
-	int						m_nVoiceThresholdValue;
 	int                     m_nMicVolumeValue;
     bool                    m_bMicBoostSelected;
-	bool					m_bOpenMicSelected;
     float                   m_fReceiveVolume;
     int                     m_nReceiveSliderValue;
 

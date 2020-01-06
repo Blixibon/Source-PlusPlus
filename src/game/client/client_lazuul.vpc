@@ -74,6 +74,11 @@ $Project "Client (Lazuul)"
 				$File "hl2\hud_suitpower_old.h"
 			}
 
+			$Folder "Game UI"
+			{
+				$File "peter\optionssublazuul.cpp"
+			}
+
 			//$Folder "UI"
 			//{
 			//	$File	"peter\laz_pmodelpanel.cpp"
