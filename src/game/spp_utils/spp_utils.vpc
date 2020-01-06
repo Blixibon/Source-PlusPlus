@@ -42,6 +42,8 @@ $Project "SPP Utils"
 	{
 		$File 	"mapedit_helper.cpp"
 		$File	"mapedit_helper.h"
+		$File	"holiday_event_system.cpp"
+		$File	"holiday_event_system.h"
 		$File	"spp_utils.cpp"
 	}
 
