@@ -84,16 +84,16 @@
 	"12"
 	{
 		"label" "#GameUI_GameMenu_Options"
-		"command" "OpenOptionsDialog"
+		"command" "OpenOptionsDialogNew"
 		//"command" "engine ent_fire settings sparkonce"
 		"InGameOrder" "90"
 	}
-	// "10"
+	// "15"
 	// {
-		// "label" "#GameUI_GameMenu_C17Options"
-		// "command" "engine OpenModOptionsDialog"
-		// "InGameOrder" "100"
-	// }
+	//	 "label" "#GameUI_GameMenu_C17Options"
+	//	 "command" "OpenOptionsDialogNew"
+	//	 "InGameOrder" "100"
+	 //}
 	"13"
 	{
 		"label" "#GameUI_GameMenu_MainMenu"
