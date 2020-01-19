@@ -28,6 +28,7 @@
 #ifndef CLIENT_DLL
 #include "envmicrophone.h"
 #include "sceneentity.h"
+#include "peter/gametypes.h"
 #else
 #include <vgui_controls/Controls.h>
 #include <vgui/IVGui.h>
@@ -304,6 +305,18 @@ public:
 
 		Q_FixSlashes( mapname );
 		Q_strlower( mapname );
+
+#ifndef CLIENT_DLL
+		CUtlStringList gameScripts;
+		int iScriptCount = g_pGameTypeSystem->GetSoundOverrideScripts(gameScripts);
+		for (int i = 0; i < iScriptCount; i++)
+		{
+			if (filesystem->FileExists(gameScripts[i], "GAME"))
+			{
+				soundemitterbase->AddSoundOverrides(gameScripts[i]);
+			}
+		}
+#endif
 
 		// Load in any map specific overrides
 		char scriptfile[ 512 ];

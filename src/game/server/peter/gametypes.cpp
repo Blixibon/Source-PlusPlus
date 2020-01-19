@@ -3,15 +3,26 @@
 #include "KeyValues.h"
 #include "filesystem.h"
 #include "fmtstr.h"
+#include "utlbuffer.h"
 
 
+IMPLEMENT_PRIVATE_SYMBOLTYPE(CGTSymbol);
 
+bool GTSLessFunc(const CGTSymbol&a, const CGTSymbol&b)
+{
+	return CaselessStringLessThan(a.String(), b.String());
+}
 
 CGameTypeManager g_GTManager;
 CGameTypeManager *g_pGameTypeSystem = &g_GTManager;
 
+CUtlFilenameSymbolTable CGameTypeManager::sm_FilenameTable;
 
 //CUtlVectorAutoPurge<char *> vecGames;
+
+CGameTypeManager::CGameTypeManager() : m_MapNameToGameConfig(GTSLessFunc), m_NewGameConfigs(GTSLessFunc)
+{
+}
 
 bool CGameTypeManager::Init()
 {
@@ -82,7 +93,7 @@ bool CGameTypeManager::Init()
 			{
 				AreaName_t *pNewAreaDef = new AreaName_t;
 
-				Q_strncpy(pNewAreaDef->substring, pkvNode->GetName(), sizeof(pNewAreaDef->substring));
+				pNewAreaDef->substring = pkvNode->GetName();
 
 				//int id = 0;
 				const char *pchString = pkvNode->GetString();
@@ -118,6 +129,58 @@ bool CGameTypeManager::Init()
 
 	pKV->deleteThis();
 
+	FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
+	const char* fileName = "cfg/*";
+	fileName = g_pFullFileSystem->FindFirstEx(fileName, "MOD", &findHandle);
+	while (fileName)
+	{
+		if (g_pFullFileSystem->FindIsDirectory(findHandle) && fileName[0] != '.')
+		{
+			char cMapList[MAX_PATH];
+			V_snprintf(cMapList, MAX_PATH, "cfg/%s/maplist.txt", fileName);
+			V_FixSlashes(cMapList);
+
+			char cControlFile[MAX_PATH];
+			V_snprintf(cControlFile, MAX_PATH, "cfg/%s/gameconfig.vdf", fileName);
+			V_FixSlashes(cControlFile);
+
+			KeyValuesAD pKVRoot("Config");
+			CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+			if (g_pFullFileSystem->ReadFile(cMapList, "MOD", buf) && pKVRoot->LoadFromFile(filesystem, cControlFile, "MOD"))
+			{
+				NewGameDef_t GameDef;
+				GameDef.m_BaseGame = FindOrAddGameType(pKVRoot->GetString("game_base", "hl2"));
+				GameDef.m_GameMod = FindOrAddGameType(pKVRoot->GetString("game_mod", "hl2"));
+				GameDef.m_PopSet = pKVRoot->GetString("population_set", "default");
+				KeyValues* pkvSoundScripts = pKVRoot->FindKey("sound_overrides");
+				if (pkvSoundScripts)
+				{
+					for (KeyValues* pkvScript = pkvSoundScripts->GetFirstValue(); pkvScript != nullptr; pkvScript = pkvScript->GetNextValue())
+					{
+						FileNameHandle_t hFilename = sm_FilenameTable.FindOrAddFileName(pkvScript->GetString());
+						GameDef.m_SoundOverrides.AddToTail(hFilename);
+					}
+				}
+
+				CGTSymbol GameDefName(fileName);
+				m_NewGameConfigs.InsertOrReplace(GameDefName, GameDef);
+
+				char szMapName[MAX_MAP_NAME];
+				do {
+					buf.GetLine(szMapName, MAX_MAP_NAME);
+					const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
+					if (pszLineEnd)
+						const_cast<char*>(pszLineEnd)[0] = 0;
+
+					m_MapNameToGameConfig.InsertOrReplace(CGTSymbol(szMapName), GameDefName);
+				} while (buf.IsValid());
+			}
+		}
+
+		fileName = g_pFullFileSystem->FindNext(findHandle);
+	}
+
+	g_pFullFileSystem->FindClose(findHandle);
 	
 	Msg("CGameTypeManager: Registered %i map prefixes.\n", m_PrefixVector.Count());
 
@@ -126,7 +189,7 @@ bool CGameTypeManager::Init()
 
 bool CGameTypeManager::IsMapInGame(const char *pchGame)
 {
-	return (0 == Q_strcmp(pchGame, m_vecGames.Element(GetCurrentGameType())));
+	return (0 == Q_strcmp(pchGame, m_vecGames.Element(GetCurrentBaseGameType())));
 }
 
 const char* CGameTypeManager::GetGameTypeName(int iType)
@@ -135,6 +198,20 @@ const char* CGameTypeManager::GetGameTypeName(int iType)
 		return nullptr;
 
 	return m_vecGames[iType];
+}
+
+int CGameTypeManager::GetSoundOverrideScripts(CUtlStringList& scripts)
+{
+	int iCount = m_CurrentGame.m_SoundOverrides.Count();
+	char szBuf[MAX_PATH];
+	for (int i = 0; i < iCount; i++)
+	{
+		FileNameHandle_t hFileName = m_CurrentGame.m_SoundOverrides.Element(i);
+		sm_FilenameTable.String(hFileName, szBuf, MAX_PATH);
+		scripts.CopyAndAddToTail(szBuf);
+	}
+
+	return iCount;
 }
 
 int CGameTypeManager::LookupGametype(const char *pchGame)
@@ -173,9 +250,9 @@ CON_COMMAND(gametype_print, "Prints info\n")
 	for (i = 0; i < iPrefixes; i++)
 	{
 		if (g_pGameTypeSystem->m_PrefixVector[i]->Type < iGames)
-			Msg("	%s: %s\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix, g_pGameTypeSystem->m_vecGames[g_pGameTypeSystem->m_PrefixVector[i]->Type]);
+			Msg("	%s: %s\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix.String(), g_pGameTypeSystem->m_vecGames[g_pGameTypeSystem->m_PrefixVector[i]->Type]);
 		else
-			Msg("	%s: %i\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix, (int)g_pGameTypeSystem->m_PrefixVector[i]->Type);
+			Msg("	%s: %i\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix.String(), (int)g_pGameTypeSystem->m_PrefixVector[i]->Type);
 	}
 	Msg("Valid Areas:\n");
 	FOR_EACH_VEC(g_pGameTypeSystem->m_vecAreaNames, i)
@@ -207,11 +284,11 @@ void CGameTypeManager::RegisterPrefix(KeyValues *pkvNode)
 	if (pkvNode->GetDataType() == KeyValues::TYPE_INT)
 	{
 		pPrefix->Type = (GameType)pkvNode->GetInt();
-		Q_strncpy(pPrefix->prefix, pkvNode->GetName(), sizeof(pPrefix->prefix));
+		pPrefix->prefix = pkvNode->GetName();
 	}
 	else if (pkvNode->GetDataType() == KeyValues::TYPE_STRING || pkvNode->GetDataType() == KeyValues::TYPE_WSTRING)
 	{
-		Q_strncpy(pPrefix->prefix, pkvNode->GetName(), sizeof(pPrefix->prefix));
+		pPrefix->prefix = pkvNode->GetName();
 
 		GameType type = GAME_INVALID;
 		const char *pchString = pkvNode->GetString();
@@ -246,6 +323,32 @@ void CGameTypeManager::RegisterPrefix(KeyValues *pkvNode)
 	m_PrefixVector.AddToTail(pPrefix);
 }
 
+int CGameTypeManager::FindOrAddGameType(const char* pchGame)
+{
+	int type = GAME_INVALID;
+	for (int i = 0; i < m_vecGames.Count(); i++)
+	{
+		if (0 == Q_stricmp(m_vecGames[i], pchGame))
+		{
+			type = i;
+			break;
+		}
+	}
+	if (type == GAME_INVALID)
+	{
+		//GameWord_t gwNew;
+
+		type = m_vecGames.Count();
+
+		m_vecGames.CopyAndAddToTail(pchGame);
+		//Q_strncpy(m_vecGames[(int)type], pchString, sizeof(m_vecGames[(int)type]));
+
+		Msg("CGameTypeManager: Registered custom game %s with index %i.\n", m_vecGames[type], type);
+	}
+
+	return type;
+}
+
 void CGameTypeManager::SelectGameType()
 {
 	m_bitAreas.ClearAll();
@@ -255,64 +358,87 @@ void CGameTypeManager::SelectGameType()
 	Q_strlower(szMapName);
 	FOR_EACH_VEC(m_AreaNameVector, i)
 	{
-		if (Q_stristr(szMapName, m_AreaNameVector[i]->substring))
+		if (Q_stristr(szMapName, m_AreaNameVector[i]->substring.String()))
 		{
 			AddAreaToMap(m_AreaNameVector[i]->iArea);
 		}
 	}
 
-	//--Find current game
-	struct PrefixCandidate
+	m_symConfigName = "default";
+
+	CGTSymbol symMapName(szMapName);
+	unsigned short usIDX = m_MapNameToGameConfig.Find(symMapName);
+	if (m_MapNameToGameConfig.IsValidIndex(usIDX))
 	{
-		int Type;
-		int Priority;
-	};
-
-	CUtlVector<PrefixCandidate> vecCandidates;
-
-	for (int i = 0; i < m_PrefixVector.Count(); i++)
-	{
-		MapPrefix_t *pPrefix = m_PrefixVector.Element(i);
-		char *pchPrefix = pPrefix->prefix;
-		int iType = (int)pPrefix->Type;
-		int iSize = Q_strlen(pchPrefix);
-
-		if (Q_strncmp(pchPrefix, szMapName, iSize) == 0)
+		CGTSymbol symGameType = m_MapNameToGameConfig.Element(usIDX);
+		unsigned short usIDX2 = m_NewGameConfigs.Find(symGameType);
+		if (!m_NewGameConfigs.IsValidIndex(usIDX2))
 		{
-			PrefixCandidate cand;
-			cand.Type = iType;
-			cand.Priority = iSize;
-
-			vecCandidates.AddToTail(cand);
+			m_CurrentGame = NewGameDef_t();
+			return;
 		}
-	}
 
-	if (vecCandidates.Count() == 0)
-	{
-		m_iGameType = GAME_DEFAULT;
-		return;
-	}
+		m_CurrentGame = m_NewGameConfigs.Element(usIDX2);
 
-	if (vecCandidates.Count() == 1)
-	{
-		m_iGameType = (GameType)vecCandidates.Head().Type;
+		m_symConfigName = symGameType;
 	}
 	else
 	{
-		GameType BestType = GAME_DEFAULT;
-		int iBestPriority = 0;
-		for (int i = 0; i < vecCandidates.Count(); i++)
+		//--Find current game
+		struct PrefixCandidate
 		{
-			PrefixCandidate Candidate = vecCandidates.Element(i);
+			int Type;
+			int Priority;
+		};
 
-			if (iBestPriority > Candidate.Priority)
-				continue;
+		CUtlVector<PrefixCandidate> vecCandidates;
 
-			iBestPriority = Candidate.Priority;
-			BestType = (GameType)Candidate.Type;
+		for (int i = 0; i < m_PrefixVector.Count(); i++)
+		{
+			MapPrefix_t* pPrefix = m_PrefixVector.Element(i);
+			const char* pchPrefix = pPrefix->prefix.String();
+			int iType = (int)pPrefix->Type;
+			int iSize = Q_strlen(pchPrefix);
+
+			if (Q_strncmp(pchPrefix, szMapName, iSize) == 0)
+			{
+				PrefixCandidate cand;
+				cand.Type = iType;
+				cand.Priority = iSize;
+
+				vecCandidates.AddToTail(cand);
+			}
 		}
 
-		m_iGameType = BestType;
+		m_CurrentGame = NewGameDef_t();
+
+		if (vecCandidates.Count() == 0)
+		{
+			//m_iGameMod = m_iGameType = GAME_DEFAULT;
+			return;
+		}
+
+		if (vecCandidates.Count() == 1)
+		{
+			m_CurrentGame.m_BaseGame = m_CurrentGame.m_GameMod = (GameType)vecCandidates.Head().Type;
+		}
+		else
+		{
+			GameType BestType = GAME_DEFAULT;
+			int iBestPriority = 0;
+			for (int i = 0; i < vecCandidates.Count(); i++)
+			{
+				PrefixCandidate Candidate = vecCandidates.Element(i);
+
+				if (iBestPriority > Candidate.Priority)
+					continue;
+
+				iBestPriority = Candidate.Priority;
+				BestType = (GameType)Candidate.Type;
+			}
+
+			m_CurrentGame.m_BaseGame = m_CurrentGame.m_GameMod = BestType;
+		}
 	}
 }
 
@@ -322,7 +448,7 @@ void CGameTypeManager::LevelInitPreEntity()
 {
 	SelectGameType();
 
-	CFmtStrN<MAX_PATH> path("scripts/classremaps/%s.vdf", m_vecGames.Element(GetCurrentGameType()));
+	CFmtStrN<MAX_PATH> path("scripts/classremaps/%s.vdf", m_vecGames.Element(GetCurrentBaseGameType()));
 	KeyValuesAD pKV("classremaps");
 	if (pKV->LoadFromFile(filesystem, path.Access()))
 	{
@@ -354,10 +480,18 @@ const char * CGameTypeManager::RemapEntityClass(const char * pchClass)
 
 ConVar sv_gametype("sv_force_gametype", "-1", FCVAR_CHEAT);
 
-GameType CGameTypeManager::GetCurrentGameType()
+int CGameTypeManager::GetCurrentBaseGameType()
 {
 	if (sv_gametype.GetInt() >= 0 && sv_gametype.GetInt() < m_vecGames.Count())
 		return (GameType)sv_gametype.GetInt();
 
-	return m_iGameType;
+	return m_CurrentGame.m_BaseGame;
+}
+
+int CGameTypeManager::GetCurrentModGameType()
+{
+	if (sv_gametype.GetInt() >= 0 && sv_gametype.GetInt() < m_vecGames.Count())
+		return (GameType)sv_gametype.GetInt();
+
+	return m_CurrentGame.m_GameMod;
 }

@@ -18,6 +18,10 @@
 #include <vgui/ILocalize.h>
 #include "KeyValues.h"
 #include "filesystem.h"
+#ifdef HL2_LAZUL
+#include "lazuul_gamerules.h"
+#include "fmtstr.h"
+#endif // HL2_LAZUL
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -41,8 +45,9 @@ struct portalcreditname_t
 	int iSlot;
 };
 
-#define CREDITS_FILE "scripts/credits_portal.txt"
+//#define CREDITS_FILE "scripts/credits_portal.txt"
 #define CREDITS_FILE_PORTAL "scripts/credits_portal.txt"
+#define CREDITS_FILE_FORMAT "cfg/%s/credits.txt"
 
 enum
 {
@@ -192,9 +197,20 @@ void CHudPortalCredits::PrepareCredits( const char *pKeyName )
 
 	KeyValues *pKV= new KeyValues( "CreditsFile" );
 
+	const char* pszCreditsFile = CREDITS_FILE_PORTAL;
+#ifdef HL2_LAZUL
+	const char* pszGameConfig = LazuulRules()->GetGameConfigName();
+	CFmtStr str;
+	if (!FStrEq(pszGameConfig, "default"))
+	{
+		str.AppendFormat(CREDITS_FILE_FORMAT, pszGameConfig);
+		pszCreditsFile = str.Access();
+	}
+#endif // HL2_LAZUL
+
 	if (m_iCreditsType == CREDITS_OUTRO_PORTAL)
 	{
-		if ( !pKV->LoadFromFile( filesystem, CREDITS_FILE_PORTAL, "MOD" ) )
+		if ( !pKV->LoadFromFile( filesystem, pszCreditsFile, "MOD" ) )
 		{
 			pKV->deleteThis();
 
@@ -204,7 +220,7 @@ void CHudPortalCredits::PrepareCredits( const char *pKeyName )
 	}
 	else
 	{
-		if ( !pKV->LoadFromFile( filesystem, CREDITS_FILE, "MOD" ) )
+		if ( !pKV->LoadFromFile( filesystem, pszCreditsFile, "MOD" ) )
 		{
 			pKV->deleteThis();
 

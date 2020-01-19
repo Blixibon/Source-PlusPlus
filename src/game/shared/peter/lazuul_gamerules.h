@@ -187,13 +187,22 @@ private:
 	float	m_flLastHealthDropTime;
 	float	m_flLastGrenadeDropTime;
 #endif
+public:
 
+	const char* GetGameConfigName();
 
 private:
 	// Rules change for the mega physgun
 	CNetworkVar(bool, m_bMegaPhysgun);
 	CNetworkVar(int, m_nGameMode);
 	CNetworkVar(int, m_iMapGameType);
+	CNetworkVar(int, m_iMapModType);
+#ifndef CLIENT_DLL
+	CNetworkVar(string_t, m_iszGameConfig);
+#else
+	char	m_szGameConfig[64];
+#endif // !CLIENT_DLL
+
 };
 
 inline CLazuul* LazuulRules()

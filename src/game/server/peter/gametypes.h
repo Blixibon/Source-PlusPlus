@@ -43,30 +43,38 @@ enum
 	MAX_CODE_AREAS
 };
 
+DECLARE_PRIVATE_SYMBOLTYPE(CGTSymbol);
+
 typedef struct GameWord_s
 {
-	char game[16];
-	GameType index;
+	CGTSymbol game;
+	int index;
 } GameWord_t;
 
 typedef struct MapPrefix_s
 {
-	char prefix[64];
-	GameType Type;
+	CGTSymbol prefix;
+	int Type;
 } MapPrefix_t;
 
 typedef struct AreaName_s
 {
-	char substring[32];
+	CGTSymbol substring;
 	int iArea;
 } AreaName_t;
+
+typedef struct NewGameDef_s
+{
+	int m_BaseGame;
+	int m_GameMod;
+	CGTSymbol m_PopSet;
+	CCopyableUtlVector< FileNameHandle_t > m_SoundOverrides;
+} NewGameDef_t;
 
 class CGameTypeManager /*: public CBaseGameSystem*/
 {
 public:
-	CGameTypeManager() /*: CBaseGameSystem()*/
-	{
-	}
+	CGameTypeManager();
 
 	virtual char const* Name() { return "CGameTypeManager"; }
 
@@ -83,12 +91,16 @@ public:
 
 	const char *RemapEntityClass(const char *pchClass);
 
-	GameType GetCurrentGameType();
+	int GetCurrentBaseGameType();
+	int GetCurrentModGameType();
 	
 	bool IsMapInGame(const char *pchGame); 
 
 	int LookupGametype(const char *);
 	const char* GetGameTypeName(int);
+
+	const char* GetCurrentConfigName() { return m_symConfigName.String(); }
+	int		GetSoundOverrideScripts(CUtlStringList& scripts);
 
 	bool IsMapInArea(int iArea)
 	{
@@ -102,8 +114,11 @@ public:
 
 	void Reload();
 
+	static CUtlFilenameSymbolTable sm_FilenameTable;
+
 protected:
 	void RegisterPrefix(KeyValues *pkvNode);
+	int	FindOrAddGameType(const char* pchGame);
 
 	void AddAreaToMap(int iArea)
 	{
@@ -119,10 +134,14 @@ protected:
 	CUtlVectorFixed<char *, MAX_CODE_AREAS> m_vecAreaNames;
 
 private:
+	CUtlMap<CGTSymbol, NewGameDef_t> m_NewGameConfigs;
+	CUtlMap<CGTSymbol, CGTSymbol>	m_MapNameToGameConfig;
+	CGTSymbol						m_symConfigName;
+
 	CUtlVectorAutoPurge<MapPrefix_t *> m_PrefixVector;
 	CUtlVector<AreaName_t *> m_AreaNameVector;
 	CUtlStringList m_vecGames;
-	GameType m_iGameType;
+	NewGameDef_t	m_CurrentGame;
 
 	CBitVec<MAX_CODE_AREAS> m_bitAreas;
 	int						m_iFirstArea;

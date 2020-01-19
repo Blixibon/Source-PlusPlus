@@ -1783,7 +1783,7 @@ void CNPC_Hunter::Precache()
 //-----------------------------------------------------------------------------
 void CNPC_Hunter::Spawn()
 {
-	if (g_pGameTypeSystem->GetCurrentGameType() == MOD_EZ1)
+	if (g_pGameTypeSystem->GetCurrentModGameType() == MOD_EZ1)
 	{
 		m_bVortControlled = true;
 		m_nSkin = 1;
@@ -1830,7 +1830,7 @@ void CNPC_Hunter::Spawn()
 		CapabilitiesAdd( bits_CAP_MOVE_JUMP );
 	}
 
-	if (m_bVortControlled && g_pGameTypeSystem->GetCurrentGameType() != MOD_EZ1)
+	if (m_bVortControlled && g_pGameTypeSystem->GetCurrentModGameType() != MOD_EZ1)
 	{
 		// Start up the eye glow
 		m_pEyeSprites[0] = CSprite::SpriteCreate("sprites/glow03.vmt", GetLocalOrigin(), false);

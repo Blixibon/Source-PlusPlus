@@ -119,7 +119,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 
 	//pHands->NetworkStateChanged();
 
-	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentGameType(), pPlayer->IsSuitEquipped());
+	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentModGameType(), pPlayer->IsSuitEquipped());
 
 	pPlayer->SetModel(modelType->models.Head().szModelName);
 	pPlayer->m_nSkin = modelType->models.Head().skin;
@@ -528,7 +528,7 @@ ReturnSpot:
 
 bool CLaz_Player::ShouldRegenerateHealth()
 {
-	return g_pGameTypeSystem->GetCurrentGameType() == GAME_PORTAL;
+	return g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_PORTAL;
 }
 
 void CLaz_Player::DoMuzzleFlash()

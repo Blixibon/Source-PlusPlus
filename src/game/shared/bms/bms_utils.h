@@ -11,7 +11,7 @@ class CAI_PlayerAlly;
 #ifdef GAME_DLL
 inline bool IsBMSMap()
 {
-	return g_pGameTypeSystem->GetCurrentGameType() == MOD_BMS;
+	return g_pGameTypeSystem->GetCurrentBaseGameType() == MOD_BMS;
 }
 
 inline bool IsPreDisaster()

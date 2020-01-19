@@ -230,6 +230,9 @@ void CHud::MsgFunc_ResetHUD(bf_read& msg)
 			pszLayoutFile = "scripts/HudLayout_HLSS.res";
 			pszAnimationFile = "scripts/hudanimations_hlsshud_manifest.txt";
 			break;
+		case TEAM_MILITARY:
+			pszSchemeFile = "resource/HudSchemeHECU.res";
+			break;
 		default:
 			break;
 		}
@@ -272,10 +275,14 @@ BEGIN_NETWORK_TABLE_NOBASE(CLazuul, DT_Lazuul)
 RecvPropBool(RECVINFO(m_bMegaPhysgun)),
 RecvPropInt(RECVINFO(m_nGameMode)),
 RecvPropInt(RECVINFO(m_iMapGameType)),
+RecvPropInt(RECVINFO(m_iMapModType)),
+RecvPropString(RECVINFO_NAME(m_szGameConfig, m_iszGameConfig)),
 #else
 SendPropBool(SENDINFO(m_bMegaPhysgun)),
 SendPropInt(SENDINFO(m_nGameMode)),
 SendPropInt(SENDINFO(m_iMapGameType)),
+SendPropInt(SENDINFO(m_iMapModType)),
+SendPropStringT(SENDINFO(m_iszGameConfig)),
 #endif
 END_NETWORK_TABLE()
 
@@ -380,7 +387,7 @@ CLazuul::~CLazuul()
 
 int CLazuul::GetProtaganistTeam()
 {
-	if (m_iMapGameType == MOD_HLSS || m_iMapGameType == MOD_EZ1)
+	if (m_iMapModType == MOD_HLSS || m_iMapModType == MOD_EZ1)
 		return TEAM_COMBINE;
 
 	return TEAM_REBELS;
@@ -3969,7 +3976,9 @@ void CLazuul::LevelInitPostEntity()
 {
 	BaseClass::LevelInitPostEntity();
 
-	m_iMapGameType = g_pGameTypeSystem->GetCurrentGameType();
+	m_iMapGameType = g_pGameTypeSystem->GetCurrentBaseGameType();
+	m_iMapModType = g_pGameTypeSystem->GetCurrentModGameType();
+	m_iszGameConfig = AllocPooledString(g_pGameTypeSystem->GetCurrentConfigName());
 }
 
 void CLazuul::Think()
@@ -4984,6 +4993,16 @@ void CLazuul::SetupOnRoundRunning(void)
 	HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_ROUND_START);
 }
 #endif
+
+const char* CLazuul::GetGameConfigName()
+{
+#ifdef CLIENT_DLL
+	return m_szGameConfig;
+#else
+	return m_iszGameConfig.Get().ToCStr();
+#endif // !CLIENT_DLL
+
+}
 
 // shared ammo definition
 // JAY: Trying to make a more physical bullet response

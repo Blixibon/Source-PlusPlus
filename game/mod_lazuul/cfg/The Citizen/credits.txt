@@ -1,0 +1,135 @@
+//Adrian: This file contains the credits info for both the Intro and outro.
+"credits.txt"
+{
+
+//========================================================
+//These are the names used in the intro (trainride)
+//========================================================
+"IntroCreditsNames"
+{
+	"V"	"WeaponIcons"
+	" "	"CreditsText"
+	
+	
+	
+}
+
+"CreditsParams"
+{
+	"fadeintime"	"2.5"
+	"fadeouttime"	"1"
+	"fadeholdtime"	"1.0"
+	"nextfadetime"	"1.0"
+	"pausebetweenwaves" "1.0"
+	"logotime" "1.0"
+	"posx"	"96"
+	"posy"	"360"
+
+	"color" "255 255 255 128"
+
+//Outro Parameters
+	"scrolltime" "158"
+	"separation"  "10"
+}
+
+//========================================================
+//These are the names used in the outro (breen_01)
+//========================================================
+"OutroCreditsNames"
+{
+	"T H E   C I T I Z E N"	"CreditsOutroLogos"
+	" "	"CreditsOutroText"
+	"---"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"a Spare Time production" "CreditsOutroText"
+	" "	"CreditsOutroText"
+	"By"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Jose M 'Kasperg' Ameyugo"   "CreditsOutroText"
+	"and"	"CreditsOutroText"
+	"Chris 'Playbus' Fox"    "CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+ 	"Voice Acting:"   "CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Anne Fox -  Susan, Citizen"   "CreditsOutroText"
+	"Chris Fox - Citizens"   "CreditsOutroText"
+	"Jason Fielding - Argento"   "CreditsOutroText"
+	"Eric Soderstrom Jr. - Larry"   "CreditsOutroText"
+	"Barry Stenfalt - Moe"   "CreditsOutroText"
+	"Jose M Ameyugo -  Radio Presenter, Jeremy, Sergeant, Citizens"   "CreditsOutroText"
+	"Cayetana Ameyugo - Elizabeth Breen, Myrle, Citizen"   "CreditsOutroText"
+	"Hussein Elgridly - The Commander"   "CreditsOutroText"
+	"David Maylia - Citizen"   "CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Voice Casting:"   "CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Chris Fox"   "CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Custom Materials: "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Jose M Ameyugo"	"CreditsOutroText"
+	"Chris Fox"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Custom Music:"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Bad Day Rising "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Bad Day Rising Is:"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Chris Fox"	"CreditsOutroText"
+	"Gary Veshio"	"CreditsOutroText"
+	"Chris Tait"	"CreditsOutroText"
+	"Harry Hall"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Playtesting:"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Anne Fox"	"CreditsOutroText"
+	"Martyn Watts"	"CreditsOutroText"
+	"David Maylia"	"CreditsOutroText"
+	"Jason Fielding"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"Special Thanks to: "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"PlanetPhillip.com"	"CreditsOutroText"
+	"twhl.co.za"	"CreditsOutroText"
+	"Interlopers.net"	"CreditsOutroText"
+	"Myrle Finidis"	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	"This mod happened by accident..."	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+	" "	"CreditsOutroText"
+
+	"T H E   C I T I Z E N"	"CreditsOutroLogos"
+}
+
+
+
+}

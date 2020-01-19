@@ -187,7 +187,7 @@ bool Flashlight_UseLegacyVersion( void )
 	// Return the results
 	return g_bUseLegacyFlashlight;
 #else
-	return !hl2_episodic.GetBool() || g_pGameTypeSystem->GetCurrentGameType() == GAME_EP1;
+	return !hl2_episodic.GetBool() || g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_EP1;
 #endif
 }
 

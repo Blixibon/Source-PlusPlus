@@ -449,7 +449,7 @@ bool CWorld::GetWorldFlagDefault(int iFlag) const
 	{
 	case WORLD_IS_EPISODIC:
 	{
-		switch (g_pGameTypeSystem->GetCurrentGameType())
+		switch (g_pGameTypeSystem->GetCurrentBaseGameType())
 		{
 		case GAME_HL2:
 		case MOD_CITIZEN:
@@ -602,7 +602,7 @@ void CWorld::Spawn( void )
 	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
 
 	// Half-Life: Source uses chapter based population tags
-	if (g_pGameTypeSystem->GetCurrentGameType() == GAME_HL1 && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
+	if (g_pGameTypeSystem->GetCurrentModGameType() == GAME_HL1 && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
 	{
 		struct chapterID_s
 		{
@@ -652,7 +652,7 @@ void CWorld::Spawn( void )
 		}
 	}
 	// Black-Mesa does this too
-	else if (g_pGameTypeSystem->GetCurrentGameType() == MOD_BMS && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
+	else if (g_pGameTypeSystem->GetCurrentModGameType() == MOD_BMS && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
 	{
 		struct chapterID_s
 		{
@@ -832,7 +832,7 @@ void CWorld::Precache( void )
 		if (m_iszDetailSpriteMaterial.Get() == FindPooledString("detail/detailsprites"))
 		{
 			char* pchNewDetail = "detail/detailsprites_hl2";
-			if (g_pGameTypeSystem->GetCurrentGameType() == GAME_EP2)
+			if (g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_EP2)
 				pchNewDetail = "detail/detailsprites_ep2";
 
 			m_iszDetailSpriteMaterial.GetForModify() = AllocPooledString(pchNewDetail);

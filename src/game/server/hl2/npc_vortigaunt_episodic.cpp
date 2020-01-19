@@ -1766,7 +1766,7 @@ void CNPC_Vortigaunt::Spawn( void )
 		SetModelName(AllocPooledString(szModel));
 	}
 
-	if ( GetWorldEntity()->GetMapVersion() == MV_EXTERNAL_MAP && g_pGameTypeSystem->GetCurrentGameType() != GAME_EP1 && !Q_strnicmp(STRING(GetModelName()), "models/vortigaunt_blue.mdl", 26))
+	if ( GetWorldEntity()->GetMapVersion() == MV_EXTERNAL_MAP && g_pGameTypeSystem->GetCurrentBaseGameType() != GAME_EP1 && !Q_strnicmp(STRING(GetModelName()), "models/vortigaunt_blue.mdl", 26))
 	{
 		SetModelName(AllocPooledString("models/vortigaunt_blu2.mdl"));
 	}

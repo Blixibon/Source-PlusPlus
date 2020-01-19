@@ -64,7 +64,7 @@ static soundlevel_t ComputeSoundlevel( float radius, bool playEverywhere )
 	{
 		// attenuation is set to a distance, compute falloff
 
-		float flRefDist = (g_pGameTypeSystem->GetCurrentGameType() == GAME_HL1) ? REFERENCE_dB_DISTANCE_HL1 : REFERENCE_dB_DISTANCE;
+		float flRefDist = (g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_HL1) ? REFERENCE_dB_DISTANCE_HL1 : REFERENCE_dB_DISTANCE;
 		float dB_loss = 20 * log10( radius / flRefDist);
 
 		soundlevel = (soundlevel_t)(int)(40 + dB_loss); // sound at 40dB at reference distance

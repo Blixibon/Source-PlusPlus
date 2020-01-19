@@ -17,6 +17,10 @@
 #include <vgui/ILocalize.h>
 #include "KeyValues.h"
 #include "filesystem.h"
+#ifdef HL2_LAZUL
+#include "lazuul_gamerules.h"
+#include "fmtstr.h"
+#endif // HL2_LAZUL
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -35,6 +39,7 @@ struct creditname_t
 };
 
 #define CREDITS_FILE "scripts/credits.txt"
+#define CREDITS_FILE_FORMAT "cfg/%s/credits.txt"
 
 enum
 {
@@ -131,6 +136,7 @@ private:
 
 	char m_szLogo[256];
 	char m_szLogo2[256];
+	char m_szLogoFont[128];
 
 	Color m_cColor;
 };	
@@ -140,8 +146,19 @@ void CHudCredits::PrepareCredits( const char *pKeyName )
 {
 	Clear();
 
+	const char* pszCreditsFile = CREDITS_FILE;
+#ifdef HL2_LAZUL
+	const char* pszGameConfig = LazuulRules()->GetGameConfigName();
+	CFmtStr str;
+	if (!FStrEq(pszGameConfig, "default"))
+	{
+		str.AppendFormat(CREDITS_FILE_FORMAT, pszGameConfig);
+		pszCreditsFile = str.Access();
+	}
+#endif // HL2_LAZUL
+
 	KeyValues *pKV= new KeyValues( "CreditsFile" );
-	if ( !pKV->LoadFromFile( filesystem, CREDITS_FILE, "MOD" ) )
+	if ( !pKV->LoadFromFile( filesystem, pszCreditsFile, "MOD" ) )
 	{
 		pKV->deleteThis();
 
@@ -249,6 +266,7 @@ void CHudCredits::ReadParams( KeyValues *pKeyValue )
 
 	Q_strncpy( m_szLogo, pKeyValue->GetString( "logo", "HALF-LIFE'" ), sizeof( m_szLogo ) );
 	Q_strncpy( m_szLogo2, pKeyValue->GetString( "logo2", "" ), sizeof( m_szLogo2 ) );
+	Q_strncpy(m_szLogoFont, pKeyValue->GetString("logofont", "WeaponIcons"), sizeof(m_szLogoFont));
 }
 
 int CHudCredits::GetStringPixelWidth( wchar_t *pString, vgui::HFont hFont )
@@ -416,7 +434,7 @@ void CHudCredits::DrawLogo( void )
 	GetHudSize(iWidth, iTall);
 	SetSize( iWidth, iTall );
 
-	char szLogoFont[64];
+	/*char szLogoFont[64];
 
 	if ( IsXbox() )
 	{
@@ -429,10 +447,10 @@ void CHudCredits::DrawLogo( void )
 	else
 	{
 		Q_snprintf( szLogoFont, sizeof( szLogoFont ), "WeaponIcons" );
-	}
+	}*/
 
 	vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
-	vgui::HFont m_hTFont = vgui::scheme()->GetIScheme(scheme)->GetFont( szLogoFont );
+	vgui::HFont m_hTFont = vgui::scheme()->GetIScheme(scheme)->GetFont(m_szLogoFont);
 
 	int iFontTall = surface()->GetFontTall ( m_hTFont );
 

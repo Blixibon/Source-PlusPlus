@@ -1198,7 +1198,7 @@ Class_T	CProtoSniper::Classify( void )
 {
 	if( m_fEnabled )
 	{
-		if (g_pGameTypeSystem->GetCurrentGameType() == MOD_BMS)
+		if (g_pGameTypeSystem->GetCurrentBaseGameType() == MOD_BMS)
 			return CLASS_HECU;
 
 		return	CLASS_PROTOSNIPER;
