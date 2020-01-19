@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/svencoop/svencoop_mp5/Map2"
+	$halflambert "1"
+}

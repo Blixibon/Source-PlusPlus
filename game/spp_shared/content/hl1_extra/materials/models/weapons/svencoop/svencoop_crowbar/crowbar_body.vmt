@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/svencoop/svencoop_crowbar/Crowbar_Body"
+	$halflambert "1"
+}

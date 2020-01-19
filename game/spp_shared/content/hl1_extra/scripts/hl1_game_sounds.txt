@@ -974,8 +974,7 @@
 
 	"rndwave"
 	{
-		"wave"			"weapons/hks1.wav"
-		"wave"			"weapons/hks2.wav"
+		"wave"			")weapons/svencoop/svencoop_m16/m16_single.wav"
 	}
 }
 
@@ -988,9 +987,54 @@
 
 	"rndwave"
 	{
-		"wave"			"weapons/glauncher.wav"
-		"wave"			"weapons/glauncher2.wav"
+		"wave"			")weapons/svencoop/svencoop_m16/glauncher.wav"
+		"wave"			")weapons/svencoop/svencoop_m16/glauncher2.wav"
 	}
+}
+
+"weapon_svencoop_m16.magout"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"weapons/svencoop/svencoop_m16/m16_magout_metallic.wav"
+}
+
+"weapon_svencoop_m16.magin"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"weapons/svencoop/svencoop_m16/m16_magin_metallic.wav"
+}
+
+"weapon_svencoop_m16.bolt"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"weapons/svencoop/svencoop_m16/m16_charge.wav"
+}
+
+"weapon_svencoop_m16.draw"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"weapons/svencoop/svencoop_m16/m16_draw.wav"
+}
+
+"weapon_svencoop_m16.gl_reload"
+{
+	"channel"		"CHAN_ITEM"
+	"volume"		"1.0"
+	"soundlevel"		"SNDLVL_NORM"
+
+	"wave"			"weapons/svencoop/svencoop_m16/gl_reload.wav"
 }
 
 "Weapon_MP5.Special1"

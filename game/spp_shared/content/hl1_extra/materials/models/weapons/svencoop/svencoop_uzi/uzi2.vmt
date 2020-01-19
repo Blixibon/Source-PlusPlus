@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/svencoop/svencoop_uzi/UZI2"
+	$halflambert "1"
+}

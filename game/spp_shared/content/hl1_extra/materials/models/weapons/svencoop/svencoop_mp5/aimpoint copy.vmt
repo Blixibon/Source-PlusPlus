@@ -1,0 +1,5 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models/weapons/svencoop/svencoop_mp5/Aimpoint copy"
+	$halflambert "1"
+}

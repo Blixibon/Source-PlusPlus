@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "vgui/hud/tfa_svencoop_lmg"
+	"$translucent" 1
+}
