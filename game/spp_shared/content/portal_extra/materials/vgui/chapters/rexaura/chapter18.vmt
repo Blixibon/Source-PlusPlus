@@ -1,0 +1,6 @@
+UnlitGeneric
+{
+	$basetexture vgui/chapters/rexaura/chapter18
+	$vertexalpha 1
+	"$ignorez" "1"
+}

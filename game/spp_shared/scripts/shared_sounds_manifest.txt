@@ -20,6 +20,7 @@
 	"precache_file"		"scripts/game_sounds_weapons_new.txt"
 	"precache_file"		"scripts/game_sounds_weapons_c17.txt"
 	"precache_file"		"scripts/game_sounds_weapons_bms.txt"
+	"precache_file"		"scripts/weapon_sounds_hl2beta.txt"
 	
 	// Lambda Wars
 	"precache_file"		"scripts/unit_sounds.txt"
@@ -108,4 +109,12 @@
 	"precache_file"		"scripts/npc_sounds_turret_portal.txt"
 	"precache_file"		"scripts/npc_sounds_rocket_turret.txt"
 	"precache_file"		"scripts/npc_sounds_glados_cores.txt"
+	
+	// Blue Portals
+    "precache_file"	        "scripts/npc_sounds_bp_announcer.txt"
+	
+	// ball mod sounds
+	"precache_file"		"scripts/ball_mod_music.txt"
+	"precache_file"		"scripts/ball_mod_sounds.txt"
+	"precache_file"		"scripts/ball_mod_sounds_manual.txt"
 }

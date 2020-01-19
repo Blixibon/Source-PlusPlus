@@ -1,0 +1,90 @@
+// Choreo version 1
+actor "ball_mod_ai"
+{
+  channel "audio"
+  {
+    event speak "ding_on"
+    {
+      time 0.000000 0.200000
+      param "Portal.ding_on"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "speak"
+    {
+      time 1.000000 3.000000
+      param "ball_mod_ai.limerick_01"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "speak"
+    {
+      time 2.700000 4.300000
+      param "ball_mod_ai.limerick_02"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "speak"
+    {
+      time 4.200000 6.100000
+      param "ball_mod_ai.limerick_03"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "speak"
+    {
+      time 6.000000 7.400000
+      param "ball_mod_ai.limerick_04"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "speak"
+    {
+      time 7.300000 12.100000
+      param "ball_mod_ai.limerick_05"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "speak"
+    {
+      time 11.900000 14.800000
+      param "ball_mod_ai.limerick_06"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+    event speak "ding_off"
+    {
+      time 15.000000 15.500000
+      param "Portal.ding_off"
+      fixedlength
+      cctype "cc_master"
+      cctoken ""
+      cc_noattenuate
+    }
+  }
+}
+mapname "maps\rex_14_target.bsp"
+scalesettings
+{
+  "CChoreoView" "100"
+  "SceneRampTool" "100"
+  "ExpressionTool" "100"
+  "GestureTool" "100"
+  "RampTool" "100"
+}
+fps 60
+snap off

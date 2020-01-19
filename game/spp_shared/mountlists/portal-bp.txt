@@ -1,0 +1,18 @@
+"Mount"
+{
+	needs_mod "Blue Portals"
+
+	sourcemods
+	{
+		"head"	"0"
+		"Blue Portals"
+		{
+			"path_id"
+			{
+				"scenes"	"1"
+			}
+		
+			vpk	bp_pak
+		}
+	}
+}

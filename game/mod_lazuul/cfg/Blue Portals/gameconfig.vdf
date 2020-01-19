@@ -1,0 +1,10 @@
+"Config"
+{
+    "game_base" "portal"
+    "game_mod"  "blueportals"
+    "population_set"    "default"
+    "sound_overrides"
+    {
+        "file"      "scripts/npc_sounds_turret_blueportals.txt"
+    }
+}

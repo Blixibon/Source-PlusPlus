@@ -405,3 +405,63 @@
 		"attenuation"	"0"
 	}
 }
+
+"BluePortals.TestChamber"
+{
+    "dsp"	"1"
+
+	"playlooping"
+	{
+		"wave"		"ambient/levels/citadel/citadel_drone_loop3.wav"
+		"pitch"		"100"
+		"volume"	"0.1"
+	}
+	"playrandom"
+	{
+		"pitch"			"90,110"
+		"volume"		"0.1"
+		"time"			"5,15"
+		"rndwave"
+		{
+			"wave"	"ambient/machines/combine_terminal_idle1.wav"
+			"wave"	"ambient/machines/combine_terminal_idle2.wav"
+			"wave"	"ambient/machines/combine_terminal_idle4.wav"
+		}
+	}
+	"playrandom"
+	{
+		"pitch"		"150,175"
+		"volume"	"0.15"
+		"time"		"3,9"
+		"rndwave"
+		{
+			"wave"	"physics/metal/metal_box_strain1.wav"
+			"wave"	"physics/metal/metal_box_strain2.wav"
+			"wave"	"physics/metal/metal_box_strain3.wav"
+			"wave"	"physics/metal/metal_box_strain4.wav" 
+		}
+	}
+	"playrandom"
+	{
+		"pitch"		"20,300"
+		"volume"	"0.2"
+		"time"		"5,10"
+		"rndwave"
+		{
+			"wave"	"ambient\levels\citadel\portal_beam_shoot1.wav"
+			"wave"	"weapons\portalgun\portal_fizzle2.wav"
+			"wave"	"weapons\portalgun\norm\portal_close1.wav"
+			"wave"	"weapons/portalgun/norm\portal_close2.wav" 
+		}
+	}
+	"playrandom"
+	{
+		"pitch"		"80,140"
+		"volume"	"0.1"
+		"time"		"4"
+		"rndwave"
+		{
+			"wave"	"ambient\atmosphere\hole_hit1.wav"
+		}
+	}
+}

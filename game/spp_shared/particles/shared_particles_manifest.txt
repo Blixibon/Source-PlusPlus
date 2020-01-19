@@ -88,6 +88,21 @@ particles_manifest
 	//Cleanser_edge_2	128x0 	large effect
 	//portal_cleanser	128x128 fill effect
 	
+	// ball mod particles
+	"file"		"particles/cleanser_128.pcf"
+	
+	// Blue Portals
+	"file"		"particles/bp_lights.pcf"
+	"file"		"particles/bp_waterfall.pcf"
+	"file"		"particles/combine_fx.pcf"
+	"file"		"particles/flamethrower.pcf"
+	"file"		"particles/paintsplashes.pcf"
+	"file"		"particles/teleporter.pcf"
+	"file"		"particles/water_leaks.pcf"
+	"file"		"particles/waterdrips.pcf"
+	"file"		"particles/waterfall.pcf"
+	"file"		"particles/weapon_fx.pcf"
+	
 	// HL:R
 	"file"		"particles/blood_impact_blue.pcf"
 	"file"		"particles/alien_slave.pcf"

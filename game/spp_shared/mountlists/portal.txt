@@ -1,5 +1,11 @@
 "Mount"
 {
+	deps
+	{
+		portal-rexaura	1
+		portal-bp	1
+	}
+
 	400
 	{
 		"head"	"1"

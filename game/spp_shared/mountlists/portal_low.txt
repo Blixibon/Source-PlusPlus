@@ -1,5 +1,13 @@
 "Mount"
 {
+	needs_app 400
+
+	supers
+	{
+		portal-rexaura	1
+		portal-bp	1
+	}
+
 	400
 	{
 		"head"	"0"
