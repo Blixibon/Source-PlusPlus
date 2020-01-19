@@ -1038,4 +1038,40 @@ rule SECURITY_GiveAmmo
 	criteria		SECURITY ConceptTalkGiveAmmo
 	response		SECURITY_GiveAmmo
 }
+///////////////////////////////////////////////////////////////////////////////
+//			BEGIN NEW RESPONSES (by CITIZENFIVE)
+///////////////////////////////////////////////////////////////////////////////
+
+// ============================================================================================
+//
+//			RESPONSES FOR HOUNDEYE (SPOTTING)
+//
+// ============================================================================================
+response SECURITY_NEW_ENEMY_HOUNDEYE
+{
+	speak "NPC_Security.houndeye01" weight 2 respeakdelay 120
+	response SECURITY_STARTCOMBAT respeakdelay 120
+}
+
+rule SECURITY_NEW_ENEMY_HOUNDEYE
+{
+	criteria SECURITY TLK_NEW_ENEMY EnemyIsHoundeye RandomChance50
+	response SECURITY_NEW_ENEMY_HOUNDEYE
+}
+// ============================================================================================
+//
+//			RESPONSES FOR HOUNDEYE KILLS (GUARD)
+//
+// ============================================================================================
+response SECURITY_ENEMY_DEAD_HOUNDEYE
+{
+	speak "NPC_Security.houndeye02" odds 25 respeakdelay 180
+	speak "NPC_Security.houndeye03" odds 25 respeakdelay 180
+}
+
+rule SECURITY_ENEMY_DEAD_HOUNDEYE
+{
+	criteria SECURITY TLK_ENEMY_DEAD EnemyIsHoundeye RandomChance75
+	response SECURITY_ENEMY_DEAD_HOUNDEYE
+}
 // ============================================================================================

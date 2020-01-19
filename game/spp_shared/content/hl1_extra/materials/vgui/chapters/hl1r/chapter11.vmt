@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "VGUI/chapters/hl1/chapter11"
+	"$vertexalpha" 1
+	"$ignorez" "1"
+}

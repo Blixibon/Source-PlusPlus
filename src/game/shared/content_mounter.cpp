@@ -667,6 +667,10 @@ namespace Mounter
 
 		MountFiles(steamApps, filesystem);
 
+		g_pVGuiLocalize->AddFile("resource/credits_%language%.txt");
+		g_pVGuiLocalize->AddFile("resource/valve_%language%.txt");
+		g_pVGuiLocalize->AddFile("resource/gameui_%language%.txt");
+
 		// Mount Mod
 		KeyValues *pkvMounts = gameinfo->FindKey("mount");
 		if (pkvMounts)

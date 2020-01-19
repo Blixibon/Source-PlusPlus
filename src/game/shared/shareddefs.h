@@ -222,6 +222,8 @@ enum CastVote
 	#define MAX_PLAYERS				65  // Absolute max players supported
 #elif defined ( TF_CLASSIC ) || defined ( TF_CLASSIC_CLIENT )
 #define MAX_PLAYERS				128 
+#elif defined(HL2_LAZUL)
+#define MAX_PLAYERS					17
 #else
 	#define MAX_PLAYERS				33  // Absolute max players supported
 #endif
