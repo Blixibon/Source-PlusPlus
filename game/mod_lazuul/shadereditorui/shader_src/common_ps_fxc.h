@@ -212,6 +212,8 @@ HALF4 EnvReflect( sampler envmapSampler,
 
 float CalcWaterFogAlpha( const float flWaterZ, const float flEyePosZ, const float flWorldPosZ, const float flProjPosZ, const float flFogOORange )
 {
+#if 1
+	// This version is what you use if you want a line-integral throught he water for water fog.
 //	float flDepthFromWater = flWaterZ - flWorldPosZ + 2.0f; // hackity hack . .this is for the DF_FUDGE_UP in view_scene.cpp
 	float flDepthFromWater = flWaterZ - flWorldPosZ;
 
@@ -223,36 +225,29 @@ float CalcWaterFogAlpha( const float flWaterZ, const float flEyePosZ, const floa
 	// Calculate the ratio of water fog to regular fog (ie. how much of the distance from the viewer
 	// to the vert is actually underwater.
 	float flDepthFromEye = flEyePosZ - flWorldPosZ;
-	float f = (flDepthFromWater / flDepthFromEye) * flProjPosZ;
+	float f = saturate(flDepthFromWater * (1.0/flDepthFromEye));
 
 	// $tmp.w is now the distance that we see through water.
-	return saturate( f * flFogOORange );
+	return saturate(f * flProjPosZ * flFogOORange);
+#else
+	// This version is simply using the depth of the water to determine fog factor,
+	// which is cheaper than doing the line integral and also fixes some problems with having 
+	// a hard line on the shore when the water surface is viewed tangentially.
+	// hackity hack . .the 2.0 is for the DF_FUDGE_UP in view_scene.cpp
+	return saturate( ( flWaterZ - flWorldPosZ - 2.0f ) * flFogOORange );
+#endif
 }
 
-#if defined(SHADER_EDITOR_SWARM_COMPILE)
-float CalcRangeFog( const float3 flEyePos, const float3 flWorldPos, const float flFogEndOverRange, const float flFogMaxDensity, const float flFogOORange )
-#else
-float CalcRangeFog( const float flProjPosZ, const float flFogEndOverRange, const float flFogMaxDensity, const float flFogOORange )
-#endif // SHADER_EDITOR_SWARM_COMPILE
+float CalcRangeFog( const float flProjPosZ, const float flFogStartOverRange, const float flFogMaxDensity, const float flFogOORange )
 {
-#if defined(SHADER_EDITOR_SWARM_COMPILE)
-	return min( flFogMaxDensity, saturate( flFogEndOverRange + ( distance( flEyePos, flWorldPos ) * flFogOORange ) ) );
-#elif defined(SHADER_EDITOR_2013_COMPILE)
-	return min( flFogMaxDensity, ( saturate( flProjPosZ * flFogOORange - flFogEndOverRange ) ) );
-#else
 #if !(defined(SHADER_MODEL_PS_1_1) || defined(SHADER_MODEL_PS_1_4) || defined(SHADER_MODEL_PS_2_0)) //Minimum requirement of ps2b
-	return min( flFogMaxDensity, ( saturate( 1.0 - (flFogEndOverRange - (flProjPosZ * flFogOORange)) ) ) );
+	return saturate( min( flFogMaxDensity, (flProjPosZ * flFogOORange) - flFogStartOverRange ) );
 #else
 	return 0.0f; //ps20 shaders will never have range fog enabled because too many ran out of slots.
 #endif
-#endif // SHADER_EDITOR_SWARM_COMPILE
 }
 
-#if defined(SHADER_EDITOR_SWARM_COMPILE)
-float CalcPixelFogFactor( int iPIXELFOGTYPE, const float4 fogParams, const float3 flEyePos, const float3 flWorldPos )
-#else
-float CalcPixelFogFactor( int iPIXELFOGTYPE, const float4 fogParams, const float flEyePosZ, const float flWorldPosZ, const float flProjPosZ )
-#endif // SHADER_EDITOR_SWARM_COMPILE
+float CalcPixelFogFactor( int iPIXELFOGTYPE, const float4 fogParams, const float3 vEyePos, const float3 vWorldPos, const float flProjPosZ )
 {
 	float retVal;
 	if ( iPIXELFOGTYPE == PIXEL_FOG_TYPE_NONE )
@@ -261,19 +256,15 @@ float CalcPixelFogFactor( int iPIXELFOGTYPE, const float4 fogParams, const float
 	}
 	if ( iPIXELFOGTYPE == PIXEL_FOG_TYPE_RANGE ) //range fog, or no fog depending on fog parameters
 	{
-#if defined(SHADER_EDITOR_SWARM_COMPILE)
-		retVal = CalcRangeFog( flEyePos, flWorldPos, fogParams.x, fogParams.z, fogParams.w );
-#else
-		retVal = CalcRangeFog( flProjPosZ, fogParams.x, fogParams.z, fogParams.w );
-#endif // SHADER_EDITOR_SWARM_COMPILE
+		// This is one only path that we go down for L4D.
+		float flFogMaxDensity = fogParams.z;
+		float flFogStartOverRange = fogParams.x;
+		float flFogOORange = fogParams.w;
+		retVal = CalcRangeFogFactorNonFixedFunction( vWorldPos, vEyePos, flFogMaxDensity, flFogStartOverRange, flFogOORange );
 	}
 	else if ( iPIXELFOGTYPE == PIXEL_FOG_TYPE_HEIGHT ) //height fog
 	{
-#if defined(SHADER_EDITOR_SWARM_COMPILE)
-		retVal = 0.0f;
-#else
-		retVal = CalcWaterFogAlpha( fogParams.y, flEyePosZ, flWorldPosZ, flProjPosZ, fogParams.w );
-#endif // SHADER_EDITOR_SWARM_COMPILE
+		retVal = CalcWaterFogAlpha( fogParams.y, vEyePos.z, vWorldPos.z, flProjPosZ, fogParams.w );
 	}
 
 	return retVal;

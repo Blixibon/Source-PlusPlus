@@ -25,22 +25,22 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"46"
+					"iTarget_node"		"44"
 					"iTarget_jack"		"2"
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"46"
+					"iTarget_node"		"44"
 					"iTarget_jack"		"1"
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"46"
+					"iTarget_node"		"44"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_03"
 				{
-					"iTarget_node"		"47"
+					"iTarget_node"		"45"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -237,7 +237,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"43"
+					"iTarget_node"		"41"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_01"
@@ -247,7 +247,7 @@
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"27"
+					"iTarget_node"		"26"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -266,17 +266,17 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"1"
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"2"
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"4"
 				}
 				"jackIn_03"
@@ -316,7 +316,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"3"
 				}
 			}
@@ -334,7 +334,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"3"
 				}
 			}
@@ -345,7 +345,7 @@
 			"iType"		"71"
 			"pos_x"		"427.059143"
 			"pos_y"		"-532.128906"
-			"size_x"		"170.000000"
+			"size_x"		"169.000000"
 			"size_y"		"-80.000000"
 			"iPreview"		"1"
 			"bridges"
@@ -357,17 +357,17 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"28"
+					"iTarget_node"		"25"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"25"
-					"iTarget_jack"		"0"
+					"iTarget_node"		"33"
+					"iTarget_jack"		"1"
 				}
 				"jackIn_03"
 				{
-					"iTarget_node"		"27"
+					"iTarget_node"		"26"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -478,17 +478,17 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"1"
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"2"
 				}
 				"jackIn_02"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"6"
 				}
 			}
@@ -509,7 +509,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -522,24 +522,6 @@
 		}
 		"Node_025"
 		{
-			"iType"		"27"
-			"pos_x"		"240.059113"
-			"pos_y"		"-510.583191"
-			"size_x"		"80.000000"
-			"size_y"		"-17.000000"
-			"iPreview"		"0"
-			"bridges"
-			{
-				"jackIn_00"
-				{
-					"iTarget_node"		"35"
-					"iTarget_jack"		"1"
-				}
-			}
-			"swizzleString"		"z"
-		}
-		"Node_026"
-		{
 			"iType"		"7"
 			"pos_x"		"98.827866"
 			"pos_y"		"-435.766724"
@@ -548,7 +530,7 @@
 			"iPreview"		"1"
 			"flSmartVal0"		"0.000000"
 		}
-		"Node_027"
+		"Node_026"
 		{
 			"iType"		"27"
 			"pos_x"		"239.658447"
@@ -560,31 +542,13 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"3"
 				}
 			}
 			"swizzleString"		"z"
 		}
-		"Node_028"
-		{
-			"iType"		"27"
-			"pos_x"		"238.527435"
-			"pos_y"		"-467.388367"
-			"size_x"		"80.000000"
-			"size_y"		"-17.000000"
-			"iPreview"		"0"
-			"bridges"
-			{
-				"jackIn_00"
-				{
-					"iTarget_node"		"26"
-					"iTarget_jack"		"0"
-				}
-			}
-			"swizzleString"		"z"
-		}
-		"Node_029"
+		"Node_027"
 		{
 			"iType"		"31"
 			"szName"		"On"
@@ -601,7 +565,7 @@
 			"i_combo_static"		"1"
 			"sz_cname"		"FLASHLIGHT"
 		}
-		"Node_030"
+		"Node_028"
 		{
 			"iType"		"19"
 			"pos_x"		"-103.441597"
@@ -624,7 +588,7 @@
 			}
 			"i_mat_rotation"		"0"
 		}
-		"Node_031"
+		"Node_029"
 		{
 			"iType"		"19"
 			"pos_x"		"-101.664513"
@@ -647,7 +611,7 @@
 			}
 			"i_mat_rotation"		"0"
 		}
-		"Node_032"
+		"Node_030"
 		{
 			"iType"		"2"
 			"pos_x"		"392.240631"
@@ -659,12 +623,12 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"31"
+					"iTarget_node"		"29"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"46"
+					"iTarget_node"		"44"
 					"iTarget_jack"		"4"
 				}
 				"jackIn_02"
@@ -679,7 +643,7 @@
 				}
 				"jackIn_04"
 				{
-					"iTarget_node"		"31"
+					"iTarget_node"		"29"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_05"
@@ -689,7 +653,7 @@
 				}
 				"jackIn_06"
 				{
-					"iTarget_node"		"30"
+					"iTarget_node"		"28"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_07"
@@ -719,7 +683,7 @@
 			"numColor_Flag_1"		"4"
 			"numColor_Name_1"		"VLight"
 		}
-		"Node_033"
+		"Node_031"
 		{
 			"iType"		"17"
 			"pos_x"		"-501.628326"
@@ -731,17 +695,17 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"38"
+					"iTarget_node"		"36"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"40"
+					"iTarget_node"		"38"
 					"iTarget_jack"		"0"
 				}
 			}
 		}
-		"Node_034"
+		"Node_032"
 		{
 			"iType"		"90"
 			"pos_x"		"-1058.235107"
@@ -751,7 +715,7 @@
 			"iPreview"		"0"
 			"i_c_matrix"		"0"
 		}
-		"Node_035"
+		"Node_033"
 		{
 			"iType"		"3"
 			"pos_x"		"-861.401611"
@@ -780,7 +744,7 @@
 			"numColor_Flag_1"		"4"
 			"numColor_Name_1"		"VLight"
 		}
-		"Node_036"
+		"Node_034"
 		{
 			"iType"		"19"
 			"pos_x"		"-896.610962"
@@ -792,18 +756,18 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"35"
+					"iTarget_node"		"33"
 					"iTarget_jack"		"2"
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"34"
+					"iTarget_node"		"32"
 					"iTarget_jack"		"0"
 				}
 			}
 			"i_mat_rotation"		"1"
 		}
-		"Node_037"
+		"Node_035"
 		{
 			"iType"		"27"
 			"pos_x"		"-747.837769"
@@ -815,40 +779,17 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"36"
+					"iTarget_node"		"34"
 					"iTarget_jack"		"0"
 				}
 			}
 			"swizzleString"		"xy"
 		}
-		"Node_038"
+		"Node_036"
 		{
 			"iType"		"19"
 			"pos_x"		"-500.976593"
 			"pos_y"		"-862.359985"
-			"size_x"		"91.000000"
-			"size_y"		"-80.000000"
-			"iPreview"		"1"
-			"bridges"
-			{
-				"jackIn_00"
-				{
-					"iTarget_node"		"39"
-					"iTarget_jack"		"0"
-				}
-				"jackIn_01"
-				{
-					"iTarget_node"		"40"
-					"iTarget_jack"		"0"
-				}
-			}
-			"i_mat_rotation"		"0"
-		}
-		"Node_039"
-		{
-			"iType"		"19"
-			"pos_x"		"-517.505432"
-			"pos_y"		"-753.256958"
 			"size_x"		"91.000000"
 			"size_y"		"-80.000000"
 			"iPreview"		"1"
@@ -861,13 +802,36 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"41"
+					"iTarget_node"		"38"
 					"iTarget_jack"		"0"
 				}
 			}
 			"i_mat_rotation"		"0"
 		}
-		"Node_040"
+		"Node_037"
+		{
+			"iType"		"19"
+			"pos_x"		"-517.505432"
+			"pos_y"		"-753.256958"
+			"size_x"		"91.000000"
+			"size_y"		"-80.000000"
+			"iPreview"		"1"
+			"bridges"
+			{
+				"jackIn_00"
+				{
+					"iTarget_node"		"35"
+					"iTarget_jack"		"0"
+				}
+				"jackIn_01"
+				{
+					"iTarget_node"		"39"
+					"iTarget_jack"		"0"
+				}
+			}
+			"i_mat_rotation"		"0"
+		}
+		"Node_038"
 		{
 			"iType"		"5"
 			"pos_x"		"-691.714172"
@@ -877,7 +841,7 @@
 			"iPreview"		"1"
 			"szConstantString"		"0.5"
 		}
-		"Node_041"
+		"Node_039"
 		{
 			"iType"		"5"
 			"pos_x"		"-689.851501"
@@ -887,7 +851,7 @@
 			"iPreview"		"1"
 			"szConstantString"		"1 -1"
 		}
-		"Node_042"
+		"Node_040"
 		{
 			"iType"		"29"
 			"szName"		"view space lightmap"
@@ -900,7 +864,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"33"
+					"iTarget_node"		"31"
 					"iTarget_jack"		"0"
 				}
 			}
@@ -913,7 +877,7 @@
 			"szFallbackTexturePath"		"texture_samples\matball_02"
 			"iFallbackMode"		"4"
 		}
-		"Node_043"
+		"Node_041"
 		{
 			"iType"		"26"
 			"pos_x"		"60.556091"
@@ -925,7 +889,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"44"
+					"iTarget_node"		"42"
 					"iTarget_jack"		"0"
 				}
 				"jackIn_01"
@@ -935,7 +899,7 @@
 				}
 			}
 		}
-		"Node_044"
+		"Node_042"
 		{
 			"iType"		"19"
 			"pos_x"		"-132.765060"
@@ -952,13 +916,13 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"45"
+					"iTarget_node"		"43"
 					"iTarget_jack"		"0"
 				}
 			}
 			"i_mat_rotation"		"0"
 		}
-		"Node_045"
+		"Node_043"
 		{
 			"iType"		"17"
 			"pos_x"		"-313.510101"
@@ -975,12 +939,12 @@
 				}
 				"jackIn_01"
 				{
-					"iTarget_node"		"42"
+					"iTarget_node"		"40"
 					"iTarget_jack"		"1"
 				}
 			}
 		}
-		"Node_046"
+		"Node_044"
 		{
 			"iType"		"1"
 			"pos_x"		"-520.492310"
@@ -1002,7 +966,7 @@
 			"dTFlag_Color_0"		"8"
 			"dTFlag_Color_1"		"8"
 		}
-		"Node_047"
+		"Node_045"
 		{
 			"iType"		"101"
 			"pos_x"		"-402.342346"
@@ -1014,7 +978,7 @@
 			{
 				"jackIn_00"
 				{
-					"iTarget_node"		"46"
+					"iTarget_node"		"44"
 					"iTarget_jack"		"3"
 				}
 			}

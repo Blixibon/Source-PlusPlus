@@ -81,7 +81,7 @@ bool ShaderEditorHandler::Init()
 #endif
 
 	char modulePath[MAX_PATH*4];
-	Q_snprintf( modulePath, sizeof( modulePath ), "%s/bin/shadereditor_2013.dll", engine->GetGameDirectory() );
+	filesystem->RelativePathToFullPath_safe("shadereditor_2013" DLL_EXT_STRING, "GAMEBIN", modulePath, FILTER_CULLPACK);
 	if ( Sys_LoadInterface( modulePath, SHADEREDIT_INTERFACE_VERSION, &shaderEditorModule, reinterpret_cast<void**>( &shaderEdit ) ) )
 	{
 		if ( !shaderEdit->Init( factories.appSystemFactory, gpGlobals, sEditMRender,
