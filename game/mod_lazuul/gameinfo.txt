@@ -45,6 +45,7 @@
 				}
 				
 				vpk	map_thumbnails
+				custom	custom
 			}
 		}
 	}
@@ -65,7 +66,7 @@
 			gamebin				|gameinfo_path|bin
 			
 			shared				|gameinfo_path|../spp_shared
-			sharedbin			|gameinfo_path|../spp_shared/bin
+			gamebin+sharedbin	|gameinfo_path|../spp_shared/bin
 
 			// Needed Crap
 			game				|all_source_engine_paths|hl2/hl2_english.vpk

@@ -85,7 +85,6 @@ $Project
 
 		$File	"SplineRope.cpp"
 
-		$File	"detail_grass.cpp"
 		$File	"ssgi.cpp"
 
 		$File	"eye_refract.cpp"
