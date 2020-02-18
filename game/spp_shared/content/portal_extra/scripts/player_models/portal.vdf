@@ -1,0 +1,37 @@
+"Models"
+{	
+	"p2_chell"
+	{
+		//"team"			"Combine"
+		//"maxplayers"	"1"
+		"games"
+		{
+			"game"	"portal"
+			"game"	"rexaura"
+		}
+		"models"
+		{
+			"0"
+			{
+			"name"		"models/player/p2_chell.mdl"
+			"bodygroups"
+			{
+				//"body"	"0"
+			}
+			"skin"		"0"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_chell.mdl"
+		}
+		
+		"abilities"
+		{
+			"voice"			"none"
+			"suit"			"none"
+			"flashlight"	"weapon"
+		}
+	}
+}
