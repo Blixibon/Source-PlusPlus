@@ -30,6 +30,7 @@ $Project "responserules_runtime"
 		$File	"rr_response.cpp"
 		$File	"rr_speechconcept.cpp"
 		$File	"rrrlib.cpp"
+		$File	"matchers.cpp"
 	}
 	
 	$Folder	"Public Header Files"

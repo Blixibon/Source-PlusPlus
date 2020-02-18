@@ -12,6 +12,7 @@
 #include "convar.h"
 #include "fmtstr.h"
 #include "generichash.h"
+#include "responserules/matchers.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -290,22 +291,22 @@ void CResponseSystem::ResolveToken( Matcher& matcher, char *token, size_t bufsiz
 }
 
 
-static bool AppearsToBeANumber( char const *token )
-{
-	if ( atof( token ) != 0.0f )
-		return true;
-
-	char const *p = token;
-	while ( *p )
-	{
-		if ( *p != '0' )
-			return false;
-
-		p++;
-	}
-
-	return true;
-}
+//static bool AppearsToBeANumber( char const *token )
+//{
+//	if ( atof( token ) != 0.0f )
+//		return true;
+//
+//	char const *p = token;
+//	while ( *p )
+//	{
+//		if ( *p != '0' )
+//			return false;
+//
+//		p++;
+//	}
+//
+//	return true;
+//}
 
 void CResponseSystem::ComputeMatcher( Criteria *c, Matcher& matcher )
 {
@@ -503,7 +504,7 @@ bool CResponseSystem::CompareUsingMatcher( const char *setValue, Matcher& m, boo
 		}
 		else
 		{
-			if ( !Q_stricmp( setValue, m.GetToken() ) )
+			if (Matcher_NamesMatch(m.GetToken(), setValue))
 				return false;
 		}
 
@@ -520,7 +521,7 @@ bool CResponseSystem::CompareUsingMatcher( const char *setValue, Matcher& m, boo
 		return v == (float)atof( m.GetToken() );
 	}
 
-	return !Q_stricmp( setValue, m.GetToken() ) ? true : false;
+	return Matcher_NamesMatch(m.GetToken(), setValue) ? true : false;
 }
 
 bool CResponseSystem::Compare( const char *setValue, Criteria *c, bool verbose /*= false*/ )
