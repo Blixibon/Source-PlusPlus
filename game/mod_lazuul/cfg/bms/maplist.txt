@@ -57,4 +57,11 @@ bm_c3a2e
 bm_c3a2f
 bm_c3a2g
 bm_c3a2h
-credits
+hc_background
+hc_fivenights
+hc_t0a0
+hc_t0a1
+hc_t0a1a
+hc_t0a2
+hc_t0a2a
+hc_t0a3
