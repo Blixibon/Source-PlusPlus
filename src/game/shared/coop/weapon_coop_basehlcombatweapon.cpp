@@ -476,6 +476,7 @@ acttable_t CWeaponCoopBaseHLCombat::s_acttableLowered[] =
 	{ ACT_HL2MP_JUMP, ACT_HL2MP_JUMP_PASSIVE, false },
 	{ ACT_HL2MP_SWIM, ACT_HL2MP_SWIM_PASSIVE, false },
 	{ ACT_HL2MP_WALK, ACT_HL2MP_WALK_PASSIVE, false },
+	{ACT_HL2MP_RUN_FAST,				ACT_HL2MP_RUN_PASSIVE,					false},
 };
 
 Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequired)

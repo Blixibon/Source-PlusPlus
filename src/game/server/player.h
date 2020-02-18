@@ -1194,7 +1194,7 @@ protected:
 	CUtlVector<CHandle<CEconWearable > >	m_hMyWearables;
 #endif
 
-private:
+protected:
 
 // Replicated to all clients
 	CNetworkVar( float, m_flMaxspeed );
@@ -1204,7 +1204,7 @@ private:
 	Vector					m_vecWaterJumpVel;
 	int						m_nImpulse;
 	float					m_flSwimSoundTime;
-	Vector					m_vecLadderNormal;
+	CNetworkVectorForDerived(m_vecLadderNormal);
 
 	float					m_flFlashTime;
 	int						m_nDrownDmgRate;		// Drowning damage in points per second without air.

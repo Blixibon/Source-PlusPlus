@@ -36,7 +36,7 @@ acttable_t CHL2PlayerAnimState::s_acttableMPToHL2MP[] = {
 	{ACT_MP_WALK, ACT_HL2MP_WALK, true},
 	{ACT_MP_AIRWALK, ACT_HL2MP_WALK, true},
 	{ACT_MP_CROUCHWALK, ACT_HL2MP_WALK_CROUCH, true},
-	{ACT_MP_SPRINT, ACT_HL2MP_RUN, true},
+	{ACT_MP_SPRINT, ACT_HL2MP_RUN_FAST, true},
 	{ACT_MP_JUMP, ACT_HL2MP_JUMP, true},
 	{ACT_MP_SWIM, ACT_HL2MP_SWIM, true},
 	{ACT_MP_DOUBLEJUMP, ACT_AHL_DUCKJUMP, true},
@@ -69,7 +69,7 @@ acttable_t CHL2PlayerAnimState::s_acttableMPToHL2MP[] = {
 //mv.m_flSprintSpeed = 320;
 //m_PlayerAnimState = new CHL2PlayerAnimState(this, mv);
 
-MultiPlayerMovementData_t CHL2PlayerAnimState::s_MoveParams = { -1.f, 190.f, 320.f, 360.f };
+MultiPlayerMovementData_t CHL2PlayerAnimState::s_MoveParams = { 80.f, 200.f, 330.f, 360.f };
 
 Activity CHL2PlayerAnimState::TranslateActivity(Activity actDesired)
 {
@@ -211,6 +211,8 @@ void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
 
 			if (nFeetAttachmentIndex > 0)
 				pVehicleAnim->GetAttachment(nFeetAttachmentIndex, vecEyes, angEyes);
+			else
+				angEyes = pVehicleAnim->GetAbsAngles();
 
 #ifdef CLIENT_DLL
 			int iVehicleSteer = pVehicleAnim->LookupPoseParameter("vehicle_steer");
@@ -556,6 +558,7 @@ bool CHL2PlayerAnimState::HandleJumping(Activity& idealActivity)
 				m_bJumping = false;
 				m_bLongJump = false;
 				RestartMainSequence();
+				AddToGestureSlot(GESTURE_SLOT_JUMP, ACT_LAND, true);
 			}
 		}
 	}
@@ -653,7 +656,9 @@ bool CHL2PlayerAnimState::HandleMoving(Activity& idealActivity)
 
 	if (flSpeed > MOVING_MINIMUM_SPEED)
 	{
-		if (flSpeed > m_MovementData.m_flWalkSpeed)
+		if (static_cast<CHL2_Player *>(GetBasePlayer())->IsSprinting() && flSpeed > m_MovementData.m_flRunSpeed)
+			idealActivity = ACT_MP_SPRINT;
+		else if (flSpeed > m_MovementData.m_flWalkSpeed)
 			idealActivity = ACT_MP_RUN;
 		else
 			idealActivity = ACT_MP_WALK;

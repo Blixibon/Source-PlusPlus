@@ -98,6 +98,7 @@ SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iPlayerSoundType), MAX_FOOTSTEP_STRING_BITS + 1),
 SendPropInt(SENDINFO(m_nFlashlightType)),
 SendPropFloat(SENDINFO(m_flEyeHeightOverride)),
+SendPropVector(SENDINFO(m_vecLadderNormal), -1, SPROP_NORMAL),
 END_SEND_TABLE();
 
 #define MODEL_CHANGE_INTERVAL 5.0f
@@ -529,6 +530,28 @@ ReturnSpot:
 bool CLaz_Player::ShouldRegenerateHealth()
 {
 	return g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_PORTAL;
+}
+
+void CLaz_Player::CreateViewModel(int index)
+{
+	Assert(index >= 0 && index < MAX_VIEWMODELS);
+
+	if (GetViewModel(index))
+		return;
+
+	CBaseViewModel* vm = (CBaseViewModel*)CreateEntityByName("predicted_viewmodel");
+	if (vm)
+	{
+		vm->SetAbsOrigin(GetAbsOrigin());
+		vm->SetOwner(this);
+		vm->SetIndex(index);
+		DispatchSpawn(vm);
+
+		vm->SetHandsModel("models/weapons/c_arms_hev.mdl");
+
+		vm->FollowEntity(this);
+		m_hViewModel.Set(index, vm);
+	}
 }
 
 void CLaz_Player::DoMuzzleFlash()

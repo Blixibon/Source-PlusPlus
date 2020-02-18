@@ -26,6 +26,8 @@ public:
 
 	virtual void	UpdateFlashlight(void);
 
+	virtual void	CalcViewModelView(const Vector& eyeOrigin, const QAngle& eyeAngles);
+
 	//bool	IsInReload();
 	//int		GetHideBits();
 	void		UpdateOnRemove();

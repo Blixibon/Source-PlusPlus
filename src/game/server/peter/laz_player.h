@@ -73,6 +73,7 @@ public:
 	virtual void UpdateOnRemove();
 	virtual CBaseEntity		*EntSelectSpawnPoint(void);
 	virtual bool ShouldRegenerateHealth();
+	virtual void		CreateViewModel(int viewmodelindex = 0);
 
 	Vector 	GetPlayerEyeHeight(void);
 
@@ -268,6 +269,8 @@ protected:
 		m_hMinion.Set(NULL);
 		V_memset(m_strMinionClass.GetForModify(), '\0', 32);
 	}
+
+	IMPLEMENT_NETWORK_VAR_FOR_DERIVED(m_vecLadderNormal);
 
 	playerModel_t m_MPModel;
 	int				m_nSpecialAttack;

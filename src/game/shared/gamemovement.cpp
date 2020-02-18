@@ -2830,7 +2830,7 @@ bool CGameMovement::LadderMove( void )
 	// If I'm already moving on a ladder, use the previous ladder direction
 	if ( player->GetMoveType() == MOVETYPE_LADDER )
 	{
-		wishdir = -player->m_vecLadderNormal;
+		wishdir = player->m_vecLadderNormal * -1.f;
 	}
 	else
 	{

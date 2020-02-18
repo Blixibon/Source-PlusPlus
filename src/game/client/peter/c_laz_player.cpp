@@ -48,6 +48,7 @@ RecvPropBool(RECVINFO(m_fIsWalking)),
 RecvPropInt(RECVINFO(m_nFlashlightType)),
 
 RecvPropFloat(RECVINFO(m_flEyeHeightOverride)),
+RecvPropVector(RECVINFO(m_vecLadderNormal), SPROP_NORMAL),
 END_RECV_TABLE();
 
 BEGIN_PREDICTION_DATA(C_Laz_Player)
@@ -152,16 +153,20 @@ bool CLazPlayerColorProxy::Init(IMaterial* pMaterial, KeyValues* pKeyValues)
 	return true;
 }
 
-void CLazPlayerColorProxy::OnBind(void* pRend)
+void CLazPlayerColorProxy::OnBind(void* pArg)
 {
-	C_BaseEntity* pEnt = BindArgToEntity(pRend);
+	IClientRenderable* pRend = (IClientRenderable*)pArg;
+
+	C_BaseEntity* pEnt = nullptr;
+	C_PortalGhostRenderable* pGhostAnim = dynamic_cast<C_PortalGhostRenderable*> (pRend);
+	if (pGhostAnim)
+		pEnt = pGhostAnim->m_pGhostedRenderable;
+	else
+		pEnt = BindArgToEntity(pRend);
+
 	if (pEnt)
 	{
 		int iEntIndex = 0;
-
-		C_PortalGhostRenderable* pGhostAnim = dynamic_cast<C_PortalGhostRenderable*> (pEnt);
-		if (pGhostAnim)
-			pEnt = pGhostAnim->m_pGhostedRenderable;
 
 		//C_BasePlayer* pPlayer = ToBasePlayer(pEnt);
 		if (pEnt->IsPlayer())
@@ -1312,6 +1317,12 @@ void C_Laz_Player::UpdateFlashlight()
 		delete m_pFlashlight;
 		m_pFlashlight = NULL;
 	}
+}
+
+void C_Laz_Player::CalcViewModelView(const Vector& eyeOrigin, const QAngle& eyeAngles)
+{
+	// Skip over C_Portal_Player
+	C_BaseHLPlayer::CalcViewModelView(eyeOrigin, eyeAngles);
 }
 
 bool C_Laz_Player::IsInReload()
