@@ -1,0 +1,374 @@
+response CSynthResponsePain
+{
+	sentence "SYN_COMBINE_PAIN"
+}
+
+response CSynthResponsePainLight
+{
+	sentence "SYN_COMBINE_TAUNT"
+}
+
+response CSynthResponsePainHeavy
+{
+	sentence "SYN_COMBINE_COVER"
+}
+
+rule CSynthPain
+{
+	criteria	ConceptTalkWound IsCombineS SoldierVoiceSynth
+	response	CSynthResponsePain
+}
+
+rule CSynthPainHeavy
+{
+	criteria	ConceptTalkMortal IsCombineS SoldierVoiceSynth
+	CombineSpokePainHeavy "!=1" required
+	applycontext "CombineSpokePainHeavy:1:60"
+	response	CSynthResponsePainHeavy
+}
+
+rule CSynthPainLight
+{
+	criteria	ConceptTalkWound IsCombineS SoldierVoiceSynth
+	healthfrac	">.9" required
+	CombineSpokePainLight "!=1" required
+	applycontext "CombineSpokePainLight:1"
+	response	CSynthResponsePainLight
+}
+
+response "SoldierDanger"
+{
+	 sentence "SYN_COMBINE_DANGER"
+}
+
+rule CSynthDanger
+{
+	criteria IsCombineS SoldierVoiceSynth ConceptTalkDanger
+	response CSynthDanger
+}
+
+response "SoldierDangerGrenade"
+{
+	 sentence "SYN_COMBINE_GREN"
+}
+
+rule CSynthDangerGrenade
+{
+	criteria IsCombineS SoldierVoiceSynth ConceptTalkDanger
+	danger_is_grenade	"1" required
+	response CSynthDangerGrenade
+}
+
+response CSynthEnemyDead
+{
+	sentence "SYN_COMBINE_KILL_MONST"
+}
+
+rule CSynthEnemyDead
+{
+	criteria		IsCombineS SoldierVoiceSynth ConceptEnemyDead
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		SoldierEnemyDead
+}
+
+response CSynthKillPlayer
+{
+	sentence "SYN_COMBINE_PLAYER_DEAD"
+}
+
+rule CSynthKillPlayer
+{
+	criteria		IsCombineS SoldierVoiceSynth ConceptEnemyDead SoldierEnemyIsPlayer
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		SoldierKillPlayer
+}
+
+// Lost Enemy
+response CSynthLostShort
+{
+	sentence "SYN_COMBINE_LOST_SHORT"
+}
+
+response CSynthLostLong
+{
+	sentence "SYN_COMBINE_LOST_LONG"
+}
+
+rule CSynthLostShort
+{
+	criteria		IsCombineS SoldierVoiceSynth ConceptTalkIdle SoldierEnteredCombat SoldierRecentCombat
+	response CSynthLostShort
+}
+
+rule CSynthLostLong
+{
+	criteria		IsCombineS SoldierVoiceSynth ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response CSynthLostLong
+}
+
+// Start Combat
+response CSynthStartMonster
+{
+	sentence "SYN_COMBINE_MONST"
+}
+
+response CSynthStartPlayer
+{
+	sentence "SYN_COMBINE_ALERT"
+}
+
+response CSynthStartRebel
+{
+	sentence "SYN_COMBINE_MONST_CITIZENS"
+}
+
+response CSynthStartVitalAlly
+{
+	sentence "SYN_COMBINE_MONST_CHARACTER"
+}
+
+response CSynthStartAntlions
+{
+	sentence "SYN_COMBINE_MONST_BUGS"
+}
+
+response CSynthStartZombies
+{
+	sentence "SYN_COMBINE_MONST_ZOMBIES"
+}
+
+response CSynthStartParasites
+{
+	sentence "SYN_COMBINE_MONST_PARASITES"
+}
+
+rule CombineStartCombat
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartMonster
+}
+
+rule CombineStartCombatPlayer
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsPlayer
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartPlayer
+}
+
+rule CombineStartCombatRebels
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsRebel
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartRebel
+}
+
+rule CombineStartCombatVital
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsVitalAlly
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartVitalAlly
+}
+
+rule CombineStartCombatAntlions
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsAntlion
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartAntlions
+}
+
+rule CombineStartCombatZombies
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsZombie
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartZombies
+}
+
+rule CombineStartCombatParasite
+{
+	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsParasite
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartParasites
+}
+
+// Attacking
+response CSynthAttacking
+{
+	sentence "SYN_COMBINE_ANNOUNCE" weight 5
+	sentence "SYN_COMBINE_GO_ALERT"
+}
+
+rule CSynthAttacking
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkAttacking
+	response CSynthAttacking
+}
+
+response CSynthAttackingLowPlayer
+{
+	sentence "SYN_COMBINE_PLAYERHIT"
+}
+
+rule CSynthAttackingLowPlayer
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkAttacking SoldierEnemyIsPlayer
+	enemyhealthfrac ">0,<.2" required
+	response CSynthAttackingLowPlayer
+}
+
+// Man Down
+response CSynthManDown
+{
+	sentence "SYN_COMBINE_MAN_DOWN"
+}
+
+rule CSynthManDown
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkAllyKilled
+	response	CSynthManDown
+}
+
+// Questions & Answers, Idles
+response CSynthReplyAffimative
+{
+	sentence "SYN_COMBINE_ANSWER"
+}
+
+rule CSynthAnswer
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkAnswer SoldierNotEnteredCombat
+	response	CSynthReplyAffimative
+}
+
+response CSynthQuestion
+{
+	sentence "SYN_COMBINE_QUEST"
+}
+
+rule CSynthQuestion
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkQuestion SoldierNotEnteredCombat
+	response	CSynthQuestion
+}
+
+response CSynthIdle
+{
+	sentence "SYN_COMBINE_IDLE"
+}
+
+rule CSynthIdle
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
+	response	CSynthIdle
+}
+
+response CSynthAskCheck
+{
+	sentence "SYN_COMBINE_CHECK"
+}
+
+rule CSynthAskCheck
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	applycontexttoself
+	response	CSynthAskCheck
+}
+
+response CSynthReplyCheck
+{
+	sentence "SYN_COMBINE_CLEAR"
+}
+
+rule CSynthReplyCheck
+{
+	criteria	IsCombineS SoldierVoiceSynth ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	applycontexttoself
+	response	CSynthReplyCheck
+}
+
+// Commander Mode
+rule CSynthCommanded
+{
+	criteria		IsCombineS SoldierVoiceSynth ConceptTalkCommanded
+	response		SoldierReplyAffimative
+}
+
+rule CSynthFollow
+{
+	criteria		IsCombineS SoldierVoiceSynth ConceptTalkStartFollow
+	response		SoldierReplyAffimative
+}
+
+// Soldier Specific
+response CSynthAnnounceAssault
+{
+	sentence "SYN_COMBINE_ASSAULT"
+}
+
+rule CSynthAnnounceAssault
+{
+	criteria		IsCombineS SoldierVoiceSynth
+	concept	"TLK_SOLDIER_ASSAULT" required
+	response CSynthAnnounceAssault
+}
+
+response CSynthThrowGrenade
+{
+	sentence "SYN_COMBINE_THROW_GRENADE"
+}
+
+rule CSynthThrowGrenade
+{
+	criteria	IsCombineS SoldierVoiceSynth
+	concept	"TLK_SOLDIER_THROW"	required
+	response CSynthThrowGrenade
+}
+
+response CSynthFlanking
+{
+	sentence "SYN_COMBINE_FLANK"
+}
+
+rule CSynthFlanking
+{
+	criteria	IsCombineS SoldierVoiceSynth
+	concept	"TLK_SOLDIER_FLANK"	required
+	response CSynthFlanking
+}
+
+response CSynthRefindEnemy
+{
+	sentence "SYN_COMBINE_REFIND_ENEMY"
+}
+
+rule CSynthRefindEnemy
+{
+	criteria	IsCombineS SoldierVoiceSynth
+	concept	"TLK_SOLDIER_REFIND"	required
+	response CSynthRefindEnemy
+}

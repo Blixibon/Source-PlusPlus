@@ -273,8 +273,8 @@ void CNPC_CombineS::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 
 	const char *pszVoiceNames[NUM_COMBINE_VOICES] = {
 		"normal",
-		"normal", // elite
-		"normal", // synth
+		"elite", // elite
+		"synth", // synth
 		"protoguard"
 	};
 

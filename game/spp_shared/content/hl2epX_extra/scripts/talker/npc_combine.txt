@@ -134,6 +134,7 @@ rule SoldierEnemyDead
 	criteria		IsCombineS SoldierVoiceNormal ConceptEnemyDead
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
+	applycontexttoself
 	response		SoldierEnemyDead
 }
 
@@ -147,6 +148,7 @@ rule SoldierKillPlayer
 	criteria		IsCombineS SoldierVoiceNormal ConceptEnemyDead SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
+	applycontexttoself
 	response		SoldierKillPlayer
 }
 
@@ -172,6 +174,7 @@ rule SoldierLostLong
 	criteria		IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
+	applycontexttoself
 	response SoldierLostLong
 }
 
@@ -216,6 +219,7 @@ rule CombineStartCombat
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartMonster
 }
 
@@ -224,6 +228,7 @@ rule CombineStartCombatPlayer
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartPlayer
 }
 
@@ -232,6 +237,7 @@ rule CombineStartCombatRebels
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsRebel
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartRebel
 }
 
@@ -240,6 +246,7 @@ rule CombineStartCombatVital
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsVitalAlly
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartVitalAlly
 }
 
@@ -248,6 +255,7 @@ rule CombineStartCombatAntlions
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsAntlion
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartAntlions
 }
 
@@ -256,6 +264,7 @@ rule CombineStartCombatZombies
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsZombie
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartZombies
 }
 
@@ -264,6 +273,7 @@ rule CombineStartCombatParasite
 	criteria    IsCombineS SoldierVoiceNormal ConceptStartCombat SoldierEnemyIsParasite
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
+	applycontexttoself
 	response    SoldierStartParasites
 }
 
@@ -348,6 +358,7 @@ rule SoldierAskCheck
 	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
 	applycontext	"soldierreplytocheck:1"
 	applycontexttosquad
+	applycontexttoself
 	response	SoldierAskCheck
 }
 
@@ -361,6 +372,7 @@ rule SoldierReplyCheck
 	criteria	IsCombineS SoldierVoiceNormal ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck
 	applycontext	"soldierreplytocheck:0"
 	applycontexttosquad
+	applycontexttoself
 	response	SoldierReplyCheck
 }
 
@@ -427,3 +439,5 @@ rule SoldierRefindEnemy
 }
 
 #include "talker/npc_protoguard.talker"
+#include "talker/npc_combine_elite.talker"
+#include "talker/npc_combine_synth.talker"

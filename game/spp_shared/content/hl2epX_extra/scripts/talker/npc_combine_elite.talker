@@ -1,0 +1,374 @@
+response CombineEResponsePain
+{
+	sentence "PKT_COMBINE_PAIN"
+}
+
+response CombineEResponsePainLight
+{
+	sentence "PKT_COMBINE_TAUNT"
+}
+
+response CombineEResponsePainHeavy
+{
+	sentence "PKT_COMBINE_COVER"
+}
+
+rule CombineEPain
+{
+	criteria	ConceptTalkWound IsCombineS SoldierVoiceElite
+	response	CombineEResponsePain
+}
+
+rule CombineEPainHeavy
+{
+	criteria	ConceptTalkMortal IsCombineS SoldierVoiceElite
+	CombineSpokePainHeavy "!=1" required
+	applycontext "CombineSpokePainHeavy:1:60"
+	response	CombineEResponsePainHeavy
+}
+
+rule CombineEPainLight
+{
+	criteria	ConceptTalkWound IsCombineS SoldierVoiceElite
+	healthfrac	">.9" required
+	CombineSpokePainLight "!=1" required
+	applycontext "CombineSpokePainLight:1"
+	response	CombineEResponsePainLight
+}
+
+response "SoldierDanger"
+{
+	 sentence "PKT_COMBINE_DANGER"
+}
+
+rule CombineEDanger
+{
+	criteria IsCombineS SoldierVoiceElite ConceptTalkDanger
+	response CombineEDanger
+}
+
+response "SoldierDangerGrenade"
+{
+	 sentence "PKT_COMBINE_GREN"
+}
+
+rule CombineEDangerGrenade
+{
+	criteria IsCombineS SoldierVoiceElite ConceptTalkDanger
+	danger_is_grenade	"1" required
+	response CombineEDangerGrenade
+}
+
+response CombineEEnemyDead
+{
+	sentence "PKT_COMBINE_KILL_MONST"
+}
+
+rule CombineEEnemyDead
+{
+	criteria		IsCombineS SoldierVoiceElite ConceptEnemyDead
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		SoldierEnemyDead
+}
+
+response CombineEKillPlayer
+{
+	sentence "PKT_COMBINE_PLAYER_DEAD"
+}
+
+rule CombineEKillPlayer
+{
+	criteria		IsCombineS SoldierVoiceElite ConceptEnemyDead SoldierEnemyIsPlayer
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response		SoldierKillPlayer
+}
+
+// Lost Enemy
+response CombineELostShort
+{
+	sentence "PKT_COMBINE_LOST_SHORT"
+}
+
+response CombineELostLong
+{
+	sentence "PKT_COMBINE_LOST_LONG"
+}
+
+rule CombineELostShort
+{
+	criteria		IsCombineS SoldierVoiceElite ConceptTalkIdle SoldierEnteredCombat SoldierRecentCombat
+	response CombineELostShort
+}
+
+rule CombineELostLong
+{
+	criteria		IsCombineS SoldierVoiceElite ConceptTalkIdle SoldierEnteredCombat NoRecentCombatShort
+	applycontext	"soldierincombat:0"
+	applycontexttosquad
+	applycontexttoself
+	response CombineELostLong
+}
+
+// Start Combat
+response CombineEStartMonster
+{
+	sentence "PKT_COMBINE_MONST"
+}
+
+response CombineEStartPlayer
+{
+	sentence "PKT_COMBINE_ALERT"
+}
+
+response CombineEStartRebel
+{
+	sentence "PKT_COMBINE_MONST_CITIZENS"
+}
+
+response CombineEStartVitalAlly
+{
+	sentence "PKT_COMBINE_MONST_CHARACTER"
+}
+
+response CombineEStartAntlions
+{
+	sentence "PKT_COMBINE_MONST_BUGS"
+}
+
+response CombineEStartZombies
+{
+	sentence "PKT_COMBINE_MONST_ZOMBIES"
+}
+
+response CombineEStartParasites
+{
+	sentence "PKT_COMBINE_MONST_PARASITES"
+}
+
+rule CombineStartCombat
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartMonster
+}
+
+rule CombineStartCombatPlayer
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsPlayer
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartPlayer
+}
+
+rule CombineStartCombatRebels
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsRebel
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartRebel
+}
+
+rule CombineStartCombatVital
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsVitalAlly
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartVitalAlly
+}
+
+rule CombineStartCombatAntlions
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsAntlion
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartAntlions
+}
+
+rule CombineStartCombatZombies
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsZombie
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartZombies
+}
+
+rule CombineStartCombatParasite
+{
+	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsParasite
+	applycontext	"soldierincombat:1"
+	applycontexttosquad
+	applycontexttoself
+	response    SoldierStartParasites
+}
+
+// Attacking
+response CombineEAttacking
+{
+	sentence "PKT_COMBINE_ANNOUNCE" weight 5
+	sentence "PKT_COMBINE_GO_ALERT"
+}
+
+rule CombineEAttacking
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkAttacking
+	response CombineEAttacking
+}
+
+response CombineEAttackingLowPlayer
+{
+	sentence "PKT_COMBINE_PLAYERHIT"
+}
+
+rule CombineEAttackingLowPlayer
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkAttacking SoldierEnemyIsPlayer
+	enemyhealthfrac ">0,<.2" required
+	response CombineEAttackingLowPlayer
+}
+
+// Man Down
+response CombineEManDown
+{
+	sentence "PKT_COMBINE_MAN_DOWN"
+}
+
+rule CombineEManDown
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkAllyKilled
+	response	CombineEManDown
+}
+
+// Questions & Answers, Idles
+response CombineEReplyAffimative
+{
+	sentence "PKT_COMBINE_ANSWER"
+}
+
+rule CombineEAnswer
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkAnswer SoldierNotEnteredCombat
+	response	CombineEReplyAffimative
+}
+
+response CombineEQuestion
+{
+	sentence "PKT_COMBINE_QUEST"
+}
+
+rule CombineEQuestion
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkQuestion SoldierNotEnteredCombat
+	response	CombineEQuestion
+}
+
+response CombineEIdle
+{
+	sentence "PKT_COMBINE_IDLE"
+}
+
+rule CombineEIdle
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
+	response	CombineEIdle
+}
+
+response CombineEAskCheck
+{
+	sentence "PKT_COMBINE_CHECK"
+}
+
+rule CombineEAskCheck
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkIdle SoldierNotEnteredCombat SoldierNotReplyToCheck
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	applycontexttoself
+	response	CombineEAskCheck
+}
+
+response CombineEReplyCheck
+{
+	sentence "PKT_COMBINE_CLEAR"
+}
+
+rule CombineEReplyCheck
+{
+	criteria	IsCombineS SoldierVoiceElite ConceptTalkIdle SoldierNotEnteredCombat SoldierReplyToCheck
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	applycontexttoself
+	response	CombineEReplyCheck
+}
+
+// Commander Mode
+rule CombineECommanded
+{
+	criteria		IsCombineS SoldierVoiceElite ConceptTalkCommanded
+	response		SoldierReplyAffimative
+}
+
+rule CombineEFollow
+{
+	criteria		IsCombineS SoldierVoiceElite ConceptTalkStartFollow
+	response		SoldierReplyAffimative
+}
+
+// Soldier Specific
+response CombineEAnnounceAssault
+{
+	sentence "PKT_COMBINE_ASSAULT"
+}
+
+rule CombineEAnnounceAssault
+{
+	criteria		IsCombineS SoldierVoiceElite
+	concept	"TLK_SOLDIER_ASSAULT" required
+	response CombineEAnnounceAssault
+}
+
+response CombineEThrowGrenade
+{
+	sentence "PKT_COMBINE_THROW_GRENADE"
+}
+
+rule CombineEThrowGrenade
+{
+	criteria	IsCombineS SoldierVoiceElite
+	concept	"TLK_SOLDIER_THROW"	required
+	response CombineEThrowGrenade
+}
+
+response CombineEFlanking
+{
+	sentence "PKT_COMBINE_FLANK"
+}
+
+rule CombineEFlanking
+{
+	criteria	IsCombineS SoldierVoiceElite
+	concept	"TLK_SOLDIER_FLANK"	required
+	response CombineEFlanking
+}
+
+response CombineERefindEnemy
+{
+	sentence "PKT_COMBINE_REFIND_ENEMY"
+}
+
+rule CombineERefindEnemy
+{
+	criteria	IsCombineS SoldierVoiceElite
+	concept	"TLK_SOLDIER_REFIND"	required
+	response CombineERefindEnemy
+}
