@@ -3,4 +3,5 @@
     "game_base" "ep2"
     "game_mod"  "entropy"
     "population_set"    "default"
+    "training_level"    "FiringRange"
 }

@@ -9,6 +9,7 @@
 #include "filesystem.h"
 #include "KeyValues.h"
 #include "gameui/modinfo.h"
+#include "fmtstr.h"
 
 using namespace vgui;
 
@@ -120,6 +121,7 @@ protected:
 
 	vgui::Button 		*m_pOpenButton;
 	vgui::Button 		*m_pCancelButton;
+	vgui::Button* m_pTrainingButton;
 
 	vgui::RadioButton* m_pEasy;
 	vgui::RadioButton* m_pMedium;
@@ -127,6 +129,8 @@ protected:
 
 	CUtlVectorAutoPurge<ImageList *> m_ImageLists;
 	CUtlVector<chapterarray_t> m_ChapterArrays;
+
+	char	m_cTrainingLevel[MAX_MAP_NAME_SAVE];
 };
 
 vgui::Frame *g_pActiveNewGamePanel = NULL;
@@ -201,6 +205,7 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 
 	m_pCancelButton = new Button(this, "CancelButton", "#FileOpenDialog_Cancel", this);
 	m_pOpenButton = new Button(this, "OpenButton", "#FileOpenDialog_Open", this);
+	m_pTrainingButton = new Button(this, "TrainingButton", "Training Room", this);
 	
 	m_pEasy = new vgui::RadioButton(this, "Easy", "#GameUI_Easy");
 	m_pMedium = new vgui::RadioButton(this, "Medium", "#GameUI_Medium");
@@ -239,34 +244,41 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 		{
 			if (g_pFullFileSystem->FindIsDirectory(findHandle) && fileName[0] != '.')
 			{
-				char cControlFile[MAX_PATH];
-				V_snprintf(cControlFile, MAX_PATH, "cfg/%s/maplist.txt", fileName);
-				V_FixSlashes(cControlFile);
-
 				bool bCreate = false;
 
-				CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
-				if (g_pFullFileSystem->ReadFile(cControlFile, "MOD", buf))
+				char szFile[MAX_PATH];
+				Q_snprintf(szFile, sizeof(szFile), "cfg/%s/chapter*.cfg", fileName);
+				FileFindHandle_t findHandle2 = FILESYSTEM_INVALID_FIND_HANDLE;
+				if (g_pFullFileSystem->FindFirst(szFile, &findHandle2))
 				{
-					char szMapName[MAX_MAP_NAME];
-					buf.GetLine(szMapName, MAX_MAP_NAME);
-					const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
-					if (pszLineEnd)
-						const_cast<char *>(pszLineEnd)[0] = 0;
+					char cControlFile[MAX_PATH];
+					V_snprintf(cControlFile, MAX_PATH, "cfg/%s/maplist.txt", fileName);
+					V_FixSlashes(cControlFile);
 
-					char mapname[MAX_PATH];
-					V_ComposeFileName("maps/", szMapName, mapname, MAX_PATH);
-					V_SetExtension(mapname, ".bsp", MAX_PATH);
+					CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+					if (g_pFullFileSystem->ReadFile(cControlFile, "MOD", buf))
+					{
+						char szMapName[MAX_MAP_NAME];
+						buf.GetLine(szMapName, MAX_MAP_NAME);
+						const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
+						if (pszLineEnd)
+							const_cast<char*>(pszLineEnd)[0] = 0;
 
-					if (filesystem->FileExists(mapname, "GAME"))
+						char mapname[MAX_PATH];
+						V_ComposeFileName("maps/", szMapName, mapname, MAX_PATH);
+						V_SetExtension(mapname, ".bsp", MAX_PATH);
+
+						if (filesystem->FileExists(mapname, "GAME"))
+						{
+							bCreate = true;
+						}
+					}
+					else
 					{
 						bCreate = true;
 					}
 				}
-				else
-				{
-					bCreate = true;
-				}
+				g_pFullFileSystem->FindClose(findHandle2);
 
 				if (bCreate)
 				{
@@ -275,6 +287,14 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 					char gameName[64];
 					Q_snprintf(gameName, sizeof(gameName), "#%s_Game_Title", fileName);
 					pKV->SetString("game", gameName);
+
+					KeyValuesAD pkvConfig("Config");
+					if (pkvConfig->LoadFromFile(g_pFullFileSystem, CFmtStr("cfg/%s/gameconfig.vdf", fileName), "MOD"))
+					{
+						KeyValues *pkvLevel = pkvConfig->FindKey("training_level");
+						if (pkvLevel)
+							pKV->AddSubKey(pkvLevel->MakeCopy());
+					}
 
 					m_pFolderList->AddItem(pKV, 0, false, false);
 
@@ -291,6 +311,8 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 	}
 
 	LoadControlSettings("resource/modsupportnewgame.res");
+
+	m_pTrainingButton->SetEnabled(false);
 
 	s_bHasOpenedDialogue = true;
 	g_pActiveNewGamePanel = this;
@@ -382,6 +404,32 @@ void CHLMSNewGame::OnSelectionUpdated(vgui::Panel* pSource)
 		if (i >= m_ChapterArrays.Count())
 			return;
 
+		KeyValues* pkvTrainingRoom = pkv->FindKey("training_level");
+		if (pkvTrainingRoom)
+		{
+			const char* pchTrainingLevel = pkvTrainingRoom->GetString();
+
+			char mapname[MAX_PATH];
+			V_ComposeFileName("maps/", pchTrainingLevel, mapname, MAX_PATH);
+			V_SetExtension(mapname, ".bsp", MAX_PATH);
+
+			if (filesystem->FileExists(mapname, "GAME"))
+			{
+				m_pTrainingButton->SetEnabled(true);
+				V_strcpy_safe(m_cTrainingLevel, pchTrainingLevel);
+			}
+			else
+			{
+				m_pTrainingButton->SetEnabled(false);
+				m_cTrainingLevel[0] = '\0';
+			}
+		}
+		else
+		{
+			m_pTrainingButton->SetEnabled(false);
+			m_cTrainingLevel[0] = '\0';
+		}
+
 		ImageList* pImgList = m_ImageLists[m_ChapterArrays[i].imagelist];
 		chapter_t* chapters = m_ChapterArrays[i].chapters;
 
@@ -436,7 +484,43 @@ void CHLMSNewGame::OnCommand(const char *command)
 				skill.SetValue(GetSelectedSkill());
 			}
 
-			if (IsPC())
+			//if (IsPC())
+			{
+				{
+					// start map
+					engine->ClientCmd(mapcommand); //replace with proper fading and stuff? [str]
+	//				BasePanel()->FadeToBlackAndRunEngineCommand( mapcommand );
+				}
+			}
+
+			Close();
+		}
+	}
+	else if (!stricmp(command, "trainingroom"))
+	{
+		if (m_pTrainingButton->IsEnabled())
+		{
+			char mapcommand[512];
+			mapcommand[0] = 0;
+			Q_snprintf(mapcommand, sizeof(mapcommand), "disconnect\ndeathmatch 0\ncoop 0\nmaxplayers 1\nprogress_enable\nmap \"%s\"\n", m_cTrainingLevel);
+
+			// Set commentary
+			ConVarRef commentary("commentary");
+			commentary.SetValue(m_bCommentaryMode);
+
+			if (m_bCommentaryMode)
+			{
+				ConVarRef sv_cheats("sv_cheats");
+				sv_cheats.SetValue(m_bCommentaryMode);
+			}
+
+			if (m_pEasy->IsVisible())
+			{
+				ConVarRef skill("skill");
+				skill.SetValue(GetSelectedSkill());
+			}
+
+			//if (IsPC())
 			{
 				{
 					// start map
