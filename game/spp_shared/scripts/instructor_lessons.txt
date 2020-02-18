@@ -185,6 +185,7 @@
 	    "can_open_when_dead" "0"
 		"force_caption"		"1"
 		"entity_glow"		"1"
+		"glow_color"		"255,20,20"
 	 
 	    "open"
 	    {
@@ -287,6 +288,7 @@
 	    "can_open_when_dead" "0"
 		"force_caption"		"1"
 		"entity_glow"		"1"
+		"glow_color"		"0,240,50"
 		
 		"icon_relative_offset"	"20"
 	 

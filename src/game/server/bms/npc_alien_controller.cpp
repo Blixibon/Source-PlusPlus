@@ -427,29 +427,21 @@ bool CBMSNPC_AlienController::OverrideMove(float flInterval)
 	//// -----------------------------------------------------------------
 	//// If I have a route, keep it updated and move toward target
 	//// ------------------------------------------------------------------
-	//if (GetNavigator()->IsGoalActive())
-	//{
-	//	if (!OverridePathMove(flInterval))
-	//	{
-	//		
-	//		float flZVel = GetAbsVelocity().z;
-	//		if (flZVel < 0)
-	//			flZVel *= -1;
-	//		float flLayerPct = RemapValClamped(flZVel, 0, 70, 0, 1);
-	//		SetLayerWeight(iFlyz, flLayerPct);
+	if (GetNavigator()->IsGoalActive())
+	{
+		if (!OverridePathMove(flInterval))
+		{
+			//return true;
+		}
+	}
+	else
+	{
+		//do nothing
+		Stop();
+		//TaskComplete();
+	}
 
-	//		//return true;
-	//	}
-	//}
-	//else
-	//{
-	//	//do nothing
-	//	Stop();
-	//	SetLayerWeight(iFlyz, 0);
-	//	//TaskComplete();
-	//}
-
-	//SetCurrentVelocity(GetAbsVelocity());
+	SetCurrentVelocity(GetAbsVelocity());
 
 	return true;
 }

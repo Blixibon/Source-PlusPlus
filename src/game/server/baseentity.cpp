@@ -63,7 +63,7 @@
 #include "tier1/utlstring.h"
 #include "utlhashtable.h"
 #include "ent_create_completion.h"
-#include "mapbase/matchers.h"
+#include "responserules/matchers.h"
 
 #if defined( TF_DLL ) || defined ( TF_CLASSIC )
 #include "tf_gamerules.h"

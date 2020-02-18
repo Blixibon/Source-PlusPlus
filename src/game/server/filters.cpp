@@ -9,7 +9,7 @@
 #include "entitylist.h"
 #include "ai_squad.h"
 #include "ai_basenpc.h"
-#include "mapbase/matchers.h"
+#include "responserules/matchers.h"
 #include "AI_Criteria.h"
 #include "ai_hint.h"
 #include "ai_speech.h"

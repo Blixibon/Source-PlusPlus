@@ -1404,9 +1404,9 @@ CPolyhedron *ClipLinkedGeometry( GeneratePolyhedronFromPlanes_UnorderedPolygonLL
 			GeneratePolyhedronFromPlanes_LineLL *pLastLineLink;
 			GeneratePolyhedronFromPlanes_Polygon *pWorkPolygon;			
 			GeneratePolyhedronFromPlanes_LineLL *pTestLine;
+			GeneratePolyhedronFromPlanes_Polygon* pLastWorkPolygon = NULL;
 
 #ifdef _DEBUG
-			GeneratePolyhedronFromPlanes_Polygon *pLastWorkPolygon = NULL;
 			GeneratePolyhedronFromPlanes_Point *pLastWorkPoint = NULL;
 #endif
 
@@ -1607,9 +1607,8 @@ CPolyhedron *ClipLinkedGeometry( GeneratePolyhedronFromPlanes_UnorderedPolygonLL
 					}
 
 					pWorkPolygon->bMissingASide = false; //repairs are finished
-
-#ifdef _DEBUG
 					pLastWorkPolygon = pWorkPolygon;
+#ifdef _DEBUG
 					pLastWorkPoint = pWorkPoint;
 #endif
 					//move to the next point
@@ -1680,9 +1679,9 @@ CPolyhedron *ClipLinkedGeometry( GeneratePolyhedronFromPlanes_UnorderedPolygonLL
 					// Update the link to the new the polygon pointer and be on our way
 					pTestLine->pLine->pPolygons[pTestLine->iReferenceIndex] = pNewPolygon;
 					pTestLine->pLine->pPolygonLineLinks[pTestLine->iReferenceIndex] = pNewLineLink;
+					pLastWorkPolygon = pWorkPolygon;
 
 #ifdef _DEBUG
-					pLastWorkPolygon = pWorkPolygon;
 					pLastWorkPoint = pWorkPoint;
 #endif
 

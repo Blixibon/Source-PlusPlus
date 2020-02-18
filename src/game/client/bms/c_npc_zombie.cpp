@@ -164,6 +164,11 @@ void C_NPC_ZombieHEV::ClientThink()
 	Vector vecDir, vecUp, vecSide, vecOrigin;
 	QAngle angAngles;
 	GetAttachment(m_iAttachment, vecOrigin, angAngles);
+	if (m_pRagdollEnt != NULL)
+	{
+		m_pRagdollEnt->GetAttachment(m_iAttachment, vecOrigin, angAngles);
+	}
+
 	AngleVectors(angAngles, &vecDir, &vecSide, &vecUp);
 
 	if (bLight)

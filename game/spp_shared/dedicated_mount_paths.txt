@@ -21,4 +21,8 @@
 	"747250"		"D:\SteamLibrary\steamapps\common\Half-Life 2 Year Long Alarm"
 	"235780"		"D:\SteamLibrary\steamapps\common\MINERVA"
 	"290930"		"D:\SteamLibrary\steamapps\common\half-life 2 update"
+	"317790"		"D:\SteamLibrary\steamapps\common\Rexaura"
+	"399120"		"D:\SteamLibrary\steamapps\common\Prospekt"
+	"365300"		"D:\SteamLibrary\steamapps\common\Transmissions Element 120"
+	"714070"		"D:\SteamLibrary\steamapps\common\Entropy Zero"
 }

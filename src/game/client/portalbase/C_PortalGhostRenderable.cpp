@@ -96,7 +96,11 @@ void C_PortalGhostRenderable::PerFrameUpdate( void )
 void C_PortalGhostRenderable::SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights)
 {
 	if (m_pGhostedRenderable != nullptr)
+	{
 		m_pGhostedRenderable->SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
+
+		
+	}
 	else
 		BaseClass::SetupWeights(pBoneToWorld, nFlexWeightCount, pFlexWeights, pFlexDelayedWeights);
 }

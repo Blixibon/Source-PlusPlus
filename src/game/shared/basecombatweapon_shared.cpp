@@ -1063,7 +1063,7 @@ WeaponClass_t CBaseCombatWeapon::WeaponClassify()
 	{
 	case ACT_IDLE_ANGRY_PISTOL:		return WEPCLASS_HANDGUN;
 	case ACT_IDLE_ANGRY_SMG1:		return WEPCLASS_RIFLE;
-	//case ACT_IDLE_ANGRY_AR2:		return WEPCLASS_RIFLE;
+	case ACT_IDLE_ANGRY_AR2:		return WEPCLASS_RIFLE;
 	case ACT_IDLE_ANGRY_SHOTGUN:	return WEPCLASS_SHOTGUN;
 	case ACT_IDLE_ANGRY_RPG:		return WEPCLASS_HEAVY;
 
