@@ -152,6 +152,7 @@
 #endif
 
 #include "spp_utils/spp_utils.h"
+#include "spp_utils/rich_presence.h"
 
 extern vgui::IInputInternal *g_InputInternal;
 
@@ -982,6 +983,9 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	if (!spp_utils->Connect(appSystemFactory))
 		return false;
 
+	if (!spp_utils->InitClient(engine, this, pGlobals))
+		return false;
+
 	// it's ok if this is NULL. That just means the sourcevr.dll wasn't found
 	g_pSourceVR = (ISourceVirtualReality *)appSystemFactory(SOURCE_VIRTUAL_REALITY_INTERFACE_VERSION, NULL);
 
@@ -1619,6 +1623,8 @@ void CHLClient::LevelInitPreEntity( char const* pMapName )
 		return;
 	g_bLevelInitialized = true;
 
+	spp_utils->ClientLevelInit(pMapName);
+
 	input->LevelInit();
 
 	vieweffects->LevelInit();
@@ -1759,6 +1765,8 @@ void CHLClient::LevelShutdown( void )
 
 	// Now do the post-entity shutdown of all systems
 	IGameSystem::LevelShutdownPostEntityAllSystems();
+
+	spp_utils->ClientLevelShutdown();
 
 	view->LevelShutdown();
 	beams->ClearBeams();

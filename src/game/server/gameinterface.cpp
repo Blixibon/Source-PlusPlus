@@ -583,10 +583,11 @@ void DrawAllDebugOverlays( void )
 CServerGameDLL g_ServerGameDLL;
 // INTERFACEVERSION_SERVERGAMEDLL_VERSION_8 is compatible with the latest since we're only adding things to the end, so expose that as well.
 //EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameDLL, IServerGameDLL008, INTERFACEVERSION_SERVERGAMEDLL_VERSION_8, g_ServerGameDLL );
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameDLL, IServerGameDLL010, INTERFACEVERSION_SERVERGAMEDLL_VERSION_10, g_ServerGameDLL);
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CServerGameDLL, IServerGameDLL, INTERFACEVERSION_SERVERGAMEDLL, g_ServerGameDLL);
 
 // When bumping the version to this interface, check that our assumption is still valid and expose the older version in the same way
-COMPILE_TIME_ASSERT( INTERFACEVERSION_SERVERGAMEDLL_INT == 10 );
+COMPILE_TIME_ASSERT( INTERFACEVERSION_SERVERGAMEDLL_INT == 11 );
 
 bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory, 
 		CreateInterfaceFn physicsFactory, CreateInterfaceFn fileSystemFactory, 
@@ -663,6 +664,9 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 
 	if (!spp_utils->Connect(appSystemFactory))
+		return false;
+
+	if (!spp_utils->InitServer(engine, this, pGlobals))
 		return false;
 
 	// Yes, both the client and game .dlls will try to Connect, the soundemittersystem.dll will handle this gracefully
@@ -1020,6 +1024,8 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 		// Single player games tell xbox live what game & chapter the user is playing
 		UpdateRichPresence();
 	}
+
+	spp_utils->ServerLevelInit(pMapName, pOldLevel, loadGame, background);
 
 	g_pGameTypeSystem->LevelInitPreEntity();
 
@@ -1454,6 +1460,8 @@ void CServerGameDLL::LevelShutdown( void )
 
 	g_pGameTypeSystem->LevelShutdown();
 
+	spp_utils->ServerLevelShutdown();
+
 	g_nCurrentChapterIndex = -1;
 
 #ifndef _XBOX
@@ -1671,7 +1679,6 @@ typedef struct
 // this list gets searched for the first partial match, so some are out of order
 static TITLECOMMENT gTitleComments[] =
 {
-#ifdef HL1_DLL
 	{ "t0a0", "#T0A0TITLE" },
 	{ "c0a0", "#HL1_Chapter1_Title" },
 	{ "c1a0", "#HL1_Chapter2_Title" },
@@ -1699,7 +1706,6 @@ static TITLECOMMENT gTitleComments[] =
 	{ "c4a2", "#HL1_Chapter16_Title"  },
 	{ "c4a3", "#HL1_Chapter18_Title"  },
 	{ "c5a1", "#HL1_Chapter19_Title"  },
-#elif defined PORTAL
 	{ "testchmb_a_00",			"#Portal_Chapter1_Title"  },
 	{ "testchmb_a_01",			"#Portal_Chapter1_Title"  },
 	{ "testchmb_a_02",			"#Portal_Chapter2_Title"  },
@@ -1723,7 +1729,6 @@ static TITLECOMMENT gTitleComments[] =
 	{ "testchmb_a_15",			"#Portal_Chapter11_Title"  },
 	{ "escape_",				"#Portal_Chapter11_Title"  },
 	{ "background2",			"#Portal_Chapter12_Title"  },
-#else
 	{ "intro", "#HL2_Chapter1_Title" },
 
 	{ "d1_trainstation_05", "#HL2_Chapter2_Title" },
@@ -1802,10 +1807,8 @@ static TITLECOMMENT gTitleComments[] =
 	
 	{ "ep2_outland_12a", "#ep2_Chapter7_Title" },
 	{ "ep2_outland_12", "#ep2_Chapter6_Title" },
-#endif
 };
 
-#ifdef _XBOX
 void CServerGameDLL::GetTitleName( const char *pMapName, char* pTitleBuff, int titleBuffSize )
 {
 	// Try to find a matching title comment for this mapname
@@ -1819,7 +1822,6 @@ void CServerGameDLL::GetTitleName( const char *pMapName, char* pTitleBuff, int t
 	}
 	Q_strncpy( pTitleBuff, pMapName, titleBuffSize );
 }
-#endif
 
 void CServerGameDLL::GetSaveComment( char *text, int maxlength, float flMinutes, float flSeconds, bool bNoTime )
 {

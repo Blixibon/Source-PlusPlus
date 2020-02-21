@@ -123,10 +123,4 @@ $Project "Client (Lazuul)"
 			$File	"Human_Error\c_npc_mantaray.cpp"
 		}
 	}
-
-	$Folder	"Link Libraries"
-	{
-		$Lib	discord-rpc		[$WIN32]
-		$Lib	libdiscord-rpc	[$LINUXALL]
-	}
 }

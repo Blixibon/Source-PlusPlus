@@ -452,8 +452,9 @@ typedef IVEngineServer IVEngineServer022;
 
 #define INTERFACEVERSION_SERVERGAMEDLL_VERSION_8	"ServerGameDLL008"
 #define INTERFACEVERSION_SERVERGAMEDLL_VERSION_9	"ServerGameDLL009"
-#define INTERFACEVERSION_SERVERGAMEDLL				"ServerGameDLL010"
-#define INTERFACEVERSION_SERVERGAMEDLL_INT			10
+#define INTERFACEVERSION_SERVERGAMEDLL_VERSION_10	"ServerGameDLL010"
+#define INTERFACEVERSION_SERVERGAMEDLL				"ServerGameDLL011"
+#define INTERFACEVERSION_SERVERGAMEDLL_INT			11
 
 class IServerGCLobby;
 
@@ -629,9 +630,13 @@ public:
 
 	// Called to see if the game server is okay with a manual changelevel or map command
 	virtual bool			IsManualMapChangeOkay( const char **pszReason ) = 0;
+	
+	// Restore for version 11
+	virtual void			GetTitleName(const char* pMapName, char* pTitleBuff, int titleBuffSize) = 0;
 };
 
 typedef IServerGameDLL IServerGameDLL008;
+typedef IServerGameDLL IServerGameDLL010;
 
 //-----------------------------------------------------------------------------
 // Just an interface version name for the random number interface

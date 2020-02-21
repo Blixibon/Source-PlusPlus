@@ -16,6 +16,11 @@ $Configuration
 		$AdditionalIncludeDirectories		"$BASE,$SRCDIR\public\spp_utils"
 		$PreprocessorDefinitions			"$BASE"
 	}
+
+	$Linker
+	{
+		$AdditionalDependencies				"$BASE WSock32.lib" [$WIN32]
+	}
 }
 
 $Configuration	"Debug"
@@ -44,16 +49,25 @@ $Project "SPP Utils"
 		$File	"mapedit_helper.h"
 		$File	"holiday_event_system.cpp"
 		$File	"holiday_event_system.h"
+		$File	"rich_presence_system.cpp"
+		$File	"rich_presence_system.h"
 		$File	"spp_utils.cpp"
 	}
 
 	$Folder	"Header Files"
 	{
 		$File	"$SRCDIR\public\spp_utils\spp_utils.h"
+		$File	"shared.h"
 	}
 
 	$Folder	"Link Libraries"
 	{
+		$Lib	tier0
+		$Lib	tier1
 		$Lib	tier2
+		$Lib	tier3
+
+		$Lib	discord-rpc		[$WIN32]
+		$Lib	libdiscord-rpc	[$LINUXALL]
 	}
 }
