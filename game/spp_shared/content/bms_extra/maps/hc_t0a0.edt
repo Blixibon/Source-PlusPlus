@@ -1,0 +1,11 @@
+"hc_t0a0"
+{
+	edit
+	{
+		"targetname"	"lobby_sci_dky"
+		"values"
+		{
+			"classname"	"npc_human_worker"
+		}
+	}
+}

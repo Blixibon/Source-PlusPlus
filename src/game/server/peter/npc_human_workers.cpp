@@ -11,7 +11,7 @@ public:
 	Class_T Classify(void);
 };
 
-LINK_ENTITY_TO_CLASS(npc_human_maint, CNPC_HumanMainT);
+//LINK_ENTITY_TO_CLASS(npc_human_maint, CNPC_HumanMainT);
 LINK_ENTITY_TO_CLASS(npc_human_maintenance, CNPC_HumanMainT);
 
 //-----------------------------------------------------------------------------
@@ -48,7 +48,7 @@ void CNPC_HumanMainT::Spawn(void)
 
 colleagueModel_t g_mainTModel[] =
 {
-	{ "models/humans/cwork.mdl",	"models/humans/cwork_hurt.mdl" },
+	{ "models/humans/cwork.mdl",	"models/humans/cwork_hurt.mdl", 0, 15 },
 };
 
 //-----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void CNPC_HumanMainT::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel, 2, m_nSkin.GetForModify())));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel, 1, m_nSkin.GetForModify())));
 }
 
 class CNPC_HumanEngie : public CNPC_BaseColleague
@@ -110,7 +110,7 @@ void CNPC_HumanEngie::Spawn(void)
 
 colleagueModel_t g_engieModel[] =
 {
-	{ "models/humans/engineer.mdl",	"models/humans/engineer_hurt.mdl" },
+	{ "models/humans/engineer.mdl",	"models/humans/engineer_hurt.mdl", 0, 15 },
 };
 
 //-----------------------------------------------------------------------------
@@ -123,7 +123,7 @@ void CNPC_HumanEngie::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel, 2, m_nSkin.GetForModify())));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel, 1, m_nSkin.GetForModify())));
 }
 
 class CNPC_HumanOffice : public CNPC_BaseColleague
@@ -172,7 +172,7 @@ void CNPC_HumanOffice::Spawn(void)
 
 colleagueModel_t g_officeModel[] =
 {
-	{ "models/humans/worker_clean.mdl",	"models/humans/worker.mdl" },
+	{ "models/humans/worker_clean.mdl",	"models/humans/worker.mdl", 0, 15 },
 };
 
 //-----------------------------------------------------------------------------
@@ -185,5 +185,5 @@ void CNPC_HumanOffice::SelectModel()
 	else
 	SetModelName(AllocPooledString(MSCI_MODEL));*/
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel, 2, m_nSkin.GetForModify())));
+	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel, 1, m_nSkin.GetForModify())));
 }
