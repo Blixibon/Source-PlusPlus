@@ -3060,7 +3060,7 @@ bool CBaseEntity::PassesDamageFilter( const CTakeDamageInfo &info )
 	if (m_hDamageFilter)
 	{
 		CBaseFilter *pFilter = (CBaseFilter *)(m_hDamageFilter.Get());
-		return pFilter->PassesDamageFilter(info);
+		return pFilter->PassesDamageFilter(this, info);
 	}
 
 	return true;

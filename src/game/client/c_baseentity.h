@@ -59,6 +59,7 @@ class CEntityMapData;
 class ConVar;
 class CDmgAccumulator;
 class IHasAttributes;
+enum gender_t;
 
 struct CSoundParameters;
 
@@ -593,6 +594,7 @@ public:
 	void	StopSound( const char *soundname );
 	void	StopSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle );
 	void	GenderExpandString( char const *in, char *out, int maxlen );
+	virtual gender_t		GetActorGender();
 
 	static float GetSoundDuration( const char *soundname, char const *actormodel );
 

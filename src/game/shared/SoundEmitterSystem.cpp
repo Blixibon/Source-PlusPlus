@@ -537,8 +537,7 @@ public:
 		CBaseEntity *ent = CBaseEntity::Instance( entindex );
 		if ( ent )
 		{
-			char const *actorModel = STRING( ent->GetModelName() );
-			gender = soundemitterbase->GetActorGender( actorModel );
+			gender = ent->GetActorGender();
 		}
 
 		if ( !soundemitterbase->GetParametersForSoundEx( ep.m_pSoundName, handle, params, gender, true ) )
@@ -1555,7 +1554,12 @@ static const char *UTIL_TranslateSoundName( const char *soundname, const char *a
 
 void CBaseEntity::GenderExpandString( char const *in, char *out, int maxlen )
 {
-	soundemitterbase->GenderExpandString( STRING( GetModelName() ), in, out, maxlen );
+	soundemitterbase->GenderExpandString( GetActorGender(), in, out, maxlen );
+}
+
+gender_t CBaseEntity::GetActorGender()
+{
+	return soundemitterbase->GetActorGender(STRING(GetModelName()));
 }
 
 bool CBaseEntity::GetParametersForSound( const char *soundname, CSoundParameters &params, const char *actormodel )

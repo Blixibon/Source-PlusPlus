@@ -34,6 +34,8 @@
 #include "scripted.h"
 #include "env_debughistory.h"
 #include "UtlStringMap.h"
+#include "utlbinaryblock.h"
+#include "utlbuffer.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -197,74 +199,156 @@ void LocalScene_Printf( const char *pFormat, ... )
 }
 #endif
 
-class CSceneFileCache : public CAutoGameSystem
+class CSceneFileCache : public CAutoGameSystem, public IChoreoStringPool
 {
 public:
-	CSceneFileCache() : CAutoGameSystem("CSceneFileCache")
+	CSceneFileCache() : CAutoGameSystem("CSceneFileCache"), m_SceneData(DefLessFunc(FileNameHandle_t))
 	{}
 
 	void LevelShutdownPostEntity()
 	{
-		m_Scenes.PurgeAndDeleteElements();
+		ClearData();
 	}
+
+	typedef struct {
+		unsigned int	msecs;
+		unsigned int	speech_msecs;
+		int				numSounds;
+		CUtlBinaryBlock binary;
+	} sceneData_t;
 
 	// Add a choreo scene to the cache.
 	// The cache now owns the scene and may delete it
-	int AddScene(CChoreoScene *, const char *);
+	FileNameHandle_t FindOrAddScene(CChoreoScene *, const char *);
 
 	CChoreoScene *GetScene(const char *);
-	CChoreoScene *GetScene(int);
+	CChoreoScene *GetScene(FileNameHandle_t);
 
-	int			Find(const char *);
+	FileNameHandle_t	Find(const char *);
 
-	bool		IsValid(int id)
+	bool	IsValid(FileNameHandle_t h)
 	{
-		return id != m_Scenes.InvalidIndex();
+		return h != (FileNameHandle_t)NULL;
+	}
+
+	virtual short FindOrAddString(const char* pString)
+	{
+		return m_StringPool.AddString(pString);
+	}
+
+	virtual bool	GetString(short stringId, char* buff, int buffSize)
+	{
+		if (stringId < 0 || (int)stringId >= m_StringPool.GetNumStrings())
+		{
+			V_strncpy(buff, "", buffSize);
+			return false;
+		}
+
+		const char* pszString = m_StringPool.String(stringId);
+		if (!pszString)
+		{
+			V_strncpy(buff, "", buffSize);
+			return false;
+		}
+
+		V_strncpy(buff, pszString, buffSize);
+		return true;
+	}
+
+	sceneData_t* GetSceneData(FileNameHandle_t hFileName)
+	{
+		unsigned short sIDX = m_SceneData.Find(hFileName);
+		if (m_SceneData.IsValidIndex(sIDX))
+		{
+			return &m_SceneData.Element(sIDX);
+		}
+		else
+			return nullptr;
+	}
+
+	void ClearData()
+	{
+		m_SceneData.Purge();
+		m_FileNames.RemoveAll();
+		m_StringPool.RemoveAll();
 	}
 
 protected:
-	CUtlStringMap<CChoreoScene *> m_Scenes;
+	CUtlMap< FileNameHandle_t, sceneData_t > m_SceneData;
+	CUtlFilenameSymbolTable m_FileNames;
+	CUtlSymbolTable m_StringPool;
 };
 
-int CSceneFileCache::AddScene(CChoreoScene *pScene, const char *pchFileName)
+FileNameHandle_t CSceneFileCache::FindOrAddScene(CChoreoScene *pScene, const char *pchFileName)
 {
-	if (m_Scenes.Defined(pchFileName))
+	FileNameHandle_t hFileName = Find(pchFileName);
+	if (IsValid(hFileName))
 	{
 		delete pScene;
-		return m_Scenes.InvalidIndex();
+		return hFileName;
 	}
 
-	m_Scenes[pchFileName] = pScene;
+	hFileName = m_FileNames.FindOrAddFileName(pchFileName);
+	CUtlBuffer buf;
+	pScene->SaveToBinaryBuffer(buf, 0, this);
 
-	return m_Scenes.GetNumStrings() - 1;
+	CUtlBinaryBlock block(buf.Base(), buf.TellPut());
+	sceneData_t data;
+	data.binary = block;
+	data.msecs = RoundFloatToUnsignedLong(pScene->FindStopTime() * 1000.0);
+	for (int i = pScene->GetNumEvents() - 1; i >= 0; i--)
+	{
+		CChoreoEvent* pEvent = pScene->GetEvent(i);
+
+		if (pEvent->GetType() == CChoreoEvent::SPEAK)
+		{
+			data.speech_msecs = RoundFloatToUnsignedLong(pEvent->GetEndTime() * 1000.0);
+			break;
+		}
+	}
+	for (int i = 0; i < pScene->GetNumEvents(); i++)
+	{
+		CChoreoEvent* pEvent = pScene->GetEvent(i);
+
+		if (pEvent->GetType() == CChoreoEvent::SPEAK)
+			data.numSounds++;
+	}
+
+	m_SceneData.InsertOrReplace(hFileName, data);
+
+	delete pScene;
+	return hFileName;
 }
 
-int CSceneFileCache::Find(const char *pchScene)
+FileNameHandle_t CSceneFileCache::Find(const char *pchScene)
 {
-	return m_Scenes.Find(pchScene);
+	return m_FileNames.FindFileName(pchScene);
 }
 
 CChoreoScene *CSceneFileCache::GetScene(const char *pchScene)
 {
-	UtlSymId_t id = Find(pchScene);
+	FileNameHandle_t id = Find(pchScene);
 
 	return GetScene(id);
 }
 
-CChoreoScene *CSceneFileCache::GetScene(int iIndex)
+CChoreoScene *CSceneFileCache::GetScene(FileNameHandle_t hNameHandle)
 {
-	if (!IsValid(iIndex))
+	sceneData_t* pData = GetSceneData(hNameHandle);
+	if (!pData)
 		return nullptr;
 
-	const CChoreoScene *pStatic = m_Scenes[iIndex];
-	if (!pStatic)
-		return nullptr;
+	CUtlBuffer buf(pData->binary.Get(), pData->binary.Length(), CUtlBuffer::READ_ONLY);
 
+	char cFileName[MAX_PATH];
 	CChoreoScene *pScene = new CChoreoScene(nullptr);
-
-	*pScene = *pStatic;
-
-	return pScene;
+	if (m_FileNames.String(hNameHandle, cFileName, MAX_PATH) && pScene->RestoreFromBinaryBuffer(buf, cFileName, this))
+		return pScene;
+	else
+	{
+		delete pScene;
+		return nullptr;
+	}
 }
 
 static CSceneFileCache g_SceneFileCache;
@@ -1913,8 +1997,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 						byteflags |= CLOSE_CAPTION_FROMPLAYER;
 					}
 					*/
-					char const *pszActorModel = STRING( actor->GetModelName() );
-					gender_t gender = soundemitterbase->GetActorGender( pszActorModel );
+					gender_t gender = actor->GetActorGender();
 
 					if ( gender == GENDER_MALE )
 					{
@@ -3398,8 +3481,8 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 
 	void *pBuffer = 0;
 
-	int iIndex = g_SceneFileCache.Find(loadfile);
-	if (!g_SceneFileCache.IsValid(iIndex))
+	FileNameHandle_t hFileName = g_SceneFileCache.Find(loadfile);
+	if (!g_SceneFileCache.IsValid(hFileName))
 	{
 
 		int fileSize = filesystem->ReadFileEx(loadfile, "SCENES", &pBuffer, true);
@@ -3408,7 +3491,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 			g_TokenProcessor.SetBuffer((char*)pBuffer);
 			CChoreoScene *pCacheScene = ChoreoLoadScene(loadfile, nullptr, &g_TokenProcessor, nullptr);
 
-			iIndex = g_SceneFileCache.AddScene(pCacheScene, loadfile);
+			hFileName = g_SceneFileCache.FindOrAddScene(pCacheScene, filename);
 		}
 		else
 		{
@@ -3419,7 +3502,7 @@ CChoreoScene *CSceneEntity::LoadScene( const char *filename, IChoreoEventCallbac
 		FreeSceneFileMemory(pBuffer);
 	}
 
-	pScene = g_SceneFileCache.GetScene(iIndex);
+	pScene = g_SceneFileCache.GetScene(hFileName);
 
 	if (pScene)
 	{
@@ -4709,12 +4792,22 @@ float GetSceneDuration( char const *pszScene )
 {
 	float flSecs = 0.0f;
 
-	CChoreoScene *pScene = CSceneEntity::LoadScene(pszScene, nullptr);
+#if 0
+	CChoreoScene* pScene = CSceneEntity::LoadScene(pszScene, nullptr);
 	if (pScene)
 	{
 		flSecs = pScene->FindStopTime();
 		delete pScene;
 	}
+#else
+	FileNameHandle_t hName = g_SceneFileCache.Find(pszScene);
+	CSceneFileCache::sceneData_t *pData = g_SceneFileCache.GetSceneData(hName);
+	if (pData)
+	{
+		flSecs = pData->msecs / 1000.f;
+	}
+#endif // 0
+
 
 	return flSecs;
 }
@@ -4728,10 +4821,11 @@ float GetSceneSpeechDuration(char const* pszScene)
 {
 	float flSecs = 0.0f;
 
+#if 0
 	CChoreoScene* pScene = CSceneEntity::LoadScene(pszScene, nullptr);
 	if (pScene)
 	{
-		for (int i = pScene->GetNumEvents()-1; i >= 0 ; i--)
+		for (int i = pScene->GetNumEvents() - 1; i >= 0; i--)
 		{
 			CChoreoEvent* pEvent = pScene->GetEvent(i);
 
@@ -4743,6 +4837,15 @@ float GetSceneSpeechDuration(char const* pszScene)
 		}
 		delete pScene;
 	}
+#else
+	FileNameHandle_t hName = g_SceneFileCache.Find(pszScene);
+	CSceneFileCache::sceneData_t* pData = g_SceneFileCache.GetSceneData(hName);
+	if (pData)
+	{
+		flSecs = pData->speech_msecs / 1000.f;
+	}
+#endif // 0
+
 
 	return flSecs;
 }
@@ -4756,12 +4859,13 @@ int GetSceneSpeechCount( char const *pszScene )
 {
 	int iNum = 0;
 
-	CChoreoScene *pScene = CSceneEntity::LoadScene(pszScene, nullptr);
+#if 0
+	CChoreoScene* pScene = CSceneEntity::LoadScene(pszScene, nullptr);
 	if (pScene)
 	{
 		for (int i = 0; i < pScene->GetNumEvents(); i++)
 		{
-			CChoreoEvent *pEvent = pScene->GetEvent(i);
+			CChoreoEvent* pEvent = pScene->GetEvent(i);
 
 			if (pEvent->GetType() == CChoreoEvent::SPEAK)
 				iNum++;
@@ -4769,6 +4873,15 @@ int GetSceneSpeechCount( char const *pszScene )
 
 		delete pScene;
 	}
+#else
+	FileNameHandle_t hName = g_SceneFileCache.Find(pszScene);
+	CSceneFileCache::sceneData_t* pData = g_SceneFileCache.GetSceneData(hName);
+	if (pData)
+	{
+		iNum = pData->numSounds;
+	}
+#endif // 0
+
 
 	return iNum;
 }

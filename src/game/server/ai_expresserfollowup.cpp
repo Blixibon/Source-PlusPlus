@@ -262,6 +262,17 @@ static float GetSpeechDurationForResponse( const AI_Response * RESTRICT response
 		return GetSceneSpeechDuration(szScene);
 	}
 		break;
+	case ResponseRules::RESPONSE_SENTENCE:
+	{
+		int iSentence = engine->SentenceIndexFromName(response->GetResponsePtr());
+		return engine->SentenceLength(iSentence);
+	}
+	break;
+	case ResponseRules::RESPONSE_SPEAK:
+	{
+		return CBaseEntity::GetSoundDuration(response->GetResponsePtr(), szActorModel);
+	}
+	break;
 	default:
 		break;
 	}

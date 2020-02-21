@@ -31,6 +31,7 @@ struct CSoundParameters;
 class IEntitySaveUtils;
 class CRecipientFilter;
 class CStudioHdr;
+enum gender_t;
 
 // Matching the high level concept is significantly better than other criteria
 // FIXME:  Could do this in the script file by making it required and bumping up weighting there instead...
@@ -1419,6 +1420,7 @@ public:
 	void					StopSound( const char *soundname );
 	void					StopSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle );
 	void					GenderExpandString( char const *in, char *out, int maxlen );
+	virtual gender_t		GetActorGender();
 
 	virtual void ModifyEmitSoundParams( EmitSound_t &params );
 
