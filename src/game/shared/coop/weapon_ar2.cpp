@@ -243,8 +243,8 @@ void CWeaponAR2::DelayedAttack( void )
 
 #ifndef CLIENT_DLL
 	pOwner->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
-    pOwner->RumbleEffect(RUMBLE_SHOTGUN_DOUBLE, 0, RUMBLE_FLAG_RESTART );
 #endif
+	RumbleEffect(RUMBLE_SHOTGUN_DOUBLE, 0, RUMBLE_FLAG_RESTART);
 	
 	WeaponSound( WPN_DOUBLE );
 
@@ -316,10 +316,11 @@ void CWeaponAR2::SecondaryAttack( void )
 
 	if( pPlayer )
 	{
-		pPlayer->RumbleEffect(RUMBLE_AR2_ALT_FIRE, 0, RUMBLE_FLAG_RESTART );
         gamestats->Event_WeaponFired( pPlayer, false, GetClassname() );
 	}
 #endif
+	RumbleEffect(RUMBLE_AR2_ALT_FIRE, 0, RUMBLE_FLAG_RESTART);
+
 	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_SECONDARY);
 	SendWeaponAnim( ACT_VM_FIDGET );
 	WeaponSound( SPECIAL1 );

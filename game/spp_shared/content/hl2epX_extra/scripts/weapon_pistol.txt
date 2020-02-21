@@ -18,6 +18,8 @@ WeaponData
 	"item_flags"			"0"
 	"damage"			"12"
 	
+	"rumble"			"1"
+	
 	"activities"
 	{
 		firstdraw	"ACT_VM_PICKUP"

@@ -631,7 +631,7 @@ const char *CLocatorTarget::UseBindingImage(char *pchIconTextureName, size_t buf
 		return pchBinding;
 	}
 
-	/*if ( input->ControllerModeActive() &&
+	if ( input->EnableJoystickMode() &&
 	( Q_strcmp( pchBinding, "A_BUTTON" ) == 0 ||
 	Q_strcmp( pchBinding, "B_BUTTON" ) == 0 ||
 	Q_strcmp( pchBinding, "X_BUTTON" ) == 0 ||
@@ -652,7 +652,7 @@ const char *CLocatorTarget::UseBindingImage(char *pchIconTextureName, size_t buf
 	// Use a blank background for the button icons
 	Q_strncpy( pchIconTextureName, "icon_blank", bufSize );
 	return pchBinding;
-	}*/
+	}
 
 	if (Q_strcmp(pchBinding, "MOUSE1") == 0)
 	{

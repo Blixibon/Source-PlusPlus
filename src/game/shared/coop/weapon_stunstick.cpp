@@ -168,8 +168,7 @@ void CWeaponStunStick::ImpactEffect( trace_t &traceHit )
 
 //#endif
 
-	//FIXME: need new decals
-	UTIL_ImpactTrace( &traceHit, DMG_CLUB );
+	BaseClass::ImpactEffect(traceHit);
 }
 
 #ifndef CLIENT_DLL
@@ -464,9 +463,6 @@ void CWeaponStunStick::Hit( trace_t &traceHit, Activity nHitActivity )
 
 	//Make sound for the AI
 	CSoundEnt::InsertSound(SOUND_BULLET_IMPACT, traceHit.endpos, 400, 0.2f, pPlayer);
-
-	// This isn't great, but it's something for when the crowbar hits.
-	pPlayer->RumbleEffect(RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART);
 #endif // !CLIENT_DLL
 
 

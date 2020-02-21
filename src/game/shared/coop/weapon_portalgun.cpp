@@ -365,7 +365,7 @@ void CWeaponPortalgun::Activate()
 
 	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
 
-	if (pPlayer)
+	if (pPlayer && pPlayer->GetActiveWeapon() == this)
 	{
 		CBaseEntity* pHeldObject = GetPlayerHeldEntity(pPlayer);
 		OpenProngs((pHeldObject) ? (false) : (true));
@@ -2127,9 +2127,8 @@ void CWeaponPortalgun::PrimaryAttack( void )
 
 #ifndef CLIENT_DLL
 	m_OnFiredPortal1.FireOutput( pPlayer, this );
-
-	pPlayer->RumbleEffect( RUMBLE_PORTALGUN_LEFT, 0, RUMBLE_FLAGS_NONE );
 #endif
+	RumbleEffect(RUMBLE_PORTALGUN_LEFT, 0, RUMBLE_FLAGS_NONE);
 
 	FirePortal1();
 
@@ -2164,8 +2163,8 @@ void CWeaponPortalgun::SecondaryAttack( void )
 
 #ifndef CLIENT_DLL
 	m_OnFiredPortal2.FireOutput( pPlayer, this );
-	pPlayer->RumbleEffect( RUMBLE_PORTALGUN_RIGHT, 0, RUMBLE_FLAGS_NONE );
 #endif
+	RumbleEffect(RUMBLE_PORTALGUN_RIGHT, 0, RUMBLE_FLAGS_NONE);
 
 	FirePortal2();
 

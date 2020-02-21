@@ -9,6 +9,7 @@
 
 #include "basecombatweapon_shared.h"
 #include "hlss_weapon_id.h"
+#include "rumble_shared.h"
 
 #ifdef CLIENT_DLL
     #define CWeaponCoopBase C_WeaponCoopBase
@@ -57,6 +58,8 @@ public:
 	virtual void ReapplyProvision(void);
 	virtual void OnActiveStateChanged(int iOldState);
 	virtual void Equip(CBaseCombatCharacter *pOwner);
+
+	virtual void RumbleEffect(unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags);
 
 	virtual acttable_t *ActivityList(int &iActivityCount);
 	// HL2

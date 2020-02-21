@@ -537,6 +537,7 @@ void CWeaponShotgun::PrimaryAttack( void )
 	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 1.0 );
 #endif
 	
+	RumbleEffect(RUMBLE_SHOTGUN_SINGLE, 0, RUMBLE_FLAGS_NONE);
 
 	FireBulletsInfo_t info(sk_plr_num_shotgun_pellets.GetInt(), vecSrc, vecAiming, GetBulletSpread(), MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
 	info.m_pAttacker = pPlayer;
@@ -616,6 +617,7 @@ void CWeaponShotgun::SecondaryAttack( void )
 	// Fire the bullets, and force the first shot to be perfectly accuracy
 	pPlayer->FireBullets(info);
 
+	RumbleEffect(RUMBLE_SHOTGUN_DOUBLE, 0, RUMBLE_FLAGS_NONE);
 
 	pPlayer->ViewPunch( QAngle(random->RandomFloat( -5, 5 ),0,0) );
 

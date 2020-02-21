@@ -510,9 +510,7 @@ void CWeaponSMG1::SecondaryAttack( void )
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	BaseClass::WeaponSound( WPN_DOUBLE );
 
-#ifndef CLIENT_DLL
-	pPlayer->RumbleEffect( RUMBLE_357, 0, RUMBLE_FLAGS_NONE );
-#endif
+	RumbleEffect( RUMBLE_357, 0, RUMBLE_FLAGS_NONE );
 
 	Vector vecSrc = pPlayer->Weapon_ShootPosition();
 	Vector	vecThrow;

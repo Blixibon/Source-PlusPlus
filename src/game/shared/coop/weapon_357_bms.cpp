@@ -218,6 +218,10 @@ void CBMSWeapon357::PrimaryAttack( void )
 	pPlayer->SnapEyeAngles( angles );
 #endif
 
+	int iRumblue = GetRumbleEffect();
+	if (iRumblue > 0)
+		RumbleEffect(iRumblue, 0, RUMBLE_FLAGS_NONE);
+
 	pPlayer->ViewPunch( QAngle( -8, random->RandomFloat( -2, 2 ), 0 ) );
     
 #ifndef CLIENT_DLL

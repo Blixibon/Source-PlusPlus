@@ -2240,11 +2240,13 @@ void CFuncTank::Fire( int bulletCount, const Vector &barrelEnd, const Vector &fo
 
 	if( pAttacker && pAttacker->IsPlayer() )
 	{
-		if ( IsX360() )
+		//if ( IsX360() )
 		{
-			UTIL_PlayerByIndex(1)->RumbleEffect( RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART | RUMBLE_FLAG_RANDOM_AMPLITUDE );
+			CBasePlayer* pPlayer = ToBasePlayer(pAttacker);
+			if (pPlayer)
+				pPlayer->RumbleEffect( RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART | RUMBLE_FLAG_RANDOM_AMPLITUDE );
 		}
-		else
+		//else
 		{
 			CSoundEnt::InsertSound( SOUND_MOVE_AWAY, barrelEnd + forward * 32.0f, 32.0f, 0.2f, pAttacker, SOUNDENT_CHANNEL_WEAPON );
 		}

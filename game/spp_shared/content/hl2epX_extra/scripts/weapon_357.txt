@@ -19,6 +19,7 @@ WeaponData
 	"item_flags"		"0"
 
 	"damage"		"75"
+	"rumble"			"2"
 
 	"activities"
 	{

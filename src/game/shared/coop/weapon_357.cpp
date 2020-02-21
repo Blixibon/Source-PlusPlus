@@ -203,6 +203,8 @@ void CWeapon357::PrimaryAttack( void )
 	pPlayer->SnapEyeAngles( angles );
 #endif
 
+	RumbleEffect(GetRumbleEffect(), 0, RUMBLE_FLAGS_NONE);
+
 	pPlayer->ViewPunch( QAngle( -8, random->RandomFloat( -2, 2 ), 0 ) );
     
 #ifndef CLIENT_DLL

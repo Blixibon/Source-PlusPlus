@@ -154,6 +154,7 @@ void CWeaponCoopBaseBludgeon::ImpactEffect( trace_t &trace )
 
 	//FIXME: need new decals
 	UTIL_ImpactTrace( &trace, DMG_CLUB );
+	RumbleEffect(RUMBLE_AR2, 0, RUMBLE_FLAG_RESTART);
 }
 
 //================================================================================
@@ -209,6 +210,8 @@ void CWeaponCoopBaseBludgeon::Swing( int bIsSecondary )
 
 	if ( !pOwner )
 		return;
+
+	RumbleEffect(RUMBLE_CROWBAR_SWING, 0, RUMBLE_FLAG_RESTART);
 
 	Vector swingStart = pOwner->Weapon_ShootPosition( );
 	Vector forward;

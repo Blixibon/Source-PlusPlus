@@ -2106,6 +2106,7 @@ bool CWeaponPhysCannon::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 	ForceDrop();
 	DestroyEffects();
+	RumbleEffect(RUMBLE_PHYSCANNON_OPEN, 0, RUMBLE_FLAG_STOP);
 
 	return BaseClass::Holster( pSwitchingTo );
 }
@@ -2116,7 +2117,7 @@ bool CWeaponPhysCannon::Holster( CBaseCombatWeapon *pSwitchingTo )
 void CWeaponPhysCannon::DryFire( void )
 {
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
-
+	RumbleEffect(RUMBLE_PISTOL, 0, RUMBLE_FLAG_RESTART);
 	WeaponSound( EMPTY );
 }
 
@@ -2201,7 +2202,7 @@ void CWeaponPhysCannon::Physgun_OnPhysGunPickup( CBaseEntity *pEntity, CBasePlay
 
 	if (reason == PUNTED_BY_CANNON)
 	{
-		//pOwner->RumbleEffect(RUMBLE_357, 0, RUMBLE_FLAGS_NONE);
+		pOwner->RumbleEffect(RUMBLE_357, 0, RUMBLE_FLAGS_NONE);
 		RecordThrownObject(pEntity);
 	}
 
@@ -3535,6 +3536,9 @@ void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
 		m_hAttachedObject->VPhysicsDestroyObject();
 	}
 #endif
+
+	if (wasLaunched)
+		RumbleEffect(RUMBLE_357, 0, RUMBLE_FLAG_RESTART);
 }
 
 
@@ -4190,6 +4194,8 @@ void CWeaponPhysCannon::OpenElements( void )
 	if ( pOwner == NULL )
 		return;
 
+	RumbleEffect(RUMBLE_PHYSCANNON_OPEN, 0, RUMBLE_FLAG_RESTART);
+
 	SendWeaponAnim( ACT_VM_IDLE );
 
 	m_bOpen = true;
@@ -4217,6 +4223,8 @@ void CWeaponPhysCannon::CloseElements( void )
 
 	if ( pOwner == NULL )
 		return;
+
+	RumbleEffect(RUMBLE_PHYSCANNON_OPEN, 0, RUMBLE_FLAG_STOP);
 
 	SendWeaponAnim( ACT_VM_IDLE );
 
@@ -4451,16 +4459,23 @@ void CWeaponPhysCannon::StartEffects( void )
 	};
 	
 	//Create the glow sprites
-	for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_PHYS_ENDCAP_SPRITES); i++ )
+	for (int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1 + NUM_PHYS_ENDCAP_SPRITES); i++)
 	{
-		if ( m_Parameters[i].GetMaterial(0) != NULL )
+		if (m_Parameters[i].GetMaterial(0) != NULL)
 			continue;
 
-		m_Parameters[i].GetScale().SetAbsolute( 0.05f * SPRITE_SCALE );
-		m_Parameters[i].GetAlpha().SetAbsolute( 255.0f );
-		SetModelIndex(m_iViewModelIndex);
-		int iAttachment = LookupAttachment(attachNamesEndCap[i - PHYSCANNON_ENDCAP1]);
-		m_Parameters[i].SetAttachment(iAttachment);
+		m_Parameters[i].GetScale().SetAbsolute(0.05f * SPRITE_SCALE);
+		m_Parameters[i].GetAlpha().SetAbsolute(255.0f);
+		if (i == PHYSCANNON_ENDCAP3)
+		{
+			m_Parameters[i].SetAttachment(1);
+		}
+		else
+		{
+			SetModelIndex(m_iViewModelIndex);
+			int iAttachment = LookupAttachment(attachNamesEndCap[i - PHYSCANNON_ENDCAP1]);
+			m_Parameters[i].SetAttachment(iAttachment);
+		}
 		SetModelIndex(m_iWorldModelIndex);
 		m_Parameters[i].SetAttachmentWorld(LookupAttachment(attachNamesEndCap[i - PHYSCANNON_ENDCAP1]));
 		m_Parameters[i].SetVisible( false );
@@ -4573,7 +4588,7 @@ void CWeaponPhysCannon::DoEffectHolding( void )
 
 		// Turn on the glow sprites
 		// NOTE: The last glow is left off for first-person
-		for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_PHYS_ENDCAP_SPRITES-1); i++ )
+		for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_PHYS_ENDCAP_SPRITES); i++ )
 		{
 			m_Parameters[i].SetVisible();
 		}

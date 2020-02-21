@@ -8,6 +8,7 @@
 #include "ammodef.h"
 #include "hl2_gamerules.h"
 #include "hlss_weapon_id.h"
+#include "rumble_shared.h"
 
 #ifdef CLIENT_DLL
 extern IVModelInfoClient* modelinfo;
@@ -19,6 +20,8 @@ extern IVModelInfo* modelinfo;
     #include "vgui/ISurface.h"
 	#include "vgui_controls/Controls.h"
 	#include "hud_crosshair.h"
+#include "c_rumble.h"
+#include "prediction.h"
 #else
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
@@ -247,7 +250,9 @@ void CWeaponCoopBase::PrimaryAttack()
 	info.m_vecSpread = GetActiveWeapon()->GetBulletSpread();
 #endif // CLIENT_DLL
 
-
+	int iRumblue = GetRumbleEffect();
+	if (iRumblue > 0)
+		RumbleEffect(iRumblue, 0, RUMBLE_FLAGS_NONE);
 
 	pPlayer->FireBullets( info );
 
@@ -1519,6 +1524,20 @@ void CWeaponCoopBase::Equip(CBaseCombatCharacter *pOwner)
 
 	// Add it to attribute providers list.
 	ReapplyProvision();
+}
+
+void CWeaponCoopBase::RumbleEffect(unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags)
+{
+#ifndef CLIENT_DLL
+	CBasePlayer* pPlayer = ToBasePlayer(GetOwner());
+	if (!pPlayer || gpGlobals->maxClients > 1)
+		return;
+
+	pPlayer->RumbleEffect(effectIndex, rumbleData, rumbleFlags);
+#else
+	if (prediction->IsFirstTimePredicted())
+		::RumbleEffect(effectIndex, rumbleData, rumbleFlags);
+#endif // !CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------

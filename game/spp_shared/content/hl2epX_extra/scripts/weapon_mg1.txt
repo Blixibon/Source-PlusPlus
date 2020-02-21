@@ -23,6 +23,7 @@ WeaponData
 
 	"size"				"15"
 	"autoswitchfrom"	"0"
+	"rumble"			"4"
 	
 	"activities"
 	{

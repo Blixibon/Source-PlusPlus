@@ -17,6 +17,7 @@ WeaponData
 	"weight"				"4"
 	"item_flags"			"0"
 	"damage"			"4"
+	"rumble"			"5"
 	
 	"activities"
 	{
