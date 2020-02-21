@@ -5266,6 +5266,22 @@ void CClientShadowMgr::UpdateShadowDirectionFromLocalLightSource( ClientShadowHa
 	if ( !pRenderable->ShouldDraw() )
 		return;
 
+	matrix3x4_t matLightingOffset;
+	SetIdentityMatrix(matLightingOffset);
+
+	C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle(shadow.m_Entity);
+	if (pEnt)
+	{
+		C_BaseAnimating* pAnim = pEnt->GetBaseAnimating();
+		if (pAnim)
+		{
+			pAnim->TransformToLightingOrigin(matLightingOffset);
+		}
+	}
+
+	matrix3x4_t matInvLightingOffset;
+	MatrixInvert(matLightingOffset, matInvLightingOffset);
+
 	Vector bbMin, bbMax;
 	pRenderable->GetRenderBoundsWorldspace( bbMin, bbMax );
 	Vector origin( 0.5f * ( bbMin + bbMax ) );
@@ -5280,12 +5296,20 @@ void CClientShadowMgr::UpdateShadowDirectionFromLocalLightSource( ClientShadowHa
 		float flMinBrightnessSqr = r_worldlight_mincastintensity.GetFloat();
 		flMinBrightnessSqr *= flMinBrightnessSqr;
 
-		if ( g_pWorldLights->GetBrightestLightSource(pRenderable->GetRenderOrigin(), lightPos, lightBrightness) == false
+		Vector vTransformedOrigin = origin;
+		VectorTransform(origin, matLightingOffset, vTransformedOrigin);
+
+		if ( g_pWorldLights->GetBrightestLightSource(vTransformedOrigin + Vector(0, 0, 8.f), lightPos, lightBrightness) == false
 			|| lightBrightness.LengthSqr() < flMinBrightnessSqr )
 		{
 			// didn't find a light source at all, use default shadow direction
 			// TODO: Could switch to using blobby shadow in this case
 			lightPos.Init( FLT_MAX, FLT_MAX, FLT_MAX );
+		}
+		else
+		{
+			Vector vOldLightPos = lightPos;
+			VectorTransform(vOldLightPos, matInvLightingOffset, lightPos);
 		}
 	}
 
@@ -5356,7 +5380,7 @@ void CClientShadowMgr::UpdateShadowDirectionFromLocalLightSource( ClientShadowHa
 
 	if ( r_worldlight_debug.GetBool() )
 	{
-		NDebugOverlay::Line( lightPos, origin, 255, 255, 0, false, 0.0f );
+		NDebugOverlay::Line(lightPos, origin, 255, 255, 0, false, 0.0f );
 	}
 }
 

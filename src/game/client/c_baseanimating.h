@@ -485,6 +485,8 @@ public:
 	virtual bool					IsViewModel() const;
 	virtual void					UpdateOnRemove( void );
 
+	virtual void					TransformToLightingOrigin(matrix3x4_t & matLightingOffset);
+
 protected:
 	// View models scale their attachment positions to account for FOV. To get the unmodified
 	// attachment position (like if you're rendering something else during the view model's DrawModel call),

@@ -2315,6 +2315,21 @@ void C_BaseAnimating::UpdateOnRemove( void )
 	BaseClass::UpdateOnRemove();
 }
 
+void C_BaseAnimating::TransformToLightingOrigin(matrix3x4_t & matLightingOffset)
+{
+	if (m_hLightingOriginRelative.Get())
+	{
+		C_InfoLightingRelative* pInfoLighting = assert_cast<C_InfoLightingRelative*>(m_hLightingOriginRelative.Get());
+		pInfoLighting->GetLightingOffset(matLightingOffset);
+	}
+	else if (m_hLightingOrigin)
+	{
+		matrix3x4_t matWorldToThis;
+		MatrixInvert(EntityToWorldTransform(), matWorldToThis);
+		ConcatTransforms(matWorldToThis, m_hLightingOrigin->EntityToWorldTransform(), matLightingOffset);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
