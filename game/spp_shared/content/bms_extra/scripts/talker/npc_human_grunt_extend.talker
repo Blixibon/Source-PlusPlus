@@ -1,5 +1,3 @@
-criterion TLK_HG_BURN concept TLK_HG_BURN required
-
 response HG_ONFIRE
 {
 	speak "npc_hgrunt.onfire01"
@@ -12,7 +10,10 @@ response HG_ONFIRE
 
 rule HG_BURNING
 {
-	criteria TLK_HG_BURN
+	criteria TLK_HG_BURN isgrunt HECUVoiceNormal
 	
 	response HG_ONFIRE
 }
+
+#include "talker/npc_human_grunt_gruff.talker"
+#include "talker/npc_human_grunt_young.talker"

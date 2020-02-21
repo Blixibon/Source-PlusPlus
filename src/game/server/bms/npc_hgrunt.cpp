@@ -4453,6 +4453,7 @@ public:
 	void		Event_Killed(const CTakeDamageInfo &info);
 	void		OnListened();
 
+	virtual void	ModifyOrAppendCriteria(AI_CriteriaSet& set);
 	void		ModifyOrAppendDerivedCriteria(AI_CriteriaSet& set);
 
 	void		ClearAttackConditions(void);
@@ -4472,8 +4473,26 @@ public:
 
 	virtual int			GetSpecialDSP(void)
 	{
-		return m_bHasMask ? 55 : 0;
+		return (GetGruntVoiceType() == VOICE_MASK_DYNAMIC) ? 55 : 0;
 	}
+
+	virtual gender_t		GetActorGender()
+	{
+		return (GetGruntVoiceType() >= VOICE_MASK_STATIC) ? GENDER_FEMALE : GENDER_MALE;
+	}
+
+	virtual int GetGruntVoiceType() { return m_nVoiceType; }
+
+	enum VoiceType_e
+	{
+		VOICE_NORMAL = 0,
+		VOICE_MASK_DYNAMIC,
+		VOICE_MASK_STATIC,
+		VOICE_MASK_GRUFF,
+		VOICE_MASK_YOUNG,
+
+		NUM_VOICE_TYPES
+	};
 
 private:
 	bool		ShouldHitPlayer(const Vector &targetDir, float targetDist);
@@ -4489,7 +4508,7 @@ protected:
 	int			m_iUseMarch;
 #endif
 
-	bool m_bHasMask;
+	int m_nVoiceType;
 };
 
 ConVar	sk_human_grunt_health("sk_human_grunt_health", "0");
@@ -4554,6 +4573,8 @@ void CNPC_Human_Grunt::Spawn(void)
 
 	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
 
+	m_nVoiceType = VOICE_NORMAL;
+
 	if (FClassnameIs(this, "npc_human_medic"))
 	{
 		SetBodygroup(FindBodygroupByName("helmet_medic"), 1);
@@ -4579,20 +4600,21 @@ void CNPC_Human_Grunt::Spawn(void)
 	else if (RandomInt(1, 3) == 1)
 	{
 		SetBodygroup(FindBodygroupByName("gasmask_nv"), 1);
-		m_bHasMask = true;
+		m_nVoiceType = RandomInt(VOICE_MASK_GRUFF, VOICE_MASK_YOUNG);
 	}
 	else
 	{
 		int iRand = RandomInt(0, 2);
 		SetBodygroup(FindBodygroupByName("head"), iRand);
 		if (iRand == 2)
-			m_bHasMask = true;
+			m_nVoiceType = RandomInt(VOICE_MASK_DYNAMIC, VOICE_MASK_STATIC);
 	}
 
 	SetBodygroup(FindBodygroupByName("gloves"), RandomInt(0, 1));
 	SetBodygroup(FindBodygroupByName("packs_chest"), RandomInt(0, 1));
 	SetBodygroup(FindBodygroupByName("packs_hips"), RandomInt(0, 1));
 	SetBodygroup(FindBodygroupByName("packs_thigh"), RandomInt(0, 1));
+	SetBodygroup(FindBodygroupByName("holster"), 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -4627,6 +4649,24 @@ void CNPC_Human_Grunt::Precache()
 	UTIL_PrecacheOther("weapon_frag");
 	UTIL_PrecacheOther("item_ammo_ar2_altfire");
 	UTIL_PrecacheOther("prop_physics_override", "models/humans/props/marine_beret.mdl");
+}
+
+void CNPC_Human_Grunt::ModifyOrAppendCriteria(AI_CriteriaSet& set)
+{
+	BaseClass::ModifyOrAppendCriteria(set);
+
+	switch (GetGruntVoiceType())
+	{
+	default:
+		set.AppendCriteria("voicetype", "normal");
+		break;
+	case VOICE_MASK_GRUFF:
+		set.AppendCriteria("voicetype", "gruff");
+		break;
+	case VOICE_MASK_YOUNG:
+		set.AppendCriteria("voicetype", "young");
+		break;
+	}
 }
 
 void CNPC_Human_Grunt::ModifyOrAppendDerivedCriteria(AI_CriteriaSet& set)
@@ -4956,7 +4996,7 @@ Activity CNPC_Human_Grunt::NPC_TranslateActivity(Activity eNewActivity)
 BEGIN_DATADESC(CNPC_Human_Grunt)
 
 DEFINE_KEYFIELD(m_iUseMarch, FIELD_INTEGER, "usemarch"),
-DEFINE_FIELD(m_bHasMask, FIELD_BOOLEAN),
+DEFINE_FIELD(m_nVoiceType, FIELD_INTEGER),
 
 END_DATADESC()
 #endif
