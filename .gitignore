@@ -104,6 +104,7 @@ config.cfg
 game/*/save/*
 game/*/screenshots/*
 game/*/edt_cache/*
+game/*/custom
 
 # shader files
 *.tmp
