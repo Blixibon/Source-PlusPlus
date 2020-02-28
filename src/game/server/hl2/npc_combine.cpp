@@ -1621,6 +1621,10 @@ int CNPC_Combine::SelectCombatSchedule()
 		return SCHED_NONE;
 	}
 
+	int scheduleHeal = SelectScheduleHeal();
+	if (scheduleHeal != SCHED_NONE)
+		return scheduleHeal;
+
 	// -----------
 	// new enemy
 	// -----------
@@ -1898,6 +1902,7 @@ int CNPC_Combine::SelectSchedule( void )
 			}
 
 			// grunts place HIGH priority on running away from danger sounds.
+#ifndef SOLDIER_POSSIBLE_ALLY
 			if ( HasCondition(COND_HEAR_DANGER) )
 			{
 				CSound *pSound;
@@ -1925,9 +1930,7 @@ int CNPC_Combine::SelectSchedule( void )
 								}
 							}
 						}
-#ifndef SOLDIER_POSSIBLE_ALLY
 						m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
-#endif
 						// If the sound is approaching danger, I have no enemy, and I don't see it, turn to face.
 						if( !GetEnemy() && pSound->IsSoundType(SOUND_CONTEXT_DANGER_APPROACH) && pSound->m_hOwner && !FInViewCone(pSound->GetSoundReactOrigin()) )
 						{
@@ -1945,6 +1948,11 @@ int CNPC_Combine::SelectSchedule( void )
 					}
 				}
 			}
+#else
+			int schedule = SelectScheduleDanger();
+			if (schedule != SCHED_NONE)
+				return schedule;
+#endif
 		}
 
 		if( BehaviorSelectSchedule() )

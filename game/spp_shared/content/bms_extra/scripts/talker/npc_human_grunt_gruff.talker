@@ -93,7 +93,10 @@ response HGRUNT_GRUFF_QUEST_RECENT_COMBAT
 
 rule HGRUNT_GRUFF_QUEST_RECENT_COMBAT
 {
-	criteria TLK_HG_QUEST RecentCombatLong isgrunt HECUVoiceMaskedGruff
+	criteria TLK_IDLE RecentCombatLong isgrunt HECUVoiceMaskedGruff SoldierNotReplyToCheck
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	applycontexttoself
 	response HGRUNT_GRUFF_QUEST_RECENT_COMBAT
 }
 
@@ -116,7 +119,10 @@ response HGRUNT_GRUFF_ANSWER_RECENT_COMBAT
 
 rule HGRUNT_GRUFF_ANSWER_RECENT_COMBAT
 {
-	criteria TLK_HG_CLEAR RecentCombatLong isgrunt HECUVoiceMaskedGruff
+	criteria TLK_IDLE isgrunt HECUVoiceMaskedGruff SoldierReplyToCheck
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	applycontexttoself
 	response HGRUNT_GRUFF_ANSWER_RECENT_COMBAT
 }
 
@@ -169,7 +175,8 @@ response HGRUNT_GRUFF_GREN
 
 rule HGRUNT_GRUFF_GREN
 {
-	criteria TLK_HG_GREN isgrunt HECUVoiceMaskedGruff
+	criteria TLK_HG_COVER isgrunt HECUVoiceMaskedGruff
+	"danger_is_grenade" "1" required
 	response HGRUNT_GRUFF_GREN
 }
 
@@ -181,7 +188,7 @@ response HGRUNT_GRUFF_HURTARM
 
 rule HGRUNT_GRUFF_HURTARM
 {
-	criteria TLK_HG_HURTARM isgrunt HECUVoiceMaskedGruff
+	criteria TLK_SHOT ShotInArm isgrunt HECUVoiceMaskedGruff
 	response HGRUNT_GRUFF_HURTARM
 }
 
@@ -193,7 +200,7 @@ response HGRUNT_GRUFF_HURTLEG
 
 rule HGRUNT_GRUFF_HURTLEG
 {
-	criteria TLK_HG_HURTLEG isgrunt HECUVoiceMaskedGruff
+	criteria TLK_SHOT ShotInLeg isgrunt HECUVoiceMaskedGruff
 	response HGRUNT_GRUFF_HURTLEG
 }
 
@@ -218,7 +225,7 @@ response HGRUNT_GRUFF_IDLE
 
 rule HGRUNT_GRUFF_IDLE
 {
-	criteria TLK_HG_IDLE isgrunt HECUVoiceMaskedGruff
+	criteria TLK_HG_IDLE isgrunt HECUVoiceMaskedGruff SoldierNotReplyToCheck
 	response HGRUNT_GRUFF_IDLE
 }
 
@@ -246,6 +253,7 @@ response HGRUNT_GRUFF_MEDIC
 rule HGRUNT_GRUFF_MEDIC
 {
 	criteria TLK_HG_MEDIC isgrunt HECUVoiceMaskedGruff
+	"damagebits"	"&~8" required
 	response HGRUNT_GRUFF_MEDIC
 }
 
@@ -362,7 +370,7 @@ response HGRUNT_GRUFF_TAUNT_PLAYER
 
 rule HGRUNT_GRUFF_TAUNT_PLAYER
 {
-	criteria TLK_HG_TAUNT EnemyIsPlayer isgrunt HECUVoiceMaskedGruff
+	criteria TLK_HG_TAUNT EnemyIsPlayer isgrunt HECUVoiceMaskedGruff CanSayFreemanLines
 	response HGRUNT_GRUFF_TAUNT_PLAYER
 }
 

@@ -58,7 +58,7 @@ response hgrunt_idle
 
 rule hgrunt_idle
 {
-	criteria isgrunt tlk_hg_idle HECUVoiceNormal
+	criteria isgrunt tlk_hg_idle HECUVoiceNormal SoldierNotReplyToCheck
 	response hgrunt_idle
 }
 
@@ -124,7 +124,10 @@ response hgrunt_quest_check
 
 rule hgrunt_quest_check
 {
-	criteria tlk_hg_quest RecentCombatLong HECUVoiceNormal
+	criteria TLK_IDLE RecentCombatLong HECUVoiceNormal SoldierNotReplyToCheck
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	applycontexttoself
 	response hgrunt_quest_check
 }
 
@@ -146,7 +149,10 @@ response hgrunt_answer_clear
 
 rule hgrunt_answer_clear
 {
-	criteria tlk_hg_clear RecentCombatLong HECUVoiceNormal
+	criteria TLK_IDLE RecentCombatLong HECUVoiceNormal SoldierReplyToCheck
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	applycontexttoself
 	response hgrunt_answer_clear
 }
 
@@ -358,7 +364,8 @@ response hgrunt_gren
 
 rule hgrunt_gren
 {
-	criteria isgrunt tlk_hg_gren HECUVoiceNormal
+	criteria isgrunt tlk_hg_cover HECUVoiceNormal
+	danger_is_grenade 1 required
 	response hgrunt_gren
 }
 
@@ -413,7 +420,7 @@ response hgrunt_hurtarm
 
 rule hgrunt_hurtarm
 {
-	criteria isgrunt tlk_hg_hurtarm HECUVoiceNormal
+	criteria isgrunt tlk_shot ShotInArm HECUVoiceNormal
 	response hgrunt_hurtarm
 }
 
@@ -435,7 +442,7 @@ response hgrunt_hurtleg
 
 rule hgrunt_hurtleg
 {
-	criteria isgrunt tlk_hg_hurtleg HECUVoiceNormal
+	criteria isgrunt tlk_shot ShotInLeg HECUVoiceNormal
 	response hgrunt_hurtleg
 }
 
@@ -457,6 +464,7 @@ response hgrunt_medic
 rule hgrunt_medic
 {
 	criteria isgrunt tlk_hg_medic HECUVoiceNormal
+	"damagebits"	"&~8" required
 	response hgrunt_medic
 }
 

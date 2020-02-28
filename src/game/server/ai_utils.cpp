@@ -33,7 +33,7 @@ CBasePlayer* AI_GetNeutralPlayer(CBaseEntity* pAI)
 	params.life = GETPLAYER_LIFE_ALIVE;
 	params.selector = GETPLAYER_NEAREST;
 	params.entityRelations = GETPLAYER_RELATIONSHIP_EQUAL;
-	params.nRelation = D_LI;
+	params.nRelation = D_NU;
 	return UTIL_GetIdealPlayer(params);
 }
 

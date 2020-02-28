@@ -62,6 +62,7 @@ public:
 	void UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual bool	CanJoinPlayerSquad(CBasePlayer *pPlayer = nullptr);
 	
+	virtual bool	IgnorePlayerPushing(void);
 
 	Activity		NPC_TranslateActivity(Activity eNewActivity);
 

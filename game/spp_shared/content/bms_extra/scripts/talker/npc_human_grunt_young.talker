@@ -82,7 +82,7 @@ response HGRUNT_YOUNG_QUEST_GENERIC
 
 rule HGRUNT_YOUNG_QUEST_GENERIC
 {
-	criteria TLK_HG_QUEST isgrunt HECUVoiceMaskedYoung
+	criteria ConceptTalkQuestion isgrunt HECUVoiceMaskedYoung
 	response HGRUNT_YOUNG_QUEST_GENERIC
 }
 
@@ -118,7 +118,7 @@ response HGRUNT_YOUNG_ANSWER_GENERIC
 
 rule HGRUNT_YOUNG_ANSWER_GENERIC
 {
-	criteria TLK_HG_ANSWER isgrunt HECUVoiceMaskedYoung
+	criteria ConceptTalkAnswer isgrunt HECUVoiceMaskedYoung
 	response HGRUNT_YOUNG_ANSWER_GENERIC
 }
 
@@ -135,7 +135,10 @@ response HGRUNT_YOUNG_QUEST_RECENT_COMBAT
 
 rule HGRUNT_YOUNG_QUEST_RECENT_COMBAT
 {
-	criteria TLK_HG_QUEST isgrunt HECUVoiceMaskedYoung RecentCombatLong
+	criteria ConceptTalkIdle isgrunt HECUVoiceMaskedYoung RecentCombatLong SoldierNotReplyToCheck
+	applycontext	"soldierreplytocheck:1"
+	applycontexttosquad
+	applycontexttoself
 	response HGRUNT_YOUNG_QUEST_RECENT_COMBAT
 }
 
@@ -163,7 +166,10 @@ response HGRUNT_YOUNG_ANSWER_RECENT_COMBAT
 
 rule HGRUNT_YOUNG_ANSWER_RECENT_COMBAT
 {
-	criteria TLK_HG_ANSWER isgrunt HECUVoiceMaskedYoung RecentCombatLong
+	criteria ConceptTalkIdle isgrunt HECUVoiceMaskedYoung RecentCombatLongSoldierReplyToCheck
+	applycontext	"soldierreplytocheck:0"
+	applycontexttosquad
+	applycontexttoself
 	response HGRUNT_YOUNG_ANSWER_RECENT_COMBAT
 }
 
@@ -182,7 +188,8 @@ response HGRUNT_YOUNG_GREN_FOE
 
 rule HGRUNT_YOUNG_GREN_FOE
 {
-	criteria TLK_HG_GREN isgrunt HECUVoiceMaskedYoung
+	criteria isgrunt HECUVoiceMaskedYoung ConceptTalkDanger
+	danger_is_grenade	"1" required
 	response HGRUNT_YOUNG_GREN_FOE
 }
 
@@ -204,22 +211,10 @@ response HGRUNT_YOUNG_HURT
 	scene "scenes/npc/hgrunt_young/hgrunt_medic21.vcd"
 }
 
-rule HGRUNT_YOUNG_HURTARM
-{
-	criteria TLK_HG_HURTARM isgrunt HECUVoiceMaskedYoung
-	response HGRUNT_YOUNG_HURT
-}
-
-rule HGRUNT_YOUNG_HURTLEG
-{
-	criteria TLK_HG_HURTLEG isgrunt HECUVoiceMaskedYoung
-	response HGRUNT_YOUNG_HURT
-}
-
-
 rule HGRUNT_YOUNG_MEDIC
 {
-	criteria TLK_HG_MEDIC isgrunt HECUVoiceMaskedYoung
+	criteria TLK_WOUND isgrunt HECUVoiceMaskedYoung
+	"damagebits"	"&~8" required
 	response HGRUNT_YOUNG_HURT
 }
 
@@ -249,7 +244,7 @@ response HGRUNT_YOUNG_IDLE
 
 rule HGRUNT_YOUNG_IDLE
 {
-	criteria TLK_HG_IDLE isgrunt HECUVoiceMaskedYoung
+	criteria ConceptTalkIdle isgrunt HECUVoiceMaskedYoung SoldierNotReplyToCheck
 	response HGRUNT_YOUNG_IDLE
 }
 
@@ -280,49 +275,49 @@ response HGRUNT_YOUNG_TAUNT_ALIEN
 
 rule HGRUNT_YOUNG_TAUNT_HEADCRAB
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsHeadcrab
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsHeadcrab
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_ZOMBIE_GUARD
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsZombieGuard
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsZombieGuard
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_ZOMBIE_SCIENTIST
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsZombieScientist
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsZombieScientist
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_ALIENGRUNT
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsAlienGrunt
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsAlienGrunt
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_ALIENSLAVE
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsAlienSlave
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsAlienSlave
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_BULLSQUID
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsBullsquid
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsBullsquid
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_HOUNDEYE
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsHoundeye
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsHoundeye
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
 rule HGRUNT_YOUNG_TAUNT_GARGANTUA
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsGargantua
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsGargantua
 	response HGRUNT_YOUNG_TAUNT_ALIEN
 }
 
@@ -345,7 +340,7 @@ response HGRUNT_YOUNG_TAUNT_GENERIC
 
 rule HGRUNT_YOUNG_TAUNT_GENERIC
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung
 	response HGRUNT_YOUNG_TAUNT_GENERIC
 }
 
@@ -368,7 +363,7 @@ response HGRUNT_YOUNG_TAUNT_PLAYER
 
 rule HGRUNT_YOUNG_TAUNT_PLAYER
 {
-	criteria TLK_HG_TAUNT isgrunt HECUVoiceMaskedYoung EnemyIsPlayer CanSayFreemanLines
+	criteria ConceptTalkAttacking isgrunt HECUVoiceMaskedYoung EnemyIsPlayer CanSayFreemanLines
 	response HGRUNT_YOUNG_TAUNT_PLAYER
 }
 

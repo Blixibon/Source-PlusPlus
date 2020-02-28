@@ -275,8 +275,13 @@ bool CNPC_BaseColleague::CanJoinPlayerSquad(CBasePlayer *pPlayer)
 	return true;
 }
 
+bool CNPC_BaseColleague::IgnorePlayerPushing(void)
+{
+	if (GlobalEntity_GetState("predisaster") == GLOBAL_ON)
+		return true;
 
-
+	return BaseClass::IgnorePlayerPushing();
+}
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

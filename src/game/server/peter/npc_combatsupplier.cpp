@@ -203,7 +203,7 @@ bool CNPC_CombatSupplier::ShouldHealTarget(CBaseEntity* pTarget, bool bActiveUse
 {
 	Disposition_t disposition;
 
-	if (!pTarget && ((disposition = IRelationType(pTarget)) != D_LI && disposition != D_NU))
+	if (!pTarget || ((disposition = IRelationType(pTarget)) != D_LI && disposition != D_NU))
 		return false;
 
 	// Don't heal if I'm in the middle of talking
@@ -423,7 +423,7 @@ void CNPC_CombatSupplier::HandleAnimEvent(animevent_t* pEvent)
 	{
 		// Heal my target (if within range)
 #if HL2_EPISODIC
-		if (USE_EXPERIMENTAL_MEDIC_CODE() && IsMedic())
+		if (GetTask() && GetTask()->iTask == TASK_SUPPLIER_HEAL_TOSS)
 		{
 			CBaseCombatCharacter* pTarget = dynamic_cast<CBaseCombatCharacter*>(GetTarget());
 			Assert(pTarget);
@@ -469,7 +469,7 @@ bool CNPC_CombatSupplier::ShouldHealTossTarget(CBaseEntity* pTarget, bool bActiv
 	if (!IsMedic())
 		return false;
 
-	if (!pTarget && ((disposition = IRelationType(pTarget)) != D_LI && disposition != D_NU))
+	if (!pTarget || !pTarget->IsPlayer() || ((disposition = IRelationType(pTarget)) != D_LI && disposition != D_NU))
 		return false;
 
 	// Don't heal if I'm in the middle of talking

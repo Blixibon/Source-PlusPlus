@@ -24,7 +24,7 @@
 #include "ai_sentence.h"
 #include "ai_baseactor.h"
 #ifdef SOLDIER_POSSIBLE_ALLY
-#include "peter/npc_playerfollower.h"
+#include "peter/npc_combatsupplier.h"
 #endif
 
 // Used when only what combine to react to what the spotlight sees
@@ -55,7 +55,7 @@ protected:
 #endif
 
 #ifdef SOLDIER_POSSIBLE_ALLY
-typedef CNPC_PlayerFollower CNPC_CombineBase;
+typedef CNPC_CombatSupplier CNPC_CombineBase;
 #else
 typedef CAI_BaseActor CNPC_CombineBase;
 #endif
@@ -190,7 +190,7 @@ protected:
 #endif
 	virtual bool CouldShootIfCrouching(CBaseEntity* pTarget);
 
-private:
+protected:
 	//=========================================================
 	// Combine S schedules
 	//=========================================================
