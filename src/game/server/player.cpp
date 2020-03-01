@@ -5613,6 +5613,9 @@ bool CBasePlayer::GetInVehicle( IServerVehicle *pVehicle, int nRole )
 	// We cannot be ducking -- do all this before SetPassenger because it
 	// saves our view offset for restoration when we exit the vehicle.
 	RemoveFlag( FL_DUCKING );
+#ifdef FL_ANIMDUCKING
+	RemoveFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 	SetViewOffset( VEC_VIEW_SCALED( this ) );
 	m_Local.m_bDucked = false;
 	m_Local.m_bDucking  = false;
@@ -8111,7 +8114,6 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 
 		SendPropFloat		( SENDINFO( m_flDeathTime ), 0, SPROP_NOSCALE ),
 
-		SendPropInt			( SENDINFO( m_nWaterLevel ), 2, SPROP_UNSIGNED ),
 		SendPropFloat		( SENDINFO( m_flLaggedMovementValue ), 0, SPROP_NOSCALE ),
 
 		SendPropEHandle		( SENDINFO(m_hTonemapController) ),

@@ -32,3 +32,6 @@ pp_skymask_ps20.fxc
 
 pp_splinerope_ps2x.fxc
 pp_splinerope_vs20.fxc
+
+pp_vertexlit_wetness_ps20b.fxc
+pp_vertexlit_wetness_vs20.fxc

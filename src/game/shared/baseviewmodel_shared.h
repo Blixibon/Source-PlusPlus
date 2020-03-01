@@ -118,6 +118,8 @@ public:
 
 	C_BaseAnimating* GetHandsModel();
 
+	virtual float	GetWetness();
+
 // Only supported in TF2 right now
 #if defined( INVASION_CLIENT_DLL )
 

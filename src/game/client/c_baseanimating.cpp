@@ -58,6 +58,7 @@
 #include "fmtstr.h"
 #include "networkstringtable_clientdll.h"
 #include "saverestore_stringtable.h"
+#include "c_effects.h"
 
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
@@ -220,6 +221,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
 	RecvPropFloat( RECVINFO( m_flFadeScale ) ), 
 
 	RecvPropInt(RECVINFO(m_iFireEffectIndex), SPROP_UNSIGNED),
+	RecvPropInt(RECVINFO(m_nWaterLevel)),
 
 END_RECV_TABLE()
 
@@ -5049,8 +5051,10 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 	pRagdoll->m_nSkin = GetSkin();
 	pRagdoll->m_vecForce = m_vecForce;
 	pRagdoll->m_nForceBone = m_nForceBone;
+	pRagdoll->m_flWetTime = m_flWetTime;
+	pRagdoll->m_bIsInWater = m_bIsInWater;
 	pRagdoll->SetNextClientThink( CLIENT_THINK_ALWAYS );
-
+	
 	pRagdoll->SetModelName( AllocPooledString(pModelName) );
 	pRagdoll->SetModelScale( GetModelScale() );
 	return pRagdoll;
@@ -5368,6 +5372,8 @@ void C_BaseAnimating::Simulate()
 	{
 		ClearRagdoll();
 	}
+
+	UpdateWetness();
 }
 
 
@@ -6248,6 +6254,84 @@ KeyValues *C_BaseAnimating::GetSequenceKeyValues( int iSequence )
 		seqKeyValues->deleteThis();
 	}
 	return NULL;
+}
+
+#define WET_TIME			    10.f	// how many seconds till we're completely wet
+#define DRY_TIME			   90.f	// how many seconds till we're completely dry
+
+void C_BaseAnimating::UpdateWetness()
+{
+	float wetness = GetWetness();
+	bool bInPrecipitation = false;
+
+	for (CClient_Precipitation* pPrecip : g_Precipitations)
+	{
+		if (!pPrecip)
+			continue;
+
+		if (pPrecip->GetPrecipitationType() != PRECIPITATION_TYPE_RAIN && pPrecip->GetPrecipitationType() != PRECIPITATION_TYPE_PARTICLERAIN && pPrecip->GetPrecipitationType() != PRECIPITATION_TYPE_PARTICLERAINSTORM)
+			continue;
+
+		if (pPrecip->CollisionProp()->IsPointInBounds(WorldSpaceCenter()))
+		{
+			trace_t tr;
+			CTraceFilterNoNPCsOrPlayer filter(this, GetCollisionGroup());
+			UTIL_TraceLine(WorldSpaceCenter(), WorldSpaceCenter() + Vector(0, 0, 4096), MASK_SHOT, &filter, &tr);
+			if (!tr.DidHit() || tr.surface.flags & SURF_SKY)
+			{
+				bInPrecipitation = true;
+				break;
+			}
+		}
+	}
+
+	if (bInPrecipitation || GetWaterLevel() >= WL_Waist || GetFlags() & FL_INRAIN)
+	{
+		if (!m_bIsInWater)
+		{
+			// Transition...
+			// Figure out how wet we are now (we were drying off...)
+
+			// Here, wet time represents the time at which we get totally wet
+			m_flWetTime = gpGlobals->curtime + (1.0 - wetness) * WET_TIME;
+
+			m_bIsInWater = true;
+		}
+	}
+	else
+	{
+		if (m_bIsInWater)
+		{
+			// Transition...
+			// Figure out how wet we are now (we were getting more wet...)
+			
+			// Here, wet time represents the time at which we get totally dry
+			m_flWetTime = gpGlobals->curtime + wetness * DRY_TIME;
+
+			m_bIsInWater = false;
+		}
+	}
+}
+
+float C_BaseAnimating::GetWetness()
+{
+	float flWetness = 0.f;
+	if (m_bIsInWater)
+	{
+		flWetness = RemapVal(gpGlobals->curtime, m_flWetTime - WET_TIME, m_flWetTime, 0.f, 1.f);
+	}
+	else
+	{
+		flWetness = RemapVal(gpGlobals->curtime, m_flWetTime, m_flWetTime - DRY_TIME, 0.f, 1.f);
+	}
+
+	return Clamp(flWetness, 0.f, 1.f);
+}
+
+void C_BaseAnimating::CopyWetnessFrom(C_BaseAnimating* pOther)
+{
+	m_bIsInWater = pOther->m_bIsInWater;
+	m_flWetTime = pOther->m_flWetTime;
 }
 
 //-----------------------------------------------------------------------------

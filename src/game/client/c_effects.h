@@ -78,7 +78,7 @@ public:
 	// Computes where we're gonna emit
 	bool ComputeEmissionArea( Vector& origin, Vector2D& size, C_BaseCombatCharacter *pCharacter ) const;
 
-
+	PrecipitationType_t GetPrecipitationType() { return m_nPrecipType; }
 private:
 
 	// Creates a single particle

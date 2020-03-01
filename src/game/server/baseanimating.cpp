@@ -268,6 +268,7 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
 	SendPropFloat( SENDINFO( m_flFadeScale ), 0, SPROP_NOSCALE ),
 
 	SendPropInt(SENDINFO(m_iFireEffectIndex), MAX_PARTICLESYSTEMS_STRING_BITS, SPROP_UNSIGNED),
+	SendPropInt(SENDINFO(m_nWaterLevel), 2, SPROP_UNSIGNED),
 
 END_SEND_TABLE()
 
@@ -3056,6 +3057,9 @@ int CBaseAnimating::DrawDebugTextOverlays(void)
 		EntityText(text_offset, tempstr, 0, r, g, b);
 		text_offset++;
 
+		Q_snprintf(tempstr, sizeof(tempstr), "Water Level: %d", GetWaterLevel());
+		EntityText(text_offset, tempstr, 0, r, g, b);
+		text_offset++;
 	}
 
 	// Visualize attachment points

@@ -244,6 +244,7 @@ void C_BaseNetworkedRagdoll::CreateHL2MPRagdoll(void)
 
 		m_nBody = pPlayer->GetBody();
 		m_nSkin = pPlayer->GetSkin();
+		CopyWetnessFrom(pPlayer);
 
 
 		for (int i = 0; i < pPlayer->GetNumWearables(); i++)

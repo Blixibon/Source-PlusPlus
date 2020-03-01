@@ -260,7 +260,6 @@ END_RECV_TABLE()
 
 		RecvPropFloat		( RECVINFO( m_flDeathTime )),
 
-		RecvPropInt			( RECVINFO( m_nWaterLevel ) ),
 		RecvPropFloat		( RECVINFO( m_flLaggedMovementValue )),
 
 		RecvPropEHandle		( RECVINFO(m_hTonemapController) ),

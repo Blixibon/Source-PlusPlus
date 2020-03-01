@@ -11,6 +11,7 @@
 #include "emissive_scroll_blended_pass_helper.h"
 #include "cloak_blended_pass_helper.h"
 #include "flesh_interior_blended_pass_helper.h"
+#include "pp_vertexlit_wetness_pass.h"
 
 BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 	BEGIN_SHADER_PARAMS
@@ -152,6 +153,32 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( TREESWAYSPEEDLERPSTART, SHADER_PARAM_TYPE_FLOAT, "3", "" )
 		SHADER_PARAM( TREESWAYSPEEDLERPEND, SHADER_PARAM_TYPE_FLOAT, "6", "" )
 		SHADER_PARAM( TREESWAYWINDVECTOR, SHADER_PARAM_TYPE_VEC3, "[0 0 0]", "")
+
+		// Wetness Pass
+			SHADER_PARAM(WETNESSPASSENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enables wetness in a second pass")
+			SHADER_PARAM(WETNESSTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "albedo (Base texture with no baked lighting)")
+			SHADER_PARAM(WETNESSBLEND, SHADER_PARAM_TYPE_FLOAT, "0.0", "")
+
+			SHADER_PARAM(WETBUMPMAP, SHADER_PARAM_TYPE_TEXTURE, "models/shadertest/shader1_normal", "bump map")
+			SHADER_PARAM(WETBUMPCOMPRESS, SHADER_PARAM_TYPE_TEXTURE, "models/shadertest/shader3_normal", "compression bump map")
+			SHADER_PARAM(WETBUMPSTRETCH, SHADER_PARAM_TYPE_TEXTURE, "models/shadertest/shader1_normal", "expansion bump map")
+			SHADER_PARAM(WETBUMPFRAME, SHADER_PARAM_TYPE_INTEGER, "0", "frame number for $bumpmap")
+
+			SHADER_PARAM(WETPHONGEXPONENT, SHADER_PARAM_TYPE_FLOAT, "5.0", "Phong exponent for local specular lights")
+			SHADER_PARAM(WETPHONGTINT, SHADER_PARAM_TYPE_VEC3, "5.0", "Phong tint for local specular lights")
+			SHADER_PARAM(WETPHONGALBEDOTINT, SHADER_PARAM_TYPE_BOOL, "1.0", "Apply tint by albedo (controlled by spec exponent texture")
+			SHADER_PARAM(WETPHONGWARPTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "warp the specular term")
+			SHADER_PARAM(WETPHONGFRESNELRANGES, SHADER_PARAM_TYPE_VEC3, "[0  0.5  1]", "Parameters for remapping fresnel output")
+			SHADER_PARAM(WETPHONGBOOST, SHADER_PARAM_TYPE_FLOAT, "1.0", "Phong overbrightening factor (specular mask channel should be authored to account for this)")
+			SHADER_PARAM(WETPHONGEXPONENTTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "Phong Exponent map")
+			SHADER_PARAM(WETPHONGEXPONENTFACTOR, SHADER_PARAM_TYPE_FLOAT, "0.0", "When using a phong exponent texture, this will be multiplied by the 0..1 that comes out of the texture.")
+			SHADER_PARAM(WETBASEMAPALPHAPHONGMASK, SHADER_PARAM_TYPE_INTEGER, "0", "indicates that there is no normal map and that the phong mask is in base alpha")
+			SHADER_PARAM(WETINVERTPHONGMASK, SHADER_PARAM_TYPE_INTEGER, "0", "invert the phong mask (0=full phong, 1=no phong)")
+
+			SHADER_PARAM(WETRIMLIGHT, SHADER_PARAM_TYPE_BOOL, "0", "enables rim lighting")
+			SHADER_PARAM(WETRIMLIGHTEXPONENT, SHADER_PARAM_TYPE_FLOAT, "4.0", "Exponent for rim lights")
+			SHADER_PARAM(WETRIMLIGHTBOOST, SHADER_PARAM_TYPE_FLOAT, "1.0", "Boost for rim lights")
+			SHADER_PARAM(WETRIMMASK, SHADER_PARAM_TYPE_BOOL, "0", "Indicates whether or not to use alpha channel of exponent texture to mask the rim term")
 	END_SHADER_PARAMS
 
 	void SetupVars( VertexLitGeneric_DX9_Vars_t& info )
@@ -360,11 +387,55 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		info.m_nTime = TIME;
 	}
 
+	void SetupVarsWetnessPass(VertexLitWetness_DX9_Vars_t& info)
+	{
+		info.m_nFlashlightTexture = FLASHLIGHTTEXTURE;
+		info.m_nFlashlightTextureFrame = FLASHLIGHTTEXTUREFRAME;
+		info.m_nWetBaseTexture = WETNESSTEXTURE;
+		info.m_nWetBaseTextureTransform = BASETEXTURETRANSFORM;
+		info.m_nWetBaseTextureFrame = FRAME;
+		info.m_nWetBumpmap = WETBUMPMAP;
+		info.m_nWetBumpFrame = WETBUMPFRAME;
+		info.m_nWetBumpTransform = BUMPTRANSFORM;
+		info.m_nWetNormalStretch = WETBUMPSTRETCH;
+		info.m_nWetNormalWrinkle = WETBUMPCOMPRESS;
+		info.m_nWetBlendStrength = WETNESSBLEND;
+		info.m_nWetBaseMapAlphaPhongMask = WETBASEMAPALPHAPHONGMASK;
+		info.m_nWetInvertPhongMask = WETINVERTPHONGMASK;
+		
+		info.m_nWetPhongExponent = WETPHONGEXPONENT;
+		info.m_nWetPhongExponentTexture = WETPHONGEXPONENTTEXTURE;
+		info.m_nWetPhongTint = WETPHONGTINT;
+		info.m_nWetPhongAlbedoTint = WETPHONGALBEDOTINT;
+		info.m_nWetPhongWarpTexture = WETPHONGWARPTEXTURE;
+		info.m_nWetPhongBoost = WETPHONGBOOST;
+		info.m_nWetPhongExponentFactor = WETPHONGEXPONENTFACTOR;
+		info.m_nWetPhongFresnelRanges = WETPHONGFRESNELRANGES;
+
+
+		info.m_nWetRimLight = WETRIMLIGHT;
+		info.m_nWetRimLightPower = WETRIMLIGHTEXPONENT;
+		info.m_nWetRimLightBoost = WETRIMLIGHTBOOST;
+		info.m_nWetRimMask = WETRIMMASK;
+	}
+
 	SHADER_INIT_PARAMS()
 	{
 		VertexLitGeneric_DX9_Vars_t vars;
 		SetupVars( vars );
 		InitParamsVertexLitGeneric_DX9( this, params, pMaterialName, true, vars );
+
+		// Wetness Pass
+		if (!params[WETNESSPASSENABLED]->IsDefined() || !g_pConfig->UsePhong() || !g_pHardwareConfig->SupportsPixelShaders_2_b())
+		{
+			params[WETNESSPASSENABLED]->SetIntValue(0);
+		}
+		else if (params[WETNESSPASSENABLED]->GetIntValue())
+		{
+			VertexLitWetness_DX9_Vars_t info;
+			SetupVarsWetnessPass(info);
+			InitParamsVertexLitWetness_DX9(this, params, pMaterialName, info);
+		}
 
 		// Cloak Pass
 		if ( !params[CLOAKPASSENABLED]->IsDefined() )
@@ -423,6 +494,13 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		SetupVars( vars );
 		InitVertexLitGeneric_DX9( this, params, true, vars );
 
+		if (params[WETNESSPASSENABLED]->GetIntValue())
+		{
+			VertexLitWetness_DX9_Vars_t info;
+			SetupVarsWetnessPass(info);
+			InitVertexLitWetness_DX9(this, params, info);
+		}
+
 		// Cloak Pass
 		if ( params[CLOAKPASSENABLED]->GetIntValue() )
 		{
@@ -448,7 +526,7 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		}
 	}
 
-	SHADER_DRAW
+		SHADER_DRAW
 	{
 		// Skip the standard rendering if cloak pass is fully opaque
 		bool bDrawStandardPass = true;
@@ -473,6 +551,23 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		{
 			// Skip this pass!
 			Draw( false );
+		}
+
+		if (params[WETNESSPASSENABLED]->GetIntValue())
+		{
+			bool bDrawWetnessPass = bDrawStandardPass && (params[WETNESSBLEND]->GetFloatValue() > 0.0f);
+			// If ( snapshotting ) or ( we need to draw this frame )
+			if ((pShaderShadow != NULL) || bDrawWetnessPass)
+			{
+				VertexLitWetness_DX9_Vars_t info;
+				SetupVarsWetnessPass(info);
+				DrawVertexLitWetness_DX9(this, params, pShaderAPI, pShaderShadow, info, vertexCompression);
+			}
+			else // We're not snapshotting and we don't need to draw this frame
+			{
+				// Skip this pass!
+				Draw(false);
+			}
 		}
 
 		// Cloak Pass

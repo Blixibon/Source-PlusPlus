@@ -428,6 +428,8 @@ private:
 	memhandle_t		m_boneCacheHandle;
 	unsigned short	m_fBoneCacheFlags;		// Used for bone cache state on model
 
+	IMPLEMENT_NETWORK_VAR_FOR_DERIVED(m_nWaterLevel);
+
 protected:
 	CNetworkVar( float, m_fadeMinDist );	// Point at which fading is absolute
 	CNetworkVar( float, m_fadeMaxDist );	// Point at which fading is inactive

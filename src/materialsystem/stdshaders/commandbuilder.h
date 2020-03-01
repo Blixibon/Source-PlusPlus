@@ -15,6 +15,8 @@
 
 #include "BaseVSShader.h"
 #include "shaderapi/ishaderapi.h"
+#include "../IShaderSystem.h"
+#include "../shaderlib/shaderDLL_Global.h"
 
 #ifdef _WIN32
 #pragma once
@@ -384,6 +386,12 @@ public:
 	{
 		ShaderAPITextureHandle_t hTexture = pShader->GetShaderAPITextureBindHandle( nTextureVar, nFrameVar );
 		BindTexture( nSampler, hTexture );
+	}
+
+	FORCEINLINE void BindTexture(Sampler_t nSampler, ITexture* pTexture, int iFrame = 0)
+	{
+		ShaderAPITextureHandle_t hTexture = GetShaderSystem()->GetShaderAPITextureBindHandle(pTexture, iFrame);
+		BindTexture(nSampler, hTexture);
 	}
 
 	FORCEINLINE void BindMultiTexture( CBaseVSShader *pShader, Sampler_t nSampler1, Sampler_t nSampler2, int nTextureVar, int nFrameVar )

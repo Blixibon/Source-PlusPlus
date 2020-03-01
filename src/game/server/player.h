@@ -984,7 +984,6 @@ public:
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_vecBaseVelocity );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_nNextThinkTick );
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_vecVelocity );
-	IMPLEMENT_NETWORK_VAR_FOR_DERIVED( m_nWaterLevel );
 
 	int						m_nButtons;
 	int						m_afButtonPressed;

@@ -89,6 +89,9 @@ $Project
 
 		$File	"eye_refract.cpp"
 		$File	"eye_refract_helper.cpp"
+		
+		$File	"pp_vertexlit_wetness_pass.h"
+		$File	"pp_vertexlit_wetness_pass.cpp"
 
 		$File	"portalstaticoverlay.cpp"
 		$File	"portal_refract.cpp"

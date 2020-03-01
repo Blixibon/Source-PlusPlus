@@ -162,6 +162,10 @@ public:
 		return Clamp(GetHL1MouthOpenPct() + GetHL2MouthOpenPct(), 0.0f, 1.0f);
 	}
 
+	virtual void	UpdateWetness();
+	virtual float	GetWetness();
+	void			CopyWetnessFrom(C_BaseAnimating* pOther);
+
 	// Computes a box that surrounds all hitboxes
 	bool ComputeHitboxSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );
 	bool ComputeEntitySpaceHitboxSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );
@@ -681,6 +685,10 @@ private:
 	mutable CStudioHdr				*m_pStudioHdr;
 	mutable MDLHandle_t				m_hStudioHdr;
 	CThreadFastMutex				m_StudioHdrInitLock;
+
+protected:
+	float							m_flWetTime;
+	bool							m_bIsInWater;
 };
 
 enum 

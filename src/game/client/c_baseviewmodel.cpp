@@ -109,8 +109,15 @@ public:
 	virtual ShadowType_t	ShadowCastType()
 	{
 		if (m_pViewModel)
-			m_pViewModel->ShadowCastType();
+			return m_pViewModel->ShadowCastType();
 		return SHADOWS_NONE;
+	}
+
+	virtual float	GetWetness()
+	{
+		if (m_pViewModel)
+			return m_pViewModel->GetWetness();
+		return BaseClass::GetWetness();
 	}
 
 	virtual bool ShouldDraw();
@@ -634,6 +641,15 @@ int CBaseViewModel::GetHandModelData(int& iSkin, int& iBody)
 C_BaseAnimating* CBaseViewModel::GetHandsModel()
 {
 	return s_pViewHands[ViewModelIndex()];
+}
+
+float CBaseViewModel::GetWetness()
+{
+	C_BasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (pOwner)
+		return pOwner->GetWetness();
+
+	return BaseClass::GetWetness();
 }
 
 //-----------------------------------------------------------------------------
