@@ -691,6 +691,7 @@ void CWeaponCrossbow::ItemBusyFrame( void )
 {
 	// Allow zoom toggling even when we're reloading
 	CheckZoomToggle();
+	HandleUserHolster();
 }
 
 //-----------------------------------------------------------------------------

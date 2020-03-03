@@ -187,6 +187,9 @@ void CPointTeleport::DoTeleport( inputdata_t &inputdata, const Vector &vecOrigin
 		{
 			pPlayer->m_nButtons |= IN_DUCK;
 			pPlayer->AddFlag( FL_DUCKING );
+#ifdef FL_ANIMDUCKING
+			pPlayer->AddFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 			pPlayer->m_Local.m_bDucked = true;
 			pPlayer->m_Local.m_bDucking = true;
 			pPlayer->m_Local.m_flDucktime = 0.0f;

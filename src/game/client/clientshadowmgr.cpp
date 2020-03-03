@@ -105,12 +105,12 @@ static ConVar r_worldlight_shortenfactor( "r_worldlight_shortenfactor", "1.5" , 
 static ConVar r_worldlight_mincastintensity( "r_worldlight_mincastintensity", "0.0003", FCVAR_CHEAT, "Minimum brightness of a light to be classed as shadow casting", true, 0, false, 0 );
 
 ConVar r_flashlightdepthtexture( "r_flashlightdepthtexture", "1" );
-ConVar r_max_shadowtextures( "r_max_shadowtextures", "8" );
+//ConVar r_max_shadowtextures( "r_max_shadowtextures", "8" );
 
 #if defined( _X360 )
 ConVar r_flashlightdepthres( "r_flashlightdepthres", "2048" );
 #else
-ConVar r_flashlightdepthres( "r_flashlightdepthres", "2048" );
+ConVar r_flashlightdepthres( "r_flashlightdepthres", "4096" );
 #endif
 
 static void ThreadedShadowMGRCallback(IConVar *var, const char *pOldValue, float flOldValue);
@@ -119,6 +119,8 @@ ConVar r_threaded_client_shadow_manager( "r_threaded_client_shadow_manager", "0"
 #ifdef _WIN32
 #pragma warning( disable: 4701 )
 #endif
+
+#define NUM_DEPTH_TEXTURE_RESOLUTIONS 5
 
 // forward declarations
 void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
@@ -946,7 +948,7 @@ public:
 				}
 			}
 
-		return m_DepthTextureCaches[3].Textures.Tail();
+		return m_DepthTextureCaches[NUM_DEPTH_TEXTURE_RESOLUTIONS-1].Textures.Tail();
 	}
 
 	virtual ShadowHandle_t GetShadowDepthHandle( int num )
@@ -1109,7 +1111,7 @@ private:
 		int Resolution;
 	} DepthTexCache_t;
 
-	DepthTexCache_t m_DepthTextureCaches[4]; // Huge, Large, Small, Tiny
+	DepthTexCache_t m_DepthTextureCaches[NUM_DEPTH_TEXTURE_RESOLUTIONS]; // Huge, Large, Small, Tiny
 
 	CUtlMap<int, InternalFlashlightState_t> m_ClientFlashlightStates;
 
@@ -1458,7 +1460,7 @@ bool CClientShadowMgr::Init()
 
 	SetShadowBlobbyCutoffArea( 0.005 );
 
-	m_nMaxDepthTextureShadows = (r_max_shadowtextures.GetInt() > 0) ? r_max_shadowtextures.GetInt() : 4;
+	m_nMaxDepthTextureShadows = 0;
 
 	bool bLowEnd = ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 );
 
@@ -1515,8 +1517,8 @@ void CClientShadowMgr::InitDepthTextureShadows()
 	m_nDepthTextureResolution = r_flashlightdepthres.GetInt();
 
 	// Create some number of depth-stencil textures
-	int nTextureResolutions[] = { m_nDepthTextureResolution, m_nDepthTextureResolution / 2, m_nDepthTextureResolution / 4, m_nDepthTextureResolution / 8 };
-	int nTexturesPerResolution[] = { 2, 18, 24, 36 }; // 0, 3, 4, 6 omnis...but individual envprojtex'es will eat into that
+	//int nTextureResolutions[NUM_DEPTH_TEXTURE_RESOLUTIONS] = { m_nDepthTextureResolution, m_nDepthTextureResolution / 2, m_nDepthTextureResolution / 4, m_nDepthTextureResolution / 8, m_nDepthTextureResolution / 16 };
+	int nTexturesPerResolution[NUM_DEPTH_TEXTURE_RESOLUTIONS] = { 1, 2, 18, 24, 36 }; // 0, 3, 4, 6 omnis...but individual envprojtex'es will eat into that
 	int numInits = 0;
 	
 	if (!m_bDepthTextureActive)
@@ -1539,13 +1541,13 @@ void CClientShadowMgr::InitDepthTextureShadows()
 #endif
 
 		// Create some number of depth-stencil textures
-		for (int j = 0; j < 4; j++)
+		for (int j = 0; j < NUM_DEPTH_TEXTURE_RESOLUTIONS; j++)
 		{
 			m_DepthTextureCaches[j].Textures.Purge();
 			m_DepthTextureCaches[j].Locks.Purge();
 			m_DepthTextureCaches[j].Handles.Purge();
 
-			m_DepthTextureCaches[j].Resolution = nTextureResolutions[j];
+			m_DepthTextureCaches[j].Resolution = Max(256, m_nDepthTextureResolution / (1 << j));
 
 			for (int i = 0; i < nTexturesPerResolution[j]; i++)
 			{
@@ -1559,13 +1561,13 @@ void CClientShadowMgr::InitDepthTextureShadows()
 #if defined( _X360 )
 				// create a render target to use as a resolve target to get the shared depth buffer
 				// surface is effectively never used
-				depthTex.InitRenderTargetTexture(nTextureResolutions[j], nTextureResolutions[j], RT_SIZE_OFFSCREEN, dstFormat, MATERIAL_RT_DEPTH_NONE, false, strRTName);
+				depthTex.InitRenderTargetTexture(m_DepthTextureCaches[j].Resolution, m_DepthTextureCaches[j].Resolution, RT_SIZE_OFFSCREEN, dstFormat, MATERIAL_RT_DEPTH_NONE, false, strRTName);
 				depthTex.InitRenderTargetSurface(1, 1, dstFormat, false);
 #else
-				depthTex.InitRenderTarget(nTextureResolutions[j], nTextureResolutions[j], RT_SIZE_NO_CHANGE, dstFormat, MATERIAL_RT_DEPTH_ONLY, false, strRTName);
+				depthTex.InitRenderTarget(m_DepthTextureCaches[j].Resolution, m_DepthTextureCaches[j].Resolution, RT_SIZE_NO_CHANGE, dstFormat, MATERIAL_RT_DEPTH_ONLY, false, strRTName);
 #endif
 
-				Assert(depthTex->GetActualWidth() == nTextureResolutions[j]);
+				Assert(depthTex->GetActualWidth() == m_DepthTextureCaches[j].Resolution);
 
 				m_DepthTextureCaches[j].Textures.AddToTail(depthTex);
 				m_DepthTextureCaches[j].Locks.AddToTail(bFalse);
@@ -5107,7 +5109,7 @@ bool CClientShadowMgr::LockShadowDepthTexture( CTextureReference *shadowDepthTex
 	else if (flDistSq < 1024*1024)
 		StartCache = 1;
 
-	for (int i = StartCache; i < 4; i++)
+	for (int i = StartCache; i < NUM_DEPTH_TEXTURE_RESOLUTIONS; i++)
 		for (int j = 0; j < m_DepthTextureCaches[i].Textures.Count(); j++)
 		{
 			if (m_DepthTextureCaches[i].Locks[j] == false && m_DepthTextureCaches[i].Textures[j].IsValid()) // is it free?

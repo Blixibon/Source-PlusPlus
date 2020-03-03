@@ -155,7 +155,7 @@ void CPlayerModels::LevelInitPreEntity()
 	}
 }
 
-ConVar force_pmodel("hlms_forced_player", "", FCVAR_CHEAT, "Forces the game to use a specific player model in singleplayer.");
+ConVar force_pmodel("hlms_forced_player", "", FCVAR_DEVELOPMENTONLY, "Forces the game to use a specific player model in singleplayer.");
 
 playerModel_t *CPlayerModels::SelectPlayerModel(int iGame, bool bSuit)
 {

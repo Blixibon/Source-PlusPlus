@@ -1347,17 +1347,17 @@ int C_Laz_Player::GetHideBits()
 	if (IsInAVehicle() && !UsingStandardWeaponsInVehicle())
 		return 0;
 
-	if (GetActiveWeapon())
+	if (GetActiveWeapon() && !GetActiveWeapon()->IsHolstered())
 	{
 		if (GetActiveWeapon()->GetWpnData().bBodyHideArmL)
 			iBits |= HIDEARM_LEFT;
 
 		if (GetActiveWeapon()->GetWpnData().bBodyHideArmR)
 			iBits |= HIDEARM_RIGHT;
-	}
 
-	if (IsInReload())
-		iBits |= (HIDEARM_LEFT | HIDEARM_RIGHT);
+		if (IsInReload())
+			iBits |= (HIDEARM_LEFT | HIDEARM_RIGHT);
+	}
 
 	return iBits;
 }

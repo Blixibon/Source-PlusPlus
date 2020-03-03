@@ -3651,6 +3651,7 @@ void CWeaponPhysCannon::ItemPreFrame()
 	if( m_bActive )
 	{
 		UpdateObject();
+		m_flReloadHeldTime = 0.f; // Set this to zero so we can't holster while holding something
 	}
 
 #ifndef CLIENT_DLL
@@ -4013,6 +4014,7 @@ void CWeaponPhysCannon::ItemPostFrame()
 	else 
 	{
 		WeaponIdle();
+		HandleUserHolster();
 	}
 
 	if (hl2_episodic.GetBool() == true)

@@ -140,6 +140,7 @@ void CWeaponCoopBaseBludgeon::ItemPostFrame( void )
 	else 
 	{
 		WeaponIdle();
+		HandleUserHolster();
 		return;
 	}
 }

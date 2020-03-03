@@ -6,6 +6,7 @@
 //=============================================================================//
 
 #include "cbase.h"
+#include "peter/gametypes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -139,6 +140,10 @@ void CShadowControl::Spawn( void )
 {
 	Precache();
 	SetSolid( SOLID_NONE );
+
+	// Disable dynamic shadow angles in coast maps
+	if (g_pGameTypeSystem->IsMapInArea(AREA_COAST))
+		m_bEnableLocalLightShadows = false;
 }
 
 //------------------------------------------------------------------------------

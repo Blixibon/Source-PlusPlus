@@ -4035,6 +4035,10 @@ void CGameMovement::FinishUnDuck( void )
 	player->m_Local.m_bDucked = false;
 	player->RemoveFlag( FL_DUCKING );
 	player->m_Local.m_bDucking  = false;
+#ifdef FL_ANIMDUCKING
+	player->RemoveFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
+
 	player->m_Local.m_bInDuckJump  = false;
 	player->SetViewOffset( GetPlayerViewOffset( false ) );
 	player->m_Local.m_flDucktime = 0;
@@ -4098,6 +4102,9 @@ void CGameMovement::FinishUnDuckJump( trace_t &trace )
 	player->RemoveFlag( FL_DUCKING );
 	player->m_Local.m_bDucked = false;
 	player->m_Local.m_bDucking  = false;
+#ifdef FL_ANIMDUCKING
+	player->RemoveFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 	player->m_Local.m_bInDuckJump = false;
 	player->m_Local.m_flDucktime = 0.0f;
 	player->m_Local.m_flDuckJumpTime = 0.0f;
@@ -4124,6 +4131,9 @@ void CGameMovement::FinishDuck( void )
 
 	player->AddFlag( FL_DUCKING );
 	player->m_Local.m_bDucked = true;
+#ifdef FL_ANIMDUCKING
+	player->AddFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 	player->m_Local.m_bDucking = false;
 
 	player->SetViewOffset( GetPlayerViewOffset( true ) );
@@ -4173,6 +4183,9 @@ void CGameMovement::StartUnDuckJump( void )
 {
 	player->AddFlag( FL_DUCKING );
 	player->m_Local.m_bDucked = true;
+#ifdef FL_ANIMDUCKING
+	player->AddFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 	player->m_Local.m_bDucking = false;
 
 	player->SetViewOffset( GetPlayerViewOffset( true ) );
@@ -4310,6 +4323,9 @@ void CGameMovement::Duck( void )
 			{
 				player->m_Local.m_flDucktime = GAMEMOVEMENT_DUCK_TIME;
 				player->m_Local.m_bDucking = true;
+#ifdef FL_ANIMDUCKING
+				player->AddFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 			}
 
 			// The player is in duck transition and not duck-jumping.
@@ -4427,6 +4443,9 @@ void CGameMovement::Duck( void )
 							float flDuckFraction = SimpleSpline( 1.0f - ( flDuckSeconds / TIME_TO_UNDUCK ) );
 							SetDuckedEyeOffset( flDuckFraction );
 							player->m_Local.m_bDucking = true;
+#ifdef FL_ANIMDUCKING
+							player->RemoveFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 						}
 					}
 				}
@@ -4441,6 +4460,9 @@ void CGameMovement::Duck( void )
 						player->m_Local.m_bDucked = true;
 						player->m_Local.m_bDucking = false;
 						player->AddFlag( FL_DUCKING );
+#ifdef FL_ANIMDUCKING
+						player->AddFlag(FL_ANIMDUCKING);
+#endif // FL_ANIMDUCKING
 					}
 				}
 			}

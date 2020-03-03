@@ -199,6 +199,8 @@ void CLaz_Player::Precache(void)
 	PrecacheScriptSound("JumpLand.HighVelocityImpact");
 	PrecacheScriptSound("PortalPlayer.FallRecover");
 
+	PrecacheParticleSystem("blood_impact_zombie_01");
+
 	for (int i = 0; i < FLASHLIGHT_TYPE_COUNT; i++)
 	{
 		gm_hsFlashLightSoundHandles[i] = PrecacheScriptSound(CFmtStr(g_pszFlashLightSounds[i], "On"));
@@ -877,9 +879,16 @@ void CLaz_Player::SetPlayerModel(void)
 		m_MPModel = { 0 };
 	}
 
-	if (GetPlayerPermissions() & LAZ_PERM_FORCE_MODEL)
+	CUtlStringList preferredModels;
+	if (!IsFakeClient())
 	{
 		const char* pszModel = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
+		V_SplitString(pszModel, ";", preferredModels);
+	}
+
+	if (preferredModels.Count() && (GetPlayerPermissions() & LAZ_PERM_FORCE_MODEL))
+	{
+		const char* pszModel = preferredModels.Head();
 		playerModel_t model = PlayerModelSystem()->FindPlayerModel(pszModel);
 		if (model.szSectionID[0])
 		{
@@ -896,15 +905,30 @@ void CLaz_Player::SetPlayerModel(void)
 
 	bool bFound = false;
 	int i = 0;
-	if (!IsFakeClient())
+	if (preferredModels.Count())
 	{
-		const char *pszModel = engine->GetClientConVarValue(engine->IndexOfEdict(edict()), "cl_playermodel");
-		for (i = 0; i < models.Count(); i++)
+		CUtlMap<int, int> prefToActual(DefLessFunc(int));
+		for (int v = 0; v < models.Count(); v++)
 		{
-			if (FStrEq(pszModel, models[i].szSectionID))
+			for (int k = 0; k < preferredModels.Count(); k++)
 			{
+				if (FStrEq(preferredModels[k], models[v].szSectionID))
+				{
+					prefToActual.InsertOrReplace(k, v);
+				}
+			}
+		}
+
+		if (prefToActual.Count())
+		{
+			for (int k = 0; k < preferredModels.Count(); k++)
+			{
+				unsigned short sIDX = prefToActual.Find(k);
+				if (!prefToActual.IsValidIndex(sIDX))
+					continue;
+
+				i = prefToActual.Element(sIDX);
 				bFound = true;
-				break;
 			}
 		}
 	}

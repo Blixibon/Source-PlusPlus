@@ -14,6 +14,9 @@ WeaponData
 	"primary_ammo"			"None"
 	"secondary_ammo"		"slam"
 	"default_clip2"			"1"
+	
+	"autoswitchto"		"0"
+	"autoswitchfrom"	"0"
 
 	"weight"				"1"
 	"item_flags"			"2"

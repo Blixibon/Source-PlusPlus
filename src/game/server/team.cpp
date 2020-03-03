@@ -216,6 +216,7 @@ void CTeam::RemoveSpawnpoint( CTeamSpawnPoint *pSpawnpoint )
 		if ( m_aSpawnPoints[i] == pSpawnpoint )
 		{
 			m_aSpawnPoints.Remove( i );
+			m_iLastSpawn = 0;
 			return;
 		}
 	}

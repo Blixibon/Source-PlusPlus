@@ -282,7 +282,7 @@ public:
 	virtual bool			ReloadOrSwitchWeapons( void );
 	virtual void			OnActiveStateChanged( int iOldState ) { return; }
 	virtual bool			HolsterOnDetach() { return false; }
-	virtual bool			IsHolstered(){ return false; }
+	virtual bool			IsHolstered(){ return IsEffectActive(EF_NODRAW); }
 	virtual void			Detach() {}
 
 	// Weapon behaviour
@@ -294,6 +294,7 @@ public:
 	virtual void			HandleFireOnEmpty();					// Called when they have the attack button down
 																	// but they are out of ammo. The default implementation
 																	// either reloads, switches weapons, or plays an empty sound.
+	virtual void			HandleUserHolster();
 	virtual bool			CanPerformSecondaryAttack() const;
 
 	virtual bool			ShouldBlockPrimaryFire() { return false; }
@@ -664,6 +665,7 @@ public:
 	float					m_fMaxRange2;			// What's the furthest this weapon can be used?
 	bool					m_bReloadsSingly;		// True if this weapon reloads 1 round at a time
 	float					m_fFireDuration;		// The amount of time that the weapon has sustained firing
+	float					m_flReloadHeldTime;
 	int						m_iSubType;
 
 	float					m_flUnlockTime;

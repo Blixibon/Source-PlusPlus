@@ -3,7 +3,6 @@
 	game	"Half-Life 2: Lazuul"
 	title	"H'LF -LIFE2"
 	title2	"== lazuul =="
-	//type singleplayer_only
 	nomodels 1
 	nohimodels 1
 	

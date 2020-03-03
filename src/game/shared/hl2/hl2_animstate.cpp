@@ -94,7 +94,8 @@ Activity CHL2PlayerAnimState::TranslateActivity(Activity actDesired)
 
 		actTranslated = pWeapon->GetItem()->GetActivityOverride(GetBasePlayer()->GetTeamNumber(), actTranslated);
 	}
-	else if (actTranslated == ACT_HL2MP_JUMP)
+	
+	if (actTranslated == ACT_HL2MP_JUMP)
 		actTranslated = ACT_BMMP_JUMP_START;
 
 	return actTranslated;
@@ -520,19 +521,19 @@ bool CHL2PlayerAnimState::HandleJumping(Activity& idealActivity)
 
 	//airwalk more like hl2mp, we airwalk until we have 0 velocity, then it's the jump animation
 	//underwater we're alright we airwalking
-	/*if (!m_bJumping && !(GetBasePlayer()->GetFlags() & FL_ONGROUND) && GetBasePlayer()->GetWaterLevel() <= WL_NotInWater)
+	if (!m_bJumping && !(GetBasePlayer()->GetFlags() & FL_ONGROUND) && GetBasePlayer()->GetWaterLevel() <= WL_NotInWater)
 	{
 		if (!m_fGroundTime)
 		{
 			m_fGroundTime = gpGlobals->curtime;
 		}
-		else if ((gpGlobals->curtime - m_fGroundTime) > 0 && GetOuterXYSpeed() < 0.5f)
+		else if ((gpGlobals->curtime - m_fGroundTime) > 0 && GetOuterXYSpeed() < MOVING_MINIMUM_SPEED)
 		{
 			m_bJumping = true;
 			m_bFirstJumpFrame = false;
 			m_flJumpStartTime = 0;
 		}
-	}*/
+	}
 
 	if (m_bJumping)
 	{
@@ -627,12 +628,16 @@ bool CHL2PlayerAnimState::HandleDriving(Activity& idealActivity)
 		else if (Q_strcmp(STRING(pEnt->GetModelName()), "models/vehicles/prisoner_pod_inner.mdl") == 0)
 			idealActivity = ACT_DRIVE_POD;
 		else
-			idealActivity = pPlayer->UsingStandardWeaponsInVehicle() ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
+			idealActivity = pVehicle->IsPassengerUsingStandardWeapons(iRole) ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
 #endif
+	}
+	else if (iRole == VEHICLE_ROLE_GUNNER)
+	{
+		idealActivity = ACT_IDLE_MANNEDGUN;
 	}
 	else /*if (iRole == VEHICLE_ROLE_PASSENGER)*/
 	{
-		idealActivity = pPlayer->UsingStandardWeaponsInVehicle() ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
+		idealActivity = pVehicle->IsPassengerUsingStandardWeapons(iRole) ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
 	}
 
 	return true;
@@ -667,6 +672,29 @@ bool CHL2PlayerAnimState::HandleMoving(Activity& idealActivity)
 	return true;
 }
 
+bool CHL2PlayerAnimState::HandleDucking(Activity& idealActivity)
+{
+#ifdef FL_ANIMDUCKING
+	if (GetBasePlayer()->GetFlags() & FL_ANIMDUCKING)
+#else
+	if (GetBasePlayer()->GetFlags() & FL_DUCKING)
+#endif // FL_ANIMDUCKING
+	{
+		if (GetOuterXYSpeed() > MOVING_MINIMUM_SPEED)
+		{
+			idealActivity = ACT_MP_CROUCHWALK;
+		}
+		else
+		{
+			idealActivity = ACT_MP_CROUCH_IDLE;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  :  - 
@@ -680,8 +708,8 @@ Activity CHL2PlayerAnimState::CalcMainActivity()
 		HandleClimbing(idealActivity) ||
 		HandleVaulting(idealActivity) ||
 		HandleJumping(idealActivity) ||
-		HandleDucking(idealActivity) ||
 		HandleSwimming(idealActivity) ||
+		HandleDucking(idealActivity) ||
 		HandleDying(idealActivity))
 	{
 		// intentionally blank

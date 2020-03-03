@@ -27,11 +27,11 @@
 //================================================================================
 CBotProfile::CBotProfile()
 {
-	int iGameSkill = TheGameRules->GetSkillLevel();
+	/*int iGameSkill = TheGameRules->GetSkillLevel();
 	int iMinSkill = (1 + (2 * (iGameSkill - 1)));
-	int iBotSkill = RandomInt(iMinSkill, iMinSkill + 1);
+	int iBotSkill = RandomInt(iMinSkill, iMinSkill + 1);*/
 
-	SetSkill(iBotSkill);
+	SetSkill(RandomInt(SKILL_EASIEST, SKILL_HARDEST));
 }
 
 //================================================================================

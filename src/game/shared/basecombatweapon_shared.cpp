@@ -1629,14 +1629,11 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 	// kill any think functions
 	SetThink(NULL);
 
-	// Send holster animation
-	SendWeaponAnim( ACT_VM_HOLSTER );
-
 	// Some weapon's don't have holster anims yet, so detect that
 	float flSequenceDuration = 0;
-	if ( GetActivity() == ACT_VM_HOLSTER )
+	if (SendWeaponAnim(ACT_VM_HOLSTER))
 	{
-		flSequenceDuration = SequenceDuration();
+		flSequenceDuration = SequenceDuration(m_nIdealSequence);
 	}
 
 	CBaseCombatCharacter *pOwner = GetOwner();
@@ -1944,7 +1941,7 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 	// -----------------------
 	//  Reload pressed / Clip Empty
 	//  Can only start the Reload Cycle after the firing cycle
-	if ( ( pOwner->m_nButtons & IN_RELOAD ) && m_flNextPrimaryAttack <= gpGlobals->curtime && UsesClipsForAmmo1() && !m_bInReload ) 
+	if ((pOwner->m_nButtons & IN_RELOAD) && !m_bInReload && m_flNextPrimaryAttack <= gpGlobals->curtime && UsesClipsForAmmo1())
 	{
 		// reload when reload is pressed, or if no buttons are down and weapon is empty.
 		Reload();
@@ -1962,6 +1959,8 @@ void CBaseCombatWeapon::ItemPostFrame( void )
 			WeaponIdle();
 		}
 	}
+
+	HandleUserHolster();
 }
 
 void CBaseCombatWeapon::HandleFireOnEmpty()
@@ -1989,6 +1988,37 @@ void CBaseCombatWeapon::HandleFireOnEmpty()
 void CBaseCombatWeapon::ItemBusyFrame( void )
 {
 	UpdateAutoFire();
+
+	if (IsHolstered())
+	{
+		HandleUserHolster();
+	}
+}
+
+void CBaseCombatWeapon::HandleUserHolster()
+{
+	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+	if (!pOwner)
+		return;
+
+	if ((pOwner->m_nButtons & IN_RELOAD) && !m_bInReload && !IsIronsighted())
+	{
+		m_flReloadHeldTime += gpGlobals->frametime;
+	}
+	else
+	{
+		m_flReloadHeldTime = 0.f;
+	}
+
+	if (m_flReloadHeldTime >= 1.5f)
+	{
+		m_flReloadHeldTime = 0.f;
+
+		if (IsHolstered())
+			Deploy();
+		else
+			Holster();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -2633,6 +2663,9 @@ bool CBaseCombatWeapon::IsLocked( CBaseEntity *pAsker )
 //-----------------------------------------------------------------------------
 Activity CBaseCombatWeapon::ActivityOverride( Activity baseAct, bool *pRequired )
 {
+	if (IsHolstered())
+		return baseAct;
+
 	int actCount = 0;
 	acttable_t *pTable = ActivityList( actCount );
 

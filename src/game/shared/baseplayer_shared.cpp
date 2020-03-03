@@ -267,9 +267,9 @@ void CBasePlayer::ItemPostFrame()
 		return;
 	}
 
-    if ( gpGlobals->curtime < m_flNextAttack )
+    if (GetActiveWeapon() && (gpGlobals->curtime < m_flNextAttack || GetActiveWeapon()->IsHolstered()))
 	{
-		if ( GetActiveWeapon() )
+		//if ( GetActiveWeapon() )
 		{
 			GetActiveWeapon()->ItemBusyFrame();
 		}

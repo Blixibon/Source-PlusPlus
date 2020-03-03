@@ -811,6 +811,7 @@ void CWeaponShotgun::ItemPostFrame( void )
 		}
 
 		WeaponIdle( );
+		HandleUserHolster();
 		return;
 	}
 
