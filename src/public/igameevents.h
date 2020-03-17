@@ -84,6 +84,30 @@ public:
 	virtual void SetString( const char *keyName, const char *value ) = 0;
 };
 
+inline void GameEvent_SetInt64(IGameEvent* pEvent, const char *keyName1, const char *keyName2, int64 i64Value)
+{
+	uint* pLongs = (uint*)&i64Value;
+
+	// Insert the two DWORDS according to network endian
+	const short endianIndex = 0x0100;
+	byte* idx = (byte*)&endianIndex;
+	pEvent->SetInt(keyName1, pLongs[*idx++]);
+	pEvent->SetInt(keyName2, pLongs[*idx]);
+}
+
+inline int64 GameEvent_GetInt64(IGameEvent* pEvent, const char* keyName1, const char* keyName2)
+{
+	int64 retval;
+	uint* pLongs = (uint*)&retval;
+
+	// Read the two DWORDs according to network endian
+	const short endianIndex = 0x0100;
+	byte* idx = (byte*)&endianIndex;
+	pLongs[*idx++] = pEvent->GetInt(keyName1);
+	pLongs[*idx] = pEvent->GetInt(keyName2);
+
+	return retval;
+}
 
 abstract_class IGameEventListener2
 {

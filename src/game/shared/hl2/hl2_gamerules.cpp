@@ -198,10 +198,10 @@ ConVar	sk_npc_dmg_gunship_to_plr	( "sk_npc_dmg_gunship_to_plr", "0", FCVAR_REPLI
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-int CHalfLife2::Damage_GetTimeBased( void )
+int64 CHalfLife2::Damage_GetTimeBased( void )
 {
 #ifdef HL2_EPISODIC
-	int iDamage = ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN );
+	int64 iDamage = ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN );
 	return iDamage;
 #else
 	return BaseClass::Damage_GetTimeBased();
@@ -213,7 +213,7 @@ int CHalfLife2::Damage_GetTimeBased( void )
 // Input  : iDmgType - 
 // Output :		bool
 //-----------------------------------------------------------------------------
-bool CHalfLife2::Damage_IsTimeBased( int iDmgType )
+bool CHalfLife2::Damage_IsTimeBased(int64 iDmgType )
 {
 	// Damage types that are time-based.
 #ifdef HL2_EPISODIC

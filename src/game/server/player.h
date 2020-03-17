@@ -1063,8 +1063,8 @@ protected:
 	Vector					m_DmgOrigin;
 	float					m_DmgTake;
 	float					m_DmgSave;
-	int						m_bitsDamageType;	// what types of damage has player taken
-	int						m_bitsHUDDamage;	// Damage bits for the current fame. These get sent to the hud via gmsgDamage
+	int64					m_bitsDamageType;	// what types of damage has player taken
+	int64					m_bitsHUDDamage;	// Damage bits for the current fame. These get sent to the hud via gmsgDamage
 
 	CNetworkVar( float, m_flDeathTime );		// the time at which the player died  (used in PlayerDeathThink())
 	float					m_flDeathAnimTime;	// the time at which the player finished their death anim (used in PlayerDeathThink() and ShouldTransmit())

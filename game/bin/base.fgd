@@ -180,8 +180,7 @@
 		2 : "[2] BULLET"
 		4 : "[4] SLASH"
 		8 : "[8] BURN"
-		//16 : "[16] FREEZE" // This does not appear to exist.
-		16 : "[16] VEHICLE"
+		16 : "[16] FREEZE"
 		32 : "[32] FALL"
 		64 : "[64] BLAST"
 		128 : "[128] CLUB"
@@ -196,14 +195,17 @@
 		524288 : "[524288] DROWNRECOVER"
 		1048576 : "[1048576] ACID"
 		2097152 : "[2097152] SLOWBURN"
-		//4194304 : "[4194304] SLOWFREEZE" // This does not appear to exist.
-		4194304 : "[4194304] REMOVENORAGDOLL"
+		4194304 : "[4194304] SLOWFREEZE"
 		16777216 : "[16777216] PLASMA"
 		33554432 : "[33554432] AIRBOAT (gun)"
 		67108864 : "[67108864] DISSOLVE"
 		134217728 : "[134217728] BLAST_SURFACE"
 		268435456 : "[268435456] DIRECT"
 		536870912 : "[536870912] BUCKSHOT"
+		1073741824 : "[1073741824] VEHICLE"
+		2147483648 : "[2147483648] REMOVENORAGDOLL"
+		4294967296 : "[4294967296] SNIPER"
+		8589934592 : "[8589934592] MISSILEDEFENSE"
 	]
 	
 	damagepresets(choices) : "Damage Presets" : 0 : "User-friendly 'presets' based on combined damage types. This is accompanied by the damage type and damage or, if they are specified." = 
@@ -219,9 +221,10 @@
 		2048 : "[2048] PREVENT_PHYSICS_FORCE (no physics force)"
 		4096 : "[4096] NEVERGIB (no gibs)"
 		8192 : "[8192] ALWAYSGIB (always gib if possible)"
-		4194304 : "[4194304] REMOVENORAGDOLL (no ragdoll on death)"
+		2147483648 : "[2147483648] REMOVENORAGDOLL (no ragdoll on death)"
 		134217728 : "[134217728] BLAST_SURFACE (no damage underwater)"
 		268435456 : "[268435456] DIRECT (With burn, NPCs treat as being on fire)"
+		8589934592 : "[8589934592] MISSILEDEFENSE (does damage to missiles)"
 	]
 ]
 
@@ -4869,40 +4872,6 @@
 		1 : "AND (input must contain all bits in damage type)"
 		2 : "OR (input must contain any bit in damage type)"
 	]
-
-	damagetype(choices) : "Damage Type" : 0 : "The type(s) of damage associated with this entity." =
-	[
-		0 : "[0] GENERIC"
-		1 : "[1] CRUSH"
-		2 : "[2] BULLET"
-		4 : "[4] SLASH"
-		8 : "[8] BURN"
-		//16 : "[16] FREEZE" // This does not appear to exist.
-		16 : "[16] VEHICLE"
-		32 : "[32] FALL"
-		64 : "[64] BLAST"
-		128 : "[128] CLUB"
-		256 : "[256] SHOCK"
-		512 : "[512] SONIC"
-		1024 : "[1024] ENERGYBEAM"
-		16384: "[16384] DROWN"
-		32768 : "[32768] PARALYSE"
-		65536 : "[65536] NERVEGAS"
-		131072 : "[131072] POISON"
-		262144 : "[262144] RADIATION"
-		524288 : "[524288] DROWNRECOVER"
-		1048576 : "[1048576] ACID"
-		2097152 : "[2097152] SLOWBURN"
-		//4194304 : "[4194304] SLOWFREEZE" // This does not appear to exist.
-		4194304 : "[4194304] REMOVENORAGDOLL"
-		16777216 : "[16777216] PLASMA"
-		33554432 : "[33554432] AIRBOAT (gun)"
-		67108864 : "[67108864] DISSOLVE"
-		134217728 : "[134217728] BLAST_SURFACE"
-		268435456 : "[268435456] DIRECT"
-		536870912 : "[536870912] BUCKSHOT"
-		268435464 : "Ignite Damage (BURN + DIRECT) [268435464]"
-	]
 ]
 
 @FilterClass base(BaseFilter) iconsprite("editor/filter_class.vmt") sphere(filter_radius) sphere(filter_outer_radius) = filter_enemy :
@@ -6646,36 +6615,12 @@
 	soundscape(target_source) : "Soundscape" 
 ]
 
-@SolidClass base(Trigger, Targetname) = trigger_hurt :
+@SolidClass base(Trigger, Targetname, DamageTypes) = trigger_hurt :
 	"A trigger volume that damages entities that touch it."
 [
 	master(string) : "Master (Obsolete)" : : "Legacy support: The name of a master entity. If the master hasn't been activated, this entity will not activate."
 	damage(integer) : "Damage" : 10 : "The amount of damage done to entities that touch this trigger. The damage is done every half-second. See also 'Damage Model' for extra details on how damage can be dealt."
 	damagecap(integer) : "Damage Cap" : 20 : "Maximum damage dealt per second. This field is only used if you select the Doubling w/Forgiveness damage model, via the spawnflag."
-	damagetype(choices) : "Damage Type" : 0 =
-	[
-		0 : "GENERIC"
-		1 : "CRUSH"
-		2 : "BULLET"
-		4 : "SLASH"
-		8 : "BURN"
-		16 : "FREEZE"
-		32 : "FALL"
-		64 : "BLAST"
-		128 : "CLUB"
-		256 : "SHOCK"
-		512 : "SONIC"
-		1024 : "ENERGYBEAM"
-		16384: "DROWN"
-		32768 : "PARALYSE"
-		65536 : "NERVEGAS"
-		131072 : "POISON"
-		262144 : "RADIATION"
-		524288 : "DROWNRECOVER"
-		1048576 : "CHEMICAL"
-		2097152 : "SLOWBURN"
-		4194304 : "SLOWFREEZE"
-	]
 
 	damagemodel(choices) : "Damage Model" : 0 : "How damage is dealt. Normal always does the specified amount of damage each half second. Doubling starts with the specified amount and doubles it each time it hurts the toucher. Forgiveness means that if the toucher gets out of the trigger the damage will reset to the specified value. Good for making triggers that are deadly over time without having to cause massive damage on each touch." =
 	[

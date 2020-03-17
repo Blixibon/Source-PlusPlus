@@ -1733,7 +1733,8 @@ void CBaseEntity::SendOnKilledGameEvent( const CTakeDamageInfo &info )
 		{
 			event->SetInt( "entindex_inflictor", info.GetInflictor()->entindex() );
 		}		
-		event->SetInt( "damagebits", info.GetDamageType() );
+		//event->SetInt( "damagebits", info.GetDamageType() );
+		GameEvent_SetInt64(event, "damagebits1", "damagebits2", info.GetDamageType());
 		gameeventmanager->FireEvent( event );
 	}
 }

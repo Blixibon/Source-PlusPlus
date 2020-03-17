@@ -126,17 +126,17 @@ public:
 
 	// Damage Queries - these need to be implemented by the various subclasses (single-player, multi-player, etc).
 	// The queries represent queries against damage types and properties.
-	virtual bool	Damage_IsTimeBased( int iDmgType ) = 0;			// Damage types that are time-based.
-	virtual bool	Damage_ShouldGibCorpse( int iDmgType ) = 0;		// Damage types that gib the corpse.
-	virtual bool	Damage_ShowOnHUD( int iDmgType ) = 0;			// Damage types that have client HUD art.
-	virtual bool	Damage_NoPhysicsForce( int iDmgType ) = 0;		// Damage types that don't have to supply a physics force & position.
-	virtual bool	Damage_ShouldNotBleed( int iDmgType ) = 0;		// Damage types that don't make the player bleed.
+	virtual bool	Damage_IsTimeBased( int64 iDmgType ) = 0;			// Damage types that are time-based.
+	virtual bool	Damage_ShouldGibCorpse(int64 iDmgType ) = 0;		// Damage types that gib the corpse.
+	virtual bool	Damage_ShowOnHUD(int64 iDmgType ) = 0;			// Damage types that have client HUD art.
+	virtual bool	Damage_NoPhysicsForce(int64 iDmgType ) = 0;		// Damage types that don't have to supply a physics force & position.
+	virtual bool	Damage_ShouldNotBleed(int64 iDmgType ) = 0;		// Damage types that don't make the player bleed.
 	//Temp: These will go away once DamageTypes become enums.
-	virtual int		Damage_GetTimeBased( void ) = 0;				// Actual bit-fields.
-	virtual int		Damage_GetShouldGibCorpse( void ) = 0;
-	virtual int		Damage_GetShowOnHud( void ) = 0;					
-	virtual int		Damage_GetNoPhysicsForce( void )= 0;
-	virtual int		Damage_GetShouldNotBleed( void ) = 0;
+	virtual int64		Damage_GetTimeBased( void ) = 0;				// Actual bit-fields.
+	virtual int64		Damage_GetShouldGibCorpse( void ) = 0;
+	virtual int64		Damage_GetShowOnHud( void ) = 0;
+	virtual int64		Damage_GetNoPhysicsForce( void )= 0;
+	virtual int64		Damage_GetShouldNotBleed( void ) = 0;
 
 // Ammo Definitions
 	//CAmmoDef* GetAmmoDef();

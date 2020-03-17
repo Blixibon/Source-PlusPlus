@@ -86,6 +86,7 @@ void MessageWriteChar( int iValue);
 void MessageWriteShort( int iValue);
 void MessageWriteWord( int iValue );
 void MessageWriteLong( long iValue);
+void MessageWriteLongLong(long long i64Value);
 void MessageWriteFloat( float flValue);
 void MessageWriteAngle( float flValue);
 void MessageWriteCoord( float flValue);
@@ -119,6 +120,7 @@ extern CSteamID GetSteamIDForPlayerIndex( int iPlayerIndex );
 #define WRITE_SHORT		(MessageWriteShort)
 #define WRITE_WORD		(MessageWriteWord)
 #define WRITE_LONG		(MessageWriteLong)
+#define WRITE_INT64		(MessageWriteLongLong)
 #define WRITE_FLOAT		(MessageWriteFloat)
 #define WRITE_ANGLE		(MessageWriteAngle)
 #define WRITE_COORD		(MessageWriteCoord)

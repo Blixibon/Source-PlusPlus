@@ -47,9 +47,9 @@ public:
 	DECLARE_CLASS( CHalfLife2, CSingleplayRules );
 
 	// Damage Query Overrides.
-	virtual bool			Damage_IsTimeBased( int iDmgType );
+	virtual bool			Damage_IsTimeBased(int64 iDmgType );
 	// TEMP:
-	virtual int				Damage_GetTimeBased( void );
+	virtual int64				Damage_GetTimeBased( void );
 	
 	virtual bool			ShouldCollide( int collisionGroup0, int collisionGroup1 );
 	virtual bool			ShouldUseRobustRadiusDamage(CBaseEntity *pEntity);

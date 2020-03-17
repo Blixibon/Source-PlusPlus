@@ -505,7 +505,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent *event )
 			m_DeathNotices[iMsg].bCrit= true;
 			m_DeathNotices[iMsg].iconCritDeath = GetIcon( "d_australium", bLocalPlayerInvolved ? kDeathNoticeIcon_Inverted : kDeathNoticeIcon_Standard );
 		}
-		else if ( event->GetInt( "damagebits" ) & DMG_CRITICAL /*|| event->GetInt( "damagebits" ) & DMG_MINICRITICAL*/  )
+		else if ( GameEvent_GetInt64(event, "damagebits1", "damagebits2") & DMG_CRITICAL /*|| event->GetInt( "damagebits" ) & DMG_MINICRITICAL*/  )
 		{
 			m_DeathNotices[iMsg].bCrit= true;
 			m_DeathNotices[iMsg].iconCritDeath = GetIcon( "d_crit", bLocalPlayerInvolved ? kDeathNoticeIcon_Inverted : kDeathNoticeIcon_Standard );
@@ -545,27 +545,27 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent *event )
 				// special case icon for dying in purgatory
 				Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_purgatory", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );
 			}
-			else if ( event->GetInt( "damagebits" ) & DMG_FALL )
+			else if (GameEvent_GetInt64(event, "damagebits1", "damagebits2") & DMG_FALL )
 			{
 				// special case text for falling death
 				V_wcsncpy( m_DeathNotices[iMsg].wzInfoText, g_pVGuiLocalize->Find( "#DeathMsg_Fall" ), sizeof( m_DeathNotices[iMsg].wzInfoText ) );
 			}
-			else if ( ( event->GetInt( "damagebits" ) & DMG_VEHICLE ) || ( 0 == Q_stricmp( m_DeathNotices[iMsg].szIcon, "d_tracktrain" ) ) )
+			else if ( (GameEvent_GetInt64(event, "damagebits1", "damagebits2") & DMG_VEHICLE ) || ( 0 == Q_stricmp( m_DeathNotices[iMsg].szIcon, "d_tracktrain" ) ) )
 			{
 				// special case icon for hit-by-vehicle death
 				Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_vehicle", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );
 			}			
-			else if ( ( event->GetInt( "damagebits" ) & DMG_BLAST ) && !killer )
+			else if ( (GameEvent_GetInt64(event, "damagebits1", "damagebits2") & DMG_BLAST ) && !killer )
 			{
 				// environmental explosive death
 				Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_explosive", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );
 			}
-			else if ( event->GetInt( "damagebits" ) & DMG_DROWN )
+			else if (GameEvent_GetInt64(event, "damagebits1", "damagebits2") & DMG_DROWN )
 			{
 				// drowned
 				V_wcsncpy( m_DeathNotices[iMsg].wzInfoText, g_pVGuiLocalize->Find( "#DeathMsg_Drown" ), sizeof( m_DeathNotices[iMsg].wzInfoText ) );
 			}
-			else if ( event->GetInt( "damagebits" ) & DMG_RADIATION )
+			else if (GameEvent_GetInt64(event, "damagebits1", "damagebits2") & DMG_RADIATION )
 			{
 				// special case icon for toxic slime death
 				Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_radiation", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );

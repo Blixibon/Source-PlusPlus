@@ -668,6 +668,51 @@ SendProp SendPropInt(
 	return ret;
 }
 
+SendProp SendPropInt64(
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int nBits,
+	int flags,
+	SendVarProxyFn varProxy
+)
+{
+	SendProp ret;
+
+	Assert(sizeofVar == 8);
+
+	ret.m_Type = DPT_DataTable;
+	ret.m_pVarName = pVarName;
+	ret.SetOffset(offset);
+	ret.SetDataTableProxyFn(SendProxy_DataTableToDataTable);
+
+	SendProp* pArrayPropAllocated = new SendProp;
+	*pArrayPropAllocated = SendPropInt(pVarName, offset, 4, -1, flags, varProxy);
+	ret.SetArrayProp(pArrayPropAllocated);
+
+	ret.SetFlags(SPROP_PROXY_ALWAYS_YES);
+
+	SendProp* pProps = new SendProp[2]; // TODO free that again
+
+	// Insert the two DWORDS according to network endian
+	const short endianIndex = 0x0100;
+	byte* idx = (byte*)&endianIndex;
+
+	for (int i = 0; i < 2; i++)
+	{
+		pProps[i] = *pArrayPropAllocated;	// copy array element property setting
+		pProps[i].SetOffset(idx[i] * 4); // adjust offset
+		pProps[i].m_pVarName = s_ElementNames[i];	// give unique name
+		pProps[i].m_pParentArrayPropName = pVarName; // For debugging...
+	}
+
+	SendTable* pTable = new SendTable(pProps, 2, pVarName); // TODO free that again
+
+	ret.SetDataTable(pTable);
+
+	return ret;
+}
+
 SendProp SendPropString(
 	const char *pVarName,
 	int offset,

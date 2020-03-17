@@ -439,14 +439,14 @@ protected:
 		case 1:		return (info.GetDamageType() & m_iDamageType) != 0;
 		case 2:
 		{
-			int iRecvDT = info.GetDamageType();
-			int iOurDT = m_iDamageType;
+			int64 iRecvDT = info.GetDamageType();
+			int64 iOurDT = m_iDamageType;
 			while (iRecvDT)
 			{
 				if (iRecvDT & iOurDT)
 					return true;
 
-				iRecvDT >>= 1; iOurDT >>= 1;
+				iRecvDT >>= 1i64; iOurDT >>= 1i64;
 			}
 			return false;
 		} break;
@@ -456,15 +456,15 @@ protected:
 
 	void InputSetField(inputdata_t& inputdata)
 	{
-		inputdata.value.Convert(FIELD_INTEGER);
-		m_iDamageType = inputdata.value.Int();
+		inputdata.value.Convert(FIELD_STRING);
+		m_iDamageType = atoll(inputdata.value.String());
 	}
 
 	bool KeyValue(const char* szKeyName, const char* szValue)
 	{
 		if (FStrEq(szKeyName, "damageor") || FStrEq(szKeyName, "damagepresets"))
 		{
-			m_iDamageType |= atoi(szValue);
+			m_iDamageType |= atoll(szValue);
 		}
 		else
 			return BaseClass::KeyValue(szKeyName, szValue);
@@ -472,7 +472,7 @@ protected:
 		return true;
 	}
 
-	int m_iDamageType;
+	int64 m_iDamageType;
 	int m_iFilterType;
 };
 
@@ -481,7 +481,7 @@ LINK_ENTITY_TO_CLASS(filter_damage_type, FilterDamageType);
 BEGIN_DATADESC(FilterDamageType)
 
 // Keyfields
-DEFINE_KEYFIELD(m_iDamageType, FIELD_INTEGER, "damagetype"),
+DEFINE_CUSTOM_KEYFIELD(m_iDamageType, &g_Int64SaveOps, "damagetype"),
 DEFINE_KEYFIELD(m_iFilterType, FIELD_INTEGER, "FilterType"),
 
 END_DATADESC()

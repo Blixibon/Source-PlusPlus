@@ -53,7 +53,7 @@
 		RecvPropInt( RECVINFO( m_iEffectName ) ),
 
 		RecvPropInt( RECVINFO( m_nMaterial ) ),
-		RecvPropInt( RECVINFO( m_nDamageType ) ),
+		RecvPropInt64( RECVINFO( m_nDamageType ) ),
 		RecvPropInt( RECVINFO( m_nHitBox ) ),
 
 		RecvPropInt( "entindex", 0, SIZEOF_IGNORE, 0, RecvProxy_EntIndex ),
@@ -115,7 +115,7 @@
 		SendPropInt( SENDINFO_NOCHECK( m_iEffectName ), MAX_EFFECT_DISPATCH_STRING_BITS, SPROP_UNSIGNED ),
 
 		SendPropInt( SENDINFO_NOCHECK( m_nMaterial ), MAX_MODEL_INDEX_BITS, SPROP_UNSIGNED ),
-		SendPropInt( SENDINFO_NOCHECK( m_nDamageType ), 32, SPROP_UNSIGNED ),
+		SendPropInt64( SENDINFO_NOCHECK( m_nDamageType ), -1, SPROP_UNSIGNED ),
 		SendPropInt( SENDINFO_NOCHECK( m_nHitBox ), 12, SPROP_UNSIGNED ),
 
 		SendPropInt( SENDINFO_NAME( m_nEntIndex, entindex ), MAX_EDICT_BITS, SPROP_UNSIGNED ),

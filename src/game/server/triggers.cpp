@@ -652,7 +652,7 @@ BEGIN_DATADESC( CTriggerHurt )
 	DEFINE_FIELD( m_flOriginalDamage, FIELD_FLOAT ),
 	DEFINE_KEYFIELD( m_flDamage, FIELD_FLOAT, "damage" ),
 	DEFINE_KEYFIELD( m_flDamageCap, FIELD_FLOAT, "damagecap" ),
-	DEFINE_KEYFIELD( m_bitsDamageInflict, FIELD_INTEGER, "damagetype" ),
+	DEFINE_CUSTOM_KEYFIELD( m_bitsDamageInflict, &g_Int64SaveOps, "damagetype" ),
 	DEFINE_KEYFIELD( m_damageModel, FIELD_INTEGER, "damagemodel" ),
 	DEFINE_KEYFIELD( m_bNoDmgForce, FIELD_BOOLEAN, "nodmgforce" ),
 

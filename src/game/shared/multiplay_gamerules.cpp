@@ -153,46 +153,46 @@ bool CMultiplayRules::IsMultiplayer( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int CMultiplayRules::Damage_GetTimeBased( void )
+int64 CMultiplayRules::Damage_GetTimeBased( void )
 {
-	int iDamage = ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN );
+	int64 iDamage = ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN );
 	return iDamage;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int	CMultiplayRules::Damage_GetShouldGibCorpse( void )
+int64	CMultiplayRules::Damage_GetShouldGibCorpse( void )
 {
-	int iDamage = ( DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB );
+	int64 iDamage = ( DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB );
 	return iDamage;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int CMultiplayRules::Damage_GetShowOnHud( void )
+int64 CMultiplayRules::Damage_GetShowOnHud( void )
 {
-	int iDamage = ( DMG_POISON | DMG_ACID | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK );
+	int64 iDamage = ( DMG_POISON | DMG_ACID | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK );
 	return iDamage;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int	CMultiplayRules::Damage_GetNoPhysicsForce( void )
+int64	CMultiplayRules::Damage_GetNoPhysicsForce( void )
 {
-	int iTimeBasedDamage = Damage_GetTimeBased();
-	int iDamage = ( DMG_FALL | DMG_BURN | DMG_PLASMA | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE );
+	int64 iTimeBasedDamage = Damage_GetTimeBased();
+	int64 iDamage = ( DMG_FALL | DMG_BURN | DMG_PLASMA | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE );
 	return iDamage;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-int	CMultiplayRules::Damage_GetShouldNotBleed( void )
+int64	CMultiplayRules::Damage_GetShouldNotBleed( void )
 {
-	int iDamage = ( DMG_POISON | DMG_ACID );
+	int64 iDamage = ( DMG_POISON | DMG_ACID );
 	return iDamage;
 }
 
@@ -201,7 +201,7 @@ int	CMultiplayRules::Damage_GetShouldNotBleed( void )
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CMultiplayRules::Damage_IsTimeBased( int iDmgType )
+bool CMultiplayRules::Damage_IsTimeBased(int64 iDmgType )
 {
 	// Damage types that are time-based.
 	return ( ( iDmgType & ( DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN ) ) != 0 );
@@ -212,7 +212,7 @@ bool CMultiplayRules::Damage_IsTimeBased( int iDmgType )
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CMultiplayRules::Damage_ShouldGibCorpse( int iDmgType )
+bool CMultiplayRules::Damage_ShouldGibCorpse(int64 iDmgType )
 {
 	// Damage types that gib the corpse.
 	return ( ( iDmgType & ( DMG_CRUSH | DMG_FALL | DMG_BLAST | DMG_SONIC | DMG_CLUB ) ) != 0 );
@@ -223,7 +223,7 @@ bool CMultiplayRules::Damage_ShouldGibCorpse( int iDmgType )
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CMultiplayRules::Damage_ShowOnHUD( int iDmgType )
+bool CMultiplayRules::Damage_ShowOnHUD(int64 iDmgType )
 {
 	// Damage types that have client HUD art.
 	return ( ( iDmgType & ( DMG_POISON | DMG_ACID | DMG_DROWN | DMG_BURN | DMG_SLOWBURN | DMG_NERVEGAS | DMG_RADIATION | DMG_SHOCK ) ) != 0 );
@@ -234,10 +234,10 @@ bool CMultiplayRules::Damage_ShowOnHUD( int iDmgType )
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CMultiplayRules::Damage_NoPhysicsForce( int iDmgType )
+bool CMultiplayRules::Damage_NoPhysicsForce(int64 iDmgType )
 {
 	// Damage types that don't have to supply a physics force & position.
-	int iTimeBasedDamage = Damage_GetTimeBased();
+	int64 iTimeBasedDamage = Damage_GetTimeBased();
 	return ( ( iDmgType & ( DMG_FALL | DMG_BURN | DMG_PLASMA | DMG_DROWN | iTimeBasedDamage | DMG_CRUSH | DMG_PHYSGUN | DMG_PREVENT_PHYSICS_FORCE ) ) != 0 );
 }
 
@@ -246,7 +246,7 @@ bool CMultiplayRules::Damage_NoPhysicsForce( int iDmgType )
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CMultiplayRules::Damage_ShouldNotBleed( int iDmgType )
+bool CMultiplayRules::Damage_ShouldNotBleed(int64 iDmgType )
 {
 	// Damage types that don't make the player bleed.
 	return ( ( iDmgType & ( DMG_POISON | DMG_ACID ) ) != 0 );

@@ -209,6 +209,7 @@ CEconItemInitializerSystem g_EconInitializer;
 #define MOD_HL2BETA 9
 #define MOD_HLSS 10
 #define MOD_EZ1 11
+#define GAME_HL1 1
 
 void CHud::MsgFunc_ResetHUD(bf_read& msg)
 {
@@ -222,6 +223,8 @@ void CHud::MsgFunc_ResetHUD(bf_read& msg)
 		const char* pszAnimationFile = "scripts/hudanimations_manifest.txt";
 		if (LazuulRules()->GetGameForMap() == MOD_HL2BETA)
 			pszLayoutFile = "scripts/HudLayout_HL2Beta.res";
+		else if (LazuulRules()->GetGameForMap() == GAME_HL1)
+			pszLayoutFile = "scripts/HudLayout_HL1.res";
 
 		switch (GetLocalPlayerTeam())
 		{
@@ -398,11 +401,11 @@ int CLazuul::GetProtaganistTeam()
 // Input  : iDmgType - 
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-int CLazuul::Damage_GetTimeBased(void)
+int64 CLazuul::Damage_GetTimeBased(void)
 {
 	if (hl2_episodic.GetBool())
 	{
-		int iDamage = (DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN);
+		int64 iDamage = (DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN);
 		return iDamage;
 	}
 	else
@@ -415,7 +418,7 @@ int CLazuul::Damage_GetTimeBased(void)
 // Input  : iDmgType - 
 // Output :		bool
 //-----------------------------------------------------------------------------
-bool CLazuul::Damage_IsTimeBased(int iDmgType)
+bool CLazuul::Damage_IsTimeBased(int64 iDmgType)
 {
 	// Damage types that are time-based.
 	if (hl2_episodic.GetBool())
@@ -4678,7 +4681,8 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 		event->SetInt("weapon_index", pInflictor ? pInflictor->entindex() : -1);
 		event->SetString("weapon_logclassname", killer_weapon_log_name);
 		event->SetInt("playerpenetratecount", info.GetPlayerPenetrationCount());
-		event->SetInt("damagebits", info.GetDamageType());
+		//event->SetInt("damagebits", info.GetDamageType());
+		GameEvent_SetInt64(event, "damagebits1", "damagebits2", info.GetDamageType());
 		event->SetInt("customkill", info.GetDamageCustom());
 		event->SetInt("priority", 7);	// HLTV event priority, not transmitted
 		event->SetInt("death_flags", 0);
@@ -4817,7 +4821,8 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 		event->SetString("weapon", killer_weapon_name);
 		event->SetInt("weapon_index", pInflictor ? pInflictor->entindex() : -1);
 		event->SetString("weapon_logclassname", killer_weapon_log_name);
-		event->SetInt("damagebits", info.GetDamageType());
+		//event->SetInt("damagebits", info.GetDamageType());
+		GameEvent_SetInt64(event, "damagebits1", "damagebits2", info.GetDamageType());
 		event->SetInt("customkill", info.GetDamageCustom());
 		event->SetBool("show_notice", bShowDeathNotice); // are we allowed to make deathnotice on THIS npc?
 		event->SetInt("priority", bShowDeathNotice ? 7 : 3);	// HLTV event priority, not transmitted

@@ -361,6 +361,14 @@ RecvProp RecvPropInt(
 	RecvVarProxyFn varProxy=0
 	);
 
+RecvProp RecvPropInt64(
+	const char* pVarName,
+	int offset,
+	int sizeofVar = SIZEOF_IGNORE,	// Handled by RECVINFO macro, but set to SIZEOF_IGNORE if you don't want to bother.
+	int flags = 0,
+	RecvVarProxyFn varProxy = 0
+);
+
 RecvProp RecvPropString(
 	const char *pVarName,
 	int offset,

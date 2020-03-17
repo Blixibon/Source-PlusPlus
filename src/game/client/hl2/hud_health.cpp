@@ -149,7 +149,7 @@ void CHudHealth::MsgFunc_Damage( bf_read &msg )
 
 	int armor = msg.ReadByte();	// armor
 	int damageTaken = msg.ReadByte();	// health
-	long bitsDamage = msg.ReadLong(); // damage bits
+	long long bitsDamage = msg.ReadLongLong(); // damage bits
 	bitsDamage; // variable still sent but not used
 
 	Vector vecFrom;

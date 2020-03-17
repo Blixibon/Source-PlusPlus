@@ -14,24 +14,26 @@
 
 ConVar phys_pushscale( "phys_pushscale", "1", FCVAR_REPLICATED );
 
-BEGIN_SIMPLE_DATADESC( CTakeDamageInfo )
-	DEFINE_FIELD( m_vecDamageForce, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecDamagePosition, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_vecReportedPosition, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_hInflictor, FIELD_EHANDLE),
-	DEFINE_FIELD( m_hAttacker, FIELD_EHANDLE),
-	DEFINE_FIELD( m_hWeapon, FIELD_EHANDLE),
-	DEFINE_FIELD( m_flDamage, FIELD_FLOAT),
-	DEFINE_FIELD( m_flMaxDamage, FIELD_FLOAT),
-	DEFINE_FIELD( m_flBaseDamage, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bitsDamageType, FIELD_INTEGER),
-	DEFINE_FIELD( m_iDamageCustom, FIELD_INTEGER),
-	DEFINE_FIELD( m_iDamageStats, FIELD_INTEGER),
-	DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER),
-	DEFINE_FIELD( m_iDamagedOtherPlayers, FIELD_INTEGER),
-END_DATADESC()
+CDamageTypeSaveOPs g_Int64SaveOps;
 
-void CTakeDamageInfo::Init( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int bitsDamageType, int iCustomDamage )
+BEGIN_SIMPLE_DATADESC(CTakeDamageInfo)
+DEFINE_FIELD(m_vecDamageForce, FIELD_VECTOR),
+DEFINE_FIELD(m_vecDamagePosition, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vecReportedPosition, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_hInflictor, FIELD_EHANDLE),
+DEFINE_FIELD(m_hAttacker, FIELD_EHANDLE),
+DEFINE_FIELD(m_hWeapon, FIELD_EHANDLE),
+DEFINE_FIELD(m_flDamage, FIELD_FLOAT),
+DEFINE_FIELD(m_flMaxDamage, FIELD_FLOAT),
+DEFINE_FIELD(m_flBaseDamage, FIELD_FLOAT),
+DEFINE_CUSTOM_FIELD(m_bitsDamageType, &g_Int64SaveOps),
+DEFINE_FIELD(m_iDamageCustom, FIELD_INTEGER),
+DEFINE_FIELD(m_iDamageStats, FIELD_INTEGER),
+DEFINE_FIELD(m_iAmmoType, FIELD_INTEGER),
+DEFINE_FIELD(m_iDamagedOtherPlayers, FIELD_INTEGER),
+END_DATADESC();
+
+void CTakeDamageInfo::Init( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int64 bitsDamageType, int iCustomDamage )
 {
 	m_hInflictor = pInflictor;
 	if ( pAttacker )
@@ -69,42 +71,42 @@ CTakeDamageInfo::CTakeDamageInfo()
 	Init( NULL, NULL, NULL, vec3_origin, vec3_origin, vec3_origin, 0, 0, 0 );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType, int iKillType )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int64 bitsDamageType, int iKillType )
 {
 	Set( pInflictor, pAttacker, flDamage, bitsDamageType, iKillType );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, float flDamage, int bitsDamageType, int iKillType )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, float flDamage, int64 bitsDamageType, int iKillType )
 {
 	Set( pInflictor, pAttacker, pWeapon, flDamage, bitsDamageType, iKillType );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, const Vector &damageForce, const Vector &damagePosition, float flDamage, int64 bitsDamageType, int iKillType, Vector *reportedPosition )
 {
 	Set( pInflictor, pAttacker, damageForce, damagePosition, flDamage, bitsDamageType, iKillType, reportedPosition );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, float flDamage, int64 bitsDamageType, int iKillType, Vector *reportedPosition )
 {
 	Set( pInflictor, pAttacker, pWeapon, damageForce, damagePosition, flDamage, bitsDamageType, iKillType, reportedPosition );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType, int iKillType )
+void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int64 bitsDamageType, int iKillType )
 {
 	Init( pInflictor, pAttacker, NULL, vec3_origin, vec3_origin, vec3_origin, flDamage, bitsDamageType, iKillType );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, float flDamage, int bitsDamageType, int iKillType )
+void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, float flDamage, int64 bitsDamageType, int iKillType )
 {
 	Init( pInflictor, pAttacker, pWeapon, vec3_origin, vec3_origin, vec3_origin, flDamage, bitsDamageType, iKillType );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, const Vector &damageForce, const Vector &damagePosition, float flDamage, int64 bitsDamageType, int iKillType, Vector *reportedPosition )
 {
 	Set( pInflictor, pAttacker, NULL, damageForce, damagePosition, flDamage, bitsDamageType, iKillType, reportedPosition );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, float flDamage, int64 bitsDamageType, int iKillType, Vector *reportedPosition )
 {
 	Vector vecReported = vec3_origin;
 	if ( reportedPosition )
@@ -185,7 +187,7 @@ CMultiDamage::CMultiDamage()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CMultiDamage::Init( CBaseEntity *pTarget, CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int bitsDamageType, int iKillType )
+void CMultiDamage::Init( CBaseEntity *pTarget, CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int64 bitsDamageType, int iKillType )
 {
 	m_hTarget = pTarget;
 	BaseClass::Init( pInflictor, pAttacker, pWeapon, damageForce, damagePosition, reportedPosition, flDamage, bitsDamageType, iKillType );
@@ -386,7 +388,7 @@ static const char * const s_DamageTypeToStrTable[] =
 	"BULLET",
 	"SLASH",
 	"BURN",
-	"VEHICLE",
+	"FREEZE",
 	"FALL",
 	"BLAST",
 	"CLUB",
@@ -404,18 +406,20 @@ static const char * const s_DamageTypeToStrTable[] =
 	"DROWNRECOVER",
 	"ACID",
 	"SLOWBURN",
-	"REMOVENORAGDOLL",
+	"SLOWFREEZE"
 	"PHYSGUN",
 	"PLASMA",
 	"AIRBOAT",
 	"DISSOLVE",
 	"BLAST_SURFACE",
 	"DIRECT",
-	"BUCKSHOT"
+	"BUCKSHOT",
+	"VEHICLE",
+	"REMOVENORAGDOLL",
 };
-#define DAMAGE_TYPE_STR_TABLE_ENTRIES 31 // number of entries in table above
+#define DAMAGE_TYPE_STR_TABLE_ENTRIES 33 // number of entries in table above
 
-void CTakeDamageInfo::DebugGetDamageTypeString(unsigned int damageType, char *outbuf, int outbuflength )
+void CTakeDamageInfo::DebugGetDamageTypeString(uint64 damageType, char *outbuf, int outbuflength )
 {
 	Assert(outbuflength > 0);
 
@@ -434,7 +438,7 @@ void CTakeDamageInfo::DebugGetDamageTypeString(unsigned int damageType, char *ou
 		 outbuflength > 0 && i < (DAMAGE_TYPE_STR_TABLE_ENTRIES - 1);
 		 ++i )
 	{
-		if ( damageType & (1 << i) )
+		if ( damageType & (1Ui64 << i) )
 		{
 			// this bit was set. Print the corresponding entry from the table
 			// (the index is +1 because entry 1 in the table corresponds to 1 << 0)

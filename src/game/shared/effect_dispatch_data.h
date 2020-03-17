@@ -59,7 +59,7 @@ public:
 
 	// Some TF2 specific things
 	int		m_nMaterial;
-	int		m_nDamageType;
+	int64	m_nDamageType;
 	int		m_nHitBox;
 	
 	unsigned char	m_nColor;

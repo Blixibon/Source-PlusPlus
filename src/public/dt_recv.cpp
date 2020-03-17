@@ -347,6 +347,48 @@ RecvProp RecvPropInt(
 	return ret;
 }
 
+RecvProp RecvPropInt64(
+	const char* pVarName,
+	int offset,
+	int sizeofVar,
+	int flags,
+	RecvVarProxyFn varProxy
+)
+{
+	RecvProp ret;
+
+	Assert(sizeofVar == 8);
+
+	ret.m_pVarName = pVarName;
+	ret.SetOffset(offset);
+	ret.m_RecvType = DPT_DataTable;
+	ret.SetDataTableProxyFn(DataTableRecvProxy_StaticDataTable);
+
+	RecvProp* pProps = new RecvProp[2]; // TODO free that again
+
+	const char* pParentArrayPropName = AllocateStringHelper("%s", pVarName);
+
+	RecvProp pArrayProp = RecvPropInt(pVarName, offset, 4, flags, varProxy);
+
+	// Read the two DWORDs according to network endian
+	const short endianIndex = 0x0100;
+	byte* idx = (byte*)&endianIndex;
+
+	for (int i = 0; i < 2; i++)
+	{
+		pProps[i] = pArrayProp; // copy basic property settings 
+		pProps[i].SetOffset(idx[i] * 4); // adjust offset
+		pProps[i].m_pVarName = s_ClientElementNames[i]; // give unique name
+		pProps[i].SetParentArrayPropName(pParentArrayPropName); // For debugging...
+	}
+
+	RecvTable* pTable = new RecvTable(pProps, 2, pVarName); // TODO free that again
+
+	ret.SetDataTable(pTable);
+
+	return ret;
+}
+
 RecvProp RecvPropString(
 	const char *pVarName,
 	int offset,

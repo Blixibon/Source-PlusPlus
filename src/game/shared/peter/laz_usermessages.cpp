@@ -33,7 +33,7 @@ void RegisterUserMessages(void)
 	usermessages->Register("VGUIMenu", -1);	// Show VGUI menu
 	usermessages->Register("Rumble", 3);	// Send a rumble to a controller
 	usermessages->Register("Battery", 2);
-	usermessages->Register("Damage", 18);		// BUG: floats are sent for coords, no variable bitfields in hud & fixed size Msg
+	usermessages->Register("Damage", 2*sizeof(byte) + sizeof(int64) + sizeof(Vector));		// BUG: floats are sent for coords, no variable bitfields in hud & fixed size Msg
 	usermessages->Register("VoiceMask", VOICE_MAX_PLAYERS_DW * 4 * 2 + 1);
 	usermessages->Register("RequestState", 0);
 	usermessages->Register("CloseCaption", -1); // Show a caption (by string id number)(duration in 10th of a second)

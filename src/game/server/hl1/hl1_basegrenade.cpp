@@ -34,7 +34,7 @@ void CHL1BaseGrenade::Precache()
 }
 
 
-void CHL1BaseGrenade::Explode( trace_t *pTrace, int bitsDamageType )
+void CHL1BaseGrenade::Explode( trace_t *pTrace, int64 bitsDamageType )
 {
 	float		flRndSound;// sound randomizer
 

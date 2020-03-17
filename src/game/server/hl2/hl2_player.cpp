@@ -2274,6 +2274,11 @@ void CHL2_Player::SetFlashlightEnabled( bool bState )
 	m_bFlashlightDisabled = !bState;
 }
 
+bool CHL2_Player::Flashlight_UseLegacyVersion(void)
+{
+	return ::Flashlight_UseLegacyVersion();
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CHL2_Player::InputDisableFlashlight( inputdata_t &inputdata )
@@ -3343,8 +3348,8 @@ void CHL2_Player::UpdateClientData( void )
 		damageOrigin = m_DmgOrigin;
 
 		// only send down damage type that have hud art
-		int iShowHudDamage = g_pGameRules->Damage_GetShowOnHud();
-		int visibleDamageBits = m_bitsDamageType & iShowHudDamage;
+		int64 iShowHudDamage = g_pGameRules->Damage_GetShowOnHud();
+		int64 visibleDamageBits = m_bitsDamageType & iShowHudDamage;
 
 		m_DmgTake = clamp( m_DmgTake, 0, 255 );
 		m_DmgSave = clamp( m_DmgSave, 0, 255 );
@@ -3367,7 +3372,7 @@ void CHL2_Player::UpdateClientData( void )
 		UserMessageBegin( user, "Damage" );
 			WRITE_BYTE( m_DmgSave );
 			WRITE_BYTE( m_DmgTake );
-			WRITE_LONG( visibleDamageBits );
+			WRITE_INT64( visibleDamageBits );
 			WRITE_FLOAT( damageOrigin.x );	//BUG: Should be fixed point (to hud) not floats
 			WRITE_FLOAT( damageOrigin.y );	//BUG: However, the HUD does _not_ implement bitfield messages (yet)
 			WRITE_FLOAT( damageOrigin.z );	//BUG: We use WRITE_VEC3COORD for everything else
@@ -3378,7 +3383,7 @@ void CHL2_Player::UpdateClientData( void )
 		m_bitsHUDDamage = m_bitsDamageType;
 		
 		// Clear off non-time-based damage indicators
-		int iTimeBasedDamage = g_pGameRules->Damage_GetTimeBased();
+		int64 iTimeBasedDamage = g_pGameRules->Damage_GetTimeBased();
 		m_bitsDamageType &= iTimeBasedDamage;
 	}
 

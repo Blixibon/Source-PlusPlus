@@ -584,7 +584,7 @@ class CAchievementHLXKillWithPhysicsObjects : public CBaseAchievement
 
 	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
 	{
-		int iDamageBits = event->GetInt("damagebits");
+		int64 iDamageBits = GameEvent_GetInt64(event, "damagebits1", "damagebits2");
 		// was victim killed with crushing damage?
 		if (iDamageBits & DMG_CRUSH)
 		{

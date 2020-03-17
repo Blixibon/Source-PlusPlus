@@ -355,7 +355,7 @@ BEGIN_DATADESC( CBasePlayer )
 	DEFINE_FIELD( m_nPoisonDmg, FIELD_INTEGER ),
 	DEFINE_FIELD( m_nPoisonRestored, FIELD_INTEGER ),
 
-	DEFINE_FIELD( m_bitsHUDDamage, FIELD_INTEGER ),
+	DEFINE_CUSTOM_FIELD( m_bitsHUDDamage, &g_Int64SaveOps ),
 	DEFINE_FIELD( m_fInitHUD, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flDeathTime, FIELD_TIME ),
 	DEFINE_FIELD( m_flDeathAnimTime, FIELD_TIME ),
@@ -413,7 +413,7 @@ BEGIN_DATADESC( CBasePlayer )
 	// m_vecVehicleViewAngles
 	// m_nVehicleViewSavedFrame
 
-	DEFINE_FIELD( m_bitsDamageType, FIELD_INTEGER ),
+	DEFINE_CUSTOM_FIELD( m_bitsDamageType, &g_Int64SaveOps),
 	DEFINE_AUTO_ARRAY( m_rgbTimeBasedDamage, FIELD_CHARACTER ),
 	DEFINE_FIELD( m_fLastPlayerTalkTime, FIELD_FLOAT ),
 	DEFINE_FIELD( m_hLastWeapon, FIELD_EHANDLE ),
@@ -1088,7 +1088,7 @@ bool CBasePlayer::ShouldTakeDamageInCommentaryMode( const CTakeDamageInfo &input
 int CBasePlayer::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 {
 	// have suit diagnose the problem - ie: report damage type
-	int bitsDamage = inputInfo.GetDamageType();
+	int64 bitsDamage = inputInfo.GetDamageType();
 	int ffound = true;
 	int fmajor;
 	int fcritical;
@@ -4072,7 +4072,7 @@ void CBasePlayer::CheckTimeBasedDamage()
 	{
 		// Make sure the damage type is really time-based.
 		// This is kind of hacky but necessary until we setup DamageType as an enum.
-		int iDamage = ( DMG_PARALYZE << i );
+		int64 iDamage = ( DMG_PARALYZE << i );
 		if ( !g_pGameRules->Damage_IsTimeBased( iDamage ) )
 			continue;
 

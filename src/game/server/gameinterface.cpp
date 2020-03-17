@@ -1553,7 +1553,7 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 	g_VguiScreenStringOps.Init( g_pStringTableVguiScreen );
 
 #ifdef HL2_LAZUL
-	g_FootStepStringOps.Init(g_pStringTablePlayerFootSteps);
+	g_pFootStepStringOps->Init(g_pStringTablePlayerFootSteps);
 #endif // HL2_LAZUL
 
 }
@@ -3436,6 +3436,14 @@ void MessageWriteLong( long iValue)
 		Error( "WriteLong called with no active message\n" );
 
 	g_pMsgBuffer->WriteLong( iValue );
+}
+
+void MessageWriteLongLong(long long i64Value)
+{
+	if (!g_pMsgBuffer)
+		Error("WriteLong called with no active message\n");
+
+	g_pMsgBuffer->WriteLongLong(i64Value);
 }
 
 void MessageWriteFloat( float flValue)

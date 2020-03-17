@@ -69,7 +69,8 @@
 		"attacker"	"short"	 	// user ID who killed
 		"weapon"	"string" 	// weapon name killer used 
 		"weaponid"	"short"		// ID of weapon killed used
-		"damagebits"	"long"	// bits of type of damage
+		"damagebits1"	"long"	// bits of type of damage
+		"damagebits2"	"long"	// bits of type of damage
 		"customkill"	"short"	// type of custom kill
 		"assister"	"short"		// user ID of assister
 		"dominated"	"short"		// did killer dominate victim with this kill
@@ -433,7 +434,8 @@
 		"weapon"	"string" 	// weapon name killer used
 		"weapon_index"	"short"	// Entindex of weapon
 		"weapon_logclassname"	"string" 	// weapon name that should be printed on the log
-		"damagebits"	"long"	// bits of type of damage
+		"damagebits1"	"long"	// bits of type of damage
+		"damagebits2"	"long"	// bits of type of damage
 		"customkill"	"short"	// type of custom kill
 		"assister_index"	"short"		// entindex of assister
 		"assister_name"		"string"	// classname of assister

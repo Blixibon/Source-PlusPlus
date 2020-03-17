@@ -44,9 +44,9 @@ public:
 	virtual ~CLazuul();
 
 	// Damage Query Overrides.
-	virtual bool			Damage_IsTimeBased(int iDmgType);
+	virtual bool			Damage_IsTimeBased(int64 iDmgType);
 	// TEMP:
-	virtual int				Damage_GetTimeBased(void);
+	virtual int64				Damage_GetTimeBased(void);
 
 	int				GetFarthestOwnedControlPoint(int iTeam, bool bWithSpawnpoints);
 	virtual bool	TeamMayCapturePoint(int iTeam, int iPointIndex);
@@ -105,6 +105,7 @@ public:
 	virtual void GetTaggedConVarList(KeyValues *pCvarTagList);
 #else
 	int		GetGameForMap() { return m_iMapGameType; }
+	int		GetModForMap() { return m_iMapModType; }
 #endif
 
 	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }

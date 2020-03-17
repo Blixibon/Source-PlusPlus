@@ -86,7 +86,7 @@ enum
 struct DamageAnimation_t
 {
 	const char *name;
-	int bitsDamage;
+	int64 bitsDamage;
 	float angleMinimum;
 	float angleMaximum;
 	int damage; 
@@ -329,7 +329,7 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 {
 	int armor = msg.ReadByte();	// armor
 	int damageTaken = msg.ReadByte();	// health
-	long bitsDamage = msg.ReadLong(); // damage bits
+	int64 bitsDamage = msg.ReadLongLong(); // damage bits
 
 	Vector vecFrom;
 
