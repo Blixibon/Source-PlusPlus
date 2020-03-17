@@ -134,7 +134,7 @@ public:
 
 	void SetOnscreenIconTextureName(const char *pszTexture);
 	void SetOffscreenIconTextureName(const char *pszTexture);
-	void SetBinding(const char *pszBinding);
+	void SetBinding(const char *pszBinding, bool bGamepadBinding);
 	const char *UseBindingImage(char *pchIconTextureName, size_t bufSize);
 
 	const char *GetOnscreenIconTextureName()	{ return m_szOnscreenTexture.String(); }

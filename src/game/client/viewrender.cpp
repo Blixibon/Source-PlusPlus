@@ -6590,7 +6590,7 @@ void CReflectiveGlassView::Draw()
 	r_visocclusion.SetValue( 0 );
 
 	int lastView = g_CurrentViewID;
-	g_CurrentViewID = VIEW_REFLECTION;
+	g_CurrentViewID = VIEW_GLASS_REFLECTION;
 	BaseClass::Draw();
 
 	g_CurrentViewID = lastView;

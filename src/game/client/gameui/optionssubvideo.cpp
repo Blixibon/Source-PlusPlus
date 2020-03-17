@@ -394,7 +394,7 @@ public:
 		{
 			m_pHDR->AddItem("#GameUI_hdr_level2", NULL);
 		}
-#if 1
+#if 0
 		if ( materials->SupportsHDRMode( HDR_TYPE_FLOAT ) )
 		{
 			m_pHDR->AddItem("#GameUI_hdr_level3", NULL);
@@ -649,9 +649,9 @@ public:
 
 		if (nDXLevel >= 90)
 		{
-			if (materials->SupportsHDRMode(HDR_TYPE_FLOAT))
+			/*if (materials->SupportsHDRMode(HDR_TYPE_FLOAT))
 				SetComboItemAsRecommended(m_pHDR, 3);
-			else
+			else*/
 				SetComboItemAsRecommended(m_pHDR, 2);
 		}
 		else
@@ -1371,7 +1371,7 @@ void COptionsSubVideo::OpenThirdPartyVideoCreditsDialog()
 
 COptionsSubVideoThirdPartyCreditsDlg::COptionsSubVideoThirdPartyCreditsDlg( vgui::VPANEL hParent ) : BaseClass( NULL, NULL )
 {
-	SetProportional( true );
+	SetProportional( false );
 
 	// parent is ignored, since we want look like we're steal focus from the parent (we'll become modal below)
 #ifdef SWARM_DLL

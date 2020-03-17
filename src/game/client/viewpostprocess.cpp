@@ -64,7 +64,7 @@ static ConVar mat_autoexposure_min( "mat_autoexposure_min", "0.5" );
 static ConVar mat_show_histogram( "mat_show_histogram", "0" );
 ConVar mat_hdr_tonemapscale( "mat_hdr_tonemapscale", "1.0", FCVAR_CHEAT );
 ConVar mat_hdr_uncapexposure( "mat_hdr_uncapexposure", "0", FCVAR_CHEAT );
-ConVar mat_force_bloom("mat_force_bloom","0", FCVAR_CHEAT);
+ConVar mat_force_bloom("mat_force_bloom","1");
 ConVar mat_disable_bloom("mat_disable_bloom","0");
 ConVar mat_debug_bloom("mat_debug_bloom","0", FCVAR_CHEAT);
 ConVar mat_colorcorrection( "mat_colorcorrection", "0" );

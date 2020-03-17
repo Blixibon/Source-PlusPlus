@@ -751,24 +751,24 @@ void CIconLesson::TakePlaceOf(CBaseLesson *pLesson)
 
 void CIconLesson::SetLocatorBinding(CLocatorTarget * pLocatorTarget)
 {
-	if (IsX360() /*|| input->ControllerModeActive()*/)
+	if (IsX360() || input->EnableJoystickMode())
 	{
 		// Try to use gamepad bindings first
 		if (m_szGamepadBinding.String()[0] != '\0')
 		{
 			// Found gamepad binds!
-			pLocatorTarget->SetBinding(m_szGamepadBinding.String());
+			pLocatorTarget->SetBinding(m_szGamepadBinding.String(), true);
 		}
 		else
 		{
 			// No gamepad binding, so fallback to the regular binding
-			pLocatorTarget->SetBinding(m_szBinding.String());
+			pLocatorTarget->SetBinding(m_szBinding.String(), true);
 		}
 	}
 	else
 	{
 		// Always use the regular binding when the gamepad is disabled
-		pLocatorTarget->SetBinding(m_szBinding.String());
+		pLocatorTarget->SetBinding(m_szBinding.String(), false);
 	}
 }
 

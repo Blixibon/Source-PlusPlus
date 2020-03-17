@@ -39,8 +39,9 @@ public:
 
 protected:
 	virtual void Paint();
+	virtual void ApplySchemeSettings(vgui::IScheme* pScheme);
 
-	void DrawIconProgressBar(int x, int y, CHudTexture *icon, float percentage, Color& clr, Color& clr2);
+	void DrawIconProgressBar(int x, int y, char cCharacterInFont, float percentage, Color& clr, Color& clr2);
 
 private:
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
@@ -100,15 +101,22 @@ void CHudSquadStatus::Init( void )
 
 void CHudSquadStatus::VidInit()
 {
-	CHudTexture *tex = new CHudTexture();
+	
+}
+
+void CHudSquadStatus::ApplySchemeSettings(vgui::IScheme* pScheme)
+{
+	BaseClass::ApplySchemeSettings(pScheme);
+
+	CHudTexture* tex = new CHudTexture();
 
 	// Key Name is the sprite name
 	Q_strncpy(tex->szShortName, "squad_member", sizeof(tex->szShortName));
-	
+
 	// it's a font-based icon
 	tex->bRenderUsingFont = true;
 	tex->cCharacterInFont = 'C';
-	Q_strncpy(tex->szTextureFile, scheme()->GetIScheme(GetScheme())->GetFontName(m_hIconFont), sizeof(tex->szTextureFile));
+	Q_strncpy(tex->szTextureFile, pScheme->GetFontName(m_hIconFont), sizeof(tex->szTextureFile));
 
 	m_pMemberIcon = gHUD.AddUnsearchableHudIconToList(*tex);
 
@@ -226,6 +234,30 @@ void CHudSquadStatus::OnThink( void )
 		}
 	}
 
+	int iNewRows = Ceil2Int(squadMembers / 4.f);
+	int iOldRows = Ceil2Int(m_iSquadMembers / 4.f);
+
+	if (iNewRows != iOldRows)
+	{
+		switch (iNewRows)
+		{
+		case 0:
+		case 1:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SquadRowsOne");
+			break;
+		case 2:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SquadRowsTwo");
+			break;
+		case 3:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SquadRowsThree");
+			break;
+		case 4:
+		default:
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SquadRowsFour");
+			break;
+		}
+	}
+
 	m_iSquadMembers = squadMembers;
 	m_bSquadMembersFollowing = following;
 }
@@ -238,30 +270,57 @@ void CHudSquadStatus::MsgFunc_SquadMemberDied(bf_read &msg)
 	m_bSquadMemberJustDied = true;
 }
 
-void CHudSquadStatus::DrawIconProgressBar(int x, int y, CHudTexture *icon, float percentage, Color& clr, Color& clr2)
+void DrawCharacterCropped(vgui::HFont hFont, char cCharacterInFont, int x, int y, int cropy, int croph, Color clr)
 {
-	if (icon == NULL)
+	// work out how much we've been cropped
+	int height = vgui::surface()->GetFontTall(hFont);
+	float frac = (height - croph) / (float)height;
+	y -= cropy;
+
+	vgui::surface()->DrawSetTextFont(hFont);
+	vgui::surface()->DrawSetTextColor(clr);
+	vgui::surface()->DrawSetTextPos(x, y);
+
+	vgui::CharRenderInfo info;
+	if (vgui::surface()->DrawGetUnicodeCharRenderInfo(cCharacterInFont, info))
+	{
+		if (cropy)
+		{
+			info.verts[0].m_Position.y = Lerp(frac, info.verts[0].m_Position.y, info.verts[1].m_Position.y);
+			info.verts[0].m_TexCoord.y = Lerp(frac, info.verts[0].m_TexCoord.y, info.verts[1].m_TexCoord.y);
+		}
+		else if (croph != height)
+		{
+			info.verts[1].m_Position.y = Lerp(1.0f - frac, info.verts[0].m_Position.y, info.verts[1].m_Position.y);
+			info.verts[1].m_TexCoord.y = Lerp(1.0f - frac, info.verts[0].m_TexCoord.y, info.verts[1].m_TexCoord.y);
+		}
+		vgui::surface()->DrawRenderCharFromInfo(info);
+	}
+}
+
+void CHudSquadStatus::DrawIconProgressBar(int x, int y, char cCharacterInFont, float percentage, Color& clr, Color& clr2)
+{
+	if (cCharacterInFont == 0)
 		return;
 
 	//Clamp our percentage
 	percentage = MIN(1.0f, percentage);
 	percentage = MAX(0.0f, percentage);
 
-	int	height = icon->Height();
-	int	width = icon->Width();
+	int	height = vgui::surface()->GetFontTall(m_hIconFont);
 
 	//Draw a vertical progress bar
 	{
 		int	barOfs = height * percentage;
 
-		icon->DrawSelfCropped(
-			x, y,  // Pos
-			0, 0, width, barOfs, // Cropped subrect
+		DrawCharacterCropped(m_hIconFont, cCharacterInFont,
+			x, y,
+			0, barOfs,
 			clr2);
 
-		icon->DrawSelfCropped(
+		DrawCharacterCropped(m_hIconFont, cCharacterInFont,
 			x, y + barOfs,
-			0, barOfs, width, height - barOfs, // Cropped subrect
+			barOfs, height - barOfs,
 			clr);
 	}
 	
@@ -281,8 +340,15 @@ void CHudSquadStatus::Paint()
 
 	// draw the suit power bar
 	int xpos = m_flIconInsetX, ypos = m_flIconInsetY;
-	for (int i = 0; i < m_iSquadMembers; i++)
+	int i = 0;
+	for (i = 0; i < m_iSquadMembers; i++)
 	{
+		if (i > 0 && i % 4 == 0)
+		{
+			xpos = m_flIconInsetX;
+			ypos += m_flIconGap;
+		}
+
 		Color clrMain = m_SquadIconColor;
 		if (m_bSquadMemberAdded && i == m_iSquadMembers - 1)
 		{
@@ -290,14 +356,14 @@ void CHudSquadStatus::Paint()
 			clrMain = m_LastMemberColor;
 		}
 
-		CHudTexture *pIcon = nullptr;
+		char cIcon = 0;
 		if (SquadMedicBits->IsBitSet(i))
 		{
-			pIcon = m_pMedicIcon;
+			cIcon = 'M';
 		}
 		else
 		{
-			pIcon = m_pMemberIcon;
+			cIcon = 'C';
 		}
 
 		float flHealthFrac = 1.0f;
@@ -306,12 +372,18 @@ void CHudSquadStatus::Paint()
 
 		flHealthFrac = RemapVal(flHealthFrac, 0.0f, 1.0f, 0.0f, 24.0f / 40.0f);
 
-		DrawIconProgressBar(xpos, ypos, pIcon, 1.0f - flHealthFrac, clrMain, m_SquadHurtColor);
+		DrawIconProgressBar(xpos, ypos, cIcon, 1.0f - flHealthFrac, clrMain, m_SquadHurtColor);
 
 		xpos += m_flIconGap;
 	}
 	if (!m_bSquadMemberAdded && m_LastMemberColor[3])
 	{
+		if (i > 0 && i % 4 == 0)
+		{
+			xpos = m_flIconInsetX;
+			ypos += m_flIconGap;
+		}
+
 		// draw the last one in the special color
 		surface()->DrawSetTextColor( m_LastMemberColor );
 		surface()->DrawSetTextFont(m_hIconFont);

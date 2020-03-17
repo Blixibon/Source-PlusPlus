@@ -69,6 +69,10 @@
 #include "deferred\deferred_shared_common.h"
 #endif // DEFERRED
 
+#ifdef HL2_LAZUL
+#include "laz_player_shared.h"
+#endif // HL2_LAZUL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -3883,10 +3887,11 @@ void MaterialFootstepSound(C_BaseAnimating* pEnt, bool bLeftFoot, float flVolume
 }
 
 
+#ifndef HL2_LAZUL
 struct HL1Foot_t
 {
-	const char *m_pNameLeft;
-	const char *m_pNameRight;
+	const char* m_pNameLeft;
+	const char* m_pNameRight;
 };
 
 static HL1Foot_t s_pHL1FootSounds[26] =
@@ -3918,6 +3923,8 @@ static HL1Foot_t s_pHL1FootSounds[26] =
 { "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },	// CHAR_TEX_GLASS			
 { "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_WARPSHIELD		
 };
+#endif // !HL2_LAZUL
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

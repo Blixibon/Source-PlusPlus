@@ -29,6 +29,7 @@ public:
 	}
 protected:
 	CvarToggleCheckButton<ConVarRef> *m_pPlayerLegsCheckBox;
+	CvarToggleCheckButton<ConVarRef>* m_pMuzzleflashLightCheckBox;
 	ComboBox* m_pCSMComboBox;
 };
 
@@ -46,6 +47,13 @@ CLazOptionsSub::CLazOptionsSub(vgui::Panel* parent) : vgui::PropertyPage(parent,
 		"LegsCheckbox",
 		"#GameUI_LazOptionLegs",
 		"cl_legs_enable"
+		);
+
+	m_pMuzzleflashLightCheckBox = new CvarToggleCheckButton<ConVarRef>(
+		this,
+		"MuzzleLightCheckbox",
+		"#GameUI_LazOptionMuzzleFlashLight",
+		"muzzleflash_light"
 		);
 
 	m_pCSMComboBox = new ComboBox(
@@ -78,6 +86,7 @@ void CLazOptionsSub::OnControlModified()
 void CLazOptionsSub::OnResetData()
 {
 	m_pPlayerLegsCheckBox->Reset();
+	m_pMuzzleflashLightCheckBox->Reset();
 
 	ConVarRef r_csm_enabled("r_csm_enabled");
 	m_pCSMComboBox->ActivateItem(r_csm_enabled.GetInt());
@@ -86,6 +95,7 @@ void CLazOptionsSub::OnResetData()
 void CLazOptionsSub::OnApplyChanges()
 {
 	m_pPlayerLegsCheckBox->ApplyChanges();
+	m_pMuzzleflashLightCheckBox->ApplyChanges();
 
 	ConVarRef r_csm_enabled("r_csm_enabled");
 	r_csm_enabled.SetValue(m_pCSMComboBox->GetActiveItem());

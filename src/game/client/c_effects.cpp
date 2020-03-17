@@ -221,7 +221,7 @@ bool CClient_Precipitation::SimulateRain( CPrecipitationParticle* pParticle, flo
 	// Update position
 	VectorMA( pParticle->m_Pos, dt, pParticle->m_Velocity, pParticle->m_Pos );
 
-	if ( cl_windspeed.GetFloat() > 0 ) // determines if s_WindVector is zeroes
+	if (!s_WindVector.IsZero()) // determines if s_WindVector is zeroes
 	{
 		// wind blows rain around
 		const float drift = 5 / pParticle->m_Mass;

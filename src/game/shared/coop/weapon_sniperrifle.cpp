@@ -250,7 +250,7 @@ public:
 
 	bool		IsLaserEnabled()
 	{ 
-		if (GetOwner() && GetOwner()->IsPlayer())
+		if (GetOwner() && GetOwner()->IsPlayer() && Clip1())
 			return true;
 
 		return m_bLaserEnabled.Get();
@@ -608,15 +608,17 @@ void CWeaponComSniper::DrawEffects(bool bViewModel)
 //-----------------------------------------------------------------------------
 int	CWeaponComSniper::DrawModel(int flags)
 {
+	int iRet = BaseClass::DrawModel(flags);
+
 	// Only render these on the transparent pass
-	if (flags & STUDIO_TRANSPARENCY)
+	if (iRet && flags & STUDIO_TRANSPARENCY)
 	{
 		DrawEffects(false);
 		return 1;
 	}
 
 	// Draw the model as normal
-	return BaseClass::DrawModel(flags);
+	return iRet;
 }
 
 //-----------------------------------------------------------------------------

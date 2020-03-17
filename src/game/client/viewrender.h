@@ -75,6 +75,7 @@ enum view_id_t
 	VIEW_SHADOW_DEPTH_TEXTURE = 7,
 	VIEW_SSAO = 8,
 	VIEW_WATER_INTERSECTION,
+	VIEW_GLASS_REFLECTION,
 
 #ifdef DEFERRED
 	// @Deferred - Biohazard

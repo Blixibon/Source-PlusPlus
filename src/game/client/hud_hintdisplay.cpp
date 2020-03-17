@@ -17,11 +17,12 @@
 #include "c_baseplayer.h"
 #include "IGameUIFuncs.h"
 #include "inputsystem/iinputsystem.h"
+#include "iinput.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar keyhint_use_gameinstructor("cl_keyhint_use_instructor", "1", FCVAR_ARCHIVE);
+//ConVar keyhint_use_gameinstructor("cl_keyhint_use_instructor", "1", FCVAR_ARCHIVE);
 
 //-----------------------------------------------------------------------------
 // Purpose: Displays hints across the center of the screen
@@ -368,6 +369,7 @@ protected:
 private:
 	CUtlVector<vgui::Label *> m_Labels;
 	vgui::HFont m_hSmallFont, m_hLargeFont;
+	vgui::HFont m_hGlyphFonts[GLYPHSET_COUNT];
 	int		m_iBaseY;
 
 	CPanelAnimationVarAliasType( float, m_iTextX, "text_xpos", "8", "proportional_float" );
@@ -415,6 +417,10 @@ void CHudHintKeyDisplay::ApplySchemeSettings( vgui::IScheme *pScheme )
 {
 	m_hSmallFont = pScheme->GetFont( "HudHintTextSmall", true );
 	m_hLargeFont = pScheme->GetFont( "HudHintTextLarge", true );
+
+	m_hGlyphFonts[GLYPHSET_XBOX] = pScheme->GetFont("GameUIButtonsX360", true);
+	m_hGlyphFonts[GLYPHSET_PS3] = pScheme->GetFont("GameUIButtonsPS3", true);
+	m_hGlyphFonts[GLYPHSET_STEAM] = pScheme->GetFont("GameUIButtonsSteam", true);
 
 	BaseClass::ApplySchemeSettings( pScheme );
 }
@@ -466,22 +472,6 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 		m_Labels[i]->MarkForDeletion();
 	}
 	m_Labels.RemoveAll();
-
-	if (keyhint_use_gameinstructor.GetBool())
-	{
-		const char *pText = text;
-
-		if (pText[0] == '#')
-		{
-			pText++;
-		}
-
-		IGameEvent *pEvent = gameeventmanager->CreateEvent("client_keyhint");
-		pEvent->SetString("text", pText);
-		gameeventmanager->FireEventClientSide(pEvent);
-
-		return false;
-	}
 
 	// look up the text string
 	wchar_t *ws = g_pVGuiLocalize->Find( text );
@@ -549,14 +539,14 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 			//!! change some key names into better names
 			char friendlyName[64];
 
-			if ( IsX360() )
+			if ( ::input->EnableJoystickMode() )
 			{
 				int iNumBinds = 0;
 
 				char szBuff[ 512 ];
 				wchar_t szWideBuff[ 64 ];
 
-				for ( int iCode = 0; iCode < BUTTON_CODE_LAST; ++iCode )
+				for ( int iCode = JOYSTICK_FIRST; iCode <= JOYSTICK_LAST; ++iCode )
 				{
 					ButtonCode_t code = static_cast<ButtonCode_t>( iCode );
 
@@ -612,6 +602,7 @@ bool CHudHintKeyDisplay::SetHintText( const char *text )
 				{
 					// 360 always uses bitmaps
 					bIsBitmap = true;
+					label->SetFont(m_hGlyphFonts[::input->GetJoystickGlyphSet()]);
 					label->SetText( friendlyName );
 				}
 			}

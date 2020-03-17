@@ -217,7 +217,9 @@ Scheme
 	BitmapFontFiles
 	{
 		// UI buttons, custom font, (256x64)
-		"Buttons"		"materials/vgui/fonts/buttons_32.vbf"
+		"X360Buttons"		"materials/vgui/fonts/buttons_32.vbf"
+		"PS3Buttons"		"materials/vgui/fonts/buttons_ps3_32.vbf"
+		"SteamButtons"		"materials/vgui/fonts/buttons_sc.vbf"
 	}
 	
 	//////////////////////// FONTS /////////////////////////////
@@ -468,23 +470,68 @@ Scheme
 				"blur"	"2"
 			}
 		}
+		
 		InstructorButtons
 		{
 			"1"
 			{
 				"bitmap"	"1"
-				"name"		"Buttons"
+				"name"		"X360Buttons"
+				"scalex"	"0.65"
+				"scaley"	"0.65"
+			}
+		}
+		
+		InstructorButtonsPS3
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"PS3Buttons"
+				"scalex"	"0.65"
+				"scaley"	"0.65"
+			}
+		}
+		
+		InstructorButtonsSteam
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"SteamButtons"
 				"scalex"	"0.65"
 				"scaley"	"0.65"
 			}
 		}
 
-		GameUIButtons
+		GameUIButtonsX360
 		{
 			"1"
 			{
 				"bitmap"	"1"
-				"name"		"Buttons"
+				"name"		"X360Buttons"
+				"scalex"	"0.5"
+				"scaley"	"0.5"
+			}
+		}
+
+		GameUIButtonsPS3
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"PS3Buttons"
+				"scalex"	"0.5"
+				"scaley"	"0.5"
+			}
+		}
+
+		GameUIButtonsSteam
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"SteamButtons"
 				"scalex"	"0.5"
 				"scaley"	"0.5"
 			}
@@ -534,58 +581,6 @@ Scheme
 				"weight"	"900"
 			}
 		}
-
-		"InstructorTitle"
-		{
-			"1"
-			{
-				"name"			"Arial"
-				"tall"			"20"
-				"weight"		"400"
-				"antialias"		"1"
-				"dropshadow"	"1"
-			}
-		}
- 
-		"InstructorKeyBindings"
-		{
-			"1"
-			{
-				"name"			"Arial"
-				"name"			"Trade Gothic Bold"
-				"tall"			"18"
-				"weight"		"600"
-				"antialias"		"1"
-				"dropshadow"	"0"
-			}
-		}
- 
-		"InstructorButtons"
-		{
-			"1"
-			{
-				"name"			"Arial"
-				"name"			"Trade Gothic Bold"
-				"tall"			"15"
-				"weight"		"600"
-				"antialias"		"1"
-				"dropshadow"	"1"
-			}
-		}
- 
-		"InstructorTitleGlow"
-		{
-			"1"
-			{
-				"name"			"Arial"
-				"name"			"Trade Gothic Bold"
-				"tall"			"20"
-				"weight"		"400"
-				"antialias"		"1"
-				"dropshadow"	"1"
-			}
-		}
-
 	}
 
 	//

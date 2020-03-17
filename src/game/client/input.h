@@ -17,6 +17,7 @@
 #include "kbutton.h"
 #include "ehandle.h"
 #include "inputsystem/AnalogCode.h"
+#include "steam/isteamcontroller.h"
 
 typedef unsigned int CRC32_t;
 
@@ -112,6 +113,7 @@ public:
 	virtual		void		CAM_CameraThirdThink( void );	
 
 	virtual	bool		EnableJoystickMode();
+	virtual ControllerGlyphSet_e GetJoystickGlyphSet();
 
 // Private Implementation
 protected:
@@ -268,6 +270,8 @@ private:
 //#if defined( HL2_CLIENT_DLL )
 	CUtlVector< CEntityGroundContact > m_EntityGroundContact;
 //#endif
+
+	ControllerHandle_t	m_hGameController;
 };
 
 extern kbutton_t in_strafe;

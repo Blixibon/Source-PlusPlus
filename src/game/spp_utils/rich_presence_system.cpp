@@ -9,6 +9,7 @@
 #include "discord/discord_rpc.h"
 #include "tier3/tier3.h"
 #include "vgui/ILocalize.h"
+#include "iserver.h"
 
 //-----------------------------------------------------------------------------
 // Discord RPC handlers
@@ -114,6 +115,7 @@ unsigned CRichPresense::UpdateThread(void* pParams)
 	CRichPresense* pThis = static_cast<CRichPresense*> (pParams);
 	IVEngineClient* engineclient = pThis->m_pEnginePointers->engineclient;
 	IServerGameDLL* gameserver = pThis->m_pEnginePointers->gameserver;
+	IServer* internalserver = pThis->m_pEnginePointers->engineserver->GetIServer();
 
 	while (pThis->m_Signal)
 	{
@@ -171,7 +173,7 @@ unsigned CRichPresense::UpdateThread(void* pParams)
 			{
 				if (!engineclient->IsInGame() || engineclient->IsDrawingLoadingImage())
 				{
-					if (pThis->m_pInternalData->IsServerRunning())
+					if (pThis->m_pInternalData->IsServerRunning() && !internalserver->IsMultiplayer())
 					{
 						data.details = "Singleplayer";
 

@@ -10,6 +10,7 @@
 #include "KeyValues.h"
 #include "gameui/modinfo.h"
 #include "fmtstr.h"
+#include "ienginevgui.h"
 
 using namespace vgui;
 
@@ -141,8 +142,9 @@ void CreateNewGameDialog(bool bCommentary)
 	{
 		g_pActiveNewGamePanel = new CHLMSNewGame(NULL, "ModNewGame", bCommentary);
 		//g_pActiveNewGamePanel->MakePopup();
-		//g_pActiveNewGamePanel->Activate();
-		g_pActiveNewGamePanel->DoModal();
+		g_pActiveNewGamePanel->Activate();
+		g_pActiveNewGamePanel->MoveToCenterOfScreen();
+		g_pActiveNewGamePanel->SetParent(enginevgui->GetPanel(PANEL_GAMEUIDLL));
 		g_pActiveNewGamePanel->SetTitle(bCommentary ? "#GameUI_Commentary" : "#GameUI_NewGame", true);
 	}
 }

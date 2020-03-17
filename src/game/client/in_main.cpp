@@ -32,6 +32,7 @@
 
 #include "client_virtualreality.h"
 #include "sourcevr/isourcevirtualreality.h"
+#include "clientsteamcontext.h"
 
 // NVNT Include
 #include "haptics/haptic_utils.h"
@@ -1659,6 +1660,7 @@ void CInput::Init_All (void)
 	{
 		Init_Mouse ();
 		Init_Keyboard();
+		steamapicontext->SteamController()->Init();
 	}
 		
 	// Initialize third person camera controls.
@@ -1674,6 +1676,7 @@ void CInput::Shutdown_All(void)
 {
 	DeactivateMouse();
 	Shutdown_Keyboard();
+	steamapicontext->SteamController()->Shutdown();
 
 	delete[] m_pCommands;
 	m_pCommands = NULL;

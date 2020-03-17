@@ -1997,6 +1997,10 @@ int CNPC_Combine::SelectSchedule( void )
 				}
 			}
 
+			int scheduleHeal = SelectScheduleHeal();
+			if (scheduleHeal != SCHED_NONE)
+				return scheduleHeal;
+
 			// Don't patrol if I'm in the middle of an assault, because I'll never return to the assault.
 			if (!m_AssaultBehavior.HasAssaultCue())
 			{
@@ -4064,7 +4068,7 @@ DEFINE_SCHEDULE
  "		TASK_FACE_REASONABLE			0"
  "		TASK_WAIT						3"
  "		TASK_WAIT_RANDOM				3"
- "		TASK_SET_SCHEDULE				SCHEDULE:SCHED_COMBINE_PATROL" // keep doing it
+ //"		TASK_SET_SCHEDULE				SCHEDULE:SCHED_COMBINE_PATROL" // keep doing it
  ""
  "	Interrupts"
  "		COND_ENEMY_DEAD"
@@ -4244,7 +4248,7 @@ DEFINE_SCHEDULE
 
 		 "	Tasks"
 		 "		TASK_STORE_POSITION_IN_SAVEPOSITION		0"
-		 "		TASK_GET_FLANK_ARC_PATH_TO_ENEMY_LOS	45"
+		 "		TASK_GET_FLANK_ARC_PATH_TO_ENEMY_LOS	30"
 		 "		TASK_SPEAK_SENTENCE						1"
 		 "		TASK_RUN_PATH							0"
 		 "		TASK_WAIT_FOR_MOVEMENT					0"

@@ -28,6 +28,7 @@
 #include "math.h"
 #include "tier1/convar_serverbounded.h"
 #include "cam_thirdperson.h"
+#include "clientsteamcontext.h"
 
 #if defined( _X360 )
 #include "xbox/xbox_win32stubs.h"
@@ -132,6 +133,30 @@ bool CInput::EnableJoystickMode()
 	return IsConsole() || in_joystick.GetBool();
 }
 
+ControllerGlyphSet_e CInput::GetJoystickGlyphSet()
+{
+	ESteamInputType eInput = k_ESteamInputType_Unknown;
+
+	if (m_hGameController)
+		eInput = steamapicontext->SteamController()->GetInputTypeForHandle(m_hGameController);
+
+	switch (eInput)
+	{
+	case k_ESteamInputType_SteamController:
+	case k_ESteamInputType_MobileTouch:
+		return GLYPHSET_STEAM;
+		break;
+	case k_ESteamInputType_PS4Controller:
+	case k_ESteamInputType_PS3Controller:
+		return GLYPHSET_PS3;
+		break;
+	case k_ESteamInputType_XBox360Controller:
+	case k_ESteamInputType_XBoxOneController:
+	default:
+		return GLYPHSET_XBOX;
+		break;
+	}
+}
 
 //-----------------------------------------------
 // Response curve function for the move axes
@@ -542,11 +567,16 @@ void CInput::Joystick_Advanced(void)
 			joy_xcontroller_cfg_loaded.SetValue( 2 );
 		}
 	}
-	else if ( joy_xcontroller_cfg_loaded.GetInt() > 0 )
+	else
 	{
-		engine->ClientCmd_Unrestricted( "exec undo360controller.cfg" );
-		joy_xcontroller_cfg_loaded.SetValue( 0 );
+		if (joy_xcontroller_cfg_loaded.GetInt() > 0)
+		{
+			engine->ClientCmd_Unrestricted("exec undo360controller.cfg");
+			joy_xcontroller_cfg_loaded.SetValue(0);
+		}
 	}
+
+	m_hGameController = steamapicontext->SteamController()->GetControllerForGamepadIndex(0);
 }
 
 

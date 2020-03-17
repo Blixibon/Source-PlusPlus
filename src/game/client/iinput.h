@@ -27,6 +27,15 @@ struct CameraThirdData_t
 	Vector	m_vecHullMax;
 };
 
+enum ControllerGlyphSet_e
+{
+	GLYPHSET_XBOX = 0,
+	GLYPHSET_PS3,
+	GLYPHSET_STEAM,
+
+	GLYPHSET_COUNT
+};
+
 abstract_class IInput
 {
 public:
@@ -111,6 +120,7 @@ public:
 	virtual void		CAM_CameraThirdThink( void ) = 0;
 
 	virtual	bool		EnableJoystickMode() = 0;
+	virtual ControllerGlyphSet_e GetJoystickGlyphSet() = 0;
 };
 
 extern ::IInput *input;

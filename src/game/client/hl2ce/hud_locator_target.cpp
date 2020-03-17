@@ -37,7 +37,7 @@
 #define ICON_GAP			5		// Number of pixels between the icon and the text
 
 #define OFFSCREEN_ICON_POSITION_RADIUS 100
-#define BUTTON_FONT_HANDLE				m_hCaptionFont
+#define BUTTON_FONT_HANDLE				m_hButtonFonts[::input->GetJoystickGlyphSet()]
 
 #define ICON_DIST_TOO_FAR	(60.0f * 12.0f)
 
@@ -539,15 +539,15 @@ void CLocatorTarget::SetOffscreenIconTextureName(const char *pszTexture)
 }
 
 //------------------------------------
-void CLocatorTarget::SetBinding(const char *pszBinding)
+void CLocatorTarget::SetBinding(const char *pszBinding, bool bGamepadBinding)
 {
 	int iAllowJoystick = -1;
 
-	/*if ( !IsX360() )
+	if ( !IsX360() )
 	{
 	// Only show joystick binds if it's enabled and non-joystick if it's disabled
-	iAllowJoystick = input->ControllerModeActive();
-	}*/
+	iAllowJoystick = input->EnableJoystickMode() ? 1 : 0;
+	}
 
 	bool bIsControllerNow = (iAllowJoystick != 0);
 
@@ -800,10 +800,11 @@ private:
 	CPanelAnimationVar(vgui::HFont, m_hCaptionGlowFont, "font", "InstructorTitleGlow");
 	CPanelAnimationVar(vgui::HFont, m_hCaptionGlowFont_ss, "font", "InstructorTitleGlow_ss");
 
-	CPanelAnimationVar(vgui::HFont, m_hButtonFont, "font", "InstructorButtons");
+	//CPanelAnimationVar(vgui::HFont, m_hButtonFont, "font", "InstructorButtons");
 
-	CPanelAnimationVar(vgui::HFont, m_hButtonFont_ss, "font", "InstructorButtons_ss");
+	//CPanelAnimationVar(vgui::HFont, m_hButtonFont_ss, "font", "InstructorButtons_ss");
 	CPanelAnimationVar(vgui::HFont, m_hKeysFont, "font", "InstructorKeyBindings");
+	vgui::HFont m_hButtonFonts[GLYPHSET_COUNT];
 
 
 	CPanelAnimationVar(int, m_iShouldWrapStaticLocators, "WrapStaticLocators", "0");
@@ -943,6 +944,11 @@ CLocatorPanel::~CLocatorPanel(void)
 void CLocatorPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
+
+	m_hButtonFonts[GLYPHSET_XBOX] = pScheme->GetFont("InstructorButtons", true);
+	m_hButtonFonts[GLYPHSET_PS3] = pScheme->GetFont("InstructorButtonsPS3", true);
+	m_hButtonFonts[GLYPHSET_STEAM] = pScheme->GetFont("InstructorButtonsSteam", true);
+
 	LoadControlSettings("resource/UI/Locator.res");
 }
 

@@ -619,7 +619,7 @@ bool CHL2PlayerAnimState::HandleDriving(Activity& idealActivity)
 		else if (Q_strcmp(modelinfo->GetModelName(pEnt->GetModel()), "models/vehicles/prisoner_pod_inner.mdl") == 0)
 			idealActivity = ACT_DRIVE_POD;
 		else
-			idealActivity = ACT_GMOD_SIT_ROLLERCOASTER;
+			idealActivity = pVehicle->IsPassengerUsingStandardWeapons(iRole) ? ACT_HL2MP_SIT : ACT_GMOD_SIT_ROLLERCOASTER;
 #else
 		if (FClassnameIs(pEnt, "prop_vehicle_airboat"))
 			idealActivity = ACT_DRIVE_AIRBOAT;
@@ -674,6 +674,9 @@ bool CHL2PlayerAnimState::HandleMoving(Activity& idealActivity)
 
 bool CHL2PlayerAnimState::HandleDucking(Activity& idealActivity)
 {
+	if (m_bInSwim && ((GetBasePlayer()->GetFlags() & FL_ONGROUND) == 0))
+		return false;
+
 #ifdef FL_ANIMDUCKING
 	if (GetBasePlayer()->GetFlags() & FL_ANIMDUCKING)
 #else
@@ -708,8 +711,8 @@ Activity CHL2PlayerAnimState::CalcMainActivity()
 		HandleClimbing(idealActivity) ||
 		HandleVaulting(idealActivity) ||
 		HandleJumping(idealActivity) ||
-		HandleSwimming(idealActivity) ||
 		HandleDucking(idealActivity) ||
+		HandleSwimming(idealActivity) ||
 		HandleDying(idealActivity))
 	{
 		// intentionally blank

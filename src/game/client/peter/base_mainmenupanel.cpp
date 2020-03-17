@@ -18,6 +18,7 @@
 #include "vgui_controls/ControllerMap.h"
 #include "fmtstr.h"
 #include "gameui/optionsdialog.h"
+#include "ienginevgui.h"
 
 using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
@@ -465,7 +466,7 @@ void CFooterPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 
-	m_hButtonFont = pScheme->GetFont((m_szButtonFont[0] != '\0') ? m_szButtonFont : "GameUIButtons");
+	m_hButtonFont = pScheme->GetFont((m_szButtonFont[0] != '\0') ? m_szButtonFont : "GameUIButtonsX360");
 	m_hTextFont = pScheme->GetFont((m_szTextFont[0] != '\0') ? m_szTextFont : "MenuLarge");
 
 	SetFgColor(pScheme->GetColor(m_szFGColor, Color(255, 255, 255, 255)));
@@ -1162,6 +1163,7 @@ void CTFMainMenuPanel::OnCommand(const char* command)
 		if (g_pOptions == nullptr)
 		{
 			new COptionsDialog(nullptr);
+			g_pOptions->SetParent(enginevgui->GetPanel(PANEL_GAMEUIDLL));
 		}
 
 		if (g_pOptions)
