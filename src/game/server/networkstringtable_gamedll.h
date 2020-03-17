@@ -49,7 +49,7 @@ enum
 	MAX_FOOTSTEP_STRINGS = 1 << MAX_FOOTSTEP_STRING_BITS,
 };
 extern INetworkStringTable* g_pStringTablePlayerFootSteps;
-extern CStringTableSaveRestoreOps g_FootStepStringOps;
+extern CStringTableSaveRestoreOps* g_pFootStepStringOps;
 #endif
 
 #endif // NETWORKSTRINGTABLE_GAMEDLL_H

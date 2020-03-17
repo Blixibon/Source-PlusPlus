@@ -10,7 +10,12 @@
 #include "hudelement.h"
 #include "hud_macros.h"
 #include "iclientmode.h"
-#include "hl1_c_player.h"
+#ifdef HL1_DLL
+#include "hl1_c_player.h" 
+#elif HL2_EPISODIC
+#include "hl2/c_basehlplayer.h"
+#endif // HL1_DLL
+
 
 #include <vgui/ISurface.h>
 #include <vgui_controls/Panel.h>
@@ -19,12 +24,12 @@
 #define MIN_ALPHA	 100	
 
 
-class CHudFlashlight : public CHudElement, public vgui::Panel
+class CHudFlashlightHL1 : public CHudElement, public vgui::Panel
 {
-	DECLARE_CLASS_SIMPLE( CHudFlashlight, vgui::Panel );
+	DECLARE_CLASS_SIMPLE( CHudFlashlightHL1, vgui::Panel );
 
 public:
-	CHudFlashlight( const char *pElementName );
+	CHudFlashlightHL1( const char *pElementName );
 
 private:
 	void	Paint( void );
@@ -37,13 +42,13 @@ private:
 	Color			m_clrReddish;
 };
 
-DECLARE_HUDELEMENT( CHudFlashlight );
+DECLARE_HUDELEMENT( CHudFlashlightHL1 );
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudFlashlight::CHudFlashlight( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudFlashlight")
+CHudFlashlightHL1::CHudFlashlightHL1( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudFlashlightHL1")
 {
 	vgui::Panel *pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
@@ -51,14 +56,24 @@ CHudFlashlight::CHudFlashlight( const char *pElementName ) : CHudElement( pEleme
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT );
 }
 
-void CHudFlashlight::Paint( void )
+#ifdef HL2_EPISODIC
+#define m_nFlashBattery m_HL2Local.m_flFlashBattery
+#endif // HL2_EPISODIC
+
+
+void CHudFlashlightHL1::Paint( void )
 {
 	int		r, g, b, a, nUnused;
 	int		x, y;
 	bool	bIsOn;
 	Color	clrFlash;
 
-	C_HL1_Player *pPlayer = ToHL1Player( C_HL1_Player::GetLocalPlayer() );
+#ifdef HL1_DLL
+	C_HL1_Player* pPlayer = ToHL1Player(C_HL1_Player::GetLocalPlayer());
+#elif HL2_EPISODIC
+	C_BaseHLPlayer* pPlayer = (C_BaseHLPlayer*)C_BasePlayer::GetLocalPlayer();
+#endif // HL1_DLL
+
 	if ( !pPlayer )
 		return;
 
@@ -116,14 +131,14 @@ void CHudFlashlight::Paint( void )
 	// draw the flashlight energy level
 	x = GetWide() - ( icon_flash_empty->Width() * 1.5 );
 
-	int nOffset = icon_flash_empty->Width() * ( 1.0 - ( (float)pPlayer->m_nFlashBattery / 100.0 ) );
+	int nOffset = icon_flash_empty->Width() * ( 1.0 - ( (float)pPlayer->m_nFlashBattery / 100.0f ) );
 	if ( nOffset < icon_flash_empty->Width() )
 	{
 		icon_flash_full->DrawSelfCropped( x + nOffset, y, nOffset, 0, icon_flash_full->Width() - nOffset, icon_flash_full->Height(), clrFlash );
 	}
 }
 
-void CHudFlashlight::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudFlashlightHL1::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	SetPaintBackgroundEnabled(false);

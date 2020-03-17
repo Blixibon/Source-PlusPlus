@@ -38,12 +38,12 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Health panel
 //-----------------------------------------------------------------------------
-class CHudHealth : public CHudElement, public CHL1HudNumbers
+class CHudHealthHL1 : public CHudElement, public CHL1HudNumbers
 {
-	DECLARE_CLASS_SIMPLE( CHudHealth, CHL1HudNumbers );
+	DECLARE_CLASS_SIMPLE( CHudHealthHL1, CHL1HudNumbers );
 
 public:
-	CHudHealth( const char *pElementName );
+	CHudHealthHL1( const char *pElementName );
 
 	void			Init( void );
 	void			VidInit( void );
@@ -62,13 +62,13 @@ private:
 	int				m_bitsDamage;
 };	
 
-DECLARE_HUDELEMENT( CHudHealth );
-DECLARE_HUD_MESSAGE( CHudHealth, Damage );
+DECLARE_HUDELEMENT( CHudHealthHL1 );
+DECLARE_HUD_MESSAGE( CHudHealthHL1, Damage );
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudHealth::CHudHealth( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudHealth")
+CHudHealthHL1::CHudHealthHL1( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudHealthHL1")
 {
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT );
 }
@@ -76,16 +76,16 @@ CHudHealth::CHudHealth( const char *pElementName ) : CHudElement( pElementName )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudHealth::Init()
+void CHudHealthHL1::Init()
 {
-	HOOK_HUD_MESSAGE( CHudHealth, Damage );
+	HOOK_HUD_MESSAGE( CHudHealthHL1, Damage );
 	Reset();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudHealth::Reset()
+void CHudHealthHL1::Reset()
 {
 	m_iHealth		= INIT_HEALTH;
 	m_flFade			= 0;
@@ -95,7 +95,7 @@ void CHudHealth::Reset()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudHealth::VidInit()
+void CHudHealthHL1::VidInit()
 {
 	Reset();
 	BaseClass::VidInit();
@@ -104,7 +104,7 @@ void CHudHealth::VidInit()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudHealth::OnThink()
+void CHudHealthHL1::OnThink()
 {
 	int x = 0;
 	C_BasePlayer *local = C_BasePlayer::GetLocalPlayer();
@@ -124,7 +124,7 @@ void CHudHealth::OnThink()
 	m_iHealth = x;
 }
 
-void CHudHealth::Paint()
+void CHudHealthHL1::Paint()
 {
 	Color	clrHealth;
 	int		a;
@@ -197,7 +197,7 @@ void CHudHealth::Paint()
 	int iHeight	= nFontHeight;
 	int iWidth	= nFontWidth / 10;
 
-	clrHealth.SetColor( 255, 160, 0, a  );
+	//clrHealth.SetColor( 255, 160, 0, a  );
 	vgui::surface()->DrawSetColor( clrHealth );
 	vgui::surface()->DrawFilledRect( x, y, x + iWidth, y + iHeight );
 }
@@ -205,11 +205,11 @@ void CHudHealth::Paint()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudHealth::MsgFunc_Damage(bf_read &msg)
+void CHudHealthHL1::MsgFunc_Damage(bf_read &msg)
 {
 	msg.ReadByte();	// armor
 	msg.ReadByte();	// health
-	msg.ReadLong();	// damage bits
+	msg.ReadLongLong();	// damage bits
 
 	Vector vecFrom;
 
@@ -218,7 +218,7 @@ void CHudHealth::MsgFunc_Damage(bf_read &msg)
 	vecFrom.z = msg.ReadBitCoord();
 }
 
-void CHudHealth::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudHealthHL1::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	SetPaintBackgroundEnabled(false);

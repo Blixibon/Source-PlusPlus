@@ -21,11 +21,11 @@ using namespace vgui;
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-class CHudTrain: public CHudElement, public CHL1HudNumbers
+class CHudTrainHL1: public CHudElement, public CHL1HudNumbers
 {
-	DECLARE_CLASS_SIMPLE( CHudTrain, CHL1HudNumbers );
+	DECLARE_CLASS_SIMPLE( CHudTrainHL1, CHL1HudNumbers );
 public:
-	CHudTrain( const char *pElementName );
+	CHudTrainHL1( const char *pElementName );
 	void	Init( void );
 	void	VidInit( void );
 	bool	ShouldDraw( void );
@@ -44,13 +44,13 @@ private:
 //-----------------------------------------------------
 //
 
-DECLARE_HUDELEMENT( CHudTrain );
-DECLARE_HUD_MESSAGE( CHudTrain, Train )
+DECLARE_HUDELEMENT( CHudTrainHL1 );
+DECLARE_HUD_MESSAGE( CHudTrainHL1, Train )
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CHudTrain::CHudTrain( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudTrain")
+CHudTrainHL1::CHudTrainHL1( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudTrainHL1")
 {
 	SetHiddenBits( HIDEHUD_MISCSTATUS );
 }
@@ -59,7 +59,7 @@ CHudTrain::CHudTrain( const char *pElementName ) : CHudElement( pElementName ), 
 // Purpose: 
 // Input  : *scheme - 
 //-----------------------------------------------------------------------------
-void CHudTrain::ApplySchemeSettings( IScheme *scheme )
+void CHudTrainHL1::ApplySchemeSettings( IScheme *scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
@@ -69,14 +69,14 @@ void CHudTrain::ApplySchemeSettings( IScheme *scheme )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudTrain::Init(void)
+void CHudTrainHL1::Init(void)
 {
-	HOOK_HUD_MESSAGE( CHudTrain, Train );
+	HOOK_HUD_MESSAGE( CHudTrainHL1, Train );
 
 	m_iPos = 0;
 }
 
-void CHudTrain::VidInit(void)
+void CHudTrainHL1::VidInit(void)
 {
 	BaseClass::VidInit();
 	
@@ -86,7 +86,7 @@ void CHudTrain::VidInit(void)
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CHudTrain::ShouldDraw( void )
+bool CHudTrainHL1::ShouldDraw( void )
 {
 	return ( CHudElement::ShouldDraw() && m_iPos );
 }
@@ -94,7 +94,7 @@ bool CHudTrain::ShouldDraw( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudTrain::Paint()
+void CHudTrainHL1::Paint()
 {
 	if ( !icon_train )
 	{
@@ -137,7 +137,7 @@ void CHudTrain::Paint()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudTrain::MsgFunc_Train( bf_read &msg )
+void CHudTrainHL1::MsgFunc_Train( bf_read &msg )
 {
 	m_iPos = msg.ReadByte();
 }

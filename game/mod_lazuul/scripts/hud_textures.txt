@@ -491,5 +491,337 @@
 			"width"		"20"
 			"height"	"46"
 		}
+		
+		"dmg_bio"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"128"
+				"y"			"0"	
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_poison"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"128"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_chem"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_cold"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"64"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_drown"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"64"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_heat"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"128"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_gas"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_rad"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"192"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"dmg_shock"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"192"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+		"cross"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"80"
+				"y"			"26"
+				"width"		"32"
+				"height"	"32"
+		}
+		"pain_up"
+		{
+				"file"		"sprites/640_pain_up"
+				"x"			"0"
+				"y"			"0"
+				"width"		"128"
+				"height"	"48"
+		}
+
+		"pain_down"
+		{
+				"file"		"sprites/640_pain_down"
+				"x"			"0"
+				"y"			"0"
+				"width"		"128"
+				"height"	"48"
+		}
+
+		"pain_left"
+		{
+				"file"		"sprites/640_pain_left"
+				"x"			"0"
+				"y"			"0"
+				"width"		"48"
+				"height"	"128"
+		}
+
+		"pain_right"
+		{
+				"file"		"sprites/640_pain_right"
+				"x"			"0"
+				"y"			"0"
+				"width"		"48"
+				"height"	"128"
+		}
+		
+		"hl1_number_0"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"0"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_1"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"20"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_2"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"40"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_3"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"60"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_4"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"80"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_5"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"100"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_6"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"120"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_7"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"140"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_8"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"160"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"hl1_number_9"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"180"
+				"y"			"0"
+				"width"		"20"
+				"height"	"26"
+		}
+
+		"suit_empty"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"40"
+				"y"			"26"
+				"width"		"40"
+				"height"	"40"
+		}
+
+		"suit_full"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"0"
+				"y"			"26"
+				"width"		"40"
+				"height"	"40"
+		}
+		
+		"flash_full"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"160"
+				"y"			"26"
+				"width"		"32"
+				"height"	"32"
+		}
+
+		"flash_empty"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"112"
+				"y"			"26"
+				"width"		"32"
+				"height"	"32"
+		}
+
+		"flash_beam"
+		{
+				"file"		"sprites/640hud7"
+				"x"			"144"
+				"y"			"26"
+				"width"		"16"
+				"height"	"32"
+		}
+
+		"dmg_poison"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"128"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_chem"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_cold"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"64"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_drown"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"64"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_heat"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"128"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_gas"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"0"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_rad"
+		{
+				"file"		"sprites/640hud9"
+				"x"			"192"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"dmg_shock"
+		{
+				"file"		"sprites/640hud8"
+				"x"			"192"
+				"y"			"0"
+				"width"		"64"
+				"height"	"64"
+		}
+
+		"train"
+		{
+				"file"		"sprites/640_train"
+				"x"			"0"
+				"y"			"0"
+				"width"		"96"
+				"height"	"96"
+		}
 	}	
 }

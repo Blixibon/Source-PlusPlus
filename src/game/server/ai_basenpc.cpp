@@ -11285,7 +11285,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_EMBEDDED(m_AttributeManager),
 
 #ifdef HL2_LAZUL
-		DEFINE_CUSTOM_ARRAY(m_iStepSounds, &g_FootStepStringOps, NUM_NPC_STEP_SOUNDS),
+		DEFINE_CUSTOM_ARRAY(m_iStepSounds, g_pFootStepStringOps, NUM_NPC_STEP_SOUNDS),
 #endif // HL2_LAZUL
 
 

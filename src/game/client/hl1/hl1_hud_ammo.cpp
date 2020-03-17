@@ -21,12 +21,12 @@
 //-----------------------------------------------------------------------------
 // Purpose: Displays current ammunition level
 //-----------------------------------------------------------------------------
-class CHudAmmo : public CHudElement, public CHL1HudNumbers
+class CHudAmmoHL1 : public CHudElement, public CHL1HudNumbers
 {
-	DECLARE_CLASS_SIMPLE( CHudAmmo, CHL1HudNumbers );
+	DECLARE_CLASS_SIMPLE( CHudAmmoHL1, CHL1HudNumbers );
 
 public:
-	CHudAmmo( const char *pElementName );
+	CHudAmmoHL1( const char *pElementName );
 	void	Init( void );
 	void	VidInit( void );
 	void	OnThink( void );
@@ -40,12 +40,12 @@ private:
 	float	m_flFade;
 };
 
-DECLARE_HUDELEMENT( CHudAmmo );
+DECLARE_HUDELEMENT( CHudAmmoHL1 );
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudAmmo::CHudAmmo( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudAmmo")
+CHudAmmoHL1::CHudAmmoHL1( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudAmmoHL1")
 {
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT | HIDEHUD_WEAPONSELECTION );
 }
@@ -53,7 +53,7 @@ CHudAmmo::CHudAmmo( const char *pElementName ) : CHudElement( pElementName ), Ba
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CHudAmmo::Init( void )
+void CHudAmmoHL1::Init( void )
 {
 	m_hLastPickedUpWeapon	= NULL;
 	m_flFade				= 0.0;
@@ -62,14 +62,14 @@ void CHudAmmo::Init( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CHudAmmo::VidInit( void )
+void CHudAmmoHL1::VidInit( void )
 {
 	Reset();
 
 	BaseClass::VidInit();
 }
 
-void CHudAmmo::OnThink( void )
+void CHudAmmoHL1::OnThink( void )
 {
 	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
 	if ( !pPlayer )
@@ -90,7 +90,7 @@ void CHudAmmo::OnThink( void )
 	}
 }
 
-void CHudAmmo::Paint( void )
+void CHudAmmoHL1::Paint( void )
 {
 	int r, g, b, a, nUnused;
 	int x, y;
@@ -217,7 +217,7 @@ void CHudAmmo::Paint( void )
 
 }
 
-void CHudAmmo::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudAmmoHL1::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	SetPaintBackgroundEnabled(false);

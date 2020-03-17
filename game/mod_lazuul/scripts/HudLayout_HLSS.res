@@ -215,4 +215,19 @@
 
 		"PaintBackgroundType"	"2"
 	}
+
+	HudDamageIndicator
+	{
+		"fieldName" "HudDamageIndicator"
+		"visible" "1"
+		"enabled" "1"
+		"DmgColorLeft" "255 0 0 0"
+		"DmgColorRight" "255 0 0 0"
+		
+		"dmg_xpos" "30"
+		"dmg_ypos" "100"
+		"dmg_wide" "36"
+		"dmg_tall1" "240"
+		"dmg_tall2" "200"
+	}
 }

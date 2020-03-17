@@ -36,7 +36,7 @@ typedef struct
 	int			x;
 	int			y;
 	CHudTexture	*icon;
-	long		fFlags;
+	long long	fFlags;
 } damagetile_t;
 
 //-----------------------------------------------------------------------------
@@ -63,11 +63,11 @@ private:
 
 private:
 	CHudTexture	*DamageTileIcon( int i );
-	long		DamageTileFlags( int i );
-	void		UpdateTiles( long bits );
+	long long	DamageTileFlags( int i );
+	void		UpdateTiles( long long bits );
 
 private:
-	long			m_bitsDamage;
+	long long		m_bitsDamage;
 	damagetile_t	m_dmgTileInfo[ NUM_DMG_TYPES ];
 };
 
@@ -79,7 +79,7 @@ DECLARE_HUD_MESSAGE( CHudDamageTiles, Damage );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudDamageTiles::CHudDamageTiles( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudDamageTiles")
+CHudDamageTiles::CHudDamageTiles( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudDamageTilesHL1")
 {
 	vgui::Panel *pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
@@ -149,7 +149,7 @@ CHudTexture *CHudDamageTiles::DamageTileIcon( int i )
 	}
 }
 
-long CHudDamageTiles::DamageTileFlags( int i )
+long long CHudDamageTiles::DamageTileFlags( int i )
 {
 	switch ( i )
 	{
@@ -163,8 +163,8 @@ long CHudDamageTiles::DamageTileFlags( int i )
 	case 2:
 		// HL2 hijacked DMG_FREEZE and made it DMG_VEHICLE
 		// HL2 hijacked DMG_SLOWFREEZE and made it DMG_DISSOLVE
-//		return DMG_FREEZE | DMG_SLOWFREEZE;	
-		return DMG_VEHICLE | DMG_DISSOLVE;	
+		return DMG_FREEZE | DMG_SLOWFREEZE;	
+		//return DMG_VEHICLE | DMG_DISSOLVE;	
 
 	case 3:
 		return DMG_DROWN;
@@ -191,7 +191,7 @@ void CHudDamageTiles::MsgFunc_Damage( bf_read &msg )
 {
 						msg.ReadByte();	// armor
 						msg.ReadByte();	// health
-	long bitsDamage	=	msg.ReadLong();	// damage bits, ignore
+	long long bitsDamage	=	msg.ReadLongLong();	// damage bits, ignore
 
 	UpdateTiles( bitsDamage );
 }
@@ -264,12 +264,12 @@ void CHudDamageTiles::Paint( void )
 }
  
 
-void CHudDamageTiles::UpdateTiles( long bitsDamage )
+void CHudDamageTiles::UpdateTiles( long long bitsDamage )
 {	
 	damagetile_t *pDmgTile;
 
 	// Which types are new?
-	long bitsOn = ~m_bitsDamage & bitsDamage;
+	long long bitsOn = ~m_bitsDamage & bitsDamage;
 	
 	for ( int i = 0; i < NUM_DMG_TYPES; i++ )
 	{

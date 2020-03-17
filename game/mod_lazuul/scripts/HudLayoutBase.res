@@ -538,7 +538,8 @@
 	HudFlashlight
 	{
 		"fieldName" "HudFlashlight"
-		"visible" "1"
+		"visible" "0"
+		"enabled"	"0"
 		"PaintBackgroundType"	"2"
 		"xpos"	"270"		[$WIN32]
 		"ypos"	"444"		[$WIN32]
@@ -577,8 +578,8 @@
 	HudDamageIndicator
 	{
 		"fieldName" "HudDamageIndicator"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 		"DmgColorLeft" "255 0 0 0"
 		"DmgColorRight" "255 0 0 0"
 		
@@ -1074,5 +1075,74 @@
 		"ypos"	 "20"
 		"wide"	 "50"
 		"tall"	 "50"
+	}
+
+	HudHealthHL1
+	{
+		"fieldName"		"HudHealthHL1"
+		"xpos"	"0"
+		"ypos"	"430"
+		"wide"	"150"
+		"tall"  "50"
+		"visible" "0"
+		"enabled" "0"
+	}
+	
+	HudSuitHL1
+	{
+		"fieldName"		"HudSuitHL1"
+		"xpos"	"0"
+		"ypos"	"430"
+		"wide"	"640"
+		"tall"  "50"
+		"visible" "0"
+		"enabled" "0"
+	}
+
+	HudAmmoHL1
+	{
+		"fieldName" "HudAmmoHL1"
+		"visible" "0"
+		"enabled" "0"
+		"xpos"	"r640"
+		"tall"	 "480"
+		"wide"	"640"
+	}
+
+	HudAmmoSecondaryHL1
+	{
+		"fieldName" "HudAmmoSecondaryHL1"
+		"visible" "0"
+		"enabled" "0"
+		"wide"	 "640"
+		"tall"	 "480"
+	}
+	
+	HudFlashlightHL1
+	{
+		"fieldName" "HudFlashlightHL1"
+		"visible" "0"
+		"enabled" "0"
+		"xpos"	"r640"
+		"tall"  "480"
+		"wide"	"640"
+	}
+	
+	HudDamageIndicatorHL1
+	{
+		"fieldName" "HudDamageIndicatorHL1"
+		"visible" "0"
+		"enabled" "0"
+		"wide"	 "640"
+		"tall"	 "480"
+	}
+
+	HudDamageTilesHL1
+	{
+		"fieldName" "HudDamageIndicatorHL1"
+		"visible" "0"
+		"enabled" "0"
+		"wide"	 "640"
+		"tall"	 "480"
 	}
 }

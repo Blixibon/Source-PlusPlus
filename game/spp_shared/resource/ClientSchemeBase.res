@@ -27,6 +27,13 @@ Scheme
 		"Blue"				"0 28 162 140"
 		"Yellow"			"251 235 202 255"
 		"TransparentYellow"		"251 235 202 140"
+		
+		// HL1-style HUD colors
+		"Yellowish"			"255 160 0 255"
+		"Normal"			"255 208 64 255"
+		"Caution"			"255 48 0 255"
+		"Reddish"			"255 16 16 255"
+		"Greenish"			"0 160 0 255"
 
 		//"Black"				"0 0 0 255"
 		//Changed black to a NTSC safe color
@@ -162,6 +169,8 @@ Scheme
 		"Yellowish"			"255 160 0 255"
 		"Normal"			"255 208 64 255"
 		"Caution"			"255 48 0 255"
+		"Reddish"			"255 16 16 255"
+		"Greenish"			"0 160 0 255"
 
 		// Top-left corner of the "Half-Life 2" on the main screen
 		"Main.Title1.X"				"76"
@@ -355,7 +364,9 @@ Scheme
 	BitmapFontFiles
 	{
 		// UI buttons, custom font, (256x64)
-		"Buttons"		"materials/vgui/fonts/buttons_32.vbf"
+		"X360Buttons"		"materials/vgui/fonts/buttons_32.vbf"
+		"PS3Buttons"		"materials/vgui/fonts/buttons_ps3_32.vbf"
+		"SteamButtons"		"materials/vgui/fonts/buttons_sc.vbf"
 	}
 	
 	//////////////////////// FONTS /////////////////////////////
@@ -1014,12 +1025,34 @@ Scheme
 
 		
 
-		GameUIButtons
+		GameUIButtonsX360
 		{
 			"1"
 			{
 				"bitmap"	"1"
-				"name"		"Buttons"
+				"name"		"X360Buttons"
+				"scalex"	"0.5"
+				"scaley"	"0.5"
+			}
+		}
+
+		GameUIButtonsPS3
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"PS3Buttons"
+				"scalex"	"0.5"
+				"scaley"	"0.5"
+			}
+		}
+
+		GameUIButtonsSteam
+		{
+			"1"
+			{
+				"bitmap"	"1"
+				"name"		"SteamButtons"
 				"scalex"	"0.5"
 				"scaley"	"0.5"
 			}

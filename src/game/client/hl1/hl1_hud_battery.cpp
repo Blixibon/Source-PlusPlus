@@ -31,12 +31,12 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Health panel
 //-----------------------------------------------------------------------------
-class CHudBattery : public CHudElement, public CHL1HudNumbers
+class CHudBatteryHL1 : public CHudElement, public CHL1HudNumbers
 {
-	DECLARE_CLASS_SIMPLE( CHudBattery, CHL1HudNumbers );
+	DECLARE_CLASS_SIMPLE( CHudBatteryHL1, CHL1HudNumbers );
 
 public:
-	CHudBattery( const char *pElementName );
+	CHudBatteryHL1( const char *pElementName );
 
 	void			Init( void );
 	void			Reset( void );
@@ -54,13 +54,13 @@ private:
 	float			m_flFade;
 };	
 
-DECLARE_HUDELEMENT( CHudBattery );
-DECLARE_HUD_MESSAGE( CHudBattery, Battery );
+DECLARE_HUDELEMENT( CHudBatteryHL1 );
+DECLARE_HUD_MESSAGE( CHudBatteryHL1, Battery );
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudBattery::CHudBattery( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudSuit")
+CHudBatteryHL1::CHudBatteryHL1( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudSuitHL1")
 {
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_NEEDSUIT );
 }
@@ -68,29 +68,29 @@ CHudBattery::CHudBattery( const char *pElementName ) : CHudElement( pElementName
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudBattery::Init()
+void CHudBatteryHL1::Init()
 {
-	HOOK_HUD_MESSAGE( CHudBattery, Battery );
+	HOOK_HUD_MESSAGE( CHudBatteryHL1, Battery );
 	Reset();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudBattery::Reset()
+void CHudBatteryHL1::Reset()
 {
 	m_iBattery	= 0;
 	m_flFade	= 0;
 }
 
-void CHudBattery::VidInit()
+void CHudBatteryHL1::VidInit()
 {
 	Reset();
 
 	BaseClass::VidInit();
 }
 
-void CHudBattery::Paint()
+void CHudBatteryHL1::Paint()
 {
 	Color	clrHealth;
 	int		a;
@@ -166,7 +166,7 @@ void CHudBattery::Paint()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CHudBattery::MsgFunc_Battery( bf_read &msg )
+void CHudBatteryHL1::MsgFunc_Battery( bf_read &msg )
 {
 	int x = msg.ReadShort();
 
@@ -177,7 +177,7 @@ void CHudBattery::MsgFunc_Battery( bf_read &msg )
 	}
 }
 
-void CHudBattery::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudBatteryHL1::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	SetPaintBackgroundEnabled(false);

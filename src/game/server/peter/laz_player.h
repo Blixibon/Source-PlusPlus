@@ -224,6 +224,11 @@ public:
 		return &m_MPModel;
 	}
 
+	bool		IsPullingObject() { return m_bIsPullingObject; }
+	void		StartPullingObject(CBaseEntity* pObject);
+	void		StopPullingObject();
+	void		UpdatePullingObject();
+
 public:
 	static EHANDLE gm_hLastRandomSpawn;
 protected:
@@ -247,6 +252,10 @@ protected:
 
 	CSimpleSimTimer m_AnnounceAttackTimer;
 	EHANDLE			m_hEnemy;
+
+	EHANDLE					m_hPullObject;
+	IPhysicsConstraint* m_pPullConstraint;
+	bool				m_bIsPullingObject;
 
 	// Anim event handlers
 	void OnAnimEventDeployManhack(animevent_t *pEvent);

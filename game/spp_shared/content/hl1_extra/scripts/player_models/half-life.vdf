@@ -1,0 +1,34 @@
+"Models"
+{
+    "hl1_gordon_hev"
+    {
+        "needs_suit"	"1"
+
+        "games"
+		{
+			"game"	"hl1"
+		}
+
+        "models"
+		{
+			"0"
+			{
+			    "name"		"models/player/hl1/ps2/player.mdl"
+			}
+		}
+		
+		"hands"
+		{
+			"model"		"models/weapons/c_arms_ps2_hev.mdl"
+		}
+		
+		"abilities"
+		{
+			"footsteps"			"HL1Steps"
+			"voice"				"none"
+			"suit"				"hev4"
+			"response_class"	"player"
+			"flashlight"	"suit"
+		}
+    }
+}

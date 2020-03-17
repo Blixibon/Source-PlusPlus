@@ -210,4 +210,22 @@
 
 		"PaintBackgroundType"	"2"
 	}
+
+	HudDamageIndicatorHL1
+	{
+		"fieldName" "HudDamageIndicatorHL1"
+		"visible" "1"
+		"enabled" "1"
+		"wide"	 "640"
+		"tall"	 "480"
+	}
+
+	HudDamageTilesHL1
+	{
+		"fieldName" "HudDamageIndicatorHL1"
+		"visible" "1"
+		"enabled" "1"
+		"wide"	 "640"
+		"tall"	 "480"
+	}
 }

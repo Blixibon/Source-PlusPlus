@@ -1,0 +1,8 @@
+"PP_VertexLitGeneric"
+{
+	"$envmap" "models/HL_PS2/player/rubbergloveCHROME"
+	"$surfaceprop" "metal"
+	"$envmapsaturation" 1
+	"$envmapcontrast" 0
+	"$envmapsphere" 1
+}

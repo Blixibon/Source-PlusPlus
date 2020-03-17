@@ -72,7 +72,7 @@ extern Vector		g_vecAttackDir;
 		"weapon_rpg",				// 20
 		"weapon_smg1",				// 21
 		"unused (weapon_smg2) 22",	// 22
-		"unused (weapon_slam) 23",	// 23
+		"weapon_slam",	// 23
 		"weapon_shotgun",			// 24
 		"unused (weapon_molotov) 25",// 25
 		"item_dynamic_resupply",	// 26
@@ -136,58 +136,58 @@ const char *pFGDPropData[] =
 };
 
 LINK_ENTITY_TO_CLASS( func_breakable, CBreakable );
-BEGIN_DATADESC( CBreakable )
+BEGIN_DATADESC(CBreakable)
 
-	DEFINE_FIELD( m_Material, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_Explosion, FIELD_INTEGER, "explosion" ),
-	DEFINE_KEYFIELD( m_GibDir, FIELD_VECTOR, "gibdir" ),
-	DEFINE_FIELD( m_hBreaker, FIELD_EHANDLE ),
+DEFINE_FIELD(m_Material, FIELD_INTEGER),
+DEFINE_KEYFIELD(m_Explosion, FIELD_INTEGER, "explosion"),
+DEFINE_KEYFIELD(m_GibDir, FIELD_VECTOR, "gibdir"),
+DEFINE_FIELD(m_hBreaker, FIELD_EHANDLE),
 
-	// Don't need to save/restore these because we precache after restore
-	//DEFINE_FIELD( m_idShard, FIELD_INTEGER ),
-	DEFINE_FIELD( m_angle, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iszGibModel, FIELD_STRING ),
-	DEFINE_FIELD( m_iszSpawnObject, FIELD_STRING ),
-	DEFINE_KEYFIELD( m_ExplosionMagnitude, FIELD_INTEGER, "explodemagnitude" ),
-	DEFINE_KEYFIELD( m_flPressureDelay, FIELD_FLOAT, "PressureDelay" ),
-	DEFINE_KEYFIELD( m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg" ),
-	DEFINE_FIELD( m_bTookPhysicsDamage, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iszPropData, FIELD_STRING ),
-	DEFINE_INPUT( m_impactEnergyScale, FIELD_FLOAT, "physdamagescale" ),
-	DEFINE_KEYFIELD( m_PerformanceMode, FIELD_INTEGER, "PerformanceMode" ),
+// Don't need to save/restore these because we precache after restore
+//DEFINE_FIELD( m_idShard, FIELD_INTEGER ),
+DEFINE_FIELD(m_angle, FIELD_FLOAT),
+DEFINE_FIELD(m_iszGibModel, FIELD_STRING),
+DEFINE_FIELD(m_iszSpawnObject, FIELD_STRING),
+DEFINE_KEYFIELD(m_ExplosionMagnitude, FIELD_INTEGER, "explodemagnitude"),
+DEFINE_KEYFIELD(m_flPressureDelay, FIELD_FLOAT, "PressureDelay"),
+DEFINE_KEYFIELD(m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg"),
+DEFINE_FIELD(m_bTookPhysicsDamage, FIELD_BOOLEAN),
+DEFINE_FIELD(m_iszPropData, FIELD_STRING),
+DEFINE_INPUT(m_impactEnergyScale, FIELD_FLOAT, "physdamagescale"),
+DEFINE_KEYFIELD(m_PerformanceMode, FIELD_INTEGER, "PerformanceMode"),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Break", InputBreak ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetHealth", InputSetHealth ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddHealth", InputAddHealth ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "RemoveHealth", InputRemoveHealth ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetMass", InputSetMass ),
+DEFINE_INPUTFUNC(FIELD_VOID, "Break", InputBreak),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "SetHealth", InputSetHealth),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "AddHealth", InputAddHealth),
+DEFINE_INPUTFUNC(FIELD_INTEGER, "RemoveHealth", InputRemoveHealth),
+DEFINE_INPUTFUNC(FIELD_FLOAT, "SetMass", InputSetMass),
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( BreakTouch ),
-	DEFINE_THINKFUNC( Die ),
+// Function Pointers
+DEFINE_ENTITYFUNC(BreakTouch),
+DEFINE_THINKFUNC(Die),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnBreak, "OnBreak"),
-	DEFINE_OUTPUT(m_OnHealthChanged, "OnHealthChanged"),
+// Outputs
+DEFINE_OUTPUT(m_OnBreak, "OnBreak"),
+DEFINE_OUTPUT(m_OnHealthChanged, "OnHealthChanged"),
 
-	DEFINE_FIELD( m_flDmgModBullet, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDmgModClub, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDmgModExplosive, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iszPhysicsDamageTableName, FIELD_STRING ),
-	DEFINE_FIELD( m_iszBreakableModel, FIELD_STRING ),
-	DEFINE_FIELD( m_iBreakableSkin, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iBreakableCount, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iMaxBreakableSize, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iszBasePropData, FIELD_STRING ),
-	DEFINE_FIELD( m_iInteractions, FIELD_INTEGER ),
-	DEFINE_FIELD( m_explodeRadius, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iszModelName, FIELD_STRING ),
-	
-	// Physics Influence
-	DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
+DEFINE_FIELD(m_flDmgModBullet, FIELD_FLOAT),
+DEFINE_FIELD(m_flDmgModClub, FIELD_FLOAT),
+DEFINE_FIELD(m_flDmgModExplosive, FIELD_FLOAT),
+DEFINE_FIELD(m_iszPhysicsDamageTableName, FIELD_STRING),
+DEFINE_FIELD(m_iszBreakableModel, FIELD_STRING),
+DEFINE_FIELD(m_iBreakableSkin, FIELD_INTEGER),
+DEFINE_FIELD(m_iBreakableCount, FIELD_INTEGER),
+DEFINE_FIELD(m_iMaxBreakableSize, FIELD_INTEGER),
+DEFINE_FIELD(m_iszBasePropData, FIELD_STRING),
+DEFINE_FIELD(m_iInteractions, FIELD_INTEGER),
+DEFINE_FIELD(m_explodeRadius, FIELD_FLOAT),
+DEFINE_FIELD(m_iszModelName, FIELD_STRING),
 
-END_DATADESC()
+// Physics Influence
+DEFINE_FIELD(m_hPhysicsAttacker, FIELD_EHANDLE),
+DEFINE_FIELD(m_flLastPhysicsInfluenceTime, FIELD_TIME),
+
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -466,8 +466,11 @@ void CBreakable::Precache( void )
 	{
 		pGibName = STRING(m_iszGibModel);
 
-#ifdef HL1_DLL
-		PrecacheModel( pGibName );
+#if defined(HL1_DLL) || defined(HL2_LAZUL)
+		if (pGibName && strstr(pGibName, ".mdl") != NULL)
+		{
+			PrecacheModel(pGibName);
+		}
 #endif
 	}
 
@@ -1086,7 +1089,7 @@ void CBreakable::Die( void )
 		for ( int i = 0; i < iCount; i++ )
 		{
 
-	#ifdef HL1_DLL
+	#if defined(HL1_DLL) || defined(HL2_LAZUL)
 			// Use the passed model instead of the propdata type
 			const char *modelName = STRING( m_iszModelName );
 			
@@ -1216,6 +1219,60 @@ CBasePlayer *CBreakable::HasPhysicsAttacker( float dt )
 	return NULL;
 }
 
+class CBreakableHL1 : public CBreakable
+{
+public:
+	DECLARE_CLASS(CBreakableHL1, CBreakable);
+
+	virtual bool KeyValue(const char* szKeyName, const char* szValue);
+
+protected:
+	static const char* pHL1SpawnObjects[];
+};
+
+LINK_ENTITY_TO_CLASS(func_breakable_hl1, CBreakableHL1);
+
+// Half-Life 1 spawn objects!
+const char* CBreakableHL1::pHL1SpawnObjects[] =
+{
+	NULL,				// 0
+	"item_battery",		// 1
+	"item_healthkit",	// 2
+	"weapon_glock",		// 3
+	"ammo_9mmclip",		// 4
+	"weapon_mp5",		// 5
+	"ammo_9mmAR",		// 6
+	"ammo_ARgrenades",	// 7
+	"weapon_shotgun",	// 8
+	"ammo_buckshot",	// 9
+	"weapon_crossbow",	// 10
+	"ammo_crossbow",	// 11
+	"weapon_357",		// 12
+	"ammo_357",			// 13
+	"weapon_rpg",		// 14
+	"ammo_rpgclip",		// 15
+	"ammo_gaussclip",	// 16
+	"weapon_handgrenade",// 17
+	"weapon_tripmine",	// 18
+	"weapon_satchel",	// 19
+	"weapon_snark",		// 20
+	"weapon_hornetgun",	// 21
+};
+
+
+bool CBreakableHL1::KeyValue(const char* szKeyName, const char* szValue)
+{
+	if (FStrEq(szKeyName, "spawnobject"))
+	{
+		int object = atoi(szValue);
+		if (object > 0 && object < ARRAYSIZE(pHL1SpawnObjects))
+			m_iszSpawnObject = MAKE_STRING(pHL1SpawnObjects[object]);
+	}
+	else
+		return BaseClass::KeyValue(szKeyName, szValue);
+
+	return true;
+}
 
 //=============================================================================================================================
 // PUSHABLE
@@ -1224,10 +1281,10 @@ CBasePlayer *CBreakable::HasPhysicsAttacker( float dt )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-class CPushable : public CBreakable
+class CPushable : public CBreakableHL1
 {
 public:
-	DECLARE_CLASS( CPushable, CBreakable );
+	DECLARE_CLASS( CPushable, CBreakableHL1);
 
 	void	Spawn ( void );
 	bool	CreateVPhysics( void );
@@ -1263,7 +1320,7 @@ void CPushable::Spawn( void )
 		CreateVPhysics();
 	}
 
-#ifdef HL1_DLL
+#if defined(HL1_DLL) || defined(HL2_LAZUL)
 	// Force HL1 Pushables to stay axially aligned.
 	VPhysicsGetObject()->SetInertia( Vector( 1e30, 1e30, 1e30 ) );
 #endif//HL1_DLL
@@ -1287,7 +1344,7 @@ bool CPushable::CreateVPhysics( void )
 // Pull the func_pushable
 void CPushable::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-#ifdef HL1_DLL
+#if defined(HL1_DLL) || defined(HL2_LAZUL)
 	if( m_spawnflags & SF_PUSH_NO_USE )
 		return;
 
@@ -1295,9 +1352,9 @@ void CPushable::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
 	if ( pPlayer )
 	{
-		if ( useType == USE_ON )
+		//if ( useType == USE_ON )
 		{
-			PlayerPickupObject( pPlayer, this );
+			PlayerPushObject( pPlayer, this );
 		}
 	}
 #else
@@ -1331,4 +1388,3 @@ void CPushable::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 
 	BaseClass::VPhysicsCollision( index, pEvent );
 }
-

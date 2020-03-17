@@ -105,4 +105,44 @@
 
 		"PaintBackgroundType"	"2"
 	}
+	
+	HudFlashlight
+	{
+		"fieldName" "HudFlashlight"
+		"visible" "1"
+		"PaintBackgroundType"	"2"
+		"xpos"	"270"		[$WIN32]
+		"ypos"	"444"		[$WIN32]
+		"xpos_hidef"	"306"		[$X360]		// aligned to left
+		"xpos_lodef"	"c-18"		[$X360]		// centered in screen
+		"ypos"	"428"		[$X360]				
+		"tall"  "24"
+		"wide"	"36"
+		"font"	"WeaponIconsSmall"
+		
+		"icon_xpos"	"4"
+		"icon_ypos" "-8"
+		
+		"BarInsetX" "4"
+		"BarInsetY" "18"
+		"BarWidth" "28"
+		"BarHeight" "2"
+		"BarChunkWidth" "2"
+		"BarChunkGap" "1"
+	}
+
+	HudDamageIndicator
+	{
+		"fieldName" "HudDamageIndicator"
+		"visible" "1"
+		"enabled" "1"
+		"DmgColorLeft" "255 0 0 0"
+		"DmgColorRight" "255 0 0 0"
+		
+		"dmg_xpos" "30"
+		"dmg_ypos" "100"
+		"dmg_wide" "36"
+		"dmg_tall1" "240"
+		"dmg_tall2" "200"
+	}
 }

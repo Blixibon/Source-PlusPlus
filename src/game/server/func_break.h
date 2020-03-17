@@ -124,7 +124,7 @@ protected:
 	Materials	m_Material;
 	EHANDLE m_hBreaker;			// The entity that broke us. Held as a data member because sometimes breaking is delayed.
 
-private:
+protected:
 
 	Explosions	m_Explosion;
 	QAngle		m_GibDir;

@@ -42,6 +42,19 @@ enum PlayerColors_e
 	NUM_PLAYER_COLORS
 };
 
+enum LazSpecialStepSounds_e
+{
+	FOOTSTEP_SOUND_HL1 = -2,
+};
+
+struct HL1Foot_t
+{
+	const char* m_pNameLeft;
+	const char* m_pNameRight;
+};
+
+extern HL1Foot_t s_pHL1FootSounds[26];
+
 #if defined( CLIENT_DLL )
 #define CLaz_Player C_Laz_Player
 #include "peter/c_laz_player.h"

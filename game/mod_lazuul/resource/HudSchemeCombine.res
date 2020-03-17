@@ -2,6 +2,14 @@
 
 Scheme
 {
+	Colors
+	{
+		// HL1-style HUD colors
+		"Yellowish"			"0 0 255 255"
+		"Normal"			"0 128 128 255"
+		"Caution"			"255 0 0 255"
+	}
+	
 	///////////////////// BASE SETTINGS ////////////////////////
 	//
 	// default settings for all panels

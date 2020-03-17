@@ -60,7 +60,7 @@ public:
 
 	inline bool IsInvalidString(int iString) { return (unsigned short)iString == INVALID_STRING_INDEX; }
 
-private:
+protected:
 	INetworkStringTable *m_pStringTable;
 };
 

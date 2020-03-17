@@ -27,11 +27,41 @@
 
 extern ConVar sv_footsteps;
 
-inline bool IsInvalidString(int iString) { return (unsigned short)iString == INVALID_STRING_INDEX; }
+inline bool IsInvalidString(int iString) { return (unsigned short)iString == INVALID_STRING_INDEX || iString < -1; }
 
 enum
 {
 	CHAN_BODY2 = CHAN_USER_BASE + CHAN_BODY,
+};
+
+HL1Foot_t s_pHL1FootSounds[26] =
+{
+	{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_ANTLION
+{ "HL1.Flesh.StepLeft", "HL1.Flesh.StepRight" },	// CHAR_TEX_BLOODYFLESH	
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_CONCRETE		
+{ "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_DIRT			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_EGGSHELL		
+{ "HL1.Flesh.StepLeft", "HL1.Flesh.StepRight" },	// CHAR_TEX_FLESH			
+{ "HL1.Grate.StepLeft", "HL1.Grate.StepRight" },	// CHAR_TEX_GRATE			
+{ "HL1.Flesh.StepLeft", "HL1.Flesh.StepRight" },	// CHAR_TEX_ALIENFLESH		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_CLIP			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_PLASTIC		
+{ "HL1.Metal.StepLeft", "HL1.Metal.StepRight" },	// CHAR_TEX_METAL			
+{ "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_SAND			
+{ "HL1.Dirt.StepLeft", "HL1.Dirt.StepRight" },	// CHAR_TEX_FOLIAGE		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_COMPUTER		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Slosh.StepLeft", "HL1.Slosh.StepRight" },	// CHAR_TEX_SLOSH			
+{ "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },			// CHAR_TEX_TILE			
+{ "HL1.Wade.StepLeft", "HL1.Wade.StepRight" },	// CHAR_TEX_WADE		
+{ "HL1.Vent.StepLeft", "HL1.Vent.StepRight" },	// CHAR_TEX_VENT			
+{ "HL1.Wood.StepLeft", "HL1.Wood.StepRight" },	// CHAR_TEX_WOOD			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_UNUSED		
+{ "HL1.Tile.StepLeft", "HL1.Tile.StepRight" },	// CHAR_TEX_GLASS			
+{ "HL1.Default.StepLeft", "HL1.Default.StepRight" },	// CHAR_TEX_WARPSHIELD		
 };
 
 //const char *g_ppszPlayerSoundPrefixNames[PLAYER_SOUNDS_MAX] =
@@ -244,16 +274,24 @@ const char *CLaz_Player::GetPlayerModelSoundPrefix(void)
 
 void CLaz_Player::PrecacheFootStepSounds(void)
 {
-	if (IsInvalidString(m_iPlayerSoundType))
-		return;
+	if (m_iPlayerSoundType == FOOTSTEP_SOUND_HL1)
+	{
+		for (auto effect : s_pHL1FootSounds)
+		{
+			PrecacheScriptSound(effect.m_pNameLeft);
+			PrecacheScriptSound(effect.m_pNameRight);
+		}
+	}
+	else if (!IsInvalidString(m_iPlayerSoundType))
+	{
+		char szFootStepName[128];
 
-	char szFootStepName[128];
+		Q_snprintf(szFootStepName, sizeof(szFootStepName), "%s.RunFootstepLeft", GetPlayerModelSoundPrefix());
+		PrecacheScriptSound(szFootStepName);
 
-	Q_snprintf(szFootStepName, sizeof(szFootStepName), "%s.RunFootstepLeft", GetPlayerModelSoundPrefix());
-	PrecacheScriptSound(szFootStepName);
-
-	Q_snprintf(szFootStepName, sizeof(szFootStepName), "%s.RunFootstepRight", GetPlayerModelSoundPrefix());
-	PrecacheScriptSound(szFootStepName);
+		Q_snprintf(szFootStepName, sizeof(szFootStepName), "%s.RunFootstepRight", GetPlayerModelSoundPrefix());
+		PrecacheScriptSound(szFootStepName);
+	}
 }
 
 
@@ -266,60 +304,133 @@ void CLaz_Player::PrecacheFootStepSounds(void)
 //-----------------------------------------------------------------------------
 void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force)
 {
-	BaseClass::PlayStepSound(vecOrigin, psurface, fvol, force);
-
-	if (IsInvalidString(m_iPlayerSoundType))
-		return;
-
-	if (gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat())
-		return;
+	if (m_iPlayerSoundType == FOOTSTEP_SOUND_HL1)
+	{
+		if (gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat())
+			return;
 
 #if defined( CLIENT_DLL )
-	// during prediction play footstep sounds only once
-	if (!prediction->IsFirstTimePredicted())
-		return;
+		// during prediction play footstep sounds only once
+		if (prediction->InPrediction() && !prediction->IsFirstTimePredicted())
+			return;
 #endif
 
-	if (GetFlags() & FL_DUCKING)
-		return;
+		if (!psurface)
+			return;
 
-	//m_Local.m_nStepside = !m_Local.m_nStepside;
+		int nSide = m_Local.m_nStepside;
+		const HL1Foot_t& effect = s_pHL1FootSounds[psurface->game.material - 'A'];
+		const char * pSoundName = nSide ? effect.m_pNameLeft : effect.m_pNameRight;
+		if (!pSoundName)
+			return;
 
-	char szStepSound[128];
+		m_Local.m_nStepside = !nSide;
 
-	if (!m_Local.m_nStepside)
-	{
-		Q_snprintf(szStepSound, sizeof(szStepSound), "%s.RunFootstepLeft", GetPlayerModelSoundPrefix());
+		CSoundParameters params;
+
+		Assert(nSide == 0 || nSide == 1);
+
+		{
+			// Give child classes an opportunity to override.
+			pSoundName = GetOverrideStepSound(pSoundName);
+
+			if (!CBaseEntity::GetParametersForSound(pSoundName, params, NULL))
+				return;
+		}
+
+		CRecipientFilter filter;
+		filter.AddRecipientsByPAS(vecOrigin);
+
+#ifndef CLIENT_DLL
+		// in MP, server removes all players in the vecOrigin's PVS, these players generate the footsteps client side
+		if (gpGlobals->maxClients > 1)
+		{
+			filter.RemoveRecipientsByPVS(vecOrigin);
+		}
+#endif
+
+		EmitSound_t ep;
+		ep.m_nChannel = CHAN_BODY;
+		ep.m_pSoundName = params.soundname;
+#if defined ( TF_DLL ) || defined ( TF_CLIENT_DLL )
+		if (TFGameRules()->IsMannVsMachineMode())
+		{
+			ep.m_flVolume = params.volume;
+		}
+		else
+		{
+			ep.m_flVolume = fvol;
+		}
+#else
+		ep.m_flVolume = fvol;
+#endif
+		ep.m_SoundLevel = params.soundlevel;
+		ep.m_nFlags = 0;
+		ep.m_nPitch = params.pitch;
+		ep.m_pOrigin = &vecOrigin;
+
+		EmitSound(filter, entindex(), ep);
+
+		// Kyle says: ugggh. This function may as well be called "PerformPileOfDesperateGameSpecificFootstepHacks".
+		OnEmitFootstepSound(params, vecOrigin, fvol);
 	}
 	else
 	{
-		Q_snprintf(szStepSound, sizeof(szStepSound), "%s.RunFootstepRight", GetPlayerModelSoundPrefix());
-	}
+		BaseClass::PlayStepSound(vecOrigin, psurface, fvol, force);
 
-	CSoundParameters params;
-	if (GetParametersForSound(szStepSound, params, NULL) == false)
-		return;
+		if (IsInvalidString(m_iPlayerSoundType))
+			return;
 
-	CRecipientFilter filter;
-	filter.AddRecipientsByPAS(vecOrigin);
+		if (gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat())
+			return;
 
-#ifndef CLIENT_DLL
-	// im MP, server removed all players in origins PVS, these players 
-	// generate the footsteps clientside
-	if (gpGlobals->maxClients > 1)
-		filter.RemoveRecipientsByPVS(vecOrigin);
+#if defined( CLIENT_DLL )
+		// during prediction play footstep sounds only once
+		if (!prediction->IsFirstTimePredicted())
+			return;
 #endif
 
-	EmitSound_t ep;
-	ep.m_nChannel = CHAN_AUTO;
-	ep.m_pSoundName = params.soundname;
-	ep.m_flVolume = fvol;
-	ep.m_SoundLevel = params.soundlevel;
-	ep.m_nFlags = 0;
-	ep.m_nPitch = params.pitch;
-	ep.m_pOrigin = &vecOrigin;
+		if (GetFlags() & FL_DUCKING)
+			return;
 
-	EmitSound(filter, entindex(), ep);
+		//m_Local.m_nStepside = !m_Local.m_nStepside;
+
+		char szStepSound[128];
+
+		if (!m_Local.m_nStepside)
+		{
+			Q_snprintf(szStepSound, sizeof(szStepSound), "%s.RunFootstepLeft", GetPlayerModelSoundPrefix());
+		}
+		else
+		{
+			Q_snprintf(szStepSound, sizeof(szStepSound), "%s.RunFootstepRight", GetPlayerModelSoundPrefix());
+		}
+
+		CSoundParameters params;
+		if (GetParametersForSound(szStepSound, params, NULL) == false)
+			return;
+
+		CRecipientFilter filter;
+		filter.AddRecipientsByPAS(vecOrigin);
+
+#ifndef CLIENT_DLL
+		// im MP, server removed all players in origins PVS, these players 
+		// generate the footsteps clientside
+		if (gpGlobals->maxClients > 1)
+			filter.RemoveRecipientsByPVS(vecOrigin);
+#endif
+
+		EmitSound_t ep;
+		ep.m_nChannel = CHAN_AUTO;
+		ep.m_pSoundName = params.soundname;
+		ep.m_flVolume = fvol;
+		ep.m_SoundLevel = params.soundlevel;
+		ep.m_nFlags = 0;
+		ep.m_nPitch = params.pitch;
+		ep.m_pOrigin = &vecOrigin;
+
+		EmitSound(filter, entindex(), ep);
+	}
 }
 
 bool CLaz_Player::ShouldCollide(int collisionGroup, int contentsMask) const
@@ -359,7 +470,7 @@ bool CLaz_Player::ShouldCollide(int collisionGroup, int contentsMask) const
 	return BaseClass::ShouldCollide(collisionGroup, contentsMask);
 }
 
-ConVar testclassviewheight( "testclassviewheight", "0", FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
+ConVar testclassviewheight( "testclassviewheight", "0", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY | FCVAR_REPLICATED );
 Vector vecTestViewHeight(0,0,0);
 
 //-----------------------------------------------------------------------------

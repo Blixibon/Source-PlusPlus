@@ -581,7 +581,7 @@ bool CTraceFilterNav::ShouldHitEntity( IHandleEntity *pHandleEntity, int content
 	if ( m_pProber->GetMoveProbe()->ShouldBrushBeIgnored( pEntity ) == true )
 		return false;
 
-#ifdef HL1_DLL 
+#if defined(HL1_DLL) || defined(HL2_LAZUL) 
 	if ( ( contentsMask & CONTENTS_MOVEABLE ) == 0 )
 	{
 		if ( pEntity->ClassMatches( "func_pushable" ) )

@@ -69,6 +69,13 @@ typedef struct NewGameDef_s
 	int m_GameMod;
 	CGTSymbol m_PopSet;
 	CCopyableUtlVector< FileNameHandle_t > m_SoundOverrides;
+
+	NewGameDef_s()
+	{
+		m_BaseGame = GAME_DEFAULT;
+		m_GameMod = GAME_DEFAULT;
+		m_PopSet = "default";
+	}
 } NewGameDef_t;
 
 class CGameTypeManager /*: public CBaseGameSystem*/
@@ -101,6 +108,7 @@ public:
 
 	const char* GetCurrentConfigName() { return m_symConfigName.String(); }
 	int		GetSoundOverrideScripts(CUtlStringList& scripts);
+	const char* GetPopulationSet() { return m_CurrentGame.m_PopSet.String(); }
 
 	bool IsMapInArea(int iArea)
 	{

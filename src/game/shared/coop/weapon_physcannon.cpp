@@ -37,6 +37,7 @@
 	#include "saverestore_utlvector.h"
 	#include "ai_interactions.h"
 	#include "ilagcompensationmanager.h"
+#include "peter/laz_player.h"
 #endif
 
 #include "gamerules.h"
@@ -1355,6 +1356,24 @@ void PlayerPickupObject( CBasePlayer *pPlayer, CBaseEntity *pObject )
 
 #endif
 
+}
+
+void PlayerPushObject(CBasePlayer* pPlayer, CBaseEntity* pObject)
+{
+#ifndef CLIENT_DLL
+	CLaz_Player* pLaz = ToLazuulPlayer(pPlayer);
+	if (!pLaz)
+		return;
+
+	//Don't pick up if we don't have a phys object.
+	if (pObject->VPhysicsGetObject() == NULL)
+		return;
+
+	if (pLaz->IsPullingObject())
+		return;
+
+	pLaz->StartPullingObject(pObject);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------

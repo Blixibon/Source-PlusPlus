@@ -29,6 +29,8 @@
 #include "econ_item_system.h"
 #include "econ_wearable.h"
 #include "viewport_panel_names.h"
+#include "vphysics/constraints.h"
+#include "physics_saverestore.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -44,7 +46,50 @@ int UTIL_LazEmitGroupnameSuit(CBasePlayer *entity, const char *groupname);
 
 ConVar sv_forcedspecialattack("sv_laz_forcedspecial", "-1", FCVAR_CHEAT);
 
-CStringTableSaveRestoreOps g_FootStepStringOps;
+// Saves negative values as-is
+// Saves everything else with the stringtable
+class CFootstepStringTableSaveRestoreOps : public CStringTableSaveRestoreOps
+{
+public:
+
+	// save data type interface
+	virtual void Save(const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave)
+	{
+		int* pStringIndex = (int*)fieldInfo.pField;
+		if (*pStringIndex < -1)
+		{
+			int iMinusOne = -1;
+			pSave->WriteInt(&iMinusOne);
+			pSave->WriteInt(pStringIndex);
+		}
+		else
+		{
+			const char* pString = m_pStringTable->GetString(*pStringIndex);
+			int nLen = Q_strlen(pString) + 1;
+			pSave->WriteInt(&nLen);
+			pSave->WriteString(pString);
+		}
+	}
+
+	virtual void Restore(const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore)
+	{
+		int* pStringIndex = (int*)fieldInfo.pField;
+		int nLen = pRestore->ReadInt();
+		if (nLen < 0)
+		{
+			*pStringIndex = pRestore->ReadInt();
+		}
+		else
+		{
+			char* pTemp = (char*)stackalloc(nLen);
+			pRestore->ReadString(pTemp, nLen, nLen);
+			*pStringIndex = m_pStringTable->AddString(CBaseEntity::IsServer(), pTemp);
+		}
+	}
+};
+
+CFootstepStringTableSaveRestoreOps g_FootStepStringOps;
+CStringTableSaveRestoreOps* g_pFootStepStringOps = &g_FootStepStringOps;
 
 const char *g_pszSpecialAttacks[SPECIAL_ATTACK_COUNT] = {
 	"manhack",
@@ -91,11 +136,15 @@ DEFINE_FIELD(m_flNextRandomExpressionTime, FIELD_TIME),
 
 DEFINE_FIELD(m_nFlashlightType, FIELD_INTEGER),
 DEFINE_FIELD(m_flEyeHeightOverride, FIELD_FLOAT),
+
+DEFINE_PHYSPTR(m_pPullConstraint),
+DEFINE_FIELD(m_hPullObject, FIELD_EHANDLE),
+DEFINE_FIELD(m_bIsPullingObject, FIELD_BOOLEAN),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
 SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
-SendPropInt(SENDINFO(m_iPlayerSoundType), MAX_FOOTSTEP_STRING_BITS + 1),
+SendPropInt(SENDINFO(m_iPlayerSoundType)/*, MAX_FOOTSTEP_STRING_BITS + 1*/),
 SendPropInt(SENDINFO(m_nFlashlightType)),
 SendPropFloat(SENDINFO(m_flEyeHeightOverride)),
 SendPropVector(SENDINFO(m_vecLadderNormal), -1, SPROP_NORMAL),
@@ -178,7 +227,6 @@ HSOUNDSCRIPTHANDLE CLaz_Player::gm_hsFlashLightSoundHandles[] = { SOUNDEMITTER_I
 int			CLaz_Player::gm_iGordonFreemanModel = -1;
 
 extern CSuitPowerDevice SuitDeviceFlashlight;
-bool Flashlight_UseLegacyVersion(void);
 
 CLaz_Player::CLaz_Player()
 {
@@ -625,6 +673,9 @@ float CLaz_Player::PlayScene(const char* pszScene, float flDelay, AI_Response* r
 void CLaz_Player::PreThink(void)
 {
 	BaseClass::PreThink();
+
+	UpdatePullingObject();
+
 	State_PreThink();
 
 	if (!g_pGameRules->IsMultiplayer())
@@ -2136,6 +2187,10 @@ void CLaz_Player::SetFootsteps(const char *pchPrefix)
 	{
 		m_iPlayerSoundType = INVALID_STRING_INDEX;
 	}
+	else if (0 == Q_strcmp("HL1Steps", pchPrefix))
+	{
+		m_iPlayerSoundType = FOOTSTEP_SOUND_HL1;
+	}
 	else
 	{
 		m_iPlayerSoundType = g_pStringTablePlayerFootSteps->AddString(CBaseEntity::IsServer(), pchPrefix);
@@ -2899,6 +2954,96 @@ void CLaz_Player::ValidateCurrentObserverTarget(void)
 void CLaz_Player::CheckObserverSettings()
 {
 	BaseClass::CheckObserverSettings();
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CLaz_Player::StartPullingObject(CBaseEntity* pObject)
+{
+	if (pObject->VPhysicsGetObject() == NULL || VPhysicsGetObject() == NULL)
+	{
+		return;
+	}
+
+	if (!(GetFlags() & FL_ONGROUND))
+	{
+		//Msg("Can't grab in air!\n");
+		return;
+	}
+
+	if (GetGroundEntity() == pObject)
+	{
+		//Msg("Can't grab something you're standing on!\n");
+		return;
+	}
+
+	constraint_fixedparams_t fixed;
+	fixed.Defaults();
+	fixed.constraint.Defaults();
+	fixed.constraint.forceLimit = lbs2kg(1000);
+	fixed.constraint.torqueLimit = lbs2kg(1000);
+	fixed.InitWithCurrentObjectState(VPhysicsGetObject(), pObject->VPhysicsGetObject());
+	m_pPullConstraint = physenv->CreateFixedConstraint(VPhysicsGetObject(), pObject->VPhysicsGetObject(), NULL, fixed);
+
+	m_hPullObject.Set(pObject);
+	m_bIsPullingObject = true;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CLaz_Player::StopPullingObject()
+{
+	if (m_pPullConstraint)
+	{
+		physenv->DestroyConstraint(m_pPullConstraint);
+	}
+
+	m_hPullObject.Set(NULL);
+	m_pPullConstraint = NULL;
+	m_bIsPullingObject = false;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CLaz_Player::UpdatePullingObject()
+{
+	if (!IsPullingObject())
+		return;
+
+	CBaseEntity* pObject = m_hPullObject.Get();
+
+	if (!pObject || !pObject->VPhysicsGetObject())
+	{
+		// Object broke or otherwise vanished.
+		StopPullingObject();
+		return;
+	}
+
+	if (m_afButtonReleased & IN_USE)
+	{
+		// Player released +USE
+		StopPullingObject();
+		return;
+	}
+
+
+	float flMaxDistSqr = Square(PLAYER_USE_RADIUS + 1.0f);
+
+	Vector objectPos;
+	QAngle angle;
+
+	pObject->VPhysicsGetObject()->GetPosition(&objectPos, &angle);
+
+	if (!FInViewCone(objectPos))
+	{
+		// Player turned away.
+		StopPullingObject();
+	}
+	else if (objectPos.DistToSqr(WorldSpaceCenter()) > flMaxDistSqr)
+	{
+		// Object got caught up on something and left behind
+		StopPullingObject();
+	}
 }
 
 CON_COMMAND_F(laz_player_set_voice, "Set the voicetype of the player", FCVAR_DEVELOPMENTONLY|FCVAR_CHEAT)

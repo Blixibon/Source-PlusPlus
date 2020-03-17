@@ -28,12 +28,12 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: HDU Damage indication
 //-----------------------------------------------------------------------------
-class CHudDamageIndicator : public CHudElement, public vgui::Panel
+class CHudDamageIndicatorHL1 : public CHudElement, public vgui::Panel
 {
-	DECLARE_CLASS_SIMPLE( CHudDamageIndicator, vgui::Panel );
+	DECLARE_CLASS_SIMPLE( CHudDamageIndicatorHL1, vgui::Panel );
 
 public:
-	CHudDamageIndicator( const char *pElementName );
+	CHudDamageIndicatorHL1( const char *pElementName );
 
 	void	Init( void );
 	void	Reset( void );
@@ -67,13 +67,13 @@ private:
 	CHudTexture	*icon_right;
 };
 
-DECLARE_HUDELEMENT( CHudDamageIndicator );
-DECLARE_HUD_MESSAGE( CHudDamageIndicator, Damage );
+DECLARE_HUDELEMENT( CHudDamageIndicatorHL1 );
+DECLARE_HUD_MESSAGE( CHudDamageIndicatorHL1, Damage );
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudDamageIndicator::CHudDamageIndicator( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudDamageIndicator")
+CHudDamageIndicatorHL1::CHudDamageIndicatorHL1( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudDamageIndicatorHL1")
 {
 	vgui::Panel *pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
@@ -84,7 +84,7 @@ CHudDamageIndicator::CHudDamageIndicator( const char *pElementName ) : CHudEleme
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CHudDamageIndicator::Reset( void )
+void CHudDamageIndicatorHL1::Reset( void )
 {
 	m_flAttackFront	= 0.0;
 	m_flAttackRear	= 0.0;
@@ -94,15 +94,15 @@ void CHudDamageIndicator::Reset( void )
 	m_clrIndicator.SetColor( 250, 0, 0, 255 );
 }
 
-void CHudDamageIndicator::Init( void )
+void CHudDamageIndicatorHL1::Init( void )
 {
-	HOOK_HUD_MESSAGE( CHudDamageIndicator, Damage );
+	HOOK_HUD_MESSAGE( CHudDamageIndicatorHL1, Damage );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-bool CHudDamageIndicator::ShouldDraw( void )
+bool CHudDamageIndicatorHL1::ShouldDraw( void )
 {
 	if ( !CHudElement::ShouldDraw() )
 		return false;
@@ -113,7 +113,7 @@ bool CHudDamageIndicator::ShouldDraw( void )
 	return true;
 }
 
-void CHudDamageIndicator::DrawDamageIndicatorFront( float flFade )
+void CHudDamageIndicatorHL1::DrawDamageIndicatorFront( float flFade )
 {
 	if ( m_flAttackFront > 0.4 )
 	{
@@ -139,7 +139,7 @@ void CHudDamageIndicator::DrawDamageIndicatorFront( float flFade )
 	}
 }
 
-void CHudDamageIndicator::DrawDamageIndicatorRear( float flFade )
+void CHudDamageIndicatorHL1::DrawDamageIndicatorRear( float flFade )
 {
 	if ( m_flAttackRear > 0.4 )
 	{
@@ -166,7 +166,7 @@ void CHudDamageIndicator::DrawDamageIndicatorRear( float flFade )
 }
 
 
-void CHudDamageIndicator::DrawDamageIndicatorLeft( float flFade )
+void CHudDamageIndicatorHL1::DrawDamageIndicatorLeft( float flFade )
 {
 	if ( m_flAttackLeft > 0.4 )
 	{
@@ -193,7 +193,7 @@ void CHudDamageIndicator::DrawDamageIndicatorLeft( float flFade )
 }
 
 
-void CHudDamageIndicator::DrawDamageIndicatorRight( float flFade )
+void CHudDamageIndicatorHL1::DrawDamageIndicatorRight( float flFade )
 {
 	if ( m_flAttackRight > 0.4 )
 	{
@@ -223,7 +223,7 @@ void CHudDamageIndicator::DrawDamageIndicatorRight( float flFade )
 //-----------------------------------------------------------------------------
 // Purpose: Paints the damage display
 //-----------------------------------------------------------------------------
-void CHudDamageIndicator::Paint()
+void CHudDamageIndicatorHL1::Paint()
 {
 	// draw damage indicators
 	float flFade = gpGlobals->frametime * 2;
@@ -236,11 +236,11 @@ void CHudDamageIndicator::Paint()
 //-----------------------------------------------------------------------------
 // Purpose: Message handler for Damage message
 //-----------------------------------------------------------------------------
-void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
+void CHudDamageIndicatorHL1::MsgFunc_Damage( bf_read &msg )
 {
 	int armor		=	msg.ReadByte();	// armor
 	int damageTaken	=	msg.ReadByte();	// health
-						msg.ReadLong();	// damage bits, ignore
+						msg.ReadLongLong();	// damage bits, ignore
 	Vector vecFrom;
 	vecFrom.x		=	msg.ReadFloat();
 	vecFrom.y		=	msg.ReadFloat();
@@ -252,7 +252,7 @@ void CHudDamageIndicator::MsgFunc_Damage( bf_read &msg )
 	}
 }
 
-void CHudDamageIndicator::CalcDamageDirection( const Vector &vecFrom )
+void CHudDamageIndicatorHL1::CalcDamageDirection( const Vector &vecFrom )
 {
 	if ( vecFrom == vec3_origin )
 	{
@@ -320,7 +320,7 @@ void CHudDamageIndicator::CalcDamageDirection( const Vector &vecFrom )
 //-----------------------------------------------------------------------------
 // Purpose: hud scheme settings
 //-----------------------------------------------------------------------------
-void CHudDamageIndicator::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudDamageIndicatorHL1::ApplySchemeSettings(vgui::IScheme *pScheme)
 {
 	BaseClass::ApplySchemeSettings(pScheme);
 	SetPaintBackgroundEnabled(false);
