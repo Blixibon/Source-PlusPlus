@@ -29,7 +29,7 @@ public:
 		//weighted_random.SetSize(0);
 	}
 
-	virtual void PostInit();
+	virtual bool Init();
 
 	virtual char const *Name() { return chName; }
 

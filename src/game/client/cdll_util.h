@@ -104,7 +104,7 @@ template <size_t tokenLen> const char *nexttoken( OUT_Z_ARRAY char( &token )[tok
 enum
 {
 	LIGHT_INDEX_TE_DYNAMIC = 0x10000000,
-	LIGHT_INDEX_PLAYER_BRIGHT = 0x20000000,
+	LIGHT_INDEX_MANAGED_LIGHT = 0x20000000,
 	LIGHT_INDEX_MUZZLEFLASH = 0x40000000,
 };
 

@@ -5,6 +5,7 @@
 #include "flashlighteffect.h"
 #include "iviewrender_beams.h"
 #include "beam_shared.h"
+#include "peter/c_lightmanager.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -18,12 +19,15 @@ public:
 	virtual void OnDataChanged(DataUpdateType_t type);
 	virtual void ClientThink();
 
-
+	~C_NPC_ZombieGuard()
+	{
+		if (m_pLight.IsValid() && !m_bStartedDecay)
+			m_pLight->StartDecay();
+	}
 protected:
 	CNewParticleEffect *m_pDroolFX;
-	dlight_t *m_dlight;
-
-	float m_flTimeLastFlicker;
+	CSmartPtr<CManagedLight> m_pLight;
+	bool	m_bStartedDecay;
 };
 
 IMPLEMENT_CLIENTCLASS_DT(C_NPC_ZombieGuard, DT_ZombieGuard, CNPC_ZombieGuard)
@@ -58,43 +62,29 @@ void C_NPC_ZombieGuard::ClientThink()
 	//142 251 0 255
 
 	// update the dlight. (always done because clienthink only exists for cavernguard)
-	if (!m_dlight)
+	if (!m_pLight.IsValid())
 	{
-		m_dlight = effects->CL_AllocElight(index);
-		m_dlight->color.r = 37;
-		m_dlight->color.g = 255;
-		m_dlight->color.b = 63;
-		m_dlight->radius = 30;
-		m_dlight->decay = 0;
-		m_dlight->minlight = 128.0 / 256.0f;
+		m_pLight = LightManager()->CreateLight("ZombieMouth");
 	}
 
-	Vector vecMouth;
-	GetAttachment("mouth", vecMouth);
-
-	if (m_pRagdollEnt != NULL)
+	if (m_pLight.IsValid())
 	{
-		m_pRagdollEnt->GetAttachment("mouth", vecMouth);
-		ParticleProp()->AddControlPoint(m_pDroolFX, 1, m_pRagdollEnt, PATTACH_POINT_FOLLOW, "mouth", Vector(3, 0, -1));
+		Vector vecMouth;
+		GetAttachment("mouth", vecMouth);
 
-		if (m_dlight->decay == 0)
-			m_dlight->decay = m_dlight->radius / 1.75f;
-	}
+		if (m_pRagdollEnt != NULL)
+		{
+			m_pRagdollEnt->GetAttachment("mouth", vecMouth);
+			ParticleProp()->AddControlPoint(m_pDroolFX, 1, m_pRagdollEnt, PATTACH_POINT_FOLLOW, "mouth", Vector(3, 0, -1));
 
-	m_dlight->origin = vecMouth;
-	m_dlight->die = gpGlobals->curtime + 0.1f;
+			if (!m_bStartedDecay)
+			{
+				m_pLight->StartDecay();
+				m_bStartedDecay = true;
+			}
+		}
 
-	if ((gpGlobals->curtime - m_flTimeLastFlicker) >= 0.1f)
-	{
-		Vector color1(37, 255, 63);
-		Vector color2(142, 251, 0);
-		Vector color = Lerp(RandomFloat(), color1, color2);
-		VectorToColorRGBExp32(color, m_dlight->color);
-
-		if (m_pRagdollEnt == NULL)
-			m_dlight->radius = RandomFloat(20.0f, 30.0f);
-
-		m_flTimeLastFlicker = gpGlobals->curtime;
+		m_pLight->UpdateOrigin(vecMouth);
 	}
 
 	BaseClass::ClientThink();

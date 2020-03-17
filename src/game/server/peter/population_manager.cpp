@@ -18,7 +18,7 @@
 #define SCRIPT_DIR "scripts/population/"
 #define DEFAULT_TAG "default"
 
-#define FILENAME_FORMAT SCRIPT_DIR "%s/%s.txt"
+#define FILENAME_FORMAT SCRIPT_DIR "%s/%s/%s.txt"
 
 
 int CPopulationDefinition::GetRandom()
@@ -33,9 +33,11 @@ int CPopulationDefinition::GetRandom()
 	}
 }
 
-void CPopulationDefinition::PostInit()
+bool CPopulationDefinition::Init()
 {
 	g_pPopulationManager->AddDefinition(this);
+
+	return true;
 }
 
 #pragma region UTILS
@@ -124,6 +126,8 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 			m_iszPopulationTag = AllocPooledString(pchTag);
 		}
 
+		const char* pszPopSet = g_pGameTypeSystem->GetPopulationSet();
+
 		// Iterate through every definition instance we know about.
 		for (int i = 0; i < m_Definitions.Count(); i++)
 		{
@@ -131,7 +135,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 			pDef->weighted_random.Purge(); // Purge any previous weighting.
 
 			CFmtStrN<MAX_PATH> filename;
-			filename.AppendFormat(FILENAME_FORMAT, STRING(m_iszPopulationTag), pDef->chName); // Build the filename for the weighting script.
+			filename.AppendFormat(FILENAME_FORMAT, pszPopSet, STRING(m_iszPopulationTag), pDef->chName); // Build the filename for the weighting script.
 
 			// Check if it exists.
 			if (!filesystem->FileExists(filename.Access(), "GAME"))
@@ -149,7 +153,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 					V_StripTrailingSlash(chPopTagNoSlash);
 
 					filename.Clear();
-					filename.AppendFormat(FILENAME_FORMAT, chPopTagNoSlash, pDef->chName);
+					filename.AppendFormat(FILENAME_FORMAT, pszPopSet, chPopTagNoSlash, pDef->chName);
 
 					// Check again.
 					if (filesystem->FileExists(filename.Access(), "GAME"))
@@ -161,11 +165,31 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 				{
 					// Try the default tag
 					filename.Clear();
-					filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, pDef->chName);
+					filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, STRING(m_iszPopulationTag), pDef->chName);
 
 					// Check again.
-					if (filesystem->FileExists(filename.Access(), "GAME"))
-						bFound = true;
+					if (!filesystem->FileExists(filename.Access(), "GAME"))
+					{
+						bool bFound = false;
+						char chPopTag[MAX_PATH];
+						Q_strncpy(chPopTag, STRING(m_iszPopulationTag), MAX_PATH);
+
+						// It wasn't found, so go up the directory tree and look for it.
+						while (!bFound && V_StripLastDir(chPopTag, MAX_PATH))
+						{
+							char chPopTagNoSlash[MAX_PATH];
+							Q_strncpy(chPopTagNoSlash, chPopTagNoSlash, MAX_PATH);
+
+							V_StripTrailingSlash(chPopTagNoSlash);
+
+							filename.Clear();
+							filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, chPopTagNoSlash, pDef->chName);
+
+							// Check again.
+							if (filesystem->FileExists(filename.Access(), "GAME"))
+								bFound = true;
+						}
+					}
 				}
 
 				if (!bFound)
