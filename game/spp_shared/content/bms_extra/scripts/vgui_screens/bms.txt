@@ -15,4 +15,13 @@
 		// This is the name of the .res file to load up and apply to the vgui panel
 		"resfile"		"scripts/screens/vgui_test_screen.res"
 	}
+	
+	"tram_control_screen"
+	{
+		"type"	"tram_control_screen"
+		"pixelswide"	480
+		"pixelshigh"	620
+		"resfile"  "resource/screens/vgui_tram_screen.res"
+		"acceptsinput"	1
+	}
 }

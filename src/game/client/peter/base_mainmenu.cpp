@@ -191,6 +191,7 @@ bool CTFMainMenu::LoadGameUI()
 char* CTFMainMenu::GetRandomMusic()
 {
 	int iCount = m_vecMusic.Count();
+	//bool bWasStartup = m_bMusicStartup;
 
 	if (iCount <= 0)
 	{
@@ -274,8 +275,11 @@ char* CTFMainMenu::GetRandomMusic()
 	if (iCount > 0)
 	{
 		FileNameHandle_t fChosen = m_vecMusic.Random();
-		m_vecMusic.FindAndRemove(fChosen);
+		//if (!bWasStartup)
+			m_vecMusic.FindAndRemove(fChosen);
+
 		g_pFullFileSystem->String(fChosen, szResult, MAX_PATH);
+		DevMsg("MenuMusic: Chose %s\n", szResult);
 	}
 
 	return V_stristr(szResult, "music");
@@ -343,6 +347,7 @@ void CTFMainMenu::OnTick()
 		if (!m_iStopGameStartupSound)
 		{
 			enginesound->NotifyBeginMoviePlayback();
+			enginesound->NotifyEndMoviePlayback();
 			m_bMusicStartup = true;
 			m_iStartMenuMusic = 6;
 		}

@@ -170,7 +170,7 @@ void CHudIconDisplay::SetLabel(const char* text, bool IsAPC)
 //-----------------------------------------------------------------------------
 // Purpose: paints a number at the specified position
 //-----------------------------------------------------------------------------
-void CHudIconDisplay::PaintIcons(HFont font, HFont font_small)
+void CHudIconDisplay::PaintIcons(HFont font, HFont font_small, bool bBlur)
 {
 	float xpos, ypos;
 
@@ -179,9 +179,12 @@ void CHudIconDisplay::PaintIcons(HFont font, HFont font_small)
 
 	//TERO: First, lets draw the icon
 
-	surface()->DrawSetTextFont(font);
-	surface()->DrawSetTextPos((int)xpos, (int)ypos);
-	surface()->DrawUnicodeString( m_Icon );
+	if (!bBlur)
+	{
+		surface()->DrawSetTextFont(font);
+		surface()->DrawSetTextPos((int)xpos, (int)ypos);
+		surface()->DrawUnicodeString(m_Icon);
+	}
 
 	//TERO: Lets draw the ammo name
 
@@ -190,17 +193,20 @@ void CHudIconDisplay::PaintIcons(HFont font, HFont font_small)
 
 	if (m_bIsAPC)
 	{
-		surface()->DrawSetTextFont(m_hTextFont);
-		surface()->DrawSetTextPos((int)xpos, (int)digi_ypos);
-		surface()->DrawUnicodeString( L"CANNON");
+		if (!bBlur)
+		{
+			surface()->DrawSetTextFont(m_hTextFont);
+			surface()->DrawSetTextPos((int)xpos, (int)digi_ypos);
+			surface()->DrawUnicodeString(L"CANNON");
 
-		surface()->DrawSetTextFont(m_hTextFont);
-		surface()->DrawSetTextPos((int)xpos, (int)(digi_ypos + surface()->GetFontTall(m_hTextFont)));
-		surface()->DrawUnicodeString( L"ROCKETS");
+			surface()->DrawSetTextFont(m_hTextFont);
+			surface()->DrawSetTextPos((int)xpos, (int)(digi_ypos + surface()->GetFontTall(m_hTextFont)));
+			surface()->DrawUnicodeString(L"ROCKETS");
+		}
 
 		ypos += digi_ypos*2;
 	}
-	else
+	else if (!bBlur)
 	{
 		surface()->DrawSetTextFont(m_hTextFont);
 		surface()->DrawSetTextPos((int)xpos, (int)ypos);
@@ -382,7 +388,7 @@ void CHudIconDisplay::Paint()
 		{
 			if (fl >= 1.0f)
 			{
-				PaintIcons(m_hNumberGlowFont, m_hSmallNumberGlowFont);
+				PaintIcons(m_hNumberGlowFont, m_hSmallNumberGlowFont, true);
 			}
 			else
 			{
@@ -390,7 +396,7 @@ void CHudIconDisplay::Paint()
 				Color col = GetFgColor();
 				col[3] *= fl;
 				surface()->DrawSetTextColor(col);
-				PaintIcons(m_hNumberGlowFont, m_hSmallNumberGlowFont);
+				PaintIcons(m_hNumberGlowFont, m_hSmallNumberGlowFont, true);
 			}
 		}
 	}

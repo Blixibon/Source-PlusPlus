@@ -87,6 +87,8 @@ void CNPC_BaseColleague::Precache()
 			PrecacheInstancedScene(AngryExpressions[i].szExpressions[j]);
 		}
 	}
+
+	m_pInstancedResponseSystem = GetAlternateResponseSystem("scripts/talker/response_rules_bms.txt");
 }
 
 //int CNPC_BaseColleague::gm_iLastChosenSkin = 0;

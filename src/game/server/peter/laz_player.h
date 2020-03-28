@@ -75,6 +75,8 @@ public:
 	virtual bool ShouldRegenerateHealth();
 	virtual void		CreateViewModel(int viewmodelindex = 0);
 
+	virtual ResponseRules::IResponseSystem* GetResponseSystem();
+
 	Vector 	GetPlayerEyeHeight(void);
 
 	virtual void DoMuzzleFlash();

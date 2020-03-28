@@ -1,0 +1,60 @@
+"Announcers"
+{
+    "Rebels"
+    {
+        "round_timer_15min" "Scientist.Time.15Minutes"
+        "round_timer_10min" "Scientist.Time.10Minutes"
+        "round_timer_5min"  "Scientist.Time.5Minutes"
+        "round_timer_1min"  "Scientist.Time.1Minute"
+        "round_timer_30sec" "Scientist.Time.30Seconds"
+        "round_timer_10sec" "Scientist.Time.10Seconds"
+        "round_timer_5sec"  "Scientist.Time.5Seconds"
+        "round_timer_4sec"  "Scientist.Time.4Seconds"
+        "round_timer_3sec"  "Scientist.Time.3Seconds"
+        "round_timer_2sec"  "Scientist.Time.2Seconds"
+        "round_timer_1sec"  "Scientist.Time.1Second"
+        "round_timer_over"  "Scientist.Game.TimeUp"
+        
+        "setup_timer_5sec"  "Scientist.Time.5Seconds"
+        "setup_timer_4sec"  "Scientist.Time.4Seconds"
+        "setup_timer_3sec"  "Scientist.Time.3Seconds"
+        "setup_timer_2sec"  "Scientist.Time.2Seconds"
+        "setup_timer_1sec"  "Scientist.Time.1Second"
+    }
+
+    "Military"
+    {
+        "round_timer_15min" "Marine.Time.15Minutes"
+        "round_timer_10min" "Marine.Time.10Minutes"
+        "round_timer_5min"  "Marine.Time.5Minutes"
+        "round_timer_1min"  "Marine.Time.1Minute"
+        "round_timer_30sec" "Marine.Time.30Seconds"
+        "round_timer_10sec" "Marine.Time.10Seconds"
+        "round_timer_5sec"  "Marine.Time.5Seconds"
+        "round_timer_4sec"  "Marine.Time.4Seconds"
+        "round_timer_3sec"  "Marine.Time.3Seconds"
+        "round_timer_2sec"  "Marine.Time.2Seconds"
+        "round_timer_1sec"  "Marine.Time.1Second"
+        "round_timer_over"  "Marine.Game.TimeUp"
+        
+        "setup_timer_5sec"  "Marine.Time.5Seconds"
+        "setup_timer_4sec"  "Marine.Time.4Seconds"
+        "setup_timer_3sec"  "Marine.Time.3Seconds"
+        "setup_timer_2sec"  "Marine.Time.2Seconds"
+        "setup_timer_1sec"  "Marine.Time.1Second"
+    }
+
+    "Combine"
+    {
+        "round_timer_3min"  "npc/overwatch/cityvoice/fcitadel_3minutestosingularity.wav"
+        "round_timer_2min"  "npc/overwatch/cityvoice/fcitadel_2minutestosingularity.wav"
+        "round_timer_1min"  "npc/overwatch/cityvoice/fcitadel_1minutetosingularity.wav"
+        "round_timer_30sec" "npc/overwatch/cityvoice/fcitadel_30sectosingularity.wav"
+        "round_timer_10sec" "npc/overwatch/cityvoice/fcitadel_10sectosingularity.wav"
+        "round_timer_5sec"  "npc/overwatch/radiovoice/five.wav"
+        "round_timer_4sec"  "npc/overwatch/radiovoice/four.wav"
+        "round_timer_3sec"  "npc/overwatch/radiovoice/three.wav"
+        "round_timer_2sec"  "npc/overwatch/radiovoice/two.wav"
+        "round_timer_1sec"  "npc/overwatch/radiovoice/one.wav"
+    }
+}

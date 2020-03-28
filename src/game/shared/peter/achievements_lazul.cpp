@@ -12,6 +12,41 @@
 
 #include "memdbgon.h"
 
+enum
+{
+	LAST_SHARED_ACHIEVEMENT = ACHIEVEMENT_TF_LAST_ORANGEBOX,
+	ACHIEVEMENT_BMS_FLAVOR_TRANSFORMATION,
+	ACHIEVEMENT_BMS_RESONANCE_PROCRASTINATOR,
+	ACHIEVEMENT_BMS_PRESS_THEIR_BUTTONS,
+	ACHIEVEMENT_BMS_ETHICALLY_QUESTIONABLE,
+	ACHIEVEMENT_BMS_BROWN_MOTION,
+	ACHIEVEMENT_BMS_KILL_IT_WITH_FIRE,
+	ACHIEVEMENT_BMS_LITTLE_FRIEND,
+	ACHIEVEMENT_BMS_MEGA_HERTZ,
+	ACHIEVEMENT_BMS_INDIGESTION,
+	ACHIEVEMENT_BMS_FRIENDS_LIKE_THESE,
+	ACHIEVEMENT_BMS_NUCLEAR_FISHIN,
+	ACHIEVEMENT_BMS_KINETIC_REPULSION,
+	ACHIEVEMENT_BMS_CHARGING_MY_LASER,
+	ACHIEVEMENT_BMS_GRAY_MATTER_PROPULSION,
+	ACHIEVEMENT_BMS_PERMEABLE_INFRASTRUCTURE,
+	ACHIEVEMENT_BMS_CALCULATED_TRAJECTORY,
+	ACHIEVEMENT_BMS_DEAD_RECKONING,
+	ACHIEVEMENT_BMS_CENTRIPETAL_ATTRACTION,
+	ACHIEVEMENT_BMS_DIGITAL_WIZARDRY,
+	ACHIEVEMENT_BMS_CAFFEINE_FREAK,
+	ACHIEVEMENT_BMS_RARE_SPECIMEN,
+	ACHIEVEMENT_BMS_PROPHYLACTIC_SUGGESTED,
+	ACHIEVEMENT_BMS_QUANTUM_CAPACITANCE,
+	ACHIEVEMENT_BMS_INSTABILITY_PARADIGM,
+	ACHIEVEMENT_BMS_HYPER_SATURATION_CONUNDRUM,
+	ACHIEVEMENT_BMS_COUPLING_THEORUM,
+
+	ACHIEVEMENT_BMS_ONE_STEP_AHEAD,
+	ACHIEVEMENT_BMS_WELL_DONE,
+};
+
+#pragma region MANAGER
 void MsgFunc_AchievementMapEvent(bf_read &msg)
 {
 	char szEvent[64];
@@ -339,25 +374,38 @@ void CLazAchievementMgr::FireGameEvent(IGameEvent * event)
 	}
 #endif // CLIENT_DLL
 }
+#pragma endregion
 
-class CRebelMapAchievement : public CMapAchievement
+#pragma region HELPERS
+template <int TEAM>
+class CTeamedMapAchievement : public CMapAchievement
 {
 public:
 	virtual bool LocalPlayerCanEarn(void)
 	{
-		return (GetLocalPlayerTeam() == TEAM_REBELS);
+		return (GetLocalPlayerTeam() == TEAM);
 	}
 };
 
-#define DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT_( achievementID, achievementName, gameDirFilter, iPointValue, bHidden ) \
-class CAchievement##achievementID : public CRebelMapAchievement {};		\
+typedef CTeamedMapAchievement<TEAM_REBELS> CRebelMapAchievement;
+typedef CTeamedMapAchievement<TEAM_COMBINE> CCombineMapAchievement;
+
+#define DECLARE_BASED_MAP_EVENT_ACHIEVEMENT_(baseclass, achievementID, achievementName, gameDirFilter, iPointValue, bHidden ) \
+class CAchievement##achievementID : public baseclass {};		\
 DECLARE_ACHIEVEMENT_( CAchievement##achievementID, achievementID, achievementName, gameDirFilter, iPointValue, bHidden )	\
 
 #define DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT( achievementID, achievementName, iPointValue )	\
-	DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT_( achievementID, achievementName, NULL, iPointValue, false )
+	DECLARE_BASED_MAP_EVENT_ACHIEVEMENT_(CRebelMapAchievement, achievementID, achievementName, NULL, iPointValue, false )
 
 #define DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT_HIDDEN( achievementID, achievementName, iPointValue )	\
-	DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT_( achievementID, achievementName, NULL, iPointValue, true )
+	DECLARE_BASED_MAP_EVENT_ACHIEVEMENT_(CRebelMapAchievement, achievementID, achievementName, NULL, iPointValue, true )
+
+#define DECLARE_EZ_MAP_EVENT_ACHIEVEMENT( achievementID, achievementName, iPointValue )					\
+	DECLARE_BASED_MAP_EVENT_ACHIEVEMENT_(CCombineMapAchievement, achievementID, achievementName, NULL, iPointValue, false )
+
+#define DECLARE_EZ_MAP_EVENT_ACHIEVEMENT_HIDDEN( achievementID, achievementName, iPointValue )					\
+	DECLARE_BASED_MAP_EVENT_ACHIEVEMENT_(CCombineMapAchievement, achievementID, achievementName, NULL, iPointValue, true )
+
 
 // helper class for achievements that check that the player was playing on a game team for the full round
 class CTFAchievementFullRound : public CBaseAchievement
@@ -398,6 +446,7 @@ public:
 	virtual void Event_OnRoundComplete(float flRoundTime, IGameEvent *event) = 0;
 
 };
+#pragma endregion
 
 #pragma region ORANGEBOX
 class CAchievementTFGetHeadshots : public CBaseAchievement
@@ -597,6 +646,11 @@ DECLARE_ACHIEVEMENT(CAchievementHLXKillWithPhysicsObjects, ACHIEVEMENT_HLX_KILL_
 
 class CAchievementHLXKillWithManhack : public CBaseAchievement
 {
+	virtual bool LocalPlayerCanEarn(void)
+	{
+		return (GetLocalPlayerTeam() != TEAM_COMBINE);
+	}
+
 	void Init()
 	{
 		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
@@ -918,4 +972,205 @@ DECLARE_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_PORTAL_ESCAPE_TESTCHAMBERS, "PORTAL_ES
 DECLARE_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_PORTAL_BEAT_GAME, "PORTAL_BEAT_GAME", 10);
 #pragma endregion
 
+#pragma region ENTROPYZERO1
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Find and wobble all of the hula girls.
+class CAchievementEZFindAllHulaGirls : public CBaseAchievement
+{
+	virtual void Init()
+	{
+		static const char* szComponents[] =
+		{
+			"EZ_HULA_01", "EZ_HULA_02", "EZ_HULA_03", "EZ_HULA_04", "EZ_HULA_05", "EZ_HULA_06", "EZ_HULA_07"
+		};
+		SetFlags(ACH_HAS_COMPONENTS | ACH_LISTEN_COMPONENT_EVENTS | ACH_SAVE_GLOBAL);
+		m_pszComponentNames = szComponents;
+		m_iNumComponents = ARRAYSIZE(szComponents);
+		SetComponentPrefix("EZ_HULA");
+		
+		SetGoal(m_iNumComponents);
+	}
+
+	// Show progress for this achievement
+	virtual bool ShouldShowProgressNotification() { return true; }
+};
+DECLARE_ACHIEVEMENT(CAchievementEZFindAllHulaGirls, ACHIEVEMENT_EZ_HULA, "ACH_EZ_HULA", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Find all of the poem pieces
+class CAchievementEZFindAllPoemPieces : public CBaseAchievement
+{
+	virtual void Init()
+	{
+		static const char* szComponents[] =
+		{
+			"EZ_POEM_01", "EZ_POEM_02", "EZ_POEM_03", "EZ_POEM_04", "EZ_POEM_05", "EZ_POEM_06", "EZ_POEM_07", "EZ_POEM_08", "EZ_POEM_09", "EZ_POEM_10"
+		};
+		SetFlags(ACH_HAS_COMPONENTS | ACH_LISTEN_COMPONENT_EVENTS | ACH_SAVE_GLOBAL);
+		m_pszComponentNames = szComponents;
+		m_iNumComponents = ARRAYSIZE(szComponents);
+		SetComponentPrefix("EZ_POEM");
+		
+		SetGoal(m_iNumComponents);
+	}
+
+	// Show progress for this achievement
+	virtual bool ShouldShowProgressNotification() { return true; }
+};
+DECLARE_ACHIEVEMENT(CAchievementEZFindAllPoemPieces, ACHIEVEMENT_EZ_POEM, "ACH_EZ_POEM", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Find all of the Lambda Generation Tags
+class CAchievementEZNextGeneration : public CBaseAchievement
+{
+	virtual void Init()
+	{
+		static const char* szComponents[] =
+		{
+			"EZ_NXTGEN_01", "EZ_NXTGEN_02", "EZ_NXTGEN_03", "EZ_NXTGEN_04", "EZ_NXTGEN_05", "EZ_NXTGEN_06", "EZ_NXTGEN_07"
+		};
+		SetFlags(ACH_HAS_COMPONENTS | ACH_LISTEN_COMPONENT_EVENTS | ACH_SAVE_GLOBAL);
+		m_pszComponentNames = szComponents;
+		m_iNumComponents = ARRAYSIZE(szComponents);
+		SetComponentPrefix("EZ_NXTGEN");
+		
+		SetGoal(m_iNumComponents);
+	}
+
+	// Show progress for this achievement
+	virtual bool ShouldShowProgressNotification() { return true; }
+};
+DECLARE_ACHIEVEMENT(CAchievementEZNextGeneration, ACHIEVEMENT_EZ_NXTGEN, "ACH_EZ_NXTGEN", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// A Real Class Act! (Get five kills with manhacks)
+class CAchievementEZClassy : public CBaseAchievement
+{
+protected:
+	virtual bool LocalPlayerCanEarn(void)
+	{
+		return (GetLocalPlayerTeam() == TEAM_COMBINE);
+	}
+
+	virtual void Init()
+	{
+		SetInflictorFilter("npc_manhack");
+		SetFlags(ACH_LISTEN_KILL_EVENTS | ACH_SAVE_WITH_GAME);
+		
+		SetGoal(5);
+	}
+
+	// This is working just fine but it isn't telling us we're making progress
+	virtual void Event_EntityKilled(CBaseEntity* pVictim, CBaseEntity* pAttacker, CBaseEntity* pInflictor, IGameEvent* event)
+	{
+		IncrementCount();
+	}
+
+	virtual bool ShouldShowProgressNotification() { return true; }
+};
+DECLARE_ACHIEVEMENT(CAchievementEZClassy, ACHIEVEMENT_EZ_CLASSY, "ACH_EZ_CLASSY", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ten sterilize Credits
+class CAchievementEZTenSC : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		
+		SetGoal(10);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementEZTenSC, ACHIEVEMENT_EZ_TENSC, "ACH_EZ_TENSC", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ten sterilize Credits
+class CAchievementEZTwentySC : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		
+		SetGoal(20);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementEZTwentySC, ACHIEVEMENT_EZ_TWENTYSC, "ACH_EZ_TWENTYSC", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Thirty sterilize Credits
+class CAchievementEZThirtySC : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		
+		SetGoal(30);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementEZThirtySC, ACHIEVEMENT_EZ_THIRTYSC, "ACH_EZ_THIRTYSC", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Forty sterilize Credits
+class CAchievementEZFortySC : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		
+		SetGoal(40);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementEZFortySC, ACHIEVEMENT_EZ_FORTYSC, "ACH_EZ_FORTYSC", 5);
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fifty sterilize Credits
+class CAchievementEZFiftySC : public CBaseAchievement
+{
+protected:
+
+	virtual void Init()
+	{
+		SetVictimFilter("npc_citizen");
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME);
+		
+		SetGoal(50);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementEZFiftySC, ACHIEVEMENT_EZ_FIFTYSC, "ACH_EZ_FIFTYSC", 5);
+#pragma endregion
+
+#pragma region BLACKMESA
+class CAchievementBMSEthicallyQuestionable : public CBaseAchievement
+{
+	virtual void Init()
+	{
+		static const char* szComponents[] =
+		{
+			"BMS_EQ_EHT_TEST", "BMS_EQ_SNARK_TEST", "BMS_EQ_ZAPPER_TEST",
+			"BMS_EQ_CES_TEST", "BMS_EQ_PRIMELASER_TEST"
+		};
+		SetFlags(ACH_HAS_COMPONENTS | ACH_LISTEN_COMPONENT_EVENTS | ACH_SAVE_WITH_GAME);
+		m_pszComponentNames = szComponents;
+		m_iNumComponents = ARRAYSIZE(szComponents);
+		SetComponentPrefix("BMS_EQ");
+		SetGoal(m_iNumComponents);
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementBMSEthicallyQuestionable, ACHIEVEMENT_BMS_ETHICALLY_QUESTIONABLE, "BMS_ETHICALLY_QUESTIONABLE", 15);
+
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_FLAVOR_TRANSFORMATION, "BMS_FLAVOR_TRANSFORMATION", 5);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_PRESS_THEIR_BUTTONS, "BMS_PRESS_THEIR_BUTTONS", 5);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_BROWN_MOTION, "BMS_BROWN_MOTION", 5);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_RESONANCE_PROCRASTINATOR, "BMS_RESONANCE_PROCRASTINATOR", 5);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_CAFFEINE_FREAK, "BMS_CAFFEINE_FREAK", 5);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_PERMEABLE_INFRASTRUCTURE, "BMS_PERMEABLE_INFRASTRUCTURE", 10);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_RARE_SPECIMEN, "BMS_RARE_SPECIMEN", 25);
+DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_BMS_HYPER_SATURATION_CONUNDRUM, "BMS_HYPER_SATURATION_CONUNDRUM", 5);
+#pragma endregion
 #endif

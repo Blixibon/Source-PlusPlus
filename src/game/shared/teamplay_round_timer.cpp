@@ -66,6 +66,12 @@ enum
 
 enum
 {
+	RT_WARNING_15MIN,
+	RT_WARNING_10MIN,
+	RT_WARNING_5MIN,
+	RT_WARNING_4MIN,
+	RT_WARNING_3MIN,
+	RT_WARNING_2MIN,
 	RT_WARNING_60SECS,
 	RT_WARNING_30SECS,
 	RT_WARNING_10SECS,
@@ -447,6 +453,8 @@ void CTeamRoundTimer::CalculateOutputMessages( void )
 #endif
 
 	m_bFireFinished = ( flTime > 0.0f );
+	m_bFire15MinRemain = (flTime >= 900.0f);
+	m_bFire10MinRemain = (flTime >= 600.0f);
 	m_bFire5MinRemain = ( flTime >= 300.0f );
 	m_bFire4MinRemain = ( flTime >= 240.0f );
 	m_bFire3MinRemain = ( flTime >= 180.0f );
@@ -476,7 +484,37 @@ void CTeamRoundTimer::ClientThink()
 
 	float flTime = GetTimeRemaining();
 
-	if ( flTime <= 61.0 && m_bFire1MinRemain )
+	if (flTime <= 901.0 && m_bFire15MinRemain)
+	{
+		m_bFire15MinRemain = false;
+		SendTimeWarning(RT_WARNING_15MIN);
+	}
+	else if (flTime <= 601.0 && m_bFire10MinRemain)
+	{
+		m_bFire10MinRemain = false;
+		SendTimeWarning(RT_WARNING_10MIN);
+	}
+	else if (flTime <= 301.0 && m_bFire5MinRemain)
+	{
+		m_bFire5MinRemain = false;
+		SendTimeWarning(RT_WARNING_5MIN);
+	}
+	else if (flTime <= 241.0 && m_bFire4MinRemain)
+	{
+		m_bFire4MinRemain = false;
+		SendTimeWarning(RT_WARNING_4MIN);
+	}
+	else if (flTime <= 181.0 && m_bFire3MinRemain)
+	{
+		m_bFire3MinRemain = false;
+		SendTimeWarning(RT_WARNING_3MIN);
+	}
+	else if (flTime <= 121.0 && m_bFire2MinRemain)
+	{
+		m_bFire2MinRemain = false;
+		SendTimeWarning(RT_WARNING_2MIN);
+	}
+	else if ( flTime <= 61.0 && m_bFire1MinRemain )
 	{
 		m_bFire1MinRemain = false;
 		SendTimeWarning( RT_WARNING_60SECS );
@@ -552,14 +590,15 @@ void CTeamRoundTimer::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
+#ifndef HL2_LAZUL
+const char* CTeamRoundTimer::GetTimeWarningSound(int nWarning)
 {
-	const char *pszRetVal;
+	const char* pszRetVal;
 
-	switch( nWarning )
+	switch (nWarning)
 	{
 	case RT_WARNING_60SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 			pszRetVal = ROUND_SETUP_60SECS;
 		}
@@ -569,7 +608,7 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 		}
 		break;
 	case RT_WARNING_30SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 			pszRetVal = ROUND_SETUP_30SECS;
 		}
@@ -579,7 +618,7 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 		}
 		break;
 	case RT_WARNING_10SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 			pszRetVal = ROUND_SETUP_10SECS;
 		}
@@ -589,10 +628,10 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 		}
 		break;
 	case RT_WARNING_5SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 #if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
-			if ( TFGameRules() && TFGameRules()->IsHalloweenScenario( CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY ) )
+			if (TFGameRules() && TFGameRules()->IsHalloweenScenario(CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY))
 			{
 				pszRetVal = MERASMUS_SETUP_5SECS;
 			}
@@ -601,17 +640,17 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 			{
 				pszRetVal = ROUND_SETUP_5SECS;
 			}
-		}
+	}
 		else
 		{
 			pszRetVal = ROUND_TIMER_5SECS;
 		}
 		break;
 	case RT_WARNING_4SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 #if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
-			if ( TFGameRules() && TFGameRules()->IsHalloweenScenario( CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY ) )
+			if (TFGameRules() && TFGameRules()->IsHalloweenScenario(CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY))
 			{
 				pszRetVal = MERASMUS_SETUP_4SECS;
 			}
@@ -620,17 +659,17 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 			{
 				pszRetVal = ROUND_SETUP_4SECS;
 			}
-		}
+}
 		else
 		{
 			pszRetVal = ROUND_TIMER_4SECS;
 		}
 		break;
 	case RT_WARNING_3SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 #if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
-			if ( TFGameRules() && TFGameRules()->IsHalloweenScenario( CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY ) )
+			if (TFGameRules() && TFGameRules()->IsHalloweenScenario(CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY))
 			{
 				pszRetVal = MERASMUS_SETUP_3SECS;
 			}
@@ -646,10 +685,10 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 		}
 		break;
 	case RT_WARNING_2SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 #if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
-			if ( TFGameRules() && TFGameRules()->IsHalloweenScenario( CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY ) )
+			if (TFGameRules() && TFGameRules()->IsHalloweenScenario(CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY))
 			{
 				pszRetVal = MERASMUS_SETUP_2SECS;
 			}
@@ -665,10 +704,10 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 		}
 		break;
 	case RT_WARNING_1SECS:
-		if ( m_nState == RT_STATE_SETUP )
+		if (m_nState == RT_STATE_SETUP)
 		{
 #if defined( TF_CLIENT_DLL ) || defined( TF_CLASSIC_CLIENT )
-			if ( TFGameRules() && TFGameRules()->IsHalloweenScenario( CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY ) )
+			if (TFGameRules() && TFGameRules()->IsHalloweenScenario(CTFGameRules::HALLOWEEN_SCENARIO_DOOMSDAY))
 			{
 				pszRetVal = MERASMUS_SETUP_1SECS;
 			}
@@ -692,6 +731,132 @@ const char *CTeamRoundTimer::GetTimeWarningSound( int nWarning )
 
 	return pszRetVal;
 }
+#else
+Announcement_e CTeamRoundTimer::GetTimeWarningSound(int nWarning)
+{
+	Announcement_e eRetVal;
+
+	switch (nWarning)
+	{
+	case RT_WARNING_60SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_60SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_60SECS;
+		}
+		break;
+	case RT_WARNING_30SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_30SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_30SECS;
+		}
+		break;
+	case RT_WARNING_10SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_10SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_10SECS;
+		}
+		break;
+	case RT_WARNING_5SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_5SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_5SECS;
+		}
+		break;
+	case RT_WARNING_4SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_4SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_4SECS;
+		}
+		break;
+	case RT_WARNING_3SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_3SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_3SECS;
+		}
+		break;
+	case RT_WARNING_2SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_2SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_2SECS;
+		}
+		break;
+	case RT_WARNING_1SECS:
+		if (m_nState == RT_STATE_SETUP)
+		{
+			eRetVal = ANNOUNCE_ROUND_SETUP_1SECS;
+		}
+		else
+		{
+			eRetVal = ANNOUNCE_ROUND_TIMER_1SECS;
+		}
+		break;
+	case RT_WARNING_TIME_START:
+		eRetVal = ANNOUNCE_ROUND_START_BELL;
+		break;
+	default:
+		if (m_nState == RT_STATE_NORMAL)
+		{
+			switch (nWarning)
+			{
+			case RT_WARNING_15MIN:
+				eRetVal = ANNOUNCE_ROUND_TIMER_15MIN;
+				break;
+			case RT_WARNING_10MIN:
+				eRetVal = ANNOUNCE_ROUND_TIMER_10MIN;
+				break;
+			case RT_WARNING_5MIN:
+				eRetVal = ANNOUNCE_ROUND_TIMER_5MIN;
+				break;
+			case RT_WARNING_4MIN:
+				eRetVal = ANNOUNCE_ROUND_TIMER_4MIN;
+				break;
+			case RT_WARNING_3MIN:
+				eRetVal = ANNOUNCE_ROUND_TIMER_3MIN;
+				break;
+			case RT_WARNING_2MIN:
+				eRetVal = ANNOUNCE_ROUND_TIMER_2MIN;
+				break;
+			default:
+				eRetVal = ANNOUNCE_INVALID;
+				break;
+			}
+		}
+		else
+			eRetVal = ANNOUNCE_INVALID;
+	}
+
+	return eRetVal;
+}
+#endif // !HL2_LAZUL
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -775,6 +940,11 @@ void CTeamRoundTimer::SendTimeWarning( int nWarning )
 				if ( bShouldPlaySound == true )
 				{
 					pPlayer->EmitSound( GetTimeWarningSound( nWarning ) );
+				}
+#elif defined(HL2_LAZUL)
+				if (bShouldPlaySound == true)
+				{
+					GetAnnouncer()->DispatchAnnouncement(GetTimeWarningSound(nWarning));
 				}
 #endif // TF_CLIENT_DLL
 			}
@@ -1254,28 +1424,60 @@ void CTeamRoundTimer::AddTimerSeconds( int iSecondsToAdd, int iTeamResponsible /
 	{
 		if ( !TeamplayRoundBasedRules()->InStalemate() && !TeamplayRoundBasedRules()->RoundHasBeenWon() && !TeamplayRoundBasedRules()->IsInKothMode() )
 		{
-			if ( iTeamResponsible >= LAST_SHARED_TEAM+1 )
+#ifndef HL2_LAZUL
+			if (iTeamResponsible >= LAST_SHARED_TEAM + 1)
 			{
-				for ( int iTeam = LAST_SHARED_TEAM+1 ; iTeam < GetNumberOfTeams(); iTeam++ )
+				for (int iTeam = LAST_SHARED_TEAM + 1; iTeam < GetNumberOfTeams(); iTeam++)
 				{
-					if ( iTeam == iTeamResponsible )
+					if (iTeam == iTeamResponsible)
 					{
-						CTeamRecipientFilter filter( iTeam, true );
-						EmitSound( filter, entindex(), ROUND_TIMER_TIME_ADDED_WINNER );
-						
+						CTeamRecipientFilter filter(iTeam, true);
+						EmitSound(filter, entindex(), ROUND_TIMER_TIME_ADDED_WINNER);
+
 					}
 					else
 					{
-						CTeamRecipientFilter filter( iTeam, true );
-						EmitSound( filter, entindex(), ROUND_TIMER_TIME_ADDED_LOSER );
+						CTeamRecipientFilter filter(iTeam, true);
+						EmitSound(filter, entindex(), ROUND_TIMER_TIME_ADDED_LOSER);
 					}
 				}
 			}
 			else
 			{
 				CReliableBroadcastRecipientFilter filter;
-				EmitSound( filter, entindex(), ROUND_TIMER_TIME_ADDED );
+				EmitSound(filter, entindex(), ROUND_TIMER_TIME_ADDED);
 			}
+#else
+			if (iTeamResponsible >= LAST_SHARED_TEAM + 1)
+			{
+				for (int iTeam = LAST_SHARED_TEAM + 1; iTeam < GetNumberOfTeams(); iTeam++)
+				{
+					if (iTeam == iTeamResponsible)
+					{
+						CTeamRecipientFilter filter(iTeam, true);
+						UserMessageBegin(filter, "TeamplayAnnouncement");
+						WRITE_LONG(ANNOUNCE_ROUND_TIMER_TIME_ADDED_WINNER);
+						MessageEnd();
+
+					}
+					else
+					{
+						CTeamRecipientFilter filter(iTeam, true);
+						UserMessageBegin(filter, "TeamplayAnnouncement");
+						WRITE_LONG(ANNOUNCE_ROUND_TIMER_TIME_ADDED_LOSER);
+						MessageEnd();
+					}
+				}
+			}
+			else
+			{
+				CReliableBroadcastRecipientFilter filter;
+				UserMessageBegin(filter, "TeamplayAnnouncement");
+				WRITE_LONG(ANNOUNCE_ROUND_TIMER_TIME_ADDED);
+				MessageEnd();
+			}
+#endif // !HL2_LAZUL
+
 		}
 
 		// is this the timer we're showing in the HUD?

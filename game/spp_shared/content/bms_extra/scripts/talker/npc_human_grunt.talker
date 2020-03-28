@@ -8,6 +8,9 @@ criterion isgrunt required
 	isgruntcommander
 }
 
+criterion "SoldierReplyToCheck"	"soldierreplytocheck"	"1" required
+criterion "SoldierNotReplyToCheck"	"soldierreplytocheck"	"!=1" required
+
 criterion "HECUVoiceNormal" "voicetype"	"normal" required
 criterion "HECUVoiceMaskedGruff" "voicetype"	"gruff" required
 criterion "HECUVoiceMaskedYoung" "voicetype"	"young" required

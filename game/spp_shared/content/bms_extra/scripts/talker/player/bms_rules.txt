@@ -1,4 +1,6 @@
 
+#include "talker/bms_rules.talker"
+
 criterion	"IsPlayerVoiceMarine"	"voice" "marine" required
 
 criterion	"PlayerEnemyIsPlayer"		"playerenemy" "player" required weight 2

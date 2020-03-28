@@ -440,6 +440,7 @@ bool CNPC_Combine::CreateBehaviors()
 
 	AddBehavior(&m_RappelBehavior);
 	AddBehavior(&m_StandoffBehavior);
+	AddBehavior(&m_FuncTankBehavior);
 
 	return bRet;
 #endif

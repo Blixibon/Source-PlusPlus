@@ -50,6 +50,7 @@ void RegisterUserMessages(void)
 	usermessages->Register("ExplosionBlind", 10);
 	usermessages->Register("UpdateRadioDuration", sizeof(float));
 	usermessages->Register("UpdateAirDefenseRecharge", -1);
+	usermessages->Register("TeamplayAnnouncement", sizeof(long));
 
 #ifndef _X360
 	// NVNT register haptic user messages

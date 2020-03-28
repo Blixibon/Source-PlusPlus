@@ -20,6 +20,7 @@
 // using ResponseRules::IResponseSystem;
 
 ResponseRules::IResponseSystem *PrecacheCustomResponseSystem( const char *scriptfile );
+ResponseRules::IResponseSystem* GetAlternateResponseSystem(const char* scriptfile);
 ResponseRules::IResponseSystem *BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore );
 void DestroyCustomResponseSystems();
 

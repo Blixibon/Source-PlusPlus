@@ -16,6 +16,8 @@
 #include "utllinkedlist.h"
 #include "stringpool.h"
 
+class CDefaultResponseSystem;
+
 namespace ResponseRules
 {
 	typedef ResponseParams	AI_ResponseParams ;
@@ -250,11 +252,11 @@ public:
 
 		void		ResponseWarning( const char *fmt, ... );
 
-		CUtlDict< ResponseGroup, short >	m_Responses;
-		CUtlDict< Criteria, short >	m_Criteria;
+		CUtlDict< ResponseGroup, int >	m_Responses;
+		CUtlDict< Criteria, int >	m_Criteria;
 		// CUtlDict< Rule, short >	m_Rules;
 		ResponseRulePartition m_RulePartitions;
-		CUtlDict< Enumeration, short > m_Enumerations;
+		CUtlDict< Enumeration, int > m_Enumerations;
 
 		CUtlVector<int> m_FakedDepletes;
 
@@ -287,6 +289,7 @@ public:
 
 		friend class CDefaultResponseSystemSaveRestoreBlockHandler;
 		friend class CResponseSystemSaveRestoreOps;
+		friend class ::CDefaultResponseSystem;
 	};
 
 	// Some globals inherited from AI_Speech.h:

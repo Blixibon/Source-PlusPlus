@@ -1068,8 +1068,8 @@
 	HudPlayerInfo
 	{
 		"fieldName" "HudPlayerInfo"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 		
 		"xpos"	 "20"
 		"ypos"	 "20"
@@ -1144,5 +1144,24 @@
 		"enabled" "0"
 		"wide"	 "640"
 		"tall"	 "480"
+	}
+	
+	HudTimerLaz
+	{
+		"fieldName"	"HudTimerLaz"
+		"visible"	"1"
+		"enabled"	"1"
+		"xpos"		"c-51"
+		"ypos"		"24"
+		"wide"	"102"
+		"tall"	"36"
+		
+		"digit_xpos"	"10"
+		"text_ypos"	"26"
+		
+		"PaintBackgroundType"	"2"
+		
+		"NumberFont"	"HudTimerFont"
+		"NumberGlowFont"	"HudTimerFontGlow"
 	}
 }

@@ -59,6 +59,8 @@ event OpenWeaponSelectionMenu
 	StopEvent CloseWeaponSelectionMenu	0.0
 	StopEvent WeaponPickup				0.0
 	StopEvent FadeOutWeaponSelectionMenu	0.0
+	
+	RunEvent HideLazTimer 0.0
 
 	// make the display visible
 	Animate HudWeaponSelection Alpha 		"128"		Linear 0.0 0.1	[$WIN32]
@@ -79,6 +81,8 @@ event CloseWeaponSelectionMenu
 	Animate HudWeaponSelection TextColor		"0 0 0 0"	Linear 0.0 0.1
 	Animate HudWeaponSelection Alpha		"0" 		Linear 0.0 0.1
 	Animate HudWeaponSelection SelectionAlpha 	"0" 		Linear 0.0 0.1
+	
+	RunEvent ShowLazTimer 0.0
 }
 
 event FadeOutWeaponSelectionMenu
@@ -92,6 +96,8 @@ event FadeOutWeaponSelectionMenu
 	Animate HudWeaponSelection WeaponBoxDist1Alpha	"0 0 0 0"	Linear 0.0 0.5
 	Animate HudWeaponSelection WeaponBoxDist2Alpha	"0 0 0 0"	Linear 0.0 0.5
 	Animate HudWeaponSelection WeaponBoxDist3Alpha	"0 0 0 0"	Linear 0.0 0.5
+	
+	RunEvent ShowLazTimer 0.5
 }
 
 event SuitAuxPowerMax
@@ -1722,4 +1728,40 @@ event WeaponDoesNotUseSecondaryAmmoNoClipHE
 
 	Animate 	HudAmmoHE			Alpha	255 	Linear 0.0 0.2
 	Animate 	HudAmmoSecondaryHE 	Alpha	0 	Linear 0.0 0.2
+}
+
+event ShowLazTimer
+{
+	StopEvent HideLazTimer 0.0
+	
+	Animate HudTimerLaz Alpha	255	Linear 0.0 1.0
+	
+	Animate HudTimerLaz		Blur		"5"			Linear	0.0	0.0 
+	Animate HudTimerLaz		Blur		"0"			Accel		0.01	1.5 
+}
+
+event HideLazTimer
+{
+	StopEvent ShowLazTimer 0.0
+	
+	Animate HudTimerLaz Alpha	0	Linear 0.0 0.1
+}
+
+event TimerTimeAdded
+{
+	Animate HudTimerLaz		Blur		"5"			Linear	0.0	0.0 
+	Animate HudTimerLaz		Blur		"0"			Accel		0.01	2.5 
+	
+	// Flash background
+	Animate HudTimerLaz	BgColor		"BrightBg"	Linear	0.0	0.01
+	Animate HudTimerLaz	BgColor		"BgColor"	Deaccel	0.1	1.0
+	
+	Animate HudTimerLaz	BgColor		"BrightBg"	Linear	1.5	0.01
+	Animate HudTimerLaz	BgColor		"BgColor"	Deaccel	1.6	1.0
+
+	Animate HudTimerLaz	FgColor		"BrightFg"	Linear	0.0	0.01
+	Animate HudTimerLaz	FgColor		"FgColor"	Deaccel	0.1	1.0
+
+	Animate HudTimerLaz	FgColor		"BrightFg"	Linear	1.5	0.01
+	Animate HudTimerLaz	FgColor		"FgColor"	Deaccel	1.6	1.0
 }

@@ -296,22 +296,16 @@ FileNameHandle_t CSceneFileCache::FindOrAddScene(CChoreoScene *pScene, const cha
 	sceneData_t data;
 	data.binary = block;
 	data.msecs = RoundFloatToUnsignedLong(pScene->FindStopTime() * 1000.0);
-	for (int i = pScene->GetNumEvents() - 1; i >= 0; i--)
-	{
-		CChoreoEvent* pEvent = pScene->GetEvent(i);
 
-		if (pEvent->GetType() == CChoreoEvent::SPEAK)
-		{
-			data.speech_msecs = RoundFloatToUnsignedLong(pEvent->GetEndTime() * 1000.0);
-			break;
-		}
-	}
 	for (int i = 0; i < pScene->GetNumEvents(); i++)
 	{
 		CChoreoEvent* pEvent = pScene->GetEvent(i);
 
 		if (pEvent->GetType() == CChoreoEvent::SPEAK)
+		{
 			data.numSounds++;
+			data.speech_msecs = RoundFloatToUnsignedLong(pEvent->GetEndTime() * 1000.0);
+		}
 	}
 
 	m_SceneData.InsertOrReplace(hFileName, data);

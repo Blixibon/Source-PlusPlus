@@ -1,4 +1,6 @@
 
+#include "talker/npc_metropolice.talker"
+
 // ============================================
 //	AUTOMATIC RESPONSES
 // ============================================

@@ -105,12 +105,16 @@ public:
 	static const char *ChooseColleagueModel(colleagueModel_t * models, int iNumModels, int &nSkin);
 	//static int gm_iLastChosenSkin;
 
+	virtual ResponseRules::IResponseSystem* GetResponseSystem() { return m_pInstancedResponseSystem; }
+
 protected:
 	CNetworkVar(int, m_iHeadRndSeed);
 	LocalFlexController_t m_HeadFlxs[NUM_RND_HEAD_FLEXES];
 	float m_HeadFlxWgts[NUM_RND_HEAD_FLEXES];
 
 	ColleagueExpressionTypes_t	m_ExpressionType;
+
+	ResponseRules::IResponseSystem* m_pInstancedResponseSystem;
 };
 
 

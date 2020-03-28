@@ -645,8 +645,7 @@ void CWorld::Spawn( void )
 		{
 			if (!Q_strnicmp(STRING(gpGlobals->mapname), chapters[i].pszName, strlen(chapters[i].pszName)))
 			{
-				CFmtStr str("hl1/%s", chapters[i].pszChapter);
-				m_iszPopulationTag = AllocPooledString(str.Access());
+				m_iszPopulationTag = AllocPooledString(chapters[i].pszChapter);
 				break;
 			}
 		}
@@ -691,8 +690,7 @@ void CWorld::Spawn( void )
 		{
 			if (!Q_strnicmp(STRING(gpGlobals->mapname), chapters[i].pszName, strlen(chapters[i].pszName)))
 			{
-				CFmtStr str("blackmesa/%s", chapters[i].pszChapter);
-				m_iszPopulationTag = AllocPooledString(str.Access());
+				m_iszPopulationTag = AllocPooledString(chapters[i].pszChapter);
 				break;
 			}
 		}

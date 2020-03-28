@@ -52,7 +52,7 @@ END_DATADESC();
 int	CHL1NPCTalker::Save(ISave &save)
 {
 	int iret = BaseClass::Save(save);
-	if (iret)
+	/*if (iret)
 	{
 		bool doSave = (m_pInstancedResponseSystem) ? true : false;
 		save.WriteBool(&doSave);
@@ -65,7 +65,7 @@ int	CHL1NPCTalker::Save(ISave &save)
 			}
 			save.EndBlock();
 		}
-	}
+	}*/
 	return iret;
 }
 
@@ -76,7 +76,7 @@ int	CHL1NPCTalker::Save(ISave &save)
 int	CHL1NPCTalker::Restore(IRestore &restore)
 {
 	int iret = BaseClass::Restore(restore);
-	if (iret)
+	/*if (iret)
 	{
 		bool doRead = false;
 		restore.ReadBool(&doRead);
@@ -103,7 +103,7 @@ int	CHL1NPCTalker::Restore(IRestore &restore)
 			}
 			restore.EndBlock();
 		}
-	}
+	}*/
 	return iret;
 }
 
@@ -307,7 +307,7 @@ void CHL1NPCTalker::Precache()
 
 	PrecacheScriptSound( "Barney.Close" );
 
-	m_pInstancedResponseSystem = PrecacheCustomResponseSystem(RESPONSE_SCRIPT_FILE);
+	m_pInstancedResponseSystem = GetAlternateResponseSystem(RESPONSE_SCRIPT_FILE);
 }
 
 void CHL1NPCTalker::PostNPCInit()

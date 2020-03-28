@@ -148,7 +148,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 				while (!bFound && V_StripLastDir(chPopTag, MAX_PATH))
 				{
 					char chPopTagNoSlash[MAX_PATH];
-					Q_strncpy(chPopTagNoSlash, chPopTagNoSlash, MAX_PATH);
+					Q_strncpy(chPopTagNoSlash, chPopTag, MAX_PATH);
 
 					V_StripTrailingSlash(chPopTagNoSlash);
 
@@ -178,7 +178,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 						while (!bFound && V_StripLastDir(chPopTag, MAX_PATH))
 						{
 							char chPopTagNoSlash[MAX_PATH];
-							Q_strncpy(chPopTagNoSlash, chPopTagNoSlash, MAX_PATH);
+							Q_strncpy(chPopTagNoSlash, chPopTag, MAX_PATH);
 
 							V_StripTrailingSlash(chPopTagNoSlash);
 

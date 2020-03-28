@@ -1,3 +1,6 @@
+
+#include "talker/hlss_rules.talker"
+
 criterion	"IsPlayerVoiceNoah"	"voice"	"noah"	required
 criterion	"IsPlayerVoiceLarson"	"voice"	"larson"	required
 criterion	"IsPlayerVoiceEloise"	"voice"	"eloise"	required

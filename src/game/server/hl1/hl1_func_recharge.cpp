@@ -19,13 +19,13 @@
 #include "engine/IEngineSound.h"
 #include "in_buttons.h"
 
-ConVar	sk_suitcharger( "sk_suitcharger","0" );
+ConVar	sk_suitcharger_hl1( "sk_suitcharger_hl1","0" );
 #define HL1_MAX_ARMOR 100
 
-class CRecharge : public CBaseToggle
+class CRechargeHL1 : public CBaseToggle
 {
 public:
-	DECLARE_CLASS( CRecharge, CBaseToggle );
+	DECLARE_CLASS(CRechargeHL1, CBaseToggle );
 
 	void Spawn( );
 
@@ -51,7 +51,7 @@ public:
 	COutputFloat m_OutRemainingCharge;
 };
 
-BEGIN_DATADESC( CRecharge )
+BEGIN_DATADESC(CRechargeHL1)
 
 	DEFINE_FIELD( m_flNextCharge, FIELD_TIME ),
 	DEFINE_FIELD( m_iReactivate, FIELD_INTEGER),
@@ -69,10 +69,10 @@ BEGIN_DATADESC( CRecharge )
 END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS(func_recharge, CRecharge);
+LINK_ENTITY_TO_CLASS(func_recharge_hl1, CRechargeHL1);
 
 
-bool CRecharge::KeyValue( const char *szKeyName, const char *szValue )
+bool CRechargeHL1::KeyValue( const char *szKeyName, const char *szValue )
 {
 	if (	FStrEq(szKeyName, "style") ||
 				FStrEq(szKeyName, "height") ||
@@ -91,7 +91,7 @@ bool CRecharge::KeyValue( const char *szKeyName, const char *szValue )
 	return true;
 }
 
-void CRecharge::Spawn()
+void CRechargeHL1::Spawn()
 {
 	Precache( );
 
@@ -99,7 +99,7 @@ void CRecharge::Spawn()
 	SetMoveType( MOVETYPE_PUSH );
 
 	SetModel( STRING( GetModelName() ) );
-	m_iJuice = sk_suitcharger.GetFloat();
+	m_iJuice = sk_suitcharger_hl1.GetFloat();
 	SetTextureFrameIndex( 0 );
 
 	m_iCaps	= FCAP_CONTINUOUS_USE;
@@ -107,7 +107,7 @@ void CRecharge::Spawn()
 	CreateVPhysics();
 }
 
-void CRecharge::Precache()
+void CRechargeHL1::Precache()
 {
 	BaseClass::Precache();
 
@@ -116,13 +116,13 @@ void CRecharge::Precache()
 	PrecacheScriptSound( "SuitRecharge.ChargingLoop" );
 }
 
-bool CRecharge::CreateVPhysics()
+bool CRechargeHL1::CreateVPhysics()
 {
 	VPhysicsInitStatic();
 	return true;
 }
 
-void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CRechargeHL1::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 { 
 	// Make sure that we have a caller
 	if (!pActivator)
@@ -170,7 +170,7 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	}
 
 	SetNextThink( gpGlobals->curtime + 0.25 );
-	SetThink(&CRecharge::Off);
+	SetThink(&CRechargeHL1::Off);
 
 	// Time to recharge yet?
 
@@ -205,21 +205,21 @@ void CRecharge::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 	}
 
 	// Send the output.
-	float flRemaining = m_iJuice / sk_suitcharger.GetFloat();
+	float flRemaining = m_iJuice / sk_suitcharger_hl1.GetFloat();
 	m_OutRemainingCharge.Set(flRemaining, pActivator, this);
 
 	// govern the rate of charge
 	m_flNextCharge = gpGlobals->curtime + 0.1;
 }
 
-void CRecharge::Recharge(void)
+void CRechargeHL1::Recharge(void)
 {
-	m_iJuice = sk_suitcharger.GetFloat();
+	m_iJuice = sk_suitcharger_hl1.GetFloat();
 	SetTextureFrameIndex( 0 );
 	SetThink( &CBaseEntity::SUB_DoNothing );
 }
 
-void CRecharge::Off(void)
+void CRechargeHL1::Off(void)
 {
 	// Stop looping sound.
 	if (m_iOn > 1)
@@ -232,7 +232,7 @@ void CRecharge::Off(void)
 	if ((!m_iJuice) &&  ( ( m_iReactivate = g_pGameRules->FlHEVChargerRechargeTime() ) > 0) )
 	{
 		SetNextThink( gpGlobals->curtime + m_iReactivate );
-		SetThink(&CRecharge::Recharge);
+		SetThink(&CRechargeHL1::Recharge);
 	}
 	else
 		SetThink( NULL );

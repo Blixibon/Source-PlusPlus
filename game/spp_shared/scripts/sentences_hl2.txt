@@ -2056,7 +2056,7 @@ HEV5_DET5 hl1/fvox/blip blip blip, antitoxin_shot(e25) radiation_detected(e50), 
 // 	HEV4 SUIT  LOGIN		
 //========================================================
 //HEV4_LOGON
-HEV4_AAx hev_vox/bell, 01_hev_logon, 05_automedic_on, 02_powerarmor_on, 03_atmospherics_on, 04_vitalsigns_on, 05_automedic_on, 06_weaponselect_on, 07_munitionview_on, 08_communications_on, 09_safe_day {Len 41.76 closecaption HEV_LOGON}
+HEV4_AAx hev_vox/bell, 01_hev_logon, 02_powerarmor_on, 03_atmospherics_on, 04_vitalsigns_on, 05_automedic_on, 06_weaponselect_on, 07_munitionview_on, 08_communications_on, 09_safe_day {Len 41.76 closecaption HEV_LOGON}
 //HEV4_LOGON_SHORT
 HEV4_A0 hev_vox/bell, 01_hev_logon {Len 11.07 closecaption HEV_LOGON_SHORT}
 //HEV4_LONG_JUMP

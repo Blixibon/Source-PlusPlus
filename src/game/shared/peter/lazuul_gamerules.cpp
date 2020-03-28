@@ -20,6 +20,7 @@
 #include "game.h"
 #include "team_control_point_master.h"
 #include "peter/laz_player_resource.h"
+#include "AI_ResponseSystem.h"
 #else
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
@@ -385,6 +386,7 @@ CLazuul::~CLazuul()
 {
 #ifndef CLIENT_DLL
 	g_Teams.Purge();
+	ShutdownCustomResponseRulesDicts();
 #endif // !CLIENT_DLL
 }
 
@@ -3982,6 +3984,18 @@ void CLazuul::LevelInitPostEntity()
 	m_iMapGameType = g_pGameTypeSystem->GetCurrentBaseGameType();
 	m_iMapModType = g_pGameTypeSystem->GetCurrentModGameType();
 	m_iszGameConfig = AllocPooledString(g_pGameTypeSystem->GetCurrentConfigName());
+}
+
+void CLazuul::InitCustomResponseRulesDicts()
+{
+	m_pPlayerResponseSystem = PrecacheCustomResponseSystem("scripts/talker/player/response_rules.txt");
+}
+
+void CLazuul::ShutdownCustomResponseRulesDicts()
+{
+	DestroyCustomResponseSystems();
+
+	m_pPlayerResponseSystem = nullptr;
 }
 
 void CLazuul::Think()

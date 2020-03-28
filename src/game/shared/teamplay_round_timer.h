@@ -13,6 +13,10 @@
 
 #ifdef CLIENT_DLL
 #define CTeamRoundTimer C_TeamRoundTimer
+#ifdef HL2_LAZUL
+#include "peter/c_localannouncer.h"  
+#endif // HL2_LAZUL
+
 #endif
 
 class CTeamRoundTimer : public CBaseEntity
@@ -90,7 +94,12 @@ private:
 	void OnPreDataChanged( DataUpdateType_t updateType );
 	void OnDataChanged( DataUpdateType_t updateType );
 	void SendTimeWarning( int nWarning );
-	const char *GetTimeWarningSound( int nWarning );
+#ifndef HL2_LAZUL
+	const char* GetTimeWarningSound(int nWarning);
+#else
+	Announcement_e GetTimeWarningSound(int nWarning);
+#endif // !HL2_LAZUL
+
 
 #else
 	void SetState( int nState, bool bFireOutput = true );
@@ -120,6 +129,8 @@ private:
 	CNetworkVar( bool, m_bStopWatchTimer );
 
 	bool			m_bFireFinished;
+	bool			m_bFire15MinRemain;
+	bool			m_bFire10MinRemain;
 	bool			m_bFire5MinRemain;
 	bool			m_bFire4MinRemain;
 	bool			m_bFire3MinRemain;

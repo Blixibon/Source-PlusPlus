@@ -166,20 +166,7 @@
 #include "talker/npc_conscript.txt"
 #include "talker/npc_metropolice.talker"
 #include "talker/dynamic_interactions.txt"
+#include "talker/npc_vortigaunt_bms.talker"
 
 // Rule Groups
 #include "talker/hlss_rules.talker"
-#include "talker/bms_rules.talker"
-
-#include "talker/hazard_course_scenes.txt"
-#include "talker/t0a0_scenes.txt"
-#include "talker/t0a1_scenes.txt"
-#include "talker/t0a1a_scenes.txt"
-#include "talker/t0a2_scenes.txt"
-#include "talker/t0a3_scenes.txt"
-
-// Player Rules
-#include "talker/player/response_rules_base.txt"
-#include "talker/player/response_rules_hl2.txt"
-#include "talker/player/response_rules_hlss.txt"
-#include "talker/player/bms_rules.txt"

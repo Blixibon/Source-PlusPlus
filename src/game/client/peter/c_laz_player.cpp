@@ -312,9 +312,28 @@ float C_Laz_Player::GetFOV( void )
 	return flFOVOffset;
 }
 
+void C_Laz_Player::OnPreDataChanged(DataUpdateType_t updateType)
+{
+	BaseClass::OnPreDataChanged(updateType);
+
+	m_iOldTeam = GetTeamNumber();
+}
+
 void C_Laz_Player::OnDataChanged(DataUpdateType_t type)
 {
 	BaseClass::OnDataChanged(type);
+
+	if (IsLocalPlayer())
+	{
+		if (m_iOldTeam != GetTeamNumber())
+		{
+			IGameEvent* event = gameeventmanager->CreateEvent("localplayer_changeteam");
+			if (event)
+			{
+				gameeventmanager->FireEventClientSide(event);
+			}
+		}
+	}
 
 	if (type == DATA_UPDATE_CREATED)
 	{

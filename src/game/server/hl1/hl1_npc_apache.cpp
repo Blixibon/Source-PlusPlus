@@ -231,7 +231,7 @@ void CNPC_Apache::Flight( void )
 		}
 		VectorNormalize( m_vecGoalOrientation );
 	}
-	else
+	else if (GetGoalEnt())
 	{
 		AngleVectors( GetGoalEnt()->GetAbsAngles(), &m_vecGoalOrientation );
 	}

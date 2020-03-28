@@ -20,6 +20,7 @@ public:
 
 	virtual bool ShouldDoPortalRenderCulling();
 
+	virtual void OnPreDataChanged(DataUpdateType_t updateType);
 	virtual void			OnDataChanged(DataUpdateType_t updateType);
 	virtual void			ClientThink();
 	virtual float GetFOV( void );
@@ -122,6 +123,8 @@ protected:
 	int					m_nFlashlightType;
 
 	float				m_flEyeHeightOverride;
+
+	int				m_iOldTeam;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

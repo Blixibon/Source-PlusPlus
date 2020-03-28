@@ -256,6 +256,15 @@ void CLaz_Player::Precache(void)
 	}
 }
 
+ResponseRules::IResponseSystem* CLaz_Player::GetResponseSystem()
+{
+	ResponseRules::IResponseSystem* pPlayerSystem = LazuulRules()->GetPlayerResponseSystem();
+	if (pPlayerSystem)
+		return pPlayerSystem;
+
+	return BaseClass::GetResponseSystem();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Force this player to immediately respawn
 //-----------------------------------------------------------------------------

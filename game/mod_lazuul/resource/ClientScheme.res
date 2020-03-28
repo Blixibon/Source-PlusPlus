@@ -42,4 +42,36 @@ Scheme
 		"Main.Title2.Y_hidef"		"174"
 		"Mod.Main.Title2.Color"	"255 255 255 200"		
 	}
+	
+	Fonts
+	{
+		HudTimerFont
+		{
+			"1"
+			{
+				"name"		"Verdana"
+				"tall"		"28"
+				"tall_hidef"	"25"
+				"weight"	"0"
+				"antialias" "1"
+				"additive"	"1"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+			}
+		}
+		HudTimerFontGlow
+		{
+			"1"
+			{
+				"name"		"Verdana"
+				"tall"		"28"
+				"tall_hidef"	"25"
+				"weight"	"0"
+				"antialias" 	"1"
+				"blur"		"5"
+				"scanlines"	"2"
+				"additive"	"1"
+				"range"		"0x0000 0x017F" //	Basic Latin, Latin-1 Supplement, Latin Extended-A
+			}
+		}
+	}
 }

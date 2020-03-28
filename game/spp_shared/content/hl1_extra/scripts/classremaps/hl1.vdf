@@ -8,7 +8,14 @@
     "weapon_rpg"            "weapon_rpg_hl1"
     "weapon_shotgun"        "weapon_shotgun_hl1"
 
-    "func_breakable"        "func_breakable_hl1"
+    "func_breakable"            "func_breakable_hl1"
+    "func_recharge"             "func_recharge_hl1"
+    "func_tank"                 "func_tank_hl1"
+    "func_tankpulselaser"       "func_tankpulselaser_hl1"
+    "func_tanklaser"            "func_tanklaser_hl1"
+    "func_tankrocket"           "func_tankrocket_hl1"
+    "func_tankmortar"           "func_tankmortar_hl1"
+    "func_tankphyscannister"    "func_tankphyscannister_hl1"
 
     "monster_barnacle"      "npc_barnacle" // This one is temp until hl1 barnacles are working.
 }

@@ -1,0 +1,12 @@
+// Base script
+#include "talker/response_criteria.talker"
+#include "talker/response_criteria_new.talker"
+
+#include "talker/bms_rules.talker"
+
+#include "talker/hazard_course_scenes.txt"
+#include "talker/t0a0_scenes.txt"
+#include "talker/t0a1_scenes.txt"
+#include "talker/t0a1a_scenes.txt"
+#include "talker/t0a2_scenes.txt"
+#include "talker/t0a3_scenes.txt"

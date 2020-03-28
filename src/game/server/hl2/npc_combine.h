@@ -337,6 +337,7 @@ private:
 #else
 	CCombineStandoffBehavior	m_StandoffBehavior;
 	CAI_RappelBehavior			m_RappelBehavior;
+	CAI_FuncTankBehavior		m_FuncTankBehavior;
 #endif
 
 public:

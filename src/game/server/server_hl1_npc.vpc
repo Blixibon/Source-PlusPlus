@@ -37,6 +37,8 @@ $Project
 			$File	"hl1\hl1_item_ammo.cpp"
 			$File	"hl1\hl1_items.cpp"
 			$File	"hl1\hl1_items.h"
+			$File	"hl1\hl1_func_recharge.cpp"
+			$File	"hl1\hl1_func_tank.cpp"
 			$File	"hl1\hl1_monstermaker.cpp"
 			$File	"hl1\hl1_monstermaker.h"
 			$File	"hl1\hl1_npc_aflock.cpp"

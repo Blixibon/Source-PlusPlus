@@ -150,4 +150,3 @@ criterion IsMoving speed ">0" required
 #include "talker/npc_human_scientist.txt"
 #include "talker/npc_human_scientist_female.txt"
 #include "talker/npc_human_security.txt"
-#include "talker/npc_vortigaunt_bms.talker"

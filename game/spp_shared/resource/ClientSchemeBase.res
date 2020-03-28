@@ -242,8 +242,8 @@ Scheme
 		FrameTitleBar.DisabledTextColor	"TanDark"
 		FrameTitleBar.DisabledBgColor	"Blank"
 		
-		"Panel.FgColor"			"TanLight"
-		"Panel.BgColor"			"Blank"
+		"Panel.FgColor"			"FgColor"
+		"Panel.BgColor"			"BgColor"
 
 		GraphPanel.FgColor				"TanLight"
 		GraphPanel.BgColor				"TransparentBlack"

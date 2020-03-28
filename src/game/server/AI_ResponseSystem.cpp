@@ -147,6 +147,8 @@ namespace ResponseRules
 // Host functions required by the ResponseRules::IEngineEmulator interface
 class CResponseRulesToEngineInterface : public ResponseRules::IEngineEmulator
 {
+	static CUniformRandomStream rr_stream;
+
 	/// Given an input text buffer data pointer, parses a single token into the variable token and returns the new
 	///  reading position
 	virtual const char			*ParseFile( const char *data, char *token, int maxlen ) 
@@ -164,7 +166,7 @@ class CResponseRulesToEngineInterface : public ResponseRules::IEngineEmulator
 	/// Return a pointer to an instance of an IUniformRandomStream
 	virtual IUniformRandomStream *GetRandomStream() 
 	{
-		return random;
+		return &rr_stream;
 	}
 
 	/// Return a pointer to a tier0 ICommandLine
@@ -186,6 +188,8 @@ class CResponseRulesToEngineInterface : public ResponseRules::IEngineEmulator
 	}
 
 };
+
+CUniformRandomStream CResponseRulesToEngineInterface::rr_stream;
 
 CResponseRulesToEngineInterface g_ResponseRulesEngineWrapper;
 IEngineEmulator *IEngineEmulator::s_pSingleton = &g_ResponseRulesEngineWrapper;
@@ -520,6 +524,46 @@ public:
 		return ( IResponseSystem * )sys;
 	}
 
+	void AddAlternateResponseSystem(const char* scriptfile, CInstancedResponseSystem* sys)
+	{
+		m_AlternateSystems.Insert(scriptfile, sys);
+	}
+
+	CInstancedResponseSystem* FindAlternateResponseSystem(const char* scriptfile)
+	{
+		int idx = m_AlternateSystems.Find(scriptfile);
+		if (idx == m_AlternateSystems.InvalidIndex())
+			return NULL;
+		return m_AlternateSystems[idx];
+	}
+
+	IResponseSystem* PrecacheAlternateResponseSystem(const char* scriptfile)
+	{
+		COM_TimestampedLog("PrecacheCustomResponseSystem %s - Start", scriptfile);
+		CInstancedResponseSystem* sys = (CInstancedResponseSystem*)FindAlternateResponseSystem(scriptfile);
+		if (!sys)
+		{
+			sys = new CInstancedResponseSystem(scriptfile);
+			if (!sys)
+			{
+				Error("Failed to load response system data from %s", scriptfile);
+			}
+
+			if (!sys->Init())
+			{
+				Error("CInstancedResponseSystem:  Failed to init response system from %s!", scriptfile);
+			}
+
+			AddAlternateResponseSystem(scriptfile, sys);
+		}
+
+		sys->Precache();
+
+		COM_TimestampedLog("PrecacheCustomResponseSystem %s - Finish", scriptfile);
+
+		return (IResponseSystem*)sys;
+	}
+
 	IResponseSystem *BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore );
 	void DestroyCustomResponseSystems();
 
@@ -558,9 +602,22 @@ public:
 			}
 		}
 
+		for (int i = 0; i < (int)m_AlternateSystems.Count(); i++)
+		{
+			CInstancedResponseSystem* sys = m_AlternateSystems[i];
+
+			sys->Clear();
+			sys->Init();
+		}
+
 		// precache sounds in case we added new ones
 		Precache();
 
+	}
+
+	CUtlDict< CInstancedResponseSystem*, int >& GetAlternateSystems()
+	{
+		return m_AlternateSystems;
 	}
 
 private:
@@ -577,11 +634,14 @@ private:
 	}
 
 	CUtlDict< CInstancedResponseSystem *, int > m_InstancedSystems;
+	CUtlDict< CInstancedResponseSystem*, int > m_AlternateSystems;
 	friend void CC_RR_DumpHashInfo( const CCommand &args );
 };
 
 ResponseRules::IResponseSystem *CDefaultResponseSystem::BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore )
 {
+	CInstancedResponseSystem* pBaseSystem = static_cast<CInstancedResponseSystem*> (PrecacheCustomResponseSystem(pszBaseFile));
+
 	// Create a instanced response system. 
 	CInstancedResponseSystem *pCustomSystem = new CInstancedResponseSystem( pszCustomName );
 	if ( !pCustomSystem )
@@ -596,11 +656,11 @@ ResponseRules::IResponseSystem *CDefaultResponseSystem::BuildCustomResponseSyste
 	int nRuleCount = m_Rules.Count();
 	for ( int iRule = 0; iRule < nRuleCount; ++iRule )
 	*/
-	for ( ResponseRulePartition::tIndex iIdx = m_RulePartitions.First() ;
-		m_RulePartitions.IsValid(iIdx) ;
-		iIdx = m_RulePartitions.Next( iIdx ) )
+	for ( ResponseRulePartition::tIndex iIdx = pBaseSystem->m_RulePartitions.First() ;
+		pBaseSystem->m_RulePartitions.IsValid(iIdx) ;
+		iIdx = pBaseSystem->m_RulePartitions.Next( iIdx ) )
 	{
-		Rule *pRule = &m_RulePartitions[iIdx];
+		Rule *pRule = &pBaseSystem->m_RulePartitions[iIdx];
 		if ( pRule )
 		{
 			float flScore = 0.0f;
@@ -610,10 +670,10 @@ ResponseRules::IResponseSystem *CDefaultResponseSystem::BuildCustomResponseSyste
 			{
 				int iRuleCriteria = pRule->m_Criteria[iCriteria];
 
-				flScore += LookForCriteria( criteriaSet, iRuleCriteria );
+				flScore += pBaseSystem->LookForCriteria( criteriaSet, iRuleCriteria );
 				if ( flScore >= flCriteriaScore )
 				{
-					CopyRuleFrom( pRule, iIdx, pCustomSystem );
+					pBaseSystem->CopyRuleFrom( pRule, iIdx, pCustomSystem );
 					break;
 				}
 			}
@@ -660,7 +720,118 @@ bool ResponseSystemCompare(const char* criterion, const char* value)
 	return false;
 }
 
-static short RESPONSESYSTEM_SAVE_RESTORE_VERSION = 1;
+//-----------------------------------------------------------------------------
+// CResponseSystemSaveRestoreOps
+//
+// Purpose: Handles save and load for instanced response systems...
+//
+// BUGBUG:  This will save the same response system to file multiple times for "shared" response systems and 
+//  therefore it'll restore the same data onto the same pointer N times on reload (probably benign for now, but we could
+//  write code to save/restore the instanced ones by filename in the block handler above maybe?
+//-----------------------------------------------------------------------------
+
+class CResponseSystemSaveRestoreOps : public CDefSaveRestoreOps
+{
+public:
+
+	virtual void Save(const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave)
+	{
+		CResponseSystem* pRS = *(CResponseSystem**)fieldInfo.pField;
+		if (!pRS || pRS == &defaultresponsesytem)
+			return;
+
+		int count = pRS->m_Responses.Count();
+		pSave->WriteInt(&count);
+		for (int i = 0; i < count; ++i)
+		{
+			pSave->StartBlock("ResponseGroup");
+
+			pSave->WriteString(pRS->m_Responses.GetElementName(i));
+			const ResponseGroup* group = &pRS->m_Responses[i];
+			pSave->WriteAll(group);
+
+			short groupCount = group->group.Count();
+			pSave->WriteShort(&groupCount);
+			for (int j = 0; j < groupCount; ++j)
+			{
+				const ParserResponse* response = &group->group[j];
+				pSave->StartBlock("Response");
+				pSave->WriteString(response->value);
+				pSave->WriteAll(response);
+				pSave->EndBlock();
+			}
+
+			pSave->EndBlock();
+		}
+	}
+
+	virtual void Restore(const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore)
+	{
+		CResponseSystem* pRS = *(CResponseSystem**)fieldInfo.pField;
+		if (!pRS || pRS == &defaultresponsesytem)
+			return;
+
+		int count = pRestore->ReadInt();
+		for (int i = 0; i < count; ++i)
+		{
+			char szResponseGroupBlockName[SIZE_BLOCK_NAME_BUF];
+			pRestore->StartBlock(szResponseGroupBlockName);
+			if (!Q_stricmp(szResponseGroupBlockName, "ResponseGroup"))
+			{
+
+				char groupname[256];
+				pRestore->ReadString(groupname, sizeof(groupname), 0);
+
+				// Try and find it
+				int idx = pRS->m_Responses.Find(groupname);
+				if (idx != pRS->m_Responses.InvalidIndex())
+				{
+					ResponseGroup* group = &pRS->m_Responses[idx];
+					pRestore->ReadAll(group);
+
+					short groupCount = pRestore->ReadShort();
+					for (int j = 0; j < groupCount; ++j)
+					{
+						char szResponseBlockName[SIZE_BLOCK_NAME_BUF];
+
+						char responsename[256];
+						pRestore->StartBlock(szResponseBlockName);
+						if (!Q_stricmp(szResponseBlockName, "Response"))
+						{
+							pRestore->ReadString(responsename, sizeof(responsename), 0);
+
+							// Find it by name
+							int ri;
+							for (ri = 0; ri < group->group.Count(); ++ri)
+							{
+								ParserResponse* response = &group->group[ri];
+								if (!Q_stricmp(response->value, responsename))
+								{
+									break;
+								}
+							}
+
+							if (ri < group->group.Count())
+							{
+								ParserResponse* response = &group->group[ri];
+								pRestore->ReadAll(response);
+							}
+						}
+
+						pRestore->EndBlock();
+					}
+				}
+			}
+
+			pRestore->EndBlock();
+		}
+	}
+
+} g_ResponseSystemSaveRestoreOps;
+
+ISaveRestoreOps* responseSystemSaveRestoreOps = &g_ResponseSystemSaveRestoreOps;
+
+static short RESPONSESYSTEM_SAVE_RESTORE_VERSION = 2;
 
 // note:  this won't save/restore settings from instanced response systems.  Could add that with a CDefSaveRestoreOps implementation if needed
 // 
@@ -680,9 +851,9 @@ public:
 	void ReadRestoreHeaders( IRestore *pRestore )
 	{
 		// No reason why any future version shouldn't try to retain backward compatability. The default here is to not do so.
-		short version;
-		pRestore->ReadShort( &version );
-		m_fDoLoad = ( version == RESPONSESYSTEM_SAVE_RESTORE_VERSION );
+		//short version;
+		pRestore->ReadShort( &m_sVersion );
+		m_fDoLoad = (m_sVersion <= RESPONSESYSTEM_SAVE_RESTORE_VERSION );
 	}
 
 	void Save( ISave *pSave )
@@ -712,6 +883,20 @@ public:
 
 			pSave->EndBlock();
 		}
+
+		pSave->StartBlock("AlternateSystems");
+		int c = rs.GetAlternateSystems().Count();
+		pSave->WriteInt(&c);
+		for (int i = 0; i < c; i++)
+		{
+			CInstancedResponseSystem *sys = rs.GetAlternateSystems().Element(i);
+			pSave->WriteString(sys->GetScriptFile());
+			CResponseSystem* pResp = sys;
+			CResponseSystem** pField = &pResp;
+
+			responseSystemSaveRestoreOps->Save(pField, pSave);
+		}
+		pSave->EndBlock();
 	}
 
 	void Restore( IRestore *pRestore, bool createPlayers )
@@ -775,9 +960,29 @@ public:
 
 			pRestore->EndBlock();
 		}
+
+		if (m_sVersion < 2)
+			return;
+
+		char szAlternateSystemsBlockName[SIZE_BLOCK_NAME_BUF];
+		pRestore->StartBlock(szAlternateSystemsBlockName);
+		if (!Q_stricmp(szAlternateSystemsBlockName, "AlternateSystems"))
+		{
+			int iCount = pRestore->ReadInt();
+			for (int i = 0; i < iCount; i++)
+			{
+				char chScript[MAX_PATH];
+				pRestore->ReadString(chScript, MAX_PATH, 0);
+				CResponseSystem* sys = (CResponseSystem*)rs.PrecacheAlternateResponseSystem(chScript);
+				CResponseSystem** pField = &sys;
+
+				responseSystemSaveRestoreOps->Restore(pField, pRestore);
+			}
+		}
+		pRestore->EndBlock();
 	}
 private:
-
+	short		m_sVersion;
 	bool		m_fDoLoad;
 
 } g_DefaultResponseSystemSaveRestoreBlockHandler;
@@ -786,117 +991,6 @@ ISaveRestoreBlockHandler *GetDefaultResponseSystemSaveRestoreBlockHandler()
 {
 	return &g_DefaultResponseSystemSaveRestoreBlockHandler;
 }
-
-//-----------------------------------------------------------------------------
-// CResponseSystemSaveRestoreOps
-//
-// Purpose: Handles save and load for instanced response systems...
-//
-// BUGBUG:  This will save the same response system to file multiple times for "shared" response systems and 
-//  therefore it'll restore the same data onto the same pointer N times on reload (probably benign for now, but we could
-//  write code to save/restore the instanced ones by filename in the block handler above maybe?
-//-----------------------------------------------------------------------------
-
-class CResponseSystemSaveRestoreOps : public CDefSaveRestoreOps
-{
-public:
-
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
-	{
-		CResponseSystem *pRS = *(CResponseSystem **)fieldInfo.pField;
-		if ( !pRS || pRS == &defaultresponsesytem )
-			return;
-
-		int count = pRS->m_Responses.Count();
-		pSave->WriteInt( &count );
-		for ( int i = 0; i < count; ++i )
-		{
-			pSave->StartBlock( "ResponseGroup" );
-
-			pSave->WriteString( pRS->m_Responses.GetElementName( i ) );
-			const ResponseGroup *group = &pRS->m_Responses[ i ];
-			pSave->WriteAll( group );
-
-			short groupCount = group->group.Count();
-			pSave->WriteShort( &groupCount );
-			for ( int j = 0; j < groupCount; ++j )
-			{
-				const ParserResponse *response = &group->group[ j ];
-				pSave->StartBlock( "Response" );
-				pSave->WriteString( response->value );
-				pSave->WriteAll( response );
-				pSave->EndBlock();
-			}
-
-			pSave->EndBlock();
-		}
-	}
-
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
-	{
-		CResponseSystem *pRS = *(CResponseSystem **)fieldInfo.pField;
-		if ( !pRS || pRS == &defaultresponsesytem )
-			return;
-
-		int count = pRestore->ReadInt();
-		for ( int i = 0; i < count; ++i )
-		{
-			char szResponseGroupBlockName[SIZE_BLOCK_NAME_BUF];
-			pRestore->StartBlock( szResponseGroupBlockName );
-			if ( !Q_stricmp( szResponseGroupBlockName, "ResponseGroup" ) )
-			{
-
-				char groupname[ 256 ];
-				pRestore->ReadString( groupname, sizeof( groupname ), 0 );
-
-				// Try and find it
-				int idx = pRS->m_Responses.Find( groupname );
-				if ( idx != pRS->m_Responses.InvalidIndex() )
-				{
-					ResponseGroup *group = &pRS->m_Responses[ idx ];
-					pRestore->ReadAll( group );
-
-					short groupCount = pRestore->ReadShort();
-					for ( int j = 0; j < groupCount; ++j )
-					{
-						char szResponseBlockName[SIZE_BLOCK_NAME_BUF];
-
-						char responsename[ 256 ];
-						pRestore->StartBlock( szResponseBlockName );
-						if ( !Q_stricmp( szResponseBlockName, "Response" ) )
-						{
-							pRestore->ReadString( responsename, sizeof( responsename ), 0 );
-
-							// Find it by name
-							int ri;
-							for ( ri = 0; ri < group->group.Count(); ++ri )
-							{
-								ParserResponse *response = &group->group[ ri ];
-								if ( !Q_stricmp( response->value, responsename ) )
-								{
-									break;
-								}
-							}
-
-							if ( ri < group->group.Count() )
-							{
-								ParserResponse *response = &group->group[ ri ];
-								pRestore->ReadAll( response );
-							}
-						}
-
-						pRestore->EndBlock();
-					}
-				}
-			}
-
-			pRestore->EndBlock();
-		}
-	}
-
-} g_ResponseSystemSaveRestoreOps;
-
-ISaveRestoreOps *responseSystemSaveRestoreOps = &g_ResponseSystemSaveRestoreOps;
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -940,6 +1034,11 @@ void CDefaultResponseSystem::Shutdown()
 ResponseRules::IResponseSystem *PrecacheCustomResponseSystem( const char *scriptfile )
 {
 	return defaultresponsesytem.PrecacheCustomResponseSystem( scriptfile );
+}
+
+ResponseRules::IResponseSystem* GetAlternateResponseSystem(const char* scriptfile)
+{
+	return defaultresponsesytem.PrecacheAlternateResponseSystem(scriptfile);
 }
 
 //-----------------------------------------------------------------------------

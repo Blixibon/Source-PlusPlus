@@ -66,6 +66,10 @@ public:
 	virtual void			LevelInitPreEntity();
 	virtual void			LevelInitPostEntity();
 
+	// Speaking, vcds, voice commands.
+	virtual void	InitCustomResponseRulesDicts();
+	virtual void	ShutdownCustomResponseRulesDicts();
+
 	virtual float FlPlayerFallDamage(CBasePlayer* pPlayer);
 
 	virtual int PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget);
@@ -179,6 +183,8 @@ public:
 	bool	NPC_ShouldDropHealth(CBasePlayer* pRecipient);
 	void	NPC_DroppedHealth(void);
 	void	NPC_DroppedGrenade(void);
+
+	ResponseRules::IResponseSystem* GetPlayerResponseSystem() { return m_pPlayerResponseSystem; }
 protected:
 	void AdjustPlayerDamageTaken(CTakeDamageInfo* pInfo);
 	float AdjustPlayerDamageInflicted(float damage);
@@ -187,6 +193,8 @@ private:
 
 	float	m_flLastHealthDropTime;
 	float	m_flLastGrenadeDropTime;
+
+	ResponseRules::IResponseSystem* m_pPlayerResponseSystem;
 #endif
 public:
 

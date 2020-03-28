@@ -55,7 +55,7 @@ protected:
 	//virtual void Paint();
 	//virtual void PaintLabel();
 
-	virtual void PaintIcons(vgui::HFont font, vgui::HFont font_small);
+	virtual void PaintIcons(vgui::HFont font, vgui::HFont font_small, bool bBlur = false);
 	/*virtual void PaintBar(ImageFX *pBar, int value, int max, float flAlha = 1.0f);
 	virtual void PaintSimpleBar(ImageFX *pBar, int value, int max, float ypos, float sidegap, float flAlpha = 1.0f);
 

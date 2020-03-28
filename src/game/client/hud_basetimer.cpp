@@ -45,10 +45,10 @@ void CHudBaseTimer::PaintTime(HFont font, int xpos, int ypos, int mins, int secs
 
 void CHudBaseTimer::Paint()
 {
-	float alpha = m_flAlphaOverride / 255;
+	/*float alpha = m_flAlphaOverride / 255;
 	Color fgColor = GetFgColor();
 	fgColor[3] *= alpha;
-	SetFgColor( fgColor );
+	SetFgColor( fgColor );*/
 	
 	surface()->DrawSetTextColor(GetFgColor());
 	PaintTime( m_hNumberFont, digit_xpos, digit_ypos, m_iMinutes, m_iSeconds );
@@ -71,14 +71,4 @@ void CHudBaseTimer::Paint()
 	}
 
 	BaseClass::PaintLabel();
-}
-
-void CHudBaseTimer::SetToPrimaryColor()
-{
-	SetFgColor(m_TextColor);
-}
-
-void CHudBaseTimer::SetToSecondaryColor()
-{
-	SetFgColor(m_FlashColor);
 }

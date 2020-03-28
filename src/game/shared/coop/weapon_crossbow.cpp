@@ -890,7 +890,7 @@ void CWeaponCrossbow::CreateChargerEffects( void )
 #ifndef CLIENT_DLL
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 
-	if ( m_hChargerSprite != NULL )
+	if ( m_hChargerSprite != NULL && pOwner)
 		return;
 
 	m_hChargerSprite = CSprite::SpriteCreate( CROSSBOW_GLOW_SPRITE, GetAbsOrigin(), false );

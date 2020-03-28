@@ -164,10 +164,12 @@ public:
 		NUM_VOICE_TYPES
 	};
 
+	virtual ResponseRules::IResponseSystem* GetResponseSystem() { return m_pInstancedResponseSystem; }
+
 private:
 	bool		ShouldHitPlayer(const Vector &targetDir, float targetDist);
 
-	
+	ResponseRules::IResponseSystem* m_pInstancedResponseSystem;
 
 #if HL2_EPISODIC
 public:
@@ -320,11 +322,15 @@ void CNPC_Human_Grunt::Precache()
 	UTIL_PrecacheOther("weapon_frag");
 	UTIL_PrecacheOther("item_ammo_ar2_altfire");
 	UTIL_PrecacheOther("prop_physics_override", "models/humans/props/marine_beret.mdl");
+
+	m_pInstancedResponseSystem = GetAlternateResponseSystem("scripts/talker/response_rules_bms.txt");
 }
 
 void CNPC_Human_Grunt::ModifyOrAppendCriteria(AI_CriteriaSet& set)
 {
 	BaseClass::ModifyOrAppendCriteria(set);
+
+	//set.AppendCriteria("voicetype", "normal");
 
 	switch (GetGruntVoiceType())
 	{

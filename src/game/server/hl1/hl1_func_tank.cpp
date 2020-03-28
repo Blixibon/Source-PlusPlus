@@ -53,11 +53,11 @@ enum TANKBULLET
 //			rockets
 //			explosion?
 
-class CFuncTank : public CBaseEntity
+class CHL1FuncTank : public CBaseEntity
 {
-	DECLARE_CLASS( CFuncTank, CBaseEntity );
+	DECLARE_CLASS( CHL1FuncTank, CBaseEntity );
 public:
-	~CFuncTank( void );
+	~CHL1FuncTank( void );
 	void	Spawn( void );
 	void	Activate( void );
 	void	Precache( void );
@@ -177,7 +177,7 @@ protected:
 };
 
 
-BEGIN_DATADESC( CFuncTank )
+BEGIN_DATADESC( CHL1FuncTank )
 
 	DEFINE_KEYFIELD( m_yawRate, FIELD_FLOAT, "yawrate" ),
 	DEFINE_KEYFIELD( m_yawRange, FIELD_FLOAT, "yawrange" ),
@@ -244,7 +244,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-CFuncTank::~CFuncTank( void )
+CHL1FuncTank::~CHL1FuncTank( void )
 {
 	if ( m_soundLoopRotate != NULL_STRING && (m_spawnflags & SF_TANK_SOUNDON) )
 	{
@@ -253,7 +253,7 @@ CFuncTank::~CFuncTank( void )
 }
 
 
-int	CFuncTank::ObjectCaps( void ) 
+int	CHL1FuncTank::ObjectCaps( void ) 
 { 
 	int iCaps = BaseClass::ObjectCaps();
 
@@ -269,7 +269,7 @@ int	CFuncTank::ObjectCaps( void )
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-inline bool CFuncTank::CanFire( void )
+inline bool CHL1FuncTank::CanFire( void )
 { 
 	float flTimeDelay = gpGlobals->curtime - m_lastSightTime;
 	// Fire when can't see enemy if time is less that persistence time
@@ -298,7 +298,7 @@ inline bool CFuncTank::CanFire( void )
 //------------------------------------------------------------------------------
 // Purpose: Input handler for activating the tank.
 //------------------------------------------------------------------------------
-void CFuncTank::InputActivate( inputdata_t &inputdata )
+void CHL1FuncTank::InputActivate( inputdata_t &inputdata )
 {	
 	TankActivate();
 }
@@ -307,7 +307,7 @@ void CFuncTank::InputActivate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFuncTank::TankActivate(void)
+void CHL1FuncTank::TankActivate(void)
 {
 	m_spawnflags	|= SF_TANK_ACTIVE; 
 	SetNextThink( gpGlobals->curtime + 0.1f ); 
@@ -318,7 +318,7 @@ void CFuncTank::TankActivate(void)
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for deactivating the tank.
 //-----------------------------------------------------------------------------
-void CFuncTank::InputDeactivate( inputdata_t &inputdata )
+void CHL1FuncTank::InputDeactivate( inputdata_t &inputdata )
 {
 	TankDeactivate();
 }
@@ -327,7 +327,7 @@ void CFuncTank::InputDeactivate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFuncTank::TankDeactivate(void)
+void CHL1FuncTank::TankDeactivate(void)
 {
 	m_spawnflags	&= ~SF_TANK_ACTIVE; 
 	m_fireLast		= 0; 
@@ -338,7 +338,7 @@ void CFuncTank::TankDeactivate(void)
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for changing the name of the tank's target entity.
 //-----------------------------------------------------------------------------
-void CFuncTank::InputSetTargetEntityName( inputdata_t &inputdata )
+void CHL1FuncTank::InputSetTargetEntityName( inputdata_t &inputdata )
 {
 	m_targetEntityName = inputdata.value.StringID();
 	m_hTarget = FindTarget( m_targetEntityName, inputdata.pActivator );
@@ -351,7 +351,7 @@ void CFuncTank::InputSetTargetEntityName( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for setting a new target entity by ehandle.
 //-----------------------------------------------------------------------------
-void CFuncTank::InputSetTargetEntity( inputdata_t &inputdata )
+void CHL1FuncTank::InputSetTargetEntity( inputdata_t &inputdata )
 {
 	if (inputdata.value.Entity() != NULL)
 	{
@@ -371,7 +371,7 @@ void CFuncTank::InputSetTargetEntity( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for setting the rate of fire in shots per second.
 //-----------------------------------------------------------------------------
-void CFuncTank::InputSetFireRate( inputdata_t &inputdata )
+void CHL1FuncTank::InputSetFireRate( inputdata_t &inputdata )
 {
 	m_fireRate = inputdata.value.Float();
 }
@@ -380,7 +380,7 @@ void CFuncTank::InputSetFireRate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for setting the target as a position.
 //-----------------------------------------------------------------------------
-void CFuncTank::InputSetTargetPosition( inputdata_t &inputdata )
+void CHL1FuncTank::InputSetTargetPosition( inputdata_t &inputdata )
 {
 	m_spawnflags		|= SF_TANK_AIM_AT_POS; 
 	m_hTarget			= NULL;
@@ -393,7 +393,7 @@ void CFuncTank::InputSetTargetPosition( inputdata_t &inputdata )
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CFuncTank::DrawDebugTextOverlays(void) 
+int CHL1FuncTank::DrawDebugTextOverlays(void) 
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
@@ -463,7 +463,7 @@ int CFuncTank::DrawDebugTextOverlays(void)
 //			ptr - 
 //			bitsDamageType - 
 //-----------------------------------------------------------------------------
-void CFuncTank::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType)
+void CHL1FuncTank::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType)
 {
 	if (m_spawnflags & SF_TANK_DAMAGE_KICK)
 	{
@@ -515,7 +515,7 @@ void CFuncTank::TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vecto
 // Input  : targetName - 
 //			pActivator - 
 //-----------------------------------------------------------------------------
-CBaseEntity *CFuncTank::FindTarget( string_t targetName, CBaseEntity *pActivator ) 
+CBaseEntity *CHL1FuncTank::FindTarget( string_t targetName, CBaseEntity *pActivator ) 
 {
 	return gEntList.FindEntityGenericNearest( STRING( targetName ), GetAbsOrigin(), 0, this, pActivator );
 }
@@ -527,7 +527,7 @@ CBaseEntity *CFuncTank::FindTarget( string_t targetName, CBaseEntity *pActivator
 //			szValue - 
 // Output : 
 //-----------------------------------------------------------------------------
-bool CFuncTank::KeyValue( const char *szKeyName, const char *szValue )
+bool CHL1FuncTank::KeyValue( const char *szKeyName, const char *szValue )
 {
 	if (FStrEq(szKeyName, "barrel"))
 	{
@@ -559,7 +559,7 @@ static Vector gTankSpread[] =
 #define MAX_FIRING_SPREADS ARRAYSIZE(gTankSpread)
 
 
-void CFuncTank::Spawn( void )
+void CHL1FuncTank::Spawn( void )
 {
 	Precache();
 
@@ -599,7 +599,7 @@ void CFuncTank::Spawn( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFuncTank::Activate( void )
+void CHL1FuncTank::Activate( void )
 {
 	BaseClass::Activate();
 
@@ -618,14 +618,14 @@ void CFuncTank::Activate( void )
 	}
 }
 
-bool CFuncTank::CreateVPhysics()
+bool CHL1FuncTank::CreateVPhysics()
 {
 	VPhysicsInitShadow( false, false );
 	return true;
 }
 
 
-void CFuncTank::Precache( void )
+void CHL1FuncTank::Precache( void )
 {
 	m_iSmallAmmoType	= GetAmmoDef()->Index("9mmRound");
 	m_iMediumAmmoType	= GetAmmoDef()->Index("9mmRound");
@@ -648,7 +648,7 @@ void CFuncTank::Precache( void )
 
 //==================================================================================
 // TANK CONTROLLING
-bool CFuncTank::OnControls( CBaseEntity *pTest )
+bool CHL1FuncTank::OnControls( CBaseEntity *pTest )
 {
 	if ( !(m_spawnflags & SF_TANK_CANCONTROL) )
 		return FALSE;
@@ -661,7 +661,7 @@ bool CFuncTank::OnControls( CBaseEntity *pTest )
 	return FALSE;
 }
 
-bool CFuncTank::StartControl( CBasePlayer *pController )
+bool CHL1FuncTank::StartControl( CBasePlayer *pController )
 {
 	if ( m_pController != NULL )
 		return FALSE;
@@ -688,7 +688,7 @@ bool CFuncTank::StartControl( CBasePlayer *pController )
 	return TRUE;
 }
 
-void CFuncTank::StopControl()
+void CHL1FuncTank::StopControl()
 {
 	// TODO: bring back the controllers current weapon
 	if ( !m_pController )
@@ -706,7 +706,7 @@ void CFuncTank::StopControl()
 }
 
 // Called each frame by the player's ItemPostFrame
-void CFuncTank::ControllerPostFrame( void )
+void CHL1FuncTank::ControllerPostFrame( void )
 {
 	Assert(m_pController != NULL);
 
@@ -731,7 +731,7 @@ void CFuncTank::ControllerPostFrame( void )
 }
 
 
-void CFuncTank::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CHL1FuncTank::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	if ( m_spawnflags & SF_TANK_CANCONTROL )
 	{  
@@ -776,7 +776,7 @@ void CFuncTank::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 }
 
 
-bool CFuncTank::InRange( float range )
+bool CHL1FuncTank::InRange( float range )
 {
 	if ( range < m_minRange )
 		return FALSE;
@@ -787,7 +787,7 @@ bool CFuncTank::InRange( float range )
 }
 
 
-void CFuncTank::Think( void )
+void CHL1FuncTank::Think( void )
 {
 	// refresh the matrix
 	UpdateMatrix();
@@ -807,7 +807,7 @@ void CFuncTank::Think( void )
 // Input  : parentTarget - the position of the target in parent space
 // Output : Vector - angles in local space
 //-----------------------------------------------------------------------------
-QAngle CFuncTank::AimBarrelAt( const Vector &parentTarget )
+QAngle CHL1FuncTank::AimBarrelAt( const Vector &parentTarget )
 {
 	Vector target = parentTarget - GetLocalOrigin();
 	float quadTarget = target.LengthSqr();
@@ -840,7 +840,7 @@ QAngle CFuncTank::AimBarrelAt( const Vector &parentTarget )
 }
 
 
-void CFuncTank::TrackTarget( void )
+void CHL1FuncTank::TrackTarget( void )
 {
 	trace_t tr;
 	bool updateTime = FALSE, lineOfSight;
@@ -1071,7 +1071,7 @@ void CFuncTank::TrackTarget( void )
 //			&forward - 
 //			*pAttacker - 
 //-----------------------------------------------------------------------------
-void CFuncTank::FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTank::FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	if ( m_fireLast != 0 )
 	{
@@ -1097,7 +1097,7 @@ void CFuncTank::FiringSequence( const Vector &barrelEnd, const Vector &forward, 
 //			forward - 
 //			pAttacker - 
 //-----------------------------------------------------------------------------
-void CFuncTank::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTank::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	if ( m_iszSpriteSmoke != NULL_STRING )
 	{
@@ -1121,7 +1121,7 @@ void CFuncTank::Fire( int bulletCount, const Vector &barrelEnd, const Vector &fo
 }
 
 
-void CFuncTank::TankTrace( const Vector &vecStart, const Vector &vecForward, const Vector &vecSpread, trace_t &tr )
+void CHL1FuncTank::TankTrace( const Vector &vecStart, const Vector &vecForward, const Vector &vecSpread, trace_t &tr )
 {
 	Vector forward, right, up;
 
@@ -1143,7 +1143,7 @@ void CFuncTank::TankTrace( const Vector &vecStart, const Vector &vecForward, con
 }
 
 	
-void CFuncTank::StartRotSound( void )
+void CHL1FuncTank::StartRotSound( void )
 {
 	if ( m_spawnflags & SF_TANK_SOUNDON )
 		return;
@@ -1178,7 +1178,7 @@ void CFuncTank::StartRotSound( void )
 }
 
 
-void CFuncTank::StopRotSound( void )
+void CHL1FuncTank::StopRotSound( void )
 {
 	if ( m_spawnflags & SF_TANK_SOUNDON )
 	{
@@ -1203,18 +1203,18 @@ void CFuncTank::StopRotSound( void )
 }
 
 // #############################################################################
-//   CFuncTankGun
+//   CHL1FuncTankGun
 // #############################################################################
-class CFuncTankGun : public CFuncTank
+class CHL1FuncTankGun : public CHL1FuncTank
 {
 public:
-	DECLARE_CLASS( CFuncTankGun, CFuncTank );
+	DECLARE_CLASS( CHL1FuncTankGun, CHL1FuncTank );
 
 	void Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker );
 };
-LINK_ENTITY_TO_CLASS( func_tank, CFuncTankGun );
+LINK_ENTITY_TO_CLASS( func_tank_hl1, CHL1FuncTankGun );
 
-void CFuncTankGun::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTankGun::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	int i;
 
@@ -1238,16 +1238,16 @@ void CFuncTankGun::Fire( int bulletCount, const Vector &barrelEnd, const Vector 
 			break;
 		}
 	}
-	CFuncTank::Fire( bulletCount, barrelEnd, forward, pAttacker );
+	CHL1FuncTank::Fire( bulletCount, barrelEnd, forward, pAttacker );
 }
 
 // #############################################################################
-//   CFuncTankPulseLaser
+//   CHL1FuncTankPulseLaser
 // #############################################################################
-class CFuncTankPulseLaser : public CFuncTankGun
+class CHL1FuncTankPulseLaser : public CHL1FuncTankGun
 {
 public:
-	DECLARE_CLASS( CFuncTankPulseLaser, CFuncTankGun );
+	DECLARE_CLASS( CHL1FuncTankPulseLaser, CHL1FuncTankGun );
 	DECLARE_DATADESC();
 
 	void Precache();
@@ -1260,9 +1260,9 @@ public:
 	float		m_flPulseLag;
 	string_t	m_sPulseFireSound;
 };
-LINK_ENTITY_TO_CLASS( func_tankpulselaser, CFuncTankPulseLaser );
+LINK_ENTITY_TO_CLASS( func_tankpulselaser_hl1, CHL1FuncTankPulseLaser );
 
-BEGIN_DATADESC( CFuncTankPulseLaser )
+BEGIN_DATADESC( CHL1FuncTankPulseLaser )
 
 	DEFINE_KEYFIELD( m_flPulseSpeed,	 FIELD_FLOAT,		"PulseSpeed" ),
 	DEFINE_KEYFIELD( m_flPulseWidth,	 FIELD_FLOAT,		"PulseWidth" ),
@@ -1278,7 +1278,7 @@ END_DATADESC()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CFuncTankPulseLaser::Precache(void)
+void CHL1FuncTankPulseLaser::Precache(void)
 {
 	UTIL_PrecacheOther( "grenade_beam" );
 
@@ -1293,7 +1293,7 @@ void CFuncTankPulseLaser::Precache(void)
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CFuncTankPulseLaser::Fire( int bulletCount, const Vector &barrelEnd, const Vector &vecForward, CBaseEntity *pAttacker )
+void CHL1FuncTankPulseLaser::Fire( int bulletCount, const Vector &barrelEnd, const Vector &vecForward, CBaseEntity *pAttacker )
 {
 	// --------------------------------------------------
 	//  Get direction vectors for spread
@@ -1333,15 +1333,15 @@ void CFuncTankPulseLaser::Fire( int bulletCount, const Vector &barrelEnd, const 
 		}
 
 	}
-	CFuncTank::Fire( bulletCount, barrelEnd, vecForward, pAttacker );
+	CHL1FuncTank::Fire( bulletCount, barrelEnd, vecForward, pAttacker );
 }
 
 // #############################################################################
-//   CFuncTankLaser
+//   CHL1FuncTankLaser
 // #############################################################################
-class CFuncTankLaser : public CFuncTank
+class CHL1FuncTankLaser : public CHL1FuncTank
 {
-	DECLARE_CLASS( CFuncTankLaser, CFuncTank );
+	DECLARE_CLASS( CHL1FuncTankLaser, CHL1FuncTank );
 public:
 	void	Activate( void );
 	void	Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker );
@@ -1356,9 +1356,9 @@ private:
 	float	m_laserTime;
 	string_t m_iszLaserName;
 };
-LINK_ENTITY_TO_CLASS( func_tanklaser, CFuncTankLaser );
+LINK_ENTITY_TO_CLASS( func_tanklaser_hl1, CHL1FuncTankLaser );
 
-BEGIN_DATADESC( CFuncTankLaser )
+BEGIN_DATADESC( CHL1FuncTankLaser )
 
 	DEFINE_KEYFIELD( m_iszLaserName, FIELD_STRING, "laserentity" ),
 
@@ -1368,7 +1368,7 @@ BEGIN_DATADESC( CFuncTankLaser )
 END_DATADESC()
 
 
-void CFuncTankLaser::Activate( void )
+void CHL1FuncTankLaser::Activate( void )
 {
 	BaseClass::Activate();
 
@@ -1383,7 +1383,7 @@ void CFuncTankLaser::Activate( void )
 	}
 }
 
-void CFuncTankLaser::UpdateOnRemove( void )
+void CHL1FuncTankLaser::UpdateOnRemove( void )
 {
 	if( GetLaser() )
 	{
@@ -1393,7 +1393,7 @@ void CFuncTankLaser::UpdateOnRemove( void )
 	BaseClass::UpdateOnRemove();
 }
 
-CEnvLaser *CFuncTankLaser::GetLaser( void )
+CEnvLaser *CHL1FuncTankLaser::GetLaser( void )
 {
 	if ( m_pLaser )
 		return m_pLaser;
@@ -1417,16 +1417,16 @@ CEnvLaser *CFuncTankLaser::GetLaser( void )
 }
 
 
-void CFuncTankLaser::Think( void )
+void CHL1FuncTankLaser::Think( void )
 {
 	if ( m_pLaser && (gpGlobals->curtime > m_laserTime) )
 		m_pLaser->TurnOff();
 
-	CFuncTank::Think();
+	CHL1FuncTank::Think();
 }
 
 
-void CFuncTankLaser::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTankLaser::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	int i;
 	trace_t tr;
@@ -1444,29 +1444,29 @@ void CFuncTankLaser::Fire( int bulletCount, const Vector &barrelEnd, const Vecto
 			m_pLaser->FireAtPoint( tr );
 			m_pLaser->SetNextThink( TICK_NEVER_THINK );
 		}
-		CFuncTank::Fire( bulletCount, barrelEnd, forward, this );
+		CHL1FuncTank::Fire( bulletCount, barrelEnd, forward, this );
 	}
 }
 
-class CFuncTankRocket : public CFuncTank
+class CHL1FuncTankRocket : public CHL1FuncTank
 {
 public:
-	DECLARE_CLASS( CFuncTankRocket, CFuncTank );
+	DECLARE_CLASS( CHL1FuncTankRocket, CHL1FuncTank );
 
 	void Precache( void );
 	void Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker );
 };
-LINK_ENTITY_TO_CLASS( func_tankrocket, CFuncTankRocket );
+LINK_ENTITY_TO_CLASS( func_tankrocket_hl1, CHL1FuncTankRocket );
 
-void CFuncTankRocket::Precache( void )
+void CHL1FuncTankRocket::Precache( void )
 {
 	UTIL_PrecacheOther( "rpg_rocket" );
-	CFuncTank::Precache();
+	CHL1FuncTank::Precache();
 }
 
 
 
-void CFuncTankRocket::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTankRocket::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	int i;
 
@@ -1475,14 +1475,14 @@ void CFuncTankRocket::Fire( int bulletCount, const Vector &barrelEnd, const Vect
 		CBaseEntity *pRocket = CBaseEntity::Create( "rpg_rocket", barrelEnd, GetAbsAngles(), this );
 		pRocket->SetAbsAngles( GetAbsAngles() );
 	}
-	CFuncTank::Fire( bulletCount, barrelEnd, forward, this );
+	CHL1FuncTank::Fire( bulletCount, barrelEnd, forward, this );
 }
 
 
-class CFuncTankMortar : public CFuncTank
+class CHL1FuncTankMortar : public CHL1FuncTank
 {
 public:
-	DECLARE_CLASS( CFuncTankMortar, CFuncTank );
+	DECLARE_CLASS( CHL1FuncTankMortar, CHL1FuncTank );
 
 	void Precache( void );
 	void FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker );
@@ -1503,9 +1503,9 @@ public:
 	CBaseEntity *m_pAttacker;
 };
 
-LINK_ENTITY_TO_CLASS( func_tankmortar, CFuncTankMortar );
+LINK_ENTITY_TO_CLASS( func_tankmortar_hl1, CHL1FuncTankMortar );
 
-BEGIN_DATADESC( CFuncTankMortar )
+BEGIN_DATADESC( CHL1FuncTankMortar )
 
 	DEFINE_KEYFIELD( m_Magnitude, FIELD_INTEGER, "iMagnitude" ),
 	DEFINE_KEYFIELD( m_fireDelay, FIELD_FLOAT, "firedelay" ),
@@ -1521,7 +1521,7 @@ END_DATADESC()
 
 
 
-void CFuncTankMortar::Precache( void )
+void CHL1FuncTankMortar::Precache( void )
 {
 	if ( m_fireStartSound != NULL_STRING )
 		PrecacheScriptSound( STRING(m_fireStartSound) );
@@ -1534,7 +1534,7 @@ void CFuncTankMortar::Precache( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler to make the tank shoot.
 //-----------------------------------------------------------------------------
-void CFuncTankMortar::InputShootGun( inputdata_t &inputdata )
+void CHL1FuncTankMortar::InputShootGun( inputdata_t &inputdata )
 {
 	ShootGun();
 }
@@ -1543,7 +1543,7 @@ void CFuncTankMortar::InputShootGun( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFuncTankMortar::ShootGun( void )
+void CHL1FuncTankMortar::ShootGun( void )
 {
 	Vector forward;
 	AngleVectors( GetLocalAngles(), &forward );
@@ -1555,7 +1555,7 @@ void CFuncTankMortar::ShootGun( void )
 }
 
 
-void CFuncTankMortar::FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTankMortar::FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	if ( m_fireLast != 0 )
 	{
@@ -1594,7 +1594,7 @@ void CFuncTankMortar::FiringSequence( const Vector &barrelEnd, const Vector &for
 	}
 }	
 
-void CFuncTankMortar::Fire( int bulletCount, const Vector &barrelEnd, const Vector &vecForward, CBaseEntity *pAttacker )
+void CHL1FuncTankMortar::Fire( int bulletCount, const Vector &barrelEnd, const Vector &vecForward, CBaseEntity *pAttacker )
 {
 	if ( m_fireEndSound != NULL_STRING )
 	{
@@ -1634,10 +1634,10 @@ void CFuncTankMortar::Fire( int bulletCount, const Vector &barrelEnd, const Vect
 //-----------------------------------------------------------------------------
 // Purpose: Func tank that fires physics cannisters placed on it
 //-----------------------------------------------------------------------------
-class CFuncTankPhysCannister : public CFuncTank
+class CHL1FuncTankPhysCannister : public CHL1FuncTank
 {
 public:
-	DECLARE_CLASS( CFuncTankPhysCannister, CFuncTank );
+	DECLARE_CLASS( CHL1FuncTankPhysCannister, CHL1FuncTank );
 	DECLARE_DATADESC();
 
 	void Activate( void );
@@ -1648,9 +1648,9 @@ protected:
 	CHandle<CBaseTrigger>	m_hBarrelVolume;
 };
 
-LINK_ENTITY_TO_CLASS( func_tankphyscannister, CFuncTankPhysCannister );
+LINK_ENTITY_TO_CLASS( func_tankphyscannister_hl1, CHL1FuncTankPhysCannister );
 
-BEGIN_DATADESC( CFuncTankPhysCannister )
+BEGIN_DATADESC( CHL1FuncTankPhysCannister )
 
 	DEFINE_KEYFIELD( m_iszBarrelVolume, FIELD_STRING, "barrel_volume" ),
 	DEFINE_FIELD( m_hBarrelVolume, FIELD_EHANDLE ),
@@ -1660,7 +1660,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFuncTankPhysCannister::Activate( void )
+void CHL1FuncTankPhysCannister::Activate( void )
 {
 	BaseClass::Activate();
 
@@ -1682,7 +1682,7 @@ void CFuncTankPhysCannister::Activate( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CFuncTankPhysCannister::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
+void CHL1FuncTankPhysCannister::Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker )
 {
 	Assert( m_hBarrelVolume );
 

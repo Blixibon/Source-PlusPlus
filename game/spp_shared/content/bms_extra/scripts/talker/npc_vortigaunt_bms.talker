@@ -2,6 +2,15 @@
 // Vortigaunt criteria
 //============================================================================================================
 criterion "IsAlienSlave" "classname" "npc_alien_slave" required
+criterion "VortigauntCure"  concept" "VORT_CURE" required
+criterion "VortigauntCureStop" "concept" "VORT_CURESTOP" required
+criterion "VortigauntCureInterrupt" "concept" "VORT_CURE_INTERRUPT" required
+criterion "VortigauntAttack" "concept" "VORT_ATTACK" required
+criterion "VortigauntMad" "concept" "VORT_MAD" required
+criterion "VortigauntShot" "concept" "VORT_SHOT" required
+criterion "VortigauntPain" "concept" "VORT_PAIN" required
+criterion "VortigauntDie" "concept" "VORT_DIE" required
+criterion "VortigauntKill" "concept" "VORT_KILL" required
 
 response "AlienSlaveIdle"
 {

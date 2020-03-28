@@ -312,4 +312,7 @@ game_sounds_manifest
 	
 	// Lambda Wars
 	"precache_file"		"scripts/unit_sounds.txt"
+	
+	"preload_file"		"scripts/killstreak/game_sounds_killstreak_marine.txt"
+	"preload_file"		"scripts/killstreak/game_sounds_killstreak_scientist.txt"
 }

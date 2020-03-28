@@ -1050,7 +1050,7 @@ rule SECURITY_GiveAmmo
 response SECURITY_NEW_ENEMY_HOUNDEYE
 {
 	speak "NPC_Security.houndeye01" weight 2 respeakdelay 120
-	response SECURITY_STARTCOMBAT respeakdelay 120
+	response SECURITY_STARTCOMBAT
 }
 
 rule SECURITY_NEW_ENEMY_HOUNDEYE

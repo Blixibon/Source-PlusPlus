@@ -4,9 +4,4 @@ refugee
 citizen
 refugee
 citizen
-refugee
-citizen
-refugee
-citizen
 rebel
-rebel2
