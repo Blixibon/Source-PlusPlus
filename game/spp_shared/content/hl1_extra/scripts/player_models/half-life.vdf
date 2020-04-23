@@ -26,9 +26,10 @@
 		{
 			"footsteps"			"HL1Steps"
 			"voice"				"none"
-			"suit"				"hev4"
+			"suit"				"hev4old"
 			"response_class"	"player"
 			"flashlight"	"suit"
+			"movecfg"		"halflife1"
 		}
     }
 }

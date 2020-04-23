@@ -182,7 +182,7 @@ void StickyBoltCallback( const CEffectData &data )
 
 DECLARE_CLIENT_EFFECT( "BoltImpact", StickyBoltCallback );
 
-void StickBoltToEnt(const Vector& vecOrigin, const Vector& vecDirection)
+void StickHL1BoltToWorld(const Vector& vecOrigin, const Vector& vecDirection)
 {
 #if 0
 	trace_t tr;
@@ -226,13 +226,6 @@ void StickBoltToEnt(const Vector& vecOrigin, const Vector& vecDirection)
 	if (tr.surface.flags & SURF_SKY)
 		return;
 
-	Vector vecEnd = vecOrigin - vecDirection * 128;
-
-	shotRay.Init(vecOrigin, vecEnd);
-
-	CRagdollBoltEnumerator	ragdollEnum(shotRay, vecOrigin);
-	partition->EnumerateElementsAlongRay(PARTITION_CLIENT_RESPONSIVE_EDICTS, shotRay, false, &ragdollEnum);
-
 	CreateCrossbowBolt(vecOrigin, vecDirection, pModel);
 #endif
 }
@@ -241,9 +234,54 @@ void StickBoltToEnt(const Vector& vecOrigin, const Vector& vecDirection)
 // Purpose: 
 // Input  : &data - 
 //-----------------------------------------------------------------------------
-void AttachMentBoltCallback(const CEffectData& data)
+void StickHL1BoltToWorldCallback(const CEffectData& data)
 {
-	StickBoltToEnt(data.m_vOrigin, data.m_vNormal);
+	StickHL1BoltToWorld(data.m_vOrigin, data.m_vNormal);
 }
 
-DECLARE_CLIENT_EFFECT("HL1BoltImpact", AttachMentBoltCallback);
+DECLARE_CLIENT_EFFECT("HL1BoltImpactWorld", StickHL1BoltToWorldCallback);
+
+void StickHL1BoltToEnt(const Vector& vecOrigin, const Vector& vecDirection)
+{
+	trace_t tr;
+	model_t* pModel = (model_t*)engine->LoadModel("models/hl1/crossbow_bolt.mdl");
+	UTIL_TraceLine(vecOrigin, vecOrigin + vecDirection * 16, MASK_SHOT, NULL, COLLISION_GROUP_NONE, &tr);
+
+	if (tr.surface.flags & SURF_SKY)
+		return;
+
+	C_LocalTempEntity* pTEnt = CreateCrossbowBolt(vecOrigin, vecDirection, pModel);
+	if (pTEnt && tr.DidHitNonWorldEntity())
+	{
+		if (tr.m_pEnt->GetBaseAnimating() && tr.hitbox > 0)
+		{
+			C_BaseAnimating* pHit = tr.m_pEnt->GetBaseAnimating();
+			matrix3x4_t bonetoworld, worldtobone, enttobone;
+			int iBone = pHit->GetHitboxBone(tr.hitbox);
+			pHit->GetBoneTransform(iBone, bonetoworld);
+			MatrixInvert(bonetoworld, worldtobone);
+			ConcatTransforms(pTEnt->EntityToWorldTransform(), worldtobone, enttobone);
+
+			Vector vecPosInBoneSpace;
+			QAngle angRotInBoneSpace;
+			MatrixAngles(enttobone, angRotInBoneSpace, vecPosInBoneSpace);
+
+			pTEnt->AttachEntityToBone(pHit, iBone, vecPosInBoneSpace, angRotInBoneSpace);
+		}
+		else
+		{
+			pTEnt->SetParent(tr.m_pEnt);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : &data - 
+//-----------------------------------------------------------------------------
+void StickHL1BoltToEntCallback(const CEffectData& data)
+{
+	//StickHL1BoltToEnt(data.m_vOrigin, data.m_vNormal);
+}
+
+DECLARE_CLIENT_EFFECT("HL1BoltImpact", StickHL1BoltToEntCallback);

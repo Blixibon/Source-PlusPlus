@@ -88,6 +88,27 @@
 
 #define SF_HGRUNT_NO_FREEMAN_SPEECH ( 1 << 18 )
 
+class CGrenadeFragBMS : public CGrenadeFrag
+{
+public:
+	DECLARE_CLASS(CGrenadeFragBMS, CGrenadeFrag);
+
+	virtual void	CreateEffects(void);
+	virtual void	BlipSound() { return; }
+	virtual const char* GetGrenadeModel();
+};
+
+LINK_ENTITY_TO_CLASS(npc_grenade_frag_bms, CGrenadeFragBMS);
+
+void CGrenadeFragBMS::CreateEffects(void)
+{
+}
+
+const char* CGrenadeFragBMS::GetGrenadeModel()
+{
+	return "models/weapons/tfa_bms/w_grenade_bms.mdl";
+}
+
 const char *gm_szRndWeapons[2] =
 {
 	//"weapon_glock",
@@ -118,6 +139,10 @@ public:
 	void		Event_Killed(const CTakeDamageInfo &info);
 	void		OnListened();
 	bool		IsMedic() { return FClassnameIs(this, "npc_human_medic"); }
+
+	virtual const char* GetGrenadeClassThrown() { return "npc_grenade_frag_bms"; }
+	virtual const char* GetGrenadeClassDropped() { return "weapon_frag_bms"; }
+	virtual const char* GetGrenadeAttachment() { return "anim_attachment_LH"; }
 
 	Class_T		Classify() { return CLASS_HECU; }
 
@@ -610,7 +635,7 @@ void CNPC_Human_Grunt::Event_Killed(const CTakeDamageInfo &info)
 			// Attempt to drop a grenade
 			if (pHL2GameRules->NPC_ShouldDropGrenade(pPlayer))
 			{
-				DropItem("weapon_frag", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
+				DropItem("weapon_frag_bms", WorldSpaceCenter() + RandomVector(-4, 4), RandomAngle(0, 360));
 				pHL2GameRules->NPC_DroppedGrenade();
 			}
 		}

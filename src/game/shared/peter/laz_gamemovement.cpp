@@ -13,6 +13,14 @@
 
 extern ConVar xc_uncrouch_on_jump;
 
+float GetJumpHeight(int iMoveConfig)
+{
+	if (iMoveConfig == MOVECFG_HL1)
+		return 45.f;
+
+	return GAMEMOVEMENT_JUMP_HEIGHT;
+}
+
 CLazGameMovement::CLazGameMovement()
 {
 	m_pLazPlayer = nullptr;
@@ -176,7 +184,7 @@ bool CLazGameMovement::CheckJumpButton(void)
 	{
 		float flJumpMod = 1.f;
 		CALL_ATTRIB_HOOK_FLOAT_ON_OTHER(player, flJumpMod, mod_jump_height);
-		flMul = sqrtf(2 * GetCurrentGravity() * GAMEMOVEMENT_JUMP_HEIGHT * flJumpMod);
+		flMul = sqrtf(2 * 600.f * GetJumpHeight(m_pLazPlayer->GetMovementConfig()) * flJumpMod);
 	}
 
 	bool bLongJump = false;
@@ -221,7 +229,7 @@ bool CLazGameMovement::CheckJumpButton(void)
 
 	// Add a little forward velocity based on your current forward velocity - if you are not sprinting.
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
-	if (!bLongJump && gpGlobals->maxClients == 1)
+	if (!bLongJump /*&& gpGlobals->maxClients == 1*/ && m_pLazPlayer->GetMovementConfig() == MOVECFG_HL2)
 	{
 		CHLMoveData* pMoveData = (CHLMoveData*)mv;
 		Vector vecForward;

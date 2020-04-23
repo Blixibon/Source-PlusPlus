@@ -17,32 +17,41 @@
 class CProp_Portal;
 class CPortalSimulator;
 
+
 class CPhysicsCloneArea : public CBaseEntity
 {
 public:
-	DECLARE_CLASS( CPhysicsCloneArea, CBaseEntity );
+	DECLARE_CLASS(CPhysicsCloneArea, CBaseEntity);
 
-	static const Vector		vLocalMins;
-	static const Vector		vLocalMaxs;
+	//static const Vector		vLocalMins;
+	//static const Vector		vLocalMaxs;
 
-	virtual void			StartTouch( CBaseEntity *pOther );
-	virtual void			Touch( CBaseEntity *pOther ); 
-	virtual void			EndTouch( CBaseEntity *pOther );
+	virtual void			StartTouch(CBaseEntity* pOther);
+	virtual void			Touch(CBaseEntity* pOther);
+	virtual void			EndTouch(CBaseEntity* pOther);
 
-	virtual void			Spawn( void );
-	virtual void			Activate( void );
+	virtual void			Spawn(void);
+	virtual void			Activate(void);
 
-	virtual int				ObjectCaps( void );
-	void					UpdatePosition( void );
+	virtual int				ObjectCaps(void);
+	void					UpdatePosition(void);
 
-	void					CloneTouchingEntities( void );
-	void					CloneNearbyEntities( void );
-	static CPhysicsCloneArea *CreatePhysicsCloneArea( CProp_Portal *pFollowPortal );	
+	void					CloneTouchingEntities(void);
+	void					CloneNearbyEntities(void);
+	static CPhysicsCloneArea* CreatePhysicsCloneArea(CProp_Portal* pFollowPortal);
+
+	inline Vector			GetLocalMins(void) const { return Vector(3.0f, -m_fHalfWidth, -m_fHalfHeight); }
+	inline Vector			GetLocalMaxs(void) const { return Vector(m_fHalfDepth, m_fHalfWidth, m_fHalfHeight); }
+
+	void					Resize(float fPortalHalfWidth, float fPortalHalfHeight);
 private:
 
-	CProp_Portal			*m_pAttachedPortal;
-	CPortalSimulator		*m_pAttachedSimulator;
+	CProp_Portal* m_pAttachedPortal;
+	CPortalSimulator* m_pAttachedSimulator;
 	bool					m_bActive;
+
+	float					m_fHalfWidth, m_fHalfHeight, m_fHalfDepth;
+	static const float		s_fPhysicsCloneAreaScale;
 
 
 };

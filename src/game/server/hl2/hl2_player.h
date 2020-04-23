@@ -174,8 +174,8 @@ public:
 
 	// Sprint Device
 	void StartAutoSprint( void );
-	void StartSprinting( void );
-	void StopSprinting( void );
+	virtual void StartSprinting( void );
+	virtual void StopSprinting( void );
 	void InitSprinting( void );
 	bool IsSprinting( void ) { return m_fIsSprinting; }
 	bool CanSprint( void );
@@ -189,8 +189,8 @@ public:
 	void CheckSuitZoom( void );
 
 	// Walking
-	void StartWalking( void );
-	void StopWalking( void );
+	virtual void StartWalking( void );
+	virtual void StopWalking( void );
 	bool IsWalking( void ) { return m_fIsWalking; }
 
 	// Aiming heuristics accessors
@@ -271,7 +271,7 @@ public:
 	void  HandleAdmireGlovesAnimation( void );
 	void  StartAdmireGlovesAnimation( void );
 	
-	void  HandleSpeedChanges( void );
+	virtual void  HandleSpeedChanges( void );
 
 	void SetControlClass( Class_T controlClass ) { m_nControlClass = controlClass; }
 	

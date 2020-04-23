@@ -199,21 +199,59 @@ void LocalScene_Printf( const char *pFormat, ... )
 }
 #endif
 
-class CSceneFileCache : public CAutoGameSystem, public IChoreoStringPool
+class CSceneFileCache : public CAutoGameSystem
 {
 public:
 	CSceneFileCache() : CAutoGameSystem("CSceneFileCache"), m_SceneData(DefLessFunc(FileNameHandle_t))
-	{}
+	{
+		m_iCurrentPool = 0;
+	}
 
 	void LevelShutdownPostEntity()
 	{
 		ClearData();
 	}
 
+	class CCacheStringPool : public IChoreoStringPool
+	{
+	public:
+		virtual short FindOrAddString(const char* pString)
+		{
+			return m_StringPool.AddString(pString);
+		}
+
+		virtual bool	GetString(short stringId, char* buff, int buffSize)
+		{
+			if (stringId < 0 || (int)stringId >= m_StringPool.GetNumStrings())
+			{
+				V_strncpy(buff, "", buffSize);
+				return false;
+			}
+
+			const char* pszString = m_StringPool.String(stringId);
+			if (!pszString)
+			{
+				V_strncpy(buff, "", buffSize);
+				return false;
+			}
+
+			V_strncpy(buff, pszString, buffSize);
+			return true;
+		}
+
+		bool TableHasRoom()
+		{
+			return m_StringPool.GetNumStrings() < USHRT_MAX - 100;
+		}
+
+		CUtlSymbolTable m_StringPool;
+	};
+
 	typedef struct {
 		unsigned int	msecs;
 		unsigned int	speech_msecs;
 		int				numSounds;
+		int				stringPoolIndex;
 		CUtlBinaryBlock binary;
 	} sceneData_t;
 
@@ -231,30 +269,6 @@ public:
 		return h != (FileNameHandle_t)NULL;
 	}
 
-	virtual short FindOrAddString(const char* pString)
-	{
-		return m_StringPool.AddString(pString);
-	}
-
-	virtual bool	GetString(short stringId, char* buff, int buffSize)
-	{
-		if (stringId < 0 || (int)stringId >= m_StringPool.GetNumStrings())
-		{
-			V_strncpy(buff, "", buffSize);
-			return false;
-		}
-
-		const char* pszString = m_StringPool.String(stringId);
-		if (!pszString)
-		{
-			V_strncpy(buff, "", buffSize);
-			return false;
-		}
-
-		V_strncpy(buff, pszString, buffSize);
-		return true;
-	}
-
 	sceneData_t* GetSceneData(FileNameHandle_t hFileName)
 	{
 		unsigned short sIDX = m_SceneData.Find(hFileName);
@@ -270,13 +284,15 @@ public:
 	{
 		m_SceneData.Purge();
 		m_FileNames.RemoveAll();
-		m_StringPool.RemoveAll();
+		m_StringPools.PurgeAndDeleteElements();
+		m_iCurrentPool = 0;
 	}
 
 protected:
 	CUtlMap< FileNameHandle_t, sceneData_t > m_SceneData;
 	CUtlFilenameSymbolTable m_FileNames;
-	CUtlSymbolTable m_StringPool;
+	CUtlVectorAutoPurge< CCacheStringPool* > m_StringPools;
+	int m_iCurrentPool;
 };
 
 FileNameHandle_t CSceneFileCache::FindOrAddScene(CChoreoScene *pScene, const char *pchFileName)
@@ -288,14 +304,27 @@ FileNameHandle_t CSceneFileCache::FindOrAddScene(CChoreoScene *pScene, const cha
 		return hFileName;
 	}
 
+	CCacheStringPool* pStringPool = nullptr;
+	if (m_StringPools.Count() < 1 || !m_StringPools[m_iCurrentPool]->TableHasRoom())
+	{
+		pStringPool = new CCacheStringPool;
+		m_iCurrentPool = m_StringPools.AddToTail(pStringPool);
+	}
+	else
+	{
+		pStringPool = m_StringPools.Element(m_iCurrentPool);
+	}
+
 	hFileName = m_FileNames.FindOrAddFileName(pchFileName);
 	CUtlBuffer buf;
-	pScene->SaveToBinaryBuffer(buf, 0, this);
+	pScene->SaveToBinaryBuffer(buf, 0, pStringPool);
 
 	CUtlBinaryBlock block(buf.Base(), buf.TellPut());
 	sceneData_t data;
+	data.stringPoolIndex = m_iCurrentPool;
 	data.binary = block;
 	data.msecs = RoundFloatToUnsignedLong(pScene->FindStopTime() * 1000.0);
+	data.numSounds = 0;
 
 	for (int i = 0; i < pScene->GetNumEvents(); i++)
 	{
@@ -332,11 +361,13 @@ CChoreoScene *CSceneFileCache::GetScene(FileNameHandle_t hNameHandle)
 	if (!pData)
 		return nullptr;
 
+	CCacheStringPool* pStringPool = m_StringPools.Element(pData->stringPoolIndex);
+
 	CUtlBuffer buf(pData->binary.Get(), pData->binary.Length(), CUtlBuffer::READ_ONLY);
 
 	char cFileName[MAX_PATH];
 	CChoreoScene *pScene = new CChoreoScene(nullptr);
-	if (m_FileNames.String(hNameHandle, cFileName, MAX_PATH) && pScene->RestoreFromBinaryBuffer(buf, cFileName, this))
+	if (m_FileNames.String(hNameHandle, cFileName, MAX_PATH) && pScene->RestoreFromBinaryBuffer(buf, cFileName, pStringPool))
 		return pScene;
 	else
 	{

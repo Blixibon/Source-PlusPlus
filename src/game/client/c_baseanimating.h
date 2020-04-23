@@ -100,6 +100,7 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_INTERPOLATION();
+	DECLARE_DATADESC();
 
 	enum
 	{
@@ -164,6 +165,7 @@ public:
 
 	virtual void	UpdateWetness();
 	virtual float	GetWetness();
+	virtual float	GetWetnessRate();
 	void			CopyWetnessFrom(C_BaseAnimating* pOther);
 
 	// Computes a box that surrounds all hitboxes
@@ -687,8 +689,7 @@ private:
 	CThreadFastMutex				m_StudioHdrInitLock;
 
 protected:
-	float							m_flWetTime;
-	bool							m_bIsInWater;
+	float							m_flInternalWetness;
 };
 
 enum 

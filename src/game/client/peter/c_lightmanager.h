@@ -41,6 +41,8 @@ public:
 
 	CManagedLight* CreateLight(const char* pszLightType, const Vector *pOrigin = nullptr);
 
+	void	CreateAutoFollowLight(const CEffectData& data);
+
 protected:
 	typedef struct lighttype_s
 	{
@@ -60,20 +62,29 @@ protected:
 class CManagedLight
 {
 public:
-	void UpdateOrigin(Vector vecOrigin);
-	bool IsDead() { return gpGlobals->curtime > m_DLightData.m_DataCopy.die; }
+	CManagedLight()
+	{
+		m_iRefCount = 0;
+		m_flOriginalRadius = 0.f;
+		m_flRadiusScale = 1.f;
+		m_DeathTimes.range = 0.f;
+		m_DeathTimes.start = 0.f;
+	}
 
-	void AddRef() { m_iRefCount++; }
-	void Release();
+	virtual void UpdateOrigin(Vector vecOrigin);
+	virtual bool IsDead() { return gpGlobals->curtime > m_DLightData.m_DataCopy.die; }
+
+	virtual void AddRef() { m_iRefCount++; }
+	virtual void Release();
 
 	const Vector& GetOrigin() { return m_DLightData.m_DataCopy.origin; }
 	void	CopyIntoLight(dlight_t* pLight);
 
-	void	StartDecay();
-	void	SetRadiusScale(float flNewScale) { m_flRadiusScale = flNewScale; }
+	virtual void	StartDecay();
+	virtual void	SetRadiusScale(float flNewScale) { m_flRadiusScale = flNewScale; }
 
 protected:
-	void	Update();
+	virtual void	Update();
 
 	class CLightData
 	{
@@ -95,6 +106,24 @@ protected:
 	friend class CDLightManager;
 private:
 	int m_iRefCount;
+};
+
+class CAutoFollowLight : public CManagedLight
+{
+public:
+	CAutoFollowLight() : CManagedLight()
+	{
+		m_hFollowEntity.Term();
+		m_iAttachmentIndex = -1;
+	}
+
+protected:
+	virtual void	Update();
+
+	EHANDLE m_hFollowEntity;
+	int	m_iAttachmentIndex;
+
+	friend class CDLightManager;
 };
 
 CDLightManager* LightManager();

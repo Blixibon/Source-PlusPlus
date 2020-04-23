@@ -104,6 +104,10 @@ public:
 	//virtual Vector VecItemRespawnSpot(CItem* pItem);
 	//virtual QAngle VecItemRespawnAngles(CItem* pItem);
 
+	// Healthcharger respawn control
+	virtual float FlHealthChargerRechargeTime(void);	// how long until a depleted HealthCharger recharges itself?
+	virtual float FlHEVChargerRechargeTime(void);		// how long until a depleted HealthCharger recharges itself?
+
 	virtual void Status(void(*print) (const char *fmt, ...));
 
 	virtual void GetTaggedConVarList(KeyValues *pCvarTagList);

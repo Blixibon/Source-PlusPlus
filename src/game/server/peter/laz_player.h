@@ -210,6 +210,16 @@ public:
 	void	UpdateExpression(void);
 	void	ClearExpression(void);
 
+	virtual void	StartSprinting(void);
+	virtual void	StopSprinting(void);
+	virtual void	HandleSpeedChanges(void);
+
+	// Walking
+	virtual void StartWalking(void);
+	virtual void StopWalking(void);
+
+	const LazSpeedData_t GetLazMoveData();
+
 	void			InputAnswerQuestion(inputdata_t& inputdata);
 	void			AnswerQuestion(CBaseCombatCharacter* pQuestioner, int iQARandomNum, bool bAnsweringHello);
 
@@ -230,6 +240,8 @@ public:
 	void		StartPullingObject(CBaseEntity* pObject);
 	void		StopPullingObject();
 	void		UpdatePullingObject();
+
+	int			GetMovementConfig();
 
 public:
 	static EHANDLE gm_hLastRandomSpawn;
@@ -296,6 +308,7 @@ protected:
 	int					m_iDesiredPermissions;
 
 	CNetworkVar(int, m_nFlashlightType);
+	CNetworkVar(int, m_nMovementCfg);
 
 	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
 	CNetworkString(m_strMinionClass, 32);

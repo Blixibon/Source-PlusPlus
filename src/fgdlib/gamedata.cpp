@@ -13,8 +13,11 @@
 #include "tier1/strtools.h"
 #include "utlmap.h"
 
+#ifdef DEBUG
 // memdbgon must be the last include file in a .cpp file!!!
-#include "tier0/memdbgon.h"
+#include "tier0/memdbgon.h"  
+#endif // DEBUG
+
 
 #pragma warning(disable:4244)
 

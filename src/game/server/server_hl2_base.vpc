@@ -204,6 +204,8 @@ $Project
 			$File	"peter\npc_playerfollower.h"
 			$File	"peter\npc_combatsupplier.cpp"
 			$File	"peter\npc_combatsupplier.h"
+			$File	"mapbase\ai_grenade.h"
+			$File	"mapbase\ai_grenade.cpp"
 			$File	"hl2\npc_PoisonZombie.cpp"
 			$File	"hl2\npc_poisonzombie.h"
 			$File	"hl2\npc_rollermine.cpp"

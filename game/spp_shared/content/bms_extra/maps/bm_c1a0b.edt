@@ -1,0 +1,21 @@
+"bm_c1a0b"
+{
+	edit
+	{
+		"targetname"	"sci43a"
+		"values"
+		{
+			"model"	"models/sirgibs/ragdolls/detective_magnusson.mdl"
+			"classname"	"generic_actor"
+		}
+	}
+	
+	edit
+	{
+		"targetname"	"Sci43_Plasma"
+		"values"
+		{
+			"classname"	"npc_human_engineer"
+		}
+	}
+}

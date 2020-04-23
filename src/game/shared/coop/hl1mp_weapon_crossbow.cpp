@@ -186,11 +186,8 @@ void CHL1CrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			DispatchEffect( "HL1BoltImpact", data );
 		}
 
-        //		if ( !g_pGameRules->IsMultiplayer() )
-        if ( !g_pGameRules->IsMultiplayer() || !m_bExplode )
-		{
-			UTIL_Remove( this );
-		}
+		SetThink(&CHL1CrossbowBolt::SUB_Remove);
+		SetNextThink(gpGlobals->curtime);
 	}
 	else
 	{
@@ -211,7 +208,7 @@ void CHL1CrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			data.m_vNormal = vForward;
 			data.m_nEntIndex = 0;
 
-			DispatchEffect( "HL1BoltImpact", data );
+			DispatchEffect( "HL1BoltImpactWorld", data );
 		}
 
 		if (  UTIL_PointContents( GetAbsOrigin() ) != CONTENTS_WATER)

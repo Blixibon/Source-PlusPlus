@@ -102,8 +102,11 @@ void CBot::OnLooked(CBaseEntity *pSightEnt)
 	else {
 		// A weapon, maybe we can use it...
 		if (pSightEnt->IsBaseCombatWeapon()) {
-			CBaseWeapon *pWeapon = ToBaseWeapon(pSightEnt);
+#ifdef DEBUG
+			CBaseWeapon* pWeapon = ToBaseWeapon(pSightEnt);
 			Assert(pWeapon);
+#endif // DEBUG
+
 
 			GetMemory()->UpdateDataMemory("VisibleWeapon", pSightEnt, 5.0f);
 		}

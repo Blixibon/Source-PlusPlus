@@ -36,6 +36,8 @@ $Project "Server (Lazuul)"
 			-$File "hl2\hl2_client.cpp"
 			-$File	"$SRCDIR\game\shared\hl2\achievements_hl2.cpp"
 			-$File	"$SRCDIR\game\shared\hl2\hl2_usermessages.cpp"
+			
+			$File	"hl2\npc_odell.cpp"
 
 			$Folder "Episodic"
 			{

@@ -55,6 +55,8 @@ IMPLEMENT_CLIENTCLASS_DT( C_Prop_Portal, DT_Prop_Portal, CProp_Portal )
 	RecvPropBool( RECVINFO(m_bActivated) ),
 	RecvPropBool( RECVINFO(m_bIsPortal2) ),
 	RecvPropInt(RECVINFO(m_iLinkageGroupID)),
+
+	RecvPropDataTable(RECVINFO_DT(m_PortalSimulator), 0, &REFERENCE_RECV_TABLE(DT_PortalSimulator))
 END_RECV_TABLE()
 
 
@@ -381,8 +383,8 @@ void C_Prop_Portal::Simulate()
 
 			if ( bActivePlayerWeapon )
 			{
-				if( !m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( pWeapon->GetOwner() ) && 
-					!m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( pWeapon ) )
+				if( !m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( pWeapon->GetOwner(), false ) && 
+					!m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( pWeapon, false) )
 					continue;
 			}
 #ifdef HL2_LAZUL
@@ -394,7 +396,7 @@ void C_Prop_Portal::Simulate()
 #endif // HL2_LAZUL
 			else if( pEntity->IsPlayer() )
 			{
-				if( !m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( (C_BaseAnimating*)pEntity ) )
+				if( !m_PortalSimulator.EntityHitBoxExtentIsInPortalHole( (C_BaseAnimating*)pEntity, false) )
 					continue;
 			}
 			else

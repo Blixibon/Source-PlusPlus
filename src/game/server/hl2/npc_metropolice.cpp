@@ -3111,7 +3111,7 @@ void CNPC_MetroPolice::OnAnimEventHeal()
 {
 	CBaseCombatCharacter* pTarget = dynamic_cast<CBaseCombatCharacter*>(GetTarget());
 	Assert(pTarget);
-	
+	if (pTarget)
 	{
 		Heal();
 	}

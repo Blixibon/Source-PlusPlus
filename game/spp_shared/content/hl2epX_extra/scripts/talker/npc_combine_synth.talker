@@ -70,7 +70,7 @@ rule CSynthEnemyDead
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
 	applycontexttoself
-	response		SoldierEnemyDead
+	response		CSynthEnemyDead
 }
 
 response CSynthKillPlayer
@@ -84,7 +84,7 @@ rule CSynthKillPlayer
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
 	applycontexttoself
-	response		SoldierKillPlayer
+	response		CSynthKillPlayer
 }
 
 // Lost Enemy
@@ -149,67 +149,67 @@ response CSynthStartParasites
 	sentence "SYN_COMBINE_MONST_PARASITES"
 }
 
-rule CombineStartCombat
+rule CSynthStartCombat
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartMonster
+	response    CSynthStartMonster
 }
 
-rule CombineStartCombatPlayer
+rule CSynthStartCombatPlayer
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartPlayer
+	response    CSynthStartPlayer
 }
 
-rule CombineStartCombatRebels
+rule CSynthStartCombatRebels
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsRebel
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartRebel
+	response    CSynthStartRebel
 }
 
-rule CombineStartCombatVital
+rule CSynthStartCombatVital
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsVitalAlly
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartVitalAlly
+	response    CSynthStartVitalAlly
 }
 
-rule CombineStartCombatAntlions
+rule CSynthStartCombatAntlions
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsAntlion
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartAntlions
+	response    CSynthStartAntlions
 }
 
-rule CombineStartCombatZombies
+rule CSynthStartCombatZombies
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsZombie
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartZombies
+	response    CSynthStartZombies
 }
 
-rule CombineStartCombatParasite
+rule CSynthStartCombatParasite
 {
 	criteria    IsCombineS SoldierVoiceSynth ConceptStartCombat SoldierEnemyIsParasite
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartParasites
+	response    CSynthStartParasites
 }
 
 // Attacking

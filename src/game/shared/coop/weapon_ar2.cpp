@@ -416,23 +416,23 @@ void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool b
 	{
 		vecSrc = pNPC->Weapon_ShootPosition( );
 		
-		Vector vecTarget;
+		Vector vecTarget = pNPC->GetAltFireTarget();;
 
-		CNPC_Combine *pSoldier = dynamic_cast<CNPC_Combine *>( pNPC );
-		if ( pSoldier )
-		{
-			// In the distant misty past, elite soldiers tried to use bank shots.
-			// Therefore, we must ask them specifically what direction they are shooting.
-			vecTarget = pSoldier->GetAltFireTarget();
-		}
-		else
-		{
-			// All other users of the AR2 alt-fire shoot directly at their enemy.
-			if ( !pNPC->GetEnemy() )
-				return;
-				
-			vecTarget = pNPC->GetEnemy()->BodyTarget( vecSrc );
-		}
+		//CNPC_Combine *pSoldier = dynamic_cast<CNPC_Combine *>( pNPC );
+		//if ( pSoldier )
+		//{
+		//	// In the distant misty past, elite soldiers tried to use bank shots.
+		//	// Therefore, we must ask them specifically what direction they are shooting.
+		//	vecTarget = pSoldier->GetAltFireTarget();
+		//}
+		//else
+		//{
+		//	// All other users of the AR2 alt-fire shoot directly at their enemy.
+		//	if ( !pNPC->GetEnemy() )
+		//		return;
+		//		
+		//	vecTarget = pNPC->GetEnemy()->BodyTarget( vecSrc );
+		//}
 
 		vecAiming = vecTarget - vecSrc;
 		VectorNormalize( vecAiming );
@@ -448,12 +448,16 @@ void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool b
 	Vector vecVelocity = vecAiming * 1000.0f;
 
 	// Fire the combine ball
-	CreateCombineBall(	vecSrc, 
-		vecVelocity, 
-		flRadius, 
+	CBaseEntity* pBall = CreateCombineBall(vecSrc,
+		vecVelocity,
+		flRadius,
 		sk_weapon_ar2_alt_fire_mass.GetFloat(),
 		flDuration,
-		pNPC );
+		pNPC);
+
+	variant_t var;
+	var.SetEntity(pBall);
+	pNPC->FireNamedOutput("OnThrowGrenade", var, pBall, pNPC);
 }
 
 //-----------------------------------------------------------------------------

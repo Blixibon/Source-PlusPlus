@@ -18,6 +18,7 @@
 #include "ai_behavior_fear.h"
 #include "ai_squadslot.h"
 #include "Human_Error\hlss_minershat.h"
+#include "mapbase\ai_grenade.h"
 
 #ifdef HL2_EPISODIC
 #include "ai_behavior_operator.h"
@@ -93,9 +94,9 @@ class CPhysicsProp;
 //
 //-----------------------------------------------------------------------------
 
-class CNPC_PlayerCompanion : public CAI_PlayerAlly
+class CNPC_PlayerCompanion : public CAI_GrenadeUser<CAI_PlayerAlly>
 {
-	DECLARE_CLASS( CNPC_PlayerCompanion, CAI_PlayerAlly );
+	DECLARE_CLASS( CNPC_PlayerCompanion, CAI_GrenadeUser<CAI_PlayerAlly>);
 
 public:
 	//---------------------------------
@@ -313,6 +314,19 @@ public:
 
 	bool			AllowReadinessValueChange( void );
 
+	virtual bool IsAltFireCapable() { return (m_iGrenadeCapabilities & GRENCAP_ALTFIRE) != 0; }
+	virtual bool IsGrenadeCapable() { return (m_iGrenadeCapabilities & GRENCAP_GRENADE) != 0; }
+
+protected:
+
+	enum eGrenadeCapabilities
+	{
+		GRENCAP_GRENADE = (1 << 0),
+		GRENCAP_ALTFIRE = (1 << 1),
+	};
+
+	// Determines whether this NPC is allowed to use grenades or alt-fire stuff.
+	eGrenadeCapabilities m_iGrenadeCapabilities;
 protected:
 	//-----------------------------------------------------
 	// Conditions, Schedules, Tasks
@@ -333,11 +347,19 @@ protected:
 		SCHED_PC_GET_OFF_COMPANION,
 		SCHED_CITIZEN_RANGE_ATTACK1_RPG,
 		SCHED_CITIZEN_STRIDER_RANGE_ATTACK1_RPG,
+		SCHED_PC_AR2_ALTFIRE,
+		SCHED_PC_MOVE_TO_FORCED_GREN_LOS,
+		SCHED_PC_FORCED_GRENADE_THROW,
+		SCHED_PC_RANGE_ATTACK2,		// Grenade throw
 		NEXT_SCHEDULE,
 
 		TASK_PC_WAITOUT_MORTAR = BaseClass::NEXT_TASK,
 		TASK_PC_GET_PATH_OFF_COMPANION,
 		TASK_CIT_RPG_AUGER,
+		TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET,
+		TASK_PC_GET_PATH_TO_FORCED_GREN_LOS,
+		TASK_PC_DEFER_SQUAD_GRENADES,
+		TASK_PC_FACE_TOSS_DIR,
 		NEXT_TASK,
 	};
 
@@ -345,6 +367,9 @@ protected:
 	{
 		SQUAD_SLOT_CITIZEN_RPG1 = LAST_SHARED_SQUADSLOT,
 		SQUAD_SLOT_CITIZEN_RPG2,
+
+		SQUAD_SLOT_GRENADE1,
+		SQUAD_SLOT_GRENADE2,
 
 		NEXT_SQUADSLOT
 	};

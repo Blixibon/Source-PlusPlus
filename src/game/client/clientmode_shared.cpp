@@ -322,9 +322,12 @@ ClientModeShared::ClientModeShared()
 
 	m_ExploCCHandle = INVALID_CLIENT_CCHANDLE;
 
-	m_flExploBlindControllers[0] = 0.f;
-	m_flExploBlindControllers[1] = 1.f;
-	m_flExploBlindTime = 0.f;
+	for (int i = 0; i < NUM_EXPLOSION_TYPES; i++)
+	{
+		m_flExploBlindControllers[i][0] = 0.f;
+		m_flExploBlindControllers[i][1] = 1.f;
+		m_flExploBlindTime[i] = 0.f;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -683,7 +686,11 @@ void ClientModeShared::Update()
 		m_ExploCCHandle = g_pColorCorrectionMgr->AddColorCorrection("scripts/colorcorrection/explosionblind.raw");
 	}
 
-	g_flCustomBloomScaleFactor = Clamp(m_flExploBlindControllers[1] * GetExploBlindIntensity(), 1.f, 50.f);
+	g_flCustomBloomScaleFactor = 1.f;
+	for (int i = 0; i < NUM_EXPLOSION_TYPES; i++)
+	{
+		g_flCustomBloomScaleFactor *= Clamp(m_flExploBlindControllers[i][1] * GetExploBlindIntensity(i), 1.f, 50.f);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1047,7 +1054,8 @@ void ClientModeShared::LevelInit( const char *newmap )
 	enginesound->SetPlayerDSP( filter, 0, true );
 	enginesound->SetRoomType( filter, 1 );
 
-	m_flExploBlindTime = 0.f;
+	for (int i = 0; i < NUM_EXPLOSION_TYPES; i++)
+		m_flExploBlindTime[i] = 0.f;
 }
 
 //-----------------------------------------------------------------------------
@@ -1747,12 +1755,12 @@ void ClientModeShared::OnExplosionBlind(float flDist, float flDot, int iType)
 	if (flDist > 250.f)
 		return;
 
-	m_flExploBlindTime = gpGlobals->curtime;
+	m_flExploBlindTime[iType] = gpGlobals->curtime;
 
 	float flIntensity = RemapValClamped(flDist, 64.f, 256.f, 1.f, 0.f);
 
-	m_flExploBlindControllers[0] = flIntensity * RemapValClamped(flDot, 0.f, 0.8, 0.f, 1.f);
-	m_flExploBlindControllers[1] = RemapVal(flIntensity, 0.f, 1.f, 1.f, 30.f);
+	m_flExploBlindControllers[iType][0] = flIntensity * RemapValClamped(flDot, 0.f, 0.8, 0.f, 1.f);
+	m_flExploBlindControllers[iType][1] = RemapVal(flIntensity, 0.f, 1.f, 1.f, 30.f);
 }
 
 void ClientModeShared::OnColorCorrectionWeightsReset()
@@ -1780,6 +1788,6 @@ void ClientModeShared::OnColorCorrectionWeightsReset()
 
 	if (m_ExploCCHandle != INVALID_CLIENT_CCHANDLE)
 	{
-		g_pColorCorrectionMgr->SetColorCorrectionWeight(m_ExploCCHandle, m_flExploBlindControllers[0] * GetExploBlindIntensity());
+		g_pColorCorrectionMgr->SetColorCorrectionWeight(m_ExploCCHandle, m_flExploBlindControllers[0][0] * GetExploBlindIntensity(0));
 	}
 }

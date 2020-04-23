@@ -191,43 +191,47 @@ void RecvProxy_Sequence( const CRecvProxyData *pData, void *pStruct, void *pOut 
 }
 
 IMPLEMENT_CLIENTCLASS_DT(C_BaseAnimating, DT_BaseAnimating, CBaseAnimating)
-	RecvPropInt(RECVINFO(m_nSequence), 0, RecvProxy_Sequence),
-	RecvPropInt(RECVINFO(m_nForceBone)),
-	RecvPropVector(RECVINFO(m_vecForce)),
-	RecvPropInt(RECVINFO(m_nSkin)),
-	RecvPropInt(RECVINFO(m_nBody)),
-	RecvPropInt(RECVINFO(m_nHitboxSet)),
+RecvPropInt(RECVINFO(m_nSequence), 0, RecvProxy_Sequence),
+RecvPropInt(RECVINFO(m_nForceBone)),
+RecvPropVector(RECVINFO(m_vecForce)),
+RecvPropInt(RECVINFO(m_nSkin)),
+RecvPropInt(RECVINFO(m_nBody)),
+RecvPropInt(RECVINFO(m_nHitboxSet)),
 
-	RecvPropFloat(RECVINFO(m_flModelScale)),
-	RecvPropFloat(RECVINFO_NAME(m_flModelScale, m_flModelWidthScale)), // for demo compatibility only
+RecvPropFloat(RECVINFO(m_flModelScale)),
+RecvPropFloat(RECVINFO_NAME(m_flModelScale, m_flModelWidthScale)), // for demo compatibility only
 
 //	RecvPropArray(RecvPropFloat(RECVINFO(m_flPoseParameter[0])), m_flPoseParameter),
-	RecvPropArray3(RECVINFO_ARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0])) ),
-	
-	RecvPropFloat(RECVINFO(m_flPlaybackRate)),
+RecvPropArray3(RECVINFO_ARRAY(m_flPoseParameter), RecvPropFloat(RECVINFO(m_flPoseParameter[0]))),
 
-	RecvPropArray3( RECVINFO_ARRAY(m_flEncodedController), RecvPropFloat(RECVINFO(m_flEncodedController[0]))),
+RecvPropFloat(RECVINFO(m_flPlaybackRate)),
 
-	RecvPropInt( RECVINFO( m_bClientSideAnimation )),
-	RecvPropInt( RECVINFO( m_bClientSideFrameReset )),
+RecvPropArray3(RECVINFO_ARRAY(m_flEncodedController), RecvPropFloat(RECVINFO(m_flEncodedController[0]))),
 
-	RecvPropInt( RECVINFO( m_nNewSequenceParity )),
-	RecvPropInt( RECVINFO( m_nResetEventsParity )),
-	RecvPropInt( RECVINFO( m_nMuzzleFlashParity ) ),
+RecvPropInt(RECVINFO(m_bClientSideAnimation)),
+RecvPropInt(RECVINFO(m_bClientSideFrameReset)),
 
-	RecvPropEHandle(RECVINFO(m_hLightingOrigin)),
-	RecvPropEHandle(RECVINFO(m_hLightingOriginRelative)),
+RecvPropInt(RECVINFO(m_nNewSequenceParity)),
+RecvPropInt(RECVINFO(m_nResetEventsParity)),
+RecvPropInt(RECVINFO(m_nMuzzleFlashParity)),
 
-	RecvPropDataTable( "serveranimdata", 0, 0, &REFERENCE_RECV_TABLE( DT_ServerAnimationData ) ),
+RecvPropEHandle(RECVINFO(m_hLightingOrigin)),
+RecvPropEHandle(RECVINFO(m_hLightingOriginRelative)),
 
-	RecvPropFloat( RECVINFO( m_fadeMinDist ) ), 
-	RecvPropFloat( RECVINFO( m_fadeMaxDist ) ), 
-	RecvPropFloat( RECVINFO( m_flFadeScale ) ), 
+RecvPropDataTable("serveranimdata", 0, 0, &REFERENCE_RECV_TABLE(DT_ServerAnimationData)),
 
-	RecvPropInt(RECVINFO(m_iFireEffectIndex), SPROP_UNSIGNED),
-	RecvPropInt(RECVINFO(m_nWaterLevel)),
+RecvPropFloat(RECVINFO(m_fadeMinDist)),
+RecvPropFloat(RECVINFO(m_fadeMaxDist)),
+RecvPropFloat(RECVINFO(m_flFadeScale)),
+
+RecvPropInt(RECVINFO(m_iFireEffectIndex), SPROP_UNSIGNED),
+RecvPropInt(RECVINFO(m_nWaterLevel)),
 
 END_RECV_TABLE()
+
+BEGIN_DATADESC(C_BaseAnimating)
+DEFINE_FIELD(m_flInternalWetness, FIELD_FLOAT),
+END_DATADESC();
 
 BEGIN_PREDICTION_DATA( C_BaseAnimating )
 
@@ -4038,8 +4042,6 @@ DECLARE_CLIENT_EFFECT("HL1FootStep", HL1FootCallback);
 //	STEP_HL1
 //};
 
-extern inline bool IsInvalidString(int iString);
-
 void FootstepSound(C_BaseAnimating* pEnt, bool bLeftFoot, const char* options)
 {
 	if (!pEnt)
@@ -5033,6 +5035,7 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 	pRagdoll->IgniteRagdoll( this );
 	pRagdoll->TransferDissolveFrom( this );
 	pRagdoll->TransferElectricsFrom(this);
+	MoveBoneAttachments(pRagdoll);
 	pRagdoll->InitModelEffects();
 
 	if ( AddRagdollToFadeQueue() == true )
@@ -5058,8 +5061,7 @@ C_BaseAnimating *C_BaseAnimating::CreateRagdollCopy()
 	pRagdoll->m_nSkin = GetSkin();
 	pRagdoll->m_vecForce = m_vecForce;
 	pRagdoll->m_nForceBone = m_nForceBone;
-	pRagdoll->m_flWetTime = m_flWetTime;
-	pRagdoll->m_bIsInWater = m_bIsInWater;
+	pRagdoll->m_flInternalWetness = m_flInternalWetness;
 	pRagdoll->SetNextClientThink( CLIENT_THINK_ALWAYS );
 	
 	pRagdoll->SetModelName( AllocPooledString(pModelName) );
@@ -6268,7 +6270,20 @@ KeyValues *C_BaseAnimating::GetSequenceKeyValues( int iSequence )
 
 void C_BaseAnimating::UpdateWetness()
 {
-	float wetness = GetWetness();
+	float flDeltaWet = GetWetnessRate() * gpGlobals->frametime;
+
+	m_flInternalWetness = Clamp(m_flInternalWetness + flDeltaWet, 0.f, 100.f);
+}
+
+float C_BaseAnimating::GetWetness()
+{
+	return RemapValClamped(m_flInternalWetness, 0.f, 100.f, 0.f, 1.f);
+}
+
+float C_BaseAnimating::GetWetnessRate()
+{
+	float flWetnessRate = -1.2f;
+
 	bool bInPrecipitation = false;
 
 	for (CClient_Precipitation* pPrecip : g_Precipitations)
@@ -6292,53 +6307,21 @@ void C_BaseAnimating::UpdateWetness()
 		}
 	}
 
-	if (bInPrecipitation || GetWaterLevel() >= WL_Waist || GetFlags() & FL_INRAIN)
+	if (bInPrecipitation || GetFlags() & FL_INRAIN)
 	{
-		if (!m_bIsInWater)
-		{
-			// Transition...
-			// Figure out how wet we are now (we were drying off...)
-
-			// Here, wet time represents the time at which we get totally wet
-			m_flWetTime = gpGlobals->curtime + (1.0 - wetness) * WET_TIME;
-
-			m_bIsInWater = true;
-		}
+		flWetnessRate = 2.f;
 	}
-	else
+	else if (GetWaterLevel() >= WL_Waist)
 	{
-		if (m_bIsInWater)
-		{
-			// Transition...
-			// Figure out how wet we are now (we were getting more wet...)
-			
-			// Here, wet time represents the time at which we get totally dry
-			m_flWetTime = gpGlobals->curtime + wetness * DRY_TIME;
-
-			m_bIsInWater = false;
-		}
-	}
-}
-
-float C_BaseAnimating::GetWetness()
-{
-	float flWetness = 0.f;
-	if (m_bIsInWater)
-	{
-		flWetness = RemapVal(gpGlobals->curtime, m_flWetTime - WET_TIME, m_flWetTime, 0.f, 1.f);
-	}
-	else
-	{
-		flWetness = RemapVal(gpGlobals->curtime, m_flWetTime, m_flWetTime - DRY_TIME, 0.f, 1.f);
+		flWetnessRate = 20.f;
 	}
 
-	return Clamp(flWetness, 0.f, 1.f);
+	return flWetnessRate;
 }
 
 void C_BaseAnimating::CopyWetnessFrom(C_BaseAnimating* pOther)
 {
-	m_bIsInWater = pOther->m_bIsInWater;
-	m_flWetTime = pOther->m_flWetTime;
+	m_flInternalWetness = pOther->m_flInternalWetness;
 }
 
 //-----------------------------------------------------------------------------

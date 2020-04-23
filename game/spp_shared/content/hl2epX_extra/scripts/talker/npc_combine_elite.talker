@@ -36,7 +36,7 @@ rule CombineEPainLight
 	response	CombineEResponsePainLight
 }
 
-response "SoldierDanger"
+response "CombineEDanger"
 {
 	 sentence "PKT_COMBINE_DANGER"
 }
@@ -47,7 +47,7 @@ rule CombineEDanger
 	response CombineEDanger
 }
 
-response "SoldierDangerGrenade"
+response "CombineEDangerGrenade"
 {
 	 sentence "PKT_COMBINE_GREN"
 }
@@ -70,7 +70,7 @@ rule CombineEEnemyDead
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
 	applycontexttoself
-	response		SoldierEnemyDead
+	response		CombineEEnemyDead
 }
 
 response CombineEKillPlayer
@@ -84,7 +84,7 @@ rule CombineEKillPlayer
 	applycontext	"soldierincombat:0"
 	applycontexttosquad
 	applycontexttoself
-	response		SoldierKillPlayer
+	response		CombineEKillPlayer
 }
 
 // Lost Enemy
@@ -149,67 +149,67 @@ response CombineEStartParasites
 	sentence "PKT_COMBINE_MONST_PARASITES"
 }
 
-rule CombineStartCombat
+rule CombineEStartCombat
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartMonster
+	response    CombineEStartMonster
 }
 
-rule CombineStartCombatPlayer
+rule CombineEStartCombatPlayer
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsPlayer
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartPlayer
+	response    CombineEStartPlayer
 }
 
-rule CombineStartCombatRebels
+rule CombineEStartCombatRebels
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsRebel
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartRebel
+	response    CombineEStartRebel
 }
 
-rule CombineStartCombatVital
+rule CombineEStartCombatVital
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsVitalAlly
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartVitalAlly
+	response    CombineEStartVitalAlly
 }
 
-rule CombineStartCombatAntlions
+rule CombineEStartCombatAntlions
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsAntlion
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartAntlions
+	response    CombineEStartAntlions
 }
 
-rule CombineStartCombatZombies
+rule CombineEStartCombatZombies
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsZombie
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartZombies
+	response    CombineEStartZombies
 }
 
-rule CombineStartCombatParasite
+rule CombineEStartCombatParasite
 {
 	criteria    IsCombineS SoldierVoiceElite ConceptStartCombat SoldierEnemyIsParasite
 	applycontext	"soldierincombat:1"
 	applycontexttosquad
 	applycontexttoself
-	response    SoldierStartParasites
+	response    CombineEStartParasites
 }
 
 // Attacking

@@ -13,8 +13,8 @@
 
 #define COMBINE_AE_KICK				( 3 )
 
-static int COMBINE_AE_BEGIN_ALTFIRE;
-static int COMBINE_AE_ALTFIRE;
+//static int COMBINE_AE_BEGIN_ALTFIRE;
+//static int COMBINE_AE_ALTFIRE;
 static int AE_METROPOLICE_KICK_BALLS;
 
 class CNPC_HumanFGrunt : public CNPC_BaseColleague

@@ -136,8 +136,8 @@ END_DATADESC()
 static int AE_ALYX_EMPTOOL_ATTACHMENT;
 static int AE_ALYX_EMPTOOL_SEQUENCE;
 static int AE_ALYX_EMPTOOL_USE;
-static int COMBINE_AE_BEGIN_ALTFIRE;
-static int COMBINE_AE_ALTFIRE;
+//static int COMBINE_AE_BEGIN_ALTFIRE;
+//static int COMBINE_AE_ALTFIRE;
 
 ConVar npc_alyx_readiness( "npc_alyx_readiness", "1" );
 ConVar npc_alyx_force_stop_moving( "npc_alyx_force_stop_moving", "1" );
@@ -3270,7 +3270,7 @@ CNPC_Alyx::WeaponType_t CNPC_Alyx::ComputeWeaponType( CBaseEntity *pWeapon )
 		pWeapon = GetActiveWeapon();
 	}
 
-	if ( !pWeapon )
+	if ( !pWeapon || !pWeapon->MyCombatWeaponPointer())
 	{
 		return WT_NONE;
 	}

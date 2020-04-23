@@ -82,7 +82,7 @@ public:
 	void BoltTouch( CBaseEntity *pOther );
 	bool CreateVPhysics( void );
 	unsigned int PhysicsSolidMaskForEntity() const;
-	static CCrossbowBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, const CWeaponCoopBase *pCrossbow, CBasePlayer *pentOwner = NULL );
+	static CCrossbowBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, const CWeaponCoopBase *pCrossbow, CBaseEntity *pentOwner = NULL );
 
 protected:
 
@@ -112,7 +112,7 @@ BEGIN_DATADESC( CCrossbowBolt )
 END_DATADESC()
 #endif
 
-CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, const CWeaponCoopBase* pCrossbow, CBasePlayer *pentOwner )
+CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, const CWeaponCoopBase* pCrossbow, CBaseEntity*pentOwner )
 {
 	// Create a new entity with CCrossbowBolt private data
 	CCrossbowBolt *pBolt = (CCrossbowBolt *)CreateEntityByName( "crossbow_bolt" );
@@ -294,7 +294,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 		else
 		{
-			CTakeDamageInfo	dmgInfo( this, pOwner, m_hCrossbow.Get(), sk_plr_dmg_crossbow.GetFloat(), DMG_BULLET | DMG_NEVERGIB | DMG_SNIPER);
+			CTakeDamageInfo	dmgInfo( this, pOwner, m_hCrossbow.Get(), pOwner->IsNPC() ? sk_npc_dmg_crossbow.GetFloat() : sk_plr_dmg_crossbow.GetFloat(), DMG_BULLET | DMG_NEVERGIB | DMG_SNIPER);
 			CalculateMeleeDamageForce( &dmgInfo, vecNormalizedVel, tr.endpos, 0.7f );
 			dmgInfo.SetDamagePosition( tr.endpos );
 			pOther->DispatchTraceAttack( dmgInfo, vecNormalizedVel, &tr );
@@ -494,6 +494,29 @@ public:
 	virtual void	ItemBusyFrame( void );
     #ifndef CLIENT_DLL
 	virtual void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual void	Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary);
+	virtual void	NPC_Reload();
+
+	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+
+	virtual int	GetMinBurst() { return 1; }
+	virtual int	GetMaxBurst() { return 1; }
+
+	virtual float	GetMinRestTime(void) { return 3.0f; } // 1.5f
+	virtual float	GetMaxRestTime(void) { return 3.0f; } // 2.0f
+
+	virtual float GetFireRate(void) { return 5.0f; }
+
+	virtual const Vector& GetBulletSpread(void)
+	{
+		static Vector cone = VECTOR_CONE_15DEGREES;
+		if (!GetOwner() || !GetOwner()->IsNPC())
+			return cone;
+
+		static Vector NPCCone = VECTOR_CONE_5DEGREES;
+
+		return NPCCone;
+	}
     #endif
 	virtual bool	SendWeaponAnim( int iActivity );
 	virtual bool	IsWeaponZoomed() { return m_bInZoom; }
@@ -512,6 +535,9 @@ private:
 	void	SetSkin( int skinNum );
 	void	CheckZoomToggle( void );
 	void	FireBolt( void );
+#ifndef CLIENT_DLL
+	void	FireNPCBolt(CAI_BaseNPC* pOwner, Vector& vecShootOrigin, Vector& vecShootDir);
+#endif
 	void	ToggleZoom( void );
 	
 	// Various states for the crossbow's charger
@@ -592,6 +618,11 @@ CWeaponCrossbow::CWeaponCrossbow( void )
 	m_bAltFiresUnderwater = true;
 	m_bInZoom			= false;
 	m_bMustReload		= false;
+
+	m_fMinRange1 = 24;
+	m_fMaxRange1 = 5000;
+	m_fMinRange2 = 24;
+	m_fMaxRange2 = 5000;
 }
 
 #define	CROSSBOW_GLOW_SPRITE	"sprites/light_glow02_noz.vmt"
@@ -890,7 +921,7 @@ void CWeaponCrossbow::CreateChargerEffects( void )
 #ifndef CLIENT_DLL
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 
-	if ( m_hChargerSprite != NULL && pOwner)
+	if ( m_hChargerSprite != NULL || !pOwner)
 		return;
 
 	m_hChargerSprite = CSprite::SpriteCreate( CROSSBOW_GLOW_SPRITE, GetAbsOrigin(), false );
@@ -1052,6 +1083,52 @@ void CWeaponCrossbow::SetChargerState( ChargerState_t state )
 #ifndef CLIENT_DLL
 //-----------------------------------------------------------------------------
 // Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponCrossbow::NPC_Reload(void)
+{
+	BaseClass::NPC_Reload();
+
+	m_nSkin = 0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponCrossbow::FireNPCBolt(CAI_BaseNPC* pOwner, Vector& vecShootOrigin, Vector& vecShootDir)
+{
+	Assert(pOwner);
+
+	QAngle angAiming;
+	VectorAngles(vecShootDir, angAiming);
+
+	CCrossbowBolt* pBolt = CCrossbowBolt::BoltCreate(vecShootOrigin, angAiming, this, pOwner);
+
+	if (pOwner->GetWaterLevel() == 3)
+	{
+		pBolt->SetAbsVelocity(vecShootDir * BOLT_WATER_VELOCITY);
+	}
+	else
+	{
+		pBolt->SetAbsVelocity(vecShootDir * BOLT_AIR_VELOCITY);
+	}
+
+	m_iClip1--;
+
+	m_nSkin = 1;
+
+	WeaponSound(SINGLE_NPC);
+	WeaponSound(SPECIAL2);
+
+	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 200, 0.2);
+
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->curtime + 2.5f;
+
+	//SetSkin(BOLT_SKIN_GLOW);
+	//SetChargerState(CHARGER_STATE_DISCHARGE);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
 // Input  : *pEvent - 
 //			*pOperator - 
 //-----------------------------------------------------------------------------
@@ -1071,10 +1148,40 @@ void CWeaponCrossbow::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 		SetChargerState( CHARGER_STATE_READY );
 		break;
 
+	case EVENT_WEAPON_SMG1:
+	{
+		CAI_BaseNPC* pNPC = pOperator->MyNPCPointer();
+		Assert(pNPC);
+
+		Vector vecSrc = pNPC->Weapon_ShootPosition();
+		Vector vecAiming = pNPC->GetActualShootTrajectory(vecSrc);
+
+		FireNPCBolt(pNPC, vecSrc, vecAiming);
+		//m_bMustReload = true;
+	}
+	break;
+
 	default:
 		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
 		break;
 	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponCrossbow::Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary)
+{
+	// Ensure we have enough rounds in the clip
+	m_iClip1++;
+
+	Vector vecShootOrigin, vecShootDir;
+	QAngle	angShootDir;
+	GetAttachment(LookupAttachment("muzzle"), vecShootOrigin, angShootDir);
+	AngleVectors(angShootDir, &vecShootDir);
+	FireNPCBolt(pOperator->MyNPCPointer(), vecShootOrigin, vecShootDir);
+
+	//m_bMustReload = true;
 }
 #endif
 

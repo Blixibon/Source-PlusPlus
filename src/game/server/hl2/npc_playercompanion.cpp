@@ -157,6 +157,9 @@ BEGIN_DATADESC( CNPC_PlayerCompanion )
 	DEFINE_INPUTFUNC(FIELD_VOID, "StartFlare", InputGiveHat),
 	DEFINE_INPUTFUNC(FIELD_VOID, "StopFlare", InputTakeHat),
 
+	DEFINE_AIGRENADE_DATADESC()
+	DEFINE_INPUT(m_iGrenadeCapabilities, FIELD_INTEGER, "SetGrenadeCapabilities"),
+
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -215,6 +218,8 @@ void CNPC_PlayerCompanion::Precache()
 	PrecacheModel( "models/props_junk/flare.mdl" );
 #endif // HL2_EPISODIC
 
+	PrecacheScriptSound("Weapon_CombineGuard.Special1");
+
 	BaseClass::Precache();
 }
 
@@ -263,7 +268,7 @@ void CNPC_PlayerCompanion::Spawn()
 
 	m_bRPGAvoidPlayer = false;
 
-#ifdef HL2_EPISODIC
+#if HL2_EPISODIC && !HL2_LAZUL
 	// We strip this flag because it's been made obsolete by the StartScripting behavior
 	if ( HasSpawnFlags( SF_NPC_ALTCOLLISION ) )
 	{
@@ -295,7 +300,7 @@ int CNPC_PlayerCompanion::Restore( IRestore &restore )
 		m_StandoffBehavior.SetActive( false );
 	}
 
-#ifdef HL2_EPISODIC
+#if HL2_EPISODIC && !HL2_LAZUL
 	// We strip this flag because it's been made obsolete by the StartScripting behavior
 	if ( HasSpawnFlags( SF_NPC_ALTCOLLISION ) )
 	{
@@ -772,6 +777,44 @@ int CNPC_PlayerCompanion::SelectSchedule()
 		}
 	}
 
+	if (m_hForcedGrenadeTarget)
+	{
+		// Can't throw at the target, so lets try moving to somewhere where I can see it
+		if (!FVisible(m_hForcedGrenadeTarget))
+		{
+			return SCHED_PC_MOVE_TO_FORCED_GREN_LOS;
+		}
+		else if (m_flNextGrenadeCheck < gpGlobals->curtime)
+		{
+			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
+
+			// The fact we have a forced grenade target overrides whether we're marked as "capable".
+			// If we're *only* alt-fire capable, use an energy ball. If not, throw a grenade.
+			if (!IsAltFireCapable() || IsGrenadeCapable())
+			{
+				Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
+				{
+					// If we can, throw a grenade at the target. 
+					// Ignore grenade count / distance / etc
+					if (CheckCanThrowGrenade(vecTarget))
+					{
+						m_hForcedGrenadeTarget = NULL;
+						return SCHED_PC_FORCED_GRENADE_THROW;
+					}
+				}
+			}
+			else
+			{
+				if (FVisible(m_hForcedGrenadeTarget))
+				{
+					m_vecAltFireTarget = vecTarget;
+					m_hForcedGrenadeTarget = NULL;
+					return SCHED_PC_AR2_ALTFIRE;
+				}
+			}
+		}
+	}
+
 	int nSched = SelectFlinchSchedule();
 	if ( nSched != SCHED_NONE )
 		return nSched;
@@ -959,6 +1002,25 @@ int CNPC_PlayerCompanion::SelectScheduleCombat()
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
+	if (HasGrenades() && GetEnemy() && !HasCondition(COND_SEE_ENEMY))
+	{
+		// We don't see our enemy. If it hasn't been long since I last saw him,
+		// and he's pretty close to the last place I saw him, throw a grenade in 
+		// to flush him out. A wee bit of cheating here...
+
+		float flTime;
+		float flDist;
+
+		flTime = gpGlobals->curtime - GetEnemies()->LastTimeSeen(GetEnemy());
+		flDist = (GetEnemy()->GetAbsOrigin() - GetEnemies()->LastSeenPosition(GetEnemy())).Length();
+
+		//Msg("Time: %f   Dist: %f\n", flTime, flDist );
+		if (flTime <= COMBINE_GRENADE_FLUSH_TIME && flDist <= COMBINE_GRENADE_FLUSH_DIST && CanGrenadeEnemy(false) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
+		{
+			return SCHED_PC_RANGE_ATTACK2;
+		}
+	}
+
 	return SCHED_NONE;
 }
 
@@ -1059,7 +1121,9 @@ int CNPC_PlayerCompanion::TranslateSchedule( int scheduleType )
 						pWeapon->Clip1() < ( pWeapon->GetMaxClip1() * .75 ) &&
 						pPlayer->GetAmmoCount( pWeapon->GetPrimaryAmmoType() ) )
 					{
-						SpeakIfAllowed( TLK_PLRELOAD );
+						// Less annoying
+						if (!pWeapon->m_bInReload && (gpGlobals->curtime - GetLastEnemyTime()) > 5.0f)
+							SpeakIfAllowed(TLK_PLRELOAD);
 					}
 				}
 				return SCHED_RELOAD;
@@ -1090,6 +1154,12 @@ int CNPC_PlayerCompanion::TranslateSchedule( int scheduleType )
 		return SCHED_PC_FLEE_FROM_BEST_SOUND;
 
 	case SCHED_ESTABLISH_LINE_OF_FIRE:
+		if (CanAltFireEnemy(false) && OccupyStrategySlot(SQUAD_SLOT_SPECIAL_ATTACK))
+		{
+			// If this companion has the balls to alt-fire the enemy's last known position,
+			// do so!
+			return SCHED_PC_AR2_ALTFIRE;
+		}
 	case SCHED_MOVE_TO_WEAPON_RANGE:
 		if ( IsMortar( GetEnemy() ) )
 			return SCHED_TAKE_COVER_FROM_ENEMY;
@@ -1146,8 +1216,27 @@ int CNPC_PlayerCompanion::TranslateSchedule( int scheduleType )
 		if ( GetShotRegulator()->IsInRestInterval() )
 			return SCHED_STANDOFF;
 
-		if( !OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK3 ) )
+		if (CanAltFireEnemy(true) && OccupyStrategySlot(SQUAD_SLOT_SPECIAL_ATTACK))
+		{
+			// Since I'm holding this squadslot, no one else can try right now. If I die before the shot 
+			// goes off, I won't have affected anyone else's ability to use this attack at their nearest
+			// convenience.
+			return SCHED_PC_AR2_ALTFIRE;
+		}
+
+		if (!OccupyStrategySlotRange(SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2))
+		{
+			// Throw a grenade if not allowed to engage with weapon.
+			if (CanGrenadeEnemy())
+			{
+				if (OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
+				{
+					return SCHED_PC_RANGE_ATTACK2;
+				}
+			}
+
 			return SCHED_STANDOFF;
+		}
 		break;
 
 	case SCHED_FAIL_TAKE_COVER:
@@ -1164,6 +1253,29 @@ int CNPC_PlayerCompanion::TranslateSchedule( int scheduleType )
 			}
 			break;
 		}
+	case SCHED_TAKE_COVER_FROM_ENEMY:
+	{
+		if (m_pSquad)
+		{
+			// Have to explicitly check innate range attack condition as may have weapon with range attack 2
+			if (HasCondition(COND_CAN_RANGE_ATTACK2) &&
+				OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
+			{
+				SpeakIfAllowed("TLK_THROWGRENADE");
+				return SCHED_PC_RANGE_ATTACK2;
+			}
+		}
+	}
+	break;
+	case SCHED_HIDE_AND_RELOAD:
+	{
+		if (CanGrenadeEnemy() && OccupyStrategySlot(SQUAD_SLOT_GRENADE1) && random->RandomInt(0, 100) < 20)
+		{
+			// If I COULD throw a grenade and I need to reload, 20% chance I'll throw a grenade before I hide to reload.
+			return SCHED_PC_RANGE_ATTACK2;
+		}
+	}
+	break;
 	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
@@ -1229,6 +1341,21 @@ void CNPC_PlayerCompanion::StartTask( const Task_t *pTask )
 	case TASK_CIT_RPG_AUGER:
 		m_bRPGAvoidPlayer = false;
 		SetWait(15.0); // maximum time auger before giving up
+		break;
+
+	case TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET:
+		StartTask_FaceAltFireTarget(pTask);
+		break;
+
+	case TASK_PC_GET_PATH_TO_FORCED_GREN_LOS:
+		StartTask_GetPathToForced(pTask);
+		break;
+
+	case TASK_PC_DEFER_SQUAD_GRENADES:
+		StartTask_DeferSquad(pTask);
+		break;
+
+	case TASK_PC_FACE_TOSS_DIR:
 		break;
 
 	default:
@@ -1358,6 +1485,18 @@ void CNPC_PlayerCompanion::RunTask( const Task_t *pTask )
 			pRPG->UpdateNPCLaserPosition(vecLaserPos);
 		}
 		break;
+
+		case TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET:
+			RunTask_FaceAltFireTarget(pTask);
+			break;
+
+		case TASK_PC_GET_PATH_TO_FORCED_GREN_LOS:
+			RunTask_GetPathToForced(pTask);
+			break;
+
+		case TASK_PC_FACE_TOSS_DIR:
+			RunTask_FaceTossDir(pTask);
+			break;
 
 		default:
 			BaseClass::RunTask( pTask );
@@ -1756,6 +1895,18 @@ void CNPC_PlayerCompanion::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	{
 		set.AppendCriteria( "hurt_by_fire", "1" );
 	}
+
+	// Ported from Alyx.
+	AIEnemiesIter_t iter;
+	int iNumEnemies = 0;
+	for (AI_EnemyInfo_t* pEMemory = GetEnemies()->GetFirst(&iter); pEMemory != NULL; pEMemory = GetEnemies()->GetNext(&iter))
+	{
+		if (pEMemory->hEnemy->IsAlive() && (pEMemory->hEnemy->Classify() != CLASS_BULLSEYE))
+		{
+			iNumEnemies++;
+		}
+	}
+	set.AppendCriteria("num_enemies", UTIL_VarArgs("%d", iNumEnemies));
 
 	if ( m_bReadinessCapable )
 	{
@@ -2655,6 +2806,10 @@ bool CNPC_PlayerCompanion::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 bool CNPC_PlayerCompanion::ShouldLookForBetterWeapon()
 {
 	if ( m_bDontPickupWeapons )
+		return false;
+
+	// Don't look for a new weapon if we have secondary ammo for our current one.
+	if (m_iNumGrenades > 0 && IsAltFireCapable() && GetActiveWeapon() && GetActiveWeapon()->UsesSecondaryAmmo())
 		return false;
 
 	return BaseClass::ShouldLookForBetterWeapon();
@@ -4084,6 +4239,9 @@ AI_BEGIN_CUSTOM_NPC( player_companion_base, CNPC_PlayerCompanion )
 	DECLARE_INTERACTION(g_interactionHitByPlayerThrownPhysObj)
 	DECLARE_INTERACTION(g_interactionPlayerPuntedHeavyObject)
 
+	DECLARE_ACTIVITY(ACT_COMBINE_AR2_ALTFIRE)
+	DECLARE_ACTIVITY(ACT_COMBINE_THROW_GRENADE)
+
 	DECLARE_CONDITION( COND_PC_HURTBYFIRE )
 	DECLARE_CONDITION( COND_PC_SAFE_FROM_MORTAR )
 	DECLARE_CONDITION( COND_PC_BECOMING_PASSENGER )
@@ -4092,10 +4250,18 @@ AI_BEGIN_CUSTOM_NPC( player_companion_base, CNPC_PlayerCompanion )
 	DECLARE_TASK( TASK_PC_GET_PATH_OFF_COMPANION )
 	DECLARE_TASK(TASK_CIT_RPG_AUGER)
 
+	DECLARE_TASK(TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET)
+	DECLARE_TASK(TASK_PC_GET_PATH_TO_FORCED_GREN_LOS)
+	DECLARE_TASK(TASK_PC_DEFER_SQUAD_GRENADES)
+	DECLARE_TASK(TASK_PC_FACE_TOSS_DIR)
+
 	DECLARE_ANIMEVENT( AE_COMPANION_PRODUCE_FLARE )
 	DECLARE_ANIMEVENT( AE_COMPANION_LIGHT_FLARE )
 	DECLARE_ANIMEVENT( AE_COMPANION_RELEASE_FLARE )
 	DECLARE_ANIMEVENT(AE_CITIZEN_GET_PACKAGE)
+
+	DECLARE_ANIMEVENT(COMBINE_AE_BEGIN_ALTFIRE)
+	DECLARE_ANIMEVENT(COMBINE_AE_ALTFIRE)
 
 	//=========================================================
 	// > TakeCoverFromBestSound
@@ -4257,6 +4423,84 @@ AI_BEGIN_CUSTOM_NPC( player_companion_base, CNPC_PlayerCompanion )
 			"		TASK_RANGE_ATTACK1			0"
 			"		TASK_CIT_RPG_AUGER			1"
 			"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
+			""
+			"	Interrupts"
+		)
+
+		//=========================================================
+	// AR2 Alt Fire Attack
+	//=========================================================
+		DEFINE_SCHEDULE
+		(
+			SCHED_PC_AR2_ALTFIRE,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING									0"
+			"		TASK_ANNOUNCE_ATTACK								1"
+			"		TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET		ACTIVITY:ACT_COMBINE_AR2_ALTFIRE"
+			""
+			"	Interrupts"
+			"		COND_TOO_CLOSE_TO_ATTACK"
+		)
+
+		//=========================================================
+		// Move to LOS of the mapmaker's forced grenade throw target
+		//=========================================================
+		DEFINE_SCHEDULE
+		(
+			SCHED_PC_MOVE_TO_FORCED_GREN_LOS,
+
+			"	Tasks "
+			"		TASK_SET_TOLERANCE_DISTANCE					48"
+			"		TASK_PC_GET_PATH_TO_FORCED_GREN_LOS			0"
+			"		TASK_SPEAK_SENTENCE							1"
+			"		TASK_RUN_PATH								0"
+			"		TASK_WAIT_FOR_MOVEMENT						0"
+			"	"
+			"	Interrupts "
+			"		COND_NEW_ENEMY"
+			"		COND_ENEMY_DEAD"
+			"		COND_CAN_MELEE_ATTACK1"
+			"		COND_CAN_MELEE_ATTACK2"
+			"		COND_HEAR_DANGER"
+			"		COND_HEAR_MOVE_AWAY"
+			"		COND_HEAVY_DAMAGE"
+		)
+
+		//=========================================================
+		// Mapmaker forced grenade throw
+		//=========================================================
+		DEFINE_SCHEDULE
+		(
+			SCHED_PC_FORCED_GRENADE_THROW,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING					0"
+			"		TASK_PC_FACE_TOSS_DIR				0"
+			"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
+			"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_COMBINE_THROW_GRENADE"
+			"		TASK_PC_DEFER_SQUAD_GRENADES	0"
+			""
+			"	Interrupts"
+		)
+
+		//=========================================================
+		// 	SCHED_PC_RANGE_ATTACK2	
+		//
+		//	secondary range attack. Overriden because base class stops attacking when the enemy is occluded.
+		//	combines's grenade toss requires the enemy be occluded.
+		//=========================================================
+		DEFINE_SCHEDULE
+		(
+			SCHED_PC_RANGE_ATTACK2,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING					0"
+			"		TASK_PC_FACE_TOSS_DIR			0"
+			"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
+			"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_COMBINE_THROW_GRENADE"
+			"		TASK_PC_DEFER_SQUAD_GRENADES	0"
+			"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_HIDE_AND_RELOAD"	// don't run immediately after throwing grenade.
 			""
 			"	Interrupts"
 		)

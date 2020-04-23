@@ -75,16 +75,22 @@ public:
 	// Create components
 	virtual bool	CreateComponents();
 
-	bool			CanThrowGrenade( const Vector &vecTarget );
-	bool			CheckCanThrowGrenade( const Vector &vecTarget );
-	virtual	bool	CanGrenadeEnemy( bool bUseFreeKnowledge = true );
-	virtual bool	CanAltFireEnemy( bool bUseFreeKnowledge );
+	virtual const char* GetGrenadeClassThrown() { return "npc_grenade_frag"; }
+	virtual const char* GetGrenadeClassDropped() { return "weapon_frag"; }
+
+	//bool			CanThrowGrenade( const Vector &vecTarget );
+	//bool			CheckCanThrowGrenade( const Vector &vecTarget );
+	//virtual	bool	CanGrenadeEnemy( bool bUseFreeKnowledge = true );
+	//virtual bool	CanAltFireEnemy( bool bUseFreeKnowledge );
 	int				GetGrenadeConditions( float flDot, float flDist );
 	int				RangeAttack2Conditions( float flDot, float flDist ); // For innate grenade attack
 	int				MeleeAttack1Conditions( float flDot, float flDist ); // For kick/punch
 	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 	virtual bool	IsCurTaskContinuousMove();
 	virtual int		GetVoiceType() { return IsElite() ? COMBINE_VOICE_ELITE : COMBINE_VOICE_NORMAL; }
+	bool			IsAltFireCapable() { return IsElite() || BaseClass::IsAltFireCapable(); }
+	bool			IsGrenadeCapable() { return !IsElite() || BaseClass::IsGrenadeCapable(); }
+	const char* GetGrenadeAttachment() { return "lefthand"; }
 
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
 
@@ -92,6 +98,7 @@ public:
 
 	void Event_Killed( const CTakeDamageInfo &info );
 
+	virtual int 	SelectScheduleCombat();
 
 	void SetActivity( Activity NewActivity );
 	NPC_STATE		SelectIdealState ( void );
@@ -103,7 +110,6 @@ public:
 	void InputStopPatrolling( inputdata_t &inputdata );
 	void InputAssault( inputdata_t &inputdata );
 	void InputHitByBugbait( inputdata_t &inputdata );
-	void InputThrowGrenadeAtTarget( inputdata_t &inputdata );
 
 	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
 
@@ -124,7 +130,6 @@ public:
 	Vector			EyeOffset( Activity nActivity );
 	Vector			EyePosition( void );
 	Vector			BodyTarget( const Vector &posSrc, bool bNoisy = true );
-	Vector			GetAltFireTarget();
 
 	void			StartTask( const Task_t *pTask );
 	void			RunTask( const Task_t *pTask );
@@ -270,9 +275,7 @@ protected:
 // -----------------------------------------------
 	enum SquadSlot_T
 	{
-		SQUAD_SLOT_GRENADE1 = BaseClass::NEXT_SQUADSLOT,
-		SQUAD_SLOT_GRENADE2,
-		SQUAD_SLOT_ATTACK_OCCLUDER,
+		SQUAD_SLOT_ATTACK_OCCLUDER = BaseClass::NEXT_SQUADSLOT,
 		SQUAD_SLOT_OVERWATCH,
 		SQUAD_SLOT_FLANK_ENEMY,
 	};
@@ -307,15 +310,15 @@ private:
 
 private:
 	int				m_nKickDamage;
-	Vector			m_vecTossVelocity;
-	EHANDLE			m_hForcedGrenadeTarget;
+	//Vector			m_vecTossVelocity;
+	//EHANDLE			m_hForcedGrenadeTarget;
 	bool			m_bShouldPatrol;
 	bool			m_bFirstEncounter;// only put on the handsign show in the squad's first encounter.
 
 	// Time Variables
 	float			m_flNextPainSoundTime;
 	float			m_flNextAlertSoundTime;
-	float			m_flNextGrenadeCheck;	
+	//float			m_flNextGrenadeCheck;	
 	float			m_flNextLostSoundTime;
 	float			m_flAlertPatrolTime;		// When to stop doing alert patrol
 	float			m_flNextAltFireTime;		// Elites only. Next time to begin considering alt-fire attack.
@@ -326,7 +329,7 @@ private:
 #ifndef SOLDIER_POSSIBLE_ALLY
 	CAI_CombineSentence m_Sentences;
 #endif
-	int			m_iNumGrenades;
+	//int			m_iNumGrenades;
 #ifndef SOLDIER_POSSIBLE_ALLY
 	CAI_AssaultBehavior			m_AssaultBehavior;
 	CCombineStandoffBehavior	m_StandoffBehavior;
@@ -343,7 +346,7 @@ private:
 public:
 	int				m_iLastAnimEventHandled;
 	bool			m_fIsElite;
-	Vector			m_vecAltFireTarget;
+	//Vector			m_vecAltFireTarget;
 
 	int				m_iTacticalVariant;
 	int				m_iPathfindingVariant;

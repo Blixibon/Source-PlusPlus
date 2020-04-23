@@ -841,6 +841,16 @@ int CLazuul::ItemShouldRespawn(CItem* pItem)
 	return GR_ITEM_RESPAWN_YES;
 }
 
+float CLazuul::FlHealthChargerRechargeTime(void)
+{
+	return IsMultiplayer() ? BaseClass::FlHealthChargerRechargeTime() : 0.f;
+}
+
+float CLazuul::FlHEVChargerRechargeTime(void)
+{
+	return IsMultiplayer() ? BaseClass::FlHEVChargerRechargeTime() : 0.f;
+}
+
 void CLazuul::Status(void(*print)(const char *fmt, ...))
 {
 	BaseClass::Status(print);
@@ -4868,6 +4878,7 @@ void CLazuul::CreateStandardEntities()
 	// Create the entity that will send our data to the client.
 	CBaseEntity* pEnt = CBaseEntity::Create("laz_gamerules", vec3_origin, vec3_angle);
 	Assert(pEnt);
+	pEnt->SetName(AllocPooledString("@gamerules_proxy"));
 }
 
 void CLazuul::CleanUpMap(void)

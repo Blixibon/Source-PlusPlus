@@ -1613,6 +1613,8 @@ void CHLClient::View_Fade( ScreenFade_t *pSF )
 		vieweffects->Fade( *pSF );
 }
 
+//static int s_MatQueMode = -1;
+
 //-----------------------------------------------------------------------------
 // Purpose: Per level init
 //-----------------------------------------------------------------------------
@@ -1698,6 +1700,8 @@ void CHLClient::LevelInitPostEntity( )
 	IGameSystem::LevelInitPostEntityAllSystems();
 	C_PhysPropClientside::RecreateAll();
 	internalCenterPrint->Clear();
+	static ConVarRef queuemode("mat_queue_mode");
+	queuemode.SetValue(-1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1740,6 +1744,9 @@ void CHLClient::LevelShutdown( void )
 
 	// Disable abs recomputations when everything is shutting down
 	CBaseEntity::EnableAbsRecomputations( false );
+
+	static ConVarRef queuemode("mat_queue_mode");
+	queuemode.SetValue(0);
 
 	// Level shutdown sequence.
 	// First do the pre-entity shutdown of all systems

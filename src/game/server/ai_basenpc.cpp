@@ -2139,6 +2139,13 @@ bool CAI_BaseNPC::QueryHearSound( CSound *pSound )
 			return false;
 	}
 
+	if (pSound->SoundContext() & SOUND_CONTEXT_OWNER_ALLIES)
+	{
+		CBaseCombatCharacter* pOwner = ToBaseCombatCharacter(pSound->m_hOwner);
+		if (!pOwner || pOwner->IRelationType(this) != D_LI)
+			return false;
+	}
+
 	if ( pSound->IsSoundType( SOUND_PLAYER ) && GetState() == NPC_STATE_IDLE && !FVisible( pSound->GetSoundReactOrigin() ) )
 	{
 		// NPC's that are IDLE should disregard player movement sounds if they can't see them.
@@ -8762,8 +8769,9 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 		{
   			if ( GetActiveWeapon() )
   			{
-  				GetActiveWeapon()->WeaponSound( RELOAD_NPC );
-  				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1(); 
+  				//GetActiveWeapon()->WeaponSound( RELOAD_NPC );
+  				//GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1();
+				GetActiveWeapon()->NPC_Reload();
   				ClearCondition(COND_LOW_PRIMARY_AMMO);
   				ClearCondition(COND_NO_PRIMARY_AMMO);
   				ClearCondition(COND_NO_SECONDARY_AMMO);

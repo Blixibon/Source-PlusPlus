@@ -47,6 +47,22 @@ enum LazSpecialStepSounds_e
 	FOOTSTEP_SOUND_HL1 = -2,
 };
 
+enum LazMovementConfig_e
+{
+	MOVECFG_HL2 = -1,
+	MOVECFG_HL1 = 0,
+
+	NUM_MOVEMENT_CONFIGS
+};
+
+struct LazSpeedData_t
+{
+	float flNormSpeed;
+	float flSlowSpeed;
+	float flFastSpeed;
+	bool bMainIsFast;
+};
+
 struct HL1Foot_t
 {
 	const char* m_pNameLeft;
@@ -54,6 +70,8 @@ struct HL1Foot_t
 };
 
 extern HL1Foot_t s_pHL1FootSounds[26];
+
+inline bool IsInvalidString(int iString) { return (unsigned short)iString == ((unsigned short)-1) || iString < -1; }
 
 #if defined( CLIENT_DLL )
 #define CLaz_Player C_Laz_Player

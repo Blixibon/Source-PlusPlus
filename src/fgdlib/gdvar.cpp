@@ -7,8 +7,10 @@
 #include "fgdlib/WCKeyValues.h"
 #include "fgdlib/gdvar.h"
 
+#ifdef DEBUG
 // memdbgon must be the last include file in a .cpp file!!!
-#include <tier0/memdbgon.h>
+#include "tier0/memdbgon.h"  
+#endif // DEBUG
 
 
 typedef struct

@@ -96,6 +96,10 @@ const char *g_pszSpecialAttacks[SPECIAL_ATTACK_COUNT] = {
 	"olivia"
 };
 
+const char* g_pszMovementConfigs[NUM_MOVEMENT_CONFIGS] = {
+	"halflife1"
+};
+
 const char* g_pszFlashlightTypes[FLASHLIGHT_TYPE_COUNT] = {
 	"suit",
 	"nvg",
@@ -140,12 +144,15 @@ DEFINE_FIELD(m_flEyeHeightOverride, FIELD_FLOAT),
 DEFINE_PHYSPTR(m_pPullConstraint),
 DEFINE_FIELD(m_hPullObject, FIELD_EHANDLE),
 DEFINE_FIELD(m_bIsPullingObject, FIELD_BOOLEAN),
+
+DEFINE_FIELD(m_nMovementCfg, FIELD_INTEGER),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
 SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iPlayerSoundType)/*, MAX_FOOTSTEP_STRING_BITS + 1*/),
 SendPropInt(SENDINFO(m_nFlashlightType)),
+SendPropInt(SENDINFO(m_nMovementCfg)),
 SendPropFloat(SENDINFO(m_flEyeHeightOverride)),
 SendPropVector(SENDINFO(m_vecLadderNormal), -1, SPROP_NORMAL),
 END_SEND_TABLE();
@@ -209,6 +216,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		pHLMS->SetResponseClassname(pchClassname);
 
 		pHLMS->m_nFlashlightType = UTIL_StringFieldToInt(pkvAbillites->GetString("flashlight"), g_pszFlashlightTypes, FLASHLIGHT_TYPE_COUNT);
+		pHLMS->m_nMovementCfg = UTIL_StringFieldToInt(pkvAbillites->GetString("movecfg"), g_pszMovementConfigs, NUM_MOVEMENT_CONFIGS);
 
 		pHLMS->m_flEyeHeightOverride = pkvAbillites->GetFloat("view_height", -1.f);
 	}
@@ -218,6 +226,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		pHLMS->SetFootsteps(DEFAULT_ABILITY);
 		pHLMS->SetResponseClassname(DEFAULT_ABILITY);
 		pHLMS->m_nFlashlightType = FLASHLIGHT_SUIT;
+		pHLMS->m_nMovementCfg = MOVECFG_HL2;
 	}
 }
 
@@ -351,6 +360,7 @@ void CLaz_Player::Spawn(void)
 
 			m_nSpecialAttack = UTIL_StringFieldToInt(pkvAbillites->GetString("special"), g_pszSpecialAttacks, SPECIAL_ATTACK_COUNT);
 			m_nFlashlightType = UTIL_StringFieldToInt(pkvAbillites->GetString("flashlight"), g_pszFlashlightTypes, FLASHLIGHT_TYPE_COUNT);
+			m_nMovementCfg = UTIL_StringFieldToInt(pkvAbillites->GetString("movecfg"), g_pszMovementConfigs, NUM_MOVEMENT_CONFIGS);
 
 			m_flEyeHeightOverride = pkvAbillites->GetFloat("view_height", -1.f);
 		}
@@ -362,6 +372,7 @@ void CLaz_Player::Spawn(void)
 			m_nSpecialAttack = -1;
 			m_nFlashlightType = FLASHLIGHT_NONE;
 			m_flEyeHeightOverride = -1.f;
+			m_nMovementCfg = MOVECFG_HL2;
 		}
 	}
 	else

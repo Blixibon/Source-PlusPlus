@@ -303,10 +303,11 @@ void CNPC_PlayerFollower::MoveOrder(const Vector &vecDest, CAI_BaseNPC **Allies,
 
 	m_AutoSummonTimer.Set(player_squad_autosummon_time.GetFloat());
 	m_vAutoSummonAnchor = pPlayer->GetAbsOrigin();
-
-	if (m_StandoffBehavior.IsRunning())
+	
+	CAI_StandoffBehavior* pStandoff = nullptr;
+	if (GetBehavior(&pStandoff) && pStandoff->IsRunning())
 	{
-		m_StandoffBehavior.SetStandoffGoalPosition(vecDest);
+		pStandoff->SetStandoffGoalPosition(vecDest);
 	}
 
 	// If in assault, cancel and move.

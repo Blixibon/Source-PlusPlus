@@ -513,6 +513,10 @@ public:
 
 	virtual CDmgAccumulator	*GetDmgAccumulator( void ) { return NULL; }
 
+	virtual	bool			NPC_CanFireSecondary() { return false; }
+	// Originally created for the crossbow, can be used to add special NPC reloading behavior
+	virtual void			NPC_Reload(void) { WeaponSound(RELOAD_NPC); m_iClip1 = GetMaxClip1(); }
+
 // Client only methods
 #else
 

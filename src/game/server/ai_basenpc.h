@@ -1169,6 +1169,12 @@ public:
 	// Return true if you're willing to be idly talked to by other friends.
 	virtual bool CanBeUsedAsAFriend( void );
 
+	// Grenade-related functions from Combine soldiers ported to ai_basenpc so they could be shared.
+	// 
+	// This is necessary because other NPCs can use them now and many instances where they were used relied on dynamic_casts.
+	virtual Vector		GetAltFireTarget() { return GetEnemy() ? GetEnemy()->BodyTarget(Weapon_ShootPosition()) : vec3_origin; }
+	virtual void		DelayGrenadeCheck(float delay) { ; }
+	virtual void		AddGrenades(int inc, CBaseEntity* pLastGrenade = NULL) { ; }
 
 private:
 	Vector			m_vecCommandGoal;

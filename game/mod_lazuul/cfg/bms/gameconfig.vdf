@@ -2,6 +2,6 @@
 {
     "game_base" "bms"
     "game_mod"  "bms"
-    "population_set"    "default"
+    "population_set"    "blackmesa"
     "training_level"    "hc_t0a0"
 }

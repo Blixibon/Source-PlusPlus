@@ -11,6 +11,7 @@
 #include "Sprite.h"
 #include "SpriteTrail.h"
 #include "soundent.h"
+#include "te_effect_dispatch.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -29,70 +30,27 @@ ConVar sk_fraggrenade_radius	( "sk_fraggrenade_radius", "0");
 
 #define GRENADE_MODEL "models/Weapons/w_npcnade.mdl"
 
-class CGrenadeFrag : public CBaseGrenade
-{
-	DECLARE_CLASS( CGrenadeFrag, CBaseGrenade );
 
-#if !defined( CLIENT_DLL )
-	DECLARE_DATADESC();
-#endif
-					
-	~CGrenadeFrag( void );
-
-public:
-	void	Spawn( void );
-	void	OnRestore( void );
-	void	Precache( void );
-	bool	CreateVPhysics( void );
-	void	CreateEffects( void );
-	void	SetTimer( float detonateDelay, float warnDelay );
-	void	SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
-	int		OnTakeDamage( const CTakeDamageInfo &inputInfo );
-	void	BlipSound() { EmitSound( "Grenade.Blip" ); }
-	void	DelayThink();
-	void	VPhysicsUpdate( IPhysicsObject *pPhysics );
-	void	OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	void	SetCombineSpawned( bool combineSpawned ) { m_combineSpawned = combineSpawned; }
-	bool	IsCombineSpawned( void ) const { return m_combineSpawned; }
-	void	SetPunted( bool punt ) { m_punted = punt; }
-	bool	WasPunted( void ) const { return m_punted; }
-
-	// this function only used in episodic.
-#if defined(HL2_EPISODIC) && 0 // FIXME: HandleInteraction() is no longer called now that base grenade derives from CBaseAnimating
-	bool	HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
-#endif 
-
-	void	InputSetTimer( inputdata_t &inputdata );
-
-protected:
-	CHandle<CSprite>		m_pMainGlow;
-	CHandle<CSpriteTrail>	m_pGlowTrail;
-
-	float	m_flNextBlipTime;
-	bool	m_inSolid;
-	bool	m_combineSpawned;
-	bool	m_punted;
-};
 
 LINK_ENTITY_TO_CLASS( npc_grenade_frag, CGrenadeFrag );
 
-BEGIN_DATADESC( CGrenadeFrag )
+BEGIN_DATADESC(CGrenadeFrag)
 
-	// Fields
-	DEFINE_FIELD( m_pMainGlow, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flNextBlipTime, FIELD_TIME ),
-	DEFINE_FIELD( m_inSolid, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_combineSpawned, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_punted, FIELD_BOOLEAN ),
-	
-	// Function Pointers
-	DEFINE_THINKFUNC( DelayThink ),
+// Fields
+DEFINE_FIELD(m_pMainGlow, FIELD_EHANDLE),
+DEFINE_FIELD(m_pGlowTrail, FIELD_EHANDLE),
+DEFINE_FIELD(m_flNextBlipTime, FIELD_TIME),
+DEFINE_FIELD(m_inSolid, FIELD_BOOLEAN),
+DEFINE_FIELD(m_combineSpawned, FIELD_BOOLEAN),
+DEFINE_FIELD(m_punted, FIELD_BOOLEAN),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetTimer", InputSetTimer ),
+// Function Pointers
+DEFINE_THINKFUNC(DelayThink),
 
-END_DATADESC()
+// Inputs
+DEFINE_INPUTFUNC(FIELD_FLOAT, "SetTimer", InputSetTimer),
+
+END_DATADESC();
 
 
 //-----------------------------------------------------------------------------
@@ -102,11 +60,16 @@ CGrenadeFrag::~CGrenadeFrag( void )
 {
 }
 
+const char* CGrenadeFrag::GetGrenadeModel()
+{
+	return GRENADE_MODEL;
+}
+
 void CGrenadeFrag::Spawn( void )
 {
 	Precache( );
 
-	SetModel( GRENADE_MODEL );
+	SetModel(GetGrenadeModel());
 
 	if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() )
 	{
@@ -126,8 +89,8 @@ void CGrenadeFrag::Spawn( void )
 	SetCollisionGroup( COLLISION_GROUP_WEAPON );
 	CreateVPhysics();
 
-	BlipSound();
-	m_flNextBlipTime = gpGlobals->curtime + FRAG_GRENADE_BLIP_FREQUENCY;
+	//BlipSound();
+	m_flNextBlipTime = gpGlobals->curtime + 0.05f;
 
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 
@@ -275,7 +238,7 @@ void CGrenadeFrag::VPhysicsUpdate( IPhysicsObject *pPhysics )
 
 void CGrenadeFrag::Precache( void )
 {
-	PrecacheModel( GRENADE_MODEL );
+	PrecacheModel(GetGrenadeModel());
 
 	PrecacheScriptSound( "Grenade.Blip" );
 
@@ -376,6 +339,28 @@ int CGrenadeFrag::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	return BaseClass::OnTakeDamage( inputInfo );
 }
 
+void CGrenadeFrag::BlipSound()
+{
+	EmitSound("Grenade.Blip");
+
+	CPVSFilter filter(GetAbsOrigin());
+	//te->DynamicLight(filter, 0.f, &WorldSpaceCenter(), 255, 0, 0, 5, 64.f, 0.1f, 128.f);
+	
+	CEffectData data;
+	data.m_flRadius = 64.f;
+	data.m_flScale = 0.1f;
+	data.m_nEntIndex = entindex();
+	data.m_nAttachmentIndex = LookupAttachment("fuse");
+	ColorRGBExp32 color;
+	color.r = 255;
+	color.g = 0;
+	color.b = 0;
+	color.exponent = 5;
+	data.m_nMaterial = *reinterpret_cast<int*> (&color);
+
+	DispatchEffect("CreateFollowLight", data, filter);
+}
+
 #if defined(HL2_EPISODIC) && 0 // FIXME: HandleInteraction() is no longer called now that base grenade derives from CBaseAnimating
 extern int	g_interactionBarnacleVictimGrab; ///< usually declared in ai_interactions.h but no reason to haul all of that in here.
 extern int g_interactionBarnacleVictimBite;
@@ -416,10 +401,10 @@ void CGrenadeFrag::InputSetTimer( inputdata_t &inputdata )
 	SetTimer( inputdata.value.Float(), inputdata.value.Float() - FRAG_GRENADE_WARN_TIME );
 }
 
-CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool combineSpawned )
+CBaseGrenade *Fraggrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer, bool combineSpawned, const char* pszClassname)
 {
 	// Don't set the owner here, or the player can't interact with grenades he's thrown
-	CGrenadeFrag *pGrenade = (CGrenadeFrag *)CBaseEntity::Create( "npc_grenade_frag", position, angles, pOwner );
+	CGrenadeFrag *pGrenade = (CGrenadeFrag *)CBaseEntity::Create(pszClassname, position, angles, pOwner );
 	
 	pGrenade->SetTimer( timer, timer - FRAG_GRENADE_WARN_TIME );
 	pGrenade->SetVelocity( velocity, angVelocity );

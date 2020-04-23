@@ -98,6 +98,9 @@ public:
 	void StopWalking(void);
 	bool IsWalking(void) { return m_fIsWalking; }
 
+	int			GetMovementConfig();
+	const LazSpeedData_t GetLazMoveData();
+
 	//virtual void PostThink(void);
 
 	bool m_bHasLongJump;
@@ -121,6 +124,7 @@ protected:
 	int						m_iHeadBone;
 
 	int					m_nFlashlightType;
+	int					m_nMovementCfg;
 
 	float				m_flEyeHeightOverride;
 

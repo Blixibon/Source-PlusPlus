@@ -43,6 +43,8 @@ public:
 	virtual void ProcessSceneEvents(void);
 	virtual CStudioHdr *OnNewModel(void);
 
+	virtual const char* GetGrenadeClassThrown() { return "npc_grenade_frag_bms"; }
+
 	void		Spawn()
 	{
 		SetFollowerBaseUse(&CNPC_BaseColleague::UseFunc);

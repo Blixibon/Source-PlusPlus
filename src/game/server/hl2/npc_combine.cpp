@@ -146,8 +146,8 @@ int	g_interactionCombineBash		= 0; // melee bash attack
 #define COMBINE_AE_GREN_DROP		( 9 )
 #define COMBINE_AE_CAUGHT_ENEMY		( 10) // grunt established sight with an enemy (player only) that had previously eluded the squad.
 
-int COMBINE_AE_BEGIN_ALTFIRE;
-int COMBINE_AE_ALTFIRE;
+//int COMBINE_AE_BEGIN_ALTFIRE;
+//int COMBINE_AE_ALTFIRE;
 
 //=========================================================
 // Combine activities
@@ -159,10 +159,9 @@ int COMBINE_AE_ALTFIRE;
 //Activity ACT_COMBINE_WALKING_AR2;
 //Activity ACT_COMBINE_STANDING_SHOTGUN;
 //Activity ACT_COMBINE_CROUCHING_SHOTGUN;
-Activity ACT_COMBINE_THROW_GRENADE;
 Activity ACT_COMBINE_LAUNCH_GRENADE;
 Activity ACT_COMBINE_BUGBAIT;
-Activity ACT_COMBINE_AR2_ALTFIRE;
+//Activity ACT_COMBINE_AR2_ALTFIRE;
 Activity ACT_WALK_EASY;
 Activity ACT_WALK_MARCH;
 
@@ -171,6 +170,7 @@ enum TacticalVariant_T
 	TACTICAL_VARIANT_DEFAULT = 0,
 	TACTICAL_VARIANT_PRESSURE_ENEMY,				// Always try to close in on the player.
 	TACTICAL_VARIANT_PRESSURE_ENEMY_UNTIL_CLOSE,	// Act like VARIANT_PRESSURE_ENEMY, but go to VARIANT_DEFAULT once within 30 feet
+	TACTICAL_VARIANT_GRENADE_HAPPY,					// Throw grenades as if you're fighting a turret
 };
 
 enum PathfindingVariant_T
@@ -191,13 +191,10 @@ enum PathfindingVariant_T
 BEGIN_DATADESC( CNPC_Combine )
 
 DEFINE_FIELD( m_nKickDamage, FIELD_INTEGER ),
-DEFINE_FIELD( m_vecTossVelocity, FIELD_VECTOR ),
-DEFINE_FIELD( m_hForcedGrenadeTarget, FIELD_EHANDLE ),
 DEFINE_FIELD( m_bShouldPatrol, FIELD_BOOLEAN ),
 DEFINE_FIELD( m_bFirstEncounter, FIELD_BOOLEAN ),
 DEFINE_FIELD( m_flNextPainSoundTime, FIELD_TIME ),
 DEFINE_FIELD( m_flNextAlertSoundTime, FIELD_TIME ),
-DEFINE_FIELD( m_flNextGrenadeCheck, FIELD_TIME ),
 DEFINE_FIELD( m_flNextLostSoundTime, FIELD_TIME ),
 DEFINE_FIELD( m_flAlertPatrolTime, FIELD_TIME ),
 DEFINE_FIELD( m_flNextAltFireTime, FIELD_TIME ),
@@ -228,11 +225,8 @@ DEFINE_INPUTFUNC( FIELD_STRING,	"Assault", InputAssault ),
 
 DEFINE_INPUTFUNC( FIELD_VOID,	"HitByBugbait",		InputHitByBugbait ),
 
-DEFINE_INPUTFUNC( FIELD_STRING,	"ThrowGrenadeAtTarget",	InputThrowGrenadeAtTarget ),
-
 DEFINE_FIELD( m_iLastAnimEventHandled, FIELD_INTEGER ),
 DEFINE_FIELD( m_fIsElite, FIELD_BOOLEAN ),
-DEFINE_FIELD( m_vecAltFireTarget, FIELD_VECTOR ),
 
 DEFINE_KEYFIELD( m_iTacticalVariant, FIELD_INTEGER, "tacticalvariant" ),
 DEFINE_KEYFIELD( m_iPathfindingVariant, FIELD_INTEGER, "pathfindingvariant" ),
@@ -309,30 +303,6 @@ void CNPC_Combine::InputAssault( inputdata_t &inputdata )
 void CNPC_Combine::InputHitByBugbait( inputdata_t &inputdata )
 {
 	SetCondition( COND_COMBINE_HIT_BY_BUGBAIT );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Force the combine soldier to throw a grenade at the target
-//			If I'm a combine elite, fire my combine ball at the target instead.
-// Input  : &inputdata -
-//-----------------------------------------------------------------------------
-void CNPC_Combine::InputThrowGrenadeAtTarget( inputdata_t &inputdata )
-{
-	// Ignore if we're inside a scripted sequence
-	if ( m_NPCState == NPC_STATE_SCRIPT && m_hCine )
-		return;
-
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), NULL, inputdata.pActivator, inputdata.pCaller );
-	if ( !pEntity )
-	{
-		DevMsg("%s (%s) received ThrowGrenadeAtTarget input, but couldn't find target entity '%s'\n", GetClassname(), GetDebugName(), inputdata.value.String() );
-		return;
-	}
-
-	m_hForcedGrenadeTarget = pEntity;
-	m_flNextGrenadeCheck = 0;
-
-	ClearSchedule( "Told to throw grenade via input" );
 }
 
 //-----------------------------------------------------------------------------
@@ -1344,7 +1314,7 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 			Vector vecStart;
 			GetAttachment( "lefthand", vecStart );
 
-			CBaseEntity *pItem = DropItem( "weapon_frag", vecStart, RandomAngle(0,360) );
+			CBaseEntity *pItem = DropItem(GetGrenadeClassDropped(), vecStart, RandomAngle(0,360) );
 
 			if ( pItem )
 			{
@@ -1374,6 +1344,15 @@ void CNPC_Combine::Event_Killed( const CTakeDamageInfo &info )
 	}
 
 	BaseClass::Event_Killed( info );
+}
+
+int CNPC_Combine::SelectScheduleCombat()
+{
+	int iRet = SelectCombatSchedule();
+	if (iRet != SCHED_NONE)
+		return iRet;
+
+	return BaseClass::SelectScheduleCombat();
 }
 
 //-----------------------------------------------------------------------------
@@ -2010,7 +1989,7 @@ int CNPC_Combine::SelectSchedule( void )
 			}
 		}
 		break;
-
+#ifndef SOLDIER_POSSIBLE_ALLY
 		case NPC_STATE_COMBAT:
 		{
 			int nSched = SelectCombatSchedule();
@@ -2018,6 +1997,7 @@ int CNPC_Combine::SelectSchedule( void )
 				return nSched;
 		}
 		break;
+#endif
 		}
 	}
 
@@ -2081,7 +2061,7 @@ int CNPC_Combine::SelectScheduleAttack()
 
 	// If I'm fighting a combine turret (it's been hacked to attack me), I can't really
 	// hurt it with bullets, so become grenade happy.
-	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_COMBINE && FClassnameIs(GetEnemy(), "npc_turret_floor") )
+	if (GetEnemy() && ((IsUsingTacticalVariant(TACTICAL_VARIANT_GRENADE_HAPPY)) || IsTurret(GetEnemy())))
 	{
 		// Don't do this until I've been fighting the turret for a few seconds
 		float flTimeAtFirstHand = GetEnemies()->TimeAtFirstHand(GetEnemy());
@@ -2097,7 +2077,8 @@ int CNPC_Combine::SelectScheduleAttack()
 
 		// If we're not in the viewcone of the turret, run up and hit it. Do this a bit later to
 		// give other squadmembers a chance to throw a grenade before I run in.
-		if ( !GetEnemy()->MyNPCPointer()->FInViewCone( this ) && OccupyStrategySlot( SQUAD_SLOT_GRENADE1 ) )
+		// Don't do turret charging of we're just grenade happy.
+		if (!IsUsingTacticalVariant(TACTICAL_VARIANT_GRENADE_HAPPY) && !GetEnemy()->MyNPCPointer()->FInViewCone(this) && OccupyStrategySlot(SQUAD_SLOT_GRENADE1))
 			return SCHED_COMBINE_CHARGE_TURRET;
 	}
 
@@ -2206,6 +2187,8 @@ int CNPC_Combine::SelectScheduleAttack()
 
 	return SCHED_NONE;
 }
+
+extern bool IsRPG(CBaseCombatWeapon* pWeapon);
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -2408,6 +2391,10 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 				Stand();
 			}
 
+			int iBase = BaseClass::TranslateSchedule(SCHED_RANGE_ATTACK1);
+			if (iBase != SCHED_RANGE_ATTACK1)
+				return iBase;
+
 			return SCHED_COMBINE_RANGE_ATTACK1;
 		}
 	case SCHED_RANGE_ATTACK2:
@@ -2435,6 +2422,9 @@ int CNPC_Combine::TranslateSchedule( int scheduleType )
 		}
 	case SCHED_COMBINE_SUPPRESS:
 		{
+		if (IsRPG(GetActiveWeapon()))
+			return BaseClass::TranslateSchedule(SCHED_RANGE_ATTACK1);
+
 #define MIN_SIGNAL_DIST	256
 			if ( GetEnemy() != NULL && GetEnemy()->IsPlayer() && m_bFirstEncounter )
 			{
@@ -2487,23 +2477,26 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 
 	if (pEvent->type & AE_TYPE_NEWEVENTSYSTEM)
 	{
-		if ( pEvent->event == COMBINE_AE_BEGIN_ALTFIRE )
+		if (pEvent->event == COMBINE_AE_BEGIN_ALTFIRE)
 		{
-			EmitSound( "Weapon_CombineGuard.Special1" );
+			if (GetActiveWeapon())
+				GetActiveWeapon()->WeaponSound(SPECIAL1);
+
+			SpeakIfAllowed("TLK_THROWGRENADE", "altfire:1", SENTENCE_PRIORITY_MEDIUM);
 			handledEvent = true;
 		}
-		else if ( pEvent->event == COMBINE_AE_ALTFIRE )
+		else if (pEvent->event == COMBINE_AE_ALTFIRE)
 		{
-			if( IsElite() )
+			if (IsAltFireCapable())
 			{
 				animevent_t fakeEvent;
 
 				fakeEvent.pSource = this;
 				fakeEvent.event = EVENT_WEAPON_AR2_ALTFIRE;
-				GetActiveWeapon()->Operator_HandleAnimEvent( &fakeEvent, this );
+				GetActiveWeapon()->Operator_HandleAnimEvent(&fakeEvent, this);
 
 				// Stop other squad members from combine balling for a while.
-				DelaySquadAltFireAttack( 10.0f );
+				DelaySquadAltFireAttack(10.0f);
 
 				// I'm disabling this decrementor. At the time of this change, the elites
 				// don't bother to check if they have grenades anyway. This means that all
@@ -2512,7 +2505,15 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				// that makes sure the elite has grenades in order to fire a combine ball, we
 				// preserve the legacy behavior while making it possible for a designer to prevent
 				// elites from shooting combine balls by setting grenades to '0' in hammer. (sjb) EP2_OUTLAND_10
+#ifdef MAPBASE
+				// 
+				// Here's a tip: In Mapbase, "OnThrowGrenade" is fired during alt-fire as well, fired by the weapon so it could pass its alt-fire projectile.
+				// So if you want elites to decrement on each grenade again, you could fire "!self > AddGrenades -1" every time an elite fires OnThrowGrenade.
+				// 
+				// AddGrenades(-1);
+#else
 				// m_iNumGrenades--;
+#endif
 			}
 
 			handledEvent = true;
@@ -2547,37 +2548,11 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 			break;
 
 		case COMBINE_AE_GREN_TOSS:
-			{
-				Vector vecSpin;
-				vecSpin.x = random->RandomFloat( -1000.0, 1000.0 );
-				vecSpin.y = random->RandomFloat( -1000.0, 1000.0 );
-				vecSpin.z = random->RandomFloat( -1000.0, 1000.0 );
-
-				Vector vecStart;
-				GetAttachment( "lefthand", vecStart );
-
-				if( m_NPCState == NPC_STATE_SCRIPT )
-				{
-					// Use a fixed velocity for grenades thrown in scripted state.
-					// Grenades thrown from a script do not count against grenades remaining for the AI to use.
-					Vector forward, up, vecThrow;
-
-					GetVectors( &forward, NULL, &up );
-					vecThrow = forward * 750 + up * 175;
-					Fraggrenade_Create( vecStart, vec3_angle, vecThrow, vecSpin, this, COMBINE_GRENADE_TIMER, true );
-				}
-				else
-				{
-					// Use the Velocity that AI gave us.
-					Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vecSpin, this, COMBINE_GRENADE_TIMER, true );
-					m_iNumGrenades--;
-				}
-
-				// wait six seconds before even looking again to see if a grenade can be thrown.
-				m_flNextGrenadeCheck = gpGlobals->curtime + 6;
-			}
+		{
+			BaseClass::HandleAnimEvent(pEvent);
 			handledEvent = true;
-			break;
+		}
+		break;
 
 		case COMBINE_AE_GREN_LAUNCH:
 			{
@@ -2600,7 +2575,7 @@ void CNPC_Combine::HandleAnimEvent( animevent_t *pEvent )
 				Vector vecStart;
 				GetAttachment( "lefthand", vecStart );
 
-				Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vec3_origin, this, COMBINE_GRENADE_TIMER, true );
+				Fraggrenade_Create( vecStart, vec3_angle, m_vecTossVelocity, vec3_origin, this, COMBINE_GRENADE_TIMER, true, GetGrenadeClassThrown());
 				m_iNumGrenades--;
 			}
 			handledEvent = true;
@@ -2940,227 +2915,7 @@ int	CNPC_Combine::RangeAttack2Conditions( float flDot, float flDist )
 	return COND_NONE;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose: Return true if the combine has grenades, hasn't checked lately, and
-//			can throw a grenade at the target point.
-// Input  : &vecTarget -
-// Output : Returns true on success, false on failure.
-//-----------------------------------------------------------------------------
-bool CNPC_Combine::CanThrowGrenade( const Vector &vecTarget )
-{
-	if( m_iNumGrenades < 1 )
-	{
-		// Out of grenades!
-		return false;
-	}
 
-	if (gpGlobals->curtime < m_flNextGrenadeCheck )
-	{
-		// Not allowed to throw another grenade right now.
-		return false;
-	}
-
-	float flDist;
-	flDist = ( vecTarget - GetAbsOrigin() ).Length();
-
-	if( flDist > 1024 || flDist < 128 )
-	{
-		// Too close or too far!
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
-		return false;
-	}
-
-	// -----------------------
-	// If moving, don't check.
-	// -----------------------
-	if ( m_flGroundSpeed != 0 )
-		return false;
-
-#if 0
-	Vector vecEnemyLKP = GetEnemyLKP();
-	if ( !( GetEnemy()->GetFlags() & FL_ONGROUND ) && GetEnemy()->GetWaterLevel() == 0 && vecEnemyLKP.z > (GetAbsOrigin().z + WorldAlignMaxs().z)  )
-	{
-		//!!!BUGBUG - we should make this check movetype and make sure it isn't FLY? Players who jump a lot are unlikely to
-		// be grenaded.
-		// don't throw grenades at anything that isn't on the ground!
-		return COND_NONE;
-	}
-#endif
-
-	// ---------------------------------------------------------------------
-	// Are any of my squad members near the intended grenade impact area?
-	// ---------------------------------------------------------------------
-	if ( m_pSquad )
-	{
-		if (m_pSquad->SquadMemberInRange( vecTarget, COMBINE_MIN_GRENADE_CLEAR_DIST ))
-		{
-			// crap, I might blow my own guy up. Don't throw a grenade and don't check again for a while.
-			m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
-
-			// Tell my squad members to clear out so I can get a grenade in
-			CSoundEnt::InsertSound( SOUND_MOVE_AWAY | SOUND_CONTEXT_COMBINE_ONLY, vecTarget, COMBINE_MIN_GRENADE_CLEAR_DIST, 0.1 );
-			return false;
-		}
-	}
-
-	return CheckCanThrowGrenade( vecTarget );
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: Returns true if the combine can throw a grenade at the specified target point
-// Input  : &vecTarget -
-// Output : Returns true on success, false on failure.
-//-----------------------------------------------------------------------------
-bool CNPC_Combine::CheckCanThrowGrenade( const Vector &vecTarget )
-{
-	//NDebugOverlay::Line( EyePosition(), vecTarget, 0, 255, 0, false, 5 );
-
-	// ---------------------------------------------------------------------
-	// Check that throw is legal and clear
-	// ---------------------------------------------------------------------
-	// FIXME: this is only valid for hand grenades, not RPG's
-	Vector vecToss;
-	Vector vecMins = -Vector(4,4,4);
-	Vector vecMaxs = Vector(4,4,4);
-	if( FInViewCone( vecTarget ) && CBaseEntity::FVisible( vecTarget ) )
-	{
-		vecToss = VecCheckThrow( this, EyePosition(), vecTarget, COMBINE_GRENADE_THROW_SPEED, 1.0, &vecMins, &vecMaxs );
-	}
-	else
-	{
-		// Have to try a high toss. Do I have enough room?
-		trace_t tr;
-		AI_TraceLine( EyePosition(), EyePosition() + Vector( 0, 0, 64 ), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-		if( tr.fraction != 1.0 )
-		{
-			return false;
-		}
-
-		vecToss = VecCheckToss( this, EyePosition(), vecTarget, -1, 1.0, true, &vecMins, &vecMaxs );
-	}
-
-	if ( vecToss != vec3_origin )
-	{
-		m_vecTossVelocity = vecToss;
-
-		// don't check again for a while.
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // 1/3 second.
-		return true;
-	}
-	else
-	{
-		// don't check again for a while.
-		m_flNextGrenadeCheck = gpGlobals->curtime + 1; // one full second.
-		return false;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Combine::CanAltFireEnemy( bool bUseFreeKnowledge )
-{
-	if (!IsElite() )
-		return false;
-
-	if (IsCrouching())
-		return false;
-
-	if( gpGlobals->curtime < m_flNextAltFireTime )
-		return false;
-
-	if( !GetEnemy() )
-		return false;
-
-	if (gpGlobals->curtime < m_flNextGrenadeCheck )
-		return false;
-
-	// See Steve Bond if you plan on changing this next piece of code!! (SJB) EP2_OUTLAND_10
-	if (m_iNumGrenades < 1)
-		return false;
-
-	CBaseEntity *pEnemy = GetEnemy();
-
-	if( !pEnemy->IsPlayer() && (!pEnemy->IsNPC() || !pEnemy->MyNPCPointer()->IsPlayerAlly()) )
-		return false;
-
-	Vector vecTarget;
-
-	// Determine what point we're shooting at
-	if( bUseFreeKnowledge )
-	{
-		vecTarget = GetEnemies()->LastKnownPosition( pEnemy ) + (pEnemy->GetViewOffset()*0.75);// approximates the chest
-	}
-	else
-	{
-		vecTarget = GetEnemies()->LastSeenPosition( pEnemy ) + (pEnemy->GetViewOffset()*0.75);// approximates the chest
-	}
-
-	// Trace a hull about the size of the combine ball (don't shoot through grates!)
-	trace_t tr;
-
-	Vector mins( -12, -12, -12 );
-	Vector maxs( 12, 12, 12 );
-
-	Vector vShootPosition = EyePosition();
-
-	if ( GetActiveWeapon() )
-	{
-		GetActiveWeapon()->GetAttachment( "muzzle", vShootPosition );
-	}
-
-	// Trace a hull about the size of the combine ball.
-	UTIL_TraceHull( vShootPosition, vecTarget, mins, maxs, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-
-	float flLength = (vShootPosition - vecTarget).Length();
-
-	flLength *= tr.fraction;
-
-	//If the ball can travel at least 65% of the distance to the player then let the NPC shoot it.
-	if( tr.fraction >= 0.65 && flLength > 128.0f )
-	{
-		// Target is valid
-		m_vecAltFireTarget = vecTarget;
-		return true;
-	}
-
-
-	// Check again later
-	m_vecAltFireTarget = vec3_origin;
-	m_flNextGrenadeCheck = gpGlobals->curtime + 1.0f;
-	return false;
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-bool CNPC_Combine::CanGrenadeEnemy( bool bUseFreeKnowledge )
-{
-	if( IsElite() )
-		return false;
-
-	CBaseEntity *pEnemy = GetEnemy();
-
-	Assert( pEnemy != NULL );
-
-	if( pEnemy )
-	{
-		// I'm not allowed to throw grenades during dustoff
-		if ( IsCurSchedule(SCHED_DROPSHIP_DUSTOFF) )
-			return false;
-
-		if( bUseFreeKnowledge )
-		{
-			// throw to where we think they are.
-			return CanThrowGrenade( GetEnemies()->LastKnownPosition( pEnemy ) );
-		}
-		else
-		{
-			// hafta throw to where we last saw them.
-			return CanThrowGrenade( GetEnemies()->LastSeenPosition( pEnemy ) );
-		}
-	}
-
-	return false;
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: For combine melee attack (kick/hit)
@@ -3228,15 +2983,6 @@ Vector CNPC_Combine::EyePosition( void )
 	GetAttachment( "eyes", m_EyePos );
 	return m_EyePos;
 	*/
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-Vector CNPC_Combine::GetAltFireTarget()
-{
-	Assert( IsElite() );
-
-	return m_vecAltFireTarget;
 }
 
 //-----------------------------------------------------------------------------
@@ -3501,10 +3247,8 @@ DECLARE_TASK( TASK_COMBINE_GET_PATH_TO_FORCED_GREN_LOS )
 DECLARE_TASK( TASK_COMBINE_SET_STANDING )
 
 //Activities
-DECLARE_ACTIVITY( ACT_COMBINE_THROW_GRENADE )
 DECLARE_ACTIVITY( ACT_COMBINE_LAUNCH_GRENADE )
 DECLARE_ACTIVITY( ACT_COMBINE_BUGBAIT )
-DECLARE_ACTIVITY( ACT_COMBINE_AR2_ALTFIRE )
 DECLARE_ACTIVITY( ACT_WALK_EASY )
 DECLARE_ACTIVITY( ACT_WALK_MARCH )
 

@@ -25,7 +25,31 @@
 	input SpeakResponseConcept(string) : "Speak the specified response concept."
 ]
 
-@BaseClass base(TalkNPC) = PlayerCompanion
+@BaseClass = GrenadeUser
+[
+	// Most grenade users shouldn't use grenades by default, override this in derived classes if otherwise
+	NumGrenades(choices) : "Number of Grenades" : "0" =
+	[
+		"0" : "None"
+		"1" : "1"
+		"2" : "2"
+		"3" : "3"
+		"4" : "4"
+		"5" : "5"
+		"999999" : "Unlimited"
+	]
+
+	// Inputs
+	input ThrowGrenadeAtTarget(target_destination) : "Throws a grenade at the specified target."
+	
+	input SetGrenades(integer) : "Sets the number of grenades we have."
+	input AddGrenades(integer) : "Adds to the number of grenades we have. Use a negative number to remove grenades."
+	
+	output OnThrowGrenade(ehandle) : "Fires when we throw a grenade. Passes the grenade."
+	output OnOutOfGrenades(ehandle) : "Fires when we run out of grenades. Passes our last grenade, if there is one."
+]
+
+@BaseClass base(TalkNPC, GrenadeUser) = PlayerCompanion
 [
 	input OutsideTransition(void) : "Use this input to teleport the NPC to a hintnode with the Player Squad Transition Point hint type."
 	input EnableAlwaysTransition(void) : "Enable the 'always transition' behavior"
@@ -33,7 +57,15 @@
 	
 	input EnableSpeakWhileScripting(void) : "Allow this NPC to speak responses while in a scripted sequence or while StartScripting is active."
 	input DisableSpeakWhileScripting(void) : "Cancels this NPC's ability to speak responses while in a scripted sequence or while StartScripting is active if it was previously enabled by EnableSpeakWhileScripting."
-	
+	input SetGrenadeCapabilities(integer) : "Sets this NPC's grenade capabilities."
+	SetGrenadeCapabilities(choices) : "Grenade capabilities" : "None" : "Controls this NPC's capability to throw grenades or use their weapon's secondary ability (energy balls/SMG grenades)." =
+	[
+		0 : "None"
+		1 : "Grenades"
+		2 : "Alt-firing"
+		3 : "Grenades + Alt-firing"
+	]
+
 	CanSpeakWhileScripting(choices) : "Speak while scripting?" : "No" : "" =
 	[
 		0 : "No"
@@ -971,7 +1003,7 @@
 	output OnPlayerUse(void) : "Fires when a player +USEs Barney"
 ]
 
-@BaseClass base(BaseNPC, RappelNPC) = BaseCombine
+@BaseClass base(BaseNPC, CombatSupplier, RappelNPC) = BaseCombine
 [
 	additionalequipment(choices) : "Weapons" : "weapon_smg1" =
 	[
@@ -1029,9 +1061,10 @@
 		"2"		:	"Super Soldier"
 		"3"		:	"Hunter Soldier"
 		"4"		:	"Outland Soldier"
-		"5"		:	"Outland Guard"
+		"5"		:	"Prison Exterior Guard"
 		"6"		:	"Advisor Guard"
 		"7"		:	"Synth Soldier"
+		"8"		:	"Prison Proto-Guard"
 	]
 	
 	tacticalvariant(choices) : "Tactical Variant" : "0" =
@@ -1039,6 +1072,7 @@
 		"0" : "Normal Tactics"
 		"1" : "Pressure the enemy (Keep advancing)"
 		"2" : "Pressure until within 30ft, then normal"
+		"3"	: "Grenade happy"
 	]
 	
 	usemarch(choices) : "Walk Easy" : "0" : "When true, will use a variety of more casual walking animations instead of the standard walk. For use in crowds. WARNING: this animation only has a north component. For use under very special circumstances only." =

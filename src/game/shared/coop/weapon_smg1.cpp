@@ -31,7 +31,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ConVar    sk_plr_dmg_smg1_grenade;	
+extern ConVar    sk_plr_dmg_smg1_grenade;
+extern ConVar    sk_npc_dmg_smg1_grenade;
 
 class CWeaponSMG1 : public CWeaponCoopMachineGun
 {
@@ -72,6 +73,7 @@ public:
 	void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
 	void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
 	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual	bool			NPC_CanFireSecondary() { return true; }
     #endif
 
 #ifndef CLIENT_DLL
@@ -261,6 +263,8 @@ void CWeaponSMG1::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool b
 	FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
 }
 
+float GetCurrentGravity(void);
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -287,32 +291,54 @@ void CWeaponSMG1::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 		}
 		break;
 
-		/*//FIXME: Re-enable
-		case EVENT_WEAPON_AR2_GRENADE:
-		{
-		CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+	case EVENT_WEAPON_AR2_ALTFIRE:
+	{
+		WeaponSound(WPN_DOUBLE);
+
+		CAI_BaseNPC* npc = pOperator->MyNPCPointer();
+		if (!npc)
+			return;
 
 		Vector vecShootOrigin, vecShootDir;
 		vecShootOrigin = pOperator->Weapon_ShootPosition();
-		vecShootDir = npc->GetShootEnemyDir( vecShootOrigin );
+		vecShootDir = npc->GetShootEnemyDir(vecShootOrigin);
 
-		Vector vecThrow = m_vecTossVelocity;
+		Vector vecTarget = npc->GetAltFireTarget();
+		Vector vecThrow;
+		if (vecTarget == vec3_origin)
+			AngleVectors(npc->EyeAngles(), &vecThrow); // Not much else to do, unfortunately
+		else
+		{
+			// Because this is happening right now, we can't "VecCheckThrow" and can only "VecDoThrow", you know what I mean?
+			// ...Anyway, this borrows from that so we'll never return vec3_origin.
+			//vecThrow = VecCheckThrow( this, vecShootOrigin, vecTarget, 600.0, 0.5 );
 
-		CGrenadeAR2 *pGrenade = (CGrenadeAR2*)Create( "grenade_ar2", vecShootOrigin, vec3_angle, npc );
-		pGrenade->SetAbsVelocity( vecThrow );
-		pGrenade->SetLocalAngularVelocity( QAngle( 0, 400, 0 ) );
-		pGrenade->SetMoveType( MOVETYPE_FLYGRAVITY ); 
-		pGrenade->m_hOwner			= npc;
-		pGrenade->m_pMyWeaponAR2	= this;
-		pGrenade->SetDamage(sk_npc_dmg_ar2_grenade.GetFloat());
+			vecThrow = (vecTarget - vecShootOrigin);
 
-		// FIXME: arrgg ,this is hard coded into the weapon???
-		m_flNextGrenadeCheck = gpGlobals->curtime + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
+			// throw at a constant time
+			float time = vecThrow.Length() / 600.0;
+			vecThrow = vecThrow * (1.0 / time);
 
-		m_iClip2--;
+			// adjust upward toss to compensate for gravity loss
+			vecThrow.z += (GetCurrentGravity() * 0.5) * time * 0.5;
 		}
-		break;
-		*/
+
+		CGrenadeAR2* pGrenade = (CGrenadeAR2*)Create("grenade_ar2", vecShootOrigin, vec3_angle, npc);
+		pGrenade->SetAbsVelocity(vecThrow);
+		pGrenade->SetLocalAngularVelocity(QAngle(0, 400, 0));
+		pGrenade->SetMoveType(MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE);
+
+		pGrenade->SetThrower(npc);
+
+		pGrenade->SetGravity(0.5); // lower gravity since grenade is aerodynamic and engine doesn't know it.
+
+		pGrenade->SetDamage(sk_npc_dmg_smg1_grenade.GetFloat());
+
+		variant_t var;
+		var.SetEntity(pGrenade);
+		npc->FireNamedOutput("OnThrowGrenade", var, pGrenade, npc);
+	}
+	break;
 
 	default:
 		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );

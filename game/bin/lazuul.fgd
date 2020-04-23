@@ -930,7 +930,7 @@
 	output OnWishToDie(void) : "Empty"
 ]
 
-@BaseClass base(BaseNPC, RappelNPC) = BaseMarine
+@BaseClass base(BaseCombine) = BaseMarine
 [
 	input Assault(string) : "Start an assault. Parameter passed in should be the name of the rally point."
 

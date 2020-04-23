@@ -67,6 +67,7 @@ $Project "Client (Lazuul)"
 			$File "peter\laz_hud_timer.cpp"
 			$File "peter\c_localannouncer.cpp"
 			$File "peter\c_localannouncer.h"
+			$File "peter\RespawnWaveVGuiScreen.cpp"
 
 			$Folder "HUD"
 			{

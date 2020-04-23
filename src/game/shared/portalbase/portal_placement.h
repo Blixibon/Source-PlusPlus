@@ -20,6 +20,8 @@ bool FitPortalOnSurface( const CProp_Portal *pIgnorePortal, Vector &vOrigin, con
 bool IsPortalIntersectingNoPortalVolume( const Vector &vOrigin, const QAngle &qAngles, const Vector &vForward );
 bool IsPortalOverlappingOtherPortals( const CProp_Portal *pIgnorePortal, const Vector &vOrigin, const QAngle &qAngles, bool bFizzle = false );
 float VerifyPortalPlacement( const CProp_Portal *pIgnorePortal, Vector &vOrigin, QAngle &qAngles, int iPlacedBy, bool bTest = false );
-
+#ifdef CLIENT_DLL
+void UTIL_ClearTrace(trace_t& trace);
+#endif // CLIENT_DLL
 
 #endif // PORTAL_PLACEMENT_H

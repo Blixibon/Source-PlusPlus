@@ -99,5 +99,39 @@ void UTIL_TransformInterpolatedPosition( CInterpolatedVar< Vector > &vInterped, 
 
 bool UTIL_Portal_EntityIsInPortalHole( const CProp_Portal *pPortal, CBaseEntity *pEntity );
 
+//To extend radius's through portals (for explosions, etc.)
+struct PortalRadiusExtension_t
+{
+	CProp_Portal* pPortalFrom;
+	CProp_Portal* pPortalTo;
+	Vector vecOrigin;
+	QAngle vecAngles;
+};
+typedef CUtlVector<PortalRadiusExtension_t> PortalRadiusExtensionVector;
+void ExtendRadiusThroughPortals(const Vector& vecOrigin, const QAngle& vecAngles, float flRadius, PortalRadiusExtensionVector& portalRadiusExtensions);
+
+void UTIL_Portal_Laser_Prevent_Tilting(Vector& vDirection);
+
+class CPolyhedron;
+class CPhysCollide;
+void UTIL_DebugOverlay_Polyhedron(const CPolyhedron* pPolyhedron, int red, int green, int blue, bool noDepthTest, float flDuration, const matrix3x4_t* pTransform = NULL);
+void UTIL_DebugOverlay_CPhysCollide(const CPhysCollide* pCollide, int red, int green, int blue, bool noDepthTest, float flDuration, const matrix3x4_t* pTransform = NULL);
+
+bool UTIL_IsCollideableIntersectingPhysCollide(ICollideable* pCollideable, const CPhysCollide* pCollide, const Vector& vPhysCollideOrigin, const QAngle& qPhysCollideAngles);
+
+#ifdef GAME_DLL
+
+class CBrushEntityList : public IEntityEnumerator
+{
+public:
+	virtual bool EnumEntity(IHandleEntity* pHandleEntity);
+
+	CUtlVectorFixedGrowable< CBaseEntity*, 32 > m_BrushEntitiesToPaint;
+};
+
+void UTIL_FindBrushEntitiesInSphere(CBrushEntityList& brushEnum, const Vector& vCenter, float flRadius);
+
+#endif
+
 #endif //#ifndef PORTAL_UTIL_SHARED_H
 

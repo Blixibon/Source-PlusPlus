@@ -4,6 +4,7 @@
 #include "KeyValues.h"
 #include "view.h"
 #include "iefx.h"
+#include "c_te_effect_dispatch.h"
 
 bool CDLightManager::Init()
 {
@@ -120,6 +121,35 @@ CManagedLight* CDLightManager::CreateLight(const char* pszLightType, const Vecto
 	return nullptr;
 }
 
+void CDLightManager::CreateAutoFollowLight(const CEffectData& data)
+{
+	if (data.GetEntity())
+	{
+		CAutoFollowLight *pNewLight = new CAutoFollowLight;
+
+		//V_memset(&pNewLight->m_DLightData, 0, sizeof(dlight_t));
+		pNewLight->m_DeathTimes.range = data.m_flScale;
+		pNewLight->m_DLightData.m_DataCopy.flags = 0;
+		pNewLight->m_DLightData.m_DataCopy.radius = pNewLight->m_flOriginalRadius = data.m_flRadius;
+		pNewLight->m_DeathTimes.start = gpGlobals->curtime + data.m_flMagnitude;
+
+		union ColorInt
+		{
+			int m_iInt;
+			ColorRGBExp32 m_Color;
+		} color2Int;
+
+		color2Int.m_iInt = data.m_nMaterial;
+		pNewLight->m_DLightData.m_DataCopy.color = color2Int.m_Color;
+
+		pNewLight->m_hFollowEntity = data.m_hEntity;
+		pNewLight->m_iAttachmentIndex = data.m_nAttachmentIndex;
+
+		pNewLight->SetRadiusScale(1.0f);
+		m_ActiveLights.AddToTail(pNewLight);
+	}
+}
+
 void CManagedLight::UpdateOrigin(Vector vecOrigin)
 {
 	m_DLightData.m_DataCopy.origin = vecOrigin;
@@ -194,3 +224,24 @@ void CManagedLight::CLightData::Update(dlight_t* pLight)
 		m_pLight->decay = m_DataCopy.decay;
 	}
 }
+
+void CAutoFollowLight::Update()
+{
+	CManagedLight::Update();
+
+	if (m_hFollowEntity.Get())
+	{
+		Vector vecOrigin = m_hFollowEntity->GetAbsOrigin();
+		if (m_iAttachmentIndex > 0)
+			m_hFollowEntity->GetAttachment(m_iAttachmentIndex, vecOrigin);
+
+		UpdateOrigin(vecOrigin);
+	}
+}
+
+void CreateFollowLightCallback(const CEffectData& data)
+{
+	g_LightManager.CreateAutoFollowLight(data);
+}
+
+DECLARE_CLIENT_EFFECT("CreateFollowLight", CreateFollowLightCallback);

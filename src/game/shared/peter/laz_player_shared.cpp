@@ -19,15 +19,23 @@
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "collisionutils.h"
 #include "bone_setup.h"
+#include "in_buttons.h"
 
 #define PLAYER_HULL_REDUCTION	0.70
 
 #define HEAD_RAND_BOUNDS 5.0f
 #define EYE_RAND_BOUNDS 3.0f
 
+#define	HL2_WALK_SPEED 150
+#define	HL2_NORM_SPEED 190
+#define	HL2_SPRINT_SPEED 320
+
 extern ConVar sv_footsteps;
 
-inline bool IsInvalidString(int iString) { return (unsigned short)iString == INVALID_STRING_INDEX || iString < -1; }
+#ifndef CLIENT_DLL
+extern CSuitPowerDevice SuitDeviceSprint;
+#endif // !CLIENT_DLL
+
 
 enum
 {
@@ -488,4 +496,145 @@ Vector CLaz_Player::GetPlayerEyeHeight(void)
 		return (Vector(0, 0, m_flEyeHeightOverride) * GetModelScale());
 
 	return VEC_VIEW_SCALED(this);
+}
+
+int	CLaz_Player::GetMovementConfig()
+{
+	return m_nMovementCfg;
+}
+
+const LazSpeedData_t CLaz_Player::GetLazMoveData()
+{
+	LazSpeedData_t data;
+
+	switch (m_nMovementCfg)
+	{
+	case MOVECFG_HL1:
+		data.bMainIsFast = true;
+		data.flSlowSpeed = 100.f;
+		data.flNormSpeed = 320.f;
+		data.flFastSpeed = 100.f;
+		break;
+	case MOVECFG_HL2:
+	default:
+		data.bMainIsFast = false;
+		data.flSlowSpeed = HL2_WALK_SPEED;
+		data.flNormSpeed = HL2_NORM_SPEED;
+		data.flFastSpeed = HL2_SPRINT_SPEED;
+		break;
+	}
+
+	return data;
+}
+
+void CLaz_Player::StartSprinting(void)
+{
+	if (m_HL2Local.m_flSuitPower < 10)
+	{
+		// Don't sprint unless there's a reasonable
+		// amount of suit power.
+		CPASAttenuationFilter filter(this);
+		filter.UsePredictionRules();
+		EmitSound(filter, entindex(), "SynergyPlayer.SprintNoPower");
+		return;
+	}
+
+#ifndef CLIENT_DLL
+	if (!SuitPower_AddDevice(SuitDeviceSprint))
+		return;
+#endif // !CLIENT_DLL
+
+	CPASAttenuationFilter filter(this);
+	filter.UsePredictionRules();
+	EmitSound(filter, entindex(), "SynergyPlayer.SprintStart");
+
+	SetMaxSpeed(GetLazMoveData().flFastSpeed);
+	m_fIsSprinting = true;
+}
+
+void CLaz_Player::StopSprinting(void)
+{
+#ifndef CLIENT_DLL
+	if (m_HL2Local.m_bitsActiveDevices & SuitDeviceSprint.GetDeviceID())
+	{
+		SuitPower_RemoveDevice(SuitDeviceSprint);
+	}
+#endif // !CLIENT_DLL
+
+	SetMaxSpeed(GetLazMoveData().flNormSpeed);
+	m_fIsSprinting = false;
+}
+
+void CLaz_Player::HandleSpeedChanges(void)
+{
+	int buttonsChanged = m_afButtonPressed | m_afButtonReleased;
+
+	// have suit, pressing button, not sprinting or ducking
+	bool bWantWalking;
+
+	if (IsSuitEquipped())
+	{
+		bWantWalking = (m_nButtons & IN_WALK) && !IsSprinting() && !(m_nButtons & IN_DUCK);
+	}
+	else
+	{
+		bWantWalking = true;
+	}
+
+	bool bCanSprint = CanSprint();
+	bool bIsSprinting = IsSprinting();
+	bool bWantSprint = (bCanSprint && IsSuitEquipped() && (m_nButtons & IN_SPEED));
+
+	if (GetLazMoveData().bMainIsFast && (m_nButtons & IN_SPEED))
+	{
+		bWantWalking = !(m_nButtons & IN_DUCK);
+		bWantSprint = false;
+	}
+
+	if (bIsSprinting != bWantSprint && (buttonsChanged & IN_SPEED))
+	{
+		// If someone wants to sprint, make sure they've pressed the button to do so. We want to prevent the
+		// case where a player can hold down the sprint key and burn tiny bursts of sprint as the suit recharges
+		// We want a full debounce of the key to resume sprinting after the suit is completely drained
+		if (bWantSprint)
+		{
+			{
+				StartSprinting();
+			}
+		}
+		else
+		{
+			{
+				StopSprinting();
+			}
+			// Reset key, so it will be activated post whatever is suppressing it.
+			m_nButtons &= ~IN_SPEED;
+		}
+	}
+
+	bool bIsWalking = IsWalking();
+
+	if (bIsWalking != bWantWalking)
+	{
+		if (bWantWalking)
+		{
+			StartWalking();
+		}
+		else
+		{
+			StopWalking();
+		}
+	}
+}
+
+void CLaz_Player::StartWalking(void)
+{
+	SetMaxSpeed(GetLazMoveData().flSlowSpeed);
+	m_fIsWalking = true;
+}
+
+void CLaz_Player::StopWalking(void)
+{
+	SetMaxSpeed(GetLazMoveData().flNormSpeed);
+	m_fIsWalking = false;
 }

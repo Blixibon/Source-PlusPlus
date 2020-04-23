@@ -49,6 +49,7 @@ public:
 	void	FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
 	void	Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
 	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual	bool			NPC_CanFireSecondary() { return true; }
 #endif
 
 	int		GetMinBurst( void ) { return 2; }

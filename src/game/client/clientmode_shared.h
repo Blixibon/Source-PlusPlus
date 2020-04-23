@@ -27,6 +27,14 @@ namespace vgui
 class Panel;
 }
 
+enum ExplosionBlindType
+{
+	EXPLO_NORMAL = 0,
+	EXPLO_PLASMA,
+
+	NUM_EXPLOSION_TYPES
+};
+
 //=============================================================================
 // HPE_BEGIN:
 // [tj] Moved this from the .cpp file so derived classes could access it
@@ -148,15 +156,15 @@ protected:
 
 	ClientCCHandle_t m_ExploCCHandle;
 
-	float			m_flExploBlindTime;
-	float			m_flExploBlindControllers[2]; // 0 is CC, 1 is bloomscale
+	float			m_flExploBlindTime[NUM_EXPLOSION_TYPES];
+	float			m_flExploBlindControllers[NUM_EXPLOSION_TYPES][2]; // 0 is CC, 1 is bloomscale
 
-	float			GetExploBlindIntensity()
+	float			GetExploBlindIntensity(int iType)
 	{
-		if (m_flExploBlindTime == 0.f)
+		if (m_flExploBlindTime[iType] == 0.f)
 			return 0.f;
 
-		float flIntensity = RemapValClamped(gpGlobals->curtime, m_flExploBlindTime, m_flExploBlindTime + 2.5f, 1.f, 0.f);
+		float flIntensity = RemapValClamped(gpGlobals->curtime, m_flExploBlindTime[iType], m_flExploBlindTime[iType] + 2.5f, 1.f, 0.f);
 
 		return SimpleSpline(flIntensity);
 	}
