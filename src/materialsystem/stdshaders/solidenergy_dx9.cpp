@@ -125,7 +125,7 @@ BEGIN_VS_SHADER( SolidEnergy_dx9, "SolidEnergy" )
 	SHADER_FALLBACK
 	{
 		if (!g_pHardwareConfig->SupportsPixelShaders_2_b())
-			return "UnlitTwoTexture";
+			return "Wireframe";
 
 		return 0;
 	}

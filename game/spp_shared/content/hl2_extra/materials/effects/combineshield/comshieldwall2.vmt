@@ -22,4 +22,9 @@
 	"$translucent" "1"
 	"$additive" 1
 	"$nodecal" 1
+	
+	"<dx90_20b"
+	{
+		"$fallbackmaterial"	"effects/combineshield/comshieldwall_fallback"
+	}
 }
