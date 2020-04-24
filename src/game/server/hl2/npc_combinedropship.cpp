@@ -906,6 +906,8 @@ void CNPC_CombineDropship::Spawn( void )
 			m_iMachineGunBaseAttachment = m_hContainer->LookupAttachment( "gun_base" );
 			// NOTE: gun_ref must have the same position as gun_base, but rotates with the gun
 			m_iMachineGunRefAttachment = m_hContainer->LookupAttachment( "gun_ref" );
+			m_poseWeapon_Pitch = m_hContainer->LookupPoseParameter("weapon_pitch");
+			m_poseWeapon_Yaw = m_hContainer->LookupPoseParameter("weapon_yaw");
 		}
 		break;
 
