@@ -166,7 +166,6 @@ public:
 	virtual void Activate();
 #endif // !CLIENT_DLL
 
-
 	virtual bool ShouldDrawCrosshair(void);
 	float GetPortal1Placablity(void) { return m_fCanPlacePortal1OnThisSurface; }
 	float GetPortal2Placablity(void) { return m_fCanPlacePortal2OnThisSurface; }

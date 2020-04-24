@@ -19,6 +19,7 @@ WeaponData
 	"item_flags"		"6"	// ITEM_FLAG_NOAUTOSWITCHEMPTY | ITEM_FLAG_NOAUTORELOAD
 	
 	"ViewModelFOV"      "90"
+	"viewmodel_bobmode"	"1"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData

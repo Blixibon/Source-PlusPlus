@@ -1,5 +1,10 @@
 "ep2_outland_02"
 {
+	"clearandreplace"
+	{
+		"lumpfile"	"maps/ep2_outland_02_l_0.lmp"
+	}
+
 	"edit"
 	{
 		"targetname"	"sheckley"

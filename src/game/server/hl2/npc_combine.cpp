@@ -1083,11 +1083,12 @@ void CNPC_Combine::StartTask( const Task_t *pTask )
 		break;
 	case TASK_RANGE_ATTACK1:
 		{
-		if (GetActiveWeapon())
-		{
-			m_nShots = GetActiveWeapon()->GetRandomBurst();
-			m_flShotDelay = GetActiveWeapon()->GetFireRate();
-		}
+			if (GetActiveWeapon())
+			{
+				m_nShots = GetActiveWeapon()->GetRandomBurst();
+				m_flShotDelay = GetActiveWeapon()->GetFireRate();
+				GetActiveWeapon()->NPC_OnRangeAttack1(this);
+			}
 
 			m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;
 			ResetIdealActivity( ACT_RANGE_ATTACK1 );
@@ -1240,6 +1241,9 @@ void CNPC_Combine::RunTask( const Task_t *pTask )
 					if (--m_nShots > 0)
 					{
 						// DevMsg("ACT_RANGE_ATTACK1\n");
+						if (GetActiveWeapon())
+							GetActiveWeapon()->NPC_OnRangeAttack1(this);
+
 						ResetIdealActivity( ACT_RANGE_ATTACK1 );
 						m_flLastAttackTime = gpGlobals->curtime;
 						m_flNextAttack = gpGlobals->curtime + m_flShotDelay - 0.1;

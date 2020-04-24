@@ -350,11 +350,14 @@ void C_EntityFlame::CreateEffect( void )
 	}
 
 	const char* pszParticleName = "burning_character";
-	C_BaseAnimating* pAnim = m_hEntAttached->GetBaseAnimating();
-	if (pAnim)
+	if (m_hEntAttached.Get())
 	{
-		if (pAnim->GetBurningParticleIndex() > 0)
-			pszParticleName = GetParticleSystemNameFromIndex(pAnim->GetBurningParticleIndex());
+		C_BaseAnimating* pAnim = m_hEntAttached->GetBaseAnimating();
+		if (pAnim)
+		{
+			if (pAnim->GetBurningParticleIndex() > 0)
+				pszParticleName = GetParticleSystemNameFromIndex(pAnim->GetBurningParticleIndex());
+		}
 	}
 
 	m_hEffect = ParticleProp()->Create(pszParticleName, PATTACH_ABSORIGIN_FOLLOW);

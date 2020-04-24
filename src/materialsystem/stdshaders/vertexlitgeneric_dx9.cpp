@@ -12,6 +12,7 @@
 #include "cloak_blended_pass_helper.h"
 #include "flesh_interior_blended_pass_helper.h"
 #include "pp_vertexlit_wetness_pass.h"
+#include "weapon_sheen_pass_helper.h"
 
 BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 	BEGIN_SHADER_PARAMS
@@ -100,6 +101,19 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		SHADER_PARAM( CLOAKFACTOR, SHADER_PARAM_TYPE_FLOAT, "0.0", "" )
 		SHADER_PARAM( CLOAKCOLORTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "Cloak color tint" )
 		SHADER_PARAM( REFRACTAMOUNT, SHADER_PARAM_TYPE_FLOAT, "2", "" )
+		
+		// Weapon Sheen Pass
+		SHADER_PARAM( SHEENPASSENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enables weapon sheen render in a second pass" )
+		SHADER_PARAM( SHEENMAP, SHADER_PARAM_TYPE_TEXTURE, "shadertest/shadertest_env", "sheenmap" )
+		SHADER_PARAM( SHEENMAPMASK, SHADER_PARAM_TYPE_TEXTURE, "shadertest/shadertest_envmask", "sheenmap mask" )
+		SHADER_PARAM( SHEENMAPMASKFRAME, SHADER_PARAM_TYPE_INTEGER, "0", "" )
+		SHADER_PARAM( SHEENMAPTINT, SHADER_PARAM_TYPE_COLOR, "[1 1 1]", "sheenmap tint" )
+		SHADER_PARAM( SHEENMAPMASKSCALEX, SHADER_PARAM_TYPE_FLOAT, "1", "X Scale the size of the map mask to the size of the target" )
+		SHADER_PARAM( SHEENMAPMASKSCALEY, SHADER_PARAM_TYPE_FLOAT, "1", "Y Scale the size of the map mask to the size of the target" )
+		SHADER_PARAM( SHEENMAPMASKOFFSETX, SHADER_PARAM_TYPE_FLOAT, "0", "X Offset of the mask relative to model space coords of target" )
+		SHADER_PARAM( SHEENMAPMASKOFFSETY, SHADER_PARAM_TYPE_FLOAT, "0", "Y Offset of the mask relative to model space coords of target" )
+		SHADER_PARAM( SHEENMAPMASKDIRECTION, SHADER_PARAM_TYPE_INTEGER, "0", "The direction the sheen should move (length direction of weapon) XYZ, 0,1,2" )
+		SHADER_PARAM( SHEENINDEX, SHADER_PARAM_TYPE_INTEGER, "0", "Index of the Effect Type (Color Additive, Override etc...)" )
 
 		// Flesh Interior Pass
 		SHADER_PARAM( FLESHINTERIORENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enable Flesh interior blend pass" )
@@ -294,6 +308,25 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 		info.m_nBumpFrame = BUMPFRAME;
 		info.m_nBumpTransform = BUMPTRANSFORM;
 	}
+	
+	// Weapon Sheen Pass
+	void SetupVarsWeaponSheenPass( WeaponSheenPassVars_t &info )
+	{
+		info.m_nSheenMap = SHEENMAP;
+		info.m_nSheenMapMask = SHEENMAPMASK;
+		info.m_nSheenMapMaskFrame = SHEENMAPMASKFRAME;
+		info.m_nSheenMapTint = SHEENMAPTINT;
+		info.m_nSheenMapMaskScaleX = SHEENMAPMASKSCALEX;
+		info.m_nSheenMapMaskScaleY = SHEENMAPMASKSCALEY;
+		info.m_nSheenMapMaskOffsetX = SHEENMAPMASKOFFSETX;
+		info.m_nSheenMapMaskOffsetY = SHEENMAPMASKOFFSETY;
+		info.m_nSheenMapMaskDirection = SHEENMAPMASKDIRECTION;
+		info.m_nSheenIndex = SHEENINDEX;
+
+		info.m_nBumpmap = BUMPMAP;
+		info.m_nBumpFrame = BUMPFRAME;
+		info.m_nBumpTransform = BUMPTRANSFORM;
+	}
 
 	bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame ) const 
 	{ 
@@ -305,6 +338,9 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 				return true;
 			// else, not cloaking this frame, so check flag2 in case the base material still needs it
 		}
+		
+		if ( params[SHEENPASSENABLED]->GetIntValue() ) // If material supports weapon sheen
+			return true;
 
 		// Check flag2 if not drawing cloak pass
 		return IS_FLAG2_SET( MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE ); 
@@ -448,6 +484,18 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 			SetupVarsCloakBlendedPass( info );
 			InitParamsCloakBlendedPass( this, params, pMaterialName, info );
 		}
+		
+		// Sheen Pass
+		if ( !params[SHEENPASSENABLED]->IsDefined() )
+		{
+			params[SHEENPASSENABLED]->SetIntValue( 0 );
+		}
+		else if ( params[SHEENPASSENABLED]->GetIntValue() )
+		{
+			WeaponSheenPassVars_t info;
+			SetupVarsWeaponSheenPass( info );
+			InitParamsWeaponSheenPass( this, params, pMaterialName, info );
+		}
 				
 		// Emissive Scroll Pass
 		if ( !params[EMISSIVEBLENDENABLED]->IsDefined() )
@@ -509,6 +557,15 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 			InitCloakBlendedPass( this, params, info );
 		}
 		
+		// TODO : Only do this if we're in range of the camera
+		// Weapon Sheen
+		if ( params[SHEENPASSENABLED]->GetIntValue() )
+		{
+			WeaponSheenPassVars_t info;
+			SetupVarsWeaponSheenPass( info );
+			InitWeaponSheenPass( this, params, info );
+		}
+		
 		// Emissive Scroll Pass
 		if ( params[EMISSIVEBLENDENABLED]->GetIntValue() )
 		{
@@ -567,6 +624,23 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 			{
 				// Skip this pass!
 				Draw(false);
+			}
+		}
+		
+		// Weapon sheen pass 
+		// only if doing standard as well (don't do it if cloaked)
+		if ( params[SHEENPASSENABLED]->GetIntValue() )
+		{
+			WeaponSheenPassVars_t info;
+			SetupVarsWeaponSheenPass( info );
+			if ( ( pShaderShadow != NULL ) || ( bDrawStandardPass && ShouldDrawMaterialSheen( params, info ) ) )
+			{
+				DrawWeaponSheenPass( this, params, pShaderAPI, pShaderShadow, info, vertexCompression );
+			}
+			else
+			{
+				// Skip this pass!
+				Draw( false );
 			}
 		}
 

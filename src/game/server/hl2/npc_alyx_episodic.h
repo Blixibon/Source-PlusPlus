@@ -16,6 +16,7 @@ class CNPC_Alyx : public CNPC_PlayerCompanion
 {
 public:
 	DECLARE_CLASS( CNPC_Alyx, CNPC_PlayerCompanion );
+	DECLARE_SERVERCLASS();
 
 	// fast class list
 	CNPC_Alyx *m_pNext;

@@ -79,53 +79,57 @@ extern int g_interactionZombieMeleeWarning;
 
 LINK_ENTITY_TO_CLASS( npc_alyx, CNPC_Alyx );
 
-BEGIN_DATADESC( CNPC_Alyx )
+BEGIN_DATADESC(CNPC_Alyx)
 
-	DEFINE_FIELD( m_hEmpTool, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hHackTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hStealthLookTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bInteractionAllowed, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fTimeNextSearchForInteractTargets, FIELD_TIME ),
-	DEFINE_FIELD( m_bDarknessSpeechAllowed, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIsEMPHolstered, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIsFlashlightBlind, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fStayBlindUntil, FIELD_TIME ),
-	DEFINE_FIELD( m_flDontBlindUntil, FIELD_TIME ),
-	DEFINE_FIELD( m_bSpokeLostPlayerInDarkness, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bPlayerFlashlightState, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bHadCondSeeEnemy, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iszCurrentBlindScene, FIELD_STRING ),
-	DEFINE_FIELD( m_fTimeUntilNextDarknessFoundPlayer, FIELD_TIME ),
-	DEFINE_FIELD( m_fCombatStartTime, FIELD_TIME ),
-	DEFINE_FIELD( m_fCombatEndTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextCrouchTime, FIELD_TIME ),
-	DEFINE_FIELD( m_WeaponType, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_bShouldHaveEMP, FIELD_BOOLEAN, "ShouldHaveEMP" ),
-	
-	DEFINE_SOUNDPATCH( m_sndDarknessBreathing ),
+DEFINE_FIELD(m_hEmpTool, FIELD_EHANDLE),
+DEFINE_FIELD(m_hHackTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_hStealthLookTarget, FIELD_EHANDLE),
+DEFINE_FIELD(m_bInteractionAllowed, FIELD_BOOLEAN),
+DEFINE_FIELD(m_fTimeNextSearchForInteractTargets, FIELD_TIME),
+DEFINE_FIELD(m_bDarknessSpeechAllowed, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsEMPHolstered, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsFlashlightBlind, FIELD_BOOLEAN),
+DEFINE_FIELD(m_fStayBlindUntil, FIELD_TIME),
+DEFINE_FIELD(m_flDontBlindUntil, FIELD_TIME),
+DEFINE_FIELD(m_bSpokeLostPlayerInDarkness, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bPlayerFlashlightState, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bHadCondSeeEnemy, FIELD_BOOLEAN),
+DEFINE_FIELD(m_iszCurrentBlindScene, FIELD_STRING),
+DEFINE_FIELD(m_fTimeUntilNextDarknessFoundPlayer, FIELD_TIME),
+DEFINE_FIELD(m_fCombatStartTime, FIELD_TIME),
+DEFINE_FIELD(m_fCombatEndTime, FIELD_TIME),
+DEFINE_FIELD(m_flNextCrouchTime, FIELD_TIME),
+DEFINE_FIELD(m_WeaponType, FIELD_INTEGER),
+DEFINE_KEYFIELD(m_bShouldHaveEMP, FIELD_BOOLEAN, "ShouldHaveEMP"),
 
-	DEFINE_EMBEDDED( m_SpeechWatch_LostPlayer ),
-	DEFINE_EMBEDDED( m_SpeechTimer_HeardSound ),
-	DEFINE_EMBEDDED( m_SpeechWatch_SoundDelay ),
-	DEFINE_EMBEDDED( m_SpeechWatch_BreathingRamp ),
-	DEFINE_EMBEDDED( m_SpeechWatch_FoundPlayer ),
+DEFINE_SOUNDPATCH(m_sndDarknessBreathing),
 
-	DEFINE_EMBEDDED( m_MoveMonitor ),
+DEFINE_EMBEDDED(m_SpeechWatch_LostPlayer),
+DEFINE_EMBEDDED(m_SpeechTimer_HeardSound),
+DEFINE_EMBEDDED(m_SpeechWatch_SoundDelay),
+DEFINE_EMBEDDED(m_SpeechWatch_BreathingRamp),
+DEFINE_EMBEDDED(m_SpeechWatch_FoundPlayer),
 
-	DEFINE_INPUTFUNC( FIELD_VOID,		"DisallowInteraction",	InputDisallowInteraction ),
-	DEFINE_INPUTFUNC( FIELD_VOID,		"AllowInteraction",		InputAllowInteraction ),
-	DEFINE_INPUTFUNC( FIELD_STRING,		"GiveWeapon",			InputGiveWeapon ),
-	DEFINE_INPUTFUNC( FIELD_BOOLEAN,	"AllowDarknessSpeech",	InputAllowDarknessSpeech ),
-	DEFINE_INPUTFUNC( FIELD_BOOLEAN,	"GiveEMP",				InputGiveEMP ),
-	DEFINE_INPUTFUNC( FIELD_VOID,		"VehiclePunted",		InputVehiclePunted ),
-	DEFINE_INPUTFUNC( FIELD_VOID,		"OutsideTransition",	InputOutsideTransition ),
+DEFINE_EMBEDDED(m_MoveMonitor),
 
-	DEFINE_OUTPUT( m_OnFinishInteractWithObject, "OnFinishInteractWithObject" ),
-	DEFINE_OUTPUT( m_OnPlayerUse, "OnPlayerUse" ),
+DEFINE_INPUTFUNC(FIELD_VOID, "DisallowInteraction", InputDisallowInteraction),
+DEFINE_INPUTFUNC(FIELD_VOID, "AllowInteraction", InputAllowInteraction),
+DEFINE_INPUTFUNC(FIELD_STRING, "GiveWeapon", InputGiveWeapon),
+DEFINE_INPUTFUNC(FIELD_BOOLEAN, "AllowDarknessSpeech", InputAllowDarknessSpeech),
+DEFINE_INPUTFUNC(FIELD_BOOLEAN, "GiveEMP", InputGiveEMP),
+DEFINE_INPUTFUNC(FIELD_VOID, "VehiclePunted", InputVehiclePunted),
+DEFINE_INPUTFUNC(FIELD_VOID, "OutsideTransition", InputOutsideTransition),
 
-	DEFINE_USEFUNC( Use ),
+DEFINE_OUTPUT(m_OnFinishInteractWithObject, "OnFinishInteractWithObject"),
+DEFINE_OUTPUT(m_OnPlayerUse, "OnPlayerUse"),
 
-END_DATADESC()
+DEFINE_USEFUNC(Use),
+
+END_DATADESC();
+
+IMPLEMENT_SERVERCLASS_ST(CNPC_Alyx, DT_NPC_Alyx)
+
+END_SEND_TABLE();
 
 #define ALYX_FEAR_ZOMBIE_DIST_SQR	Square(60)
 #define ALYX_FEAR_ANTLION_DIST_SQR	Square(360)

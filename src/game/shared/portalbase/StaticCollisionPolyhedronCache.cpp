@@ -16,94 +16,89 @@
 class CPolyhedron_LumpedMemory : public CPolyhedron //we'll be allocating one big chunk of memory for all our polyhedrons. No individual will own any memory.
 {
 public:
-	virtual void Release( void ) { };
-	static CPolyhedron_LumpedMemory *AllocateAt( void *pMemory, int iVertices, int iLines, int iIndices, int iPolygons )
+	virtual void Release(void) { Assert(false); };
+	static CPolyhedron_LumpedMemory* AllocateAt(void* pMemory, int iVertices, int iLines, int iIndices, int iPolygons)
 	{
 #include "tier0/memdbgoff.h" //the following placement new doesn't compile with memory debugging
-		CPolyhedron_LumpedMemory *pAllocated = new ( pMemory ) CPolyhedron_LumpedMemory;
+		CPolyhedron_LumpedMemory* pAllocated = new (pMemory) CPolyhedron_LumpedMemory;
 #include "tier0/memdbgon.h"
 
 		pAllocated->iVertexCount = iVertices;
 		pAllocated->iLineCount = iLines;
 		pAllocated->iIndexCount = iIndices;
 		pAllocated->iPolygonCount = iPolygons;
-		pAllocated->pVertices = (Vector *)(pAllocated + 1); //start vertex memory at the end of the class
-		pAllocated->pLines = (Polyhedron_IndexedLine_t *)(pAllocated->pVertices + iVertices);
-		pAllocated->pIndices = (Polyhedron_IndexedLineReference_t *)(pAllocated->pLines + iLines);
-		pAllocated->pPolygons = (Polyhedron_IndexedPolygon_t *)(pAllocated->pIndices + iIndices);
+		pAllocated->pVertices = (Vector*)(pAllocated + 1); //start vertex memory at the end of the class
+		pAllocated->pLines = (Polyhedron_IndexedLine_t*)(pAllocated->pVertices + iVertices);
+		pAllocated->pIndices = (Polyhedron_IndexedLineReference_t*)(pAllocated->pLines + iLines);
+		pAllocated->pPolygons = (Polyhedron_IndexedPolygon_t*)(pAllocated->pIndices + iIndices);
 
 		return pAllocated;
 	}
 };
 
-static void *s_BrushPolyhedronMemory = NULL;
-static void *s_StaticPropPolyhedronMemory = NULL;
+static void* s_BrushPolyhedronMemory = NULL;
+static void* s_StaticPropPolyhedronMemory = NULL;
 
 CStaticCollisionPolyhedronCache g_StaticCollisionPolyhedronCache;
 
-typedef ICollideable *ICollideablePtr; //needed for key comparison function syntax
-static bool CollideablePtr_KeyCompareFunc( const ICollideablePtr &a, const ICollideablePtr &b )
-{ 
+void sv_portal_staticcollisioncache_cache_ChangeFN(IConVar* var, const char* pOldValue, float flOldValue)
+{
+	g_StaticCollisionPolyhedronCache.ForceRefreshOnMapLoad(); //force a reload on restart/mapchange
+}
+
+ConVar sv_portal_staticcollisioncache_cachebrushes("sv_portal_staticcollisioncache_cachebrushes", IsPS3() ? "0" : "1", FCVAR_REPLICATED, "Cache all solid brushes as polyhedrons on level load", sv_portal_staticcollisioncache_cache_ChangeFN);
+ConVar sv_portal_staticcollisioncache_cachestaticprops("sv_portal_staticcollisioncache_cachestaticprops", IsPS3() ? "0" : "1", FCVAR_REPLICATED, "Cache all solid static props' vcollides as polyhedrons on level load", sv_portal_staticcollisioncache_cache_ChangeFN);
+
+
+typedef vcollide_t* VCollidePtr; //needed for key comparison function syntax
+static bool CollideablePtr_KeyCompareFunc(const VCollidePtr& a, const VCollidePtr& b)
+{
 	return a < b;
 };
 
-CStaticCollisionPolyhedronCache::CStaticCollisionPolyhedronCache( void )
-: m_CollideableIndicesMap( CollideablePtr_KeyCompareFunc )
+CStaticCollisionPolyhedronCache::CStaticCollisionPolyhedronCache(void)
+	: m_CollideableIndicesMap(CollideablePtr_KeyCompareFunc)
 {
 
 }
 
-CStaticCollisionPolyhedronCache::~CStaticCollisionPolyhedronCache( void )
+CStaticCollisionPolyhedronCache::~CStaticCollisionPolyhedronCache(void)
 {
 	Clear();
 }
 
-void CStaticCollisionPolyhedronCache::LevelInitPreEntity( void )
+void CStaticCollisionPolyhedronCache::LevelInitPreEntity(void)
 {
-
-	// FIXME: Fast updates would be nice but this method doesn't work with the recent changes to standard containers.
-	// For now we're going with the quick fix of always doing a full update. -Jeep
-
-//	if( Q_stricmp( m_CachedMap, MapName() ) != 0 )
-//	{
-//		// New map or the last load was a transition, fully update the cache
-//		m_CachedMap.Set( MapName() );
+	//keep the cached data if the source hasn't changed.
+	if (
+#if defined( GAME_DLL )
+		(gpGlobals->eLoadType != MapLoad_LoadGame) || //always reload on new game, only in case the map file contents changed (level designers using "restart")
+#endif
+		(Q_stricmp(m_CachedMap, MapName()) != 0)) //different map than we have cached.
+	{
+		// New map or the last load was a transition, fully update the cache
+		m_CachedMap.Set(MapName());
 
 		Update();
-//	}
-//	else
-//	{
-//		// No need for a full update, but we need to remap static prop ICollideable's in the old system to the new system
-//		for( int i = m_CollideableIndicesMap.Count(); --i >= 0; )
-//		{
-//#ifdef _DEBUG
-//			StaticPropPolyhedronCacheInfo_t cacheInfo = m_CollideableIndicesMap.Element(i);
-//#endif
-//			m_CollideableIndicesMap.Reinsert( staticpropmgr->GetStaticPropByIndex( m_CollideableIndicesMap.Element(i).iStaticPropIndex ), i );
-//
-//			Assert( (m_CollideableIndicesMap.Element(i).iStartIndex == cacheInfo.iStartIndex) &&
-//					(m_CollideableIndicesMap.Element(i).iNumPolyhedrons == cacheInfo.iNumPolyhedrons) &&
-//					(m_CollideableIndicesMap.Element(i).iStaticPropIndex == cacheInfo.iStaticPropIndex) ); //I'm assuming this doesn't cause a reindex of the unordered list, if it does then this needs to be rewritten
-//		}
-//	}
+	}
 }
 
-void CStaticCollisionPolyhedronCache::Shutdown( void )
+void CStaticCollisionPolyhedronCache::Shutdown(void)
 {
 	Clear();
 }
 
 
-void CStaticCollisionPolyhedronCache::Clear( void )
+void CStaticCollisionPolyhedronCache::Clear(void)
 {
 	//The uses one big lump of memory to store polyhedrons. No need to Release() the polyhedrons.
-	
+
 	//Brushes
 	{
 		m_BrushPolyhedrons.RemoveAll();
-		if( s_BrushPolyhedronMemory != NULL )
+		if (s_BrushPolyhedronMemory != NULL)
 		{
-			delete []s_BrushPolyhedronMemory;
+			delete[]s_BrushPolyhedronMemory;
 			s_BrushPolyhedronMemory = NULL;
 		}
 	}
@@ -112,167 +107,191 @@ void CStaticCollisionPolyhedronCache::Clear( void )
 	{
 		m_CollideableIndicesMap.RemoveAll();
 		m_StaticPropPolyhedrons.RemoveAll();
-		if( s_StaticPropPolyhedronMemory != NULL )
+		if (s_StaticPropPolyhedronMemory != NULL)
 		{
-			delete []s_StaticPropPolyhedronMemory;
+			delete[]s_StaticPropPolyhedronMemory;
 			s_StaticPropPolyhedronMemory = NULL;
 		}
 	}
 }
 
-void CStaticCollisionPolyhedronCache::Update( void )
+static CPolyhedron* ConvertBrushToPolyhedron(int iBrushNumber, int iContentsMask, bool bTempPolyhedron)
+{
+	CUtlVector<Vector4D> vecPlanes;
+	int iBrushContents = 0;
+	enginetrace->GetBrushInfo(iBrushNumber, &vecPlanes, &iBrushContents);
+	if ((vecPlanes.Count() == 0) || ((iContentsMask & iBrushContents) == 0))
+		return NULL;
+
+	uint8* pMemory;
+	void* pDeleteMemory;
+	float* fStackPlanes;
+	//BrushSideInfo_t* brushSides;
+	size_t iMemoryNeeded = vecPlanes.Count() * ((sizeof(float) * 4));
+
+	if (iMemoryNeeded < (64 * 1024))
+	{
+		//use stack memory
+		pMemory = (uint8*)stackalloc(iMemoryNeeded);
+		pDeleteMemory = NULL;
+	}
+	else
+	{
+		pMemory = new uint8[iMemoryNeeded];
+		pDeleteMemory = pMemory;
+	}
+
+
+	fStackPlanes = (float*)pMemory;
+	int iPlaneCount = vecPlanes.Count();
+
+	CPolyhedron* pRetVal = NULL;
+	//Assert(iPlaneCount == iPlanesNeeded);
+	//if (iPlaneCount == iPlanesNeeded)
+	{
+		for (int i = 0; i != iPlaneCount; ++i)
+		{
+			fStackPlanes[(i * 4) + 0] = vecPlanes[i].x;
+			fStackPlanes[(i * 4) + 1] = vecPlanes[i].y;
+			fStackPlanes[(i * 4) + 2] = vecPlanes[i].z;
+			fStackPlanes[(i * 4) + 3] = vecPlanes[i].w;
+		}
+
+		pRetVal = GeneratePolyhedronFromPlanes(fStackPlanes, iPlaneCount, (1.0f / 16.0f), bTempPolyhedron);
+	}
+
+	if (pDeleteMemory)
+	{
+		delete[]pDeleteMemory;
+	}
+
+	return pRetVal;
+}
+
+void CStaticCollisionPolyhedronCache::Update(void)
 {
 	Clear();
+
+	if (gpGlobals->IsClient() && (g_pGameRules->IsMultiplayer() == false)) //not going to need this data on the client
+		return;
+
+	if (!sv_portal_staticcollisioncache_cachebrushes.GetBool() && !sv_portal_staticcollisioncache_cachestaticprops.GetBool())
+		return;
 
 	//There's no efficient way to know exactly how much memory we'll need to cache off all these polyhedrons.
 	//So we're going to allocated temporary workspaces as we need them and consolidate into one allocation at the end.
 	const size_t workSpaceSize = 1024 * 1024; //1MB. Fairly arbitrary size for a workspace. Brushes usually use 1-3MB in the end. Static props usually use about half as much as brushes.
 
-	uint8 *workSpaceAllocations[256];
+	uint8* workSpaceAllocations[256];
 	size_t usedSpaceInWorkspace[256];
 	unsigned int workSpacesAllocated = 0;
-	uint8 *pCurrentWorkSpace = new uint8 [workSpaceSize];
+	uint8* pCurrentWorkSpace = new uint8[workSpaceSize];
 	size_t roomLeftInWorkSpace = workSpaceSize;
 	workSpaceAllocations[workSpacesAllocated] = pCurrentWorkSpace;
 	usedSpaceInWorkspace[workSpacesAllocated] = 0;
 	++workSpacesAllocated;
-	
+
 
 	//brushes
+	if (sv_portal_staticcollisioncache_cachebrushes.GetBool())
 	{
 		int iBrush = 0;
-		CUtlVector<Vector4D> Planes;
+		int iBrushContents;
 
-		float fStackPlanes[4 * 400]; //400 is a crapload of planes in my opinion
+		CPolyhedron* pTempPolyhedron = ConvertBrushToPolyhedron(iBrush, MASK_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_MONSTERCLIP, true);
 
-		while( enginetrace->GetBrushInfo( iBrush, &Planes, NULL ) )
+		while ((pTempPolyhedron != NULL) || (enginetrace->GetBrushInfo(iBrush, NULL, &iBrushContents) != 0))
 		{
-			int iPlaneCount = Planes.Count();
-			AssertMsg( iPlaneCount != 0, "A brush with no planes???????" );
-
-			const Vector4D *pReturnedPlanes = Planes.Base();
-
-			CPolyhedron *pTempPolyhedron;
-
-			if( iPlaneCount > 400 )
+			if (pTempPolyhedron)
 			{
-				// o_O, we'll have to get more memory to transform this brush
-				float *pNonstackPlanes = new float [4 * iPlaneCount];
+				size_t memRequired = (sizeof(CPolyhedron_LumpedMemory)) +
+					(sizeof(Vector) * pTempPolyhedron->iVertexCount) +
+					(sizeof(Polyhedron_IndexedLine_t) * pTempPolyhedron->iLineCount) +
+					(sizeof(Polyhedron_IndexedLineReference_t) * pTempPolyhedron->iIndexCount) +
+					(sizeof(Polyhedron_IndexedPolygon_t) * pTempPolyhedron->iPolygonCount);
 
-				for( int i = 0; i != iPlaneCount; ++i )
-				{
-					pNonstackPlanes[(i * 4) + 0] = pReturnedPlanes[i].x;
-					pNonstackPlanes[(i * 4) + 1] = pReturnedPlanes[i].y;
-					pNonstackPlanes[(i * 4) + 2] = pReturnedPlanes[i].z;
-					pNonstackPlanes[(i * 4) + 3] = pReturnedPlanes[i].w;
-				}
+				Assert(memRequired < workSpaceSize);
 
-				pTempPolyhedron = GeneratePolyhedronFromPlanes( pNonstackPlanes, iPlaneCount, 0.01f, true );
-
-				delete []pNonstackPlanes;
-			}
-			else
-			{
-				for( int i = 0; i != iPlaneCount; ++i )
-				{
-					fStackPlanes[(i * 4) + 0] = pReturnedPlanes[i].x;
-					fStackPlanes[(i * 4) + 1] = pReturnedPlanes[i].y;
-					fStackPlanes[(i * 4) + 2] = pReturnedPlanes[i].z;
-					fStackPlanes[(i * 4) + 3] = pReturnedPlanes[i].w;
-				}
-
-				pTempPolyhedron = GeneratePolyhedronFromPlanes( fStackPlanes, iPlaneCount, 0.01f, true );
-			}
-
-			if( pTempPolyhedron )
-			{
-				size_t memRequired = (sizeof( CPolyhedron_LumpedMemory )) +
-					(sizeof( Vector ) * pTempPolyhedron->iVertexCount) +
-					(sizeof( Polyhedron_IndexedLine_t ) * pTempPolyhedron->iLineCount) +
-					(sizeof( Polyhedron_IndexedLineReference_t ) * pTempPolyhedron->iIndexCount) +
-					(sizeof( Polyhedron_IndexedPolygon_t ) * pTempPolyhedron->iPolygonCount);
-
-				Assert( memRequired < workSpaceSize );
-
-				if( roomLeftInWorkSpace < memRequired )
+				if (roomLeftInWorkSpace < memRequired)
 				{
 					usedSpaceInWorkspace[workSpacesAllocated - 1] = workSpaceSize - roomLeftInWorkSpace;
 
-					pCurrentWorkSpace = new uint8 [workSpaceSize];
+					pCurrentWorkSpace = new uint8[workSpaceSize];
 					roomLeftInWorkSpace = workSpaceSize;
 					workSpaceAllocations[workSpacesAllocated] = pCurrentWorkSpace;
 					usedSpaceInWorkspace[workSpacesAllocated] = 0;
 					++workSpacesAllocated;
 				}
 
-				CPolyhedron *pWorkSpacePolyhedron = CPolyhedron_LumpedMemory::AllocateAt( pCurrentWorkSpace, 
-																							pTempPolyhedron->iVertexCount,
-																							pTempPolyhedron->iLineCount,
-																							pTempPolyhedron->iIndexCount,
-																							pTempPolyhedron->iPolygonCount );
+				CPolyhedron* pWorkSpacePolyhedron = CPolyhedron_LumpedMemory::AllocateAt(pCurrentWorkSpace,
+					pTempPolyhedron->iVertexCount,
+					pTempPolyhedron->iLineCount,
+					pTempPolyhedron->iIndexCount,
+					pTempPolyhedron->iPolygonCount);
 
 				pCurrentWorkSpace += memRequired;
 				roomLeftInWorkSpace -= memRequired;
 
-				memcpy( pWorkSpacePolyhedron->pVertices, pTempPolyhedron->pVertices, pTempPolyhedron->iVertexCount * sizeof( Vector ) );
-				memcpy( pWorkSpacePolyhedron->pLines, pTempPolyhedron->pLines, pTempPolyhedron->iLineCount * sizeof( Polyhedron_IndexedLine_t ) );
-				memcpy( pWorkSpacePolyhedron->pIndices, pTempPolyhedron->pIndices, pTempPolyhedron->iIndexCount * sizeof( Polyhedron_IndexedLineReference_t ) );
-				memcpy( pWorkSpacePolyhedron->pPolygons, pTempPolyhedron->pPolygons, pTempPolyhedron->iPolygonCount * sizeof( Polyhedron_IndexedPolygon_t ) );
+				memcpy(pWorkSpacePolyhedron->pVertices, pTempPolyhedron->pVertices, pTempPolyhedron->iVertexCount * sizeof(Vector));
+				memcpy(pWorkSpacePolyhedron->pLines, pTempPolyhedron->pLines, pTempPolyhedron->iLineCount * sizeof(Polyhedron_IndexedLine_t));
+				memcpy(pWorkSpacePolyhedron->pIndices, pTempPolyhedron->pIndices, pTempPolyhedron->iIndexCount * sizeof(Polyhedron_IndexedLineReference_t));
+				memcpy(pWorkSpacePolyhedron->pPolygons, pTempPolyhedron->pPolygons, pTempPolyhedron->iPolygonCount * sizeof(Polyhedron_IndexedPolygon_t));
 
-				m_BrushPolyhedrons.AddToTail( pWorkSpacePolyhedron );
+				m_BrushPolyhedrons.AddToTail(pWorkSpacePolyhedron);
 
 				pTempPolyhedron->Release();
 			}
 			else
 			{
-				m_BrushPolyhedrons.AddToTail( NULL );
+				m_BrushPolyhedrons.AddToTail(NULL);
 			}
 
 			++iBrush;
+			pTempPolyhedron = ConvertBrushToPolyhedron(iBrush, MASK_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_MONSTERCLIP, true);
 		}
 
 		usedSpaceInWorkspace[workSpacesAllocated - 1] = workSpaceSize - roomLeftInWorkSpace;
-		
-		if( usedSpaceInWorkspace[0] != 0 ) //At least a little bit of memory was used.
+
+		if (usedSpaceInWorkspace[0] != 0) //At least a little bit of memory was used.
 		{
 			//consolidate workspaces into a single memory chunk
 			size_t totalMemoryNeeded = 0;
-			for( unsigned int i = 0; i != workSpacesAllocated; ++i )
+			for (unsigned int i = 0; i != workSpacesAllocated; ++i)
 			{
 				totalMemoryNeeded += usedSpaceInWorkspace[i];
 			}
 
-			uint8 *pFinalDest = new uint8 [totalMemoryNeeded];
+			uint8* pFinalDest = new uint8[totalMemoryNeeded];
 			s_BrushPolyhedronMemory = pFinalDest;
 
-			DevMsg( 2, "CStaticCollisionPolyhedronCache: Used %.2f KB to cache %d brush polyhedrons.\n", ((float)totalMemoryNeeded) / 1024.0f, m_BrushPolyhedrons.Count() );
+			DevMsg(2, "CStaticCollisionPolyhedronCache: Used %.2f KB to cache %d brush polyhedrons.\n", ((float)totalMemoryNeeded) / 1024.0f, m_BrushPolyhedrons.Count());
 
 			int iCount = m_BrushPolyhedrons.Count();
-			for( int i = 0; i != iCount; ++i )
+			for (int i = 0; i != iCount; ++i)
 			{
-				CPolyhedron_LumpedMemory *pSource = (CPolyhedron_LumpedMemory *)m_BrushPolyhedrons[i];
+				CPolyhedron_LumpedMemory* pSource = (CPolyhedron_LumpedMemory*)m_BrushPolyhedrons[i];
 
-				if( pSource == NULL )
+				if (pSource == NULL)
 					continue;
-				
-				size_t memRequired = (sizeof( CPolyhedron_LumpedMemory )) +
-										(sizeof( Vector ) * pSource->iVertexCount) +
-										(sizeof( Polyhedron_IndexedLine_t ) * pSource->iLineCount) +
-										(sizeof( Polyhedron_IndexedLineReference_t ) * pSource->iIndexCount) +
-										(sizeof( Polyhedron_IndexedPolygon_t ) * pSource->iPolygonCount);
 
-				CPolyhedron_LumpedMemory *pDest = (CPolyhedron_LumpedMemory *)pFinalDest;
+				size_t memRequired = (sizeof(CPolyhedron_LumpedMemory)) +
+					(sizeof(Vector) * pSource->iVertexCount) +
+					(sizeof(Polyhedron_IndexedLine_t) * pSource->iLineCount) +
+					(sizeof(Polyhedron_IndexedLineReference_t) * pSource->iIndexCount) +
+					(sizeof(Polyhedron_IndexedPolygon_t) * pSource->iPolygonCount);
+
+				CPolyhedron_LumpedMemory* pDest = (CPolyhedron_LumpedMemory*)pFinalDest;
 				m_BrushPolyhedrons[i] = pDest;
 				pFinalDest += memRequired;
 
-				int memoryOffset = ((uint8 *)pDest) - ((uint8 *)pSource);
+				int memoryOffset = ((uint8*)pDest) - ((uint8*)pSource);
 
-				memcpy( pDest, pSource, memRequired );
+				memcpy(pDest, pSource, memRequired);
 				//move all the pointers to their new location.
-				pDest->pVertices = (Vector *)(((uint8 *)(pDest->pVertices)) + memoryOffset);
-				pDest->pLines = (Polyhedron_IndexedLine_t *)(((uint8 *)(pDest->pLines)) + memoryOffset);
-				pDest->pIndices = (Polyhedron_IndexedLineReference_t *)(((uint8 *)(pDest->pIndices)) + memoryOffset);
-				pDest->pPolygons = (Polyhedron_IndexedPolygon_t *)(((uint8 *)(pDest->pPolygons)) + memoryOffset);
+				pDest->pVertices = (Vector*)(((uint8*)(pDest->pVertices)) + memoryOffset);
+				pDest->pLines = (Polyhedron_IndexedLine_t*)(((uint8*)(pDest->pLines)) + memoryOffset);
+				pDest->pIndices = (Polyhedron_IndexedLineReference_t*)(((uint8*)(pDest->pIndices)) + memoryOffset);
+				pDest->pPolygons = (Polyhedron_IndexedPolygon_t*)(((uint8*)(pDest->pPolygons)) + memoryOffset);
 			}
 		}
 	}
@@ -284,201 +303,283 @@ void CStaticCollisionPolyhedronCache::Update( void )
 	roomLeftInWorkSpace = workSpaceSize;
 
 	//static props
+	if (sv_portal_staticcollisioncache_cachestaticprops.GetBool())
 	{
-		CUtlVector<ICollideable *> StaticPropCollideables;
-		staticpropmgr->GetAllStaticProps( &StaticPropCollideables );
+		CUtlVector<ICollideable*> StaticPropCollideables;
+		staticpropmgr->GetAllStaticProps(&StaticPropCollideables);
 
-		if( StaticPropCollideables.Count() != 0 )
+		if (StaticPropCollideables.Count() != 0)
 		{
-			ICollideable **pCollideables = StaticPropCollideables.Base();
-			ICollideable **pStop = pCollideables + StaticPropCollideables.Count();
+			ICollideable** pCollideables = StaticPropCollideables.Base();
+			ICollideable** pStop = pCollideables + StaticPropCollideables.Count();
 
 			int iStaticPropIndex = 0;
 			do
 			{
-				ICollideable *pProp = *pCollideables;
-				vcollide_t *pCollide = modelinfo->GetVCollide( pProp->GetCollisionModel() );
-				StaticPropPolyhedronCacheInfo_t cacheInfo;
-				cacheInfo.iStartIndex = m_StaticPropPolyhedrons.Count();
+				ICollideable* pProp = *pCollideables;
 
-				if( pCollide != NULL )
+				if ((pProp->GetCollisionModel() != NULL) && (pProp->GetSolid() != SOLID_NONE) && ((pProp->GetSolidFlags() & FSOLID_NOT_SOLID) == 0))
 				{
-					VMatrix matToWorldPosition = pProp->CollisionToWorldTransform();
-
-					for( int i = 0; i != pCollide->solidCount; ++i )
+					vcollide_t* pCollide = modelinfo->GetVCollide(pProp->GetCollisionModel());
+					if ((pCollide != NULL) && (m_CollideableIndicesMap.IsValidIndex(m_CollideableIndicesMap.Find(pCollide)) == false))
 					{
-						CPhysConvex *ConvexesArray[1024];
-						int iConvexes = physcollision->GetConvexesUsedInCollideable( pCollide->solids[i], ConvexesArray, 1024 );
-
-						for( int j = 0; j != iConvexes; ++j )
+						StaticPropPolyhedronCacheInfo_t cacheInfo;
+						cacheInfo.iStartIndex = m_StaticPropPolyhedrons.Count();
+						for (int i = 0; i != pCollide->solidCount; ++i)
 						{
-							CPolyhedron *pTempPolyhedron = physcollision->PolyhedronFromConvex( ConvexesArray[j], true );
-							if( pTempPolyhedron )
+							CPhysConvex* ConvexesArray[1024];
+							int iConvexes = physcollision->GetConvexesUsedInCollideable(pCollide->solids[i], ConvexesArray, 1024);
+
+							for (int j = 0; j != iConvexes; ++j)
 							{
-								for( int iPointCounter = 0; iPointCounter != pTempPolyhedron->iVertexCount; ++iPointCounter )
-									pTempPolyhedron->pVertices[iPointCounter] = matToWorldPosition * pTempPolyhedron->pVertices[iPointCounter];
-
-								for( int iPolyCounter = 0; iPolyCounter != pTempPolyhedron->iPolygonCount; ++iPolyCounter )
-									pTempPolyhedron->pPolygons[iPolyCounter].polyNormal = matToWorldPosition.ApplyRotation( pTempPolyhedron->pPolygons[iPolyCounter].polyNormal );
-
-								
-								size_t memRequired = (sizeof( CPolyhedron_LumpedMemory )) +
-									(sizeof( Vector ) * pTempPolyhedron->iVertexCount) +
-									(sizeof( Polyhedron_IndexedLine_t ) * pTempPolyhedron->iLineCount) +
-									(sizeof( Polyhedron_IndexedLineReference_t ) * pTempPolyhedron->iIndexCount) +
-									(sizeof( Polyhedron_IndexedPolygon_t ) * pTempPolyhedron->iPolygonCount);
-
-								Assert( memRequired < workSpaceSize );
-
-								if( roomLeftInWorkSpace < memRequired )
+								CPolyhedron* pTempPolyhedron = physcollision->PolyhedronFromConvex(ConvexesArray[j], true);
+								if (pTempPolyhedron)
 								{
-									usedSpaceInWorkspace[workSpacesAllocated - 1] = workSpaceSize - roomLeftInWorkSpace;
-									
-									if( workSpacesAllocated < iBrushWorkSpaces )
+									size_t memRequired = (sizeof(CPolyhedron_LumpedMemory)) +
+										(sizeof(Vector) * pTempPolyhedron->iVertexCount) +
+										(sizeof(Polyhedron_IndexedLine_t) * pTempPolyhedron->iLineCount) +
+										(sizeof(Polyhedron_IndexedLineReference_t) * pTempPolyhedron->iIndexCount) +
+										(sizeof(Polyhedron_IndexedPolygon_t) * pTempPolyhedron->iPolygonCount);
+
+									Assert(memRequired < workSpaceSize);
+
+									if (roomLeftInWorkSpace < memRequired)
 									{
-										//re-use a workspace already allocated during brush polyhedron conversion
-										pCurrentWorkSpace = workSpaceAllocations[workSpacesAllocated];
-										usedSpaceInWorkspace[workSpacesAllocated] = 0;
+										usedSpaceInWorkspace[workSpacesAllocated - 1] = workSpaceSize - roomLeftInWorkSpace;
+
+										if (workSpacesAllocated < iBrushWorkSpaces)
+										{
+											//re-use a workspace already allocated during brush polyhedron conversion
+											pCurrentWorkSpace = workSpaceAllocations[workSpacesAllocated];
+											usedSpaceInWorkspace[workSpacesAllocated] = 0;
+										}
+										else
+										{
+											//allocate a new workspace
+											pCurrentWorkSpace = new uint8[workSpaceSize];
+											workSpaceAllocations[workSpacesAllocated] = pCurrentWorkSpace;
+											usedSpaceInWorkspace[workSpacesAllocated] = 0;
+										}
+
+										roomLeftInWorkSpace = workSpaceSize;
+										++workSpacesAllocated;
 									}
-									else
+
+									CPolyhedron* pWorkSpacePolyhedron = CPolyhedron_LumpedMemory::AllocateAt(pCurrentWorkSpace,
+										pTempPolyhedron->iVertexCount,
+										pTempPolyhedron->iLineCount,
+										pTempPolyhedron->iIndexCount,
+										pTempPolyhedron->iPolygonCount);
+
+									pCurrentWorkSpace += memRequired;
+									roomLeftInWorkSpace -= memRequired;
+
+									memcpy(pWorkSpacePolyhedron->pVertices, pTempPolyhedron->pVertices, pTempPolyhedron->iVertexCount * sizeof(Vector));
+									memcpy(pWorkSpacePolyhedron->pLines, pTempPolyhedron->pLines, pTempPolyhedron->iLineCount * sizeof(Polyhedron_IndexedLine_t));
+									memcpy(pWorkSpacePolyhedron->pIndices, pTempPolyhedron->pIndices, pTempPolyhedron->iIndexCount * sizeof(Polyhedron_IndexedLineReference_t));
+									memcpy(pWorkSpacePolyhedron->pPolygons, pTempPolyhedron->pPolygons, pTempPolyhedron->iPolygonCount * sizeof(Polyhedron_IndexedPolygon_t));
+
+									m_StaticPropPolyhedrons.AddToTail(pWorkSpacePolyhedron);
+
+#if defined( DBGFLAG_ASSERT ) && 0
+									CPhysConvex* pConvex = physcollision->ConvexFromConvexPolyhedron(*pTempPolyhedron);
+									AssertMsg(pConvex != NULL, "Conversion from Convex to Polyhedron was irreversable");
+									if (pConvex)
 									{
-										//allocate a new workspace
-										pCurrentWorkSpace = new uint8 [workSpaceSize];
-										workSpaceAllocations[workSpacesAllocated] = pCurrentWorkSpace;
-										usedSpaceInWorkspace[workSpacesAllocated] = 0;
+										physcollision->ConvexFree(pConvex);
 									}
-
-									roomLeftInWorkSpace = workSpaceSize;
-									++workSpacesAllocated;
-								}
-
-								CPolyhedron *pWorkSpacePolyhedron = CPolyhedron_LumpedMemory::AllocateAt( pCurrentWorkSpace, 
-																											pTempPolyhedron->iVertexCount,
-																											pTempPolyhedron->iLineCount,
-																											pTempPolyhedron->iIndexCount,
-																											pTempPolyhedron->iPolygonCount );
-
-								pCurrentWorkSpace += memRequired;
-								roomLeftInWorkSpace -= memRequired;
-
-								memcpy( pWorkSpacePolyhedron->pVertices, pTempPolyhedron->pVertices, pTempPolyhedron->iVertexCount * sizeof( Vector ) );
-								memcpy( pWorkSpacePolyhedron->pLines, pTempPolyhedron->pLines, pTempPolyhedron->iLineCount * sizeof( Polyhedron_IndexedLine_t ) );
-								memcpy( pWorkSpacePolyhedron->pIndices, pTempPolyhedron->pIndices, pTempPolyhedron->iIndexCount * sizeof( Polyhedron_IndexedLineReference_t ) );
-								memcpy( pWorkSpacePolyhedron->pPolygons, pTempPolyhedron->pPolygons, pTempPolyhedron->iPolygonCount * sizeof( Polyhedron_IndexedPolygon_t ) );
-
-								m_StaticPropPolyhedrons.AddToTail( pWorkSpacePolyhedron );
-
-#ifdef _DEBUG
-								CPhysConvex *pConvex = physcollision->ConvexFromConvexPolyhedron( *pTempPolyhedron );
-								AssertMsg( pConvex != NULL, "Conversion from Convex to Polyhedron was unreversable" );
-								if( pConvex )
-								{
-									physcollision->ConvexFree( pConvex );
-								}
 #endif
 
-								pTempPolyhedron->Release();
+									pTempPolyhedron->Release();
+								}
 							}
 						}
-					}
 
-					cacheInfo.iNumPolyhedrons = m_StaticPropPolyhedrons.Count() - cacheInfo.iStartIndex;
-					cacheInfo.iStaticPropIndex = iStaticPropIndex;
-					Assert( staticpropmgr->GetStaticPropByIndex( iStaticPropIndex ) == pProp );
-					
-					m_CollideableIndicesMap.InsertOrReplace( pProp, cacheInfo );
+						cacheInfo.iNumPolyhedrons = m_StaticPropPolyhedrons.Count() - cacheInfo.iStartIndex;
+						Assert(m_CollideableIndicesMap.IsValidIndex(m_CollideableIndicesMap.Find(pCollide)) == false);
+						m_CollideableIndicesMap.Insert(pCollide, cacheInfo);
+					}
 				}
 
 				++iStaticPropIndex;
 				++pCollideables;
-			} while( pCollideables != pStop );
+			} while (pCollideables != pStop);
 
 
 			usedSpaceInWorkspace[workSpacesAllocated - 1] = workSpaceSize - roomLeftInWorkSpace;
 
-			if( usedSpaceInWorkspace[0] != 0 ) //At least a little bit of memory was used.
+			if (usedSpaceInWorkspace[0] != 0) //At least a little bit of memory was used.
 			{
 				//consolidate workspaces into a single memory chunk
 				size_t totalMemoryNeeded = 0;
-				for( unsigned int i = 0; i != workSpacesAllocated; ++i )
+				for (unsigned int i = 0; i != workSpacesAllocated; ++i)
 				{
 					totalMemoryNeeded += usedSpaceInWorkspace[i];
 				}
 
-				uint8 *pFinalDest = new uint8 [totalMemoryNeeded];
+				uint8* pFinalDest = new uint8[totalMemoryNeeded];
 				s_StaticPropPolyhedronMemory = pFinalDest;
 
-				DevMsg( 2, "CStaticCollisionPolyhedronCache: Used %.2f KB to cache %d static prop polyhedrons.\n", ((float)totalMemoryNeeded) / 1024.0f, m_StaticPropPolyhedrons.Count() );
+				DevMsg(2, "CStaticCollisionPolyhedronCache: Used %.2f KB to cache %d static prop polyhedrons.\n", ((float)totalMemoryNeeded) / 1024.0f, m_StaticPropPolyhedrons.Count());
 
 				int iCount = m_StaticPropPolyhedrons.Count();
-				for( int i = 0; i != iCount; ++i )
+				for (int i = 0; i != iCount; ++i)
 				{
-					CPolyhedron_LumpedMemory *pSource = (CPolyhedron_LumpedMemory *)m_StaticPropPolyhedrons[i];
+					CPolyhedron_LumpedMemory* pSource = (CPolyhedron_LumpedMemory*)m_StaticPropPolyhedrons[i];
 
-					size_t memRequired = (sizeof( CPolyhedron_LumpedMemory )) +
-											(sizeof( Vector ) * pSource->iVertexCount) +
-											(sizeof( Polyhedron_IndexedLine_t ) * pSource->iLineCount) +
-											(sizeof( Polyhedron_IndexedLineReference_t ) * pSource->iIndexCount) +
-											(sizeof( Polyhedron_IndexedPolygon_t ) * pSource->iPolygonCount);
+					size_t memRequired = (sizeof(CPolyhedron_LumpedMemory)) +
+						(sizeof(Vector) * pSource->iVertexCount) +
+						(sizeof(Polyhedron_IndexedLine_t) * pSource->iLineCount) +
+						(sizeof(Polyhedron_IndexedLineReference_t) * pSource->iIndexCount) +
+						(sizeof(Polyhedron_IndexedPolygon_t) * pSource->iPolygonCount);
 
-					CPolyhedron_LumpedMemory *pDest = (CPolyhedron_LumpedMemory *)pFinalDest;
+					CPolyhedron_LumpedMemory* pDest = (CPolyhedron_LumpedMemory*)pFinalDest;
 					m_StaticPropPolyhedrons[i] = pDest;
 					pFinalDest += memRequired;
 
-					int memoryOffset = ((uint8 *)pDest) - ((uint8 *)pSource);
+					int memoryOffset = ((uint8*)pDest) - ((uint8*)pSource);
 
-					memcpy( pDest, pSource, memRequired );
+					memcpy(pDest, pSource, memRequired);
 					//move all the pointers to their new location.
-					pDest->pVertices = (Vector *)(((uint8 *)(pDest->pVertices)) + memoryOffset);
-					pDest->pLines = (Polyhedron_IndexedLine_t *)(((uint8 *)(pDest->pLines)) + memoryOffset);
-					pDest->pIndices = (Polyhedron_IndexedLineReference_t *)(((uint8 *)(pDest->pIndices)) + memoryOffset);
-					pDest->pPolygons = (Polyhedron_IndexedPolygon_t *)(((uint8 *)(pDest->pPolygons)) + memoryOffset);
+					pDest->pVertices = (Vector*)(((uint8*)(pDest->pVertices)) + memoryOffset);
+					pDest->pLines = (Polyhedron_IndexedLine_t*)(((uint8*)(pDest->pLines)) + memoryOffset);
+					pDest->pIndices = (Polyhedron_IndexedLineReference_t*)(((uint8*)(pDest->pIndices)) + memoryOffset);
+					pDest->pPolygons = (Polyhedron_IndexedPolygon_t*)(((uint8*)(pDest->pPolygons)) + memoryOffset);
 				}
 			}
 		}
 	}
 
-	if( iBrushWorkSpaces > workSpacesAllocated )
+	if (iBrushWorkSpaces > workSpacesAllocated)
 		workSpacesAllocated = iBrushWorkSpaces;
 
-	for( unsigned int i = 0; i != workSpacesAllocated; ++i )
+	for (unsigned int i = 0; i != workSpacesAllocated; ++i)
 	{
-		delete []workSpaceAllocations[i];
+		delete[]workSpaceAllocations[i];
 	}
 }
 
 
 
-const CPolyhedron *CStaticCollisionPolyhedronCache::GetBrushPolyhedron( int iBrushNumber )
+const CPolyhedron* CStaticCollisionPolyhedronCache::GetBrushPolyhedron(int iBrushNumber)
 {
-	Assert( iBrushNumber < m_BrushPolyhedrons.Count() );
+	Assert((iBrushNumber < m_BrushPolyhedrons.Count()) || ((sv_portal_staticcollisioncache_cachebrushes.GetBool() == false) && (m_CachedMap.IsEmpty() == false)));
 
-	if( (iBrushNumber < 0) || (iBrushNumber >= m_BrushPolyhedrons.Count()) )
+	if (iBrushNumber < 0)
 		return NULL;
+
+	if ((iBrushNumber >= m_BrushPolyhedrons.Count()) || (m_BrushPolyhedrons[iBrushNumber] == NULL))
+	{
+		return ConvertBrushToPolyhedron(iBrushNumber, MASK_ALL, false);
+	}
 
 	return m_BrushPolyhedrons[iBrushNumber];
 }
 
-int CStaticCollisionPolyhedronCache::GetStaticPropPolyhedrons( ICollideable *pStaticProp, CPolyhedron **pOutputPolyhedronArray, int iOutputArraySize )
+void CStaticCollisionPolyhedronCache::ReleaseBrushPolyhedron(int iBrushNumber, const CPolyhedron* pPolyhedron)
 {
-	unsigned short iPropIndex = m_CollideableIndicesMap.Find( pStaticProp );
-	if( !m_CollideableIndicesMap.IsValidIndex( iPropIndex ) ) //static prop never made it into the cache for some reason (specifically no collision data when this workaround was written)
-		return 0;
-
-	StaticPropPolyhedronCacheInfo_t cacheInfo = m_CollideableIndicesMap.Element( iPropIndex );
-
-	if( cacheInfo.iNumPolyhedrons < iOutputArraySize )
-		iOutputArraySize = cacheInfo.iNumPolyhedrons;
-
-	for( int i = cacheInfo.iStartIndex, iWriteIndex = 0; iWriteIndex != iOutputArraySize; ++i, ++iWriteIndex )
+	//we only actually do any work here if there was a polyhedron and it's not in our cache.
+	if (pPolyhedron)
 	{
-		pOutputPolyhedronArray[iWriteIndex] = m_StaticPropPolyhedrons[i];
+		Assert(iBrushNumber >= 0);
+		if ((iBrushNumber >= m_BrushPolyhedrons.Count()) || (pPolyhedron != m_BrushPolyhedrons[iBrushNumber]))
+		{
+			//not a cached version. Must have generated it on the fly, release it
+			((CPolyhedron*)pPolyhedron)->Release();
+		}
 	}
-
-	return iOutputArraySize;
 }
 
+int CStaticCollisionPolyhedronCache::GetStaticPropPolyhedrons(ICollideable* pStaticProp, const CPolyhedron** pOutputPolyhedronArray, int iOutputArraySize)
+{
+	if (pStaticProp->GetCollisionModel() == NULL)
+		return 0;
 
+	vcollide_t* pCollide = modelinfo->GetVCollide(pStaticProp->GetCollisionModel());
+	if (pCollide == NULL)
+		return 0;
+
+	unsigned short iPropIndex = m_CollideableIndicesMap.Find(pCollide);
+
+	int iWrotePolyhedrons = 0;
+
+	if (m_CollideableIndicesMap.IsValidIndex(iPropIndex))
+	{
+		StaticPropPolyhedronCacheInfo_t cacheInfo = m_CollideableIndicesMap.Element(iPropIndex);
+
+		if (cacheInfo.iNumPolyhedrons < iOutputArraySize)
+		{
+			iOutputArraySize = cacheInfo.iNumPolyhedrons;
+		}
+
+		for (int i = cacheInfo.iStartIndex; iWrotePolyhedrons != iOutputArraySize; ++i, ++iWrotePolyhedrons)
+		{
+			pOutputPolyhedronArray[iWrotePolyhedrons] = m_StaticPropPolyhedrons[i];
+		}
+	}
+	else
+	{
+		if ((pStaticProp->GetSolid() == SOLID_NONE) || ((pStaticProp->GetSolidFlags() & FSOLID_NOT_SOLID) != 0))
+			return 0;
+
+		for (int i = 0; i != pCollide->solidCount; ++i)
+		{
+			CPhysConvex* ConvexesArray[1024];
+			int iConvexes = physcollision->GetConvexesUsedInCollideable(pCollide->solids[i], ConvexesArray, 1024);
+
+			if (iConvexes > iOutputArraySize)
+			{
+				iConvexes = iOutputArraySize;
+			}
+
+			for (int j = 0; j != iConvexes; ++j)
+			{
+				pOutputPolyhedronArray[iWrotePolyhedrons] = physcollision->PolyhedronFromConvex(ConvexesArray[j], false);
+				if (pOutputPolyhedronArray[iWrotePolyhedrons] != NULL)
+				{
+					++iWrotePolyhedrons;
+				}
+			}
+		}
+	}
+
+	return iWrotePolyhedrons;
+}
+
+void CStaticCollisionPolyhedronCache::ReleaseStaticPropPolyhedrons(ICollideable* pStaticProp, const CPolyhedron** pPolyhedrons, int iPolyhedronCount)
+{
+	if (pStaticProp->GetCollisionModel() != NULL)
+	{
+		vcollide_t* pCollide = modelinfo->GetVCollide(pStaticProp->GetCollisionModel());
+		if (pCollide != NULL)
+		{
+			if (m_CollideableIndicesMap.IsValidIndex(m_CollideableIndicesMap.Find(pCollide)))
+			{
+				//these polyhedrons came from the cache, do nothing.
+#if defined( DBGFLAG_ASSERT )
+				for (int i = 0; i < iPolyhedronCount; ++i)
+				{
+					Assert(m_StaticPropPolyhedrons.IsValidIndex(m_StaticPropPolyhedrons.Find((CPolyhedron*)pPolyhedrons[i])));
+				}
+#endif
+				return;
+			}
+		}
+	}
+
+#if defined( DBGFLAG_ASSERT )
+	for (int i = 0; i < iPolyhedronCount; ++i)
+	{
+		Assert(m_StaticPropPolyhedrons.IsValidIndex(m_StaticPropPolyhedrons.Find((CPolyhedron*)pPolyhedrons[i])) == false);
+	}
+#endif
+
+	//if we're down here, the polyhedrons were not in the cache. Release them
+	for (int i = 0; i != iPolyhedronCount; ++i)
+	{
+		((CPolyhedron*)pPolyhedrons[i])->Release();
+	}
+}
 
 
 

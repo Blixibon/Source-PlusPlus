@@ -1,115 +1,47 @@
-"Unlittwotexture"
+"SolidEnergy"
 {
-	"$basetexture" "Effects/Combineshield/comshieldwall"
-	"$texture2" "Effects/Combineshield/comshieldwall_close"
+	"$basetexture" "Effects/Combineshield/comshieldwall_alpha"
+	//"$detail1" "Effects/Combineshield/comshieldwall"
 //	"$texture2" "Effects/Combineshield/comshieldwall"
 
-	"$translucent" "1"
-	"$envmap" "env_cubemap"
-	"$envmaptint" "[1 1 1]"
-	"$gnoise" "1"
-	"$playerdistance" "0"
-	"$additive" 1
-	"$alpharesult" "1"
-	"$smallamount" ".1"
-	"$alpharesultmin" "1"
-	"$alpharesultmax" "1"
-	"$nodecal" 1
-	"$hundred" "100"
-	"$largeamount" "1"
-	"$playerdistance2" "1"
-	"$moveresult" "30"
-	"$ten" "1500"
-	"$mod" "0.1"
-	"$frameminusten" "1"
+	$flowbounds "effects/xen_shield_bounds2"
+	$flowmap "effects/fizzler_flow"
+	$FLOW_NOISE_TEXTURE "effects/fizzler_underground_noise"
+	$FLOW_UVSCROLLDISTANCE "0.2"
+	$FLOW_TIMEINTERVALINSECONDS "1.5"
+	$FLOW_NOISE_SCALE 0.008
+	$FLOW_LERPEXP 1.5
+	$FLOW_WORLDUVSCALE 0.008
+	$FLOW_NORMALUVSCALE 0.01
+	$FLOW_COLOR "[.025 .78 .75]"
+	$flow_color_intensity 1
+	$flow_cheap 0
 	
+	$FLOW_VORTEX_COLOR "[.0 .78 .75]"
+	$FLOW_VORTEX_SIZE 64
+	
+	$FLOW_VORTEX1 1
+	$FLOW_VORTEX2 0
+	
+	$OUTPUTINTENSITY 1
 
-	"Proxies"
+	"$translucent" "1"
+	"$additive" 1
+	"$nodecal" 1
+	
+	Proxies
 	{
-
-		"PlayerProximity"
+		"PlayerPosition"
 		{
-			"resultVar" "$playerdistance2"
-			"scale"  1
-		}	
-		"Subtract"
-		{
-			"srcVar1" "$playerdistance2"
-			"srcVar2" "$ten"
-			"resultVar" "$moveresult"
-		}
-		"Multiply"
-		{
-			"srcVar1" "$moveresult"
-			"srcVar2" "$mod"
-			"resultVar" "$frameminusten"
+			"scale"	"1"
+			"resultVar"	"$FLOW_VORTEX_POS1"
 		}
 		
-		"Clamp"
+		"MainCharacterPosition"
 		{
-			"srcVar1"	"$frameminusten"
-			"min"		"0"
-			"max"		"30"
-			"resultVar" "$frame2"
-		}
-		"Clamp"
-		{
-			"srcVar1"	"$frameminusten"
-			"min"		"0"
-			"max"		"30"
-			"resultVar" "$frame"
-		}
-
-		"PlayerProximity"
-		{
-			"resultVar" "$playerdistance"
-			"scale" 0.0001 
-		}	
-		"GaussianNoise"
-		{
-			"minVal" .8
-			"maxVal" 1	
- 			"mean" .7
-			"halfwidth" .3
-			"resultVar" "$gnoise"
-		}
-		"Subtract"
-		{
-			"srcVar1" "$gnoise"
-			"srcVar2" "$playerdistance"
-			"resultVar" "$alpharesultmin"
-		}
-		"Multiply"
-		{
-			"srcVar1" "$hundred"
-			"srcVar2" "$playerdistance"
-			"resultVar" "$largeamount"
-		}
-		"Equals"
-		{
-			"srcVar1" "$playerdistance"
-			"resultVar" "$envmaptint[1]"
-		}	
-		"Add"
-		{
-			"srcVar1" "$alpharesultmin"
-			"srcVar2" "$smallamount"
-			"resultVar" "$alpharesultmax"
-		}	
-		"Sine"
-		{
-			"sineperiod"	1.08
-			"sinemin"	"$alpharesultmin"
-			"sinemax"	"$alpharesultmax"
-			"resultVar"	"$alpha"
-		}
-
-
-		"TextureScroll"
-		{
-			"texturescrollvar" "$texture2transform"
-			"texturescrollrate" .1
-			"texturescrollangle" 20
+			"scale"	"1"
+			"foundVar"	"$FLOW_VORTEX2"
+			"resultVar"	"$FLOW_VORTEX_POS2"
 		}
 	}
 }

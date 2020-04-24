@@ -197,6 +197,7 @@ static CUtlVector<C_Prop_Portal*> s_PortalLinkageGroups[256];
 C_Prop_Portal::C_Prop_Portal( void )
 {
 	TransformedLighting.m_LightShadowHandle = CLIENTSHADOW_INVALID_HANDLE;
+	m_PortalSimulator.SetSize(PORTAL_HALF_WIDTH, PORTAL_HALF_HEIGHT);
 	CProp_Portal_Shared::AllPortals.AddToTail( this );
 }
 

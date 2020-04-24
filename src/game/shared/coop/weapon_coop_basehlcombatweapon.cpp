@@ -282,106 +282,6 @@ void CWeaponCoopBaseHLCombat::ItemHolsterFrame()
 }
 
 #ifdef CLIENT_DLL
-float CWeaponCoopBaseHLCombat::CalcViewmodelBob( void )
-{
-	static	float bobtime;
-	static	float lastbobtime;
-	float	cycle;
-	
-	CBasePlayer *player = ToBasePlayer( GetOwner() );
-	//Assert( player );
-
-	//NOTENOTE: For now, let this cycle continue when in the air, because it snaps badly without it
-
-	if ( ( !gpGlobals->frametime ) || ( player == NULL ) )
-	{
-		//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
-		return 0.0f;// just use old value
-	}
-
-	//Find the speed of the player
-	float speed = player->GetLocalVelocity().Length2D();
-
-	//FIXME: This maximum speed value must come from the server.
-	//		 MaxSpeed() is not sufficient for dealing with sprinting - jdw
-
-	speed = clamp( speed, -320, 320 );
-
-	float bob_offset = RemapVal( speed, 0, 320, 0.0f, 1.0f );
-	
-	bobtime += ( gpGlobals->curtime - lastbobtime ) * bob_offset;
-	lastbobtime = gpGlobals->curtime;
-
-	//Calculate the vertical bob
-	cycle = bobtime - (int)(bobtime/ cl_bobcycle.GetFloat())* cl_bobcycle.GetFloat();
-	cycle /= cl_bobcycle.GetFloat();
-
-	if ( cycle < cl_bobup.GetFloat())
-	{
-		cycle = M_PI * cycle / cl_bobup.GetFloat();
-	}
-	else
-	{
-		cycle = M_PI + M_PI*(cycle- cl_bobup.GetFloat())/(1.0 - cl_bobup.GetFloat());
-	}
-	
-	g_verticalBob = speed*0.005f;
-	g_verticalBob = g_verticalBob*0.3 + g_verticalBob*0.7*sin(cycle);
-
-	g_verticalBob = clamp( g_verticalBob, -7.0f, 4.0f );
-
-	//Calculate the lateral bob
-	cycle = bobtime - (int)(bobtime/ cl_bobcycle.GetFloat() *2)* cl_bobcycle.GetFloat() *2;
-	cycle /= cl_bobcycle.GetFloat() *2;
-
-	if ( cycle < cl_bobup.GetFloat())
-	{
-		cycle = M_PI * cycle / cl_bobup.GetFloat();
-	}
-	else
-	{
-		cycle = M_PI + M_PI*(cycle- cl_bobup.GetFloat())/(1.0 - cl_bobup.GetFloat());
-	}
-
-	g_lateralBob = speed*0.005f;
-	g_lateralBob = g_lateralBob*0.3 + g_lateralBob*0.7*sin(cycle);
-	g_lateralBob = clamp( g_lateralBob, -7.0f, 4.0f );
-	
-	//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
-	return 0.0f;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
-//			&angles - 
-//			viewmodelindex - 
-//-----------------------------------------------------------------------------
-void CWeaponCoopBaseHLCombat::AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles )
-{
-	if (viewmodel->GetSequenceActivity(viewmodel->GetSequence()) == GetSprintActivity())
-		return;
-
-	Vector	forward, right;
-	AngleVectors( angles, &forward, &right, NULL );
-
-	CalcViewmodelBob();
-
-	// Apply bob, but scaled down to 40%
-	VectorMA( origin, g_verticalBob * 0.1f, forward, origin );
-	
-	// Z bob a bit more
-	origin[2] += g_verticalBob * 0.1f;
-	
-	// bob the angles
-	angles[ ROLL ]	+= g_verticalBob * 0.5f;
-	angles[ PITCH ]	-= g_verticalBob * 0.4f;
-
-	angles[ YAW ]	-= g_lateralBob  * 0.3f;
-
-	VectorMA( origin, g_lateralBob * 0.8f, right, origin );
-}
-
 //-----------------------------------------------------------------------------
 Vector CWeaponCoopBaseHLCombat::GetBulletSpread( WeaponProficiency_t proficiency )
 {
@@ -399,22 +299,32 @@ const WeaponProficiencyInfo_t *CWeaponCoopBaseHLCombat::GetProficiencyValues()
 {
 	return NULL;
 }
+
+void CWeaponCoopBaseHLCombat::AddViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles)
+{
+	if (viewmodel->GetSequenceActivity(viewmodel->GetSequence()) == GetSprintActivity())
+		return;
+
+	switch (GetCoopWpnData().m_iViewmodelBobMode)
+	{
+	case BOBMODE_HL2:
+	default:
+		AddHL2ViewmodelBob(viewmodel, origin, angles);
+		break;
+	case BOBMODE_HL1:
+		AddHL1ViewmodelBob(viewmodel, origin, angles);
+		break;
+	case BOBMODE_PORTAL:
+		AddPortalViewmodelBob(viewmodel, origin, angles);
+		break;
+	}
+}
+
 #else
-float CWeaponCoopBaseHLCombat::CalcViewmodelBob( void )
-{
-	return 0.0f;
-}
 
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
-//			&angles - 
-//			viewmodelindex - 
-//-----------------------------------------------------------------------------
-void CWeaponCoopBaseHLCombat::AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles )
+void CWeaponCoopBaseHLCombat::AddViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles)
 {
 }
-
 
 //-----------------------------------------------------------------------------
 Vector CWeaponCoopBaseHLCombat::GetBulletSpread( WeaponProficiency_t proficiency )
@@ -502,6 +412,9 @@ Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequ
 
 bool CWeaponCoopBaseHLCombat::CanSprint()
 {
+	if (gpGlobals->maxClients > 1)
+		return false;
+
 	return (GetSprintActivity() != ACT_INVALID && SelectWeightedSequence(GetSprintActivity()) != ACT_INVALID);
 }
 

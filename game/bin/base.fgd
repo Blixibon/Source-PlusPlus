@@ -923,6 +923,12 @@
 		0 : "No"
 		1 : "Yes"
 	]
+
+	uses_portals(choices) : "Uses Portals" : 1 : "If set, caches all static level geometry at startup for use by portal simulators." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
 	
 	levelversion(integer)	readonly	: "FGD Version"      : 1  : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
 ]

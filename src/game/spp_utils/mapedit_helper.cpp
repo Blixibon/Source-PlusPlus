@@ -214,7 +214,7 @@ bool MapEdit_ExtractEnts(Map_t *pMap, const char *pszEntBuffer)
 	DevMsg( "Extracting entities...\n" );
 	
 	// extract ents from the ASCII buffer
-	char line[256];
+	char line[MAX_KEY + MAX_VALUE + 4];
 	int len = strlen( pszEntBuffer );
 	int cur = 0;
 	BOOL endBracketFound = FALSE;
@@ -375,7 +375,7 @@ BOOL MapEdit_BuildEntBuffer(Map_t *pMap)
 			if ( !kv )
 				continue;
 
-			char line[256];
+			char line[MAX_KEY + MAX_VALUE + 4];
 			sprintf_s( line, sizeof( line ), "\"%s\" \"%s\"", kv->key, kv->value );
 
 			totalSize += strlen( line ) + 1;

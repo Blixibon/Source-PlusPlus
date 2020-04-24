@@ -70,11 +70,14 @@ typedef struct NewGameDef_s
 	CGTSymbol m_PopSet;
 	CCopyableUtlVector< FileNameHandle_t > m_SoundOverrides;
 
+	bool	m_bExpectPortals;
+
 	NewGameDef_s()
 	{
 		m_BaseGame = GAME_DEFAULT;
 		m_GameMod = GAME_DEFAULT;
 		m_PopSet = "default";
+		m_bExpectPortals = false;
 	}
 } NewGameDef_t;
 
@@ -109,6 +112,8 @@ public:
 	const char* GetCurrentConfigName() { return m_symConfigName.String(); }
 	int		GetSoundOverrideScripts(CUtlStringList& scripts);
 	const char* GetPopulationSet() { return m_CurrentGame.m_PopSet.String(); }
+
+	bool WorldShouldExpectPortals() { return m_CurrentGame.m_bExpectPortals; }
 
 	bool IsMapInArea(int iArea)
 	{

@@ -94,14 +94,17 @@ public:
 
 	void AddGrenades( int inc, CBaseEntity *pLastGrenade = NULL )
 	{
-		m_iNumGrenades += inc;
-		if (m_iNumGrenades <= 0)
-			m_OnOutOfGrenades.Set( pLastGrenade, pLastGrenade, this );
+		if (m_iNumGrenades != -1)
+		{
+			m_iNumGrenades += inc;
+			if (m_iNumGrenades <= 0)
+				m_OnOutOfGrenades.Set(pLastGrenade, pLastGrenade, this);
+		}
 	}
 
 	virtual bool	IsAltFireCapable() { return false; }
 	virtual bool	IsGrenadeCapable() { return true; }
-	inline bool		HasGrenades() { return m_iNumGrenades > 0; }
+	inline bool		HasGrenades() { return m_iNumGrenades > 0 || m_iNumGrenades == -1; }
 
 	void InputSetGrenades( inputdata_t &inputdata ) { AddGrenades( inputdata.value.Int() - m_iNumGrenades ); }
 	void InputAddGrenades( inputdata_t &inputdata ) { AddGrenades( inputdata.value.Int() ); }

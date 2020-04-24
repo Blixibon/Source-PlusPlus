@@ -1,5 +1,9 @@
 ep2_outland_06a
 {
+	"clearandreplace"
+	{
+		"lumpfile"	"maps/ep2_outland_06a_l_0.lmp"
+	}
 
 	create //Spawn a new ent, similar to the VMF format
 	{

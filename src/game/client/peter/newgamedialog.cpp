@@ -270,7 +270,7 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 						V_ComposeFileName("maps/", szMapName, mapname, MAX_PATH);
 						V_SetExtension(mapname, ".bsp", MAX_PATH);
 
-						if (filesystem->FileExists(mapname, "GAME"))
+						if (filesystem->FileExists(mapname, "GAME") && (!m_bCommentaryMode || filesystem->FileExists(CFmtStr("maps" CORRECT_PATH_SEPARATOR_S "%s_commentary.txt", szMapName), "GAME")))
 						{
 							bCreate = true;
 						}
@@ -291,7 +291,7 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 					pKV->SetString("game", gameName);
 
 					KeyValuesAD pkvConfig("Config");
-					if (pkvConfig->LoadFromFile(g_pFullFileSystem, CFmtStr("cfg/%s/gameconfig.vdf", fileName), "MOD"))
+					if (!m_bCommentaryMode && pkvConfig->LoadFromFile(g_pFullFileSystem, CFmtStr("cfg/%s/gameconfig.vdf", fileName), "MOD"))
 					{
 						KeyValues *pkvLevel = pkvConfig->FindKey("training_level");
 						if (pkvLevel)
@@ -418,6 +418,7 @@ void CHLMSNewGame::OnSelectionUpdated(vgui::Panel* pSource)
 			if (filesystem->FileExists(mapname, "GAME"))
 			{
 				m_pTrainingButton->SetEnabled(true);
+				m_pTrainingButton->SetAsCurrentDefaultButton(1);
 				V_strcpy_safe(m_cTrainingLevel, pchTrainingLevel);
 			}
 			else
@@ -451,6 +452,11 @@ void CHLMSNewGame::OnSelectionUpdated(vgui::Panel* pSource)
 
 		m_pChapterList->SetSortColumn(1);
 		m_pChapterList->SortList();
+	}
+	else if (pSource == m_pChapterList)
+	{
+		m_pOpenButton->SetAsCurrentDefaultButton(1);
+		m_pTrainingButton->SetAsCurrentDefaultButton(0);
 	}
 }
 

@@ -1,0 +1,7 @@
+ep1_citadel_03
+{
+	"clearandreplace"
+	{
+		"lumpfile"	"maps/ep1_citadel_03_l_0.lmp"
+	}
+}

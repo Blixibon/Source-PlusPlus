@@ -190,6 +190,10 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 								bFound = true;
 						}
 					}
+					else
+					{
+						bFound = true;
+					}
 				}
 
 				if (!bFound)

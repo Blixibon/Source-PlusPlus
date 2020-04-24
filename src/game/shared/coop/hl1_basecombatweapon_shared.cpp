@@ -6,7 +6,6 @@
 
 #include "cbase.h"
 #include "hl1_basecombatweapon_shared.h"
-#include "bobvars.h"
 
 #include "effect_dispatch_data.h"
 
@@ -149,116 +148,6 @@ void CCoopHL1CombatWeapon::EjectShell(CBaseEntity* pPlayer, int iType)
 }
 
 #if defined( CLIENT_DLL )
-
-#define	HL1_BOB_CYCLE_MIN	1.0f
-#define	HL1_BOB_CYCLE_MAX	0.45f
-#define	HL1_BOB			0.002f
-#define	HL1_BOB_UP		0.5f
-
-extern float	g_lateralBob;
-extern float	g_verticalBob;
-
-// Register these cvars if needed for easy tweaking
-static ConVar	v_iyaw_cycle( "v_iyaw_cycle", "2"/*, FCVAR_UNREGISTERED*/ );
-static ConVar	v_iroll_cycle( "v_iroll_cycle", "0.5"/*, FCVAR_UNREGISTERED*/ );
-static ConVar	v_ipitch_cycle( "v_ipitch_cycle", "1"/*, FCVAR_UNREGISTERED*/ );
-static ConVar	v_iyaw_level( "v_iyaw_level", "0.3"/*, FCVAR_UNREGISTERED*/ );
-static ConVar	v_iroll_level( "v_iroll_level", "0.1"/*, FCVAR_UNREGISTERED*/ );
-static ConVar	v_ipitch_level( "v_ipitch_level", "0.3"/*, FCVAR_UNREGISTERED*/ );
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Output : float
-//-----------------------------------------------------------------------------
-float g_bob;
-float CCoopHL1CombatWeapon::CalcViewmodelBob( void )
-{
-	static  float bob;
-	static   float bobtime;
-	static   float lastbobtime;
-	float   cycle;
-
-	CBasePlayer *player = ToBasePlayer(GetOwner());
-
-	//NOTENOTE: For now, let this cycle continue when in the air, because it snaps badly without it
-
-	if ((!gpGlobals->frametime) || (player == NULL))
-	{
-		//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
-		return 0.0f;// just use old value
-	}
-
-	lastbobtime = gpGlobals->curtime;
-
-	bobtime += gpGlobals->frametime;
-
-	//Calculate the vertical bob
-	cycle = bobtime - (int)(bobtime / cl_bobcycle.GetFloat()) * cl_bobcycle.GetFloat();
-	cycle /= cl_bobcycle.GetFloat();
-
-	if (cycle < cl_bobup.GetFloat())
-	{
-		cycle = M_PI * cycle / cl_bobup.GetFloat();
-	}
-	else
-	{
-		cycle = M_PI + M_PI * (cycle - cl_bobup.GetFloat()) / (1.0 - cl_bobup.GetFloat());
-	}
-
-	//Find the speed of the player
-	Vector2D vel = player->GetLocalVelocity().AsVector2D();
-
-	bob = sqrt(vel[0] * vel[0] + vel[1] * vel[1]) * cl_bob.GetFloat();
-	bob = bob * 0.3 + bob * 0.7 * sin(cycle);
-	bob = min(bob, 4.f);
-	bob = max(bob, -7.f);
-
-	g_bob = bob;
-
-	//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
-	return 0.0f;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
-//			&angles - 
-//			viewmodelindex - 
-//-----------------------------------------------------------------------------
-float v_idlescale = 0.0f;
-//float aBob = 0.0f;
-void CCoopHL1CombatWeapon::AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles )
-{
-	Vector   forward, right, up;
-	QAngle oldAngles = angles;
-	AngleVectors(angles, &forward, &right, &up);
-
-	CalcViewmodelBob();
-	static float time2 = 0.0f;
-	time2 += gpGlobals->frametime;
-
-	//angles[ROLL] += v_idlescale * sin(time2*0.5) * 0.1;
-	//angles[PITCH] += v_idlescale * sin(time2 * 1) * 0.3;
-	//angles[YAW] += v_idlescale * sin(time2 * 2) * 0.3;
-	//aBob += g_bob;
-	// Apply bob, but scaled down to 40%
-	for (int i = 0; i < 3; i++)
-	{
-		origin[i] += g_bob * 0.4 * forward[i];
-	}
-
-	//origin[2] += g_bob;
-
-	// throw in a little tilt.
-	angles[YAW] -= g_bob  * 0.5f;
-	angles[ROLL] -= g_bob * 1.0f;
-	angles[PITCH] -= g_bob * 0.3f;
-
-	// pushing the view origin down off of the same X/Z plane as the ent's origin will give the
-	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
-	// with view model distortion, this may be a cause. (SJB). 
-	origin[2] -= 1;
-}
 
 
 #else

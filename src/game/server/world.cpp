@@ -461,6 +461,9 @@ bool CWorld::GetWorldFlagDefault(int iFlag) const
 			break;
 		}
 	}
+	break;
+	case WORLD_EXPECTS_PORTALS:
+		return g_pGameTypeSystem->WorldShouldExpectPortals();
 		break;
 	default:
 		return false;
@@ -509,6 +512,11 @@ bool CWorld::KeyValue( const char *szKeyName, const char *szValue )
 	{
 		bool bValue = (atoi(szValue) != 0);
 		SetWorldFlag(WORLD_IS_EPISODIC, bValue);
+	}
+	else if (FStrEq(szKeyName, "uses_portals"))
+	{
+		bool bValue = (atoi(szValue) != 0);
+		SetWorldFlag(WORLD_EXPECTS_PORTALS, bValue);
 	}
 	else
 		return BaseClass::KeyValue( szKeyName, szValue );
@@ -816,11 +824,25 @@ void CWorld::Precache( void )
 
 	CSoundEnt::InitSoundEnt();
 
+	ConVarRef sv_portal_staticcollisioncache_cachebrushes("sv_portal_staticcollisioncache_cachebrushes");
+	ConVarRef sv_portal_staticcollisioncache_cachestaticprops("sv_portal_staticcollisioncache_cachestaticprops");
+
+	if (GetWorldFlag(WORLD_EXPECTS_PORTALS))
+	{
+		sv_portal_staticcollisioncache_cachebrushes.SetValue(true);
+		sv_portal_staticcollisioncache_cachestaticprops.SetValue(true);
+	}
+	else
+	{
+		sv_portal_staticcollisioncache_cachebrushes.SetValue(false);
+		sv_portal_staticcollisioncache_cachestaticprops.SetValue(false);
+	}
+
+	hl2_episodic.SetValue(GetWorldEpisodic());
+
 	// Only allow precaching between LevelInitPreEntity and PostEntity
 	CBaseEntity::SetAllowPrecache( true );
 	IGameSystem::LevelInitPreEntityAllSystems( STRING( GetModelName() ) );
-
-	hl2_episodic.SetValue(GetWorldEpisodic());
 
 	// Create the player resource
 	g_pGameRules->CreateStandardEntities();

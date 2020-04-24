@@ -7491,6 +7491,11 @@ void CAI_BaseNPC::OnRangeAttack1()
 {
 	SetLastAttackTime( gpGlobals->curtime );
 
+	if (GetActiveWeapon())
+	{
+		GetActiveWeapon()->NPC_OnRangeAttack1(this);
+	}
+
 	// Houston, there is a problem!
 	AssertOnce( GetShotRegulator()->ShouldShoot() );
 
@@ -8353,6 +8358,20 @@ Activity CAI_BaseNPC::GetReloadActivity( CAI_Hint* pHint )
 					}
 				}
 				break;
+			}
+		}
+	}
+	else if (HasMemory(bits_MEMORY_INCOVER))
+	{
+		if (SelectWeightedSequence(ACT_RELOAD_LOW) != ACTIVITY_NOT_AVAILABLE)
+		{
+			Vector vEyePos = GetAbsOrigin() + EyeOffset(ACT_RELOAD_LOW);
+			// Check if this location will block the threat's line of sight to me
+			trace_t tr;
+			AI_TraceLOS(vEyePos, GetEnemy()->EyePosition(), this, &tr);
+			if (tr.fraction != 1.0)
+			{
+				nReloadActivity = ACT_RELOAD_LOW;
 			}
 		}
 	}

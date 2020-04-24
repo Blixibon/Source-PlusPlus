@@ -23,6 +23,7 @@ $Project
 		$File	"hud_chat.cpp"
 		$File	"c_team_objectiveresource.cpp"
 		$File	"c_team_objectiveresource.h"
+		-$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 
 		$Folder "Peter"
 		{

@@ -516,6 +516,7 @@ public:
 	virtual	bool			NPC_CanFireSecondary() { return false; }
 	// Originally created for the crossbow, can be used to add special NPC reloading behavior
 	virtual void			NPC_Reload(void) { WeaponSound(RELOAD_NPC); m_iClip1 = GetMaxClip1(); }
+	virtual void			NPC_OnRangeAttack1(CAI_BaseNPC *pOperator) { return; }
 
 // Client only methods
 #else

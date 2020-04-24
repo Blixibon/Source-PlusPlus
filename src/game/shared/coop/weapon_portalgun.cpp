@@ -603,7 +603,9 @@ void CWeaponPortalgun::FirePortalDirection2(inputdata_t& inputdata)
 		WeaponSound(DOUBLE_NPC);
 	}
 }
+
 #else
+
 void C_WeaponPortalgun::OnPreDataChanged(DataUpdateType_t updateType)
 {
 	//PreDataChanged.m_matrixThisToLinked = m_matrixThisToLinked;

@@ -100,6 +100,9 @@ $Project
 		$File	"solidenergy_dx9.cpp"
 		$File	"solidenergy_dx9_helper.cpp"
 		$File	"solidenergy_dx9_helper.h"
+		
+		$File	"weapon_sheen_pass_helper.cpp"
+		$File	"weapon_sheen_pass_helper.h"
 
 		$File	"SkyMask.cpp"
 	}

@@ -1,0 +1,29 @@
+SolidEnergy
+{
+	$basetexture "effects/xen_shield_ripples5"
+	$flowmap "effects/fizzler_flow"
+	$flowbounds "effects/xen_shield_bounds2"
+	$FLOW_NOISE_TEXTURE "effects/xen_shield_noise2"
+	$FLOW_UVSCROLLDISTANCE "0.2"
+	$FLOW_TIMEINTERVALINSECONDS "1.2"
+	$FLOW_NOISE_SCALE 0.008
+	$FLOW_LERPEXP 1.5
+	$FLOW_WORLDUVSCALE 0.008
+	$FLOW_NORMALUVSCALE 0.01
+	$FLOW_COLOR "[.025 .78 .75]"
+	$surfaceprop glass
+	"%keywords" Portal2
+	//$translucent 1
+	//$additive 1
+
+	Proxies
+	{
+TextureScroll
+	{
+	textureScrollVar $basetexturetransform
+	textureScrollRate 0.02
+	textureScrollAngle 90
+	}
+	}
+}
+

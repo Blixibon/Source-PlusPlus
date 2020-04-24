@@ -152,6 +152,7 @@ bool CGameTypeManager::Init()
 				GameDef.m_BaseGame = FindOrAddGameType(pKVRoot->GetString("game_base", "hl2"));
 				GameDef.m_GameMod = FindOrAddGameType(pKVRoot->GetString("game_mod", "hl2"));
 				GameDef.m_PopSet = pKVRoot->GetString("population_set", "default");
+				GameDef.m_bExpectPortals = pKVRoot->GetBool("portals");
 				KeyValues* pkvSoundScripts = pKVRoot->FindKey("sound_overrides");
 				if (pkvSoundScripts)
 				{

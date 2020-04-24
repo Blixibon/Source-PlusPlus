@@ -10,11 +10,31 @@
 #include "basecombatweapon_shared.h"
 #include "hlss_weapon_id.h"
 #include "rumble_shared.h"
+#include "weapon_parse.h"
 
 #ifdef CLIENT_DLL
-    #define CWeaponCoopBase C_WeaponCoopBase
-    void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip );
+#define CWeaponCoopBase C_WeaponCoopBase
+void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip );
 #endif
+
+enum ViewmodelBobMode_e
+{
+	BOBMODE_HL2 = 0,
+	BOBMODE_HL1,
+	BOBMODE_PORTAL,
+};
+
+class CCoopWeaponData : public FileWeaponInfo_t
+{
+public:
+	CCoopWeaponData();
+
+	// Each game can override this to get whatever values it wants from the script.
+	virtual void Parse(KeyValues* pKeyValuesData, const char* szWeaponName);
+
+public:
+	int m_iViewmodelBobMode;
+};
 
 //================================================================================
 // La base para un arma cooperativo
@@ -35,7 +55,18 @@ public:
     #ifdef CLIENT_DLL
     virtual void OnDataChanged( DataUpdateType_t type );
     virtual bool ShouldPredict();
+
+	virtual void	AddPortalViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles);
+	//virtual	float	CalcPortalViewmodelBob(void);
+
+	virtual void AddHL2ViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles);
+	virtual	float CalcHL2ViewmodelBob(void);
+
+	virtual void	AddHL1ViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles);
+	virtual	float	CalcHL1ViewmodelBob(void);
     #endif
+
+	const CCoopWeaponData &GetCoopWpnData() const;
 
 	virtual int GetWeaponID(void) const;
 	virtual WeaponClass_t	WeaponClassify();

@@ -3460,7 +3460,7 @@ void CPortalSimulator::CreatePolyhedrons(void)
 					transformedCollisionClip[clip].m_Dist = collisionClip[clip].m_Dist - collisionClip[clip].m_Normal.Dot(vPropTranslation);
 				}
 
-				CPolyhedron* PolyhedronArray[1024];
+				const CPolyhedron* PolyhedronArray[1024];
 				int iPolyhedronCount = g_StaticCollisionPolyhedronCache.GetStaticPropPolyhedrons(pProp, PolyhedronArray, 1024);
 
 				PropPolyhedronGroup_t indices;
@@ -3486,7 +3486,7 @@ void CPortalSimulator::CreatePolyhedrons(void)
 					}
 				}
 
-				//g_StaticCollisionPolyhedronCache.ReleaseStaticPropPolyhedrons(pProp, PolyhedronArray, iPolyhedronCount);
+				g_StaticCollisionPolyhedronCache.ReleaseStaticPropPolyhedrons(pProp, PolyhedronArray, iPolyhedronCount);
 
 				indices.iNumPolyhedrons = m_InternalData.Simulation.Static.World.StaticProps.Polyhedrons.Count() - indices.iStartIndex;
 				if (indices.iNumPolyhedrons != 0)
@@ -4439,7 +4439,7 @@ static void ConvertBrushListToClippedPolyhedronList(const int* pBrushes, int iBr
 			pPolyhedronList->AddToTail(pPolyhedron);
 		}
 
-		//g_StaticCollisionPolyhedronCache.ReleaseBrushPolyhedron(pBrushes[i], pBrushPolyhedron);
+		g_StaticCollisionPolyhedronCache.ReleaseBrushPolyhedron(pBrushes[i], pBrushPolyhedron);
 	}
 }
 

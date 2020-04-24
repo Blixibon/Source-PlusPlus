@@ -496,6 +496,7 @@ public:
 	virtual void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	virtual void	Operator_ForceNPCFire(CBaseCombatCharacter* pOperator, bool bSecondary);
 	virtual void	NPC_Reload();
+	virtual void	NPC_OnRangeAttack1(CAI_BaseNPC* pOperator);
 
 	int		CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
 
@@ -1091,6 +1092,17 @@ void CWeaponCrossbow::NPC_Reload(void)
 	m_nSkin = 0;
 }
 
+void CWeaponCrossbow::NPC_OnRangeAttack1(CAI_BaseNPC* pOperator)
+{
+	if (!pOperator || !m_iClip1)
+		return;
+
+	Vector vecSrc = pOperator->Weapon_ShootPosition();
+	Vector vecAiming = pOperator->GetActualShootTrajectory(vecSrc);
+
+	FireNPCBolt(pOperator, vecSrc, vecAiming);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -1153,10 +1165,7 @@ void CWeaponCrossbow::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 		CAI_BaseNPC* pNPC = pOperator->MyNPCPointer();
 		Assert(pNPC);
 
-		Vector vecSrc = pNPC->Weapon_ShootPosition();
-		Vector vecAiming = pNPC->GetActualShootTrajectory(vecSrc);
-
-		FireNPCBolt(pNPC, vecSrc, vecAiming);
+		NPC_OnRangeAttack1(pNPC);
 		//m_bMustReload = true;
 	}
 	break;

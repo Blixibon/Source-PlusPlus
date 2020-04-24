@@ -63,9 +63,18 @@ public:
 
 	CHL1WeaponShotgun(void);
 
-//#ifndef CLIENT_DLL
-//	DECLARE_ACTTABLE();
-//#endif
+#ifndef CLIENT_DLL
+	virtual void	NPC_OnRangeAttack1(CAI_BaseNPC* pOperator);
+	int CapabilitiesGet(void) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+
+	virtual int				GetMinBurst() { return 1; }
+	virtual int				GetMaxBurst() { return 3; }
+
+	virtual float			GetMinRestTime() { return 1.2f; }
+	virtual float			GetMaxRestTime() { return 1.5f; }
+
+	virtual bool			CanBePickedUpByNPCs(void) { return true; }
+#endif
 };
 
 
@@ -417,3 +426,44 @@ void CHL1WeaponShotgun::WeaponIdle( void )
 		}
 	}
 }
+
+#ifndef CLIENT_DLL
+void CHL1WeaponShotgun::NPC_OnRangeAttack1(CAI_BaseNPC* pOperator)
+{
+	if (!pOperator)
+		return;
+
+	Vector vecSrc = pOperator->Weapon_ShootPosition();
+	Vector vecAiming = pOperator->GetActualShootTrajectory(vecSrc);
+
+	// MUST call sound before removing a round from the clip of a CMachineGun
+	WeaponSound(SINGLE);
+
+	// Don't fire again until fire animation has completed
+	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
+	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
+	m_iClip1 -= 1;
+
+	if (g_pGameRules->IsMultiplayer())
+	{
+		FireBulletsInfo_t info(4, vecSrc, vecAiming, VECTOR_CONE_DM_SHOTGUN, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
+		info.m_pAttacker = pOperator;
+
+		pOperator->FireBullets(info);
+	}
+	else
+	{
+		FireBulletsInfo_t info(6, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, MAX_TRACE_LENGTH, m_iPrimaryAmmoType);
+		info.m_pAttacker = pOperator;
+
+		pOperator->FireBullets(info);
+
+		//		pPlayer->FireBullets( 6, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 0 );
+	}
+
+	EjectShell(pOperator, 1);
+
+	//	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 600, 0.2 );
+	WeaponSound(SINGLE);
+}
+#endif // !CLIENT_DLL
