@@ -806,35 +806,47 @@ CChoreoStringPool g_ChoreoStringPool;
 
 CChoreoScene *C_SceneEntity::LoadScene( const char *filename )
 {
-	char loadfile[ 512 ];
-	Q_strncpy( loadfile, filename, sizeof( loadfile ) );
-	Q_SetExtension( loadfile, ".vcd", sizeof( loadfile ) );
-	Q_FixSlashes( loadfile );
+	char loadfile[512];
+	Q_strncpy(loadfile, filename, sizeof(loadfile));
+	Q_SetExtension(loadfile, ".vcd", sizeof(loadfile));
+	Q_FixSlashes(loadfile);
 
-	CChoreoScene *pScene;
-	void *pBuffer = NULL;
+	char* pBuffer = NULL;
+	size_t bufsize = scenefilecache->GetSceneBufferSize(loadfile);
+	if (bufsize <= 0)
+		return NULL;
 
+	pBuffer = new char[bufsize];
+	if (!scenefilecache->GetSceneData(filename, (byte*)pBuffer, bufsize))
 	{
-		int fileSize = filesystem->ReadFileEx(loadfile, "SCENES", &pBuffer, true, true);
+		delete[] pBuffer;
+		return NULL;
+	}
 
-		if (fileSize)
+	CChoreoScene* pScene;
+	if (IsBufferBinaryVCD(pBuffer, bufsize))
+	{
+		pScene = new CChoreoScene(this);
+		CUtlBuffer buf(pBuffer, bufsize, CUtlBuffer::READ_ONLY);
+		if (!pScene->RestoreFromBinaryBuffer(buf, loadfile, &g_ChoreoStringPool))
 		{
-			g_TokenProcessor.SetBuffer((char*)pBuffer);
-			pScene = ChoreoLoadScene(loadfile, this, &g_TokenProcessor, Scene_Printf);
+			Warning("Unable to restore binary scene '%s'\n", loadfile);
+			delete pScene;
+			pScene = NULL;
 		}
 		else
-			return NULL;
+		{
+			pScene->SetPrintFunc(Scene_Printf);
+			pScene->SetEventCallbackInterface(this);
+		}
 	}
-	
-	if (pScene)
+	else
 	{
-		pScene->SetPrintFunc(Scene_Printf);
-		pScene->SetEventCallbackInterface(this);
+		g_TokenProcessor.SetBuffer(pBuffer);
+		pScene = ChoreoLoadScene(loadfile, this, &g_TokenProcessor, Scene_Printf);
 	}
 
-	
-	filesystem->FreeOptimalReadBuffer(pBuffer);
-
+	delete[] pBuffer;
 	return pScene;
 }
 

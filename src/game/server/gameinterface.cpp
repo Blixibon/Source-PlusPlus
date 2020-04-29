@@ -641,8 +641,8 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	if ( (serverpluginhelpers = (IServerPluginHelpers *)appSystemFactory(INTERFACEVERSION_ISERVERPLUGINHELPERS, NULL)) == NULL )
 		return false;
-	if ( (scenefilecache = (ISceneFileCache *)appSystemFactory( SCENE_FILE_CACHE_INTERFACE_VERSION, NULL )) == NULL )
-		return false;
+	//if ( (scenefilecache = (ISceneFileCache *)appSystemFactory( SCENE_FILE_CACHE_INTERFACE_VERSION, NULL )) == NULL )
+	//	return false;
 	if ( IsX360() && (xboxsystem = (IXboxSystem *)appSystemFactory( XBOXSYSTEM_INTERFACE_VERSION, NULL )) == NULL )
 		return false;
 	if ( IsX360() && (matchmaking = (IMatchmaking *)appSystemFactory( VENGINE_MATCHMAKING_VERSION, NULL )) == NULL )
@@ -688,6 +688,12 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	FactoryList_Store( factories );
 
 	Mounter::MountExtraContent();
+
+	if (spp_utils->Init() != INIT_OK)
+		return false;
+
+	if ((scenefilecache = (ISceneFileCache*)spp_utils->QueryInterface(SCENE_FILE_CACHE_INTERFACE_VERSION)) == NULL)
+		return false;
 
 	// load used game events  
 	gameeventmanager->LoadEventsFromFile("resource/gameevents.res");
@@ -3594,7 +3600,7 @@ public:
 	CServerDLLSharedAppSystems()
 	{
 		AddAppSystem( "soundemittersystem" DLL_EXT_STRING, SOUNDEMITTERSYSTEM_INTERFACE_VERSION );
-		AddAppSystem( "scenefilecache" DLL_EXT_STRING, SCENE_FILE_CACHE_INTERFACE_VERSION );
+		//AddAppSystem( "scenefilecache" DLL_EXT_STRING, SCENE_FILE_CACHE_INTERFACE_VERSION );
 	}
 
 	virtual int	Count()

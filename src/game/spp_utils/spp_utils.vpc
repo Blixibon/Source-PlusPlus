@@ -51,7 +51,12 @@ $Project "SPP Utils"
 		$File	"holiday_event_system.h"
 		$File	"rich_presence_system.cpp"
 		$File	"rich_presence_system.h"
+		$File	"scenecache.cpp"
+		$File	"scenecache.h"
+		$File	"filehelpers.cpp"
+		$File	"filehelpers.h"
 		$File	"spp_utils.cpp"
+		$File	"$SRCDIR\public\interpolatortypes.cpp"
 	}
 
 	$Folder	"Header Files"
@@ -62,10 +67,12 @@ $Project "SPP Utils"
 
 	$Folder	"Link Libraries"
 	{
+		$Lib	choreoobjects
 		$Lib	tier0
 		$Lib	tier1
 		$Lib	tier2
 		$Lib	tier3
+		$Lib	mathlib
 
 		$Lib	discord-rpc		[$WIN32]
 		$Lib	libdiscord-rpc	[$LINUXALL]
