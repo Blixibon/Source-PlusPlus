@@ -719,7 +719,7 @@ void CNPC_Alyx::SearchForInteractTargets()
 		return;
 	}
 
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer* pPlayer = GetBestPlayer();
 
 	if( !pPlayer )
 	{

@@ -734,7 +734,7 @@ void C_WeaponStunStick::ClientThink( void )
 	if ( IsEffectActive( EF_NODRAW ) )
 		return;
 
-	//if ( ShouldDrawUsingViewModel() )
+	if (C_BasePlayer::GetLocalPlayer() == GetOwner())
 	{
 		// Update our effects
 		if ( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 3 ) == 0 ) )

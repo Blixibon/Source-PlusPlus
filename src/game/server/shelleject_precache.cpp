@@ -26,4 +26,6 @@ void PrecacheNewShells()
 		pKVFile->deleteThis();
 		fileName = g_pFullFileSystem->FindNext(findHandle);
 	}
+
+	g_pFullFileSystem->FindClose(findHandle);
 }
