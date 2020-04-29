@@ -7,4 +7,6 @@
     "weapon_mp5"           	"weapon_mp5_bms"
     "weapon_rpg"           	"weapon_rpg_bms"
     "weapon_shotgun"       	"weapon_shotgun_bms"
+
+    "prop_scalable"         "prop_dynamic_special"
 }

@@ -5954,8 +5954,8 @@
 [
 ]
 
-@PointClass base(prop_dynamic_base,EnableDisable) sphere(fademindist) sphere(fademaxdist) studioprop() = prop_dynamic_glow :
-	"A prop_dynamic that can glow with an outline."
+@PointClass base(prop_dynamic_base,EnableDisable) sphere(fademindist) sphere(fademaxdist) studioprop() = prop_dynamic_special :
+	"A prop_dynamic that can glow with an outline and use advanced scaling."
 [
 	glowenabled(choices) : "Start Glowing" : 0 : "Does the prop start glowing?" =
 	[
@@ -5968,6 +5968,10 @@
 	input SetGlowEnabled(void) : "Enable the glow effect."
 	input SetGlowDisabled(void) : "Disable the glow effect."
 	input SetGlowColor(color255) : "Set the color of the glow effect."
+
+	input SetScaleX(vector) : "Scales the prop in one Axis. Params: <New Size> <Time>"
+	input SetScaleY(vector) : "Scales the prop in one Axis. Params: <New Size> <Time>"
+	input SetScaleZ(vector) : "Scales the prop in one Axis. Params: <New Size> <Time>"
 ]
 
 @PointClass base(prop_dynamic_base) studioprop() = prop_dynamic_override :

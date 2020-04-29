@@ -96,7 +96,7 @@ ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_REPLICATED, "Turns on turb
 float GetBreakableDamage( const CTakeDamageInfo &inputInfo, IBreakableWithPropData *pProp )
 {
 	float flDamage = inputInfo.GetDamage();
-	int iDmgType = inputInfo.GetDamageType();
+	int64 iDmgType = inputInfo.GetDamageType();
 
 	// Bullet damage?
 	if ( iDmgType & DMG_BULLET )
