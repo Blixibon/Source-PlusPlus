@@ -4512,7 +4512,7 @@ const char* CLazuul::GetKillingWeaponName(const CTakeDamageInfo& info, CBaseEnti
 			killer_weapon_name = "hunter_pound";
 		}
 	}
-	else if (V_strcmp(killer_weapon_name, "sniper") == 0)
+	else if (V_stristr(killer_weapon_name, "sniper") != 0)
 	{
 		killer_weapon_name = "sniperrifle";
 	}

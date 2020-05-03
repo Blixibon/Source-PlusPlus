@@ -176,7 +176,8 @@ void CAI_GrenadeUser<BASE_NPC>::HandleAnimEvent( animevent_t *pEvent )
 
 		fakeEvent.pSource = this;
 		fakeEvent.event = EVENT_WEAPON_AR2_ALTFIRE;
-		GetActiveWeapon()->Operator_HandleAnimEvent( &fakeEvent, this );
+		if (GetActiveWeapon())
+			GetActiveWeapon()->Operator_HandleAnimEvent(&fakeEvent, this);
 
 		// Stop other squad members from combine balling for a while.
 		DelaySquadAltFireAttack( 10.0f );

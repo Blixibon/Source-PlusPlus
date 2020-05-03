@@ -415,7 +415,7 @@ void CWeaponCoopBase::AddHL1ViewmodelBob(CBaseViewModel* viewmodel, Vector& orig
 	QAngle oldAngles = angles;
 	AngleVectors(angles, &forward, &right, &up);
 
-	CalcViewmodelBob();
+	CalcHL1ViewmodelBob();
 	static float time2 = 0.0f;
 	time2 += gpGlobals->frametime;
 

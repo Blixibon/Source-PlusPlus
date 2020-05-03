@@ -170,6 +170,11 @@ void CNPC_CombineS::Spawn( void )
 
 	BaseClass::Spawn();
 
+	if (m_iSoldierVariant == COMBINE_MODEL_SYNTH)
+	{
+		SetBloodColor(BLOOD_COLOR_SYNTH);
+	}
+
 	m_nSkin = iSkin;
 
 	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_CombineS", "NPC_CombineS");
@@ -293,6 +298,16 @@ void CNPC_CombineS::DeathSound( const CTakeDamageInfo &info )
 		EmitSound("NPC_CombineS.ElectrocuteScream");
 }
 
+
+int CNPC_CombineS::OnTakeDamage_Alive(const CTakeDamageInfo& info)
+{
+	if (info.GetDamageType() & DMG_NERVEGAS && (m_iSoldierVariant != COMBINE_MODEL_PROTOGUARD))
+	{
+		return 0;
+	}
+
+	return BaseClass::OnTakeDamage_Alive(info);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Soldiers use CAN_RANGE_ATTACK2 to indicate whether they can throw

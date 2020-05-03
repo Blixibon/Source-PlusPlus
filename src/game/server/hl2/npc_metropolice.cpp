@@ -4323,6 +4323,44 @@ int CNPC_MetroPolice::SelectSchedule( void )
 		}
 	}
 
+	if (m_hForcedGrenadeTarget)
+	{
+		// Can't throw at the target, so lets try moving to somewhere where I can see it
+		if (!FVisible(m_hForcedGrenadeTarget))
+		{
+			return SCHED_PC_MOVE_TO_FORCED_GREN_LOS;
+		}
+		else if (m_flNextGrenadeCheck < gpGlobals->curtime)
+		{
+			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
+
+			// The fact we have a forced grenade target overrides whether we're marked as "capable".
+			// If we're *only* alt-fire capable, use an energy ball. If not, throw a grenade.
+			if (!IsAltFireCapable() || IsGrenadeCapable())
+			{
+				Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
+				{
+					// If we can, throw a grenade at the target. 
+					// Ignore grenade count / distance / etc
+					if (CheckCanThrowGrenade(vecTarget))
+					{
+						m_hForcedGrenadeTarget = NULL;
+						return SCHED_PC_FORCED_GRENADE_THROW;
+					}
+				}
+			}
+			else
+			{
+				if (FVisible(m_hForcedGrenadeTarget))
+				{
+					m_vecAltFireTarget = vecTarget;
+					m_hForcedGrenadeTarget = NULL;
+					return SCHED_PC_AR2_ALTFIRE;
+				}
+			}
+		}
+	}
+
 	// React to being struck by a physics object
 	if ( HasCondition( COND_METROPOLICE_PHYSOBJECT_ASSAULT ) )
 	{
@@ -4615,6 +4653,10 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 			}
 			else
 			{
+				int nSched = BaseClass::TranslateSchedule(SCHED_RANGE_ATTACK1);
+				if (nSched != SCHED_RANGE_ATTACK1)
+					return nSched;
+
 				return SCHED_METROPOLICE_SMG_NORMAL_ATTACK;
 			}
 		}
@@ -5176,6 +5218,11 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 {
 	CTakeDamageInfo info = inputInfo;
+
+	if (info.GetDamageType() & DMG_NERVEGAS && (!IsUnique() || IsAnders()))
+	{
+		return 0;
+	}
 
 	if ( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
 	{

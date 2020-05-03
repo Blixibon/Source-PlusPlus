@@ -29,4 +29,7 @@ protected:
 	virtual ~IMaterialProxy() {}
 };
 
+#define PRXY_STRING(p) #p
+#define EXPOSE_MATERIAL_PROXY(DLLClassName, proxy) EXPOSE_INTERFACE( DLLClassName, IMaterialProxy, PRXY_STRING(proxy) IMATERIAL_PROXY_INTERFACE_VERSION );
+
 #endif // IMATERIALPROXY_H

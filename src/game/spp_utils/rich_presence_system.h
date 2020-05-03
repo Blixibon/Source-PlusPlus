@@ -1,10 +1,15 @@
 #pragma once
 #include "rich_presence.h"
 #include "shared.h"
+#include "appframework/IAppSystem.h"
+#include "ServerBrowser/IServerBrowser.h"
 
-class CRichPresense : public IDiscordPresence
+class CRichPresense : public CBaseAppSystem< IDiscordPresence >
 {
 public:
+	// Here's where the app systems get to learn about each other 
+	virtual bool Connect(CreateInterfaceFn factory);
+
 	// Inherited via IDiscordPresence
 	virtual void InitDiscord(const char* applicationId) override;
 	virtual void ShutdownDiscord();
@@ -16,6 +21,8 @@ public:
 	static unsigned UpdateThread(void* pParams);
 
 	void	InternalInit(IInternalSharedData* pInternalData);
+
+	void	InitiateConnection(const char* pszServer);
 
 private:
 	ThreadHandle_t m_UpdateThread;
@@ -31,5 +38,7 @@ private:
 
 	const enginePointers_t* m_pEnginePointers;
 	IInternalSharedData* m_pInternalData;
+
+	IServerBrowser* m_pServerBrowser;
 };
 

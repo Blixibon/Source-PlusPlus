@@ -516,42 +516,6 @@ void CNPC_Combine::PrescheduleThink()
 	}
 }
 
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Combine::DelayAltFireAttack( float flDelay )
-{
-	float flNextAltFire = gpGlobals->curtime + flDelay;
-
-	if( flNextAltFire > m_flNextAltFireTime )
-	{
-		// Don't let this delay order preempt a previous request to wait longer.
-		m_flNextAltFireTime = flNextAltFire;
-	}
-}
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void CNPC_Combine::DelaySquadAltFireAttack( float flDelay )
-{
-	// Make sure to delay my own alt-fire attack.
-	DelayAltFireAttack( flDelay );
-
-	AISquadIter_t iter;
-	CAI_BaseNPC *pSquadmate = m_pSquad ? m_pSquad->GetFirstMember( &iter ) : NULL;
-	while ( pSquadmate )
-	{
-		CNPC_Combine *pCombine = dynamic_cast<CNPC_Combine*>(pSquadmate);
-
-		if( pCombine && pCombine->IsElite() )
-		{
-			pCombine->DelayAltFireAttack( flDelay );
-		}
-
-		pSquadmate = m_pSquad->GetNextMember( &iter );
-	}
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: degrees to turn in 0.1 seconds
 //-----------------------------------------------------------------------------

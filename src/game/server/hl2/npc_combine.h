@@ -119,8 +119,8 @@ public:
 
 	Class_T			Classify( void );
 	bool			IsElite() { return m_fIsElite; }
-	void			DelayAltFireAttack( float flDelay );
-	void			DelaySquadAltFireAttack( float flDelay );
+	//void			DelayAltFireAttack( float flDelay );
+	//void			DelaySquadAltFireAttack( float flDelay );
 	float			MaxYawSpeed( void );
 	bool			ShouldMoveAndShoot();
 	bool			OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );;
@@ -321,7 +321,7 @@ private:
 	//float			m_flNextGrenadeCheck;	
 	float			m_flNextLostSoundTime;
 	float			m_flAlertPatrolTime;		// When to stop doing alert patrol
-	float			m_flNextAltFireTime;		// Elites only. Next time to begin considering alt-fire attack.
+	//float			m_flNextAltFireTime;		// Elites only. Next time to begin considering alt-fire attack.
 
 	int				m_nShots;
 	float			m_flShotDelay;

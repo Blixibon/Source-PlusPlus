@@ -8368,7 +8368,9 @@ Activity CAI_BaseNPC::GetReloadActivity( CAI_Hint* pHint )
 			Vector vEyePos = GetAbsOrigin() + EyeOffset(ACT_RELOAD_LOW);
 			// Check if this location will block the threat's line of sight to me
 			trace_t tr;
-			AI_TraceLOS(vEyePos, GetEnemy()->EyePosition(), this, &tr);
+			if (GetEnemy())
+				AI_TraceLOS(vEyePos, GetEnemy()->EyePosition(), this, &tr);
+
 			if (tr.fraction != 1.0)
 			{
 				nReloadActivity = ACT_RELOAD_LOW;

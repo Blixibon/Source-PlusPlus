@@ -211,7 +211,9 @@ public:
 
 	// Print death notices involving this npc?
 	virtual bool		ShowInDeathnotice() { return true; }
-	virtual const char *GetDeathNoticeNameOverride() { return IsPlayerAllySniper() ? "npc_alyx" : nullptr; }
+	//virtual const char *GetDeathNoticeNameOverride() { return IsPlayerAllySniper() ? "npc_alyx" : nullptr; }
+
+	virtual void		CreateSniperCorpse(const CTakeDamageInfo& info);
 
 	bool IsLaserOn( void ) { return m_pBeam != NULL; }
 
@@ -271,7 +273,7 @@ public:
 
 	void NotifyShotMissedTarget();
 
-private:
+protected:
 	
 	bool ShouldSnapShot( void );
 	void ClearTargetGroup( void );
@@ -306,14 +308,14 @@ private:
 	void InputSetPaintIntervalVariance( inputdata_t &inputdata );
 #endif
 
-	void LaserOff( void );
-	void LaserOn( const Vector &vecTarget, const Vector &vecDeviance );
+	virtual void LaserOff( void );
+	virtual void LaserOn( const Vector &vecTarget, const Vector &vecDeviance );
 
 	void PaintTarget( const Vector &vecTarget, float flPaintTime );
 
-	bool IsPlayerAllySniper();
+	virtual bool IsPlayerAllySniper();
 
-private:
+protected:
 
 	/// This is the variable from which m_flPaintTime gets set.
 	/// How long to aim at someone before shooting them.
@@ -388,7 +390,7 @@ private:
 // The concept of "patience" is simply a restriction placed
 // on how close a target has to be to the sniper before the 
 // sniper will take his first shot at the target. This
-// distance is referred to as "patience" is set by the `
+// distance is referred to as "patience" is set by the
 // designer in Worldcraft. The sniper won't attack unless 
 // the target enters this radius. Once the sniper takes 
 // this first shot, he will not return to a patient state.
@@ -401,6 +403,10 @@ private:
 //=========================================================
 //=========================================================
 
+bool Sniper_IsSniper(CBaseEntity* pEntity)
+{
+	return dynamic_cast<CProtoSniper*>(pEntity) != NULL;
+}
 
 //=========================================================
 //=========================================================
@@ -846,18 +852,7 @@ void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
 //-----------------------------------------------------------------------------
 bool CProtoSniper::IsPlayerAllySniper()
 {
-#if 0
-	findPlayerParams_t params;
-	params.nClass = CLASS_PLAYER;
-	CBaseEntity *pPlayer = UTIL_GetIdealPlayer(params);
-
-	return IRelationType( pPlayer ) == D_LI;
-#else
-	if (AI_IsSinglePlayer())
-		return IsPlayerAlly();
-
-	return FindClassRelationship(CLASS_PLAYER)->disposition != D_HT;
-#endif
+	return false;
 }
 			
 //-----------------------------------------------------------------------------
@@ -1198,9 +1193,6 @@ Class_T	CProtoSniper::Classify( void )
 {
 	if( m_fEnabled )
 	{
-		if (g_pGameTypeSystem->GetCurrentBaseGameType() == MOD_BMS)
-			return CLASS_HECU;
-
 		return	CLASS_PROTOSNIPER;
 	}
 	else
@@ -1337,6 +1329,26 @@ int CProtoSniper::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	return CAI_BaseNPC::OnTakeDamage_Alive( newInfo );
 }
 
+void CProtoSniper::CreateSniperCorpse(const CTakeDamageInfo& info)
+{
+	Vector vecForward;
+
+	float flForce = random->RandomFloat(500, 700) * 10;
+
+	AngleVectors(GetLocalAngles(), &vecForward);
+
+	float flFadeTime = 0.0;
+
+	if (HasSpawnFlags(SF_NPC_FADE_CORPSE))
+	{
+		flFadeTime = 5.0;
+	}
+
+	CBaseEntity* pGib;
+	bool bShouldIgnite = IsOnFire() || hl2_episodic.GetBool();
+	pGib = CreateRagGib("models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: When a sniper is killed, we launch a fake ragdoll corpse as if the
 // sniper was blasted out of his nest.
@@ -1348,23 +1360,7 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 {
 	if( !(m_spawnflags & SF_SNIPER_NOCORPSE) )
 	{
-		Vector vecForward;
-		
-		float flForce = random->RandomFloat( 500, 700 ) * 10;
-
-		AngleVectors( GetLocalAngles(), &vecForward );
-		
-		float flFadeTime = 0.0;
-
-		if( HasSpawnFlags( SF_NPC_FADE_CORPSE ) )
-		{
-			flFadeTime = 5.0;
-		}
-
-		CBaseEntity *pGib;
-		bool bShouldIgnite = IsOnFire() || hl2_episodic.GetBool();
-		pGib = CreateRagGib( "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite );
-
+		CreateSniperCorpse(info);
 	}
 
 	m_OnDeath.FireOutput( info.GetAttacker(), this );
@@ -1886,10 +1882,7 @@ int CProtoSniper::TranslateSchedule( int scheduleType )
 #ifdef HL2_LAZUL
 void CProtoSniper::UpdateTeam()
 {
-	if (IsPlayerAllySniper())
-		ChangeTeam(TEAM_REBELS);
-	else
-		ChangeTeam(TEAM_COMBINE);
+	BaseClass::UpdateTeam();
 }
 #endif
 //---------------------------------------------------------
@@ -3527,3 +3520,136 @@ bool CSniperTarget::KeyValue( const char *szKeyName, const char *szValue )
 LINK_ENTITY_TO_CLASS( info_snipertarget, CSniperTarget );
 
 
+
+class CSniperAlyx : public CProtoSniper
+{
+public:
+	DECLARE_CLASS(CSniperAlyx, CProtoSniper);
+
+	virtual const char* GetDeathNoticeNameOverride() { return "npc_alyx"; }
+	Class_T Classify(void);
+
+	virtual bool IsPlayerAllySniper() { return true; }
+};
+
+LINK_ENTITY_TO_CLASS(npc_sniper_alyx, CSniperAlyx);
+
+Class_T CSniperAlyx::Classify(void)
+{
+	if (m_fEnabled)
+	{
+		return CLASS_PLAYER_ALLY_VITAL;
+	}
+	else
+	{
+		return CLASS_NONE;
+	}
+}
+
+class CSniperHECU : public CProtoSniper
+{
+public:
+	DECLARE_CLASS(CSniperHECU, CProtoSniper);
+
+	Class_T Classify(void);
+	void	Precache(void);
+	virtual void		CreateSniperCorpse(const CTakeDamageInfo& info);
+
+	virtual void LaserOn(const Vector& vecTarget, const Vector& vecDeviance);
+};
+
+LINK_ENTITY_TO_CLASS(npc_sniper_hecu, CSniperHECU);
+
+Class_T CSniperHECU::Classify(void)
+{
+	if (m_fEnabled)
+	{
+		return CLASS_HECU;
+	}
+	else
+	{
+		return CLASS_NONE;
+	}
+}
+
+void CSniperHECU::Precache(void)
+{
+	BaseClass::Precache();
+
+	PrecacheModel("effects/redlaser1.vmt");
+	PrecacheModel("models/humans/marine_sg.mdl");
+}
+
+void CSniperHECU::CreateSniperCorpse(const CTakeDamageInfo& info)
+{
+	Vector vecForward;
+
+	float flForce = random->RandomFloat(500, 700) * 10;
+
+	AngleVectors(GetLocalAngles(), &vecForward);
+
+	float flFadeTime = 0.0;
+
+	if (HasSpawnFlags(SF_NPC_FADE_CORPSE))
+	{
+		flFadeTime = 5.0;
+	}
+
+	CBaseEntity* pGib;
+	bool bShouldIgnite = IsOnFire() || hl2_episodic.GetBool();
+	pGib = CreateRagGib("models/humans/marine_sg.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite);
+	if (pGib && pGib->GetBaseAnimating())
+	{
+		CBaseAnimating* pAnim = pGib->GetBaseAnimating();
+		pAnim->m_nSkin = random->RandomInt(0, pAnim->GetModelPtr()->numskinfamilies() - 1);
+	}
+}
+
+void CSniperHECU::LaserOn(const Vector& vecTarget, const Vector& vecDeviance)
+{
+	if (!m_pBeam)
+	{
+		m_pBeam = CBeam::BeamCreate("effects/redlaser1.vmt", 1.0f);
+		m_pBeam->SetColor(255, 32, 32);
+	}
+	else
+	{
+		// Beam seems to be on.
+		//return;
+	}
+
+	// Don't aim right at the guy right now.
+	Vector vecInitialAim;
+
+	if (vecDeviance == vec3_origin)
+	{
+		// Start the aim where it last left off!
+		vecInitialAim = m_vecPaintCursor;
+	}
+	else
+	{
+		vecInitialAim = vecTarget;
+	}
+
+	vecInitialAim.x += random->RandomFloat(-vecDeviance.x, vecDeviance.x);
+	vecInitialAim.y += random->RandomFloat(-vecDeviance.y, vecDeviance.y);
+	vecInitialAim.z += random->RandomFloat(-vecDeviance.z, vecDeviance.z);
+
+	// The beam is backwards, sortof. The endpoint is the sniper. This is
+	// so that the beam can be tapered to very thin where it emits from the sniper.
+	m_pBeam->PointsInit(vecInitialAim, GetBulletOrigin());
+	m_pBeam->SetBrightness(255);
+	m_pBeam->SetNoise(0);
+	m_pBeam->SetWidth(1.0f);
+	m_pBeam->SetEndWidth(0);
+	m_pBeam->SetScrollRate(0);
+	m_pBeam->SetFadeLength(0);
+	m_pBeam->SetHaloTexture(sHaloSprite);
+	m_pBeam->SetHaloScale(4.0f);
+
+	m_vecPaintStart = vecInitialAim;
+
+	// Think faster whilst painting. Higher resolution on the 
+	// beam movement.
+	SetNextThink(gpGlobals->curtime + 0.02);
+}

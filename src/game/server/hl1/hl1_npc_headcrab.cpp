@@ -747,7 +747,7 @@ public:
 	}
 
 	virtual float GetSpecialDamageAmount(void) { return 5.0f; }
-	virtual int GetSpecialDamageType(void) { return DMG_SHOCK; }
+	virtual int64 GetSpecialDamageType(void) { return DMG_SHOCK; }
 
 private:
 	CHandle<CBeam>  m_hBeams[NUM_BEAMS]; //This is temp.
@@ -785,7 +785,7 @@ void CNPC_HCFElectoCrab::CreateBeams(void)
 {
 	for (int i = 0; i < NUM_BEAMS; i++)
 	{
-		if (m_hBeams[i])
+		if (m_hBeams[i].Get())
 			continue;
 
 		const char* attachNamesStart[NUM_BEAMS] =
@@ -854,7 +854,7 @@ public:
 	virtual int GetGibSkin(void) { return 3; }
 
 	virtual float GetSpecialDamageAmount(void) { return 5.0f; }
-	virtual int GetSpecialDamageType(void) { return DMG_BURN; }
+	virtual int64 GetSpecialDamageType(void) { return DMG_BURN; }
 };
 
 LINK_ENTITY_TO_CLASS(monster_hcf_fireheadcrab, CNPC_HCFFireHeadcrab);
@@ -880,7 +880,7 @@ public:
 	virtual int GetGibSkin(void) { return 2; }
 
 	virtual float GetSpecialDamageAmount(void) { return 10.0f; }
-	virtual int GetSpecialDamageType(void) { return DMG_POISON; }
+	virtual int64 GetSpecialDamageType(void) { return DMG_POISON; }
 };
 
 LINK_ENTITY_TO_CLASS(monster_hcf_poisonheadcrab, CNPC_HCFPoisonHeadcrab);
@@ -906,7 +906,7 @@ public:
 	virtual int GetGibSkin(void) { return 6; }
 
 	virtual float GetSpecialDamageAmount(void) { return 10.0f; }
-	virtual int GetSpecialDamageType(void) { return DMG_NERVEGAS; }
+	virtual int64 GetSpecialDamageType(void) { return DMG_NERVEGAS; }
 };
 
 LINK_ENTITY_TO_CLASS(monster_hcf_hallucheadcrab, CNPC_HCFHalucinoHeadcrab);
@@ -933,7 +933,7 @@ public:
 	virtual int GetGibSkin(void) { return 1; }
 
 	virtual float GetSpecialDamageAmount(void) { return 5.0f; }
-	virtual int GetSpecialDamageType(void) { return DMG_PARALYZE; }
+	virtual int64 GetSpecialDamageType(void) { return DMG_FREEZE; }
 };
 
 LINK_ENTITY_TO_CLASS(monster_hcf_iceheadcrab, CNPC_HCFIceHeadcrab);

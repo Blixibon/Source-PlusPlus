@@ -142,3 +142,98 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	// Create it
 	g_TEDynamicLight.Create( filter, delay );
 }
+
+//-----------------------------------------------------------------------------
+// Purpose: Displays a dynamic light
+//-----------------------------------------------------------------------------
+class CTEDynamicLightFollow : public CBaseTempEntity
+{
+public:
+	DECLARE_CLASS(CTEDynamicLightFollow, CBaseTempEntity);
+
+	CTEDynamicLightFollow(const char* name);
+	virtual			~CTEDynamicLightFollow(void);
+
+	virtual void	Test(const Vector& current_origin, const QAngle& current_angles);
+
+	DECLARE_SERVERCLASS();
+
+public:
+	CNetworkVar(int, m_nEntIndex);
+	CNetworkVar(int, m_nAttachmentIndex);
+	CNetworkVar(float, m_fRadius);
+	CNetworkVar(int, r);
+	CNetworkVar(int, g);
+	CNetworkVar(int, b);
+	CNetworkVar(int, exponent);
+	CNetworkVar(float, m_fTime);
+	CNetworkVar(float, m_fDecay);
+};
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *name - 
+//-----------------------------------------------------------------------------
+CTEDynamicLightFollow::CTEDynamicLightFollow(const char* name) :
+	CBaseTempEntity(name)
+{
+	m_nEntIndex = 0;
+	m_nAttachmentIndex = 0;
+	r = 0;
+	g = 0;
+	b = 0;
+	exponent = 0;
+	m_fRadius = 0.0;
+	m_fTime = 0.0;
+	m_fDecay = 0.0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CTEDynamicLightFollow::~CTEDynamicLightFollow(void)
+{
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *current_origin - 
+//			*current_angles - 
+//-----------------------------------------------------------------------------
+void CTEDynamicLightFollow::Test(const Vector& current_origin, const QAngle& current_angles)
+{
+	
+}
+
+IMPLEMENT_SERVERCLASS_ST(CTEDynamicLightFollow, DT_TEDynamicLightFollow)
+SendPropInt(SENDINFO(m_nEntIndex), MAX_EDICT_BITS, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(m_nAttachmentIndex), 5, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(r), 8, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(g), 8, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(b), 8, SPROP_UNSIGNED),
+SendPropInt(SENDINFO(exponent), 8, 0),
+SendPropFloat(SENDINFO(m_fRadius), 8, SPROP_ROUNDUP, 0, 2560.0),
+SendPropFloat(SENDINFO(m_fTime), 8, SPROP_ROUNDDOWN, 0, 25.6),
+SendPropFloat(SENDINFO(m_fDecay), 8, SPROP_ROUNDDOWN, 0, 2560.0),
+END_SEND_TABLE()
+
+
+// Singleton
+static CTEDynamicLightFollow g_TEDynamicLightFollow("Dynamic Follow Light");
+
+void TE_DynamicLightFollow(IRecipientFilter& filter, float delay, int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay)
+{
+	// Set up parameters
+	g_TEDynamicLightFollow.m_nEntIndex = iEntIndex;
+	g_TEDynamicLightFollow.m_nAttachmentIndex = iAttachmentIndex;
+	g_TEDynamicLightFollow.r = r;
+	g_TEDynamicLightFollow.g = g;
+	g_TEDynamicLightFollow.b = b;
+	g_TEDynamicLightFollow.exponent = exponent;
+	g_TEDynamicLightFollow.m_fRadius = radius;
+	g_TEDynamicLightFollow.m_fTime = time;
+	g_TEDynamicLightFollow.m_fDecay = decay;
+
+	// Create it
+	g_TEDynamicLightFollow.Create(filter, delay);
+}

@@ -154,6 +154,7 @@ private:
 	bool			GetEndPointAttachment( int iPt, Vector &vPos, QAngle &angle );
 	
 	Vector			*GetRopeSubdivVectors( int *nSubdivs );
+	void			UpdateHolidayLights(void);
 	void			CalcLightValues();
 
 	void			ReceiveMessage( int classID, bf_read &msg );

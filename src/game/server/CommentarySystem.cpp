@@ -600,7 +600,7 @@ public:
 		char szFullName[512];
 		Q_snprintf(szFullName,sizeof(szFullName), "maps/%s_commentary.txt", STRING( gpGlobals->mapname ));
 		KeyValues *pkvFile = new KeyValues( "Commentary" );
-		if ( pkvFile->LoadFromFile( filesystem, szFullName, "MOD" ) )
+		if ( pkvFile->LoadFromFile( filesystem, szFullName, "GAME" ) )
 		{
 			Msg( "Commentary: Loading commentary data from %s. \n", szFullName );
 

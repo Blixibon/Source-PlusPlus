@@ -11,6 +11,12 @@
 #include "vgui/ILocalize.h"
 #include "iserver.h"
 
+// See interface.h/.cpp for specifics:  basically this ensures that we actually Sys_UnloadModule the dll and that we don't call Sys_LoadModule 
+//  over and over again.
+static CDllDemandLoader g_ServerBrowser("ServerBrowser");
+
+static CRichPresense* s_pRichPresence = nullptr;
+
 //-----------------------------------------------------------------------------
 // Discord RPC handlers
 //-----------------------------------------------------------------------------
@@ -37,21 +43,36 @@ static void HandleDiscordError(int errcode, const char* message)
 
 static void HandleDiscordJoin(const char* secret)
 {
-	CFmtStr command("connect %s", secret);
-
-	internaldata->GetEnginePointers().engineclient->ClientCmd(command);
+	if (s_pRichPresence)
+	{
+		s_pRichPresence->InitiateConnection(secret);
+	}
 }
 
 static void HandleDiscordSpectate(const char* secret)
 {
-	CFmtStr command("connect %s", secret);
-
-	internaldata->GetEnginePointers().engineclient->ClientCmd(command);
+	if (s_pRichPresence)
+	{
+		s_pRichPresence->InitiateConnection(secret);
+	}
 }
 
 static void HandleDiscordJoinRequest(const DiscordUser* request)
 {
 	// Not implemented
+}
+
+bool CRichPresense::Connect(CreateInterfaceFn factory)
+{
+	CreateInterfaceFn ServerBrowserFactory = g_ServerBrowser.GetFactory();
+	if (!ServerBrowserFactory)
+		return false;
+
+	m_pServerBrowser = (IServerBrowser *)ServerBrowserFactory(SERVERBROWSER_INTERFACE_VERSION, NULL);
+	if (!m_pServerBrowser)
+		return false;
+
+	return true;
 }
 
 void CRichPresense::InitDiscord(const char* applicationId)
@@ -220,7 +241,17 @@ void CRichPresense::InternalInit(IInternalSharedData* pInternalData)
 	m_pInternalData = pInternalData;
 }
 
+void CRichPresense::InitiateConnection(const char* pszServer)
+{
+	netadr_t address(pszServer);
+	if (address.IsValid())
+	{
+		m_pServerBrowser->JoinGame(address.GetIPHostByteOrder(), address.GetPort(), "");
+	}
+}
+
 void CRichPresense::RunCallbacks()
 {
+	s_pRichPresence = this;
 	Discord_RunCallbacks();
 }

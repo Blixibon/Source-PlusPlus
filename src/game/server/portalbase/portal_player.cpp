@@ -33,6 +33,10 @@
 #include "ai_speech.h"		// For expressors, vcd playing
 #include "sceneentity.h"	// has the VCD precache function
 
+#include "info_camera_link.h"
+#include "point_camera.h"
+#include "script_intro.h"
+
 // Max mass the player can lift with +use
 #define PORTAL_PLAYER_MAX_LIFT_MASS 85
 #define PORTAL_PLAYER_MAX_LIFT_SIZE 128
@@ -1530,7 +1534,7 @@ void PortalSetupVisibility( CBaseEntity *pPlayer, int area, unsigned char *pvs, 
 
 void CPortal_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize )
 {
-	BaseClass::SetupVisibility( pViewEntity, pvs, pvssize );
+	CBasePlayer::SetupVisibility( pViewEntity, pvs, pvssize );
 
 	int area = pViewEntity ? pViewEntity->NetworkProp()->AreaNum() : NetworkProp()->AreaNum();
 
@@ -1565,6 +1569,25 @@ void CPortal_Player::SetupVisibility( CBaseEntity *pViewEntity, unsigned char *p
 					area = engine->GetArea( eyeOrigin );
 				}
 			}
+		}
+	}
+
+	PointCameraSetupVisibility(this, area, pvs, pvssize);
+
+	// If the intro script is playing, we want to get it's visibility points
+	if (g_hIntroScript)
+	{
+		Vector vecOrigin;
+		CBaseEntity* pCamera;
+		if (g_hIntroScript->GetIncludedPVSOrigin(&vecOrigin, &pCamera))
+		{
+			// If it's a point camera, turn it on
+			CPointCamera* pPointCamera = dynamic_cast<CPointCamera*>(pCamera);
+			if (pPointCamera)
+			{
+				pPointCamera->SetActive(true);
+			}
+			engine->AddOriginToPVS(vecOrigin);
 		}
 	}
 

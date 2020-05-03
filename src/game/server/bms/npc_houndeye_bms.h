@@ -18,12 +18,12 @@
 
 #include	"ai_basenpc.h"
 
-#include	"energy_wave.h"
+//#include	"energy_wave.h"
 
-class CNPC_Houndeye : public CAI_BaseNPC
+class CNPC_BMSHoundeye : public CAI_BaseNPC
 {
-	DECLARE_CLASS( CNPC_Houndeye, CAI_BaseNPC );
-
+	DECLARE_CLASS( CNPC_BMSHoundeye, CAI_BaseNPC );
+	DECLARE_SERVERCLASS();
 public:
 	void			Spawn( void );
 	void			Precache( void );
@@ -53,12 +53,14 @@ public:
 	void			Event_Killed( const CTakeDamageInfo &info );
 	bool			IsAnyoneInSquadAttacking( void );
 	void			SpeakSentence( int sentenceType );
+	float			GetChargeTime(int iSequence);
 
 	float			m_flNextSecondaryAttack;
 	bool			m_bLoopClockwise;
 
-	CEnergyWave*	m_pEnergyWave;
-	float			m_flEndEnergyWaveTime;
+	//CEnergyWave*	m_pEnergyWave;
+	CNetworkVar(float, m_flEndEnergyWaveTime);
+	CNetworkVar(float, m_flWaveChargeTime);
 
 	bool			m_fAsleep;// some houndeyes sleep in idle mode if this is set, the houndeye is lying down
 	bool			m_fDontBlink;// don't try to open/close eye if this bit is set!

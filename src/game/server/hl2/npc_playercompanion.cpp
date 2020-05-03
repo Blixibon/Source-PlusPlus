@@ -36,6 +36,11 @@
 
 #include "players_system.h"
 
+#ifdef HL2_LAZUL
+#include "Human_Error/grenade_smoke.h"
+#endif // HL2_LAZUL
+
+
 #include "tier0/memdbgon.h"
 
 ConVar ai_debug_readiness("ai_debug_readiness", "0" );
@@ -67,6 +72,8 @@ bool IsRPG(CBaseCombatWeapon *pWeapon)
 #endif
 	return FClassnameIs(pWeapon, "weapon_rpg");
 }
+
+bool Sniper_IsSniper(CBaseEntity* pEntity);
 
 #define MAX_TIME_BETWEEN_BARRELS_EXPLODING			5.0f
 #define MAX_TIME_BETWEEN_CONSECUTIVE_PLAYER_KILLS	3.0f
@@ -1811,8 +1818,7 @@ void CNPC_PlayerCompanion::HandleAnimEvent( animevent_t *pEvent )
 		case EVENT_WEAPON_RELOAD:
 			if (GetActiveWeapon())
 			{
-				GetActiveWeapon()->WeaponSound(RELOAD_NPC);
-				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1();
+				GetActiveWeapon()->NPC_Reload();
 				ClearCondition(COND_LOW_PRIMARY_AMMO);
 				ClearCondition(COND_NO_PRIMARY_AMMO);
 				ClearCondition(COND_NO_SECONDARY_AMMO);
@@ -2698,7 +2704,7 @@ void CNPC_PlayerCompanion::DecalTrace( trace_t *pTrace, char const *decalName )
 //------------------------------------------------------------------------------
 bool CNPC_PlayerCompanion::FCanCheckAttacks()
 {
-	if( GetEnemy() && ( IsSniper(GetEnemy()) || IsMortar(GetEnemy()) || IsTurret(GetEnemy()) ) )
+	if( GetEnemy() && ( IsSniper(GetEnemy()) || IsMortar(GetEnemy()) || (IsTurret(GetEnemy()) && !IsGrenadeCapable()) ) )
 	{
 		// Don't attack the sniper or the mortar.
 		return false;
@@ -3147,7 +3153,7 @@ bool CNPC_PlayerCompanion::IsSniper( CBaseEntity *pEntity )
 {
 	if ( !pEntity )
 		return false;
-	return ( pEntity->Classify() == CLASS_PROTOSNIPER );
+	return Sniper_IsSniper(pEntity);
 }
 
 //-----------------------------------------------------------------------------
@@ -3334,6 +3340,10 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 		string_t iszEntityFlame = AllocPooledString( "entityflame" );
 #endif // HL2_EPISODIC
 
+#ifdef HL2_LAZUL
+		string_t iszGrenadeSmoke = AllocPooledString("npc_grenade_smoke");
+#endif // HL2_LAZUL
+
 		if ( IsCurSchedule( SCHED_TAKE_COVER_FROM_BEST_SOUND ) )
 		{
 			CSound *pSound = GetBestSound( SOUND_DANGER );
@@ -3401,6 +3411,16 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 					}
 				}
 			}
+#ifdef HL2_LAZUL
+			else if (pEntity->m_iClassname == iszGrenadeSmoke)
+			{
+				CGrenadeSmoke* pSmoke = static_cast<CGrenadeSmoke*>(pEntity);
+				if (pSmoke && pSmoke->IsSmoking())
+				{
+					GetLocalNavigator()->AddObstacle(pEntity->WorldSpaceCenter(), smoke_grenade_radius.GetFloat() * 1.2f, AIMST_AVOID_DANGER);
+				}
+			}
+#endif // HL2_LAZUL
 		}
 	}
 
@@ -4405,114 +4425,119 @@ AI_BEGIN_CUSTOM_NPC( player_companion_base, CNPC_PlayerCompanion )
 			"		TASK_RANGE_ATTACK1			0"
 			"		TASK_CIT_RPG_AUGER			1"
 			""
-			"	Interrupts"
-		)
+"	Interrupts"
+)
 
-		//=========================================================
-		// > SCHED_CITIZEN_RANGE_ATTACK1_RPG
-		//=========================================================
-		DEFINE_SCHEDULE
-		(
-			SCHED_CITIZEN_STRIDER_RANGE_ATTACK1_RPG,
+//=========================================================
+// > SCHED_CITIZEN_RANGE_ATTACK1_RPG
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_CITIZEN_STRIDER_RANGE_ATTACK1_RPG,
 
-			"	Tasks"
-			"		TASK_STOP_MOVING			0"
-			"		TASK_FACE_ENEMY				0"
-			"		TASK_ANNOUNCE_ATTACK		1"	// 1 = primary attack
-			"		TASK_WAIT					1"
-			"		TASK_RANGE_ATTACK1			0"
-			"		TASK_CIT_RPG_AUGER			1"
-			"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
-			""
-			"	Interrupts"
-		)
+	"	Tasks"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_FACE_ENEMY				0"
+	"		TASK_ANNOUNCE_ATTACK		1"	// 1 = primary attack
+	"		TASK_WAIT					1"
+	"		TASK_RANGE_ATTACK1			0"
+	"		TASK_CIT_RPG_AUGER			1"
+	"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
+	""
+	"	Interrupts"
+)
 
-		//=========================================================
-	// AR2 Alt Fire Attack
-	//=========================================================
-		DEFINE_SCHEDULE
-		(
-			SCHED_PC_AR2_ALTFIRE,
+//=========================================================
+// AR2 Alt Fire Attack
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PC_AR2_ALTFIRE,
 
-			"	Tasks"
-			"		TASK_STOP_MOVING									0"
-			"		TASK_ANNOUNCE_ATTACK								1"
-			"		TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET		ACTIVITY:ACT_COMBINE_AR2_ALTFIRE"
-			""
-			"	Interrupts"
-			"		COND_TOO_CLOSE_TO_ATTACK"
-		)
+	"	Tasks"
+	"		TASK_STOP_MOVING									0"
+	"		TASK_ANNOUNCE_ATTACK								1"
+	"		TASK_PC_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET		ACTIVITY:ACT_COMBINE_AR2_ALTFIRE"
+	""
+	"	Interrupts"
+	"		COND_TOO_CLOSE_TO_ATTACK"
+)
 
-		//=========================================================
-		// Move to LOS of the mapmaker's forced grenade throw target
-		//=========================================================
-		DEFINE_SCHEDULE
-		(
-			SCHED_PC_MOVE_TO_FORCED_GREN_LOS,
+//=========================================================
+// Move to LOS of the mapmaker's forced grenade throw target
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PC_MOVE_TO_FORCED_GREN_LOS,
 
-			"	Tasks "
-			"		TASK_SET_TOLERANCE_DISTANCE					48"
-			"		TASK_PC_GET_PATH_TO_FORCED_GREN_LOS			0"
-			"		TASK_SPEAK_SENTENCE							1"
-			"		TASK_RUN_PATH								0"
-			"		TASK_WAIT_FOR_MOVEMENT						0"
-			"	"
-			"	Interrupts "
-			"		COND_NEW_ENEMY"
-			"		COND_ENEMY_DEAD"
-			"		COND_CAN_MELEE_ATTACK1"
-			"		COND_CAN_MELEE_ATTACK2"
-			"		COND_HEAR_DANGER"
-			"		COND_HEAR_MOVE_AWAY"
-			"		COND_HEAVY_DAMAGE"
-		)
+	"	Tasks "
+	"		TASK_SET_TOLERANCE_DISTANCE					48"
+	"		TASK_PC_GET_PATH_TO_FORCED_GREN_LOS			0"
+	"		TASK_SPEAK_SENTENCE							1"
+	"		TASK_RUN_PATH								0"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	"	"
+	"	Interrupts "
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_CAN_MELEE_ATTACK1"
+	"		COND_CAN_MELEE_ATTACK2"
+	"		COND_HEAR_DANGER"
+	"		COND_HEAR_MOVE_AWAY"
+	"		COND_HEAVY_DAMAGE"
+)
 
-		//=========================================================
-		// Mapmaker forced grenade throw
-		//=========================================================
-		DEFINE_SCHEDULE
-		(
-			SCHED_PC_FORCED_GRENADE_THROW,
+//=========================================================
+// Mapmaker forced grenade throw
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PC_FORCED_GRENADE_THROW,
 
-			"	Tasks"
-			"		TASK_STOP_MOVING					0"
-			"		TASK_PC_FACE_TOSS_DIR				0"
-			"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
-			"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_COMBINE_THROW_GRENADE"
-			"		TASK_PC_DEFER_SQUAD_GRENADES	0"
-			""
-			"	Interrupts"
-		)
+	"	Tasks"
+	"		TASK_STOP_MOVING					0"
+	"		TASK_PC_FACE_TOSS_DIR				0"
+	"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
+	"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_COMBINE_THROW_GRENADE"
+	"		TASK_PC_DEFER_SQUAD_GRENADES	0"
+	""
+	"	Interrupts"
+)
 
-		//=========================================================
-		// 	SCHED_PC_RANGE_ATTACK2	
-		//
-		//	secondary range attack. Overriden because base class stops attacking when the enemy is occluded.
-		//	combines's grenade toss requires the enemy be occluded.
-		//=========================================================
-		DEFINE_SCHEDULE
-		(
-			SCHED_PC_RANGE_ATTACK2,
+//=========================================================
+// 	SCHED_PC_RANGE_ATTACK2	
+//
+//	secondary range attack. Overriden because base class stops attacking when the enemy is occluded.
+//	combines's grenade toss requires the enemy be occluded.
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PC_RANGE_ATTACK2,
 
-			"	Tasks"
-			"		TASK_STOP_MOVING					0"
-			"		TASK_PC_FACE_TOSS_DIR			0"
-			"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
-			"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_COMBINE_THROW_GRENADE"
-			"		TASK_PC_DEFER_SQUAD_GRENADES	0"
-			"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_HIDE_AND_RELOAD"	// don't run immediately after throwing grenade.
-			""
-			"	Interrupts"
-		)
+	"	Tasks"
+	"		TASK_STOP_MOVING					0"
+	"		TASK_PC_FACE_TOSS_DIR			0"
+	"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
+	"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_COMBINE_THROW_GRENADE"
+	"		TASK_PC_DEFER_SQUAD_GRENADES	0"
+	"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_HIDE_AND_RELOAD"	// don't run immediately after throwing grenade.
+	""
+	"	Interrupts"
+)
 
-AI_END_CUSTOM_NPC()
+AI_END_CUSTOM_NPC();
 
 
 //
 // Special movement overrides for player companions
 //
 
+#ifdef HL2_LAZUL
+#define NUM_OVERRIDE_MOVE_CLASSNAMES	5
+#else
 #define NUM_OVERRIDE_MOVE_CLASSNAMES	4
+#endif // HL2_LAZUL
+
 
 class COverrideMoveCache : public IEntityListener
 {
@@ -4625,6 +4650,9 @@ private:
 		m_Classname[1] = AllocPooledString( "combine_mine" );
 		m_Classname[2] = AllocPooledString( "npc_turret_floor" );
 		m_Classname[3] = AllocPooledString( "entityflame" );
+#ifdef HL2_LAZUL
+		m_Classname[4] = AllocPooledString("npc_grenade_smoke");
+#endif
 	}
 
 	CUtlLinkedList<EHANDLE>	m_Cache;

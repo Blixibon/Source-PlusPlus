@@ -673,6 +673,11 @@ void CNPC_Manhack::DestroySmokeTrail()
 //-----------------------------------------------------------------------------
 int	CNPC_Manhack::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
+	if (info.GetDamageType() & DMG_NERVEGAS)
+	{
+		return 0;
+	}
+
 	// Hafta make a copy of info cause we might need to scale damage.(sjb)
 	CTakeDamageInfo tdInfo = info;
 

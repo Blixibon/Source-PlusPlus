@@ -60,6 +60,8 @@ void TE_Decal( IRecipientFilter& filter, float delay,
 	const Vector* pos, const Vector* start, int entity, int hitbox, int index );
 void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay );
+void TE_DynamicLightFollow(IRecipientFilter& filter, float delay,
+	int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay);
 void TE_Explosion( IRecipientFilter& filter, float delay,
 	const Vector* pos, int modelindex, float scale, int framerate, int flags, int radius, int magnitude, const Vector* normal = NULL, unsigned char materialType = 'C' );
 void TE_ShatterSurface( IRecipientFilter& filter, float delay,
@@ -517,6 +519,15 @@ public:
 		if ( !SuppressTE( filter ) )
 		{
 			TE_ClientProjectile( filter, delay, vecOrigin, vecVelocity, modelindex, lifetime, pOwner );
+		}
+	}
+
+	virtual void DynamicLight(IRecipientFilter& filter, float delay,
+		int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay)
+	{
+		if (!SuppressTE(filter))
+		{
+			TE_DynamicLightFollow(filter, delay, iEntIndex, iAttachmentIndex, r, g, b, exponent, radius, time, decay);
 		}
 	}
 };

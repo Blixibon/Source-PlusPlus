@@ -1,0 +1,37 @@
+"SolidEnergy"
+{
+	"$basetexture" "Effects/Combineshield/comshieldwall_alpha"
+	//"$detail1" "Effects/Combineshield/comshieldwall"
+//	"$texture2" "Effects/Combineshield/comshieldwall"
+
+	$flowbounds "effects/xen_shield_bounds2"
+	$flowmap "effects/fizzler_flow"
+	$FLOW_NOISE_TEXTURE "effects/xen_shield_noise2"
+	$FLOW_UVSCROLLDISTANCE "1.2"
+	$FLOW_TIMEINTERVALINSECONDS "1.5"
+	$FLOW_NOISE_SCALE 0.008
+	$FLOW_LERPEXP 1.5
+	$FLOW_WORLDUVSCALE 0.008
+	$FLOW_NORMALUVSCALE 0.015
+	$FLOW_COLOR "[.5 .5 .5]"
+	$flow_color_intensity 1
+	$powerup 1
+	
+	$OUTPUTINTENSITY 1
+
+	"$translucent" "1"
+	"$additive" 1
+	"$nodecal" 1
+	
+	"<dx90_20b"
+	{
+		"$fallbackmaterial"	"effects/combineshield/comshieldwall_mp_fallback"
+	}
+	
+	"Proxies"
+	{
+		"CombineShieldVortex"
+		{
+		}
+	}
+}

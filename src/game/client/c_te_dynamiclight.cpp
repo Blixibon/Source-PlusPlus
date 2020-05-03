@@ -13,6 +13,7 @@
 #include "tier1/KeyValues.h"
 #include "toolframework_client.h"
 #include "tier0/vprof.h"
+#include "peter/c_lightmanager.h"
 
 #ifdef DEFERRED
 #include "deferred\deferred_shared_common.h"
@@ -139,6 +140,7 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 		msg->SetColor( "color", clr );
  		msg->SetInt( "exponent", exponent );
  		msg->SetInt( "lightindex", nLightIndex );
+		msg->SetBool("follow", false);
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -158,6 +160,114 @@ void C_TEDynamicLight::PostDataUpdate( DataUpdateType_t updateType )
 	TE_DynamicLight( filter, 0.0f, &m_vecOrigin, r, g, b, exponent, m_fRadius, m_fTime, m_fDecay, LIGHT_INDEX_TE_DYNAMIC );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: Dynamic Light
+//-----------------------------------------------------------------------------
+class C_TEDynamicLightFollow : public C_BaseTempEntity
+{
+public:
+	DECLARE_CLASS(C_TEDynamicLightFollow, C_BaseTempEntity);
+	DECLARE_CLIENTCLASS();
+
+	C_TEDynamicLightFollow(void);
+	virtual			~C_TEDynamicLightFollow(void);
+
+	virtual void	PostDataUpdate(DataUpdateType_t updateType);
+
+public:
+	int				m_nEntIndex;
+	int				m_nAttachmentIndex;
+	float			m_fRadius;
+	int				r;
+	int				g;
+	int				b;
+	int				exponent;
+	float			m_fTime;
+	float			m_fDecay;
+};
+
+
+//-----------------------------------------------------------------------------
+// Networking 
+//-----------------------------------------------------------------------------
+IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEDynamicLightFollow, DT_TEDynamicLightFollow, CTEDynamicLightFollow)
+RecvPropInt(RECVINFO(m_nEntIndex)),
+RecvPropInt(RECVINFO(m_nAttachmentIndex)),
+RecvPropInt(RECVINFO(r)),
+RecvPropInt(RECVINFO(g)),
+RecvPropInt(RECVINFO(b)),
+RecvPropInt(RECVINFO(exponent)),
+RecvPropFloat(RECVINFO(m_fRadius)),
+RecvPropFloat(RECVINFO(m_fTime)),
+RecvPropFloat(RECVINFO(m_fDecay)),
+END_RECV_TABLE()
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+C_TEDynamicLightFollow::C_TEDynamicLightFollow(void)
+{
+	m_nEntIndex = 0;
+	m_nAttachmentIndex = 0;
+	r = 0;
+	g = 0;
+	b = 0;
+	exponent = 0;
+	m_fRadius = 0.0;
+	m_fTime = 0.0;
+	m_fDecay = 0.0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+C_TEDynamicLightFollow::~C_TEDynamicLightFollow(void)
+{
+}
+
+void TE_DynamicLightFollow(IRecipientFilter& filter, float delay,
+	int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay)
+{
+	C_BaseEntity *pEnt = ClientEntityList().GetBaseEntity(iEntIndex);
+	LightManager()->CreateAutoFollowLight(pEnt, iAttachmentIndex, r, g, b, exponent, radius, time, decay);
+
+	if (ToolsEnabled() && pEnt && clienttools->IsInRecordingMode())
+	{
+		Color clr(r, g, b, 255);
+
+		KeyValues* msg = new KeyValues("TempEntity");
+
+		msg->SetInt("te", TE_DYNAMIC_LIGHT);
+		msg->SetString("name", "TE_DynamicLightFollow");
+		msg->SetFloat("time", gpGlobals->curtime);
+		msg->SetFloat("duration", time);
+		msg->SetFloat("radius", radius);
+		msg->SetFloat("decay", decay);
+		msg->SetColor("color", clr);
+		msg->SetInt("exponent", exponent);
+		msg->SetInt("entindex", iEntIndex);
+		msg->SetInt("attachment", iAttachmentIndex);
+		msg->SetBool("follow", true);
+
+		ToolFramework_PostToolMessage(HTOOLHANDLE_INVALID, msg);
+		msg->deleteThis();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : bool - 
+//-----------------------------------------------------------------------------
+void C_TEDynamicLightFollow::PostDataUpdate(DataUpdateType_t updateType)
+{
+	VPROF("C_TEDynamicLight::PostDataUpdate");
+
+	CBroadcastRecipientFilter filter;
+	TE_DynamicLightFollow(filter, 0.0f, m_nEntIndex, m_nAttachmentIndex, r, g, b, exponent, m_fRadius, m_fTime, m_fDecay);
+}
+
 void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
 {
 	Vector vecOrigin;
@@ -170,8 +280,18 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues *pKeyValu
 	float flRadius = pKeyValues->GetFloat( "radius" );
 	float flDecay = pKeyValues->GetFloat( "decay" );
  	int nLightIndex = pKeyValues->GetInt( "lightindex", LIGHT_INDEX_TE_DYNAMIC );
+	bool bFollow = pKeyValues->GetBool("follow");
+	int iEntIndex = pKeyValues->GetInt("entindex");
+	int iAttachment = pKeyValues->GetInt("attachment");
 
-	TE_DynamicLight( filter, 0.0f, &vecOrigin, c.r(), c.g(), c.b(), nExponent, 
-		flRadius, flDuration, flDecay, nLightIndex );
+	if (bFollow)
+	{
+		TE_DynamicLightFollow(filter, 0.0f, iEntIndex, iAttachment, c.r(), c.g(), c.b(), nExponent, flRadius, flDuration, flDecay);
+	}
+	else
+	{
+		TE_DynamicLight(filter, 0.0f, &vecOrigin, c.r(), c.g(), c.b(), nExponent,
+			flRadius, flDuration, flDecay, nLightIndex);
+	}
 }
 

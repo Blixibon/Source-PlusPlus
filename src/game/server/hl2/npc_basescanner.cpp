@@ -387,6 +387,11 @@ void CNPC_BaseScanner::StartTask( const Task_t *pTask )
 //------------------------------------------------------------------------------
 int CNPC_BaseScanner::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
+	if (info.GetDamageType() & DMG_NERVEGAS)
+	{
+		return 0;
+	}
+
 	// Start smoking when we're nearly dead
 	if ( m_iHealth < ( m_iMaxHealth - ( m_iMaxHealth / 4 ) ) )
 	{

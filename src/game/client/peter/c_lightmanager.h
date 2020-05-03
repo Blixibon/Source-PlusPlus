@@ -42,6 +42,7 @@ public:
 	CManagedLight* CreateLight(const char* pszLightType, const Vector *pOrigin = nullptr);
 
 	void	CreateAutoFollowLight(const CEffectData& data);
+	void	CreateAutoFollowLight(C_BaseEntity *pEntity, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay);
 
 protected:
 	typedef struct lighttype_s

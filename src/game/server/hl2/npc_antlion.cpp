@@ -436,7 +436,7 @@ void CNPC_Antlion::Precache( void )
 		UTIL_PrecacheOther( "grenade_spit" );
 		PrecacheParticleSystem( "blood_impact_antlion_worker_01" );
 		PrecacheParticleSystem( "antlion_gib_02" );
-		PrecacheParticleSystem( "blood_impact_yellow_01" );
+		//PrecacheParticleSystem( "blood_impact_yellow_01" );
 	}
 	else
 #endif // HL2_EPISODIC
@@ -1139,7 +1139,7 @@ void CNPC_Antlion::HandleAnimEvent( animevent_t *pEvent )
 
 				for ( int i = 0; i < 8; i++ )
 				{
-					DispatchParticleEffect( "blood_impact_yellow_01", vSpitPos + RandomVector( -12.0f, 12.0f ), RandomAngle( 0, 360 ) );
+					DispatchParticleEffect( "blood_impact_antlion_worker_01", vSpitPos + RandomVector( -12.0f, 12.0f ), RandomAngle( 0, 360 ) );
 				}
 
 				EmitSound( "NPC_Antlion.PoisonShoot" );

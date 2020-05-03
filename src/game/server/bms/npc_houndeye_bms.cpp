@@ -6,7 +6,7 @@
 //=============================================================================//
 
 #include "cbase.h"
-#include "npc_houndeye.h"
+#include "npc_houndeye_bms.h"
 #include "npc_antlion.h"
 #include "ai_default.h"
 #include "ai_node.h"
@@ -31,6 +31,7 @@
 #include "movevars_shared.h"
 #include "te_effect_dispatch.h"
 #include "../beam_flags.h"
+#include "animation.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -49,8 +50,8 @@ int s_nRingTexture = -1;
 #define VORTFX_ZAPBEAM		0	// Beam that damages the target
 #define VORTFX_ARMBEAM		1	// Smaller beams from the hands as we charge up
 
-ConVar	sk_Houndeye_health( "sk_Houndeye_health","0");
-ConVar	sk_Houndeye_dmg_blast( "sk_Houndeye_dmg_blast","0");
+ConVar	sk_houndeye_bms_health( "sk_houndeye_bms_health","0");
+ConVar	sk_houndeye_bms_dmg_blast( "sk_houndeye_bms_dmg_blast","0");
 
 //=========================================================
 // Interactions
@@ -120,78 +121,91 @@ int	ACT_HOUND_GUARD;
 #define		HOUND_AE_CLOSE_EYE		7
 #define		HOUND_AE_LEAP_HIT		8
 
+int AE_HOUND_RANGE_ATTACK1;
+int AE_HOUND_PRE_RANGE_ATTACK1;
+
 //-----------------------------------------------------------------------------
 // Purpose: Initialize the custom schedules
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CNPC_Houndeye::InitCustomSchedules(void) 
+void CNPC_BMSHoundeye::InitCustomSchedules(void) 
 {
-	INIT_CUSTOM_AI(CNPC_Houndeye);
+	INIT_CUSTOM_AI(CNPC_BMSHoundeye);
 
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_CLOSE_EYE);
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_OPEN_EYE);
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_THREAT_DISPLAY);
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_FALL_ASLEEP);
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_WAKE_UP);
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_HOP_BACK);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_CLOSE_EYE);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_OPEN_EYE);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_THREAT_DISPLAY);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_FALL_ASLEEP);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_WAKE_UP);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_HOP_BACK);
 
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_GET_PATH_TO_CIRCLE);
-	ADD_CUSTOM_TASK(CNPC_Houndeye,	TASK_HOUND_REVERSE_STRAFE_DIR);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_GET_PATH_TO_CIRCLE);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_REVERSE_STRAFE_DIR);
 	
-	ADD_CUSTOM_CONDITION(CNPC_Houndeye,	COND_HOUND_GROUP_ATTACK);
-	ADD_CUSTOM_CONDITION(CNPC_Houndeye,	COND_HOUND_GROUP_RETREAT);
+	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye,	COND_HOUND_GROUP_ATTACK);
+	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye,	COND_HOUND_GROUP_RETREAT);
+	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye, COND_HOUND_GROUP_RALLEY);
 
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_HOP_RETREAT);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_RANGE_ATTACK1);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_ATTACK_STRAFE);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_ATTACK_STRAFE_REVERSE);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_GROUP_ATTACK);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_GROUP_RETREAT);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_CHASE_ENEMY);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_COVER_WAIT);
-	ADD_CUSTOM_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_GROUP_RALLEY);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_HOP_RETREAT);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_RANGE_ATTACK1);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE_REVERSE);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_ATTACK);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RETREAT);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_CHASE_ENEMY);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_COVER_WAIT);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RALLEY);
+
+	ADD_CUSTOM_ANIMEVENT(CNPC_BMSHoundeye, AE_HOUND_PRE_RANGE_ATTACK1);
+	ADD_CUSTOM_ANIMEVENT(CNPC_BMSHoundeye, AE_HOUND_RANGE_ATTACK1);
 	
-	ADD_CUSTOM_ACTIVITY(CNPC_Houndeye,	ACT_HOUND_GUARD);
+	ADD_CUSTOM_ACTIVITY(CNPC_BMSHoundeye,	ACT_HOUND_GUARD);
 
 	g_interactionHoundeyeGroupAttack				= CBaseCombatCharacter::GetInteractionID();
 	g_interactionHoundeyeGroupRetreat				= CBaseCombatCharacter::GetInteractionID();
 	g_interactionHoundeyeGroupRalley				= CBaseCombatCharacter::GetInteractionID();
 
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_HOP_RETREAT);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_RANGE_ATTACK1);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_ATTACK_STRAFE);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_ATTACK_STRAFE_REVERSE);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_GROUP_ATTACK);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_GROUP_RETREAT);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_CHASE_ENEMY);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_COVER_WAIT);
-	AI_LOAD_SCHEDULE(CNPC_Houndeye,	SCHED_HOUND_GROUP_RALLEY);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_HOP_RETREAT);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_RANGE_ATTACK1);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE_REVERSE);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_ATTACK);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RETREAT);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_CHASE_ENEMY);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_COVER_WAIT);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RALLEY);
 }
 
-LINK_ENTITY_TO_CLASS( npc_houndeye, CNPC_Houndeye );
-LINK_ENTITY_TO_CLASS( monster_houndeye, CNPC_Houndeye );
-IMPLEMENT_CUSTOM_AI( npc_houndeye, CNPC_Houndeye );
+LINK_ENTITY_TO_CLASS( npc_houndeye_bms, CNPC_BMSHoundeye );
+//LINK_ENTITY_TO_CLASS( monster_houndeye, CNPC_BMSHoundeye );
+IMPLEMENT_CUSTOM_AI(npc_houndeye_bms, CNPC_BMSHoundeye );
 
-BEGIN_DATADESC( CNPC_Houndeye )
+BEGIN_DATADESC( CNPC_BMSHoundeye )
 
 	DEFINE_FIELD( m_fAsleep,					FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_fDontBlink,				FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flNextSecondaryAttack,	FIELD_TIME ),
 	DEFINE_FIELD( m_bLoopClockwise,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_pEnergyWave,				FIELD_CLASSPTR ),
+	//DEFINE_FIELD( m_pEnergyWave,				FIELD_CLASSPTR ),
 	DEFINE_FIELD( m_flEndEnergyWaveTime,		FIELD_TIME ),	
+	DEFINE_FIELD(m_flWaveChargeTime, FIELD_FLOAT),
 
 END_DATADESC()
+
+IMPLEMENT_SERVERCLASS_ST(CNPC_BMSHoundeye, DT_BMHound)
+SendPropTime(SENDINFO(m_flEndEnergyWaveTime)),
+SendPropFloat(SENDINFO(m_flWaveChargeTime)),
+END_SEND_TABLE()
 
 //=========================================================
 // Classify - indicates this monster's place in the 
 // relationship table.
 //=========================================================
-Class_T	CNPC_Houndeye::Classify ( void )
+Class_T	CNPC_BMSHoundeye::Classify ( void )
 {
-	if (FClassnameIs( this, "monster_houndeye" ))
-		return CLASS_ALIEN_MONSTER;
+	/*if (FClassnameIs( this, "monster_houndeye" ))
+		return CLASS_ALIEN_MONSTER;*/
 
 	return	CLASS_HOUNDEYE;
 }
@@ -201,7 +215,7 @@ Class_T	CNPC_Houndeye::Classify ( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-int CNPC_Houndeye::RangeAttack1Conditions ( float flDot, float flDist )
+int CNPC_BMSHoundeye::RangeAttack1Conditions ( float flDot, float flDist )
 {
 	// I'm not allowed to attack if standing in another hound eye 
 	// (note houndeyes allowed to interpenetrate)
@@ -244,7 +258,7 @@ int CNPC_Houndeye::RangeAttack1Conditions ( float flDot, float flDist )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-int CNPC_Houndeye::GetSoundInterests( void )
+int CNPC_BMSHoundeye::GetSoundInterests( void )
 {
 	return	SOUND_WORLD		|
 			SOUND_COMBAT	|
@@ -256,7 +270,7 @@ int CNPC_Houndeye::GetSoundInterests( void )
 // MaxYawSpeed - allows each sequence to have a different
 // turn rate associated with it.
 //=========================================================
-float CNPC_Houndeye::MaxYawSpeed ( void )
+float CNPC_BMSHoundeye::MaxYawSpeed ( void )
 {
 	int ys = 90;
 
@@ -286,10 +300,22 @@ float CNPC_Houndeye::MaxYawSpeed ( void )
 // HandleAnimEvent - catches the monster-specific messages
 // that occur when tagged animation frames are played.
 //=========================================================
-void CNPC_Houndeye::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_BMSHoundeye::HandleAnimEvent( animevent_t *pEvent )
 {
-	switch ( pEvent->event )
+	if (pEvent->event == AE_HOUND_PRE_RANGE_ATTACK1)
 	{
+		WarmUpSound();
+	}
+	else if (pEvent->event == AE_HOUND_RANGE_ATTACK1)
+	{
+		// emit the shockwaves
+		SonicAttack();
+		m_flNextAttack = gpGlobals->curtime + random->RandomFloat(5.0, 8.0);
+	}
+	else
+	{
+		switch (pEvent->event)
+		{
 		case HOUND_AE_WARN:
 			// do stuff for this event.
 			WarnSound();
@@ -300,136 +326,137 @@ void CNPC_Houndeye::HandleAnimEvent( animevent_t *pEvent )
 			break;
 
 		case HOUND_AE_HOPBACK:
-			{
-				float flGravity = GetCurrentGravity();
+		{
+			float flGravity = GetCurrentGravity();
 
-				SetGroundEntity( NULL );
+			SetGroundEntity(NULL);
 
-				Vector forward;
-				AngleVectors( GetLocalAngles(), &forward );
-				Vector vecNewVelocity = forward * -200;
-				//jump up 36 inches
-				vecNewVelocity.z += sqrt( 2 * flGravity * 36 );
-				SetAbsVelocity( vecNewVelocity );
-				break;
-			}
+			Vector forward;
+			AngleVectors(GetLocalAngles(), &forward);
+			Vector vecNewVelocity = forward * -200;
+			//jump up 36 inches
+			vecNewVelocity.z += sqrt(2 * flGravity * 36);
+			SetAbsVelocity(vecNewVelocity);
+			break;
+		}
 
 		case HOUND_AE_THUMP:
 			// emit the shockwaves
 			SonicAttack();
-			m_flNextAttack = gpGlobals->curtime + random->RandomFloat( 5.0, 8.0 );
+			m_flNextAttack = gpGlobals->curtime + random->RandomFloat(5.0, 8.0);
 			break;
 
 		case HOUND_AE_ANGERSOUND1:
-			{
-				EmitSound( "NPC_Houndeye.Anger1" );
-			}
-			break;
+		{
+			EmitSound("NPC_Houndeye.Anger1");
+		}
+		break;
 
 		case HOUND_AE_ANGERSOUND2:
-			{
-			EmitSound( "NPC_Houndeye.Anger2" );
-			}
-			break;
+		{
+			EmitSound("NPC_Houndeye.Anger2");
+		}
+		break;
 
 		case HOUND_AE_CLOSE_EYE:
-			if ( !m_fDontBlink )
+			if (!m_fDontBlink)
 			{
-			//<<TEMP>>	pev->skin = HOUNDEYE_EYE_FRAMES - 1;
+				m_nSkin = HOUNDEYE_EYE_FRAMES - 1;
 			}
 			break;
 
 		case HOUND_AE_LEAP_HIT:
+		{
+			//<<TEMP>>return;//<<TEMP>>
+			SetGroundEntity(NULL);
+
+			//
+			// Take him off ground so engine doesn't instantly reset FL_ONGROUND.
+			//
+			UTIL_SetOrigin(this, GetLocalOrigin() + Vector(0, 0, 1));
+			Vector vecJumpDir;
+			if (GetEnemy() != NULL)
 			{
-				//<<TEMP>>return;//<<TEMP>>
-				SetGroundEntity( NULL );
+				Vector vecEnemyEyePos = GetEnemy()->EyePosition();
 
-				//
-				// Take him off ground so engine doesn't instantly reset FL_ONGROUND.
-				//
-				UTIL_SetOrigin( this, GetLocalOrigin() + Vector( 0 , 0 , 1 ));
-				Vector vecJumpDir;
-				if ( GetEnemy() != NULL )
+				float gravity = GetCurrentGravity();
+				if (gravity <= 1)
 				{
-					Vector vecEnemyEyePos = GetEnemy()->EyePosition();
-
-					float gravity = GetCurrentGravity();
-					if ( gravity <= 1 )
-					{
-						gravity = 1;
-					}
-
-					//
-					// How fast does the houndeye need to travel to reach my enemy's eyes given gravity?
-					//
-					float height = ( vecEnemyEyePos.z - GetAbsOrigin().z );
-					if ( height < 16 )
-					{
-						height = 16;
-					}
-					else if ( height > 120 )
-					{
-						height = 120;
-					}
-					float speed = sqrt( 2 * gravity * height );
-					float time = speed / gravity;
-
-					//
-					// Scale the sideways velocity to get there at the right time
-					//
-					vecJumpDir = vecEnemyEyePos - GetAbsOrigin();
-					vecJumpDir = vecJumpDir / time;
-
-					//
-					// Speed to offset gravity at the desired height.
-					//
-					vecJumpDir.z = speed;
-
-					//
-					// Don't jump too far/fast.
-					//
-					float distance = vecJumpDir.Length();
-					if ( distance > 650 )
-					{
-						vecJumpDir = vecJumpDir * ( 650.0 / distance );
-					}
-				}
-				else
-				{
-					Vector forward, up;
-					AngleVectors( GetLocalAngles(), &forward, NULL, &up );
-					//
-					// Jump hop, don't care where.
-					//
-					vecJumpDir = Vector( forward.x, forward.y, up.z ) * 350;
+					gravity = 1;
 				}
 
-				SetAbsVelocity( vecJumpDir );
-				m_flNextAttack = gpGlobals->curtime + 2;
-				break;
+				//
+				// How fast does the houndeye need to travel to reach my enemy's eyes given gravity?
+				//
+				float height = (vecEnemyEyePos.z - GetAbsOrigin().z);
+				if (height < 16)
+				{
+					height = 16;
+				}
+				else if (height > 120)
+				{
+					height = 120;
+				}
+				float speed = sqrt(2 * gravity * height);
+				float time = speed / gravity;
+
+				//
+				// Scale the sideways velocity to get there at the right time
+				//
+				vecJumpDir = vecEnemyEyePos - GetAbsOrigin();
+				vecJumpDir = vecJumpDir / time;
+
+				//
+				// Speed to offset gravity at the desired height.
+				//
+				vecJumpDir.z = speed;
+
+				//
+				// Don't jump too far/fast.
+				//
+				float distance = vecJumpDir.Length();
+				if (distance > 650)
+				{
+					vecJumpDir = vecJumpDir * (650.0 / distance);
+				}
 			}
-		default:
-			BaseClass::HandleAnimEvent( pEvent );
+			else
+			{
+				Vector forward, up;
+				AngleVectors(GetLocalAngles(), &forward, NULL, &up);
+				//
+				// Jump hop, don't care where.
+				//
+				vecJumpDir = Vector(forward.x, forward.y, up.z) * 350;
+			}
+
+			SetAbsVelocity(vecJumpDir);
+			m_flNextAttack = gpGlobals->curtime + 2;
 			break;
+		}
+		default:
+			BaseClass::HandleAnimEvent(pEvent);
+			break;
+		}
 	}
 }
 
 //=========================================================
 // Spawn
 //=========================================================
-void CNPC_Houndeye::Spawn()
+void CNPC_BMSHoundeye::Spawn()
 {
 	Precache( );
 
-	SetModel(HOUNDEYE_MODEL);
-	SetHullType(HULL_WIDE_SHORT);
+	SetModel(HOUNDEYE_MODEL_HD);
+	SetHullType(HULL_MEDIUM);
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
 	SetBloodColor( BLOOD_COLOR_YELLOW );
-	m_iHealth			= sk_Houndeye_health.GetFloat();
+	m_iHealth			= sk_houndeye_bms_health.GetInt();
 	m_flFieldOfView		= 0.5;// indicates the width of this monster's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
 	m_fAsleep			= false; // everyone spawns awake
@@ -442,7 +469,7 @@ void CNPC_Houndeye::Spawn()
 	m_flNextSecondaryAttack = 0;
 	m_bLoopClockwise		= random->RandomInt(0,1) ? true : false;
 
-	m_pEnergyWave			= NULL;
+	//m_pEnergyWave			= NULL;
 	m_flEndEnergyWaveTime	= 0;
 
 	SetCollisionGroup( HL2COLLISION_GROUP_HOUNDEYE ); 
@@ -453,9 +480,9 @@ void CNPC_Houndeye::Spawn()
 //=========================================================
 // Precache - precaches all resources this monster needs
 //=========================================================
-void CNPC_Houndeye::Precache()
+void CNPC_BMSHoundeye::Precache()
 {
-	PrecacheModel(HOUNDEYE_MODEL);
+	PrecacheModel(HOUNDEYE_MODEL_HD);
 
 	s_nRingTexture = PrecacheModel( "sprites/lgtning.vmt" );
 
@@ -484,7 +511,7 @@ void CNPC_Houndeye::Precache()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CNPC_Houndeye::SpeakSentence( int sentenceType )
+void CNPC_BMSHoundeye::SpeakSentence( int sentenceType )
 {
 	if (gpGlobals->curtime > m_flSoundWaitTime)
 	{
@@ -496,7 +523,7 @@ void CNPC_Houndeye::SpeakSentence( int sentenceType )
 //=========================================================
 // IdleSound
 //=========================================================
-void CNPC_Houndeye::IdleSound ( void )
+void CNPC_BMSHoundeye::IdleSound ( void )
 {
 	if (!FOkToMakeSound())
 	{
@@ -509,15 +536,17 @@ void CNPC_Houndeye::IdleSound ( void )
 //=========================================================
 // IdleSound
 //=========================================================
-void CNPC_Houndeye::WarmUpSound ( void )
+void CNPC_BMSHoundeye::WarmUpSound ( void )
 {
 	EmitSound( "NPC_Houndeye.Charge" );
+	m_flWaveChargeTime = GetChargeTime(GetSequence());
+	m_flEndEnergyWaveTime = gpGlobals->curtime + m_flWaveChargeTime;
 }
 
 //=========================================================
 // WarnSound 
 //=========================================================
-void CNPC_Houndeye::WarnSound ( void )
+void CNPC_BMSHoundeye::WarnSound ( void )
 {
 	EmitSound( "NPC_Houndeye.Warn" );
 }
@@ -525,7 +554,7 @@ void CNPC_Houndeye::WarnSound ( void )
 //=========================================================
 // AlertSound 
 //=========================================================
-void CNPC_Houndeye::AlertSound ( void )
+void CNPC_BMSHoundeye::AlertSound ( void )
 {
 	// only first squad member makes ALERT sound.
 	if ( m_pSquad && !m_pSquad->IsLeader( this ) )
@@ -539,7 +568,7 @@ void CNPC_Houndeye::AlertSound ( void )
 //=========================================================
 // DeathSound 
 //=========================================================
-void CNPC_Houndeye::DeathSound ( const CTakeDamageInfo &info )
+void CNPC_BMSHoundeye::DeathSound ( const CTakeDamageInfo &info )
 {
 	EmitSound( "NPC_Houndeye.Die" );
 }
@@ -547,7 +576,7 @@ void CNPC_Houndeye::DeathSound ( const CTakeDamageInfo &info )
 //=========================================================
 // PainSound 
 //=========================================================
-void CNPC_Houndeye::PainSound ( const CTakeDamageInfo &info )
+void CNPC_BMSHoundeye::PainSound ( const CTakeDamageInfo &info )
 {
 	EmitSound( "NPC_Houndeye.Pain" );
 }
@@ -556,7 +585,7 @@ void CNPC_Houndeye::PainSound ( const CTakeDamageInfo &info )
 // WriteBeamColor - writes a color vector to the network 
 // based on the size of the group. 
 //=========================================================
-void CNPC_Houndeye::WriteBeamColor ( void )
+void CNPC_BMSHoundeye::WriteBeamColor ( void )
 {
 	int	bRed, bGreen, bBlue;
 
@@ -604,16 +633,16 @@ void CNPC_Houndeye::WriteBeamColor ( void )
 //-----------------------------------------------------------------------------
 // Purpose: Plays the engine sound.
 //-----------------------------------------------------------------------------
-void CNPC_Houndeye::NPCThink(void)
+void CNPC_BMSHoundeye::NPCThink(void)
 {
-	if (m_pEnergyWave)
+	/*if (m_pEnergyWave)
 	{
 		if (gpGlobals->curtime > m_flEndEnergyWaveTime)
 		{
 			UTIL_Remove(m_pEnergyWave);
 			m_pEnergyWave = NULL;
 		}
-	}
+	}*/
 
 	// -----------------------------------------------------
 	//  Update collision group
@@ -660,7 +689,7 @@ void CNPC_Houndeye::NPCThink(void)
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-int CNPC_Houndeye::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CNPC_BMSHoundeye::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
 	if (m_pSquad && random->RandomInt(0,10) == 10)
 	{
@@ -678,7 +707,7 @@ int CNPC_Houndeye::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CNPC_Houndeye::Event_Killed( const CTakeDamageInfo &info )
+void CNPC_BMSHoundeye::Event_Killed( const CTakeDamageInfo &info )
 {
 	EmitSound( "NPC_Houndeye.Retreat" );
 	m_flSoundWaitTime = gpGlobals->curtime + 1.0;
@@ -691,12 +720,37 @@ void CNPC_Houndeye::Event_Killed( const CTakeDamageInfo &info )
 	BaseClass::Event_Killed( info );
 }
 
+float CNPC_BMSHoundeye::GetChargeTime(int iSequence)
+{
+	animevent_t NPCEvent;
+	int index = 0;
+
+	float flCycleStart = 0.0f;
+	float flCycleEnd = 0.0f;
+
+	while ((index = GetAnimationEvent(GetModelPtr(), iSequence, &NPCEvent, 0.0f, 1.0f, index)) != 0)
+	{
+		if (NPCEvent.event == AE_HOUND_PRE_RANGE_ATTACK1)
+		{
+			flCycleStart = NPCEvent.cycle;
+		}
+		else if (NPCEvent.event == AE_HOUND_RANGE_ATTACK1)
+		{
+			flCycleEnd = NPCEvent.cycle;
+		}
+	}
+
+	return fabsf(flCycleEnd - flCycleStart) * SequenceDuration(iSequence);
+}
+
 //=========================================================
 // SonicAttack
 //=========================================================
-void CNPC_Houndeye::SonicAttack ( void )
+void CNPC_BMSHoundeye::SonicAttack ( void )
 {
 	EmitSound( "NPC_Houndeye.Blast" );
+
+	m_flEndEnergyWaveTime = 0;
 
 	//if (m_pEnergyWave)
 	//{
@@ -713,11 +767,11 @@ void CNPC_Houndeye::SonicAttack ( void )
 
 		UTIL_ScreenShake( GetAbsOrigin(), 20.0f, 150.0, 1.0, 1250.0f, SHAKE_START );
 
-		CEffectData data;
+		//CEffectData data;
 
-		data.m_vOrigin = GetAbsOrigin();
+		//data.m_vOrigin = GetAbsOrigin();
 
-		DispatchEffect( "cball_explode", data );
+		//DispatchEffect( "cball_explode", data );
 
 		te->BeamRingPoint( filter2, 0, GetAbsOrigin(),	//origin
 			32,	//start radius
@@ -761,8 +815,13 @@ void CNPC_Houndeye::SonicAttack ( void )
 
 	CBaseEntity *pEntity = NULL;
 	// iterate on all entities in the vicinity.
-	for ( CEntitySphereQuery sphere( GetAbsOrigin(), HOUNDEYE_MAX_ATTACK_RADIUS ); pEntity = sphere.GetCurrentEntity(); sphere.NextEntity() )
+	//CEntitySphereQuery sphere(, );
+	
+	
+
+	while ( (pEntity = gEntList.FindEntityInSphere(pEntity, GetAbsOrigin(), HOUNDEYE_MAX_ATTACK_RADIUS)) != NULL )
 	{
+		//sphere.NextEntity();
 		if (pEntity->Classify()	== CLASS_BARNACLE)
 		{
 			continue;
@@ -822,7 +881,7 @@ void CNPC_Houndeye::SonicAttack ( void )
 			// ------------------------------
 			if (pEntity->m_takedamage != DAMAGE_NO)
 			{
-				CTakeDamageInfo info( this, this, flDamageAdjuster * sk_Houndeye_dmg_blast.GetFloat(), DMG_SONIC | DMG_ALWAYSGIB );
+				CTakeDamageInfo info( this, this, flDamageAdjuster * sk_houndeye_bms_dmg_blast.GetFloat(), DMG_SONIC | DMG_ALWAYSGIB );
 				CalculateExplosiveDamageForce( &info, (pEntity->GetAbsOrigin() - GetAbsOrigin()), pEntity->GetAbsOrigin() );
 
 				pEntity->TakeDamage( info );
@@ -894,19 +953,9 @@ void CNPC_Houndeye::SonicAttack ( void )
 			else
 			{
 				// Turn them over
-				pAntlion->Flip( true );
+				pAntlion->Flip( false );
 
-				// Display an effect between us and the flipped creature
-				// Tell the client to start an arm beam
-				Vector vecCenter = (GetAbsOrigin() + Vector(0,0,20));
-				unsigned char uchAttachment = pAntlion->LookupAttachment( "mouth" );
-				EntityMessageBegin( this, true );
-					WRITE_BYTE( VORTFX_ZAPBEAM );
-					//WRITE_LONG( pAntlion->entindex() );
-					WRITE_BYTE( uchAttachment );
-					WRITE_VEC3COORD( vecCenter );
-					//WRITE_VEC3NORMAL( Vector( 0, 0, 1 ) );
-				MessageEnd();
+				
 				
 			}
 		}
@@ -916,7 +965,7 @@ void CNPC_Houndeye::SonicAttack ( void )
 //=========================================================
 // start task
 //=========================================================
-void CNPC_Houndeye::StartTask( const Task_t *pTask )
+void CNPC_BMSHoundeye::StartTask( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
@@ -1010,7 +1059,7 @@ void CNPC_Houndeye::StartTask( const Task_t *pTask )
 		}
 	case TASK_HOUND_HOP_BACK:
 		{
-			SetIdealActivity( ACT_LEAP );
+			SetIdealActivity( ACT_HOP );
 			break;
 		}
 	case TASK_RANGE_ATTACK1:
@@ -1029,7 +1078,7 @@ void CNPC_Houndeye::StartTask( const Task_t *pTask )
 //=========================================================
 // RunTask 
 //=========================================================
-void CNPC_Houndeye::RunTask( const Task_t *pTask )
+void CNPC_BMSHoundeye::RunTask( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
@@ -1076,30 +1125,30 @@ void CNPC_Houndeye::RunTask( const Task_t *pTask )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CNPC_Houndeye::PrescheduleThink ( void )
+void CNPC_BMSHoundeye::PrescheduleThink ( void )
 {
 	BaseClass::PrescheduleThink();
 	
 	// if the hound is mad and is running, make hunt noises.
-	if ( m_NPCState == NPC_STATE_COMBAT && ( GetActivity() == ACT_RUN ) && random->RandomFloat( 0, 1 ) < 0.2 )
+	/*if ( m_NPCState == NPC_STATE_COMBAT && ( GetActivity() == ACT_RUN ) && random->RandomFloat( 0, 1 ) < 0.2 )
 	{
 		WarnSound();
-	}
+	}*/
 
 	// at random, initiate a blink if not already blinking or sleeping
-	if ( !m_fDontBlink )
-	{
-		//<<TEMP>>//<<TEMP>>
-		if ( ( m_nSkin == 0 ) && random->RandomInt(0,0x7F) == 0 )
-		{// start blinking!
-			m_nSkin = HOUNDEYE_EYE_FRAMES - 1;
-		}
-		else if ( m_nSkin != 0 )
-		{// already blinking
-			m_nSkin--;
-		}
-		
-	}
+	//if ( !m_fDontBlink )
+	//{
+	//	//<<TEMP>>//<<TEMP>>
+	//	if ( ( m_nSkin == 0 ) && random->RandomInt(0,0x7F) == 0 )
+	//	{// start blinking!
+	//		m_nSkin = HOUNDEYE_EYE_FRAMES - 1;
+	//	}
+	//	else if ( m_nSkin != 0 )
+	//	{// already blinking
+	//		m_nSkin--;
+	//	}
+	//	
+	//}
 }
 
 //-----------------------------------------------------------------------------
@@ -1107,7 +1156,7 @@ void CNPC_Houndeye::PrescheduleThink ( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-Activity CNPC_Houndeye::NPC_TranslateActivity( Activity eNewActivity )
+Activity CNPC_BMSHoundeye::NPC_TranslateActivity( Activity eNewActivity )
 {
 	if ( eNewActivity == ACT_IDLE && m_NPCState == NPC_STATE_COMBAT )
 	{
@@ -1121,7 +1170,7 @@ Activity CNPC_Houndeye::NPC_TranslateActivity( Activity eNewActivity )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-int CNPC_Houndeye::TranslateSchedule( int scheduleType )
+int CNPC_BMSHoundeye::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
@@ -1149,7 +1198,7 @@ int CNPC_Houndeye::TranslateSchedule( int scheduleType )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-bool CNPC_Houndeye::IsAnyoneInSquadAttacking( void )
+bool CNPC_BMSHoundeye::IsAnyoneInSquadAttacking( void )
 {
 	if (!m_pSquad)
 	{
@@ -1170,7 +1219,7 @@ bool CNPC_Houndeye::IsAnyoneInSquadAttacking( void )
 //=========================================================
 // SelectSchedule
 //=========================================================
-int CNPC_Houndeye::SelectSchedule( void )
+int CNPC_BMSHoundeye::SelectSchedule( void )
 {
 	switch	( m_NPCState )
 	{
@@ -1212,7 +1261,7 @@ int CNPC_Houndeye::SelectSchedule( void )
 				else
 				{
 					m_flNextAttack = gpGlobals->curtime;
-					SCHED_HOUND_ATTACK_STRAFE;
+					return SCHED_HOUND_ATTACK_STRAFE;
 				}
 			}
 
@@ -1299,7 +1348,7 @@ int CNPC_Houndeye::SelectSchedule( void )
 // Output :	 true  - if sub-class has a response for the interaction
 //			 false - if sub-class has no response
 //-----------------------------------------------------------------------------
-bool CNPC_Houndeye::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
+bool CNPC_BMSHoundeye::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
 {
 	if (interactionType == g_interactionHoundeyeGroupAttack)
 	{
@@ -1319,7 +1368,7 @@ bool CNPC_Houndeye::HandleInteraction(int interactionType, void *data, CBaseComb
 		return true;
 	}
 
-	return false;
+	return BaseClass::HandleInteraction(interactionType, data, sourceEnt);
 }
 
 

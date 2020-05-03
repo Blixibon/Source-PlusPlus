@@ -1,0 +1,11 @@
+ep1_c17_01
+{
+	edit
+	{
+		"targetname" "sniper_alyx"
+		"values"
+		{
+			"classname" "npc_sniper_alyx"
+		}
+	}
+}

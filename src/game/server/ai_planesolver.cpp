@@ -351,23 +351,25 @@ void CAI_PlaneSolver::GenerateObstacleNpcs( const AILocalMoveGoal_t &goal, float
 			}
 		}
 
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex( 1 );
-		if ( pPlayer )
+		for (int i = 1; i <= gpGlobals->maxClients; i++)
 		{
-			Vector mins, maxs;
-
-			pPlayer->CollisionProp()->WorldSpaceSurroundingBounds( &mins, &maxs );
-			if ( mins.z < maxsSelf.z + 12.0 && maxs.z > minsSelf.z - 12.0 )
+			CBaseEntity* pPlayer = UTIL_PlayerByIndex(i);
+			if (pPlayer)
 			{
-				float radius = (mins.AsVector2D() - maxs.AsVector2D()).Length();
-				float distance = ( pPlayer->GetAbsOrigin().AsVector2D() - m_pNpc->GetAbsOrigin().AsVector2D() ).Length();
-				if ( distance - radius < radiusSelf + probeDist )
+				Vector mins, maxs;
+
+				pPlayer->CollisionProp()->WorldSpaceSurroundingBounds(&mins, &maxs);
+				if (mins.z < maxsSelf.z + 12.0 && maxs.z > minsSelf.z - 12.0)
 				{
-					AddObstacle( pPlayer->WorldSpaceCenter(), radius, pPlayer, AIMST_AVOID_NPC );
+					float radius = (mins.AsVector2D() - maxs.AsVector2D()).Length();
+					float distance = (pPlayer->GetAbsOrigin().AsVector2D() - m_pNpc->GetAbsOrigin().AsVector2D()).Length();
+					if (distance - radius < radiusSelf + probeDist)
+					{
+						AddObstacle(pPlayer->WorldSpaceCenter(), radius, pPlayer, AIMST_AVOID_NPC);
+					}
 				}
 			}
 		}
-
 	}
 }
 

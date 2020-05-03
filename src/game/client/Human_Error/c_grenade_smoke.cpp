@@ -44,7 +44,7 @@ void C_GrenadeSmoke::UpdateOnRemove( void )
 //-----------------------------------------------------------------------------
 void C_GrenadeSmoke::OnDataChanged( DataUpdateType_t type )
 {
-	if (m_bStartSmoke)
+	if (m_bStartSmoke && !m_hEffect)
 	{
 		m_hEffect = ParticleProp()->Create( "he_smokegrenade", PATTACH_ABSORIGIN_FOLLOW );
 		m_hEffect->SetControlPointEntity( 0, this );

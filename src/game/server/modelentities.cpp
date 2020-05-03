@@ -19,21 +19,21 @@ extern ConVar	showtriggers;
 
 LINK_ENTITY_TO_CLASS( func_brush, CFuncBrush );
 
-BEGIN_DATADESC( CFuncBrush )
+BEGIN_DATADESC(CFuncBrush)
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
-	DEFINE_KEYFIELD( m_iDisabled, FIELD_INTEGER, "StartDisabled" ),
-	DEFINE_KEYFIELD( m_iSolidity, FIELD_INTEGER, "Solidity" ),
-	DEFINE_KEYFIELD( m_bSolidBsp, FIELD_BOOLEAN, "solidbsp" ),
-	DEFINE_KEYFIELD( m_iszExcludedClass, FIELD_STRING, "excludednpc" ),
-	DEFINE_KEYFIELD( m_bInvertExclusion, FIELD_BOOLEAN, "invert_exclusion" ),
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputTurnOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputTurnOff),
+DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
+DEFINE_KEYFIELD(m_iDisabled, FIELD_INTEGER, "StartDisabled"),
+DEFINE_KEYFIELD(m_iSolidity, FIELD_INTEGER, "Solidity"),
+DEFINE_KEYFIELD(m_bSolidBsp, FIELD_BOOLEAN, "solidbsp"),
+DEFINE_KEYFIELD(m_iszExcludedClass, FIELD_STRING, "excludednpc"),
+DEFINE_KEYFIELD(m_bInvertExclusion, FIELD_BOOLEAN, "invert_exclusion"),
 
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetExcluded", InputSetExcluded ),
-	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "SetInvert", InputSetInvert ),
+DEFINE_INPUTFUNC(FIELD_STRING, "SetExcluded", InputSetExcluded),
+DEFINE_INPUTFUNC(FIELD_BOOLEAN, "SetInvert", InputSetInvert),
 
-END_DATADESC()
+END_DATADESC();
 
 
 void CFuncBrush::Spawn( void )

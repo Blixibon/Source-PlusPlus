@@ -36,6 +36,7 @@
 #include "UtlStringMap.h"
 #include "utlbinaryblock.h"
 #include "utlbuffer.h"
+#include "envmicrophone.h"
 
 #ifdef HL2_EPISODIC
 #include "npc_alyx_episodic.h"
@@ -1847,7 +1848,9 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 	if ( actor )
 	{
 		// This used to be an attenuation filter, but that broke NPCs on monitors in multiplayer
-		CPASFilter filter( actor->GetSoundEmissionOrigin() );
+		CRecipientFilter filter;
+		CPASAttenuationFilter basefilter(actor->GetSoundEmissionOrigin(), iSoundlevel);
+		filter.CopyFrom(basefilter);
 
 		if ( m_pRecipientFilter )
 		{
@@ -1873,6 +1876,16 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 					filter.RemoveRecipientByPlayerIndex( playerindex );
 				}
 			}			
+		}
+		else if (gpGlobals->maxClients > 1)
+		{
+			CUtlVector<Vector> vSpeakers;
+			CEnvMicrophone::TestMicrophones(actor->entindex(), iSoundlevel, 1.f, &actor->GetSoundEmissionOrigin(), vSpeakers);
+			for (auto& vSpeaker : vSpeakers)
+			{
+				CPASAttenuationFilter micfilter(vSpeaker, iSoundlevel);
+				filter.CopyFrom(micfilter);
+			}
 		}
 
 		float time_in_past = m_flCurrentTime - event->GetStartTime() ;

@@ -45,6 +45,9 @@ $Project "Server (Lazuul)"
 				-$File	"$SRCDIR\game\shared\episodic\achievements_ep2.cpp"
 				-$File	"$SRCDIR\game\shared\episodic\achievements_epx.cpp"
 			}
+			
+			$File	"hl2beta\npc_stalker_beta.cpp"
+			$File	"hl2beta\npc_stalker_beta.h"
 		}
 
 		$Folder "Black Mesa"
@@ -56,6 +59,8 @@ $Project "Server (Lazuul)"
 			$File "bms\npc_human_scientist.cpp"
 			$File "bms\npc_gargantua.cpp"
 			$File "bms\npc_hgrunt.cpp"
+			$File "bms\npc_houndeye_bms.cpp"
+			$File "bms\npc_houndeye_bms.h"
 			$File "$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
 			$File "peter\npc_human_workers.cpp"
 			$File "bms\npc_zombie_bms.cpp"
@@ -76,6 +81,8 @@ $Project "Server (Lazuul)"
 			$File "peter\laz_hltvdirector.cpp"
 			$File "peter\laz_gameinterface.cpp"
 			$File "peter\laz_player_resource.cpp"
+			$File "peter\func_combine_wall.cpp"
+			$File "peter\func_combine_wall.h"
 		}
 
 		$Folder "TF"
@@ -115,6 +122,8 @@ $Project "Server (Lazuul)"
 			$File	"Human_Error\weapon_bee.h"
 			$File	"Human_Error\weapon_fireball.cpp"
 			$File	"Human_Error\weapon_fireball.h"
+			$File	"Human_Error\grenade_smoke.cpp"
+			$File	"Human_Error\grenade_smoke.h"
 		}
 	}
 }

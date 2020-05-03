@@ -4040,6 +4040,7 @@ class CFuncTankCombineCannon : public CFuncTankGun
 	void Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker, bool bIgnoreSpread );
 	void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
 	void TankDeactivate();
+	virtual void TankActivate(void);
 
 	void InputSetTargetEntity( inputdata_t &inputdata );
 	void InputClearTargetEntity( inputdata_t &inputdata );
@@ -4389,6 +4390,14 @@ void CFuncTankCombineCannon::TankDeactivate()
 	SetContextThink( NULL, 0, s_pUpdateBeamThinkContext );
 
 	BaseClass::TankDeactivate();
+}
+
+void CFuncTankCombineCannon::TankActivate(void)
+{
+	BaseClass::TankActivate();
+
+	m_flTimeBeamOn = gpGlobals->curtime;
+	CreateBeam();
 }
 
 //---------------------------------------------------------

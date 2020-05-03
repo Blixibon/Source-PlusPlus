@@ -19,6 +19,9 @@
 #include "Sprite.h"
 #include "ai_behavior_follow.h"
 #include "collisionutils.h"
+#include "weapon_physcannon.h"
+#include "props.h"
+#include "particle_parse.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -38,6 +41,8 @@ public:
 	void StartTask( const Task_t *pTask );
 	void HandleAnimEvent( animevent_t *pEvent );
 	int	 SelectSchedule( void );
+
+	int				MeleeAttack1Conditions(float flDot, float flDist);
 
 	bool FindPhysicsObject( const char *pPickupName, CBaseEntity *pIgnore = NULL );
 	void RunTask( const Task_t *pTask );
@@ -80,10 +85,13 @@ public:
 	void	MantainBoneFollowerCollisionGroups( int CollisionGroup );
 	virtual void SetPlayerAvoidState( void );
 
+	void GroundSlam(const Vector& vecOrigin, float flRadius);
+	int NumEnemiesInRadius(float flRadius);
 protected:
 	enum
 	{
 		COND_DOG_LOST_PHYSICS_ENTITY = BaseClass::NEXT_CONDITION,
+		COND_DOG_SLAM_GROUND,
 
 		NEXT_CONDITION,
 	};
@@ -131,6 +139,7 @@ protected:
 
 	bool	m_bBoneFollowersActive;
 
+	float			m_flDispelTestTime;
 
 protected:
 	
@@ -185,6 +194,8 @@ END_DATADESC()
 #define DOG_MAX_THROW_MASS			250.0f
 #define DOG_PHYSGUN_ATTACHMENT_NAME "physgun"
 
+#define HUNTER_MELEE_REACH				80
+
 // These bones have physics shadows
 static const char *pFollowerBoneNames[] =
 {
@@ -198,6 +209,7 @@ enum
 	SCHED_DOG_FIND_OBJECT = LAST_SHARED_SCHEDULE,
 	SCHED_DOG_CATCH_OBJECT,
 	SCHED_DOG_WAIT_THROW_OBJECT,
+	SCHED_DOG_GROUND_SLAM,
 };
 
 //=========================================================
@@ -220,11 +232,14 @@ int ACT_DOG_THROW;
 int ACT_DOG_PICKUP;
 int ACT_DOG_WAITING;
 int ACT_DOG_CATCH;
+Activity ACT_GROUND_SLAM1;
 
 int AE_DOG_THROW;
 int AE_DOG_PICKUP;
 int AE_DOG_CATCH;
 int AE_DOG_PICKUP_NOEFFECT;
+int AE_MELEE_ATTACK1;
+int AE_GROUND_SLAM1;
 
 ConVar dog_max_wait_time( "dog_max_wait_time", "7" );
 ConVar dog_debug( "dog_debug", "0" );
@@ -489,6 +504,152 @@ void CNPC_Dog::Spawn( void )
 	m_flNextRouteTime = gpGlobals->curtime;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : flRadius - 
+// Output : int
+//-----------------------------------------------------------------------------
+int CNPC_Dog::NumEnemiesInRadius(float flRadius)
+{
+	CBaseEntity* sEnemySearch[16];
+	int nNumAntlions = 0;
+	int nNumEnemies = UTIL_EntitiesInBox(sEnemySearch, ARRAYSIZE(sEnemySearch), GetAbsOrigin() - Vector(flRadius, flRadius, flRadius), GetAbsOrigin() + Vector(flRadius, flRadius, flRadius), FL_NPC | FL_CLIENT);
+	for (int i = 0; i < nNumEnemies; i++)
+	{
+		// We only care about antlions
+		if (sEnemySearch[i] == NULL || IRelationType(sEnemySearch[i]) != D_HT)
+			continue;
+
+		nNumAntlions++;
+	}
+
+	return nNumAntlions;
+}
+
+//-----------------------------------------------------------------------------
+// For innate melee attack
+//-----------------------------------------------------------------------------
+int CNPC_Dog::MeleeAttack1Conditions(float flDot, float flDist)
+{
+
+
+	/*if (GetEnemy()->Classify() == CLASS_PLAYER_ALLY_VITAL)
+	{
+		return COND_NONE;
+	}*/
+
+	if (m_flDispelTestTime <= gpGlobals->curtime)
+	{
+		m_flDispelTestTime = gpGlobals->curtime + 1.0f;
+
+		if (GetEnemy() /*&& GetEnemy()->Classify() == CLASS_ANTLION*/)
+		{
+			if (NumEnemiesInRadius(200) > 2)
+			{
+				m_flDispelTestTime = gpGlobals->curtime + 15.0f;
+				return COND_DOG_SLAM_GROUND;
+			}
+		}
+	}
+
+	if (flDist > HUNTER_MELEE_REACH)
+	{
+		// Translate a hit vehicle into its passenger if found
+		if (GetEnemy() != NULL)
+		{
+			/*CBaseCombatCharacter *pCCEnemy = GetEnemy()->MyCombatCharacterPointer();
+			if (pCCEnemy != NULL && pCCEnemy->IsInAVehicle())
+			{
+				return MeleeAttack1ConditionsVsEnemyInVehicle(pCCEnemy, flDot);
+			}*/
+
+#if defined(HL2_DLL) && !defined(HL2MP)
+			// If the player is holding an object, knock it down.
+			if (GetEnemy()->IsPlayer())
+			{
+				CBasePlayer* pPlayer = ToBasePlayer(GetEnemy());
+
+				Assert(pPlayer != NULL);
+
+				// Is the player carrying something?
+				CBaseEntity* pObject = GetPlayerHeldEntity(pPlayer);
+
+				if (!pObject)
+				{
+					pObject = PhysCannonGetHeldEntity(pPlayer->GetActiveWeapon());
+				}
+
+				if (pObject)
+				{
+					float flDist = pObject->WorldSpaceCenter().DistTo(WorldSpaceCenter());
+
+					if (flDist <= HUNTER_MELEE_REACH)
+					{
+						return COND_CAN_MELEE_ATTACK1;
+					}
+				}
+			}
+#endif
+		}
+
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	if (flDot < 0.7)
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+
+	// Build a cube-shaped hull, the same hull that MeleeAttack is going to use.
+	Vector vecMins = GetHullMins();
+	Vector vecMaxs = GetHullMaxs();
+	vecMins.z = vecMins.x;
+	vecMaxs.z = vecMaxs.x;
+
+	Vector forward;
+	GetVectors(&forward, NULL, NULL);
+
+	trace_t	tr;
+	AI_TraceHull(WorldSpaceCenter(), WorldSpaceCenter() + forward * HUNTER_MELEE_REACH, vecMins, vecMaxs, MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr);
+
+	if (tr.fraction == 1.0 || !tr.m_pEnt)
+	{
+		// This attack would miss completely. Trick the hunter into moving around some more.
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+
+	if (tr.m_pEnt == GetEnemy() || tr.m_pEnt->IsNPC() || (tr.m_pEnt->m_takedamage == DAMAGE_YES && (dynamic_cast<CBreakableProp*>(tr.m_pEnt))))
+	{
+		// Let the hunter swipe at his enemy if he's going to hit them.
+		// Also let him swipe at NPC's that happen to be between the hunter and the enemy. 
+		// This makes mobs of hunters seem more rowdy since it doesn't leave guys in the back row standing around.
+		// Also let him swipe at things that takedamage, under the assumptions that they can be broken.
+		return COND_CAN_MELEE_ATTACK1;
+	}
+
+	// dvs TODO: incorporate this
+	/*if ( tr.m_pEnt->IsBSPModel() )
+	{
+	// The trace hit something solid, but it's not the enemy. If this item is closer to the hunter than
+	// the enemy is, treat this as an obstruction.
+	Vector vecToEnemy = GetEnemy()->WorldSpaceCenter() - WorldSpaceCenter();
+	Vector vecTrace = tr.endpos - tr.startpos;
+
+	if ( vecTrace.Length2DSqr() < vecToEnemy.Length2DSqr() )
+	{
+	return COND_HUNTER_LOCAL_MELEE_OBSTRUCTION;
+	}
+	}*/
+
+	if (!tr.m_pEnt->IsWorld() && GetEnemy() && GetEnemy()->GetGroundEntity() == tr.m_pEnt)
+	{
+		// Try to swat whatever the player is standing on instead of acting like a dill.
+		return COND_CAN_MELEE_ATTACK1;
+	}
+
+	// Move around some more
+	return COND_TOO_FAR_TO_ATTACK;
+}
 
 void CNPC_Dog::PrescheduleThink( void )
 {
@@ -553,6 +714,20 @@ int CNPC_Dog::SelectSchedule ( void )
 			}
 		}
 	}
+
+	if (HasCondition(COND_DOG_SLAM_GROUND))
+	{
+		ClearCondition(COND_DOG_SLAM_GROUND);
+		return SCHED_DOG_GROUND_SLAM;
+	}
+
+	//if (GetEnemy() && !HasCondition(COND_CAN_MELEE_ATTACK1) && FindPhysicsObject(NULL, GetEnemy()))
+	//{
+	//	if (/*m_flTimeToCatch < 0.1 &&*/ m_flNextSwat <= gpGlobals->curtime)
+	//	{
+	//		return SCHED_DOG_FIND_OBJECT;
+	//	}
+	//}
 
 	return BaseClass::SelectSchedule();
 }
@@ -645,6 +820,8 @@ void CNPC_Dog::Precache( void )
 	PrecacheModel( "sprites/orangelight1.vmt" );
 	PrecacheModel( "sprites/physcannon_bluelight2.vmt" );
 	PrecacheModel( "sprites/glow04_noz.vmt" );
+
+	PrecacheParticleSystem("pg_dog_slam");
 
 	BaseClass::Precache();
 }
@@ -974,6 +1151,23 @@ void CNPC_Dog::HandleAnimEvent( animevent_t *pEvent )
 			 m_bBeamEffects = true;
 
 		PickupOrCatchObject( pEvent->options );
+		return;
+	}
+
+	if (pEvent->event == AE_MELEE_ATTACK1)
+	{
+		Vector vecMins = GetHullMins();
+		Vector vecMaxs = GetHullMaxs();
+		vecMins.z = vecMins.x;
+		vecMaxs.z = vecMaxs.x;
+
+		CheckTraceHullAttack(HUNTER_MELEE_REACH, vecMins, vecMaxs, 20, DMG_CLUB);
+		return;
+	}
+
+	if (pEvent->event == AE_GROUND_SLAM1)
+	{
+		GroundSlam(GetAbsOrigin(), 200.0f);
 		return;
 	}
 
@@ -1682,6 +1876,61 @@ void CNPC_Dog::StartTask( const Task_t *pTask )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CNPC_Dog::GroundSlam(const Vector& vecOrigin, float flRadius)
+{
+
+	DispatchParticleEffect("pg_dog_slam", PATTACH_POINT_FOLLOW, this, m_iPhysGunAttachment);
+	EmitSound("unit_rebel_dog_slam");
+
+	trace_t tr;
+	CBaseEntity* pEnemySearch[32];
+	int nNumEnemies = UTIL_EntitiesInBox(pEnemySearch, ARRAYSIZE(pEnemySearch), vecOrigin - Vector(flRadius, flRadius, flRadius), vecOrigin + Vector(flRadius, flRadius, flRadius), FL_NPC | FL_CLIENT);
+	for (int i = 0; i < nNumEnemies; i++)
+	{
+		// We only care about antlions
+		if (IRelationType(pEnemySearch[i]) != D_HT)
+			continue;
+
+		CBaseCombatCharacter* pBCC = pEnemySearch[i]->MyCombatCharacterPointer();
+
+		if (!pBCC)
+			continue;
+
+		// Attempt to trace a line to hit the target
+		UTIL_TraceLine(vecOrigin, pBCC->BodyTarget(vecOrigin), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction < 1.0f && tr.m_pEnt != pBCC)
+			continue;
+
+		Vector vecDir = (pBCC->GetAbsOrigin() - vecOrigin);
+		vecDir[2] = 0.0f;
+		float flDist = VectorNormalize(vecDir);
+
+		float flFalloff = RemapValClamped(flDist, 0, flRadius * 0.75f, 1.0f, 0.1f);
+
+		vecDir *= (flRadius * 1.5 * flFalloff);
+		vecDir[2] += (flRadius * 0.5 * flFalloff);
+
+		pBCC->SetAbsOrigin(pBCC->GetAbsOrigin() + Vector(0, 0, 1));
+		pBCC->SetGroundEntity(NULL);
+		pBCC->ApplyAbsVelocityImpulse(vecDir);
+
+		// gib nearby antlions, knock over distant ones. 
+		//if (flDist < sk_alien_slave_dispel_range.GetFloat())
+		//{
+		//	// splat!
+		//	vecDir[2] += 400.0f * flFalloff;
+		//	CTakeDamageInfo dmgInfo(this, this, vecDir, pBCC->GetAbsOrigin(), sk_alien_slave_dispel_dmg.GetFloat(), DMG_SHOCK);
+		//	pBCC->TakeDamage(dmgInfo);
+		//}
+	}
+
+	CTakeDamageInfo info(this, this, 230, DMG_SONIC);
+	RadiusDamage(info, vecOrigin, flRadius, CLASS_NONE, this);
+}
+
 void CNPC_Dog::InputTurnBoneFollowersOff( inputdata_t &inputdata )
 {
 	if ( m_bBoneFollowersActive )
@@ -1709,8 +1958,10 @@ AI_BEGIN_CUSTOM_NPC( npc_dog, CNPC_Dog )
 	DECLARE_ACTIVITY( ACT_DOG_PICKUP )
 	DECLARE_ACTIVITY( ACT_DOG_WAITING )
 	DECLARE_ACTIVITY( ACT_DOG_CATCH )
+	DECLARE_ACTIVITY(ACT_GROUND_SLAM1)
 	
 	DECLARE_CONDITION( COND_DOG_LOST_PHYSICS_ENTITY )
+	DECLARE_CONDITION(COND_DOG_SLAM_GROUND)
 
 	DECLARE_TASK( TASK_DOG_DELAY_SWAT )
 	DECLARE_TASK( TASK_DOG_GET_PATH_TO_PHYSOBJ )
@@ -1727,6 +1978,8 @@ AI_BEGIN_CUSTOM_NPC( npc_dog, CNPC_Dog )
 	DECLARE_ANIMEVENT( AE_DOG_PICKUP )
 	DECLARE_ANIMEVENT( AE_DOG_CATCH )
 	DECLARE_ANIMEVENT( AE_DOG_PICKUP_NOEFFECT )
+	DECLARE_ANIMEVENT(AE_MELEE_ATTACK1)
+	DECLARE_ANIMEVENT(AE_GROUND_SLAM1)
 	
 
 	DEFINE_SCHEDULE
@@ -1778,5 +2031,16 @@ AI_BEGIN_CUSTOM_NPC( npc_dog, CNPC_Dog )
 		"	Interrupts"
 		"		COND_DOG_LOST_PHYSICS_ENTITY"
 	)
+
+		DEFINE_SCHEDULE
+		(
+			SCHED_DOG_GROUND_SLAM,
+
+			"	Tasks"
+			"		TASK_STOP_MOVING		0"
+			"		TASK_PLAY_SEQUENCE		ACTIVITY:ACT_GROUND_SLAM1"
+			""
+			"	Interrupts"
+		)
 
 AI_END_CUSTOM_NPC()

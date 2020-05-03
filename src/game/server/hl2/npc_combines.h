@@ -44,6 +44,8 @@ public:
 
 	virtual const char *GetDeathNoticeNameOverride() { return IsElite() ? "npc_combine_e" : NULL; }
 
+	int			OnTakeDamage_Alive(const CTakeDamageInfo& info);
+
 	void		ClearAttackConditions( void );
 
 	bool		m_fIsBlocking;

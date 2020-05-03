@@ -270,6 +270,8 @@ void CNPC_Human_Grunt::Spawn(void)
 
 	m_nSkin = random->RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
 
+	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_CombineS", "NPC_CombineS");
+
 	m_nVoiceType = VOICE_NORMAL;
 
 	if (FClassnameIs(this, "npc_human_medic"))

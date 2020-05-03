@@ -28,7 +28,7 @@ public:
 		if (m_bConnected)
 			return true;
 
-		m_bConnected = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init();
+		m_bConnected = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init() && m_Presence.Connect(factory);
 		m_Presence.InternalInit(this);
 
 		return m_bConnected;
@@ -41,6 +41,7 @@ public:
 
 		m_Holidays.Shutdown();
 		m_SceneCache.Disconnect();
+		m_Presence.Disconnect();
 		BaseClass::Disconnect();
 		m_bConnected = false;
 	}

@@ -150,6 +150,31 @@ void CDLightManager::CreateAutoFollowLight(const CEffectData& data)
 	}
 }
 
+void CDLightManager::CreateAutoFollowLight(C_BaseEntity* pEntity, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay)
+{
+	if (pEntity)
+	{
+		CAutoFollowLight* pNewLight = new CAutoFollowLight;
+
+		//V_memset(&pNewLight->m_DLightData, 0, sizeof(dlight_t));
+		pNewLight->m_DeathTimes.range = time;
+		pNewLight->m_DLightData.m_DataCopy.flags = 0;
+		pNewLight->m_DLightData.m_DataCopy.radius = pNewLight->m_flOriginalRadius = radius;
+		pNewLight->m_DeathTimes.start = gpGlobals->curtime;
+
+		pNewLight->m_DLightData.m_DataCopy.color.r = r;
+		pNewLight->m_DLightData.m_DataCopy.color.g = g;
+		pNewLight->m_DLightData.m_DataCopy.color.b = b;
+		pNewLight->m_DLightData.m_DataCopy.color.exponent = exponent;
+
+		pNewLight->m_hFollowEntity.Set(pEntity);
+		pNewLight->m_iAttachmentIndex = iAttachmentIndex;
+
+		pNewLight->SetRadiusScale(1.0f);
+		m_ActiveLights.AddToTail(pNewLight);
+	}
+}
+
 void CManagedLight::UpdateOrigin(Vector vecOrigin)
 {
 	m_DLightData.m_DataCopy.origin = vecOrigin;

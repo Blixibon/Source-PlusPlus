@@ -46,6 +46,7 @@ static colorentry_t bloodcolors[] =
 	{ BLOOD_COLOR_MECH,		20,		20,		20	},
 	{ BLOOD_COLOR_GREEN,	195,	195,	0	},
 	{ BLOOD_COLOR_BLUE,		0,		0,		72	},
+	{ BLOOD_COLOR_SYNTH,	72,		72,		72	},
 };
 
 #endif // EFFECT_COLOR_TABLES_H

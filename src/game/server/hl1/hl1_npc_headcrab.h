@@ -45,7 +45,7 @@ public:
 	int RangeAttack1Conditions ( float flDot, float flDist );
 	virtual float GetDamageAmount( void );
 	virtual float GetSpecialDamageAmount(void) { return 0.0f; }
-	virtual int GetSpecialDamageType(void) { return DMG_GENERIC; }
+	virtual int64 GetSpecialDamageType(void) { return DMG_GENERIC; }
 
 	
 

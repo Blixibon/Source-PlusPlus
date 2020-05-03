@@ -560,3 +560,21 @@ bool CEnvMicrophone::OnSoundPlayed( int entindex, const char *soundname, soundle
 
 	return bSwallowed;
 }
+
+void CEnvMicrophone::TestMicrophones(int entindex, soundlevel_t soundlevel, float flVolume, const Vector* pOrigin, CUtlVector<Vector>& soundorigins)
+{
+	// Loop through all registered microphones and tell them the sound was just played
+	int iCount = s_Microphones.Count();
+	if (iCount > 0)
+	{
+		// Iterate backwards because we might be deleting microphones.
+		for (int i = iCount - 1; i >= 0; i--)
+		{
+			float flTestVolume = flVolume;
+			if (s_Microphones[i] && s_Microphones[i]->CanHearSound(entindex, soundlevel, flTestVolume, pOrigin))
+			{
+				soundorigins.AddToTail(s_Microphones[i]->GetSpeakerOrigin());
+			}
+		}
+	}
+}

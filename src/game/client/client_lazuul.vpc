@@ -46,6 +46,7 @@ $Project "Client (Lazuul)"
 			$File	"$SRCDIR\game\shared\bms\basecollegue_shared.cpp"
 			$File	"bms\c_xenportal.cpp"
 			$File	"bms\c_npc_zombie.cpp"
+			$File	"bms\c_npc_houndeye.cpp"
 		}
 
 		$Folder	"Lazuul"
@@ -68,6 +69,7 @@ $Project "Client (Lazuul)"
 			$File "peter\c_localannouncer.cpp"
 			$File "peter\c_localannouncer.h"
 			$File "peter\RespawnWaveVGuiScreen.cpp"
+			$File "peter\c_func_combine_wall.cpp"
 
 			$Folder "HUD"
 			{
@@ -134,6 +136,7 @@ $Project "Client (Lazuul)"
 			$File	"$SRCDIR\game\shared\Human_Error\weapon_camera.cpp"
 			$File	"Human_Error\c_npc_aliencontroller.cpp"
 			$File	"Human_Error\c_npc_mantaray.cpp"
+			$File	"Human_Error\c_grenade_smoke.cpp"
 		}
 	}
 }

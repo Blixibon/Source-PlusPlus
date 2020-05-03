@@ -124,6 +124,9 @@ public:
 
 	virtual void ClientProjectile( IRecipientFilter& filter, float delay,
 		const Vector* vecOrigin, const Vector* vecVelocity, int modelindex, int lifetime, CBaseEntity *pOwner ) = 0;
+
+	virtual void DynamicLight(IRecipientFilter& filter, float delay,
+		int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay) = 0;
 };
 
 extern ITempEntsSystem *te;

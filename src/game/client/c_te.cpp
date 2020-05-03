@@ -70,6 +70,8 @@ void TE_Decal( IRecipientFilter& filter, float delay,
 void TE_Decal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues );
 void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay, int nLightIndex = LIGHT_INDEX_TE_DYNAMIC );
+void TE_DynamicLightFollow(IRecipientFilter& filter, float delay,
+	int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay);
 void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues *pKeyValues );
 void TE_Explosion( IRecipientFilter& filter, float delay,
 	const Vector* pos, int modelindex, float scale, int framerate, int flags, int radius, int magnitude, 
@@ -525,6 +527,15 @@ public:
 		}
 	}
 
+	virtual void DynamicLight(IRecipientFilter& filter, float delay,
+		int iEntIndex, int iAttachmentIndex, int r, int g, int b, int exponent, float radius, float time, float decay)
+	{
+		if (!SuppressTE(filter))
+		{
+			TE_DynamicLightFollow(filter, delay, iEntIndex, iAttachmentIndex, r, g, b, exponent, radius, time, decay);
+		}
+	}
+
 	// For playback from external tools
 	virtual void TriggerTempEntity( KeyValues *pKeyValues )
 	{
@@ -668,7 +679,7 @@ public:
 			TE_Explosion( filter, 0.0f, pKeyValues );
 			break;
 
-#ifdef HL2_DLL
+#ifdef HL2_CLIENT_DLL
 		case TE_CONCUSSIVE_EXPLOSION:
 			TE_ConcussiveExplosion( filter, 0.0f, pKeyValues );
 			break;

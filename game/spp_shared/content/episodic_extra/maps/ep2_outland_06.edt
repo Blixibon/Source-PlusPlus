@@ -1,0 +1,11 @@
+ep2_outland_06
+{
+	edit
+	{
+		"targetname" "alyx_sniper"
+		"values"
+		{
+			"classname" "npc_sniper_alyx"
+		}
+	}
+}

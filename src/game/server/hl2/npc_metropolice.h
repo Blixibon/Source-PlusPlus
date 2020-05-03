@@ -66,6 +66,8 @@ public:
 	int MeleeAttack1Conditions(float flDot, float flDist);
 	void		ModifyOrAppendCriteria(AI_CriteriaSet& set);
 
+	virtual const char* GetGrenadeClassThrown() { return "npc_grenade_smoke"; }
+
 	Class_T		Classify( void );
 	Disposition_t IRelationType(CBaseEntity *pTarget);
 	float		MaxYawSpeed( void );

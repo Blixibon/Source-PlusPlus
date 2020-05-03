@@ -24,6 +24,8 @@
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "tier1/callqueue.h"
 #include "tier1/memstack.h"
+#include "tempent.h"
+#include "c_te_legacytempents.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -97,8 +99,10 @@ static ConVar r_drawropes( "r_drawropes", "1", FCVAR_CHEAT );
 static ConVar r_queued_ropes( "r_queued_ropes", "1" );
 #endif
 static ConVar r_ropetranslucent( "r_ropetranslucent", "1");
-static ConVar r_rope_holiday_light_scale( "r_rope_holiday_light_scale", "0.055", FCVAR_DEVELOPMENTONLY );
-static ConVar r_ropes_holiday_lights_allowed( "r_ropes_holiday_lights_allowed", "1", FCVAR_DEVELOPMENTONLY );
+ConVar r_rope_holiday_light_scale( "r_rope_holiday_light_scale", "0.055", FCVAR_DEVELOPMENTONLY );
+ConVar r_ropes_holiday_lights_allowed( "r_ropes_holiday_lights_allowed", "1", FCVAR_DEVELOPMENTONLY );
+ConVar r_ropes_holiday_lights_forced("r_ropes_holiday_lights_forced", "-1", FCVAR_DEVELOPMENTONLY);
+ConVar r_ropes_holiday_max_dist_to_draw("r_ropes_holiday_max_dist_to_draw", "1700", FCVAR_DEVELOPMENTONLY, "If a ropes length (from one end to the other, not counting slack), exceeds this distance, it won't have lights.");
 
 static ConVar rope_wind_dist( "rope_wind_dist", "1000", 0, "Don't use CPU applying small wind gusts to ropes when they're past this distance." );
 static ConVar rope_averagelight( "rope_averagelight", "1", 0, "Makes ropes use average of cubemap lighting instead of max intensity." );
@@ -123,6 +127,118 @@ static int			g_nRopePointsSimulated;
 #ifdef MAPBASE
 static IMaterial *g_pSplineCableShadowdepth = NULL;
 #endif
+
+// Used for cycling so that they're sequencially ordered on each strand
+int g_nHolidayLightColor = 0;
+
+// 4 light colors
+Color g_rgbaHolidayRed(255, 0, 0, 255);
+Color g_rgbaHolidayYellow(2, 110, 197, 255);
+Color g_rgbaHolidayGreen(117, 193, 8, 255);
+Color g_rgbaHolidayBlue(255, 151, 29, 255);
+
+Color g_rgbaHalloweenOrange(239, 136, 15, 255);
+Color g_rgbaHalloweenPurple(128, 46, 204, 255);
+
+Color* (rgbaHolidayLightColors[]) = { &g_rgbaHolidayRed,
+									  &g_rgbaHolidayYellow,
+									  &g_rgbaHolidayGreen,
+									  &g_rgbaHolidayBlue };
+
+Color* (rgbaHalloweenLightColors[]) = { &g_rgbaHalloweenOrange,
+										&g_rgbaHalloweenPurple };
+
+struct HolidayLightData_t
+{
+	Vector vOrigin;
+	int nID;
+	int nSubID;
+	float fScale;
+};
+
+
+void CreateHolidayLight(const HolidayLightData_t& holidayLight);
+
+
+class CHolidayLightManager : public CAutoGameSystemPerFrame
+{
+public:
+	CHolidayLightManager(char const* name);
+
+	// Methods of IGameSystem
+	virtual void Update(float frametime);
+
+	virtual void LevelInitPostEntity(void);
+	virtual void LevelShutdownPreEntity();
+
+	void AddHolidayLight(const CEffectData& data);
+
+private:
+
+	CUtlVector< HolidayLightData_t > m_PendingLightData;
+};
+
+CHolidayLightManager g_CHolidayLightManager("CHolidayLightManager");
+
+
+CHolidayLightManager::CHolidayLightManager(char const* name) : CAutoGameSystemPerFrame(name)
+{
+}
+
+// Methods of IGameSystem
+void CHolidayLightManager::Update(float frametime)
+{
+	for (int i = 0; i < m_PendingLightData.Count(); ++i)
+	{
+		CreateHolidayLight(m_PendingLightData[i]);
+	}
+
+	m_PendingLightData.RemoveAll();
+}
+
+void CHolidayLightManager::LevelInitPostEntity(void)
+{
+	m_PendingLightData.RemoveAll();
+	g_nHolidayLightColor = 0;
+}
+
+void CHolidayLightManager::LevelShutdownPreEntity()
+{
+	m_PendingLightData.RemoveAll();
+	g_nHolidayLightColor = 0;
+}
+
+void CHolidayLightManager::AddHolidayLight(const CEffectData& data)
+{
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if (!pPlayer)
+		return;
+
+	// Too far away?
+	if (pPlayer->GetAbsOrigin().DistTo(data.m_vOrigin) > 2000.0f)
+		return;
+
+	// In the skybox?
+	sky3dparams_t* pSky = &(pPlayer->m_Local.m_skybox3d);
+	if (pSky->origin->DistTo(data.m_vOrigin) < 2000.0f)
+		return;
+
+	HolidayLightData_t newData;
+
+	newData.vOrigin = data.m_vOrigin;
+
+	// HACK: Use these ints to ID the light later
+	newData.nID = data.m_nMaterial;
+	newData.nSubID = data.m_nHitBox;
+
+	// Skybox lights pass in a smaller scale
+	newData.fScale = data.m_flScale;
+
+	if (m_PendingLightData.Count() < CTempEnts::MAX_TEMP_ENTITIES / 2)
+	{
+		m_PendingLightData.AddToTail(newData);
+	}
+}
 
 // Active ropes.
 CUtlLinkedList<C_RopeKeyframe*, int> g_Ropes;
@@ -169,7 +285,14 @@ static Vector	g_BarbedSubdivs[MAX_ROPE_SUBDIVS] = {	Vector(1.5,		1.5*1.5,		1.5*1
 static float g_flLockAmount = 0.1;
 static float g_flLockFalloff = 0.3;
 
-
+class CRopeDelayedEffects
+{
+public:
+	float m_flTimeProcessedOnMainThread; // gpGlobals->curtime
+	CThreadFastMutex m_mtx;
+	CUtlVector< CEffectData > m_arrEffects;
+}
+g_RopeDelayedEffects;
 
 #ifndef MAPBASE
 class CQueuedRopeMemoryManager
@@ -474,7 +597,7 @@ void CRopeManager::DrawRenderCache_NonQueued( bool bShadowDepth, RopeRenderData_
 
 	if ( bShadowDepth && !m_pDepthWriteMaterial && g_pMaterialSystem )
 	{
-		KeyValues *pVMTKeyValues = new KeyValues( "SDK_DepthWrite" );
+		KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
 		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
 		pVMTKeyValues->SetInt( "$alphatest", 0 );
 		pVMTKeyValues->SetInt( "$nocull", 1 );
@@ -669,6 +792,62 @@ void CRopeManager::DrawRenderCache_NonQueued( bool bShadowDepth, RopeRenderData_
 						}
 					} while( --nSegmentsToRender );
 
+					int nSegsToRender = pRope->m_RopePhysics.NumNodes() - 1;
+					Vector vecRopeStart = pNode[0].m_vPredicted;
+					Vector vecRopeEnd = pNode[nSegsToRender].m_vPredicted;
+					float flDist = (vecRopeStart - vecRopeEnd).Length();
+					if (flDist < r_ropes_holiday_max_dist_to_draw.GetFloat())
+					{
+						for (int nSeg = 1; nSeg < nSegsToRender; ++nSeg)
+						{
+							CEffectData data;
+							if (RopeManager()->IsHolidayLightMode() &&
+								//pRope->m_ropeType == ROPE_TYPE_DEFAULT &&
+								//pRope->m_iDefaultRopeMaterialModelIndex == pRope->m_iRopeMaterialModelIndex &&
+								pRope->m_RopePhysics.NumNodes() >= 5 &&
+								m_RopeQueuedRenderCaches.Count() == 1 &&
+								r_rope_holiday_light_scale.GetFloat() > 0.0f)
+							{
+								//int xy = (int)(pNode[nSeg].m_vPredicted.x + pNode[nSeg].m_vPredicted.y);
+								data.m_nMaterial = pRope->GetRefEHandle().GetEntryIndex();
+								//int z = (int)pNode[nSeg].m_vPredicted.z;
+								data.m_nHitBox = (nSeg << 8);
+								data.m_flScale = r_rope_holiday_light_scale.GetFloat();
+								data.m_vOrigin = pNode[nSeg].m_vPredicted;
+								{
+									AUTO_LOCK(g_RopeDelayedEffects.m_mtx);
+									g_RopeDelayedEffects.m_arrEffects.AddToTail(data);
+								}
+
+								//catmull_t spline;
+								if (nSeg == 1)
+								{
+									Catmull_Rom_Spline(vecRopeStart, vecRopeStart, pNode[nSeg].m_vPredicted, pNode[nSeg + 1].m_vPredicted, 0.5f, data.m_vOrigin);
+									data.m_nHitBox++;
+									{
+										AUTO_LOCK(g_RopeDelayedEffects.m_mtx);
+										g_RopeDelayedEffects.m_arrEffects.AddToTail(data);
+									}
+								}
+
+								if (nSeg == nSegmentsToRender-1)
+								{
+									Catmull_Rom_Spline(pNode[nSeg - 1].m_vPredicted, pNode[nSeg].m_vPredicted, vecRopeEnd, vecRopeEnd, 0.5f, data.m_vOrigin);
+								}
+								else
+								{
+									Catmull_Rom_Spline(pNode[nSeg - 1].m_vPredicted, pNode[nSeg].m_vPredicted, pNode[nSeg + 1].m_vPredicted, pNode[nSeg + 2].m_vPredicted, 0.5f, data.m_vOrigin);
+								}
+
+								data.m_nHitBox++;
+								{
+									AUTO_LOCK(g_RopeDelayedEffects.m_mtx);
+									g_RopeDelayedEffects.m_arrEffects.AddToTail(data);
+								}
+							}
+						}
+					}
+
 					// output last piece
 					OUTPUT_2SPLINE_VERTS( 1.0, flU );
 					meshBuilder.FastIndex( nCurIDX );
@@ -836,11 +1015,11 @@ void CRopeManager::DrawRenderCache( bool bShadowDepth )
 		Assert( ((void *)pVectorWrite == (void *)(((uint8 *)pMemory) + iMemoryNeeded)) && ((void *)pWriteRopeQueuedData == (void *)pVectorDataStart));		
 		pCallQueue->QueueCall( this, &CRopeManager::DrawRenderCache_NonQueued, bShadowDepth, pRenderCachesStart, iRenderCacheCount, vForward, vOrigin, pBuildRopeQueuedDataStart, pRopeDataMutex );
 
-		if ( IsHolidayLightMode() )
-		{
-			// With holiday lights we need to also build the ropes non-queued without rendering them
-			DrawRenderCache_NonQueued( bShadowDepth, m_aRenderCache.Base(), iRenderCacheCount, vForward, vOrigin, NULL, NULL );
-		}
+		//if ( IsHolidayLightMode() )
+		//{
+		//	// With holiday lights we need to also build the ropes non-queued without rendering them
+		//	DrawRenderCache_NonQueued( bShadowDepth, m_aRenderCache.Base(), iRenderCacheCount, vForward, vOrigin, NULL, NULL );
+		//}
 #else
 		Assert( ((void *)pVectorWrite == (void *)(((uint8 *)pMemory) + iMemoryNeeded)) && ((void *)pWriteRopeQueuedData == (void *)pVectorDataStart));		
 		pCallQueue->QueueCall( this, &CRopeManager::DrawRenderCache_NonQueued, bShadowDepth, pRenderCachesStart, iRenderCacheCount, vForward, vOrigin, pBuildRopeQueuedDataStart );
@@ -875,11 +1054,25 @@ bool CRopeManager::IsHolidayLightMode( void )
 	if ( !m_bHolidayInitialized && GameRules() )
 	{
 		m_bHolidayInitialized = true;
-		m_bDrawHolidayLights = GameRules()->IsHolidayActive( kHoliday_Christmas );
+		if (GameRules()->IsHolidayActive(kHoliday_Christmas))
+		{
+			m_bDrawHolidayLights = true;
+			m_nHolidayLightsStyle = 0;
+		}
+		else if (GameRules()->IsHolidayActive(kHoliday_Halloween))
+		{
+			m_bDrawHolidayLights = true;
+			m_nHolidayLightsStyle = 1;
+		}
+	}
+
+	if (r_ropes_holiday_lights_forced.GetInt() >= 0)
+	{
+		m_bDrawHolidayLights = true;
+		m_nHolidayLightsStyle = r_ropes_holiday_lights_forced.GetInt();
 	}
 
 	bDrawHolidayLights = m_bDrawHolidayLights;
-	m_nHolidayLightsStyle = 0;
 
 #ifdef TF_CLIENT_DLL
 	// Turn them on in Pyro-vision too
@@ -1711,6 +1904,8 @@ void C_RopeKeyframe::ClientThink()
 	if( !r_drawropes.GetBool() )
 		return;
 
+	UpdateHolidayLights();
+
 	if( !InitRopePhysics() ) // init if not already
 		return;
 
@@ -2418,6 +2613,22 @@ Vector *C_RopeKeyframe::GetRopeSubdivVectors( int *nSubdivs )
 }
 #endif
 
+void C_RopeKeyframe::UpdateHolidayLights(void)
+{
+	if (!RopeManager()->IsHolidayLightMode())
+		return;
+
+	if ((gpGlobals->curtime != g_RopeDelayedEffects.m_flTimeProcessedOnMainThread) && g_RopeDelayedEffects.m_arrEffects.Count())
+	{
+		g_RopeDelayedEffects.m_flTimeProcessedOnMainThread = gpGlobals->curtime;
+		AUTO_LOCK(g_RopeDelayedEffects.m_mtx);
+		FOR_EACH_VEC(g_RopeDelayedEffects.m_arrEffects, iEffect)
+		{
+			g_CHolidayLightManager.AddHolidayLight(g_RopeDelayedEffects.m_arrEffects[iEffect]);
+		}
+		g_RopeDelayedEffects.m_arrEffects.RemoveAll();
+	}
+}
 
 void C_RopeKeyframe::CalcLightValues()
 {
@@ -2474,4 +2685,83 @@ void C_RopeKeyframe::ReceiveMessage( int classID, bf_read &msg )
 	m_flImpulse.y   = msg.ReadFloat();
 	m_flImpulse.z   = msg.ReadFloat();
 #endif
+}
+
+void CreateHolidayLight(const HolidayLightData_t& holidayLight)
+{
+	int nHolidayLightStyle = RopeManager()->GetHolidayLightStyle();
+
+	const model_t* pModel = engine->LoadModel("effects/christmas_bulb.vmt");
+	if (!pModel)
+		return;
+
+	Assert(pModel);
+
+	Color** pLightColors = rgbaHolidayLightColors;
+	int iNumLightColors = ARRAYSIZE(rgbaHolidayLightColors);
+	if (nHolidayLightStyle == 1)
+	{
+		pLightColors = rgbaHalloweenLightColors;
+		iNumLightColors = ARRAYSIZE(rgbaHalloweenLightColors);
+	}
+
+	C_LocalTempEntity* pTemp = tempents->FindTempEntByID(holidayLight.nID, holidayLight.nSubID);
+
+	if (!pTemp)
+	{
+		// Didn't find one with that ID, so make a new one!
+		// Randomize the angle
+		QAngle angOrientation = QAngle(0.0f, 0.0f, RandomFloat(-180.0f, 180.0f));
+		pTemp = tempents->SpawnTempModel(pModel, holidayLight.vOrigin, angOrientation, vec3_origin, 2.0f, FTENT_NONE);
+		if (!pTemp)
+		{
+			return;
+		}
+
+		pTemp->clientIndex = 0;
+
+		// HACK: Use these ints to ID the light later
+		pTemp->m_nSkin = holidayLight.nID;
+		pTemp->hitSound = holidayLight.nSubID;
+
+		// Skybox lights pass in a smaller scale
+		pTemp->m_flSpriteScale = holidayLight.fScale;
+
+		// Smuggle the color index here
+		pTemp->m_nHitboxSet = g_nHolidayLightColor;
+
+		// Set the color
+		pTemp->SetRenderColor(pLightColors[g_nHolidayLightColor]->r(),
+			pLightColors[g_nHolidayLightColor]->g(),
+			pLightColors[g_nHolidayLightColor]->b(),
+			pLightColors[g_nHolidayLightColor]->a());
+
+		// Next color in the pattern
+		g_nHolidayLightColor = (g_nHolidayLightColor + 1) % iNumLightColors;
+
+		// Animate if needed
+		pTemp->m_flFrameMax = modelinfo->GetModelFrameCount(pModel) - 1;
+		pTemp->flags = (FTENT_SPRANIMATE | FTENT_SPRANIMATELOOP);
+		pTemp->m_flFrameRate = 10;
+	}
+	else
+	{
+		// Update the position
+		pTemp->SetAbsOrigin(holidayLight.vOrigin);
+
+		// Every 10 light strands have a blink cycle
+		if (pTemp->m_nSkin % 5 == 0)
+		{
+			// Magic! Basically this makes the on/off cycle of each color different and offsets it by the segment index.
+			// That way it looks like a timed pattern but is also chaotic.
+			int nCycle = (pTemp->hitSound + static_cast<int>(gpGlobals->curtime * 2.0f)) % (pTemp->m_nHitboxSet + iNumLightColors + 1);
+			pTemp->SetRenderColorA(nCycle < iNumLightColors ? 255 : 64);
+		}
+
+		// Update the scale
+		pTemp->m_flSpriteScale = holidayLight.fScale;
+
+		// Extend it's life
+		pTemp->die = gpGlobals->curtime + 2.0f;
+	}
 }

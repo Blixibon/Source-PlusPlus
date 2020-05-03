@@ -549,6 +549,7 @@ enum
 #endif // HL2_EPISODIC
 
 	BLOOD_COLOR_BLUE,
+	BLOOD_COLOR_SYNTH,
 };
 
 //-----------------------------------------------------------------------------

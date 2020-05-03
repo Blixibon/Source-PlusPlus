@@ -483,6 +483,7 @@ ParticleForBlood_t	bloodCallbacks[] =
 	{ BLOOD_COLOR_ANTLION_WORKER,	"blood_impact_antlion_worker_01" },
 #endif // HL2_EPISODIC
 	{ BLOOD_COLOR_BLUE,				"blood_impact_blue_01" },
+	{ BLOOD_COLOR_SYNTH,			"blood_impact_synth_01" },
 };
 
 //-----------------------------------------------------------------------------

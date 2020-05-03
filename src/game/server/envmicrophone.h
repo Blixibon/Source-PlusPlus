@@ -55,11 +55,23 @@ public:
 	void InputDisable( inputdata_t &inputdata );
 	void InputSetSpeakerName( inputdata_t &inputdata );
 
+	const Vector& GetSpeakerOrigin() const
+	{
+		if (m_hSpeaker.Get())
+		{
+			return m_hSpeaker->GetAbsOrigin();
+		}
+
+		return vec3_origin;
+	}
+
 	DECLARE_DATADESC();
 
 	// Hook for the sound system to tell us when a sound's been played. Returns true if it's to swallow the passed in sound.
 	static bool OnSoundPlayed( int entindex, const char *soundname, soundlevel_t soundlevel, 
 		float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
+
+	static void TestMicrophones(int entindex, soundlevel_t soundlevel, float flVolume, const Vector* pOrigin, CUtlVector< Vector >& soundorigins);
 
 private:
 

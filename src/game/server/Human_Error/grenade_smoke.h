@@ -21,9 +21,9 @@
 extern ConVar smoke_grenade_radius;
 
 
-class CGrenadeSmoke : public CBaseGrenade
+class CGrenadeSmoke : public CGrenadeFrag
 {
-	DECLARE_CLASS( CGrenadeSmoke, CBaseGrenade );
+	DECLARE_CLASS( CGrenadeSmoke, CGrenadeFrag);
 	DECLARE_SERVERCLASS();
 
 #if !defined( CLIENT_DLL )
@@ -32,39 +32,17 @@ class CGrenadeSmoke : public CBaseGrenade
 					
 	~CGrenadeSmoke( void );
 
+	virtual void	CreateEffects(void);
+	virtual void	BlipSound();
+	void	Precache(void);
 public:
-	void	SmokeDetonate();
+	void	Detonate();
 	void	SmokeThink();
 
-	void	Spawn( void );
-	void	OnRestore( void );
-	void	Precache( void );
-	bool	CreateVPhysics( void );
-	void	CreateEffects( void );
-	void	SetTimer( float detonateDelay, float warnDelay );
-	void	SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
-	int		OnTakeDamage( const CTakeDamageInfo &inputInfo );
-	void	BlipSound() { EmitSound( "Grenade.Blip" ); }
-	void	DelayThink();
-	void	VPhysicsUpdate( IPhysicsObject *pPhysics );
-	void	OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	void	SetPunted( bool punt ) { m_punted = punt; }
-	bool	WasPunted( void ) const { return m_punted; }
-
-	void	InputSetTimer( inputdata_t &inputdata );
-
+	bool	IsSmoking() { return m_bStartSmoke.Get(); }
 private:
 
 	CNetworkVar( bool, m_bStartSmoke );
-
-protected:
-	CHandle<CSprite>		m_pMainGlow;
-	CHandle<CSpriteTrail>	m_pGlowTrail;
-
-	float	m_flNextBlipTime;
-	bool	m_inSolid;
-	bool	m_combineSpawned;
-	bool	m_punted;
 };
 
 extern CBaseGrenade *SmokeGrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer );
