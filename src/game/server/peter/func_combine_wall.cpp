@@ -1,16 +1,106 @@
 #include "cbase.h"
 #include "func_combine_wall.h"
+#include "team.h"
+
+#define SHIELD_LIST_UPDATE_INTERVAL 0.5f
 
 CEntityClassList<CCombineShieldWall> g_ShieldWallList;
 template <> CCombineShieldWall* CEntityClassList<CCombineShieldWall>::m_pClassList = NULL;
 
 BEGIN_DATADESC(CCombineShieldWall)
 DEFINE_FIELD(m_bShieldActive, FIELD_BOOLEAN),
+DEFINE_FIELD(m_vecLocalOuterBoundsMins, FIELD_VECTOR),
+DEFINE_FIELD(m_vecLocalOuterBoundsMaxs, FIELD_VECTOR),
+
+DEFINE_THINKFUNC(ActiveThink),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CCombineShieldWall, DT_CombineShieldWall)
 SendPropBool(SENDINFO(m_bShieldActive)),
+SendPropArray(SendPropEHandle(SENDINFO_ARRAY(m_hNearbyEntities)), m_hNearbyEntities),
 END_SEND_TABLE();
+
+LINK_ENTITY_TO_CLASS(func_combine_wall, CCombineShieldWall);
+
+class CWallEnumerator : public IPartitionEnumerator
+{
+public:
+	CWallEnumerator(CBaseEntity* pEnt)
+	{
+		m_pOuter = pEnt;
+	}
+
+	virtual IterationRetval_t EnumElement(IHandleEntity* pHandleEntity);
+	void	Sort();
+
+	CUtlVector<EHANDLE> m_listNearbyEntities;
+	CBaseEntity* m_pOuter;
+
+private:
+	static CCollisionProperty* gm_pSortCollideable;
+	static int __cdecl NearestEntitySort(const EHANDLE* pLeft, const EHANDLE* pRight);
+};
+
+IterationRetval_t CWallEnumerator::EnumElement(IHandleEntity* pHandleEntity)
+{
+	if (pHandleEntity)
+	{
+		CBaseEntity* pEntity = gEntList.GetBaseEntity(pHandleEntity->GetRefEHandle());
+		if (pEntity)
+		{
+			if (pEntity == m_pOuter)
+				return ITERATION_CONTINUE;
+
+			if (m_pOuter->InSameTeam(pEntity))
+				return ITERATION_CONTINUE;
+
+			if (!pEntity->IsPlayer() && !pEntity->IsNPC())
+				return ITERATION_CONTINUE;
+
+			m_listNearbyEntities.AddToTail(pEntity);
+		}
+	}
+
+	return ITERATION_CONTINUE;
+}
+
+void CWallEnumerator::Sort()
+{
+	gm_pSortCollideable = m_pOuter->CollisionProp();
+	m_listNearbyEntities.Sort(CWallEnumerator::NearestEntitySort);
+	gm_pSortCollideable = nullptr;
+}
+
+CCollisionProperty* CWallEnumerator::gm_pSortCollideable = nullptr;
+
+int __cdecl CWallEnumerator::NearestEntitySort(const EHANDLE* pLeft, const EHANDLE* pRight)
+{
+	if (pLeft->Get() && !pRight->Get())
+		return -1;
+
+	if (!pLeft->Get() && pRight->Get())
+		return 1;
+
+	if (!pLeft->Get() && !pRight->Get())
+		return 0;
+
+	float flDist2Left = gm_pSortCollideable->CalcDistanceFromPoint(pLeft->Get()->WorldSpaceCenter());
+	float flDist2Right = gm_pSortCollideable->CalcDistanceFromPoint(pRight->Get()->WorldSpaceCenter());
+
+	if (flDist2Left < flDist2Right)
+		return -1;
+
+	if (flDist2Right < flDist2Left)
+		return 1;
+
+	if (pLeft->Get()->IsPlayer() && !pRight->Get()->IsPlayer())
+		return -1;
+
+	if (!pLeft->Get()->IsPlayer() && pRight->Get()->IsPlayer())
+		return 1;
+
+	return 0;
+}
 
 CCombineShieldWall::CCombineShieldWall()
 {
@@ -28,6 +118,8 @@ void CCombineShieldWall::Precache()
 	PrecacheScriptSound("outland_10.shieldwall_on");
 	PrecacheScriptSound("Streetwar.d3_c17_07_combine_shield_loop3");
 	PrecacheScriptSound("Streetwar.d3_c17_07_combine_shield_touch_loop1");
+	PrecacheScriptSound("NPC_RollerMine.Reprogram");
+	PrecacheScriptSound("AlyxEMP.Discharge");
 }
 
 void CCombineShieldWall::Spawn()
@@ -36,6 +128,38 @@ void CCombineShieldWall::Spawn()
 
 	Precache();
 	BaseClass::Spawn();
+
+	AddSolidFlags(FSOLID_TRIGGER);
+	CollisionProp()->UseTriggerBounds(true, 1.f);
+
+	const Vector& delta = CollisionProp()->OBBSize();
+	int iMin = 0;
+	for (int i = 1; i < 3; i++)
+	{
+		// Get the maximum value.
+		if (delta[i] < delta[iMin])
+		{
+			iMin = i;
+		}
+	}
+
+	Vector vAdd(4.f);
+	vAdd[iMin] = 64.f;
+
+	m_vecLocalOuterBoundsMaxs = CollisionProp()->OBBMaxs() + vAdd;
+	m_vecLocalOuterBoundsMins = CollisionProp()->OBBMins() - vAdd;
+
+	if (!m_iDisabled)
+	{
+		m_bShieldActive = true;
+
+		SetThink(&CCombineShieldWall::ActiveThink);
+		SetNextThink(gpGlobals->curtime + 0.1f);
+	}
+	else
+	{
+		AddSolidFlags(FSOLID_NOT_SOLID);
+	}
 }
 
 bool CCombineShieldWall::ShouldCollide(int collisionGroup, int contentsMask) const
@@ -87,6 +211,8 @@ void CCombineShieldWall::TurnOff(void)
 	m_bShieldActive = false;
 	m_iDisabled = TRUE;
 	EmitSound("outland_10.shieldwall_off");
+
+	SetThink(NULL);
 }
 
 
@@ -106,12 +232,62 @@ void CCombineShieldWall::TurnOn(void)
 	m_bShieldActive = true;
 	m_iDisabled = FALSE;
 	EmitSound("outland_10.shieldwall_on");
+
+	SetThink(&CCombineShieldWall::ActiveThink);
+	SetNextThink(gpGlobals->curtime);
+
+	ClearSpace();
 }
 
 
 bool CCombineShieldWall::IsOn(void) const
 {
 	return m_bShieldActive.Get();
+}
+
+void CCombineShieldWall::ChangeTeam(int iTeamNum)
+{
+	int iOldTeam = GetTeamNumber();
+
+	BaseClass::ChangeTeam(iTeamNum);
+
+	if (IsOn() && iOldTeam != iTeamNum)
+	{
+		ClearSpace();
+
+		CPASAttenuationFilter filter(this, "NPC_RollerMine.Reprogram");
+		filter.RemoveRecipientsNotOnTeam(GetGlobalTeam(iTeamNum));
+
+		EmitSound(filter, entindex(), "NPC_RollerMine.Reprogram");
+
+		CPASAttenuationFilter filter2(this, "AlyxEMP.Discharge");
+		filter2.RemoveRecipientsByTeam(GetGlobalTeam(iTeamNum));
+
+		EmitSound(filter2, entindex(), "AlyxEMP.Discharge");
+	}
+}
+
+void CCombineShieldWall::ActiveThink()
+{
+	Vector vecMins, vecMaxs;
+	CollisionProp()->CollisionToWorldSpace(m_vecLocalOuterBoundsMins, &vecMins);
+	CollisionProp()->CollisionToWorldSpace(m_vecLocalOuterBoundsMaxs, &vecMaxs);
+
+	CWallEnumerator functor(this);
+	partition->EnumerateElementsInBox(PARTITION_ENGINE_NON_STATIC_EDICTS|PARTITION_ENGINE_SOLID_EDICTS, vecMins, vecMaxs, true, &functor);
+	functor.Sort();
+
+	int i = 0;
+	for (; i < 2 && i < functor.m_listNearbyEntities.Count(); i++)
+	{
+		m_hNearbyEntities.Set(i, functor.m_listNearbyEntities[i]);
+	}
+	for (; i < 2; i++)
+	{
+		m_hNearbyEntities.Set(i, NULL);
+	}
+
+	SetNextThink(gpGlobals->curtime + SHIELD_LIST_UPDATE_INTERVAL);
 }
 
 bool CCombineShieldWall::PointsCrossForceField(const Vector& vecStart, const Vector& vecEnd, int nTeamToIgnore)
@@ -137,4 +313,21 @@ bool CCombineShieldWall::PointsCrossForceField(const Vector& vecStart, const Vec
 	}
 
 	return false;
+}
+
+void CCombineShieldWall::ClearSpace()
+{
+	touchlink_t* root = (touchlink_t*)GetDataObject(TOUCHLINK);
+	if (root)
+	{
+		for (touchlink_t* link = root->nextLink; link != root; link = link->nextLink)
+		{
+			CBaseEntity* pTouch = link->entityTouched;
+			if (pTouch && !InSameTeam(pTouch) && (pTouch->IsPlayer() || pTouch->IsNPC()))
+			{
+				CTakeDamageInfo info(this, this, pTouch->GetMaxHealth() * 2.f, DMG_CRUSH | DMG_DISSOLVE | DMG_DIRECT | DMG_NEVERGIB);
+				pTouch->TakeDamage(info);
+			}
+		}
+	}
 }

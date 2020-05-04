@@ -9,18 +9,15 @@
 #include "view.h"
 
 #define SHIELD_POWERUP_TIME 0.35f
-#define SHIELD_LIST_UPDATE_INTERVAL 0.5f
+#define SHIELD_POWERDOWN_TIME 0.5f
 #define SOUNDCONTROLLER() CSoundEnvelopeController::GetController()
 
-class C_CombineShieldWall : public C_BaseEntity, public IPartitionEnumerator
+class C_CombineShieldWall : public C_BaseEntity
 {
 public:
 	DECLARE_CLASS(C_CombineShieldWall, C_BaseEntity);
 	DECLARE_CLIENTCLASS();
 
-	// This gets called	by the enumeration methods with each element
-	// that passes the test.
-	virtual IterationRetval_t EnumElement(IHandleEntity* pHandleEntity);
 
 	virtual void		ClientThink();
 	virtual void		OnDataChanged(DataUpdateType_t type);
@@ -37,128 +34,70 @@ private:
 	bool m_bShieldActive;
 	bool m_bOldShieldActive;
 
-	Vector	m_vecLocalOuterBoundsMins;
-	Vector	m_vecLocalOuterBoundsMaxs;
-
 	float m_flStateChangedTime;
 
 	CSoundPatch* m_pIdleSound;
+	CSoundPatch* m_pTouchSound;
 
-	CUtlVector< EHANDLE > m_listNearbyEntities;
-	float	m_flLastListUpdateTime;
+	EHANDLE m_hNearbyEntities[2];
 };
 
 IMPLEMENT_CLIENTCLASS_DT(C_CombineShieldWall, DT_CombineShieldWall, CCombineShieldWall)
 RecvPropBool(RECVINFO(m_bShieldActive)),
+RecvPropArray(RecvPropEHandle(RECVINFO(m_hNearbyEntities[0])), m_hNearbyEntities),
 END_RECV_TABLE();
-
-IterationRetval_t C_CombineShieldWall::EnumElement(IHandleEntity* pHandleEntity)
-{
-	IClientEntity* pClientEntity = cl_entitylist->GetClientEntityFromHandle(pHandleEntity->GetRefEHandle());
-	C_BaseEntity* pEntity = pClientEntity ? pClientEntity->GetBaseEntity() : NULL;
-	if (pEntity)
-	{
-		if (pEntity == this)
-			return ITERATION_CONTINUE;
-
-		if (!pEntity->IsServerEntity())
-			return ITERATION_CONTINUE;
-
-		if (InSameTeam(pEntity))
-			return ITERATION_CONTINUE;
-
-		if (!pEntity->IsPlayer() && !pEntity->IsNPC())
-			return ITERATION_CONTINUE;
-
-		m_listNearbyEntities.AddToTail(pEntity);
-	}
-
-	return ITERATION_CONTINUE;
-}
-
-static CCollisionProperty* g_pSortCollideable = nullptr;
-
-int __cdecl NearestEntitySort(const EHANDLE* pLeft, const EHANDLE* pRight)
-{
-	if (pLeft->Get() && !pRight->Get())
-		return -1;
-
-	if (!pLeft->Get() && pRight->Get())
-		return 1;
-
-	if (!pLeft->Get() && !pRight->Get())
-		return 0;
-
-	float flDist2Left = g_pSortCollideable->CalcDistanceFromPoint(pLeft->Get()->WorldSpaceCenter());
-	float flDist2Right = g_pSortCollideable->CalcDistanceFromPoint(pRight->Get()->WorldSpaceCenter());
-
-	if (flDist2Left < flDist2Right)
-		return -1;
-
-	if (flDist2Right < flDist2Left)
-		return 1;
-
-	if (pLeft->Get()->IsPlayer() && !pRight->Get()->IsPlayer())
-		return -1;
-
-	if (!pLeft->Get()->IsPlayer() && pRight->Get()->IsPlayer())
-		return 1;
-
-	return 0;
-}
 
 void C_CombineShieldWall::ClientThink()
 {
-	if (m_bShieldActive && WorldSpaceCenter().DistToSqr(MainViewOrigin()) <= Sqr(1024.f) && gpGlobals->curtime >= m_flLastListUpdateTime + SHIELD_LIST_UPDATE_INTERVAL)
+	C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+	if (pLocalPlayer)
 	{
-		m_flLastListUpdateTime = gpGlobals->curtime;
-		m_listNearbyEntities.Purge();
+		bool bStopSound = InSameTeam(pLocalPlayer) || !pLocalPlayer->IsAlive() || !m_bShieldActive;
+		if (!bStopSound)
+		{
+			Vector vecShieldNearest;
+			CollisionProp()->CalcNearestPoint(pLocalPlayer->WorldSpaceCenter(), &vecShieldNearest);
+			float flDist = pLocalPlayer->CollisionProp()->CalcDistanceFromPoint(vecShieldNearest);
+			if (flDist > 2.f)
+			{
+				bStopSound = true;
+			}
+			else if (!m_pTouchSound)
+			{
+				CBroadcastRecipientFilter filter;
+				m_pTouchSound = SOUNDCONTROLLER().SoundCreate(filter, entindex(), "Streetwar.d3_c17_07_combine_shield_touch_loop1");
+				SOUNDCONTROLLER().Play(m_pTouchSound, .01f, 75.f);
 
-		Vector vecMins, vecMaxs;
-		CollisionProp()->CollisionToWorldSpace(m_vecLocalOuterBoundsMins, &vecMins);
-		CollisionProp()->CollisionToWorldSpace(m_vecLocalOuterBoundsMaxs, &vecMaxs);
+				SOUNDCONTROLLER().SoundChangePitch(m_pTouchSound, 100.f, 0.2f);
+				SOUNDCONTROLLER().SoundChangeVolume(m_pTouchSound, 1.f, 0.2f);
+			}
+		}
 
-		partition->EnumerateElementsInBox(PARTITION_CLIENT_SOLID_EDICTS, vecMins, vecMaxs, false, this);
-		g_pSortCollideable = CollisionProp();
-		m_listNearbyEntities.Sort(NearestEntitySort);
-		g_pSortCollideable = nullptr;
+		if (bStopSound && m_pTouchSound)
+		{
+			SOUNDCONTROLLER().SoundChangePitch(m_pTouchSound, 75.f, 0.5f);
+			SOUNDCONTROLLER().SoundFadeOut(m_pTouchSound, 0.5f, true);
+			m_pTouchSound = NULL;
+		}
 	}
+
+	UpdateVisibility();
 }
 
 void C_CombineShieldWall::OnDataChanged(DataUpdateType_t type)
 {
+	BaseClass::OnDataChanged(type);
+
 	if (type == DATA_UPDATE_CREATED)
 	{
-		const Vector &delta = CollisionProp()->OBBSize();
-		int iMin = 0;
-		for (int i = 1; i < 3; i++)
-		{
-			// Get the maximum value.
-			if (delta[i] < delta[iMin])
-			{
-				iMin = i;
-			}
-		}
-
-		Vector vAdd(4.f);
-		vAdd[iMin] = 64.f;
-
-		m_vecLocalOuterBoundsMaxs = CollisionProp()->OBBMaxs() + vAdd;
-		m_vecLocalOuterBoundsMins = CollisionProp()->OBBMins() - vAdd;
-
 		m_bOldShieldActive = m_bShieldActive;
 		m_flStateChangedTime = gpGlobals->curtime - SHIELD_POWERUP_TIME;
-		m_flLastListUpdateTime = gpGlobals->curtime;
 	}
 	else
 	{
 		if (m_bOldShieldActive != m_bShieldActive)
 		{
 			m_flStateChangedTime = gpGlobals->curtime;
-			if (!m_bShieldActive)
-			{
-				m_listNearbyEntities.Purge();
-			}
 		}
 	}
 
@@ -168,9 +107,10 @@ void C_CombineShieldWall::OnDataChanged(DataUpdateType_t type)
 		{
 			CBroadcastRecipientFilter filter;
 			m_pIdleSound = SOUNDCONTROLLER().SoundCreate(filter, entindex(), "Streetwar.d3_c17_07_combine_shield_loop3");
-			SOUNDCONTROLLER().Play(m_pIdleSound, 1.f, 100.f);
+			SOUNDCONTROLLER().Play(m_pIdleSound, .01f, 50.f);
 		}
-		else if (!m_bOldShieldActive)
+
+		if (!m_bOldShieldActive)
 		{
 			SOUNDCONTROLLER().SoundChangePitch(m_pIdleSound, 100.f, SHIELD_POWERUP_TIME);
 			SOUNDCONTROLLER().SoundChangeVolume(m_pIdleSound, 1.f, SHIELD_POWERUP_TIME);
@@ -179,7 +119,8 @@ void C_CombineShieldWall::OnDataChanged(DataUpdateType_t type)
 	else if (m_pIdleSound && m_bOldShieldActive)
 	{
 		SOUNDCONTROLLER().SoundChangePitch(m_pIdleSound, 50.f, SHIELD_POWERUP_TIME);
-		SOUNDCONTROLLER().SoundChangeVolume(m_pIdleSound, 0.f, SHIELD_POWERUP_TIME);
+		SOUNDCONTROLLER().SoundFadeOut(m_pIdleSound, SHIELD_POWERUP_TIME, true);
+		m_pIdleSound = NULL;
 	}
 
 	SetNextClientThink(CLIENT_THINK_ALWAYS);
@@ -187,6 +128,8 @@ void C_CombineShieldWall::OnDataChanged(DataUpdateType_t type)
 
 void C_CombineShieldWall::OnPreDataChanged(DataUpdateType_t type)
 {
+	BaseClass::OnPreDataChanged(type);
+
 	if (type == DATA_UPDATE_DATATABLE_CHANGED)
 	{
 		m_bOldShieldActive = m_bShieldActive;
@@ -234,7 +177,7 @@ float C_CombineShieldWall::GetPowerFraction()
 	}
 	else
 	{
-		return RemapValClamped(gpGlobals->curtime, m_flStateChangedTime, m_flStateChangedTime + SHIELD_POWERUP_TIME, 1.f, 0.f);
+		return RemapValClamped(gpGlobals->curtime, m_flStateChangedTime, m_flStateChangedTime + SHIELD_POWERDOWN_TIME, 1.f, 0.f);
 	}
 }
 
@@ -267,11 +210,11 @@ Vector C_CombineShieldWall::GetShieldColor()
 int C_CombineShieldWall::GetDeniedEntities(C_BaseEntity* pEntities[2])
 {
 	int iCount = 0;
-	for (int i = 0; iCount < 2 && i < m_listNearbyEntities.Count(); i++)
+	for (int i = 0; iCount < 2 && i < ARRAYSIZE(m_hNearbyEntities); i++)
 	{
-		if (m_listNearbyEntities[i].Get() != nullptr)
+		if (m_hNearbyEntities[i].Get() != nullptr)
 		{
-			pEntities[iCount] = m_listNearbyEntities[i].Get();
+			pEntities[iCount] = m_hNearbyEntities[i].Get();
 			iCount++;
 		}
 	}
@@ -359,7 +302,7 @@ void CShieldVortexProxy::OnBind(C_BaseEntity* pBaseEntity)
 	C_CombineShieldWall* pShield = dynamic_cast<C_CombineShieldWall*> (pBaseEntity);
 	if (pShield)
 	{
-		m_pPowerupVar->SetFloatValue(pShield->GetPowerFraction());
+		m_pPowerupVar->SetFloatValue(Bias(pShield->GetPowerFraction(), 0.75f));
 		Vector vecColor = pShield->GetShieldColor();
 		m_pShieldColorVar->SetVecValue(vecColor.Base(), 3);
 		vecColor += 0.1f;

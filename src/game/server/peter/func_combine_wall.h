@@ -24,7 +24,18 @@ public:
 	virtual void TurnOn(void);
 	virtual bool IsOn(void) const;
 
+	// Team Handling
+	virtual void			ChangeTeam(int iTeamNum);
+
+	void	ActiveThink();
+
 	static bool PointsCrossForceField(const Vector& vecStart, const Vector& vecEnd, int nTeamToIgnore = TEAM_UNASSIGNED);
 private:
+	void	ClearSpace();
+
 	CNetworkVar(bool, m_bShieldActive);
+	CNetworkArray(EHANDLE, m_hNearbyEntities, 2);
+
+	Vector	m_vecLocalOuterBoundsMins;
+	Vector	m_vecLocalOuterBoundsMaxs;
 };

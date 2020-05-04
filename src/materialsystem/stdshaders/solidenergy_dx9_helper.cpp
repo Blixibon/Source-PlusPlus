@@ -157,7 +157,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 
 			// Vertex Shader
 #if !defined( _GAMECONSOLE )
-			if ( g_pHardwareConfig->GetDXSupportLevel() < 95 )
+			if (!g_pHardwareConfig->SupportsShaderModel_3_0())
 #endif
 			{
 				DECLARE_STATIC_VERTEX_SHADER( solidenergy_vs20 );
@@ -193,7 +193,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 
 			// Pixel Shader
 #if !defined( _GAMECONSOLE )
-			if ( g_pHardwareConfig->GetDXSupportLevel() < 95 )
+			if (!g_pHardwareConfig->SupportsShaderModel_3_0())
 #endif
 			{
 				DECLARE_STATIC_PIXEL_SHADER( solidenergy_ps20b );
@@ -426,7 +426,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 
 		// VERTEX SHADER SETUP
 #if !defined( _GAMECONSOLE )
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 95 )
+		if (!g_pHardwareConfig->SupportsShaderModel_3_0())
 #endif
 		{
 			DECLARE_DYNAMIC_VERTEX_SHADER( solidenergy_vs20 );
@@ -435,7 +435,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( VORTEX1, bVortex1 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( VORTEX2, bVortex2 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO(DOWATERFOG, pShaderAPI->GetPixelFogCombo());
-			SET_DYNAMIC_VERTEX_SHADER( solidenergy_vs20 );
+			SET_DYNAMIC_VERTEX_SHADER_CMD(DynamicCmdsOut, solidenergy_vs20 );
 		}
 #if !defined( _GAMECONSOLE )
 		else
@@ -446,7 +446,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( VORTEX1, bVortex1 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( VORTEX2, bVortex2 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO(DOWATERFOG, pShaderAPI->GetPixelFogCombo());
-			SET_DYNAMIC_VERTEX_SHADER( solidenergy_vs30 );
+			SET_DYNAMIC_VERTEX_SHADER_CMD(DynamicCmdsOut, solidenergy_vs30 );
 		}
 #endif
 
@@ -487,7 +487,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 		// PIXEL SHADER SETUP
 
 #if !defined( _GAMECONSOLE )
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 95 )
+		if ( !g_pHardwareConfig->SupportsShaderModel_3_0() )
 #endif
 		{
 			DECLARE_DYNAMIC_PIXEL_SHADER( solidenergy_ps20b );
@@ -496,7 +496,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( VORTEX1, bVortex1 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( VORTEX2, bVortex2 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo());
-			SET_DYNAMIC_PIXEL_SHADER( solidenergy_ps20b );
+			SET_DYNAMIC_PIXEL_SHADER_CMD(DynamicCmdsOut, solidenergy_ps20b );
 		}
 #if !defined( _GAMECONSOLE )
 		else
@@ -507,7 +507,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( VORTEX1, bVortex1 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( VORTEX2, bVortex2 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo());
-			SET_DYNAMIC_PIXEL_SHADER( solidenergy_ps30 );
+			SET_DYNAMIC_PIXEL_SHADER_CMD(DynamicCmdsOut, solidenergy_ps30 );
 		}
 #endif
 

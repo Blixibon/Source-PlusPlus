@@ -13,6 +13,19 @@
 	input SetTeam(integer) : "Changes the entity's team."
 ]
 
+@BaseClass = TeamNumExclusive
+[
+	TeamNum(choices) : "Team" : 0 : "Team" =
+	[
+		0 : "Neutral"
+		2 : "Combine"
+		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
+	]
+	input SetTeam(integer) : "Changes the entity's team."
+]
+
 @FilterClass base(BaseFilter) size(-8 -8 -8, 8 8 8) = filter_activator_team :
 	"A filter that filters by the team of the activator."
 [
@@ -25,6 +38,15 @@
 		3 : "Rebels"
 		4 : "Military"
 		5 : "Zombies"
+	]
+]
+
+@SolidClass base(Targetname, Parentname, Origin, RenderFields, Global, Inputfilter, EnableDisable, Shadow, TeamNumExclusive) = func_combine_wall :
+	"A combine energy wall. Only characters on its team can pass through."
+[
+	spawnflags(flags) =
+	[
+		2: "Ignore player +USE" : 1
 	]
 ]
 

@@ -1020,6 +1020,32 @@ bool CAI_MoveProbe::MoveLimit( Navigation_t navType, const Vector &vecStart,
 	pTrace->fStatus = AIMR_OK;
 	pTrace->vEndPosition = vecStart;
 
+	unsigned int uMask = 0;
+#ifdef HL2_LAZUL
+	switch (GetOuter()->GetTeamNumber())
+	{
+	case TF_TEAM_RED:
+		uMask = MASK_REDTEAMSOLID;
+		break;
+
+	case TF_TEAM_BLUE:
+		uMask = MASK_BLUETEAMSOLID;
+		break;
+
+	case TF_TEAM_GREEN:
+		uMask |= MASK_GREENTEAMSOLID;
+		break;
+
+	case TF_TEAM_YELLOW:
+		uMask |= MASK_YELLOWTEAMSOLID;
+		break;
+
+	default:
+		uMask = MASK_ALLTEAMS;
+		break;
+	}
+#endif
+
 	switch (navType)
 	{
 	case NAV_GROUND:
@@ -1040,12 +1066,12 @@ bool CAI_MoveProbe::MoveLimit( Navigation_t navType, const Vector &vecStart,
 		{
 			Assert( vecStart == GetLocalOrigin() );
 			trace_t tr;
-			TraceLine(const_cast<CAI_MoveProbe *>(this)->GetOuter()->EyePosition(), vecEnd, collisionMask, true, &tr);
+			TraceLine(const_cast<CAI_MoveProbe *>(this)->GetOuter()->EyePosition(), vecEnd, collisionMask | uMask, true, &tr);
 			bDoIt = ( tr.fraction > 0.99 );
 		}
 
 		if ( bDoIt  )
-			GroundMoveLimit(vecStart, vecEnd, collisionMask, pTarget, testGroundMoveFlags, pctToCheckStandPositions, pTrace);
+			GroundMoveLimit(vecStart, vecEnd, collisionMask | uMask, pTarget, testGroundMoveFlags, pctToCheckStandPositions, pTrace);
 		else
 		{
 			pTrace->pObstruction = GetContainingEntity( INDEXENT(0) );
@@ -1060,11 +1086,11 @@ bool CAI_MoveProbe::MoveLimit( Navigation_t navType, const Vector &vecStart,
 	}
 
 	case NAV_FLY:
-		FlyMoveLimit(vecStart, vecEnd, collisionMask, pTarget, pTrace);
+		FlyMoveLimit(vecStart, vecEnd, collisionMask | uMask, pTarget, pTrace);
 		break;
 
 	case NAV_JUMP:
-		JumpMoveLimit(vecStart, vecEnd, collisionMask, pTarget, pTrace);
+		JumpMoveLimit(vecStart, vecEnd, collisionMask | uMask, pTarget, pTrace);
 		break;
 
 	case NAV_CLIMB:

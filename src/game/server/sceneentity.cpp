@@ -1880,7 +1880,8 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 		else if (gpGlobals->maxClients > 1)
 		{
 			CUtlVector<Vector> vSpeakers;
-			CEnvMicrophone::TestMicrophones(actor->entindex(), iSoundlevel, 1.f, &actor->GetSoundEmissionOrigin(), vSpeakers);
+			Vector vecSoundOrigin = actor->GetSoundEmissionOrigin();
+			CEnvMicrophone::TestMicrophones(actor->entindex(), iSoundlevel, 1.f, &vecSoundOrigin, vSpeakers);
 			for (auto& vSpeaker : vSpeakers)
 			{
 				CPASAttenuationFilter micfilter(vSpeaker, iSoundlevel);
