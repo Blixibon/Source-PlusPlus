@@ -2694,6 +2694,11 @@ void CBaseCombatCharacter::AddClassRelationship ( Class_T class_type, Dispositio
 	m_Relationship[index].priority		= ( priority != DEF_RELATIONSHIP_PRIORITY ) ? priority : 0;
 }
 
+Disposition_t CBaseCombatCharacter::GetDefaultRelationshipDispositionBetweenClasses(Class_T nClassTarget1, Class_T nClassTarget2)
+{
+	return m_DefaultRelationship[nClassTarget1][nClassTarget2].disposition;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Add or Change a entity relationship for this entity
 // Input  :

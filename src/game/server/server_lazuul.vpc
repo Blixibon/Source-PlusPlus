@@ -83,6 +83,8 @@ $Project "Server (Lazuul)"
 			$File "peter\laz_player_resource.cpp"
 			$File "peter\func_combine_wall.cpp"
 			$File "peter\func_combine_wall.h"
+			$File "$SRCDIR\game\shared\peter\weapon_emp.cpp"
+			$File "$SRCDIR\game\shared\peter\weapon_emp.h"
 		}
 
 		$Folder "TF"
@@ -93,11 +95,22 @@ $Project "Server (Lazuul)"
 
 		$Folder "Human Error"
 		{
+			$Folder "Dynamic Spawns"
+			{
+				$File	"HLSS_DNS\hlss_director.cpp"
+				$File	"HLSS_DNS\hlss_dynamic_brush_entities.cpp"
+				$File	"HLSS_DNS\hlss_dynamic_npc_spawner.cpp"
+				$File	"HLSS_DNS\hlss_dynamic_npc_spawner.h"
+				$File	"HLSS_DNS\hlss_dynamic_point_entities.cpp"
+				$File	"HLSS_DNS\hlss_dynamic_point_entities.h"
+			}
+			
 			$File	"Human_Error\hlss_minershat.cpp"
 			$File	"Human_Error\npc_unique_metropolice.cpp"
 			$File	"Human_Error\npc_unique_metropolice.h"
 			$File	"Human_Error\ai_behavior_recharge.cpp"
 			$File	"Human_Error\ai_behavior_recharge.h"
+			$File	"Human_Error\hlss_combine_interface.cpp"
 			$File	"Human_Error\hlss_weapon_stripper.cpp"
 			$File	"Human_Error\hlss_metrocopradio.cpp"
 			$File	"Human_Error\npc_olivia.cpp"

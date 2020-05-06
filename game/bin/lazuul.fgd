@@ -1,4 +1,4 @@
-@include "halflife1_laz.fgd"
+@include "hlss_dns.fgd"
 
 @BaseClass = TeamNum
 [
@@ -26,6 +26,28 @@
 	input SetTeam(integer) : "Changes the entity's team."
 ]
 
+@PointClass base(Targetname, EnableDisable, ComputerNetwork) size(-8 -8 -8, 8 8 8) = laz_computer_network :
+	"An entity that defines a computer network."
+[
+	TeamNum(choices) : "Team" : 0 : "Team" =
+	[
+		0 : "Neutral"
+		1 : "Rogue"
+		2 : "Combine"
+		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
+	]
+
+	input SetTeam(integer) : "Changes the entity's team."
+
+	HasGenerator(choices) : "Has Generator" : 0 : "Does this node have a generator?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+]
+
 @FilterClass base(BaseFilter) size(-8 -8 -8, 8 8 8) = filter_activator_team :
 	"A filter that filters by the team of the activator."
 [
@@ -41,34 +63,30 @@
 	]
 ]
 
-@SolidClass base(Targetname, Parentname, Origin, RenderFields, Global, Inputfilter, EnableDisable, Shadow, TeamNumExclusive) = func_combine_wall :
+@SolidClass base(Targetname, Parentname, Origin, RenderFields, Global, Inputfilter, EnableDisable, Shadow, TeamNumExclusive, ComputerNetwork) = func_combine_wall :
 	"A combine energy wall. Only characters on its team can pass through."
 [
 	spawnflags(flags) =
 	[
 		2: "Ignore player +USE" : 1
 	]
+
+	projector_props(target_destination) : "Field Projectors" : : "The name of one or more prop_shield_wall_projector entities that should change state with this field."
 ]
 
-@PointClass base(Targetname) = laz_gamerules
+@PointClass base(Targetname, Global, Angles, Studiomodel) studioprop() = prop_shield_wall_projector :
+	"A shield wall projector prop for use with func_combine_wall."
 [
-	allowdeathmatch(choices) : "Allow Deathmatch" : 0  =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	allowcoop(choices) : "Allow Coop" : 0  =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	
-	allowversus(choices) : "Allow Versus" : 0  =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
+	anim_activate(string) : "Activate Animation" : "" : "The animation to play when activated."
+	anim_deactivate(string) : "Deactivate Animation" : "" : "The animation to play when deactivated."
+	idle_active(string) : "Idle Activated" : "" : "The idle to play when activated."
+	idle_inactive(string) : "Idle Deactivated" : "" : "The idle to play when deactivated."
+
+	skin_inactive(integer) : "Inactive Skin" : 0
+	skin_blueteam(integer) : "Blue Skin" : 0
+	skin_redteam(integer) : "Red Skin" : 0
+	skin_greenteam(integer) : "Green Skin" : 0
+	skin_yellowteam(integer) : "Yellow Skin" : 0
 ]
 
 @PointClass base(Targetname, TeamNum, EnableDisable, Angles) studio("models/editor/playerstart.mdl") = info_player_teamspawn :
@@ -659,58 +677,6 @@
 	input Disable(void) : "Disable"
 ]
 
-@NPCClass base(BaseNPC, TalkNPC, Targetname) studio("models/aliengrunt.mdl") = npc_aliengrunt : "Alien Grunt"
-[
-	spawnflags(Flags) = 
-	[
-		65536 :  "Can grab enemy ragdoll" : 0
-		131072 : "Wait for ragdoll grab before shooting bees." : 0
-	]
-
-	input EnableRagdollGrab(void)	: "Enable enemy ragdoll grabbing."
-	input DisableRagdollGrab(void)	: "Disable enemy ragdoll grabbing."
-	input DisableWaitRagdollGrab(void) : "Disable waiting for ragdoll grab."
-
-	input AttackItem(string) : "Attack prop_physics, or prop_door_rotating."
-
-]
-
-@NPCClass base(BaseNPC, TalkNPC) studio("models/controller.mdl") = npc_aliencontroller : "Alien Controller"
-[
-	spawnflags(Flags) = 
-	[
-		65536 :  "Can use Telekinesis" : 1
-	]
-
-
-	landed(choices) : "Start Flying" : 1 : "Should the Alien Controller start flying." =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-	canland(choices) : "Can Land / Lift off" : 1 : "Can the Alien Controller Land / Lift off." =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	preferred_height(float) : "Preferred Height" : 256 : "The height we want to fly at."
-
-	output OnLand(void) 	: "When Alien Controller lands on ground to walk."
-	output OnLiftOff(void)	: "When Alien Controller lifts off from groun to fly."
-
-	input EnableLanding(void)	: "Enable Landing / Lifting off."
-	input DisableLanding(void) 	: "Disable Landing / Lifting off."
-
-	input EnableTelekinesis(void)	: "Enable Telekinesis."
-	input DisableTelekinesis(void) 	: "Disable Telekinesis."
-	input StopScriptingAndGesture(void) : "Stop scripting and remove all gestures."
-
-	output OnFoundEnemy(void) : "Fired when a non-player enemy is spotted within the inner radius."
-]
-
-
-
 @PointClass base(prop_dynamic_base,EnableDisable) studio() = prop_xenplant : "Xen Plant"
 [
 	model(studio) : "World model" : "models/props_xen/plant001.mdl"
@@ -737,15 +703,6 @@
 	output OnUnhide(void)	: "When lightbulbs came out from hiding."
 ]
 
-
-@PointClass base(Targetname) = hlss_weaponstripper : "Remove given ammo type."
-[
-	input TakeAmmo(string) : "Remove Ammo 1 of given type."
-	input TakeAllAmmo(string) : "Remove all Ammo of given type."
-	output AmmoRemoved(void) : "If ammo was removed."
-	output NoAmmo(void) : "If no ammo were removed."
-]
-
 @PointClass base(BaseDriveableVehicle) studioprop() = prop_vehicle_drivable_apc :
 	"Driveable studiomodel APC."
 [
@@ -760,41 +717,6 @@
 	input DisableMove(void) : "Disable APC movement, machine gun and rockets only."
 	input EnableMove(void) : "Enable APC movement."
 	input ForcePlayerOut(void) : "Force the player out of the vehicle."
-]
-
-@NPCClass base(VehicleDriverNPC) studio("models/HLSS_Characters/TruckDriver.mdl") = npc_truckdriver : 
-	"NPC used to drive a target vehicle."
-[
-	drivermaxspeed(float) : "Maxspeed." : 1 : "Percentage of vehicle's minspeed."
-	driverminspeed(float) : "MinSpeed." : 0 : "Percentage of vehicle's maxspeed."
-	followplayerspeedscale(float) : "Player follow speed scale" : "0.75"  	
-
-	followplayerspeed(choices) : "Follow player" : 1 =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	input EnablePlayerFollow(void) : "Enable Player Speed Following."
-	input DisablePlayerFollow(void) : "Disable Player Speed Following."
-	input SetDriversMaxSpeed(float) : "Set the Maxspeed."
-	input SetDriversMinSpeed(float) : "Set the Minspeed."
-	input StartForward(void) : "Tell the driver to start driving."
-	input Stop(void) : "Tell the driver to stop driving."
-	input FollowPlayer(void) : "Set GoalEnt as !player."
-]
-
-
-@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_noah.mdl") = npc_noah : "Noah"
-[
-]
-
-@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_eloise.mdl") = npc_eloise : "Eloise"
-[
-]
-
-@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_larson.mdl") = npc_larson : "Larson"
-[
 ]
 
 @NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_sdk.mdl") = npc_anders : "Anders"
@@ -827,58 +749,6 @@
 
 	// Outputs
 	output OnRecharge(void) 		: "OnRecharge."
-]
-
-@PointClass base(Targetname, Angles) studio("models/editor/scriptedsequence.mdl") = hlss_olivia_target : "Target for Olivia to enable." 
-[
-	enabled(choices) : "Target enabled" : 0 : "Start target enabled?" =
-	[
-		0 : "No"
-		1 : "Yes"
-	]
-
-	glowentity(target_destination) : "Target entity name" : "" : "The entity Anders must be looking at to active the output."
-
-	description(string) : "Description to write." : "" : "Description to show in the location of this entity when the target is enabled. Use '/' for line break."
-
-	delay(float) : "Delay" : 120 : "Delay before reuse during the round."
-	difficulty(integer) : "Difficulty" : 50 : "What the difficulty must be atleast."
-
-	animation(string) : "Sequence" : "ButtonPush" : "Name of the sequence to do when doing this."
-	movement(choices) : "Movement" : 0 : "How to get to our position?" =
-	[
-		0 : "Walk"
-		1 : "Run"
-		2 : "Dance!"
-		3 : "Lead"
-	]
-
-	item_give(choices) : "Item to give" : 0 : "Instead of doing the animation, give this item to Anders." =
-	[
-		0 : "Nothing"
-		1 : "Healthkit"
-		2 : "SMG1"
-		3 : "Shotgun"
-		4 : "AR2"
-		5 : "RPG"
-		6 : "Emp Tool (only if revealed Traitor)"
-	]
-
-	//Inputs
-	input Enable(void) : "Enable Target"
-	input Disable(void) : "Disable Target"
-
-	//Outputs
-	output OnOliviaUsed(void) : "Fired when the player has succesfully used the target."
-]
-
-@PointClass base(Targetname) iconsprite("editor/ambient_generic.vmt") sphere() = hlss_metrocopradio : "Metrocop Radio."
-[
-	message(sound) : "Sound Name" : "" : "Name of the GameSound entry for the sound to play. Also supports direct .wav filenames."
-	
-	
-	input PlaySound(void) : "Starts the sound."
-	input StopSound(void) : "Stops the sound if it is playing."
 ]
 
 // BMS

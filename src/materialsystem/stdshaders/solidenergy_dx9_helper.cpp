@@ -18,8 +18,8 @@
 
 void InitParamsSolidEnergy( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, SolidEnergyVars_t &info )
 {
-	static ConVarRef gpu_level( "gpu_level" );
-	int nGPULevel = gpu_level.GetInt();
+	static ConVarRef mat_reducefillrate( "mat_reducefillrate" );
+	int nGPULevel = mat_reducefillrate.GetBool() ? 0 : 2;
 
 	// Set material parameter default values
 	SET_PARAM_FLOAT_IF_NOT_DEFINED( info.m_nDetail1Scale, kDefaultDetailScale );

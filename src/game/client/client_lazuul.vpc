@@ -70,6 +70,7 @@ $Project "Client (Lazuul)"
 			$File "peter\c_localannouncer.h"
 			$File "peter\RespawnWaveVGuiScreen.cpp"
 			$File "peter\c_func_combine_wall.cpp"
+			$File "$SRCDIR\game\shared\peter\weapon_emp.cpp"
 
 			$Folder "HUD"
 			{
@@ -137,6 +138,7 @@ $Project "Client (Lazuul)"
 			$File	"Human_Error\c_npc_aliencontroller.cpp"
 			$File	"Human_Error\c_npc_mantaray.cpp"
 			$File	"Human_Error\c_grenade_smoke.cpp"
+			$File	"Human_Error\vgui_hlss_combine_interface.cpp"
 		}
 	}
 }

@@ -6,6 +6,200 @@
 #include "items.h"
 #include "laz_player.h"
 #include "econ_item_system.h"
+#include "saverestore_utlvector.h"
+#include "filters.h"
+
+#pragma region NETWORK
+class CLazComputerNetwork : public CLazNetworkEntity< CLogicalEntity >, public ILazNetworkController
+{
+public:
+	DECLARE_CLASS(CLazComputerNetwork, CLazNetworkEntity< CLogicalEntity >);
+	DECLARE_DATADESC();
+
+	virtual Class_T Classify();
+	virtual void ChangeTeam(int iTeam);
+
+	void	AddEntityToNetwork(ILazNetworkEntity* pEnt);
+	void	RemoveEntityFromNetwork(ILazNetworkEntity* pEnt);
+
+	void	SetPowerEnabled(bool bPower, bool bNetwork = false, bool bForce = false);
+
+	void	InputToggle(inputdata_t& inputdata);
+	void	InputEnable(inputdata_t& inputdata);
+	void	InputDisable(inputdata_t& inputdata);
+
+	virtual void NetworkPowerOn(bool bForce) { SetPowerEnabled(true, true, bForce); }
+	virtual void NetworkPowerOff(bool bForce) { SetPowerEnabled(false, true, bForce); }
+	virtual LazNetworkRole_t GetNetworkRole() { return NETROLE_SUBNETWORK; }
+
+protected:
+	CUtlVector<EHANDLE> m_NetworkEnts;
+	bool	m_bIsDisabled;
+	bool	m_bHasOwnGenerator;
+	bool	m_bForcedOff;
+};
+
+BEGIN_DATADESC(CLazComputerNetwork)
+DEFINE_UTLVECTOR(m_NetworkEnts, FIELD_EHANDLE),
+DEFINE_KEYFIELD(m_bIsDisabled, FIELD_BOOLEAN, "StartDisabled"),
+DEFINE_FIELD(m_bForcedOff, FIELD_BOOLEAN),
+DEFINE_KEYFIELD(m_bHasOwnGenerator, FIELD_BOOLEAN, "HasGenerator"),
+
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
+
+DEFINE_LAZNETWORKENTITY_DATADESC(),
+END_DATADESC();
+
+LINK_ENTITY_TO_CLASS(laz_computer_network, CLazComputerNetwork);
+
+Class_T CLazComputerNetwork::Classify()
+{
+	return (Class_T)(CLASS_COMPUTER_NEUTRAL + GetTeamNumber());
+}
+
+void CLazComputerNetwork::ChangeTeam(int iTeam)
+{
+	BaseClass::ChangeTeam(iTeam);
+
+	for (int i = 0; i < m_NetworkEnts.Count(); i++)
+	{
+		ILazNetworkEntity* pNet = dynamic_cast<ILazNetworkEntity*> (m_NetworkEnts.Element(i).Get());
+		if (pNet && !pNet->HasFirewall())
+		{
+			m_NetworkEnts.Element(i)->ChangeTeam(iTeam);
+		}
+	}
+}
+void CLazComputerNetwork::AddEntityToNetwork(ILazNetworkEntity* pEnt)
+{
+	EHANDLE hEnt = pEnt->GetEntityPtr();
+	if (hEnt.Get() && m_NetworkEnts.Find(hEnt) == -1)
+	{
+		m_NetworkEnts.AddToTail(hEnt);
+	}
+}
+void CLazComputerNetwork::RemoveEntityFromNetwork(ILazNetworkEntity* pEnt)
+{
+	EHANDLE hEnt = pEnt->GetEntityPtr();
+	m_NetworkEnts.FindAndRemove(hEnt);
+}
+
+void CLazComputerNetwork::SetPowerEnabled(bool bPower, bool bNetwork, bool bForce)
+{
+	bool bIsOn = !m_bIsDisabled;
+	if (bIsOn == bPower)
+		return;
+
+	if (bNetwork && !bForce && m_bHasOwnGenerator)
+		return;
+
+	if (m_bForcedOff && !bForce)
+		return;
+
+	if (bPower)
+	{
+		for (int i = 0; i < m_NetworkEnts.Count(); i++)
+		{
+			ILazNetworkEntity* pNet = dynamic_cast<ILazNetworkEntity*> (m_NetworkEnts.Element(i).Get());
+			if (!pNet)
+				continue;
+
+			pNet->NetworkPowerOn(bForce);
+		}
+
+		m_bForcedOff = false;
+	}
+	else
+	{
+		for (int i = 0; i < m_NetworkEnts.Count(); i++)
+		{
+			ILazNetworkEntity* pNet = dynamic_cast<ILazNetworkEntity*> (m_NetworkEnts.Element(i).Get());
+			if (!pNet)
+				continue;
+
+			pNet->NetworkPowerOff(bForce);
+		}
+
+		m_bForcedOff = bForce;
+	}
+
+	m_bIsDisabled = !bPower;
+}
+
+void CLazComputerNetwork::InputToggle(inputdata_t& inputdata)
+{
+	if (m_bHasOwnGenerator)
+		SetPowerEnabled(m_bIsDisabled);
+}
+
+void CLazComputerNetwork::InputEnable(inputdata_t& inputdata)
+{
+	if (m_bHasOwnGenerator)
+		SetPowerEnabled(true);
+}
+
+void CLazComputerNetwork::InputDisable(inputdata_t& inputdata)
+{
+	if (m_bHasOwnGenerator)
+		SetPowerEnabled(false);
+}
+
+// ###################################################################
+//	> FilterName
+// ###################################################################
+class CFilterNetwork : public CLazNetworkEntity<CBaseFilter>
+{
+	DECLARE_CLASS(CFilterNetwork, CLazNetworkEntity<CBaseFilter>);
+	DECLARE_DATADESC();
+public:
+
+	bool PassesFilterImpl(CBaseEntity* pCaller, CBaseEntity* pEntity)
+	{
+		return pEntity && InSameTeam(pEntity);
+	}
+
+	void InputSetField(inputdata_t& inputdata)
+	{
+		if (m_hNetworkController.Get())
+		{
+			ILazNetworkController* pNetwork = dynamic_cast<ILazNetworkController*> (m_hNetworkController.Get());
+			pNetwork->RemoveEntityFromNetwork(this);
+			m_hNetworkController.Term();
+		}
+
+		inputdata.value.Convert(FIELD_STRING);
+		m_strControllerName = inputdata.value.StringID();
+
+		CBaseEntity* pEnt = gEntList.FindEntityByName(nullptr, m_strControllerName, this);
+		if (!pEnt)
+		{
+			Warning("%s was unable to find network controller named %s!\n", GetDebugName(), STRING(m_strControllerName));
+		}
+		else
+		{
+			ILazNetworkController* pNetwork = dynamic_cast<ILazNetworkController*> (pEnt);
+			if (pNetwork)
+			{
+				m_hNetworkController.Set(pEnt);
+				pNetwork->AddEntityToNetwork(this);
+				ChangeTeam(pEnt->GetTeamNumber());
+			}
+			else
+			{
+				Warning("%s found %s, but it was not a network controller!\n", GetDebugName(), STRING(m_strControllerName));
+			}
+		}
+	}
+};
+
+LINK_ENTITY_TO_CLASS(filter_computer_network, CFilterNetwork);
+
+BEGIN_DATADESC(CFilterNetwork)
+DEFINE_LAZNETWORKENTITY_DATADESC(),
+END_DATADESC()
+#pragma endregion
 
 #pragma region EQUIP
 LINK_ENTITY_TO_CLASS(info_player_equip, CLazPlayerEquip);

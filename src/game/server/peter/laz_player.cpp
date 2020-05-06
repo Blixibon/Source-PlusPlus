@@ -806,16 +806,6 @@ void CLaz_Player::ChangeTeam(int iTeam)
 	if (iTeam == iOldTeam)
 		return;
 
-	if (g_pGameRules->IsMultiplayer() == true)
-	{
-		// In co-op mode, you can be a spectator or a protaganist.
-		if (LazuulRules()->GetGameMode() == LAZ_GM_COOP && iTeam != TEAM_SPECTATOR)
-		{
-			if (GetTeamNumber() != iTeam)
-				iTeam = LazuulRules()->GetProtaganistTeam();
-		}
-	}
-
 	BaseClass::ChangeTeam(iTeam);
 
 	//m_flNextTeamChangeTime = gpGlobals->curtime + TEAM_CHANGE_INTERVAL;
@@ -841,9 +831,20 @@ void CLaz_Player::ChangeTeam(int iTeam)
 
 		if (iTeam >= FIRST_GAME_TEAM && m_iPlayerState == STATE_WELCOME)
 			State_Transition(STATE_OBSERVER_MODE);
-	}	
+	}
 
 	SetPlayerModel();
+}
+
+void CLaz_Player::ForceChangeTeam(int iTeam)
+{
+	int iOldTeam = GetTeamNumber();
+
+	// if this is our current team, just abort
+	if (iTeam == iOldTeam)
+		return;
+
+	BaseClass::ChangeTeam(iTeam);
 }
 
 //-----------------------------------------------------------------------------
@@ -851,7 +852,7 @@ void CLaz_Player::ChangeTeam(int iTeam)
 //-----------------------------------------------------------------------------
 int CLaz_Player::GetAutoTeam(void)
 {
-	if (!LazuulRules()->IsDeathmatch())
+	if (LazuulRules()->GetNumTeams() < 2)
 		return LazuulRules()->GetProtaganistTeam();
 
 	int iTeam = TEAM_SPECTATOR;
@@ -898,7 +899,7 @@ bool CLaz_Player::HandleCommand_JoinTeam(int team)
 	if (team == TF_TEAM_AUTOASSIGN)
 		team = GetAutoTeam();
 
-	if (!GetGlobalTeam(team) || team == 0)
+	if (!GetGlobalTeam(team) || team == 0 || !LazuulRules()->Player_CanDoTeamChange(GetTeamNumber(), team))
 	{
 		Warning("HandleCommand_JoinTeam( %d ) - invalid team index.\n", team);
 		return false;

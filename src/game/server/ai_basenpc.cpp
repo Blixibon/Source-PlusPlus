@@ -600,6 +600,12 @@ void CAI_BaseNPC::SelectDeathPose( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::Event_Killed( const CTakeDamageInfo &info )
 {
+	//TERO: first bit by me
+	if (info.GetAttacker() && info.GetAttacker()->IsPlayer() && !IsPlayerAlly(ToBasePlayer(info.GetAttacker())))
+	{
+		m_bKilledByPlayer = true;
+	}
+
 	if (IsCurSchedule(SCHED_NPC_FREEZE))
 	{
 		// We're frozen; don't die.
@@ -3655,6 +3661,30 @@ void CAI_BaseNPC::UpdateSleepState( bool bInPVS )
 					AddSleepFlags(AI_SLEEP_FLAG_AUTO_PVS);
 					RemoveSleepFlags(AI_SLEEP_FLAG_AUTO_PVS_AFTER_PVS);
 				}
+			}
+
+			//TERO: added by me
+			if (!HasCondition(COND_IN_PVS) && GetEnemy() == NULL) //!bInPVS && 
+			{
+
+				if (m_flRemoveTime != 0 && m_flRemoveTime < gpGlobals->curtime)
+				{
+					DevWarning("Removing NPC %s because being TOO FUCKING OLD!\n", GetClassname());
+
+					CBaseEntity* pOwner = GetOwnerEntity();
+					if (pOwner)
+					{
+						pOwner->DeathNotice(this);
+						SetOwnerEntity(NULL);
+					}
+
+					UTIL_Remove(this);
+
+				}
+			}
+			else if (m_flRemoveTime != 0)
+			{
+				m_flRemoveTime = gpGlobals->curtime + RemoveTimeDelay();
 			}
 		}
 	}
@@ -11392,6 +11422,10 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_THINKFUNC( CorpseFallThink ),
 	DEFINE_THINKFUNC( NPCInitThink ),
 
+	//TERO:
+	DEFINE_FIELD(m_flRemoveTime, FIELD_TIME),
+	DEFINE_FIELD(m_bKilledByPlayer, FIELD_BOOLEAN),
+
 END_DATADESC()
 
 BEGIN_SIMPLE_DATADESC( AIScheduleState_t )
@@ -12055,6 +12089,10 @@ CAI_BaseNPC::CAI_BaseNPC(void)
 	m_spawnEquipmentItem = -1;
 
 	SetCollisionGroup( COLLISION_GROUP_NPC );
+
+	//TERO: added
+	m_flRemoveTime = 0;
+	m_bKilledByPlayer = false;
 }
 
 //-----------------------------------------------------------------------------

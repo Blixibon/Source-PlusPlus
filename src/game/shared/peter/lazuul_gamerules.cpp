@@ -210,6 +210,7 @@ CEconItemInitializerSystem g_EconInitializer;
 #define MOD_HL2BETA 9
 #define MOD_HLSS 10
 #define MOD_EZ1 11
+#define MOD_BMS 7
 #define GAME_HL1 1
 
 void CHud::MsgFunc_ResetHUD(bf_read& msg)
@@ -252,25 +253,6 @@ void CHud::MsgFunc_ResetHUD(bf_read& msg)
 	s_iLastMod = LazuulRules()->GetGameForMap();
 }
 #endif
-
-#ifndef CLIENT_DLL
-static bool s_bInModeChangedScope = false;
-void LazGamemodeChangedCallback(IConVar* pConVar, const char* pOldValue, float flOldValue)
-{
-	
-	if (!s_bInModeChangedScope)
-	{
-		s_bInModeChangedScope = true;
-		ConVarRef var(pConVar);
-		if (g_pGameRules)
-			LazuulRules()->SetGameMode(var.GetInt());
-		s_bInModeChangedScope = false;
-	}
-}
-
-ConVar gamemode("laz_gamemode", "0", FCVAR_NOTIFY, "Multiplayer gamemode.", true, 0, true, LAZ_GM_COUNT - 1, LazGamemodeChangedCallback);
-#endif // !CLIENT_DLL
-
 
 REGISTER_GAMERULES_CLASS(CLazuul);
 
@@ -392,10 +374,75 @@ CLazuul::~CLazuul()
 
 int CLazuul::GetProtaganistTeam()
 {
-	if (m_iMapModType == MOD_HLSS || m_iMapModType == MOD_EZ1)
-		return TEAM_COMBINE;
+	switch (GetGameMode())
+	{
+	case LAZ_GM_SINGLEPLAYER:
+		if (m_iMapModType == MOD_HLSS || m_iMapModType == MOD_EZ1)
+			return TEAM_COMBINE;
+		break;
+	case LAZ_GM_BASE_DEFENSE:
+		return TF_TEAM_BLUE;
+		break;
+	default:
+		break;
+	}
 
 	return TEAM_REBELS;
+}
+
+int CLazuul::GetAntagonistTeam()
+{
+	switch (GetGameMode())
+	{
+	case LAZ_GM_SINGLEPLAYER:
+		if (m_iMapModType == MOD_HLSS || m_iMapModType == MOD_EZ1)
+			return TEAM_REBELS;
+		else if (m_iMapGameType == MOD_BMS)
+		{
+			return TEAM_MILITARY;
+		}
+		break;
+	case LAZ_GM_BASE_DEFENSE:
+		return TEAM_REBELS;
+		break;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+int CLazuul::GetTeamInRole(int iRole)
+{
+	switch (GetGameMode())
+	{
+	case LAZ_GM_BASE_DEFENSE:
+		if (iRole == TEAM_ROLE_DEFENDERS)
+		{
+			return TEAM_COMBINE;
+		}
+		else
+		{
+			return TEAM_REBELS;
+		}
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+int CLazuul::GetNumTeams()
+{
+	switch (GetGameMode())
+	{
+	case LAZ_GM_CAMPAIGN:
+		return 1;
+		break;
+	default:
+		return 2;
+		break;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -740,20 +787,6 @@ void CLazuul::SetGameMode(int iMode)
 	}*/
 
 	m_nGameMode.Set(iGameMode);
-	if (iGameMode >= 0)
-		gamemode.SetValue(iGameMode);
-}
-
-void CLazuul::SetAllowedModes(bool bModes[])
-{
-	for (int i = 0; i < LAZ_GM_COUNT; i++)
-	{
-		m_bitAllowedModes.Set(i, bModes[i]);
-	}
-
-	s_bInModeChangedScope = true;
-	SetGameMode(gamemode.GetInt());
-	s_bInModeChangedScope = false;
 }
 
 float CLazuul::FlPlayerFallDamage(CBasePlayer* pPlayer)
@@ -866,6 +899,41 @@ void CLazuul::GetTaggedConVarList(KeyValues * pCvarTagList)
 	BaseClass::GetTaggedConVarList(pCvarTagList);
 }
 
+bool CLazuul::Player_CanDoTeamChange(int iOldTeam, int iNewTeam)
+{
+	int iGameMode = GetGameMode();
+	if (iGameMode == LAZ_GM_DEATHMATCH)
+	{
+		return true;
+	}
+	else if (iGameMode == LAZ_GM_BASE_DEFENSE)
+	{
+		bool bTraitorMode = false;
+		if (bTraitorMode)
+		{
+			if (iOldTeam == GetTeamInRole(TEAM_ROLE_ATTACKERS))
+			{
+				return false;
+			}
+			else if (iNewTeam != GetTeamInRole(TEAM_ROLE_DEFENDERS) && iNewTeam != TEAM_SPECTATOR)
+			{
+				return false;
+			}
+
+			return true;
+		}
+		else
+		{
+			if (iNewTeam != GetTeamInRole(TEAM_ROLE_DEFENDERS) && iNewTeam != GetTeamInRole(TEAM_ROLE_ATTACKERS) && iNewTeam != TEAM_SPECTATOR)
+				return false;
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 //-----------------------------------------------------------------------------
 	// Purpose: Returns how much damage the given ammo type should do to the victim
 	//			when fired by the attacker.
@@ -962,6 +1030,29 @@ float CLazuul::AdjustPlayerDamageInflicted(float damage)
 	default:
 		return damage;
 		break;
+	}
+}
+
+CBaseEntity* CLazuul::GetPlayerSpawnSpot(CBasePlayer* pPlayer)
+{
+	return BaseClass::GetPlayerSpawnSpot(pPlayer);
+}
+
+void CLazuul::RespawnTeam(int iTeam)
+{
+	if (iTeam < 0 || iTeam >= TF_TEAM_COUNT)
+	{
+		return;
+	}
+
+	const TeamHandlerList_t& list = m_TeamSpawnHandlers[iTeam];
+	if (list.Count() > 0)
+	{
+
+	}
+	else
+	{
+		RespawnPlayers(false, true, iTeam);
 	}
 }
 
@@ -3911,12 +4002,44 @@ const char* CLazuul::GetGameDescription(void)
 	case LAZ_GM_DEATHMATCH:
 		return "HL2 Lazuul: Team Deathmatch";
 		break;
-	case LAZ_GM_COOP:
+	case LAZ_GM_CAMPAIGN:
 		return "HL2 Lazuul: Co-op";
 		break;
-	case LAZ_GM_VERSUS:
-		return "HL2 Lazuul: Versus";
+	case LAZ_GM_BASE_DEFENSE:
+		return "HL2 Lazuul: Base Defense";
 		break;
+	}
+}
+
+void CLazuul::AddRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler, int iTeam)
+{
+	if (iTeam < 0 || iTeam >= TF_TEAM_COUNT || !pHandler)
+		return;
+
+	m_TeamSpawnHandlers[iTeam].AddToTail(pHandler);
+}
+
+void CLazuul::RemoveRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler)
+{
+	if (!pHandler)
+		return;
+
+	for (int i = 0; i < TF_TEAM_COUNT; i++)
+	{
+		m_TeamSpawnHandlers[i].FindAndRemove(pHandler);
+	}
+}
+
+void CLazuul::ClientCommandKeyValues(edict_t* pEntity, KeyValues* pKeyValues)
+{
+	if (FStrEq("EntityCommand", pKeyValues->GetName()))
+	{
+		EHANDLE hEntity;
+		hEntity.FromIndex(pKeyValues->GetInt("target", INVALID_EHANDLE_INDEX));
+		if (hEntity.IsValid())
+		{
+			hEntity->HandleEntityCommand(pKeyValues->GetFirstTrueSubKey());
+		}
 	}
 }
 
@@ -3982,10 +4105,14 @@ void CLazuul::LevelInitPreEntity()
 		CBaseEntity::sm_bAccurateTriggerBboxChecks = true;
 	}
 
-	SetGameMode(gamemode.GetInt());
-
 	BaseClass::LevelInitPreEntity();
 }
+
+const char* g_pszGamemodeControllerClassNames[LAZ_GM_COUNT] = {
+	"laz_logic_deathmatch",
+	"laz_logic_campaign",
+	"hlss_director",
+};
 
 void CLazuul::LevelInitPostEntity()
 {
@@ -3994,6 +4121,20 @@ void CLazuul::LevelInitPostEntity()
 	m_iMapGameType = g_pGameTypeSystem->GetCurrentBaseGameType();
 	m_iMapModType = g_pGameTypeSystem->GetCurrentModGameType();
 	m_iszGameConfig = AllocPooledString(g_pGameTypeSystem->GetCurrentConfigName());
+
+	for (int i = 0; i < LAZ_GM_COUNT; i++)
+	{
+		CBaseEntity* pEntity = gEntList.FindEntityByClassname(NULL, g_pszGamemodeControllerClassNames[i]);
+		if (pEntity)
+		{
+			IGameModeControllerEntity* pController = dynamic_cast<IGameModeControllerEntity*> (pEntity);
+			if (pController && pController->ShouldActivateMode(i))
+			{
+				SetGameMode(i);
+				break;
+			}
+		}
+	}
 }
 
 void CLazuul::InitCustomResponseRulesDicts()
@@ -4902,20 +5043,7 @@ void CLazuul::CleanUpMap(void)
 
 void CLazuul::GetMapEditVariants(CUtlStringList& vecList)
 {
-	switch (GetGameMode())
-	{
-	default:
-		break;
-	case LAZ_GM_DEATHMATCH:
-		vecList.CopyAndAddToTail("dm");
-		break;
-	case LAZ_GM_COOP:
-		vecList.CopyAndAddToTail("coop");
-		break;
-	case LAZ_GM_VERSUS:
-		vecList.CopyAndAddToTail("versus");
-		break;
-	}
+	
 }
 
 //-----------------------------------------------------------------------------

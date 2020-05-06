@@ -416,7 +416,7 @@ public:
 
 	virtual void			SetLightingOriginRelative( CBaseEntity *pLightingOrigin );
 
-protected:
+public:
 	Relationship_t			*FindEntityRelationship( CBaseEntity *pTarget );
 	Relationship_t*			FindClassRelationship(Class_T nClass);
 
@@ -454,6 +454,10 @@ public:
 	virtual void		AddEntityRelationship( CBaseEntity *pEntity, Disposition_t nDisposition, int nPriority );
 	virtual bool		RemoveEntityRelationship( CBaseEntity *pEntity );
 	virtual void		AddClassRelationship( Class_T nClass, Disposition_t nDisposition, int nPriority );
+
+	//TERO: this one added by me
+	static Disposition_t		GetDefaultRelationshipDispositionBetweenClasses(Class_T nClassTarget1, Class_T nClassTarget2);
+
 
 	virtual void		ChangeTeam( int iTeamNum );
 

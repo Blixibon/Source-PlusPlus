@@ -6,6 +6,99 @@
 #include "team_spawnpoint.h"
 #include "GameEventListener.h"
 
+enum LazNetworkRole_t
+{
+	NETROLE_GENERIC = 0,
+	NETROLE_SHIELDS,
+	NETROLE_TURRETS,
+	NETROLE_SUBNETWORK,
+
+	NETROLE_COUNT
+};
+
+class ILazNetworkEntity
+{
+public:
+	virtual void NetworkPowerOn(bool bForce) = 0;
+	virtual void NetworkPowerOff(bool bForce) = 0;
+	virtual bool HasFirewall() = 0;
+	virtual LazNetworkRole_t GetNetworkRole() = 0;
+
+	virtual CBaseEntity *GetEntityPtr() = 0;
+};
+
+class ILazNetworkController
+{
+public:
+	virtual void	AddEntityToNetwork(ILazNetworkEntity* pEnt) = 0;
+	virtual void	RemoveEntityFromNetwork(ILazNetworkEntity* pEnt) = 0;
+};
+
+#define	DEFINE_LAZNETWORKENTITY_DATADESC() \
+	DEFINE_FIELD(m_hNetworkController, FIELD_EHANDLE),	\
+	DEFINE_KEYFIELD(m_strControllerName, FIELD_STRING, "NetworkController")
+
+template <class BASE_ENTITY>
+class CLazNetworkEntity : public BASE_ENTITY, public ILazNetworkEntity
+{
+public:
+	DECLARE_CLASS(CLazNetworkEntity, BASE_ENTITY);
+
+	virtual void Activate();
+	virtual void UpdateOnRemove();
+
+	virtual void NetworkPowerOn(bool bForce) { return; }
+	virtual void NetworkPowerOff(bool bForce) { return; }
+	virtual LazNetworkRole_t GetNetworkRole() { return NETROLE_GENERIC; }
+	virtual bool HasFirewall() { return false; }
+
+	virtual CBaseEntity* GetEntityPtr() { return this; }
+protected:
+	EHANDLE m_hNetworkController;
+	string_t	m_strControllerName;
+};
+
+template<class BASE_ENTITY>
+inline void CLazNetworkEntity<BASE_ENTITY>::Activate()
+{
+	if (m_strControllerName != NULL_STRING && !m_hNetworkController.Get())
+	{
+		CBaseEntity* pEnt = gEntList.FindEntityByName(nullptr, m_strControllerName, this);
+		if (!pEnt)
+		{
+			Warning("%s was unable to find network controller named %s!\n", GetDebugName(), STRING(m_strControllerName));
+		}
+		else
+		{
+			ILazNetworkController* pNetwork = dynamic_cast<ILazNetworkController*> (pEnt);
+			if (pNetwork)
+			{
+				m_hNetworkController.Set(pEnt);
+				pNetwork->AddEntityToNetwork(this);
+			}
+			else
+			{
+				Warning("%s found %s, but it was not a network controller!\n", GetDebugName(), STRING(m_strControllerName));
+			}
+		}
+	}
+
+	BaseClass::Activate();
+}
+
+template<class BASE_ENTITY>
+inline void CLazNetworkEntity<BASE_ENTITY>::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	if (m_hNetworkController.Get())
+	{
+		ILazNetworkController* pNetwork = dynamic_cast<ILazNetworkController*> (m_hNetworkController.Get());
+		pNetwork->RemoveEntityFromNetwork(this);
+		m_hNetworkController.Term();
+	}
+}
+
 class CLazPlayerEquip : public CServerOnlyPointEntity
 {
 	DECLARE_CLASS(CLazPlayerEquip, CServerOnlyPointEntity)

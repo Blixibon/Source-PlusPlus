@@ -20,6 +20,10 @@
 #include "basehlcombatweapon_shared.h"
 #include "iservervehicle.h"
 #include "globalstate.h"
+#ifdef HL2_LAZUL
+#include "peter/laz_mapents.h"
+#endif // HL2_LAZUL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -88,9 +92,15 @@ enum eyeState_t
 // Ceiling Turret
 //
 
-class CNPC_CeilingTurret : public CAI_BaseNPC
+#ifdef HL2_LAZUL
+typedef CLazNetworkEntity< CAI_BaseNPC > CNPC_CeilingTurretBase;
+#else
+typedef CAI_BaseNPC CNPC_CeilingTurretBase;
+#endif
+
+class CNPC_CeilingTurret : public CNPC_CeilingTurretBase
 {
-	DECLARE_CLASS( CNPC_CeilingTurret, CAI_BaseNPC );
+	DECLARE_CLASS( CNPC_CeilingTurret, CNPC_CeilingTurretBase);
 public:
 	
 	CNPC_CeilingTurret( void );
@@ -112,6 +122,10 @@ public:
 	void	InputEnable( inputdata_t &inputdata );
 	void	InputDisable( inputdata_t &inputdata );
 
+	virtual void NetworkPowerOn(bool bForce) { Enable(); }
+	virtual void NetworkPowerOff(bool bForce) { Disable(); }
+	virtual LazNetworkRole_t GetNetworkRole() { return NETROLE_TURRETS; }
+
 	void	SetLastSightTime();
 	
 	float	MaxYawSpeed( void );
@@ -124,6 +138,14 @@ public:
 
 	Class_T	Classify( void ) 
 	{
+#ifdef HL2_LAZUL
+		// Defer to network controller
+		if (m_hNetworkController.Get())
+		{
+			return m_hNetworkController->Classify();
+		}
+		else
+#endif // HL2_LAZUL
 		if (!m_bEnabled)
 		{
 			// NPC's should disregard me if I'm closed.
@@ -225,6 +247,8 @@ BEGIN_DATADESC( CNPC_CeilingTurret )
 	DEFINE_OUTPUT( m_OnDeploy, "OnDeploy" ),
 	DEFINE_OUTPUT( m_OnRetire, "OnRetire" ),
 	DEFINE_OUTPUT( m_OnTipped, "OnTipped" ),
+
+	DEFINE_LAZNETWORKENTITY_DATADESC(),
 
 END_DATADESC()
 

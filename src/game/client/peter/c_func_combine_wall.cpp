@@ -201,6 +201,12 @@ Vector C_CombineShieldWall::GetShieldColor()
 	case TEAM_REBELS:
 		return Vector(.973f, .063f, .063f);
 		break;
+	case TF_TEAM_GREEN:
+		return Vector(.063f, .973f, .063f);
+		break;
+	case TF_TEAM_YELLOW:
+		return Vector(1.f, .749f, .161f);
+		break;
 	default:
 		return Vector(0.5f);
 		break;

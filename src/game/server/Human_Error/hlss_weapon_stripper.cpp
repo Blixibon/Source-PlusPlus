@@ -57,7 +57,10 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 void CHLSSWeaponStripper::TakeAmmo( inputdata_t &inputdata )
 {
-	CBasePlayer *pPlayer  = AI_GetSinglePlayer();
+	CBasePlayer* pPlayer = ToBasePlayer(inputdata.pActivator);
+	if (!pPlayer)
+		pPlayer = AI_GetSinglePlayer();
+
 	if (pPlayer) 
 	{
 		string_t iszAmmoType = inputdata.value.StringID();

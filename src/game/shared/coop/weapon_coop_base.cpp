@@ -696,6 +696,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 		iWeaponRole = TF_WPN_TYPE_GRENADE;
 		break;
 	case HLSS_WEAPON_ID_MEDKIT:
+	case HLSS_WEAPON_ID_EMPTOOL:
 		iWeaponRole = TF_WPN_TYPE_PDA;
 		break;
 	case HLSS_WEAPON_ID_CROWBAR:
@@ -744,6 +745,7 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_SMG1:
 	case HLSS_WEAPON_ID_SMG2:
 	case HLSS_WEAPON_ID_LEADPIPE:
+	case HLSS_WEAPON_ID_EMPTOOL:
 	default:
 		iWeaponVariant = 0;
 		break;

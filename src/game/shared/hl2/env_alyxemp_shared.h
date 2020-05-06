@@ -37,14 +37,14 @@ public:
 	void	Stop( float flDuration );
 	void	SetTargetEntity( CBaseEntity *pTarget );
 
-	void	ActivateAutomatic( CBaseEntity *pAlyx, CBaseEntity *pTarget );
+	virtual void	ActivateAutomatic( CBaseEntity *pAlyx, CBaseEntity *pTarget );
 	void	AutomaticThink();
 
 	void	Spawn( void );
 	void	Precache( void );
 	void	Activate( void );
 
-private:
+protected:
 
 	void	SetTargetEntity( const char *szEntityName );
 	CHandle<CBeam>			m_hBeam;

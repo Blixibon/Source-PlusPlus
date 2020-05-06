@@ -73,7 +73,7 @@ ConVar func_break_max_pieces( "func_break_max_pieces", "15", FCVAR_ARCHIVE | FCV
 
 ConVar cl_fasttempentcollision( "cl_fasttempentcollision", "5" );
 
-#if !defined( HL1_CLIENT_DLL )		// HL1 implements a derivative of CTempEnts
+#if !defined( HL1_CLIENT_DLL )	// HL1 implements a derivative of CTempEnts
 // Temp entity interface
 static CTempEnts g_TempEnts;
 // Expose to rest of the client .dll

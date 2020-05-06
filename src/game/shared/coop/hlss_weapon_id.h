@@ -48,6 +48,7 @@ enum HLSS_WeaponId {
 
 	// PDA
 	HLSS_WEAPON_ID_MEDKIT, // 0
+	HLSS_WEAPON_ID_EMPTOOL, // 0
 
 	// Secondary
 	HLSS_WEAPON_ID_PISTOL, // 0

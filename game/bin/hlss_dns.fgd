@@ -1,0 +1,914 @@
+@include "halflife1_laz.fgd"
+
+@BaseClass = ComputerNetwork
+[
+	NetworkController(target_destination) : "Network Controller" : : "The name of a laz_computer_network entity that will control this entity."
+]
+
+@PointClass base(PlayerClass, Angles) studio("models/editor/playerstart.mdl") = info_player_rebel :
+	"This entity indicates the position and facing direction at which the player will spawn during a deathmatch map. Any number of "+
+	"info_player_deathmatch entities may be placed in a map."
+[
+	spawnflags(flags) =
+	[
+		1: "During the first minute of the round, spawn always here." : 0
+	]
+]
+
+@NPCClass base(TalkNPC,Parentname) studio() = npc_eli : "Eli Vance"
+[
+	model(studio) : "World model" : "models/eli.mdl"
+
+	output StartedFollowingMetrocop(void) : "Fired when Eli starts following a non-Traitor / non-Alyx"
+	output StoppedFollowingMetrocop(void) : "Fired when Eli starts following a non-Traitor / non-Alyx"
+]
+
+@NPCClass base(BaseNPC, TalkNPC) studio("models/controller.mdl") = npc_aliencontroller : "Alien Controller"
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Can use Telekinesis (Currently Obsolete)" : 1
+	]
+
+
+	landed(choices) : "Start Flying" : 0 : "Should the Alien Controller start flying." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	canland(choices) : "Can Land / Lift off" : 1 : "Can the Alien Controller Land / Lift off." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	preferred_height(float) : "Preferred Height" : 256 : "The height we want to fly at."
+
+	output OnLand(void) 	: "When Alien Controller lands on ground to walk."
+	output OnLiftOff(void)	: "When Alien Controller lifts off from groun to fly."
+
+	input EnableLanding(void)	: "Enable Landing / Lifting off."
+	input DisableLanding(void) 	: "Disable Landing / Lifting off."
+
+	input EnableTelekinesis(void)	: "Enable Telekinesis."
+	input DisableTelekinesis(void) 	: "Disable Telekinesis."
+	input StopScriptingAndGesture(void) : "Stop scripting and remove all gestures."
+
+	output OnFoundEnemy(void) : "Fired when a non-player enemy is spotted within the inner radius."
+]
+
+//-------------------------------------------------------------------------
+//
+// Weapons
+//
+//-------------------------------------------------------------------------
+
+@PointClass base(Targetname, Angles) studio( "models/combine_turrets/floor_turret.mdl" ) = npc_turret_floor : "Combine Floor Turret"
+[
+	spawnflags(Flags) = 
+	[
+		32 : "Autostart" : 0
+		64 : "Start Inactive" : 0
+		128 : "Fast Retire" : 0
+		256 : "Out of Ammo" : 0
+		512 : "Citizen modified (Friendly)" : 0
+		8192 : "Breakable turret with health of 120" : 0
+		16384 : "Can be carried by player in inventory" : 0
+	]
+
+	SkinNumber(integer) : "Skin Number" : 0 : "Which skin to use for this turret. Set to 0 to select randomly."
+
+	// Inputs
+	input Toggle(void) : "Toggle - If open, close. If closed, open."
+	input Enable(void) : "Enable the turret."
+	input Disable(void) : "Disable the turret."
+	input DepleteAmmo(void) : "Depletes all the ammo from a turret, causing it to dry-fire."
+	input RestoreAmmo(void) : "Restores ammo to a turret, allowing it to fire live rounds again."
+	input SelfDestruct(void) : "Causes the turret to warn and then explode."
+	input MakeBreakable(void) : "Makes the turret breakalbe and it self destruct when health zero."
+
+	// Outputs
+	output OnDeploy(void) : "Turret is becoming active and dangerous."
+	output OnRetire(void) : "Turret is becoming inactive and harmless."
+	output OnTipped(void) : "Turret has been tipped over and is inactive."
+	output OnPhysGunPickup(void) : "Picked up with physgun"
+	output OnPhysGunDrop(void) : "Released by physgun"
+]
+
+@PointClass base(BaseNPC, Parentname, AlyxInteractable) studio( "models/combine_turrets/ground_turret.mdl" ) = npc_turret_ground : "Combine ground turret"
+[
+	input Enable(void) : "Turn turret on."
+	input Disable(void) : "Turn turret off."
+	input SetHackedOn(void) : "Make hostile for Combine players."
+	input SetHackedOff(void) : "Make friendly for Combine players."
+
+	output OnAreaClear(void) : "Fires when the turret can't find any more enemies (7 second delay)"
+]
+
+@PointClass base(Targetname) = hlss_weaponstripper : "Remove given ammo type or weapons."
+[
+	input TakeAmmo(string) : "Remove Ammo 1 of given type."
+	input TakeAllAmmo(string) : "Remove all Ammo of given type."
+	input StripWeapons(void) : "Remove all weapons except the ammo supplier and the healthkit."
+
+	output AmmoRemoved(void) : "If ammo was removed."
+	output NoAmmo(void) : "If no ammo were removed."
+]
+
+@SolidClass base(hlss_weaponstripper) = hlss_weaponstripper_brush : "Remove given ammo type or weapons."
+[
+]
+
+@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_noah.mdl") = npc_noah : "Noah"
+[
+]
+
+@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_eloise.mdl") = npc_eloise : "Eloise"
+[
+]
+
+@NPCClass base(npc_metropolice) studio("models/HLSS_Characters/police_larson.mdl") = npc_larson : "Larson"
+[
+]
+
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/hlss_recharger.vmt") sphere(max_distance) = hlss_recharge_point : "Recharge point for recharge behavior." 
+[
+	spawnflags(flags) =
+	[
+		1 : "Start active." : 0
+		2 : "Don't speak TLK_CP_RECHARGING." : 0
+		4 : "Need AR2 AltFire ammo to use." : 0
+	]
+
+	max_distance(float) : "Max Distance to look for NPCs" : "4096"
+	sequence(string) : "Sequence name" : "buttonfront" : "The name of the sequence to play when doing recharging."
+	actor(target_name_or_class) : "Actor" : "" : "Targetname or classname of the NPC to run the behavior. If you choose Unique Metrocops as the search type, you can leave this empty."
+	SearchType(choices) : "Search Type" : 0 : "How to search for the NPC." = 
+	[
+		0 : "Entity Name"
+		1 : "Classname"
+		2 : "Unique Metrocops"
+	]
+	ammo_crate(target_destination) : "Ammo Crate" : "" : "Targetname of the Ammo Crate where NPCs should run to get AR2 ammo if the SF is set." 
+
+	input Activate(void)		: "Activate."
+	input Deactivate(void)		: "Deactivate."
+
+	// Outputs
+	output OnRecharge(void) 		: "OnRecharge."
+]
+
+@PointClass base(Targetname) sphere(maxdist) = hlss_glow_entity : "Show L4D style glow on an entity." 
+[
+	spawnflags(flags) =
+	[
+		1 : "Show only for players who haven't revealed to be traitors" : 0
+		2 : "Show only for traitors" : 0
+	]
+
+	glowenabled(choices) : "Glow enabled" : 0 : "Start glow enabled?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	maxdist(float) : "Max Distance" : -1 : "Maximum distance this glow is visible. Negative values means visible in distance."
+
+	glowentity(target_destination) : "Glow entity name" : "" : "The entity that is going to have the glow effect. Must be set on spawn or this entity will be removed on spawn."
+
+	rendercolor(color255) : "Glow Color (R G B)" : "0 220 255" : "The glow color."
+
+	description(string) : "Description to write." : "" : "Description to show in the location of this entity when the glow is enabled. Use '/' for line break."
+
+	icon(choices) : "Icon" : 0 : "Show an icon instead of the text?" =
+	[
+		0 : "None"
+		1 : "Stalker"
+		2 : "Hack"
+		3 : "Recharge generator"
+		4 : "AR2 AltFire"
+		5 : "Grenades"
+		6 : "Lambda"
+		7 : "Thumper"
+		8 : "Headcrab canister"
+		9 : "Health"
+		10 : "Machine Gun"
+		11 : "Machine Gun (with the Main Frame objective)"
+		12 : "Dropship (Eli capture point)"
+	]
+
+	//Inputs
+	input Enable(void) : "Enable Glow"
+	input Disable(void) : "Disable Glow"
+
+	input Color(color255) : "Set the sprite's color (R G B)."
+]
+
+@PointClass base(Targetname, Angles) studio("models/editor/scriptedsequence.mdl") = hlss_olivia_target : "Target for Olivia to enable." 
+[
+	enabled(choices) : "Target enabled" : 0 : "Start target enabled?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	glowentity(target_destination) : "Target entity name" : "" : "The entity Anders must be looking at to active the output."
+
+	description(string) : "Description to write." : "" : "Description to show in the location of this entity when the target is enabled. Use '/' for line break."
+
+	delay(float) : "Delay" : 120 : "Delay before reuse during the round."
+	difficulty(integer) : "Difficulty" : 50 : "What the difficulty must be atleast."
+
+	animation(string) : "Sequence" : "ButtonPush" : "Name of the sequence to do when doing this."
+	movement(choices) : "Movement" : 0 : "How to get to our position?" =
+	[
+		0 : "Walk"
+		1 : "Run"
+		2 : "Dance!"
+		3 : "Lead"
+	]
+
+	item_give(choices) : "Item to give" : 0 : "Instead of doing the animation, give this item to Anders." =
+	[
+		0 : "Nothing"
+		1 : "Healthkit"
+		2 : "SMG1"
+		3 : "Shotgun"
+		4 : "AR2"
+		5 : "RPG"
+		6 : "Emp Tool (only if revealed Traitor)"
+	]
+
+	//Inputs
+	input Enable(void) : "Enable Target"
+	input Disable(void) : "Disable Target"
+
+	//Outputs
+	output OnOliviaUsed(void) : "Fired when the player has succesfully used the target."
+]
+
+@PointClass base(Targetname, Global) iconsprite("editor/hlss_director.vmt") line(255 0 0, targetname, FirstPath_Name) = hlss_director : 
+	"Entity that measures how well the player is doing."
+[
+	spawnflags(flags) =
+	[
+		1 : "Don't allow Alyx Mode" : 0
+	]
+
+	StartEnabled(choices) : "Director enabled" : 1 : "Should Director start enabled." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	director_mode(choices) : "Director Mode" : 0 : "Director Mode." =
+	[
+		0 : "Normal Co-op"
+		1 : "Traitor Mode"
+		2 : "Traitor Mode with Antlions"
+		3 : "Alyx Mode"
+	]
+
+	doug_enabled(choices) : "Boss NPCs" : 1 : "Can Alex and or Doug be spawned by the director?" =
+	[
+		0 : "No"
+		1 : "Alyx or Dog"
+		2 : "Both Alyx and Dog"
+		3 : "Dog"
+		4 : "Alyx"
+		5 : "Antlion Guards"
+	]
+
+	death_squad(choices) : "Traitor Death Squad" : 1 : "Send a Elite soldier death squad on revealed traitors?" =
+	[
+		0 : "No"
+		1 : "Yes, definately, let that fucker suffer"
+	]
+
+	FirstPath_Name(target_destination) : "First Path" : "" : "Name of the first path brush."
+
+	FirstAR2(float) 			: "First AR2 Time" 	: 120 	: "The first AR2 can be spawned after this time. Negative values will make never spawn."
+	FirstShotgun(float) 			: "First Shotgun" 	: 60 	: "The first Shotgun can be spawned after this time. Negative values will make never spawn."
+	FirstSMG1_Grenade(float) 		: "First SMG1 Grenade" 	: 90 	: "The first SGM1 Grenade can be spawned after this time. Negative values will make never spawn."
+	FirstAR2_AltFire(float)			: "First AR2 AltFire"	 : 180 	: "The first AR2 AltFire can be spawned after this time. Negative values will make never spawn."
+	Max_Friendly_Shotgun(integer)		: "Max Friendly Shotguns" 	: 3 : "How many friendly NPCs can have a shotgun at the same time. -1 Means infinite."
+	Max_Friendly_RPG(integer)		: "Max Friendly RPGs" 		: 1 : "How many friendly NPCs can have an RPG at the same time. -1 Means infinite."
+	Max_Friendly_AR2(integer)		: "Max Friendly AR2s" 		: 2 : "How many friendly NPCs can have an AR2 at the same time. -1 Means infinite."
+	Max_Hostile_Shotgun(integer)		: "Max Hostile Shotguns" 	: 3 : "How many hostile NPCs can have a shotgun at the same time. -1 Means infinite."
+	Max_Hostile_RPG(integer)		: "Max Hostile RPGs"		: 2 : "How many hostile NPCs can have an RPG at the same time. -1 Means infinite."
+	Max_Hostile_AR2(integer)		: "MAx Hostile AR2s"		: 3 : "How many hostile NPCs can have an AR2 at the same time. -1 Means infinite."
+
+
+	DropShipEnabled(choices) : "Dropships enabled" : 1 : "Should Dropship start enabled." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]	
+
+	DropShipDelay(float)			: "Dropship Delay" : 18 : "After a player or an unique NPC is dead, how long does it take in seconds for the dropship to start coming."
+
+	CaptureEli(choices) : "Capture Eli enabled" : 0 : "Can the dropship be used to capture Eli." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	//Inputs
+	input Enable(void) : "Enable Dynamic NPC Spawner"
+	input Disable(void) : "Disable Dynamic NPC Spawner"
+	input ResetStartTime(float) : "Reset the start time (that is used to calculate the situation, etc.)"
+
+	input EnableDropship(void) : "Enable Dropship."
+	input DisableDropship(void) : "Disable Dropship."
+
+	input EnableCapture(void) : "Enable capturing Eli."
+	input DisableCapture(void) : "Disable capturing Eli."
+
+	// Outputs
+	output AllDead(void) : "Fired when the spawner is disabled and there's no NPCs left."
+	output AllButFriendliesDead(void) : "Fired when the spawner is disabled and there's only friendly NPCs left."
+
+	output OnDropshipSpawned(void) : "Fired when a dropship is spawned."
+]
+
+@BaseClass = HLSS_Spawner_Group
+[
+	GroupId(choices) : "Group Id" : 0 : "Name of id. If the spawn flag is set NPCs can only be spawn into the spawn limiter if it has the same group id." =
+	[
+		-1 : "Any Group"
+		 0 : "Group 0"
+		 1 : "Group 1"
+		 2 : "Group 2"
+		 3 : "Group 3"
+		 4 : "Group 4"
+		 5 : "Group 5"
+		 6 : "Group 6"
+		 7 : "Group 7"
+		 8 : "Group 8"
+		 9 : "Group 9"
+		10 : "Group 10"
+		11 : "Group 11"
+		12 : "Group 12"
+		13 : "Group 13"
+		14 : "Group 14"
+		15 : "Group 15"
+		16 : "Group 16"
+		17 : "Group 17"
+		18 : "Group 18"
+		19 : "Group 19"
+		20 : "Group 20"
+	]
+]
+
+@PointClass base(Targetname, Global, HLSS_Spawner_Group) iconsprite("editor/npc_maker.vmt") line(255 0 0, targetname, Template_Name)  = hlss_dynamic_npc_spawner : 
+	"An entity that creates NPCs. The NPCs it creates are clones of a template NPCs. The NPCs are spawned dynamically."
+[
+	spawnflags(flags) =
+	[
+		1 : "Only spawn on spawn limiters with same group" : 0
+	]
+
+	StartEnabled(choices) : "Dynamic Spawner enabled" : 1 : "Should Dynamic NPC Spawner start enabled." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	//TEMPLATE 
+	Template_Name(target_destination) 	: "Template NPC Name" 		: "" 	: "Template NPC that this maker should be creating clones of."
+//	Template_Delay(float) 			: "Delay between attacks" 	: 60 	: "Delay between NPCs attacks"
+	Template_Max(integer) 			: "Max Number of NPCs" 		: 10 	: "Max number of NPC"
+//	Template_MaxAttack(integer)		: "Max Attack Size"		: 10 	: "Max size of attacks."
+	Template_Difficulty(integer) 		: "NPC Difficulty" 		: 50 	: "0-100 setting to approx this NPC's difficulty. For hostiles > 50 will spawn only if situation is better. For friendlies < 50 will only spawn if situation is worse."
+	Template_FirstDelay(float)		: "First Delay" 		: 120 	: "Delay before the first NPC from template 1 can be spawned. Should be bigger than Delay. 0 means will be able to spawn right away."
+
+	PanicEvent_Max(integer)			: "Max Panic Event"		: 20	: "Max NPCs during panic event. Can be bigger than Max Number of NPCs."
+	PanicEvent_Delay(float)			: "Panie Event Full Delay"	: 10	: "Seconds of delay between new NPCs when Max Panic Event has been reached."
+	PanicEvent_Absolute(integer)		: "Absolute Max Panic Event"	: 30	: "When Max Panic Event has been reached, this is the absolute maximum NPC count."
+
+	//Inputs
+	input Enable(void) 		: "Enable Dynamic NPC Spawner"
+	input Disable(void) 		: "Disable Dynamic NPC Spawner"
+
+//	input SetMaxAttack(integer) 	: "Set max size for attacks."
+	input SetMaxNPCs(integer) 	: "Set max NPCs."
+
+	input StartPanicEvent(void) 	: "Start Panic Event."
+	input StopPanicEvent(void) 	: "Stop Panic Event."
+
+	// Outputs
+	output AllDead(void) : "Fired when the spawner is disabled and there's no NPCs left."
+]
+
+@PointClass base(hlss_dynamic_npc_spawner) iconsprite("editor/npc_maker.vmt") line(255 0 0, targetname, Template_Name) = hlss_dynamic_antlion_spawner
+[
+]
+
+@PointClass base(Angles) iconsprite("editor/info_target.vmt") line(255 0 0, targetname, dropship_fly) line(0 255 0, targetname, dropship_spawn) line(0 0 255, targetname, player_path)  = hlss_dropship_land : "Landing point for the dropships spawned by the hlss_director."
+[
+	targetname(target_source) : "Dropship Land" : : "The name that other entities refer to this entity by."
+	
+	dropship_spawn(target_destination) : "Dropship Spawn" : "" : "path_track where the dropship should spawn and then fly to this hlss_dropship_land."
+	dropship_fly(target_destination) : "Dropship Fly" : "" : "path_track where the dropship should fly after landing."
+	player_path(target_destination) : "Player Path" : "" : "hlss_player_path the players has to have had reached fo this dropship zone to be enabled."
+
+	Dustoff1(target_destination) : "Name of dustoff point for NPC 1"
+	Dustoff2(target_destination) : "Name of dustoff point for NPC 2"
+	Dustoff3(target_destination) : "Name of dustoff point for NPC 3"
+	Dustoff4(target_destination) : "Name of dustoff point for NPC 4"
+	Dustoff5(target_destination) : "Name of dustoff point for NPC 5"
+	Dustoff6(target_destination) : "Name of dustoff point for NPC 6"
+
+	// Inputs
+	input Kill(void) : "Removes this entity from the world."
+]
+
+//-----------------------------------------------------------------------------------------------
+// HLSS DNS BRUSH ENTITIES
+//-----------------------------------------------------------------------------------------------
+
+
+
+@SolidClass base( Targetname, Origin ) line(255 0 0, targetname, NextPath_Name) = hlss_player_path 
+[
+	NextPath_Name(target_destination) : "Next Path" : "" : "Name of the next path brush."
+	StartEnabled(choices) : "Path enabled" : 1 : "Should path start enabled." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	//Inputs
+	input Enable(void) : "Enable path."
+	input Disable(void) : "Disable path."
+]
+
+//-----------------------------------------------------------------------------------------------
+// HLSS DNS POINT ENTITIES
+//-----------------------------------------------------------------------------------------------
+
+
+@PointClass base(Targetname, Parentname, Angles) iconsprite("editor/info_target.vmt") = hlss_dynamic_weapon_point : "Weapon Spawn Point. (Consult hlss_dynamic_npc_spawner help for more info)" 
+[
+	difficulty(integer) : "Difficulty" : 100 : "If the player situation 0-100 is bigger than this, no item is spawned."
+]
+
+@PointClass base(Targetname, Parentname, Angles) studio("models/items/ammocrate_rockets.mdl") = hlss_dynamic_ammo_crate_point : "Weapon Spawn Point. (Consult hlss_dynamic_npc_spawner help for more info)" 
+[
+	difficulty(integer) : "Difficulty" : 100 : "If the player situation 0-100 is bigger than this, no crate is spawned."
+]
+
+//BasePropPhysics, Targetname, Angles, DamageFilter, BaseFadeProp
+
+@PointClass base(Targetname, Parentname, Angles) studio("models/items/item_item_crate.mdl") = hlss_item_crate : "HLSS Item Crate"
+[
+	probability(integer) : "Probability" : 100 : "The probability 0-100 this crate will spawn."
+
+	// Inputs
+	input Kill(void) : "Remove the item crate"
+	input Break(void) : "Breaks the breakable."
+	input SetHealth(integer) : "Sets a new value for health. If the breakable's health reaches zero it will break."
+	input AddHealth(integer) : "Adds health to the breakable. If the breakable's health reaches zero it will break."
+	input RemoveHealth(integer) : "Removes health from the breakable. If the breakable's health reaches zero it will break."
+	
+	// Outputs
+	output OnBreak(void) : "Fires when broken."
+	output OnHealthChanged(float) : "Fires when the health of this breakable changes, passing the new value of health as a percentage of max health, from [0..1]."
+
+	output OnCacheInteraction(void) : "This output fires when the player proves they have 'found' this crate. Fires on: Picked up by +USE, Picked up by Physcannon, Punted by Physcannon, Broken."
+]
+
+@PointClass base(Targetname, Angles, Studiomodel, ComputerNetwork) studio( "models/combine_turrets/ceiling_turret.mdl" ) = npc_turret_ceiling : "Combine Ceiling Turret"
+[
+	spawnflags(Flags) = 
+	[
+		32 : "Autostart" : 1
+		64 : "Start Inactive" : 0
+		128 : "Never Retire" : 0
+		256 : "Out of Ammo" : 0
+	]
+
+	minhealthdmg(integer) : "Min req'd damage for hurting turret" : 0		
+
+	// Inputs
+	input Enable(void) : 		"If closed, open."
+	input Disable(void) : 		"If open, close."
+	input Toggle(void) : 		"Toggle - If open, close. If closed, open."
+
+	input SetHackedOff(void) : 	"Restore the Combine turret"
+	input SetHackedOn(void) : 	"Hack the Combine turret"
+
+	// Outputs
+	output OnDeploy(void) : "Turret is becoming active and dangerous."
+	output OnRetire(void) : "Turret is becoming inactive and harmless."
+	output OnTipped(void) : "Turret has been tipped over and is inactive."
+]
+
+@PointClass base(Targetname, Angles, Global, ComputerNetwork) studio() sphere(maxdist) = hlss_combine_interface : 
+	"Used in Traitor mode to set players hostile in eyes of the Combine computers."
+[
+	spawnflags(Flags) = 
+	[
+		1 : "NPCs shouldn't try to hack" : 0
+		2 : "Doors are called Gates" : 0
+	]
+
+	TeamNum(choices) : "Team" : 0 : "Team" =
+	[
+		0 : "Neutral"
+		1 : "Rogue"
+		2 : "Combine"
+		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
+	]
+
+	model(choices) : "Model" : "models/props_combine/combine_interface001.mdl" =
+	[
+		"models/props_combine/combine_interface001.mdl" : "Interface 1"
+		"models/props_combine/combine_interface002.mdl" : "Interface 2"
+		"models/props_combine/combine_interface003.mdl" : "Interface 3"
+		"models/props_combine/combine_intmonitor001.mdl" : "Monitor 1"
+		"models/props_combine/combine_intmonitor003.mdl" : "Monitor 3"
+		"models/props_combine/breenconsole.mdl" : "Breen Console"
+	]
+
+	maxdist(float) : "Max Distance" : -1 : "Maximum distance this glow is visible. Negative values means visible in distance."
+
+	HasGenerator(choices) : "Has Generator" : 0 : "Does this interface have a generator?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	StartDisabled(choices) : "Generator Disabled" : 0 : "Does the generator start disabled" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	slot_vote(choices) : "Can Vote" : 1 : "Can this interface be used to vote against players?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	slot_shield(choices) : "Can Toggle Shields" : 1 : "Can this interface be used to toggle shields on and off?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	shields(choices) : "Shield Enabled" : 1 : "Do the shields start enabled?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	slot_turrets(choices) : "Can Toggle Turrets" : 1 : "Can this interface be used to toggle turrets on and off?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	turrets(choices) : "Turrets Enabled" : 1 : "Do the turrets start enabled?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	slot_manhacks(choices) : "Can Toggle Manhacks" : 0 : "Can this interface be used to toggle manhack dispensers on and off?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	manhacks(choices) : "Manhacks Enabled" : 0 : "Do the manhack dispensers start enabled?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	slot_doors(choices) : "Can Lock doors" : 0 : "Can this interface be used to lock and unlock doors" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+	doors(choices) : "Doors Locked" : 0 : "Do the doors start locked?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	skin(integer) : "Skin" : 0 : "Some models have multiple versions of their textures, called skins. Set this to a number other than 0 to use that skin instead of the default."
+
+	disableshadows(choices) : "Disable Shadows" : 0 : "Used to disable dynamic shadows on this entity." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	// Outputs
+	output OnManhacksEnabled(void) : 	"Fires when manhacks are enabled."
+	output OnManhacksDisabled(void) : 	"Fires when manhacks are disabled."
+
+	output OnDoorsLocked(void) : 		"Fires when doors are locked."
+	output OnDoorsUnlocked(void) : 		"Fires when doors are unlocked."
+
+	output OnChangedTeam(integer) :		"Fires when the interface changes team."
+
+ 	// Inputs
+	input Skin(integer) : 			"Changes the model skin to the specified number."
+	input DisableShadow(void) : 		"Turn shadow off."
+	input EnableShadow(void) : 		"Turn shadow on."
+	input Kill(void) : 			"Remove the Combine interface"
+	input SetNPCShouldHackOn(void) : 	"Enable NPCs hacking this console."
+	input SetNPCShouldHackOff(void) :	"Disable NPCs hacking this console."
+
+	input GeneratorEnabled(void) : 		"When the generator is being enabled"
+	input GeneratorDisabled(void) : 	"When the generator is being disabled"
+
+	input UnlockDoors(void) : 		"Can be used to force unlock doors / open gates linked to this interface."
+	input LockDoors(void) : 		"Can be used to force lock doors / close gates linked to this interface."
+
+	input SetTeam(integer) : "Changes the entity's team."
+]
+
+@PointClass base(hlss_combine_interface) studio() = hlss_main_frame : "Main Frame. This gets destroyed by Rebels and they win."
+[
+	model(choices) : "Model" : "models/props_combine/masterinterface.mdl" =
+	[
+		"models/props_combine/masterinterface.mdl" : "Master Interface"
+		"models/props_combine/combine_monitorbay.mdl" : "Monitor Bay"
+	]
+
+	output OnDestroyed(void) : 		"When this Main Frame is destroyed."
+]
+
+@PointClass base(Targetname, Angles, Global) studio() sphere(maxdist) = hlss_advisor_pod : "Advisor Pod. This gets destroyed by Rebels and they win."
+[
+	model(choices) : "Model" : "models/advisorpod.mdl" =
+	[
+		"models/advisorpod.mdl" : "Advisor Pod (Mobile)"
+		"models/combine_advisor_pod/combine_advisor_pod.mdl" : "Advisor Pod (Wall)"
+	]
+
+	maxdist(float) : "Max Distance" : -1 : "Maximum distance this glow is visible. Negative values means visible in distance."
+
+	output OnDestroyed(void) : 		"When this Advisor Pod is destroyed."
+]
+
+@PointClass base(Targetname, Parentname, Angles) studio("models/props_combine/combine_lock01.mdl") = hlss_door_lock : "Combine door lock. Can be locked and unlocked with emp tool."
+[
+	locked(Choices) : "Start locked" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	disableshadows(choices) : "Disable Shadows" : 0 : "Used to disable dynamic shadows on this entity." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+
+	// Inputs
+	input Lock(void) : "Lock."
+	input Unlock(void) : "Unlock."
+
+	input DisableShadow(void) : "Turn shadow off."
+	input EnableShadow(void) : "Turn shadow on."
+
+	output OnDoorLocked(void) : 		"Fires when the door is locked."
+	output OnDoorUnlocked(void) : 		"Fires when the door is unlocked."
+]
+
+@NPCClass base(BaseNPC, TalkNPC, Targetname) studio("models/aliengrunt.mdl") = npc_aliengrunt : "Alien Grunt"
+[
+	spawnflags(Flags) = 
+	[
+		65536 :  "Can grab enemy ragdoll" : 0
+		131072 : "Wait for ragdoll grab before shooting bees." : 0
+	]
+
+	input EnableRagdollGrab(void) : "Enable enemy ragdoll grabbing."
+	input DisableRagdollGrab(void) : "Disable enemy ragdoll grabbing."
+	input DisableWaitRagdollGrab(void) : "Disable waiting for ragdoll grab."
+
+	input AttackItem(string) : "Attack prop_physics, or prop_door_rotating."
+
+]
+
+@PointClass base(Targetname, Parentname, Angles, Global, Studiomodel) studioprop() = prop_door_rotating : 
+	"An entity used to place a door in the world."
+[
+	slavename(target_destination) : "Slave Name" : : "The name of any doors that should be slaved to this door (i.e. should open when this one opens, and close when this one closes)."
+	hardware(choices) : "Hardware Type" : 1 =
+	[
+		0 : "<None>"
+		1 : "Lever"
+		2 : "Push bar"
+		3 : "Keypad"
+	]
+	
+	ajarangles(angle) : "Ajar Angles (Pitch Yaw Roll)" : "0 0 0" : "If the door 'Spawn Position' is set to Ajar, these are the angles to spawn at, instead of being open or closed."
+	spawnpos(choices) : "Spawn Position" : 0 =
+	[
+		0 : "Closed"
+		1 : "Open forward"
+		2 : "Open back"
+		3 : "Ajar (use Ajar Angles)"
+	]
+	
+	axis(axis) : "Hinge Axis"
+	distance(float) : "Rotation Distance (deg)" : 90 : "The amount, in degrees, that the door should rotate when opened."
+	speed(integer) : "Speed" : 100 : "The speed at which the door moves."
+	soundopenoverride(sound) : "Fully Open Sound" : : "Sound played when the door has finished opening."
+	soundcloseoverride(sound) : "Fully Closed Sound" : : "Sound played when the door has finished closing."
+	soundmoveoverride(sound) : "Moving Sound" : : "Sound played when the door starts to move."
+	returndelay(integer) : "Delay Before close (-1 stay open)" : -1 : "Amount of time, in seconds, after the door has opened before it closes. If the value is set to -1, the door never closes itself."
+	dmg(integer) : "Damage Inflicted When Blocked" : 0 : "Amount of damage done to entities that block the movement of this door, per frame."
+	health(integer) : "Health (0 = Unbreakable)" : 0			// NEEDHELP: Doesn't look like this is hooked up anymore?
+	soundlockedoverride(sound) : "Locked Sound" : : "Sound played when the player tries to open the door, and fails because it's locked."
+	soundunlockedoverride(sound) : "Unlocked Sound" : : "Sound played when the door is unlocked."
+
+	forceclosed(choices) : "Force Closed" : 0 : "If set, this door will close no matter what. Useful for doors that have to close even if the player tries to block them with objects." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	spawnflags(flags) =
+	[
+		1 : "Starts Open" : 0
+		//512: "NPCs Can't" : 0
+		2048: "Starts locked" : 0
+		4096: "Door silent (No sound, and does not alert NPCs)" : 0
+		8192: "Use closes" : 1
+		16384 : "Door silent to NPCS (Does not alert NPCs)" : 0
+		32768 : "Ignore player +USE" : 0
+		//65536 : "SF_DOOR_NEW_USE_RULES"  : 0
+		131072 : "Breakable by Alien Grunts" : 0
+	]
+
+	opendir(choices) : "Open Direction" : 0 : "Force the door to open only forwards or only backwards. Both directions is the standard door behavior." =
+	[
+		0 : "Open Both Directions"
+		1 : "Open Forward Only"
+		2 : "Open Backward Only"
+	]
+
+	// Outputs
+	output OnClose(void) : "Fired when the door is told to close."
+	output OnOpen(void) : "Fired when the door is told to open."
+	output OnFullyOpen(void) : "Fired when the door reaches the fully open position."
+	output OnFullyClosed(void) : "Fired when the door reaches the fully closed position."
+	output OnBlockedClosing(void) : "Fired when the door is blocked while closing."
+	output OnBlockedOpening(void) : "Fired when the door is blocked while opening."
+	output OnUnblockedClosing(void) : "Fired when the door is unblocked while closing."
+	output OnUnblockedOpening(void) : "Fired when the door is unblocked while opening."
+	output OnLockedUse(void) : "Fired when the player uses the door, but it is locked."
+	output OnBroken(void) : "Fired when the door is broken by an NPC."
+
+	// Inputs
+	input Open(void) : "Open the door, if it is not fully open."
+	input OpenAwayFrom(string) : "Open the door away from the specified entity."
+	input Close(void) : "Close the door, if it is not fully closed."
+	input Toggle(void) : "Toggle the door between open and closed."
+	input Lock(void) : "Lock the door."
+	input Unlock(void) : "Unlock the door."
+	input SetRotationDistance(float) : "Set the distance (in degrees) between Open and Closed."
+	input SetSpeed(float) : "Set the speed at which the door rotates. 100 is default."
+]
+
+@SolidClass base(CombineBallSpawners) = func_combine_ball_spawner :
+    "Spawns Combine balls."
+[
+	combineball_targetname(string) : "Target name of the energy ball (optional)"
+	output OnBallReinserted(void) : "Fired when a combine ball is reinserted into the field (only gets triggered when Combine Power supply is checked)"
+	output OnLastBallGrabbed(void) : "Fired when the last combine ball is grabbed from the field by a mega physcannon"
+]
+
+
+@BaseClass base(Targetname, HLSS_Spawner_Group) = hlss_spawn_limiter_base : "If you have even one spawn limiter. NPCs can only spawn inside them."
+[
+	spawnflags(flags) =
+	[
+		1 : "Only limit NPC spawners with my group (GLOBAL)" : 0
+		2 : "Only allow NPC spawners with the same group" : 0
+	]
+
+	StartEnabled(choices) : "Enabled" : 1 : "Can NPCs spawn here." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	//Inputs
+	input Enable(void) : "Enable path."
+	input Disable(void) : "Disable path."
+]
+
+@PointClass base(hlss_spawn_limiter_base) sphere(radius) = hlss_spawn_limiter : "If you have even one spawn limiter. NPCs can only spawn inside them."
+[
+	radius(float) : "Radius" : 128 : "Radius."
+]
+
+@SolidClass base(hlss_spawn_limiter_base) = hlss_spawn_limiter_brush : "If you have even one spawn limiter. NPCs can only spawn inside them."
+[
+]
+
+@PointClass base(PlayerClass, Angles) studio("models/combine_super_soldier.mdl") = info_death_squad :
+	"When a Traitor Reveals himself, and the death squad is enabled on the hlss_director settings " +
+	"this is where the death squad will spawn. If there's less than four, the rest will spawn on dropship."
+[
+	output OnSpawn(void) : "Fires when an Elite is spawned here."
+]
+
+@PointClass base(Targetname) sphere(radius) = hlss_search_point : "Used for NPCs to search for someone like Eli."
+[
+	SeachType(choices) : "Search Type" : 0 : "What type of NPCs is this search point meant for." =
+	[
+		0 : "Combine"
+		1 : "Hostiles"
+		2 : "Both"
+	]
+
+	StartEnabled(choices) : "Enabled" : 1 : "Can we search this?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	radius(float) : "Radius" : 256 : "Radius."
+
+	//Inputs
+	input Enable(void) : "Enable path."
+	input Disable(void) : "Disable path."
+]
+
+@PointClass base(Targetname) studio("models/ray.mdl") = hlss_mantaray_spawner : "Spawn mantarays to spawn Xenoforms."
+[
+	StartEnabled(choices) : "Enabled" : 1 : "Can we search this?" =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	max_rays(choices) : "Max Mantarays" : 1 : "How many Mantarays can there be alive at max." =
+	[
+		1 : "One"
+		2 : "Two"
+		3 : "Three"
+	]
+
+	delay(float) : "Spawn Delay" : 20 : "Delay between spawns."
+
+	ray_path(target_destination) : "Fly path" : "" : "Name of the path_track for the Mantaray to fly."
+	teleport(target_destination) : "Teleport target" : "" : "Name of the hlss_mantaray_teleport_target to spawn the Xenoforms into."
+
+	//Inputs
+	input Enable(void) : "Enable path."
+	input Disable(void) : "Disable path."
+]
+
+@PointClass base(Targetname) = hlss_mantaray_teleport_target : "Mantarays use these to spawn stuff."
+[
+]
+
+// COMBINE AIR DEFENSE SYSYEM
+@PointClass base(Targetname, Angles, RenderFields) studio( "models/props_combine/airdefense.mdl" ) = npc_combine_air_defense : "Combine Air Defense"
+[
+	spawnflags(Flags) = 
+	[
+		32768  : "Auto Activate" 		: 1
+		65536  : "Start Active" 		: 1
+		131072 : "No Machine Gun" 		: 0
+		262144 : "No Rockets" 			: 0
+		524288 : "Never retire" 		: 1
+		1048576 : "Update Recharge hud" 	: 0
+		2097152 : "Only shoot flying things" 	: 0
+	]
+
+	recharge_increase_speed(float) 	: "Recharge Increase Speed" : 60	
+	recharge_decrease_speed(float) 	: "Recharge Decrease SPeed" : 30	
+
+	minhealthdmg(integer)		: "Minimum damage to hurt" : 100	
+
+	// Inputs
+	input Enable(void) 	: "Enalbe (overrides recharge)."
+	input Disable(void) 	: "Disable (overrides recharge)."
+	input Toggle(void) 	: "Toggle (override recharge)."
+	
+	input StartRecharge(void)	: "Start or continue recharge."
+	input StopRecharge(void)	: "Stop recharge and start draining power."
+
+	input SetRechargeIncreaseTime(float)	: "Set the speed for each step in recharge."
+	input SetRechargeDecreaseTime(float)	: "Set the speed the power drains from charge."
+	input SetHackedOn(void)			: "Hack the Air Defense."
+	input SetHackedOff(void)		: "Fix the Air Defense."
+
+	// Outputs
+	output OnDeploy(void) 		: "Deploing."
+	output OnRetire(void) 		: "Retiring."
+	output OnTipped(void)		: "On tipped."
+	output OnRechargeComplete(void) : "When recharge is complete."
+]

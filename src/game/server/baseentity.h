@@ -258,6 +258,14 @@ enum Class_T
 	CLASS_HECU_PLAYER,
 	CLASS_ZOMBIE_PLAYER,
 
+	// Classes for hackable computer networks
+	CLASS_COMPUTER_NEUTRAL, // Only attacks monsters
+	CLASS_COMPUTER_ROGUE, // Attacks everything
+	CLASS_COMPUTER_BLUE,
+	CLASS_COMPUTER_RED,
+	CLASS_COMPUTER_GREEN,
+	CLASS_COMPUTER_YELLOW,
+
 	NUM_AI_CLASSES
 };
 
@@ -545,6 +553,8 @@ public:
 	void					DestroyDataObject( int type );
 	void					DestroyAllDataObjects( void );
 
+public:
+	bool					HandleEntityCommand(KeyValues* pKeyValues) { return false; }
 public:
 	void SetScaledPhysics( IPhysicsObject *pNewObject );
 

@@ -15,7 +15,6 @@
 	$FLOW_NORMALUVSCALE 0.01
 	$FLOW_COLOR "[.025 .78 .75]"
 	$flow_color_intensity 1
-	$flow_cheap 0
 	
 	$FLOW_VORTEX_COLOR "[.0 .78 .75]"
 	$FLOW_VORTEX_SIZE 64

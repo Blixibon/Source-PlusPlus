@@ -109,7 +109,8 @@ public:
 
 	//void UpdateWooshSounds(void);
 
-	virtual void ChangeTeam(int iTeam);
+	virtual void ChangeTeam(int iTeam); // Move the player to this team, if allowed.
+	void ForceChangeTeam(int iTeam); // Force the player onto this team.
 
 	bool ClientCommand(const CCommand &args);
 

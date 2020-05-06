@@ -2191,6 +2191,13 @@ public:
 	void				GetPlayerAvoidBounds( Vector *pMins, Vector *pMaxs );
 
 	void				StartPingEffect( void ) { m_flTimePingEffect = gpGlobals->curtime + 2.0f; DispatchUpdateTransmitState(); }
+
+	//TERO: added by me
+public:
+
+	bool				m_bKilledByPlayer;
+	float				m_flRemoveTime;
+	virtual float		RemoveTimeDelay() { return 30.0f; }
 };
 
 

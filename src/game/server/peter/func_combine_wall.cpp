@@ -1,18 +1,113 @@
 #include "cbase.h"
 #include "func_combine_wall.h"
 #include "team.h"
+#include "saverestore_utlvector.h"
+#include "props.h"
 
 #define SHIELD_LIST_UPDATE_INTERVAL 0.5f
 
 CEntityClassList<CCombineShieldWall> g_ShieldWallList;
 template <> CCombineShieldWall* CEntityClassList<CCombineShieldWall>::m_pClassList = NULL;
 
+class CPropCombineWallProjector : public CDynamicProp
+{
+public:
+	DECLARE_CLASS(CPropCombineWallProjector, CDynamicProp);
+	DECLARE_DATADESC();
+
+	void	PowerOn();
+	void	PowerOff();
+
+	virtual void			ChangeTeam(int iTeamNum);
+protected:
+	string_t	m_strAnimActivate;
+	string_t	m_strAnimDeactivate;
+	string_t	m_strIdleActive;
+	string_t	m_strIdleInactive;
+
+	int			m_iSkinInactive;
+	int			m_iTeamSkins[TF_TEAM_COUNT];
+
+	bool		m_bDisabled;
+};
+
+LINK_ENTITY_TO_CLASS(prop_shield_wall_projector, CPropCombineWallProjector);
+
+BEGIN_DATADESC(CPropCombineWallProjector)
+DEFINE_KEYFIELD(m_strAnimActivate, FIELD_STRING, "anim_activate"),
+DEFINE_KEYFIELD(m_strAnimDeactivate, FIELD_STRING, "anim_deactivate"),
+DEFINE_KEYFIELD(m_strIdleActive, FIELD_STRING, "idle_active"),
+DEFINE_KEYFIELD(m_strIdleInactive, FIELD_STRING, "idle_inactive"),
+
+DEFINE_KEYFIELD(m_iSkinInactive, FIELD_INTEGER, "skin_inactive"),
+DEFINE_KEYFIELD(m_iTeamSkins[2], FIELD_INTEGER, "skin_blueteam"),
+DEFINE_KEYFIELD(m_iTeamSkins[3], FIELD_INTEGER, "skin_redteam"),
+DEFINE_KEYFIELD(m_iTeamSkins[4], FIELD_INTEGER, "skin_greenteam"),
+DEFINE_KEYFIELD(m_iTeamSkins[5], FIELD_INTEGER, "skin_yellowteam"),
+
+DEFINE_FIELD(m_bDisabled, FIELD_BOOLEAN),
+END_DATADESC();
+
+void CPropCombineWallProjector::PowerOn()
+{
+	if (!m_bDisabled)
+		return;
+
+	m_bDisabled = false;
+	m_nSkin = m_iTeamSkins[GetTeamNumber()];
+
+	if (m_strAnimActivate != NULL_STRING)
+	{
+		PropSetAnim(STRING(m_strAnimActivate));
+	}
+
+	if (m_strIdleActive != NULL_STRING)
+	{
+		m_iszDefaultAnim = m_strIdleActive;
+	}
+}
+
+void CPropCombineWallProjector::PowerOff()
+{
+	if (m_bDisabled)
+		return;
+
+	m_bDisabled = true;
+	m_nSkin = m_iSkinInactive;
+
+	if (m_strAnimDeactivate != NULL_STRING)
+	{
+		PropSetAnim(STRING(m_strAnimDeactivate));
+	}
+
+	if (m_strIdleInactive != NULL_STRING)
+	{
+		m_iszDefaultAnim = m_strIdleInactive;
+	}
+}
+
+void CPropCombineWallProjector::ChangeTeam(int iTeamNum)
+{
+	int iOldTeam = GetTeamNumber();
+
+	BaseClass::ChangeTeam(iTeamNum);
+
+	if (iOldTeam != iTeamNum && !m_bDisabled)
+	{
+		m_nSkin = m_iTeamSkins[iTeamNum];
+	}
+}
+
 BEGIN_DATADESC(CCombineShieldWall)
 DEFINE_FIELD(m_bShieldActive, FIELD_BOOLEAN),
 DEFINE_FIELD(m_vecLocalOuterBoundsMins, FIELD_VECTOR),
 DEFINE_FIELD(m_vecLocalOuterBoundsMaxs, FIELD_VECTOR),
+DEFINE_UTLVECTOR(m_hShieldProjectors, FIELD_EHANDLE),
+DEFINE_KEYFIELD(m_strShieldProjectors, FIELD_STRING, "projector_props"),
 
 DEFINE_THINKFUNC(ActiveThink),
+
+DEFINE_LAZNETWORKENTITY_DATADESC(),
 END_DATADESC();
 
 IMPLEMENT_SERVERCLASS_ST(CCombineShieldWall, DT_CombineShieldWall)
@@ -162,6 +257,25 @@ void CCombineShieldWall::Spawn()
 	}
 }
 
+void CCombineShieldWall::Activate()
+{
+	BaseClass::Activate();
+
+	if (m_strShieldProjectors != NULL_STRING && !m_hShieldProjectors.Count())
+	{
+		CBaseEntity* pEnt = gEntList.FindEntityByName(nullptr, m_strShieldProjectors, this);
+		for (; pEnt != nullptr; pEnt = gEntList.FindEntityByName(pEnt, m_strShieldProjectors, this))
+		{
+			CPropCombineWallProjector* pProp = dynamic_cast<CPropCombineWallProjector*> (pEnt);
+			if (!pProp)
+				continue;
+
+			pProp->ChangeTeam(GetTeamNumber());
+			m_hShieldProjectors.AddToTail(pProp);
+		}
+	}
+}
+
 bool CCombineShieldWall::ShouldCollide(int collisionGroup, int contentsMask) const
 {
 	if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
@@ -213,6 +327,15 @@ void CCombineShieldWall::TurnOff(void)
 	EmitSound("outland_10.shieldwall_off");
 
 	SetThink(NULL);
+
+	for (int i = 0; i < m_hShieldProjectors.Count(); i++)
+	{
+		CPropCombineWallProjector* pProp = dynamic_cast<CPropCombineWallProjector*> (m_hShieldProjectors[i].Get());
+		if (pProp)
+		{
+			pProp->PowerOff();
+		}
+	}
 }
 
 
@@ -237,6 +360,15 @@ void CCombineShieldWall::TurnOn(void)
 	SetNextThink(gpGlobals->curtime);
 
 	ClearSpace();
+
+	for (int i = 0; i < m_hShieldProjectors.Count(); i++)
+	{
+		CPropCombineWallProjector* pProp = dynamic_cast<CPropCombineWallProjector*> (m_hShieldProjectors[i].Get());
+		if (pProp)
+		{
+			pProp->PowerOn();
+		}
+	}
 }
 
 
@@ -251,9 +383,17 @@ void CCombineShieldWall::ChangeTeam(int iTeamNum)
 
 	BaseClass::ChangeTeam(iTeamNum);
 
+	for (int i = 0; i < m_hShieldProjectors.Count(); i++)
+	{
+		CBaseEntity* pEntity = m_hShieldProjectors[i].Get();
+		if (pEntity)
+			pEntity->ChangeTeam(iTeamNum);
+	}
+
 	if (IsOn() && iOldTeam != iTeamNum)
 	{
 		ClearSpace();
+		SetNextThink(gpGlobals->curtime);
 
 		CPASAttenuationFilter filter(this, "NPC_RollerMine.Reprogram");
 		filter.RemoveRecipientsNotOnTeam(GetGlobalTeam(iTeamNum));
@@ -261,7 +401,7 @@ void CCombineShieldWall::ChangeTeam(int iTeamNum)
 		EmitSound(filter, entindex(), "NPC_RollerMine.Reprogram");
 
 		CPASAttenuationFilter filter2(this, "AlyxEMP.Discharge");
-		filter2.RemoveRecipientsByTeam(GetGlobalTeam(iTeamNum));
+		//filter2.RemoveRecipientsByTeam(GetGlobalTeam(iTeamNum));
 
 		EmitSound(filter2, entindex(), "AlyxEMP.Discharge");
 	}

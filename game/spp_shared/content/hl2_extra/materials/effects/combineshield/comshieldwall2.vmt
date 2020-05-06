@@ -15,7 +15,6 @@
 	$FLOW_NORMALUVSCALE 0.015
 	$FLOW_COLOR "[.025 .78 .75]"
 	$flow_color_intensity 1
-	$flow_cheap 0
 	
 	$OUTPUTINTENSITY 1
 

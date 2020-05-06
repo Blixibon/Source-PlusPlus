@@ -7,6 +7,7 @@
 #include "teamplayroundbased_gamerules.h"
 #include "hl2_gamerules.h"
 #include "tf_shareddefs.h"
+#include "utlmultilist.h"
 
 #ifdef CLIENT_DLL
 #define CLazuul C_Lazuul
@@ -22,12 +23,37 @@
 enum {
 	LAZ_GM_SINGLEPLAYER = -1,
 	LAZ_GM_DEATHMATCH = 0,
-	LAZ_GM_COOP,
-	LAZ_GM_VERSUS,
+	LAZ_GM_CAMPAIGN,
+	LAZ_GM_BASE_DEFENSE,
 
 	LAZ_GM_COUNT
 };
 
+enum BaseDefenseModes_e
+{
+	LAZ_BD_ASSAULT = 0,
+	LAZ_BD_TRAITOR,
+};
+
+#ifndef CLIENT_DLL
+class IGameModeControllerEntity
+{
+public:
+	virtual bool ShouldActivateMode(int iGameMode) = 0;
+	virtual bool CanActivateVariant(int iGameMode, int iVariant) = 0;
+};
+
+class CLaz_Player;
+
+class ITeamRespawnWaveHandler
+{
+public:
+	virtual bool RespawnPlayer(CLaz_Player* pPlayer) = 0;
+	virtual bool IsCurrentlyHandlingPlayer(CLaz_Player* pPlayer) = 0;
+	virtual bool IsEnabled() = 0;
+	virtual bool CanSpawnPlayersNow() = 0;
+};
+#endif
 class CLazuulProxy : public CTeamplayRoundBasedRulesProxy
 {
 public:
@@ -60,6 +86,11 @@ public:
 
 	virtual bool	IsConnectedUserInfoChangeAllowed(CBasePlayer *pPlayer) { return true; }
 #ifndef CLIENT_DLL
+	void			AddRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler, int iTeam);
+	void			RemoveRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler);
+
+	virtual void ClientCommandKeyValues(edict_t* pEntity, KeyValues* pKeyValues);
+
 	virtual bool			ShouldAutoAim(CBasePlayer* pPlayer, edict_t* target);
 	virtual float			GetAutoAimScale(CBasePlayer* pPlayer);
 	virtual float			GetAmmoQuantityScale(int iAmmoIndex);
@@ -122,12 +153,12 @@ public:
 	bool	IsCoop()
 	{
 		int iMode = GetGameMode();
-		return (iMode == LAZ_GM_COOP || iMode == LAZ_GM_VERSUS);
+		return (iMode == LAZ_GM_CAMPAIGN /*|| iMode == LAZ_GM_VERSUS*/);
 	}
 	bool	IsDeathmatch()
 	{
 		int iMode = GetGameMode();
-		return (iMode == LAZ_GM_DEATHMATCH || iMode == LAZ_GM_VERSUS);
+		return (iMode == LAZ_GM_DEATHMATCH || iMode == LAZ_GM_BASE_DEFENSE);
 	}
 
 	int		GetGameMode()
@@ -137,9 +168,23 @@ public:
 		return m_nGameMode;
 	}
 
+	int		GetGameModeSubType()
+	{
+		if (!IsMultiplayer())
+			return 0;
+		return m_nGameModeVariant;
+	}
+
 	int		GetProtaganistTeam();
+	int		GetAntagonistTeam();
+
+	int		GetTeamInRole(int iRole);
+
+	int		GetNumTeams();
 
 #ifndef CLIENT_DLL
+	bool			Player_CanDoTeamChange(int iOldTeam, int iNewTeam);
+
 	virtual float			GetAmmoDamage(CBaseEntity* pAttacker, CBaseEntity* pVictim, int nAmmoType);
 
 	virtual bool IsAlyxInDarknessMode();
@@ -167,7 +212,6 @@ public:
 
 	// Can only set on server
 	void	SetGameMode(int iMode);
-	void	SetAllowedModes(bool bModes[]);
 
 	virtual bool			ShouldBurningPropsEmitLight();
 
@@ -183,6 +227,8 @@ public:
 	CBaseEntity* GetAssister(CBaseEntity* pVictim, CBaseEntity* pKiller, CBaseEntity* pInflictor);
 	CBaseEntity* GetRecentDamager(CBaseEntity* pVictim, int iDamager, float flMaxElapsed);
 
+	virtual CBaseEntity* GetPlayerSpawnSpot(CBasePlayer* pPlayer);
+
 	bool	NPC_ShouldDropGrenade(CBasePlayer* pRecipient);
 	bool	NPC_ShouldDropHealth(CBasePlayer* pRecipient);
 	void	NPC_DroppedHealth(void);
@@ -192,13 +238,17 @@ public:
 protected:
 	void AdjustPlayerDamageTaken(CTakeDamageInfo* pInfo);
 	float AdjustPlayerDamageInflicted(float damage);
+
+	virtual void RespawnTeam(int iTeam);
 private:
-	CBitVec<LAZ_GM_COUNT> m_bitAllowedModes;
 
 	float	m_flLastHealthDropTime;
 	float	m_flLastGrenadeDropTime;
 
 	ResponseRules::IResponseSystem* m_pPlayerResponseSystem;
+	
+	typedef CUtlLinkedList<ITeamRespawnWaveHandler*> TeamHandlerList_t;
+	TeamHandlerList_t m_TeamSpawnHandlers[TF_TEAM_COUNT];
 #endif
 public:
 
@@ -208,6 +258,7 @@ private:
 	// Rules change for the mega physgun
 	CNetworkVar(bool, m_bMegaPhysgun);
 	CNetworkVar(int, m_nGameMode);
+	CNetworkVar(int, m_nGameModeVariant);
 	CNetworkVar(int, m_iMapGameType);
 	CNetworkVar(int, m_iMapModType);
 #ifndef CLIENT_DLL
