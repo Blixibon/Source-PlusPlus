@@ -1572,7 +1572,7 @@
 
 
 	// Outputs
-	output OnFinishedDropoff(void)  : "Fires when the dropship has finished a dropoff."
+	output OnFinishedDropoff(void) : "Fires when the dropship has finished a dropoff."
 	output OnFinishedPickup(void) : "Fires when the dropship has finished a pickup."
 
 	output OnCrateShotDownBeforeDropoff(float) : "Fires when the container was shot down before it dropped off soldiers. The parameter contains the number of soldiers that weren't successfully dropped off."

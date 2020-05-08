@@ -14,7 +14,7 @@ class IVEngineServer;
 class IServerGameDLL;
 class CGlobalVars;
 
-#define SPP_UTILS_INTERFACE "VGameSharedUtils003"
+#define SPP_UTILS_INTERFACE "VGameSharedUtils004"
 
 class IGameSharedUtils : public IAppSystem
 {
@@ -32,6 +32,11 @@ public:
 	virtual void	ClientLevelShutdown() = 0;
 
 	virtual IDiscordPresence* GetRichPresence() = 0;
+
+	// Unload the module if this returns 0
+	virtual	const int	GetRefCount() const = 0;
+	virtual void	ShaderInit() = 0;
+	virtual void	ShaderShutdown() = 0;
 };
 
 #endif // !SPP_UTILS_H

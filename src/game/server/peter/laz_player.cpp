@@ -155,6 +155,8 @@ SendPropInt(SENDINFO(m_nFlashlightType)),
 SendPropInt(SENDINFO(m_nMovementCfg)),
 SendPropFloat(SENDINFO(m_flEyeHeightOverride)),
 SendPropVector(SENDINFO(m_vecLadderNormal), -1, SPROP_NORMAL),
+SendPropBool(SENDINFO(m_bInAutoMovement)),
+SendPropQAngles(SENDINFO(m_angAutoMoveAngles)),
 END_SEND_TABLE();
 
 #define MODEL_CHANGE_INTERVAL 5.0f
@@ -688,6 +690,32 @@ int CLaz_Player::GetPlayerPermissions()
 float CLaz_Player::PlayScene(const char* pszScene, float flDelay, AI_Response* response, IRecipientFilter* filter)
 {
 	return InstancedScriptedScene(this, pszScene, NULL, flDelay, false, response, true, filter);
+}
+
+void CLaz_Player::StartAutoMovement(QAngle angOrientation, int iSequence)
+{
+	m_angAutoMoveAngles = angOrientation;
+	m_bInAutoMovement = true;
+	SetAbsAngles(angOrientation);
+	SnapEyeAngles(angOrientation);
+	AddFlag(FL_FROZEN);
+	SetMoveType(MOVETYPE_NOCLIP);
+	DoAnimationEvent(PLAYERANIMEVENT_CUSTOM_SEQUENCE, iSequence);
+}
+
+void CLaz_Player::StopAutoMovement()
+{
+	m_bInAutoMovement = false;
+	RemoveFlag(FL_FROZEN);
+	SetMoveType(MOVETYPE_WALK);
+	DoAnimationEvent(PLAYERANIMEVENT_SPAWN);
+}
+
+void CLaz_Player::PostThink(void)
+{
+	BaseClass::PostThink();
+
+	PerformAutoMovement();
 }
 
 void CLaz_Player::PreThink(void)

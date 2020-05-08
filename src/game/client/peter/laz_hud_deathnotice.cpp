@@ -144,6 +144,16 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		int iCustomDamage = event->GetInt( "customkill" );
 		int iLocalPlayerIndex = GetLocalPlayerIndex();
 
+		if (m_DeathNotices[iDeathNoticeMsg].Victim.iTeam == TEAM_UNASSIGNED)
+		{
+			m_DeathNotices[iDeathNoticeMsg].Victim.iTeam = -event->GetInt("victim_faction");
+		}
+
+		if (m_DeathNotices[iDeathNoticeMsg].Killer.iTeam == TEAM_UNASSIGNED)
+		{
+			m_DeathNotices[iDeathNoticeMsg].Killer.iTeam = -event->GetInt("attacker_faction");
+		}
+
 		// if there was an assister, put both the killer's and assister's names in the death message
 		int iAssisterID = /*bPlayerDeath ? event->GetInt( "assister" ) :*/ event->GetInt( "assister_index" );
 		const char *assister_classname = event->GetString( "assister_name" );
@@ -166,6 +176,11 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 
 		if ( assister_name )
 		{
+			if (!IsPlayerIndex(iAssisterID) && assister_team == TEAM_UNASSIGNED)
+			{
+				assister_team = -event->GetInt("assister_faction");
+			}
+
 			// Base TF2 assumes that the assister and killer are the same team, thus it 
 			// writes both of the same string, which in turn gives them both the killers team color
 			// whether or not the assister is on the killers team or not. -danielmm8888
@@ -324,8 +339,8 @@ void CLazHudDeathNotice::OnGameEvent(IGameEvent *event, int iDeathNoticeMsg)
 		bool bDefense = ( FStrEq( "teamplay_capture_blocked", pszEventName ) || ( FStrEq( "teamplay_flag_event", pszEventName ) &&
 			TF_FLAGEVENT_DEFEND == event->GetInt( "eventtype" ) ) );
 
-		const char *szCaptureIcons[] = { "d_bluecapture", "d_redcapture" };
-		const char *szDefenseIcons[] = { "d_bluedefend", "d_reddefend" };
+		const char *szCaptureIcons[] = { "d_bluecapture", "d_redcapture", "d_greencapture", "d_yellowcapture" };
+		const char *szDefenseIcons[] = { "d_bluedefend", "d_reddefend", "d_greendefend", "d_yellowdefend" };
 		
 		int iTeam = m_DeathNotices[iDeathNoticeMsg].Killer.iTeam;
 		Assert( iTeam >= FIRST_GAME_TEAM );
@@ -619,26 +634,56 @@ void CLazHudDeathNotice::Paint()
 //-----------------------------------------------------------------------------
 Color CLazHudDeathNotice::GetTeamColor( int iTeamNumber, bool bLocalPlayerInvolved /* = false */ )
 {
-	switch ( iTeamNumber )
+	if (iTeamNumber < 0)
 	{
-	case TF_TEAM_BLUE:
-		return m_clrBlueText;
-		break;
-	case TF_TEAM_RED:
-		return m_clrRedText;
-		break;
-	case TF_TEAM_GREEN:
-		return m_clrGreenText;
-		break;
-	case TF_TEAM_YELLOW:
-		return m_clrYellowText;
-		break;
-	case TEAM_UNASSIGNED:		
-		return bLocalPlayerInvolved ? Color(0, 0, 0, 255) : Color(255, 255, 255, 255);
-		break;
-	default:
-		AssertOnce( false );	// invalid team
-		return bLocalPlayerInvolved ? Color(0, 0, 0, 255) : Color(255, 255, 255, 255);
-		break;
+		switch (-iTeamNumber)
+		{
+		default:
+			return bLocalPlayerInvolved ? Color(0, 0, 0, 255) : Color(255, 255, 255, 255);
+			break;
+		case FACTION_GOODGUYS:
+			return m_clrRedText;
+			break;
+		case FACTION_COMBINE:
+			return m_clrBlueText;
+			break;
+		case FACTION_HOSTILEFAUNA:
+			return Color(138, 104, 26, 255);
+			break;
+		case FACTION_MARINES:
+			return m_clrGreenText;
+			break;
+		case FACTION_ZOMBIES:
+			return m_clrYellowText;
+			break;
+		case FACTION_XENIANS:
+			return Color(154, 0, 219, 255);
+			break;
+		}
+	}
+	else
+	{
+		switch (iTeamNumber)
+		{
+		case TF_TEAM_BLUE:
+			return m_clrBlueText;
+			break;
+		case TF_TEAM_RED:
+			return m_clrRedText;
+			break;
+		case TF_TEAM_GREEN:
+			return m_clrGreenText;
+			break;
+		case TF_TEAM_YELLOW:
+			return m_clrYellowText;
+			break;
+		case TEAM_UNASSIGNED:
+			return bLocalPlayerInvolved ? Color(0, 0, 0, 255) : Color(255, 255, 255, 255);
+			break;
+		default:
+			AssertOnce(false);	// invalid team
+			return bLocalPlayerInvolved ? Color(0, 0, 0, 255) : Color(255, 255, 255, 255);
+			break;
+		}
 	}
 }

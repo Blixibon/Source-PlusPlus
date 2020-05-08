@@ -22,6 +22,7 @@
 #include "items.h"
 #include "ai_behavior_follow.h"
 #include "hlss_dynamic_npc_spawner.h"
+#include "players_system.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -76,12 +77,14 @@ BEGIN_DATADESC( CHLSS_Dynamic_NPC_Spawner )
 	DEFINE_FIELD( m_flNextAttackBrushSearch,		FIELD_TIME ),
 
 	DEFINE_KEYFIELD( m_iszGroupName,				FIELD_STRING,		"GroupName" ),
+	DEFINE_KEYFIELD(m_iGroupID,						FIELD_INTEGER,		"GroupId"),
 
 	DEFINE_FIELD( m_flNextDistanceToCreateNPCs,		FIELD_FLOAT ),
 	DEFINE_FIELD( m_iNumToSpawnInDistance,			FIELD_INTEGER ),
 
 	// Function Pointers
 	DEFINE_THINKFUNC( DynamicSpawnerThink ),
+	DEFINE_THINKFUNC(DynamicSpawnerMPThink),
 
 	DEFINE_INPUTFUNC( FIELD_VOID,		"Enable",				InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID,		"Disable",				InputDisable ),
@@ -154,7 +157,11 @@ void CHLSS_Dynamic_NPC_Spawner::Spawn()
 	FindDirector();
 #endif
 
-	SetThink ( &CHLSS_Dynamic_NPC_Spawner::DynamicSpawnerThink );
+	if (!AI_IsSinglePlayer())
+		SetThink(&CHLSS_Dynamic_NPC_Spawner::DynamicSpawnerMPThink);
+	else
+		SetThink ( &CHLSS_Dynamic_NPC_Spawner::DynamicSpawnerThink );
+
 	SetNextThink( gpGlobals->curtime );
 }
 
@@ -532,6 +539,111 @@ void CHLSS_Dynamic_NPC_Spawner::DynamicSpawnerThink()
 	}
 }
 
+void CHLSS_Dynamic_NPC_Spawner::DynamicSpawnerMPThink()
+{
+	SetNextThink(gpGlobals->curtime);
+
+#ifdef HLSS_USE_EHANDLE_DIRECTOR
+	if (!m_hDirector && !FindDirector())
+	{
+		Warning("DynamicSpawnerThink: no m_hDirector!\n");
+		return;
+	}
+
+	CHLSS_Director* pDirector = m_hDirector;
+#else
+	CHLSS_Director* pDirector = CHLSS_Director::GetDirector();
+#endif
+
+	if (!pDirector)
+	{
+		Warning("DynamicSpawnerThink: no pDirector!\n");
+		return;
+	}
+
+	if (m_bEnabled && pDirector->m_bEnabled)
+	{
+		/*CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+
+		if (!pPlayer)
+		{
+			Warning("hlss_dynamic_npc_spawner: no player\n");
+			return;
+		}*/
+
+		//TERO: if it's panic event for this NPC, ignore all burst shit
+		if (m_bPanicEvent)
+		{
+
+#ifdef DEBUG_DNS_ENTITY
+			DevMsg("hlss_dynamic_npc_spawner: panic event\n");
+#endif
+
+			if (m_iNumberOfNPCs < m_iPanicEventMaxNPCs)
+			{
+				if (m_flNextSpawnAttackTime < gpGlobals->curtime)
+				{
+					SpawnAttackMP();
+
+					if (m_iNumberOfNPCs >= m_iPanicEventMaxNPCs)
+					{
+						m_flNextSpawnAttackTime = gpGlobals->curtime + m_flPanicEventMaxFullDelay;
+					}
+					else
+					{
+						m_flNextSpawnAttackTime = gpGlobals->curtime + 0.2f;
+					}
+					m_flNextSpawnTime = 0;
+					m_iAttackSize = 1;
+				}
+			}
+			else if (m_iNumberOfNPCs < m_iPanicEventAbsoluteMaxNPCs && m_flNextSpawnAttackTime < gpGlobals->curtime)
+			{
+				SpawnAttackMP();
+				m_flNextSpawnAttackTime = gpGlobals->curtime + m_flPanicEventMaxFullDelay;
+				m_flNextSpawnTime = 0;
+				m_iAttackSize = 1;
+			}
+		}
+		else if (m_iAttackSize && m_flNextSpawnTime < gpGlobals->curtime && m_iNumberOfNPCs < m_iMaxNumberOfNPCs)
+		{
+			if (SpawnAttackMP())
+			{
+				m_iAttackSize--;
+			}
+
+			//TERO: the equation will make the delay between 0.5 and 1.0
+			m_flNextSpawnTime = gpGlobals->curtime + (1.0f - ((float)CHLSS_Director::GetDirector()->m_iPlayerSituation / 200.0f)); //HLSS_DYNAMIC_NPC_SPANWER_DEFAULT_DELAY;
+		}
+
+		if (m_iAttackSize <= 0)
+		{
+			GetNextAttack();
+		}
+
+	}
+	else
+	{
+
+		//TERO: here we check if there's still some alive NPCs,
+		//		we continue to set SetNextThink( gpGlobals->curtime );
+		//		until there is no NPCs alive left and we fire the appropriate outout
+
+		if (!m_bAllDead)
+		{
+			if (m_iNumberOfNPCs > 0)
+			{
+				SetNextThink(gpGlobals->curtime);
+			}
+			else
+			{
+				m_AllDead.FireOutput(this, this);
+				m_bAllDead = true;
+			}
+		}
+	}
+}
+
 void CHLSS_Dynamic_NPC_Spawner::GetNextDistanceToSpawn()
 {
 	DevMsg("Old distance to create NPCs: %f", m_flNextDistanceToCreateNPCs);
@@ -624,7 +736,7 @@ void CHLSS_Dynamic_NPC_Spawner::CheckAttackSpawning()
 void CHLSS_Dynamic_NPC_Spawner::GetNextAttack()
 {
 	//TERO: we don't need to check the burst shit now
-	if (m_flNextSpawnTime != 0)
+	if (AI_IsSinglePlayer() && m_flNextSpawnTime != 0)
 		return;
 
 	int iPlayerSituation = CHLSS_Director::GetDirector()->m_iPlayerSituation;
@@ -1018,6 +1130,62 @@ bool CHLSS_Dynamic_NPC_Spawner::SpawnAttack()
 	return false;
 }
 
+bool CHLSS_Dynamic_NPC_Spawner::SpawnAttackMP()
+{
+	CBaseEntity* pMainframe = gEntList.FindEntityByClassname(nullptr, "hlss_main_frame");
+	if (!pMainframe)
+	{
+		pMainframe = gEntList.FindEntityByClassname(nullptr, "hlss_advisor_pod");
+	}
+
+	if (!pMainframe)
+	{
+		return false;
+	}
+
+	//TERO: lets create an NPC
+	CAI_BaseNPC* pNPC = CreateNPC();
+
+	if (!pNPC)
+	{
+		return false;
+	}
+
+	//Vector vecSpawnPos = pNPC->GetAbsOrigin();
+	CHLSS_Spawn_Limiter_Filter filter(m_iGroupID);
+	int iPlayerNode = GetNetwork()->NearestNodeToPoint(pNPC, pMainframe->GetAbsOrigin(), false, &filter);
+	if (iPlayerNode == NO_NODE)
+	{
+		UTIL_RemoveImmediate(pNPC);
+		return false;
+	}
+
+	//CHLSS_Director* pDirector = CHLSS_Director::GetDirector();
+	if (filter.m_pChosenLimiter && !filter.m_pChosenLimiter->IsPointSized())
+	{
+		int iSpawnNode = GetNetwork()->NodeInsideBrush(pNPC, filter.m_pChosenLimiter, &filter);
+		if (iSpawnNode != NO_NODE)
+		{
+			Vector vecNode = GetNetwork()->GetNodePosition(pNPC, iSpawnNode);
+			pNPC->SetAbsOrigin(vecNode);
+			return true;
+		}
+	}
+	else if (filter.m_pChosenLimiter)
+	{
+		Vector vPos;
+
+		if (CAI_BaseNPC::FindSpotForNPCInRadius(&vPos, filter.m_pChosenLimiter->GetAbsOrigin(), pNPC, 128.f))
+		{
+			pNPC->SetAbsOrigin(vPos);
+			return true;
+		}
+	}
+
+	UTIL_RemoveImmediate(pNPC);
+	return false;
+}
+
 void CHLSS_Dynamic_NPC_Spawner::ClearAttackBrush()
 {
 	CHLSS_Dynamic_Attack_Brush *pBrush = m_hAttackBrush;
@@ -1185,3 +1353,97 @@ int CHLSS_Dynamic_NPC_Spawner::GetNumberOfIdleNPCsToSpawn()
 	return random->RandomInt(0, iMax);
 }
 
+BEGIN_DATADESC(CHLSS_Spawn_Limiter)
+DEFINE_KEYFIELD(m_bEnabled, FIELD_BOOLEAN, "StartEnabled"),
+DEFINE_KEYFIELD(m_iGroupID, FIELD_INTEGER, "GroupId"),
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+END_DATADESC();
+
+LINK_ENTITY_TO_CLASS(hlss_spawn_limiter_brush, CHLSS_Spawn_Limiter);
+
+CEntityClassList< CHLSS_Spawn_Limiter > g_SpawnLimiters;
+template <> CHLSS_Spawn_Limiter* CEntityClassList<CHLSS_Spawn_Limiter>::m_pClassList = NULL;
+
+CHLSS_Spawn_Limiter::CHLSS_Spawn_Limiter()
+{
+	g_SpawnLimiters.Insert(this);
+}
+
+CHLSS_Spawn_Limiter::~CHLSS_Spawn_Limiter()
+{
+	g_SpawnLimiters.Remove(this);
+}
+
+void CHLSS_Spawn_Limiter::Spawn()
+{
+	// Bind to our bmodel.
+	SetModel(STRING(GetModelName()));
+	AddEffects(EF_NODRAW);
+
+	AddSolidFlags(FSOLID_NOT_SOLID);
+}
+
+bool CHLSS_Spawn_Limiter::IsPointWithin(const Vector& vecPoint)
+{
+	return CollisionProp()->IsPointInBounds(vecPoint);
+}
+
+void CHLSS_Spawn_Limiter::InputEnable(inputdata_t& inputdata)
+{
+	m_bEnabled = true;
+}
+
+void CHLSS_Spawn_Limiter::InputDisable(inputdata_t& inputdata)
+{
+	m_bEnabled = false;
+}
+
+class CHLSS_Spawn_Limiter_Point : public CHLSS_Spawn_Limiter
+{
+public:
+	DECLARE_CLASS(CHLSS_Spawn_Limiter_Point, CHLSS_Spawn_Limiter);
+	DECLARE_DATADESC();
+
+	virtual void Spawn();
+	virtual bool	IsPointWithin(const Vector& vecPoint);
+
+	float m_flRadius;
+};
+
+BEGIN_DATADESC(CHLSS_Spawn_Limiter_Point)
+DEFINE_KEYFIELD(m_flRadius, FIELD_FLOAT, "radius"),
+END_DATADESC();
+
+LINK_ENTITY_TO_CLASS(hlss_spawn_limiter, CHLSS_Spawn_Limiter_Point);
+
+void CHLSS_Spawn_Limiter_Point::Spawn()
+{
+	AddEffects(EF_NODRAW);
+
+	AddSolidFlags(FSOLID_NOT_SOLID);
+}
+
+bool CHLSS_Spawn_Limiter_Point::IsPointWithin(const Vector& vecPoint)
+{
+	return (GetAbsOrigin().DistToSqr(vecPoint) <= Sqr(m_flRadius));
+}
+
+bool CHLSS_Spawn_Limiter_Filter::IsValid(CAI_Node* pNode)
+{
+	for (CHLSS_Spawn_Limiter* pLimiter = g_SpawnLimiters.m_pClassList; pLimiter != nullptr; pLimiter = pLimiter->m_pNext)
+	{
+		if (pLimiter->m_iGroupID == m_iGroupID && pLimiter->m_bEnabled && pLimiter->IsPointWithin(pNode->GetPosition(HULL_HUMAN) + Vector(0, 0, 8)) /*&& !ThePlayersSystem->IsAbleToSee(pNode->GetPosition(HULL_HUMAN))*/)
+		{
+			m_pChosenLimiter = pLimiter;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CHLSS_Spawn_Limiter_Filter::ShouldContinue()
+{
+	return !m_pChosenLimiter;
+}

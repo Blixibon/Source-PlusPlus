@@ -371,11 +371,13 @@ bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer )
 	// Trace between to see if we're occluded
 	trace_t tr;
 	CTraceFilterSkipTwoEntities filter( pPlayer, pItem, COLLISION_GROUP_PLAYER_MOVEMENT );
+	/*CTraceFilterSkipTwoClassnames filter2(pPlayer, "prop_dropship_container", "npc_combinedropship", COLLISION_GROUP_PLAYER_MOVEMENT);
+	CTraceFilterChain filter3(&filter, &filter2);*/
 	UTIL_TraceLine( vecStartPos, vecEndPos, MASK_SOLID, &filter, &tr );
 
 	// Occluded
 	// FIXME: For now, we exclude starting in solid because there are cases where this doesn't matter
-	if ( tr.fraction < 1.0f )
+	if ( tr.fraction < 1.0f && !tr.startsolid)
 		return false;
 
 	return true;

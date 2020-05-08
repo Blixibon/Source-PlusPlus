@@ -833,7 +833,8 @@ void CServerGameDLL::DLLShutdown( void )
 	g_pGameTypeSystem->Shutdown();
 
 	spp_utils->Disconnect();
-	filesystem->UnloadModule(spp_utils_module);
+	if (spp_utils->GetRefCount() <= 0)
+		filesystem->UnloadModule(spp_utils_module);
 
 #ifdef CSTRIKE_DLL // BOTPORT: TODO: move these ifdefs out
 	RemoveBotControl();

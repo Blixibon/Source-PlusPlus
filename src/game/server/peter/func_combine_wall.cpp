@@ -15,6 +15,11 @@ public:
 	DECLARE_CLASS(CPropCombineWallProjector, CDynamicProp);
 	DECLARE_DATADESC();
 
+	CPropCombineWallProjector()
+	{
+		SetSolid(SOLID_VPHYSICS);
+	}
+
 	void	PowerOn();
 	void	PowerOff();
 
@@ -224,6 +229,8 @@ void CCombineShieldWall::Spawn()
 	Precache();
 	BaseClass::Spawn();
 
+	m_takedamage = DAMAGE_EVENTS_ONLY;
+
 	AddSolidFlags(FSOLID_TRIGGER);
 	CollisionProp()->UseTriggerBounds(true, 1.f);
 
@@ -271,6 +278,15 @@ void CCombineShieldWall::Activate()
 				continue;
 
 			pProp->ChangeTeam(GetTeamNumber());
+			if (IsOn())
+			{
+				pProp->PowerOn();
+			}
+			else
+			{
+				pProp->PowerOff();
+			}
+
 			m_hShieldProjectors.AddToTail(pProp);
 		}
 	}
@@ -405,6 +421,19 @@ void CCombineShieldWall::ChangeTeam(int iTeamNum)
 
 		EmitSound(filter2, entindex(), "AlyxEMP.Discharge");
 	}
+}
+
+int CCombineShieldWall::OnTakeDamage(const CTakeDamageInfo& info)
+{
+	int iRet = BaseClass::OnTakeDamage(info);
+	if (iRet)
+	{
+		EntityMessageBegin(this);
+		WRITE_BYTE(2);
+		MessageEnd();
+	}
+	
+	return iRet;
 }
 
 void CCombineShieldWall::ActiveThink()

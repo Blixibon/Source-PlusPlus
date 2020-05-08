@@ -31,6 +31,9 @@ public:
 	// Team Handling
 	virtual void			ChangeTeam(int iTeamNum);
 
+	// returns the amount of damage inflicted
+	virtual int		OnTakeDamage(const CTakeDamageInfo& info);
+
 	void	ActiveThink();
 
 	static bool PointsCrossForceField(const Vector& vecStart, const Vector& vecEnd, int nTeamToIgnore = TEAM_UNASSIGNED);

@@ -75,6 +75,10 @@ public:
 	virtual bool ShouldRegenerateHealth();
 	virtual void		CreateViewModel(int viewmodelindex = 0);
 
+	void	StartAutoMovement(QAngle angOrientation, int iSequence);
+	void	StopAutoMovement();
+	void	PerformAutoMovement();
+
 	virtual ResponseRules::IResponseSystem* GetResponseSystem();
 
 	Vector 	GetPlayerEyeHeight(void);
@@ -96,7 +100,7 @@ public:
 
 	virtual float		PlayScene(const char* pszScene, float flDelay = 0.0f, AI_Response * response = NULL, IRecipientFilter * filter = NULL);
 
-	//virtual void PostThink(void);
+	virtual void PostThink(void);
 	virtual void PreThink(void);
 
 	virtual bool HandleCommand_JoinTeam(int team);
@@ -320,6 +324,9 @@ protected:
 	friend class CLAZPlayerResource;
 
 	CNetworkVar(float, m_flEyeHeightOverride);
+
+	CNetworkVar(bool, m_bInAutoMovement);
+	CNetworkQAngle(m_angAutoMoveAngles);
 public:
 	CNetworkVar(bool, m_bHasLongJump);
 };

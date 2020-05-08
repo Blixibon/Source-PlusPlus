@@ -8,6 +8,7 @@
 #include "utlmap.h"
 
 class CLZSS;
+typedef void (*MsgFunc_t) (PRINTF_FORMAT_STRING const char* fmt, ...);
 
 class CSceneFileCache : public CTier0AppSystem<ISceneFileCache>
 {
@@ -26,7 +27,9 @@ public:
 	virtual const char* GetSceneString(short stringId) override;
 	virtual void Reload() override;
 
+	CInterlockedInt m_ThreadActive;
 protected:
+	void	BlockForLoad();
 	static CLZSS compressor;
 
 	struct internalSceneData_t : public SceneCachedData_t
@@ -78,4 +81,8 @@ protected:
 
 	CCacheStringPool m_PersistantStrings;
 	CUtlMap<CRC32_t, internalSceneData_t> m_SceneTable;
+	CInterlockedInt m_ScenesLoaded;
+	ThreadHandle_t m_LoaderThread;
+
+	friend void DoLoadScenes(CSceneFileCache* pThis, MsgFunc_t print);
 };

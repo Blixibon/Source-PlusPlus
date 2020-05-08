@@ -7,13 +7,22 @@
 
 #include "ai_basenpc.h"
 #include "smoke_trail.h"
+#ifdef HL2_LAZUL
+#include "peter/laz_mapents.h"
+#endif // HL2_LAZUL
+
+#ifdef HL2_LAZUL
+typedef CLazNetworkEntity< CAI_BaseNPC > CNPC_GroundTurretBase;
+#else
+typedef CAI_BaseNPC CNPC_GroundTurretBase;
+#endif
 
 //=========================================================
 //=========================================================
-class CNPC_GroundTurret : public CAI_BaseNPC
+class CNPC_GroundTurret : public CNPC_GroundTurretBase
 {
 public:
-	DECLARE_CLASS( CNPC_GroundTurret, CAI_BaseNPC );
+	DECLARE_CLASS( CNPC_GroundTurret, CNPC_GroundTurretBase);
 	DECLARE_DATADESC();
 
 	void			Precache( void );
@@ -38,6 +47,23 @@ public:
 		return VECTOR_CONE_5DEGREES;
 	}
 
+#ifdef HL2_LAZUL
+	virtual void NetworkPowerOn(bool bForce)
+	{
+		inputdata_t inputdata;
+		inputdata.pActivator = this;
+		inputdata.pCaller = this;
+		InputEnable(inputdata);
+	}
+	virtual void NetworkPowerOff(bool bForce)
+	{
+		inputdata_t inputdata;
+		inputdata.pActivator = this;
+		inputdata.pCaller = this;
+		InputDisable(inputdata);
+	}
+	virtual LazNetworkRole_t GetNetworkRole() { return NETROLE_TURRETS; }
+#endif // HL2_LAZUL
 
 	// Sensing 
 	void GatherConditions();
@@ -105,6 +131,9 @@ protected:
 	Vector		m_vecLightOffset;
 
 	HSOUNDSCRIPTHANDLE 	m_ShotSounds;
+
+	COutputEvent	m_OnEnabled;
+	COutputEvent	m_OnDisabled;
 };
 
 #endif //#ifndef NPC_TURRET_GROUND_H

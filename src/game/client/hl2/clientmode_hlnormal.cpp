@@ -13,6 +13,11 @@
 #include <vgui_controls/AnimationController.h>
 #include "iinput.h"
 #include "ienginevgui.h"
+#ifdef HL2_LAZUL
+#include "hl2mp/ui/hl2mptextwindow.h"
+#include "peter/ui/lazuulclientscoreboard.h"
+#endif // HL2_LAZUL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -53,7 +58,42 @@ protected:
 		SetPaintBackgroundEnabled( false );
 	}
 
-	virtual void CreateDefaultPanels(void) { BaseClass::CreateDefaultPanels(); };
+#ifdef HL2_LAZUL
+	virtual void CreateDefaultPanels(void)
+	{
+		AddNewPanel(CreatePanelByName(PANEL_SCOREBOARD), "PANEL_SCOREBOARD");
+		AddNewPanel(CreatePanelByName(PANEL_INFO), "PANEL_INFO");
+		AddNewPanel(CreatePanelByName(PANEL_SPECGUI), "PANEL_SPECGUI");
+		//AddNewPanel(CreatePanelByName(PANEL_SPECMENU), "PANEL_SPECMENU");
+		AddNewPanel(CreatePanelByName(PANEL_NAV_PROGRESS), "PANEL_NAV_PROGRESS");
+		AddNewPanel(CreatePanelByName(PANEL_TEAM), "PANEL_TEAM");
+	};
+
+	virtual IViewPortPanel* CreatePanelByName(const char* szPanelName)
+	{
+		IViewPortPanel* newpanel = NULL;
+
+		if (Q_strcmp(PANEL_SCOREBOARD, szPanelName) == 0)
+		{
+			newpanel = new CLazClientScoreBoardDialog(this);
+			return newpanel;
+		}
+		else if (Q_strcmp(PANEL_INFO, szPanelName) == 0)
+		{
+			newpanel = new CHL2MPTextWindow(this);
+			return newpanel;
+		}
+		else if (Q_strcmp(PANEL_SPECGUI, szPanelName) == 0)
+		{
+			newpanel = new CHL2MPSpectatorGUI(this);
+			return newpanel;
+		}
+
+
+		return BaseClass::CreatePanelByName(szPanelName);
+	}
+#endif // HL2_LAZUL
+
 };
 
 

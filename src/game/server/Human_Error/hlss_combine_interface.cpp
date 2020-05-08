@@ -4,6 +4,7 @@
 #include "saverestore_utlvector.h"
 #include "peter/weapon_emp.h"
 #include "lazuul_gamerules.h"
+#include "peter/laz_player.h"
 #include "te.h"
 
 enum ControlSlots_e
@@ -18,6 +19,9 @@ enum ControlSlots_e
 
 ConVar hlss_main_frame_health("hlss_main_frame_health", "2500");
 
+#define SF_INTERFACE_NOT_NPC_HACKABLE 1
+#define SF_INTERFACE_DOORS_ARE_GATES 2
+
 class CHLSSCombineInterface : public CLazNetworkEntity< CBaseAnimating >, public ILazNetworkController, public IEMPInteractable
 {
 public:
@@ -30,8 +34,17 @@ public:
 
 	virtual void Precache();
 	virtual void Spawn();
+	virtual int	ObjectCaps(void)
+	{
+		return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
+	}
 
-	bool	HandleEntityCommand(KeyValues* pKeyValues);
+	virtual int			UpdateTransmitState();
+	virtual int			ShouldTransmit(const CCheckTransmitInfo* pInfo);
+
+	virtual void			Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value);
+
+	virtual bool	HandleEntityCommand(CBasePlayer* pClient, KeyValues* pKeyValues);
 
 	virtual bool EmpCanInteract(CBaseCombatWeapon* pWeapon);
 	virtual void EmpNotifyInteraction(CBaseCombatWeapon* pWeapon);
@@ -59,6 +72,8 @@ protected:
 	//bool	m_bSlotIsAvailable[NUM_CONTROL_SLOTS];
 	CNetworkArray(bool, m_bSlotActive, NUM_CONTROL_SLOTS);
 	CNetworkArray(bool, m_bSlotIsAvailable, NUM_CONTROL_SLOTS);
+	CNetworkHandle(CLaz_Player, m_hInterfacePlayer);
+	CNetworkVar(bool, m_bDoorIsGate);
 
 	COutputEvent m_ManhacksEnable;
 	COutputEvent m_ManhacksDisable;
@@ -73,13 +88,17 @@ LINK_ENTITY_TO_CLASS(hlss_combine_interface, CHLSSCombineInterface);
 
 IMPLEMENT_SERVERCLASS_ST(CHLSSCombineInterface, DT_HLSSCombineInterface)
 SendPropArray3(SENDINFO_ARRAY3(m_bSlotActive), SendPropBool(SENDINFO_ARRAY(m_bSlotActive))),
+SendPropEHandle(SENDINFO(m_hInterfacePlayer)),
+
 SendPropArray3(SENDINFO_ARRAY3(m_bSlotIsAvailable), SendPropBool(SENDINFO_ARRAY(m_bSlotIsAvailable))),
+SendPropBool(SENDINFO(m_bDoorIsGate)),
 END_SEND_TABLE();
 
 BEGIN_DATADESC(CHLSSCombineInterface)
 DEFINE_UTLVECTOR(m_NetworkEnts, FIELD_EHANDLE),
 DEFINE_KEYFIELD(m_bIsDisabled, FIELD_BOOLEAN, "StartDisabled"),
 DEFINE_FIELD(m_bForcedOff, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bDoorIsGate, FIELD_BOOLEAN),
 DEFINE_KEYFIELD(m_bHasOwnGenerator, FIELD_BOOLEAN, "HasGenerator"),
 
 DEFINE_KEYFIELD(m_bSlotIsAvailable[0], FIELD_BOOLEAN, "slot_shield"),
@@ -139,6 +158,7 @@ void CHLSSCombineInterface::Precache()
 	}
 
 	PrecacheModel(STRING(GetModelName()));
+	PrecacheScriptSound("combine.door_lock");
 }
 
 void CHLSSCombineInterface::Spawn()
@@ -147,29 +167,82 @@ void CHLSSCombineInterface::Spawn()
 
 	BaseClass::Spawn();
 
+	m_bDoorIsGate = HasSpawnFlags(SF_INTERFACE_DOORS_ARE_GATES);
+
 	SetModel(STRING(GetModelName()));
 
 	SetSolid(SOLID_VPHYSICS);
 	VPhysicsInitStatic();
+
+	if (m_bIsDisabled)
+		m_nSkin = 1;
 }
 
-bool CHLSSCombineInterface::HandleEntityCommand(KeyValues* pKeyValues)
+int CHLSSCombineInterface::UpdateTransmitState()
 {
-	if (FStrEq(pKeyValues->GetName(), "SlotChange"))
+	return SetTransmitState(FL_EDICT_FULLCHECK);
+}
+
+int CHLSSCombineInterface::ShouldTransmit(const CCheckTransmitInfo* pInfo)
+{
+	CBaseEntity* pRecipientEntity = CBaseEntity::Instance(pInfo->m_pClientEnt);
+
+	Assert(pRecipientEntity->IsPlayer());
+
+	CBasePlayer* pRecipientPlayer = static_cast<CBasePlayer*>(pRecipientEntity);
+
+	if (InSameTeam(pRecipientPlayer))
 	{
-		int iSlot = pKeyValues->GetInt("slot");
-		bool bEnabled = pKeyValues->GetBool("enabled");
+		return FL_EDICT_ALWAYS;
+	}
 
-		if (iSlot < 0 || iSlot >= NUM_CONTROL_SLOTS)
+	// by default do a PVS check
+
+	return FL_EDICT_PVSCHECK;
+}
+
+void CHLSSCombineInterface::Use(CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value)
+{
+	CLaz_Player* pPlayer = ToLazuulPlayer(pActivator);
+	if (!m_bIsDisabled && pPlayer && InSameTeam(pPlayer) && !m_hInterfacePlayer.Get())
+	{
+		m_hInterfacePlayer.Set(pPlayer);
+	}
+	else if (pPlayer)
+	{
+		CSingleUserRecipientFilter filter(pPlayer);
+		EmitSound(filter, entindex(), "combine.door_lock");
+	}
+}
+
+bool CHLSSCombineInterface::HandleEntityCommand(CBasePlayer* pClient, KeyValues* pKeyValues)
+{
+	if (pClient == m_hInterfacePlayer.Get())
+	{
+		if (FStrEq(pKeyValues->GetName(), "SlotChange"))
 		{
-			return false;
+			int iSlot = pKeyValues->GetInt("slot");
+			bool bEnabled = pKeyValues->GetBool("enabled");
+
+			if (iSlot < 0 || iSlot >= NUM_CONTROL_SLOTS)
+			{
+				return false;
+			}
+
+			if (m_bSlotActive.Get(iSlot) != bEnabled)
+			{
+				if (m_bSlotIsAvailable[iSlot])
+					m_bSlotActive.Set(iSlot, bEnabled);
+
+				UpdateSlot(iSlot);
+			}
+			return true;
 		}
-
-		if (m_bSlotIsAvailable[iSlot])
-			m_bSlotActive.Set(iSlot, bEnabled);
-
-		UpdateSlot(iSlot);
-		return true;
+		else if (FStrEq(pKeyValues->GetName(), "Close"))
+		{
+			m_hInterfacePlayer.Set(nullptr);
+			return true;
+		}
 	}
 
 	return false;
@@ -265,6 +338,7 @@ void CHLSSCombineInterface::SetPowerEnabled(bool bPower, bool bNetwork, bool bFo
 
 		m_bForcedOff = bForce;
 		m_nSkin = 1;
+		m_hInterfacePlayer = nullptr;
 	}
 
 	m_bIsDisabled = !bPower;
@@ -294,10 +368,14 @@ void CHLSSCombineInterface::UpdateSlot(int iSlot)
 	{
 		if (iSlot < SLOT_MANHACKS)
 		{
-			for (auto& hEnt : m_NetworkEnts)
+			for (int i = 0; i < m_NetworkEnts.Count(); i++)
 			{
-				ILazNetworkEntity* pNet = (ILazNetworkEntity*)hEnt.Get();
-				if (iSlot + 1 == pNet->GetNetworkRole())
+				ILazNetworkEntity* pNet = dynamic_cast<ILazNetworkEntity*> (m_NetworkEnts.Element(i).Get());
+				if (!pNet)
+					continue;
+
+				int iRole = pNet->GetNetworkRole();
+				if (iSlot == iRole - 1)
 				{
 					if (m_bSlotActive[iSlot])
 						pNet->NetworkPowerOn(false);
@@ -323,11 +401,14 @@ void CHLSSCombineInterface::UpdateSlot(int iSlot)
 	}
 }
 
-class CHLSSCombineMainframe : public CHLSSCombineInterface
+class CHLSSCombineMainframe : public CHLSSCombineInterface, public IGameModeControllerEntity
 {
 public:
 	DECLARE_CLASS(CHLSSCombineMainframe, CHLSSCombineInterface);
 	DECLARE_DATADESC();
+
+	virtual bool ShouldActivateMode(int iGameMode);
+	virtual bool CanActivateVariant(int iGameMode, int iVariant);
 
 	void Spawn();
 	virtual bool EmpCanInteract(CBaseCombatWeapon* pWeapon) { return false; }
@@ -344,6 +425,21 @@ DEFINE_OUTPUT(m_OnDestroyed, "OnDestroyed"),
 END_DATADESC();
 
 LINK_ENTITY_TO_CLASS(hlss_main_frame, CHLSSCombineMainframe);
+
+bool CHLSSCombineMainframe::ShouldActivateMode(int iGameMode)
+{
+	return iGameMode == LAZ_GM_BASE_DEFENSE;
+}
+
+bool CHLSSCombineMainframe::CanActivateVariant(int iGameMode, int iVariant)
+{
+	if (iGameMode == LAZ_GM_BASE_DEFENSE)
+	{
+		return true;
+	}
+
+	return false;
+}
 
 void CHLSSCombineMainframe::Spawn()
 {

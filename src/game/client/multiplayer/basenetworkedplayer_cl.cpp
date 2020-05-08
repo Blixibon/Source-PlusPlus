@@ -197,7 +197,15 @@ void C_BaseNetworkedPlayer::UpdateClientSideAnimation()
 	SetLocalAngles( angles );
 
 	if (GetAnimState())
-		GetAnimState()->Update( EyeAngles()[YAW], EyeAngles()[PITCH] );
+	{
+		if (GetAnimState()->IsPlayingCustomSequence())
+		{
+			//GetAnimState()->m_bForceAimYaw = true;
+			GetAnimState()->Update(GetNetworkAngles()[YAW], GetNetworkAngles()[PITCH]);
+		}
+		else
+			GetAnimState()->Update(EyeAngles()[YAW], EyeAngles()[PITCH]);
+	}
 
 	BaseClass::UpdateClientSideAnimation();
 }

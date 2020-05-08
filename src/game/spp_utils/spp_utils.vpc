@@ -57,6 +57,8 @@ $Project "SPP Utils"
 		$File	"filehelpers.h"
 		$File	"spp_utils.cpp"
 		$File	"$SRCDIR\public\interpolatortypes.cpp"
+		$File	"shader_data_system.cpp"
+		$File	"shader_data_system.h"
 	}
 
 	$Folder	"Header Files"

@@ -1,15 +1,33 @@
 "GameInfo"
 {
-	game	"Half-Life 2"
-	title	"HALF-LIFE'"
-	title2	""
-	type singleplayer_only
+	//game	"Half-Life 2: Lazuul"
+	//title	"H'LF -LIFE2"
+	//title2	"== lazuul =="
+	nomodels 1
+	nohimodels 1
 	
-	supportsvr	1
+	GameData	"lazuul.fgd"
+	
+	"icon"		"resource/game"
 	
 	content
 	{
-		"hl2"	1
+		citizen2		1	// The Citizen Returns
+		citizen			1	// The Citizen
+		"entropy-zero"	1	// Entropy Zero 1
+		human_error		1	// Human Error + Human Error: Coop
+		"hl1_low"		1	// Half-Life: Source
+		"bms_low"		1	// Black Mesa: Source mod and retail
+		"portal_low"	1	// Portal 1
+		cstrike_low		1	// Counter-Strike: Source
+		hl2_downfall	1	// Half-Life 2: Downfall
+		hl2_yla			1	// Half-Life 2: Year Long Alarm
+		metastasis		1	// MINERVA: Metastasis
+		missinginfo		1	// Missing Information
+		depot			1	// Depot Mod
+		hl2mp_low		1	// Half-Life 2: Deathmatch
+		hl1mp_low		1	// Half-Life Deathmatch Source
+		episodic		1	// Half-Life 2 + Episodes 1 & 2 + Lostcoast
 	}
 	
 	mount
@@ -20,13 +38,21 @@
 			
 			"|gameinfo_path|"
 			{
-				path_id
+				"path_id"
 				{
-					mod 1
+					"mod"	1
 				}
+				
+				vpk	map_thumbnails
+				custom	custom
 			}
 		}
 	}
+	
+	supportsvr	0
+	supportdx8 0
+	multiplecampaigns 1
+	hasportals	1
 
 	FileSystem
 	{
@@ -37,8 +63,9 @@
 			// Our Crap
 			game+mod+mod_write+default_write_path		|gameinfo_path|.
 			gamebin				|gameinfo_path|bin
-			game+mod			|all_source_engine_paths|sdk/sdk_pak.vpk
+			
 			shared				|gameinfo_path|../spp_shared
+			gamebin+sharedbin	|gameinfo_path|../spp_shared/bin
 
 			// Needed Crap
 			game				|all_source_engine_paths|hl2/hl2_english.vpk
@@ -49,7 +76,6 @@
 			game				|all_source_engine_paths|hl2/hl2_misc.vpk
 			game+game_write		hl2
 			game				|all_source_engine_paths|hl2
-			//game				"|all_source_engine_paths|../Half-Life 2/hl2"
 			platform			|all_source_engine_paths|platform
 			
 			// Engine Crap

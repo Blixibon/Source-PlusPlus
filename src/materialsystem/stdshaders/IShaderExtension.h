@@ -40,27 +40,34 @@ struct UberlightState_t
 	IMPLEMENT_OPERATOR_EQUAL( UberlightState_t );
 };
 
-class IShaderExtensionV1
+// Interface for the main thread
+class IShaderExtension
 {
 public:
-	virtual void SetUberlightParamsForFlashlightState( FlashlightState_t&, const UberlightState_t & ) = 0;
-	virtual void OnFlashlightStateDestroyed( const FlashlightState_t& ) = 0;
+	virtual void SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t) = 0;
+	virtual void OnFlashlightStateDestroyed(int iIndex) = 0;
 
-protected:
-	virtual ~IShaderExtensionV1() {};
-};
-
-class IShaderExtension : public IShaderExtensionV1
-{
-public:
-	virtual void SetDepthTextureFallbackForFlashlightState(FlashlightState_t&, ITexture*) = 0;
-	// Callers can use this to keep their own data organized
-	virtual int GetIndexOfFlashlightState(FlashlightState_t&) = 0;
+	virtual void SetDepthTextureFallbackForFlashlightState(int iIndex, ITexture*) = 0;
 
 protected:
 	virtual ~IShaderExtension() {};
 };
 
-#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension003"
+#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension004"
+
+typedef struct
+{
+	UberlightState_t uber;
+	ITexture* pDepth;
+} flashlightData_t;
+
+// Interface for the render thread
+class IShaderExtensionInternal
+{
+public:
+	virtual const flashlightData_t* GetState(const FlashlightState_t& flashlightState) const = 0;
+};
+
+#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal001"
 
 #endif // ISHADEREXTENSION_H

@@ -172,7 +172,15 @@ void CBaseNetworkedPlayer::PostThink()
 	m_angEyeAngles = EyeAngles();
 
 	if (GetAnimState())
-		GetAnimState()->Update(m_angEyeAngles[YAW], m_angEyeAngles[PITCH]);
+	{
+		if (GetAnimState()->IsPlayingCustomSequence())
+		{
+			GetAnimState()->m_bForceAimYaw = true;
+			GetAnimState()->Update(GetLocalAngles()[YAW], GetLocalAngles()[PITCH]);
+		}
+		else
+			GetAnimState()->Update(m_angEyeAngles[YAW], m_angEyeAngles[PITCH]);
+	}
 
 	if (IsAlive() && m_cycleLatchTimer.IsElapsed())
 	{

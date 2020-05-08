@@ -20,6 +20,20 @@
 //	TEAM_REBELS,
 //};
 
+enum LazFaction_t
+{
+	FACTION_NONE = 0,
+	FACTION_GOODGUYS,
+	FACTION_COMBINE,
+	FACTION_HOSTILEFAUNA,
+	FACTION_ZOMBIES,
+	FACTION_MARINES,
+	FACTION_XENIANS,
+	FACTION_ROGUE_COMPUTERS,
+
+	LAZ_FACTION_COUNT
+};
+
 enum {
 	LAZ_GM_SINGLEPLAYER = -1,
 	LAZ_GM_DEATHMATCH = 0,
@@ -48,8 +62,8 @@ class CLaz_Player;
 class ITeamRespawnWaveHandler
 {
 public:
-	virtual bool RespawnPlayer(CLaz_Player* pPlayer) = 0;
-	virtual bool IsCurrentlyHandlingPlayer(CLaz_Player* pPlayer) = 0;
+	virtual bool RespawnPlayer(CBasePlayer* pPlayer) = 0;
+	virtual bool IsCurrentlyHandlingPlayer(CBasePlayer* pPlayer) = 0;
 	virtual bool IsEnabled() = 0;
 	virtual bool CanSpawnPlayersNow() = 0;
 };
@@ -88,6 +102,8 @@ public:
 #ifndef CLIENT_DLL
 	void			AddRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler, int iTeam);
 	void			RemoveRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler);
+
+	virtual LazFaction_t GetFactionForClass(Class_T nClass);
 
 	virtual void ClientCommandKeyValues(edict_t* pEntity, KeyValues* pKeyValues);
 
@@ -145,6 +161,8 @@ public:
 #else
 	int		GetGameForMap() { return m_iMapGameType; }
 	int		GetModForMap() { return m_iMapModType; }
+
+	virtual void	GetTeamGlowColor(int nTeam, float& r, float& g, float& b);
 #endif
 
 	bool	MegaPhyscannonActive(void) { return m_bMegaPhysgun; }
@@ -228,6 +246,7 @@ public:
 	CBaseEntity* GetRecentDamager(CBaseEntity* pVictim, int iDamager, float flMaxElapsed);
 
 	virtual CBaseEntity* GetPlayerSpawnSpot(CBasePlayer* pPlayer);
+	bool	IsPlayerRespawningByHandler(CBasePlayer* pPlayer);
 
 	bool	NPC_ShouldDropGrenade(CBasePlayer* pRecipient);
 	bool	NPC_ShouldDropHealth(CBasePlayer* pRecipient);

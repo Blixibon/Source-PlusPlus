@@ -1246,7 +1246,8 @@ void CHLClient::Shutdown( void )
 	IGameSystem::ShutdownAllSystems();
 
 	spp_utils->Disconnect();
-	filesystem->UnloadModule(spp_utils_module);
+	if (spp_utils->GetRefCount() <= 0)
+		filesystem->UnloadModule(spp_utils_module);
 	
 	gHUD.Shutdown();
 	VGui_Shutdown();

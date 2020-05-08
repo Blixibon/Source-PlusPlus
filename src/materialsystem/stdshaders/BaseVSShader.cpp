@@ -2265,109 +2265,6 @@ void CBaseVSShader::DrawEqualDepthToDestAlpha( void )
 #endif
 }
 
-class CShaderExtension : public IShaderExtension
-{
-public:
-	typedef struct
-	{
-		UberlightState_t uber;
-		ITexture* pDepth;
-	} flashlightData_t;
-
-	void SetUberlightParamsForFlashlightState( FlashlightState_t& flashlightState, const UberlightState_t& uberlightState ) OVERRIDE
-	{
-		AUTO_LOCK(mutex);
-		int index = GetFlashlightStateIndex(flashlightState);
-
-		if (index == -1)
-		{
-			return Warning("Could not set uberlight state for flashlight. Tell developer.");
-		}
-
-		//if ( memcmp( &m_dataTable[index], &uberlightState, sizeof( UberlightState_t ) ) )
-			m_dataTable[index - 1].uber = uberlightState;
-	}
-
-	void SetDepthTextureFallbackForFlashlightState(FlashlightState_t& flashlightState, ITexture* pDepthTex)
-	{
-		AUTO_LOCK(mutex);
-		int index = GetFlashlightStateIndex(flashlightState);
-
-		if (index == -1)
-		{
-			return Warning("Could not set depth texture for flashlight. Tell developer.");
-		}
-
-		//if ( memcmp( &m_dataTable[index], &uberlightState, sizeof( UberlightState_t ) ) )
-		m_dataTable[index - 1].pDepth = pDepthTex;
-	}
-
-	virtual int GetIndexOfFlashlightState(FlashlightState_t& flashlightState)
-	{
-		AUTO_LOCK(mutex);
-		return GetFlashlightStateIndex(flashlightState);
-	}
-
-	void OnFlashlightStateDestroyed( const FlashlightState_t& flashlightState ) OVERRIDE
-	{
-		AUTO_LOCK( mutex );
-		const int index = flashlightState.m_nShadowQuality >> 16;
-		if ( index != 0 )
-		{
-			m_usedSlots.Clear( index - 1 );
-		}
-	}
-
-	const flashlightData_t* GetState( const FlashlightState_t& flashlightState ) const
-	{
-		AUTO_LOCK( mutex );
-		const int index = flashlightState.m_nShadowQuality >> 16;
-		if ( index != 0 )
-		{
-			return &m_dataTable[index - 1];
-		}
-		return NULL;
-	}
-
-protected:
-	int		GetFlashlightStateIndex(FlashlightState_t& flashlightState)
-	{
-		AUTO_LOCK(mutex);
-		const int index = flashlightState.m_nShadowQuality >> 16;
-		if (index == 0)
-		{
-			int emptySlot = -1;
-			for (int i = 0; i < 128; ++i)
-			{
-				if (!m_usedSlots.IsBitSet(i))
-				{
-					emptySlot = i;
-					break;
-				}
-			}
-
-			if (emptySlot == -1)
-				return -1;
-
-			flashlightState.m_nShadowQuality |= (emptySlot + 1) << 16;
-			//flashlightState.m_nShadowQuality = emptySlot + 1;
-			m_usedSlots.Set(emptySlot);
-			return emptySlot + 1;
-		}
-
-		return index;
-	}
-
-private:
-	CThreadMutex mutex;
-	flashlightData_t m_dataTable[128];
-	CBitVec<128> m_usedSlots;
-};
-
-static CShaderExtension s_shaderExtension;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CShaderExtension, IShaderExtension, SHADEREXTENSION_INTERFACE_VERSION, s_shaderExtension );
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CShaderExtension, IShaderExtensionV1, "IShaderExtension001", s_shaderExtension);
-
 #define	PSREG_UBERLIGHT_SMOOTH_EDGE_0			33
 #define	PSREG_UBERLIGHT_SMOOTH_EDGE_1			34
 #define	PSREG_UBERLIGHT_SMOOTH_EDGE_OOW			35
@@ -2377,7 +2274,10 @@ EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CShaderExtension, IShaderExtensionV1, "IShader
 
 bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const &state )
 {
-	const CShaderExtension::flashlightData_t *pData = s_shaderExtension.GetState( state );
+	if (!g_pShaderExtension)
+		return false;
+
+	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
 	if (!pData)
 		return false;
 	const UberlightState_t& uberlightState = pData->uber;
@@ -2412,7 +2312,10 @@ bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const 
 
 ITexture* GetDepthTextureFromState(FlashlightState_t const& state)
 {
-	const CShaderExtension::flashlightData_t* pData = s_shaderExtension.GetState(state);
+	if (!g_pShaderExtension)
+		return false;
+
+	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
 	if (!pData)
 		return nullptr;
 

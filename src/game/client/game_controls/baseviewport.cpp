@@ -242,9 +242,6 @@ void CBaseViewport::CreateDefaultPanels( void )
 	AddNewPanel( CreatePanelByName( PANEL_SPECMENU ), "PANEL_SPECMENU" );
 	AddNewPanel( CreatePanelByName( PANEL_NAV_PROGRESS ), "PANEL_NAV_PROGRESS" );
 #endif // !TF_CLIENT_DLL
-#ifdef HL2_LAZUL
-	AddNewPanel(CreatePanelByName(PANEL_TEAM), "PANEL_TEAM");
-#endif
 #endif // !_XBOX
 }
 

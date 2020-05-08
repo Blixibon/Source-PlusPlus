@@ -38,29 +38,36 @@ LINK_ENTITY_TO_CLASS( npc_turret_ground, CNPC_GroundTurret );
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CNPC_GroundTurret )
-	DEFINE_FIELD( m_iAmmoType,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_pSmoke,			FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_vecSpread,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_bEnabled,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeNextShoot, FIELD_TIME ),
-	DEFINE_FIELD( m_flTimeLastSawEnemy, FIELD_TIME ),
-	DEFINE_FIELD( m_iDeathSparks,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_bHasExploded,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flSensingDist,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_flTimeNextPing, FIELD_TIME ),
-	DEFINE_FIELD( m_bSeeEnemy,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecClosedPos,	FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecLightOffset,	FIELD_POSITION_VECTOR ),
+BEGIN_DATADESC(CNPC_GroundTurret)
+DEFINE_FIELD(m_iAmmoType, FIELD_INTEGER),
+DEFINE_FIELD(m_pSmoke, FIELD_CLASSPTR),
+DEFINE_FIELD(m_vecSpread, FIELD_VECTOR),
+DEFINE_FIELD(m_bEnabled, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flTimeNextShoot, FIELD_TIME),
+DEFINE_FIELD(m_flTimeLastSawEnemy, FIELD_TIME),
+DEFINE_FIELD(m_iDeathSparks, FIELD_INTEGER),
+DEFINE_FIELD(m_bHasExploded, FIELD_BOOLEAN),
+DEFINE_FIELD(m_flSensingDist, FIELD_FLOAT),
+DEFINE_FIELD(m_flTimeNextPing, FIELD_TIME),
+DEFINE_FIELD(m_bSeeEnemy, FIELD_BOOLEAN),
+DEFINE_FIELD(m_vecClosedPos, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vecLightOffset, FIELD_POSITION_VECTOR),
 
-	DEFINE_THINKFUNC( DeathEffects ),
+DEFINE_THINKFUNC(DeathEffects),
 
-	DEFINE_OUTPUT( m_OnAreaClear, "OnAreaClear" ),
+DEFINE_OUTPUT(m_OnAreaClear, "OnAreaClear"),
+DEFINE_OUTPUT(m_OnEnabled, "OnEnabled"),
+DEFINE_OUTPUT(m_OnDisabled, "OnDisabled"),
 
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
 	// DEFINE_FIELD( m_ShotSounds, FIELD_SHORT ),
+
+#ifdef HL2_LAZUL
+	DEFINE_LAZNETWORKENTITY_DATADESC(),
+#endif // HL2_LAZUL
+
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -190,6 +197,11 @@ Class_T	CNPC_GroundTurret::Classify( void )
 	}
 	else
 	{
+		if (m_hNetworkController.Get())
+		{
+			return m_hNetworkController->Classify();
+		}
+
 		return CLASS_COMBINE;
 	}
 }
@@ -649,6 +661,11 @@ void CNPC_GroundTurret::Scan()
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::InputEnable( inputdata_t &inputdata )
 {
+	if (!m_bEnabled)
+	{
+		m_OnEnabled.FireOutput(inputdata.pActivator, this);
+	}
+
 	m_bEnabled = true;
 
 	// Because the turret might not ever ACQUIRE an enemy, we need to arrange to 
@@ -660,6 +677,11 @@ void CNPC_GroundTurret::InputEnable( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::InputDisable( inputdata_t &inputdata )
 {
+	if (m_bEnabled)
+	{
+		m_OnDisabled.FireOutput(inputdata.pActivator, this);
+	}
+
 	m_bEnabled = false;
 }
 

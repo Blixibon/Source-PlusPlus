@@ -82,7 +82,7 @@ public:
 	virtual Class_T		Classify ( void )
 	{
 		if (FClassnameIs(this, "npc_alien_slave"))
-			return CLASS_ANTLION;
+			return CLASS_ALIEN_MILITARY;
 
 		return IsGameEndAlly() ? CLASS_PLAYER_ALLY_VITAL : CLASS_VORTIGAUNT;
 	}

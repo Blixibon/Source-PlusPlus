@@ -133,6 +133,7 @@ public:
 	bool		 SpawnInsideBrush(CBasePlayer *pPlayer, int iPlayerNode, CAI_BaseNPC *pNPC, CHLSS_Dynamic_Spawn_Brush* pBrush);
 	CHLSS_Dynamic_Attack_Brush* FindAttackBrush(CBasePlayer *pPlayer, int iPlayerNode,  CAI_BaseNPC *pNPC);
 	bool		 SpawnAttack();
+	bool		 SpawnAttackMP();
 	void		 ClearAttackBrush();
 
 	int			 GetNumberOfIdleNPCsToSpawn();
@@ -144,6 +145,7 @@ public:
 #endif
 
 	void		 DynamicSpawnerThink( void );
+	void		 DynamicSpawnerMPThink();
 
 	void		 CheckAttackSpawning();
 	void		 GetNextAttack();
@@ -207,6 +209,7 @@ public:
 	static const char *m_lpzNPCWeaponNames[HLSS_NPC_WEAPON_NUM];
 
 	string_t m_iszGroupName;
+	int		m_iGroupID;
 
 	#define SF_HLSS_SPAWNER_ONLY_ALLOW_FROM_GROUP		( 1 << 0  )
 
@@ -373,7 +376,7 @@ public:
 
 	COutputEvent m_OnSpawn;
 
-	#define SF_HLSS_BRUSH_ONLY_ALLOW_FROM_GROUP		( 1 << 0  )
+	#define SF_HLSS_BRUSH_ONLY_ALLOW_FROM_GROUP		( 1 << 0 )
 
 	string_t m_iszGroupName;
 
@@ -571,6 +574,45 @@ public:
 	CHandle<CHLSS_Player_Path> m_hNextPath;
 	float		m_flDistanceToNext;
 	bool		m_bEnabled;
+};
+
+class CHLSS_Spawn_Limiter : public CBaseEntity
+{
+public:
+	DECLARE_CLASS(CHLSS_Spawn_Limiter, CBaseEntity);
+	DECLARE_DATADESC();
+
+	CHLSS_Spawn_Limiter();
+	~CHLSS_Spawn_Limiter();
+
+	CHLSS_Spawn_Limiter* m_pNext;
+
+	virtual void Spawn();
+
+	virtual bool	IsPointWithin(const Vector& vecPoint);
+
+	void	InputEnable(inputdata_t& inputdata);
+	void	InputDisable(inputdata_t& inputdata);
+
+	bool		m_bEnabled;
+	int			m_iGroupID;
+};
+
+class CHLSS_Spawn_Limiter_Filter : public INearestNodeFilter
+{
+public:
+	CHLSS_Spawn_Limiter_Filter(int iGroupID)
+	{
+		m_iGroupID = iGroupID;
+		m_pChosenLimiter = nullptr;
+	}
+
+	virtual bool IsValid(CAI_Node* pNode);
+	virtual bool ShouldContinue();
+
+	CHLSS_Spawn_Limiter* m_pChosenLimiter;
+private:
+	int		m_iGroupID;
 };
 
 #endif // HLSS_DYNAMIC_NPC_SPAWNER_H

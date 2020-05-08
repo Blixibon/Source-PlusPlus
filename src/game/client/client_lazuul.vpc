@@ -84,6 +84,10 @@ $Project "Client (Lazuul)"
 			$Folder "Game UI"
 			{
 				$File "peter\optionssublazuul.cpp"
+				$File "peter\ui\lazuulclientscoreboard.cpp"
+				$File "peter\ui\lazuulclientscoreboard.h"
+				$File "hl2mp\ui\backgroundpanel.cpp"
+				$File "hl2mp\ui\hl2mptextwindow.cpp"
 			}
 
 			//$Folder "UI"

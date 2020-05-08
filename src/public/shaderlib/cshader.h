@@ -30,6 +30,7 @@
 #include "materialsystem/imaterialsystemhardwareconfig.h"
 #include "materialsystem/materialsystem_config.h"
 #include "shaderlib/ShaderDLL.h"
+#include "../materialsystem/stdshaders/IShaderExtension.h"
 
 // make "local variable is initialized but not referenced" warnings errors for combo checking macros
 #pragma warning ( error : 4189 )
@@ -39,6 +40,7 @@
 //-----------------------------------------------------------------------------
 extern IMaterialSystemHardwareConfig *g_pHardwareConfig;
 extern const MaterialSystem_Config_t *g_pConfig;
+extern IShaderExtensionInternal* g_pShaderExtension;
 extern bool g_shaderConfigDumpEnable;
 
 // Helper method

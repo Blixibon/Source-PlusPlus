@@ -11,6 +11,10 @@
 #endif
 
 #include "basemultiplayerplayer.h"
+#ifdef HL2_LAZUL
+#include "peter/laz_mapents.h"
+#endif // HL2_LAZUL
+
 
 // Spawnflags
 #define SF_CAP_POINT_HIDEFLAG		(1<<0)
@@ -23,6 +27,9 @@
 // Purpose: 
 //-----------------------------------------------------------------------------
 class CTeamControlPoint : public CBaseAnimating
+#ifdef HL2_LAZUL
+	//, public ILazNetworkController
+#endif
 {
 	DECLARE_CLASS( CTeamControlPoint, CBaseAnimating );
 public:

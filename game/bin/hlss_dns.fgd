@@ -95,12 +95,13 @@
 	output OnPhysGunDrop(void) : "Released by physgun"
 ]
 
-@PointClass base(BaseNPC, Parentname, AlyxInteractable) studio( "models/combine_turrets/ground_turret.mdl" ) = npc_turret_ground : "Combine ground turret"
+@PointClass base(BaseNPC, Parentname, ComputerNetwork) studio( "models/combine_turrets/ground_turret.mdl" ) = npc_turret_ground : "Combine ground turret"
 [
 	input Enable(void) : "Turn turret on."
 	input Disable(void) : "Turn turret off."
-	input SetHackedOn(void) : "Make hostile for Combine players."
-	input SetHackedOff(void) : "Make friendly for Combine players."
+
+	output OnEnabled(void) : "Fires when this turret is enabled."
+	output OnDisabled(void) : "Fires when this turret is disabled."
 
 	output OnAreaClear(void) : "Fires when the turret can't find any more enemies (7 second delay)"
 ]
@@ -376,9 +377,9 @@
 
 	//TEMPLATE 
 	Template_Name(target_destination) 	: "Template NPC Name" 		: "" 	: "Template NPC that this maker should be creating clones of."
-//	Template_Delay(float) 			: "Delay between attacks" 	: 60 	: "Delay between NPCs attacks"
+	Template_Delay(float) 			: "Delay between attacks" 	: 60 	: "Delay between NPCs attacks"
 	Template_Max(integer) 			: "Max Number of NPCs" 		: 10 	: "Max number of NPC"
-//	Template_MaxAttack(integer)		: "Max Attack Size"		: 10 	: "Max size of attacks."
+	Template_MaxAttack(integer)		: "Max Attack Size"		: 10 	: "Max size of attacks."
 	Template_Difficulty(integer) 		: "NPC Difficulty" 		: 50 	: "0-100 setting to approx this NPC's difficulty. For hostiles > 50 will spawn only if situation is better. For friendlies < 50 will only spawn if situation is worse."
 	Template_FirstDelay(float)		: "First Delay" 		: 120 	: "Delay before the first NPC from template 1 can be spawned. Should be bigger than Delay. 0 means will be able to spawn right away."
 
@@ -390,7 +391,7 @@
 	input Enable(void) 		: "Enable Dynamic NPC Spawner"
 	input Disable(void) 		: "Disable Dynamic NPC Spawner"
 
-//	input SetMaxAttack(integer) 	: "Set max size for attacks."
+	input SetMaxAttack(integer) 	: "Set max size for attacks."
 	input SetMaxNPCs(integer) 	: "Set max NPCs."
 
 	input StartPanicEvent(void) 	: "Start Panic Event."
@@ -494,9 +495,6 @@
 	input Enable(void) : 		"If closed, open."
 	input Disable(void) : 		"If open, close."
 	input Toggle(void) : 		"Toggle - If open, close. If closed, open."
-
-	input SetHackedOff(void) : 	"Restore the Combine turret"
-	input SetHackedOn(void) : 	"Hack the Combine turret"
 
 	// Outputs
 	output OnDeploy(void) : "Turret is becoming active and dangerous."

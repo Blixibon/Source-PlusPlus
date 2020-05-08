@@ -8,8 +8,11 @@
 #include "c_team.h"
 #include "view.h"
 
+#define SHIELD_OVERLOAD_SUSTAIN_TIME 0.1f
+#define SHIELD_OVERLOAD_FADE_TIME 0.3f
+
 #define SHIELD_POWERUP_TIME 0.35f
-#define SHIELD_POWERDOWN_TIME 0.5f
+#define SHIELD_POWERDOWN_TIME 0.45f
 #define SOUNDCONTROLLER() CSoundEnvelopeController::GetController()
 
 class C_CombineShieldWall : public C_BaseEntity
@@ -29,12 +32,17 @@ public:
 	virtual bool		ShouldDraw(void);
 	Vector				GetShieldColor();
 	int					GetDeniedEntities(C_BaseEntity* pEntities[2]);
+	float				GetOverloadPct();
+
+	// Server to client message received
+	virtual void					ReceiveMessage(int classID, bf_read& msg);
 
 private:
 	bool m_bShieldActive;
 	bool m_bOldShieldActive;
 
 	float m_flStateChangedTime;
+	float m_flTimeLastDamaged;
 
 	CSoundPatch* m_pIdleSound;
 	CSoundPatch* m_pTouchSound;
@@ -228,6 +236,30 @@ int C_CombineShieldWall::GetDeniedEntities(C_BaseEntity* pEntities[2])
 	return iCount;
 }
 
+float C_CombineShieldWall::GetOverloadPct()
+{
+	if (m_flTimeLastDamaged == 0.f)
+		return 0.f;
+
+	return RemapValClamped(gpGlobals->curtime, m_flTimeLastDamaged + SHIELD_OVERLOAD_SUSTAIN_TIME, m_flTimeLastDamaged + SHIELD_OVERLOAD_SUSTAIN_TIME + SHIELD_OVERLOAD_FADE_TIME, 1.f, 0.f);
+}
+
+void C_CombineShieldWall::ReceiveMessage(int classID, bf_read& msg)
+{
+	if (classID != GetClientClass()->m_ClassID)
+	{
+		BaseClass::ReceiveMessage(classID, msg);
+		return;
+	}
+
+	int iMsgType = msg.ReadByte();
+	if (iMsgType == 2)
+	{
+		m_flTimeLastDamaged = gpGlobals->curtime;
+		return;
+	}
+}
+
 class CShieldBasicColorProxy : public CResultProxy
 {
 public:
@@ -239,7 +271,7 @@ public:
 			C_CombineShieldWall* pShield = dynamic_cast<C_CombineShieldWall*> (pEnt);
 			if (pShield)
 			{
-				Vector vColor = pShield->GetShieldColor() * pShield->GetPowerFraction();
+				Vector vColor = pShield->GetShieldColor() * pShield->GetPowerFraction() * Lerp(pShield->GetOverloadPct(), 1.f, 4.f);
 				m_pResult->SetVecValue(vColor.Base(), 3);
 				return;
 			}
@@ -260,6 +292,7 @@ public:
 
 private:
 	IMaterialVar* m_pPowerupVar;
+	IMaterialVar* m_pOverloadVar;
 	IMaterialVar* m_pShieldColorVar;
 	IMaterialVar* m_pVortexColorVar;
 	IMaterialVar* m_pVortexActiveVars[2];
@@ -273,6 +306,10 @@ bool CShieldVortexProxy::Init(IMaterial* pMaterial, KeyValues* pKeyValues)
 	bool bFound = false;
 
 	m_pPowerupVar = pMaterial->FindVar("$POWERUP", &bFound);
+	if (!bFound)
+		return false;
+
+	m_pOverloadVar = pMaterial->FindVar("$FLOW_COLOR_INTENSITY", &bFound);
 	if (!bFound)
 		return false;
 
@@ -309,6 +346,7 @@ void CShieldVortexProxy::OnBind(C_BaseEntity* pBaseEntity)
 	if (pShield)
 	{
 		m_pPowerupVar->SetFloatValue(Bias(pShield->GetPowerFraction(), 0.75f));
+		m_pOverloadVar->SetFloatValue(Lerp(pShield->GetOverloadPct(), 1.f, 4.f));
 		Vector vecColor = pShield->GetShieldColor();
 		m_pShieldColorVar->SetVecValue(vecColor.Base(), 3);
 		vecColor += 0.1f;

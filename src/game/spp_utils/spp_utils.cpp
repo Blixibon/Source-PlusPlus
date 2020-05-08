@@ -4,6 +4,7 @@
 #include "holiday_event_system.h"
 #include "rich_presence_system.h"
 #include "scenecache.h"
+#include "shader_data_system.h"
 #include "tier3/tier3.h"
 
 //IVEngineClient* engineclient = nullptr;
@@ -19,31 +20,42 @@ class CGameSharedUtils : public CTier3AppSystem<IGameSharedUtils>, public IInter
 public:
 	CGameSharedUtils() : BaseClass(true)
 	{
-		m_bConnected = false;
+		m_iConnectCount = 0;
+		m_iShaderCount = 0;
 		m_bInitialized = false;
 	}
 
+	virtual const int	GetRefCount() const
+	{
+		return m_iConnectCount + m_iShaderCount;
+	}
+
+	virtual void	ShaderInit();
+	virtual void	ShaderShutdown();
+
 	virtual bool Connect( CreateInterfaceFn factory ) 
 	{
-		if (m_bConnected)
-			return true;
+		bool bRet = true;
+		if (m_iConnectCount == 0)
+		{
+			bRet = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init() && m_Presence.Connect(factory);
+			m_Presence.InternalInit(this);
+		}
 
-		m_bConnected = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init() && m_Presence.Connect(factory);
-		m_Presence.InternalInit(this);
-
-		return m_bConnected;
+		m_iConnectCount++;
+		return bRet;
 	}
 
 	virtual void Disconnect()
 	{
-		if (!m_bConnected)
+		m_iConnectCount--;
+		if (m_iConnectCount != 0)
 			return;
 
 		m_Holidays.Shutdown();
 		m_SceneCache.Disconnect();
 		m_Presence.Disconnect();
 		BaseClass::Disconnect();
-		m_bConnected = false;
 	}
 
 	virtual InitReturnVal_t Init()
@@ -140,12 +152,14 @@ public:
 	}
 
 private:
-	bool m_bConnected;
+	int m_iConnectCount;
+	int m_iShaderCount;
 	bool m_bInitialized;
 	CMapEditHelper m_Helper;
 	CHolidayEventSystem m_Holidays;
 	CRichPresense m_Presence;
 	CSceneFileCache m_SceneCache;
+	CShaderDataExtension m_ShaderExtension;
 
 	typedef struct {
 		bool m_bRunning;
@@ -202,11 +216,29 @@ CGameSharedUtils g_SharedUtils;
 IInternalSharedData* internaldata = &g_SharedUtils;
 EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CGameSharedUtils, IGameSharedUtils, SPP_UTILS_INTERFACE, g_SharedUtils);
 
+void CGameSharedUtils::ShaderInit()
+{
+	m_iShaderCount++;
+}
+
+void CGameSharedUtils::ShaderShutdown()
+{
+	m_iShaderCount--;
+}
+
 void* CGameSharedUtils::QueryInterface(const char* pInterfaceName)
 {
 	if (V_strcmp(SCENE_FILE_CACHE_INTERFACE_VERSION, pInterfaceName) == 0)
 	{
 		return static_cast<ISceneFileCache*> (&m_SceneCache);
+	}
+	else if (V_strcmp(SHADEREXTENSION_INTERFACE_VERSION, pInterfaceName) == 0)
+	{
+		return static_cast<IShaderExtension*> (&m_ShaderExtension);
+	}
+	else if (V_strcmp(SHADEREXTENSIONINTERNAL_INTERFACE_VERSION, pInterfaceName) == 0)
+	{
+		return static_cast<IShaderExtensionInternal*> (&m_ShaderExtension);
 	}
 	else
 	{

@@ -345,10 +345,13 @@ void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
 	m_bForceAimYaw = false;
 
 #ifndef CLIENT_DLL
-	QAngle angle = GetBasePlayer()->GetAbsAngles();
-	angle[YAW] = m_flCurrentFeetYaw;
+	if (!IsPlayingCustomSequence())
+	{
+		QAngle angle = GetBasePlayer()->GetAbsAngles();
+		angle[YAW] = m_flCurrentFeetYaw;
 
-	GetBasePlayer()->SetAbsAngles(angle);
+		GetBasePlayer()->SetAbsAngles(angle);
+	}
 #else
 	//QAngle bodyAngles = m_angRender;
 	//

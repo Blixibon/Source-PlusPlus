@@ -12151,6 +12151,11 @@ void CAI_BaseNPC::ChangeTeam(int iTeamNum)
 	}
 
 	BaseClass::ChangeTeam(iTeamNum);
+
+	if (GetState() == NPC_STATE_COMBAT)
+	{
+		ChooseEnemy();
+	}
 }
 
 void CAI_BaseNPC::UpdateTeam()

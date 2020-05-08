@@ -21,7 +21,7 @@
 #include "ammodef.h"
 #include "items.h"
 #include "ai_behavior_follow.h"
-
+#include "players_system.h"
 #include "hlss_dynamic_npc_spawner.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -329,11 +329,23 @@ void CHLSS_Director::UpdatePlayerSituation()
 	m_flNextSituationUpdateTime = gpGlobals->curtime + HLSS_SITUATION_UPDATE_DELAY;
 
 
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-	if (!pPlayer)
+	CBasePlayer *pPlayer = nullptr;
+	int iPlayerTeam = TEAM_UNASSIGNED;
+	if (AI_IsSinglePlayer())
 	{
-		Warning("hlss_director: no player\n");
-		return;
+		pPlayer = UTIL_GetLocalPlayer();
+
+		if (!pPlayer)
+		{
+			Warning("hlss_director: no player\n");
+			return;
+		}
+
+		iPlayerTeam = pPlayer->GetTeamNumber();
+	}
+	else
+	{
+		iPlayerTeam = LazuulRules()->GetProtaganistTeam();
 	}
 
 	float flPathReachedRatio = 0;
@@ -359,7 +371,7 @@ void CHLSS_Director::UpdatePlayerSituation()
 	{
 		if (pSpawner->m_bEnabled)
 		{
-			disposition = (pSpawner->m_iNPCTeam == LazuulRules()->GetProtaganistTeam()) ? D_LI : D_HT;
+			disposition = (pSpawner->m_iNPCTeam == iPlayerTeam) ? D_LI : D_HT;
 
 			if (disposition == D_HT)
 			{
@@ -396,7 +408,13 @@ void CHLSS_Director::UpdatePlayerSituation()
 
 	//float flAfterLoad = clamp(((gpGlobals->curtime - m_flLastLoadTime) / HLSS_EASY_TIME_AFTER_LOAD), 0.0f, 1.0f);
 
-	int iHealth = pPlayer->GetHealth();
+	int iHealth;
+	if (AI_IsSinglePlayer())
+		iHealth = pPlayer->GetHealth();
+	else
+	{
+		iHealth = ThePlayersSystem->GetHealthTotal(iPlayerTeam);
+	}
 
 	//TERO: lets start recording the damage take
 	if ( iHealth < m_iLastPlayerHealth && m_flStopTakingDamageTime == 0)
@@ -453,27 +471,33 @@ void CHLSS_Director::UpdatePlayerSituation()
 	flNewSituation += (flNPCScale * HLSS_SITUATION_NPC); //(flFriendlyScale - flHostileScale) * 40.0f;
 
 	float flWeapons = 0;
-
-	//TERO: this doesn't take into count grenades or smg1 grenades, etc.
-	for (int i=HLSS_DYNAMIC_WEAPON_PISTOL; i<HLSS_DYNAMIC_WEAPON_STUNSTICK; i++)
+	if (AI_IsSinglePlayer())
 	{
-		//if ((pPlayer->Weapon_OwnsThisType( STRING(iszWeaponNames[i]) ) != NULL))
-		if ((pPlayer->Weapon_OwnsThisType( m_lpzItemNames[i] ) != NULL))
+		//TERO: this doesn't take into count grenades or smg1 grenades, etc.
+		for (int i = HLSS_DYNAMIC_WEAPON_PISTOL; i < HLSS_DYNAMIC_WEAPON_STUNSTICK; i++)
 		{
-			if (m_iAmmoTypes[i] != -1)
+			//if ((pPlayer->Weapon_OwnsThisType( STRING(iszWeaponNames[i]) ) != NULL))
+			if ((pPlayer->Weapon_OwnsThisType(m_lpzItemNames[i]) != NULL))
 			{
-				int iMax = GetAmmoDef()->MaxCarry(m_iAmmoTypes[i]);
-				int iCount = pPlayer->GetAmmoCount(m_iAmmoTypes[i]);
-
-				if (iMax != 0)
+				if (m_iAmmoTypes[i] != -1)
 				{
-					flWeapons += (float)iCount / (float)iMax;
+					int iMax = GetAmmoDef()->MaxCarry(m_iAmmoTypes[i]);
+					int iCount = pPlayer->GetAmmoCount(m_iAmmoTypes[i]);
+
+					if (iMax != 0)
+					{
+						flWeapons += (float)iCount / (float)iMax;
+					}
 				}
 			}
 		}
-	}
 
-	flWeapons = clamp(flWeapons * HLSS_MAX_WEAPONS_CARRY_SCALE, 0.0f, 1.0f);
+		flWeapons = clamp(flWeapons * HLSS_MAX_WEAPONS_CARRY_SCALE, 0.0f, 1.0f);
+	}
+	else
+	{
+		flWeapons = (float)ThePlayersSystem->GetWeaponStats(iPlayerTeam) / (float)STATS_EXCELENT;
+	}
 
 	flNewSituation += flWeapons * HLSS_SITUATION_WEAPONS;
 
@@ -1075,6 +1099,11 @@ int CHLSS_Director::GetAmmoCrateToSpawn()
 
 void CHLSS_Director::UpdateItemData(bool bForce)
 {
+	if (!AI_IsSinglePlayer())
+	{
+		return;
+	}
+
 	//UPDATE THE REST
 
 	if (m_flNextUpdateItemData > gpGlobals->curtime && !bForce)

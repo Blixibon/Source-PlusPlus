@@ -24,8 +24,10 @@ public:
 	virtual void			OnDataChanged(DataUpdateType_t updateType);
 	virtual void			ClientThink();
 	virtual float GetFOV( void );
+	virtual const QAngle& GetRenderAngles();
 
 	virtual void	UpdateFlashlight(void);
+	void	PerformAutoMovement();
 
 	virtual void	CalcViewModelView(const Vector& eyeOrigin, const QAngle& eyeAngles);
 
@@ -75,6 +77,7 @@ public:
 
 	virtual	bool			TestHitboxes(const Ray_t &ray, unsigned int fContentsMask, trace_t& tr);
 
+	virtual void PostThink(void);
 	virtual void PreThink(void);
 
 	// Taunts/VCDs
@@ -109,6 +112,7 @@ public:
 
 protected:
 	void HandleTaunting(void);
+	bool GetIntervalMovement(float flIntervalUsed, bool& bMoveSeqFinished, Vector& newPosition, QAngle& newAngles);
 
 	bool				m_bWasTaunting;
 	CameraThirdData_t	m_TauntCameraData;
@@ -127,6 +131,9 @@ protected:
 	int					m_nMovementCfg;
 
 	float				m_flEyeHeightOverride;
+
+	bool m_bInAutoMovement;
+	QAngle m_angAutoMoveAngles;
 
 	int				m_iOldTeam;
 };

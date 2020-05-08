@@ -638,3 +638,33 @@ void CLaz_Player::StopWalking(void)
 	SetMaxSpeed(GetLazMoveData().flNormSpeed);
 	m_fIsWalking = false;
 }
+
+void CLaz_Player::PerformAutoMovement()
+{
+	// Perform automovement
+	if (m_bInAutoMovement && GetAnimState()->IsPlayingCustomSequence())
+	{
+		SetAbsAngles(m_angAutoMoveAngles);
+#ifndef CLIENT_DLL
+		SnapEyeAngles(m_angAutoMoveAngles);
+#else
+		SetViewAngles(m_angAutoMoveAngles);
+#endif
+
+		bool bFinished;
+		Vector newPos;
+		QAngle newAngles;
+
+		float flInterval = GetAnimTimeInterval();
+
+		if (flInterval > 0.f && GetIntervalMovement(flInterval, bFinished, newPos, newAngles))
+		{
+			Vector dist = newPos - GetLocalOrigin();
+			VectorScale(dist, 1.0 / flInterval, dist);
+			SetLocalVelocity(dist);
+
+			//QAngle angDeltaYaw = newAngles - GetLocalAngles();
+			//m_angAutoMoveAngles = m_angAutoMoveAngles + angDeltaYaw;
+		}
+	}
+}

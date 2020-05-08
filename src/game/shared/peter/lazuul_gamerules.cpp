@@ -436,6 +436,7 @@ int CLazuul::GetNumTeams()
 {
 	switch (GetGameMode())
 	{
+	case LAZ_GM_SINGLEPLAYER:
 	case LAZ_GM_CAMPAIGN:
 		return 1;
 		break;
@@ -454,7 +455,7 @@ int64 CLazuul::Damage_GetTimeBased(void)
 {
 	if (hl2_episodic.GetBool())
 	{
-		int64 iDamage = (DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_ACID | DMG_SLOWBURN);
+		int64 iDamage = (DMG_PARALYZE | DMG_NERVEGAS | DMG_POISON | DMG_RADIATION | DMG_DROWNRECOVER | DMG_SLOWBURN);
 		return iDamage;
 	}
 	else
@@ -1035,7 +1036,36 @@ float CLazuul::AdjustPlayerDamageInflicted(float damage)
 
 CBaseEntity* CLazuul::GetPlayerSpawnSpot(CBasePlayer* pPlayer)
 {
-	return BaseClass::GetPlayerSpawnSpot(pPlayer);
+	if (IsPlayerRespawningByHandler(pPlayer))
+	{
+		return nullptr;
+	}
+	else
+		return BaseClass::GetPlayerSpawnSpot(pPlayer);
+}
+
+bool CLazuul::IsPlayerRespawningByHandler(CBasePlayer* pPlayer)
+{
+	int iTeam = pPlayer->GetTeamNumber();
+	if (iTeam < 0 || iTeam >= TF_TEAM_COUNT)
+	{
+		return false;
+	}
+
+	const TeamHandlerList_t& list = m_TeamSpawnHandlers[iTeam];
+	if (list.Count() > 0)
+	{
+		for (int i = 0; i < list.Count(); i++)
+		{
+			ITeamRespawnWaveHandler* pHandler = list[i];
+			if (pHandler->IsCurrentlyHandlingPlayer(pPlayer))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void CLazuul::RespawnTeam(int iTeam)
@@ -1048,7 +1078,60 @@ void CLazuul::RespawnTeam(int iTeam)
 	const TeamHandlerList_t& list = m_TeamSpawnHandlers[iTeam];
 	if (list.Count() > 0)
 	{
+		CTeam* pTeam = GetGlobalTeam(iTeam);
 
+		for (int i = 0; i < list.Count(); i++)
+		{
+			ITeamRespawnWaveHandler* pHandler = list[i];
+			if (!pHandler->IsEnabled() || !pHandler->CanSpawnPlayersNow())
+			{
+				continue;
+			}
+
+			for (int j = 0; j < pTeam->GetNumPlayers(); j++)
+			{
+				CBasePlayer* pPlayer = pTeam->GetPlayer(j);
+				if (!pPlayer)
+					continue;
+
+				// players that haven't chosen a team/class can never spawn
+				if (!pPlayer->IsReadyToPlay())
+				{
+					// Let the player spawn immediately when they do pick a class
+					if (pPlayer->ShouldGainInstantSpawn())
+					{
+						pPlayer->AllowInstantSpawn();
+					}
+
+					continue;
+				}
+
+				if (pPlayer->IsAlive())
+					continue;
+
+				// If the player hasn't been dead the minimum respawn time, he
+				// waits until the next wave.
+				if (!HasPassedMinRespawnTime(pPlayer))
+					continue;
+
+				if (!pPlayer->IsReadyToSpawn())
+				{
+					// Let the player spawn immediately when they do pick a class
+					if (pPlayer->ShouldGainInstantSpawn())
+					{
+						pPlayer->AllowInstantSpawn();
+					}
+
+					continue;
+				}
+
+				if (IsPlayerRespawningByHandler(pPlayer))
+					continue;
+
+				if (!pHandler->RespawnPlayer(pPlayer))
+					break;
+			}
+		}
 	}
 	else
 	{
@@ -1442,7 +1525,53 @@ bool CLazuul::FAllowNPCs(void)
 	if (IsInWaitingForPlayers() || m_iRoundState == GR_STATE_PREGAME)
 		return false;
 
+	if (GetGameMode() == LAZ_GM_BASE_DEFENSE)
+		return true;
+
 	return BaseClass::FAllowNPCs();
+}
+
+void InitRelationshipsFromFactions()
+{
+	for (int i = 0; i < NUM_AI_CLASSES; i++)
+	{
+		LazFaction_t nFaction1 = LazuulRules()->GetFactionForClass((Class_T)i);
+		for (int j = 0; j < NUM_AI_CLASSES; j++)
+		{
+			LazFaction_t nFaction2 = LazuulRules()->GetFactionForClass((Class_T)j);
+			Disposition_t disp = D_ER;
+			if (nFaction1 == FACTION_NONE || nFaction2 == FACTION_NONE)
+			{
+				disp = D_NU;
+			}
+			else if (nFaction1 != nFaction2)
+			{
+				disp = D_HT;
+			}
+			else
+			{
+				disp = D_LI;
+			}
+
+			// By default all relationships are neutral of priority zero
+			CBaseCombatCharacter::SetDefaultRelationship((Class_T)i, (Class_T)j, disp, 0);
+		}
+	}
+}
+
+void SetClassFactionRelationships(Class_T nClass, LazFaction_t nFaction, Disposition_t nDisp)
+{
+	for (int i = 0; i < NUM_AI_CLASSES; i++)
+	{
+		LazFaction_t nFaction1 = LazuulRules()->GetFactionForClass((Class_T)i);
+		if (nFaction != nFaction1)
+		{
+			continue;
+		}
+
+		// By default all relationships are neutral of priority zero
+		CBaseCombatCharacter::SetDefaultRelationship(nClass, (Class_T)i, nDisp, 0);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -1452,7 +1581,7 @@ bool CLazuul::FAllowNPCs(void)
 	//------------------------------------------------------------------------------
 void CLazuul::InitDefaultAIRelationships(void)
 {
-	int i, j;
+	//int i, j;
 
 	//  Allocate memory for default relationships
 	CBaseCombatCharacter::AllocateDefaultRelationships();
@@ -1460,14 +1589,16 @@ void CLazuul::InitDefaultAIRelationships(void)
 	// --------------------------------------------------------------
 	// First initialize table so we can report missing relationships
 	// --------------------------------------------------------------
-	for (i = 0; i < NUM_AI_CLASSES; i++)
-	{
-		for (j = 0; j < NUM_AI_CLASSES; j++)
-		{
-			// By default all relationships are neutral of priority zero
-			CBaseCombatCharacter::SetDefaultRelationship((Class_T)i, (Class_T)j, D_NU, 0);
-		}
-	}
+	//for (i = 0; i < NUM_AI_CLASSES; i++)
+	//{
+	//	for (j = 0; j < NUM_AI_CLASSES; j++)
+	//	{
+	//		// By default all relationships are neutral of priority zero
+	//		CBaseCombatCharacter::SetDefaultRelationship((Class_T)i, (Class_T)j, D_NU, 0);
+	//	}
+	//}
+
+	InitRelationshipsFromFactions();
 
 	// ------------------------------------------------------------
 		//	> CLASS_ANTLION
@@ -3919,9 +4050,11 @@ void CLazuul::InitDefaultAIRelationships(void)
 	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ZOMBIE_PLAYER, CLASS_ALIEN_MONSTER, D_HT, 0);
 	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ZOMBIE_PLAYER, CLASS_ALIEN_PREY, D_HT, 0);
 	CBaseCombatCharacter::SetDefaultRelationship(CLASS_ZOMBIE_PLAYER, CLASS_ALIEN_PREDATOR, D_HT, 0);
+
+	SetClassFactionRelationships(CLASS_COMPUTER_NEUTRAL, FACTION_HOSTILEFAUNA, D_HT);
 }
 
-
+#define CLASSTEXT(class_t) case class_t: return #class_t
 //------------------------------------------------------------------------------
 // Purpose : Return classify text for classify type
 // Input   :
@@ -3958,6 +4091,7 @@ const char* CLazuul::AIClassText(int classType)
 	case CLASS_MISSILE:				return "CLASS_MISSILE";
 	case CLASS_FLARE:				return "CLASS_FLARE";
 	case CLASS_EARTH_FAUNA:			return "CLASS_EARTH_FAUNA";
+		CLASSTEXT(CLASS_HACKED_ROLLERMINE);
 	
 	// HL1
 	case CLASS_ALIEN_PREY:		return "CLASS_ALIEN_PREY";
@@ -3986,6 +4120,13 @@ const char* CLazuul::AIClassText(int classType)
 	// Lazuul
 	case CLASS_HECU_PLAYER:		return "CLASS_HECU_PLAYER";
 	case CLASS_ZOMBIE_PLAYER:	return "CLASS_ZOMBIE_PLAYER";
+
+	case CLASS_COMPUTER_NEUTRAL: return "CLASS_COMPUTER_NEUTRAL";
+	case CLASS_COMPUTER_ROGUE: return "CLASS_COMPUTER_ROGUE";
+	case CLASS_COMPUTER_BLUE: return "CLASS_COMPUTER_BLUE";
+		CLASSTEXT(CLASS_COMPUTER_RED);
+		CLASSTEXT(CLASS_COMPUTER_GREEN);
+		CLASSTEXT(CLASS_COMPUTER_YELLOW);
 
 	default:					return "MISSING CLASS in ClassifyText()";
 	}
@@ -4030,15 +4171,86 @@ void CLazuul::RemoveRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler)
 	}
 }
 
+LazFaction_t CLazuul::GetFactionForClass(Class_T nClass)
+{
+	static LazFaction_t nClassToFaction[] = {
+		FACTION_NONE,
+		FACTION_GOODGUYS,
+		FACTION_GOODGUYS,
+		FACTION_GOODGUYS,
+		FACTION_HOSTILEFAUNA,
+		FACTION_HOSTILEFAUNA,
+		FACTION_NONE,
+		FACTION_HOSTILEFAUNA,
+		FACTION_COMBINE,
+		FACTION_GOODGUYS,
+		FACTION_COMBINE,
+		FACTION_COMBINE,
+		FACTION_GOODGUYS,
+		FACTION_ZOMBIES,
+		FACTION_HOSTILEFAUNA,
+		FACTION_COMBINE,
+		FACTION_COMBINE,
+		FACTION_COMBINE,
+		FACTION_COMBINE,
+		FACTION_COMBINE,
+		FACTION_GOODGUYS,
+		FACTION_ZOMBIES,
+		FACTION_COMBINE,
+		FACTION_NONE,
+		FACTION_NONE,
+		FACTION_NONE,
+		FACTION_GOODGUYS,
+		FACTION_COMBINE,
+		FACTION_NONE,
+		FACTION_MARINES,
+		FACTION_GOODGUYS,
+		FACTION_MARINES,
+		FACTION_XENIANS,
+		FACTION_HOSTILEFAUNA,
+		FACTION_HOSTILEFAUNA,
+		FACTION_HOSTILEFAUNA,
+		FACTION_NONE,
+		FACTION_NONE,
+		FACTION_NONE,
+		FACTION_GOODGUYS,
+		FACTION_GOODGUYS,
+		FACTION_NONE,
+		FACTION_GOODGUYS,
+		FACTION_GOODGUYS,
+		FACTION_COMBINE,
+		FACTION_GOODGUYS,
+		FACTION_GOODGUYS,
+		FACTION_COMBINE,
+		FACTION_COMBINE,
+		FACTION_MARINES,
+		FACTION_ZOMBIES,
+		FACTION_NONE,
+		FACTION_ROGUE_COMPUTERS,
+		FACTION_COMBINE,
+		FACTION_GOODGUYS,
+		FACTION_MARINES,
+		FACTION_ZOMBIES,
+	};
+
+	COMPILE_TIME_ASSERT(ARRAYSIZE(nClassToFaction) == NUM_AI_CLASSES);
+
+	return nClassToFaction[nClass];
+}
+
 void CLazuul::ClientCommandKeyValues(edict_t* pEntity, KeyValues* pKeyValues)
 {
-	if (FStrEq("EntityCommand", pKeyValues->GetName()))
+	CBasePlayer* pPlayer = ToBasePlayer(GetContainingEntity(pEntity));
+	if (pPlayer)
 	{
-		EHANDLE hEntity;
-		hEntity.FromIndex(pKeyValues->GetInt("target", INVALID_EHANDLE_INDEX));
-		if (hEntity.IsValid())
+		if (FStrEq("EntityCommand", pKeyValues->GetName()))
 		{
-			hEntity->HandleEntityCommand(pKeyValues->GetFirstTrueSubKey());
+			CBaseEntity* pEntity = CBaseEntity::Instance(pKeyValues->GetInt("target"));
+			KeyValues* pkvCommand = pKeyValues->GetFirstTrueSubKey();
+			if (pEntity && pkvCommand)
+			{
+				pEntity->HandleEntityCommand(pPlayer, pkvCommand);
+			}
 		}
 	}
 }
@@ -4108,10 +4320,15 @@ void CLazuul::LevelInitPreEntity()
 	BaseClass::LevelInitPreEntity();
 }
 
-const char* g_pszGamemodeControllerClassNames[LAZ_GM_COUNT] = {
-	"laz_logic_deathmatch",
-	"laz_logic_campaign",
-	"hlss_director",
+struct GameModeController_t
+{
+	int iGameMode;
+	const char* pszEntity;
+};
+
+GameModeController_t g_GamemodeControllerDefs[] = {
+	{LAZ_GM_BASE_DEFENSE, "hlss_main_frame"},
+	{LAZ_GM_BASE_DEFENSE, "hlss_advisor_pod"},
 };
 
 void CLazuul::LevelInitPostEntity()
@@ -4122,15 +4339,15 @@ void CLazuul::LevelInitPostEntity()
 	m_iMapModType = g_pGameTypeSystem->GetCurrentModGameType();
 	m_iszGameConfig = AllocPooledString(g_pGameTypeSystem->GetCurrentConfigName());
 
-	for (int i = 0; i < LAZ_GM_COUNT; i++)
+	for (int i = 0; i < ARRAYSIZE(g_GamemodeControllerDefs); i++)
 	{
-		CBaseEntity* pEntity = gEntList.FindEntityByClassname(NULL, g_pszGamemodeControllerClassNames[i]);
+		CBaseEntity* pEntity = gEntList.FindEntityByClassname(NULL, g_GamemodeControllerDefs[i].pszEntity);
 		if (pEntity)
 		{
 			IGameModeControllerEntity* pController = dynamic_cast<IGameModeControllerEntity*> (pEntity);
-			if (pController && pController->ShouldActivateMode(i))
+			if (pController && pController->ShouldActivateMode(g_GamemodeControllerDefs[i].iGameMode))
 			{
-				SetGameMode(i);
+				SetGameMode(g_GamemodeControllerDefs[i].iGameMode);
 				break;
 			}
 		}
@@ -4870,6 +5087,10 @@ void CLazuul::DeathNotice(CBasePlayer * pVictim, const CTakeDamageInfo & info)
 		}
 #endif
 
+		event->SetInt("victim_faction", GetFactionForClass(pVictim->Classify()));
+		event->SetInt("attacker_faction", pKiller ? GetFactionForClass(pKiller->Classify()) : FACTION_NONE);
+		event->SetInt("assister_faction", pAssister ? GetFactionForClass(pAssister->Classify()) : FACTION_NONE);
+
 		gameeventmanager->FireEvent(event);
 	}
 }
@@ -4991,6 +5212,10 @@ void CLazuul::DeathNotice(CAI_BaseNPC* pVictim, const CTakeDamageInfo& info)
 		event->SetInt("customkill", info.GetDamageCustom());
 		event->SetBool("show_notice", bShowDeathNotice); // are we allowed to make deathnotice on THIS npc?
 		event->SetInt("priority", bShowDeathNotice ? 7 : 3);	// HLTV event priority, not transmitted
+
+		event->SetInt("victim_faction", GetFactionForClass(pVictim->Classify()));
+		event->SetInt("attacker_faction", pKiller ? GetFactionForClass(pKiller->Classify()) : FACTION_NONE);
+		event->SetInt("assister_faction", pAssister ? GetFactionForClass(pAssister->Classify()) : FACTION_NONE);
 
 		gameeventmanager->FireEvent(event);
 	}
@@ -5149,6 +5374,32 @@ void CLazuul::SetupOnRoundRunning(void)
 	}
 
 	HaveAllPlayersSpeakConceptIfAllowed(MP_CONCEPT_ROUND_START);
+}
+#else
+void CLazuul::GetTeamGlowColor(int nTeam, float& r, float& g, float& b)
+{
+	switch (nTeam)
+	{
+	case TF_TEAM_BLUE:
+		r = 0.49f; g = 0.66f; b = 0.7699971f;
+		break;
+
+	case TF_TEAM_RED:
+		r = 0.74f; g = 0.23f; b = 0.23f;
+		break;
+
+	case TF_TEAM_GREEN:
+		r = 0.03f; g = 0.68f; b = 0;
+		break;
+
+	case TF_TEAM_YELLOW:
+		r = 1.0f; g = 0.62f; b = 0;
+		break;
+
+	default:
+		r = 0.76f; g = 0.76f; b = 0.76f;
+		break;
+	}
 }
 #endif
 

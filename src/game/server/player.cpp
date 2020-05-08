@@ -5843,7 +5843,10 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 
 	if ( pent != NULL && !(pent->IsMarkedForDeletion()) )
 	{
-		pent->Touch( this );
+		if (pWeapon)
+			BumpWeapon(pWeapon);
+		else
+			pent->Touch( this );
 	}
 
 	return pent;
@@ -6742,7 +6745,8 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 	else
 	{
 		// Don't let the player fetch weapons through walls (use MASK_SOLID so that you can't pickup through windows)
-		if( pWeapon->FVisible( this, MASK_SOLID ) == false && !(GetFlags() & FL_NOTARGET) )
+		CBaseEntity* pBlocker = nullptr;
+		if( pWeapon->FVisible( this, MASK_SOLID, &pBlocker ) == false && (!pBlocker || (!pBlocker->ClassMatches("prop_dropship_container") && !FClassnameIs(pBlocker, "npc_combinedropship"))) && !(GetFlags() & FL_NOTARGET) )
 			return false;
 	}
 

@@ -88,6 +88,7 @@
 #include "debugoverlay_shared.h"
 #include "view.h"
 #include "fmtstr.h"
+#include "spp_utils/spp_utils.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -881,6 +882,8 @@ private:
 	} InternalFlashlightState_t;
 
 private:
+	int	GetIndexOfFlashlightState(FlashlightState_t& state);
+
 	// Shadow update functions
 	void UpdateStudioShadow( IClientRenderable *pRenderable, ClientShadowHandle_t handle );
 	void UpdateBrushShadow( IClientRenderable *pRenderable, ClientShadowHandle_t handle );
@@ -1118,6 +1121,8 @@ private:
 	/*CUtlVector< CTextureReference > m_DepthTextureCache;
 	CUtlVector< bool > m_DepthTextureCacheLocks;*/
 	int	m_nMaxDepthTextureShadows;
+
+	CBitVec<128> m_usedSlots;
 
 	friend class CVisibleShadowList;
 	friend class CVisibleShadowFrustumList;
@@ -1434,7 +1439,7 @@ static void ShadowRestoreFunc( int nChangeFlags )
 	s_ClientShadowMgr.RestoreRenderState();
 }
 
-CSysModule* shaderDLL = nullptr;
+//CSysModule* shaderDLL = nullptr;
 IShaderExtension* g_pShaderExtension;
 
 //-----------------------------------------------------------------------------
@@ -1445,12 +1450,18 @@ bool CClientShadowMgr::Init()
 	m_bRenderTargetNeedsClear = false;
 	m_SimpleShadow.Init( "decals/simpleshadow", TEXTURE_GROUP_DECAL );
 
-	char dllPath[MAX_PATH * 2];
-	V_sprintf_safe( dllPath, "%s" CORRECT_PATH_SEPARATOR_S "bin" CORRECT_PATH_SEPARATOR_S "game_shader_dx9" DLL_EXT_STRING, engine->GetGameDirectory() );
+	//char dllPath[MAX_PATH * 2];
+	//V_sprintf_safe( dllPath, "%s" CORRECT_PATH_SEPARATOR_S "bin" CORRECT_PATH_SEPARATOR_S "game_shader_dx9" DLL_EXT_STRING, engine->GetGameDirectory() );
 
-	if (!Sys_LoadInterface(dllPath, SHADEREXTENSION_INTERFACE_VERSION, &shaderDLL, reinterpret_cast<void**>(&g_pShaderExtension)))
+	/*if (!Sys_LoadInterface(dllPath, SHADEREXTENSION_INTERFACE_VERSION, &shaderDLL, reinterpret_cast<void**>(&g_pShaderExtension)))
 	{
 		AssertMsgAlways(0, "Client failed to get critical interface from game_shader_dx9!");
+		return false;
+	}*/
+
+	g_pShaderExtension = (IShaderExtension *)spp_utils->QueryInterface(SHADEREXTENSION_INTERFACE_VERSION);
+	if (!g_pShaderExtension)
+	{
 		return false;
 	}
 
@@ -1497,9 +1508,6 @@ void CClientShadowMgr::Shutdown()
 	ShutdownDepthTextureShadows();
 
 	materials->RemoveRestoreFunc( ShadowRestoreFunc );
-	
-	if ( shaderDLL )
-		Sys_UnloadModule( shaderDLL );
 }
 
 
@@ -2174,8 +2182,8 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 		BuildPerspectiveWorldToFlashlightMatrix(shadow.m_WorldToShadow, flashlightState);
 	}
 
-	g_pShaderExtension->SetUberlightParamsForFlashlightState(procState, flashlightState.m_UberlightState);
-	int iStateIndex = g_pShaderExtension->GetIndexOfFlashlightState(procState);
+	int iStateIndex = GetIndexOfFlashlightState(procState);
+	g_pShaderExtension->SetUberlightParamsForFlashlightState(iStateIndex, flashlightState.m_UberlightState);
 
 	shadowmgr->UpdateFlashlightState(shadow.m_ShadowHandle, procState);
 
@@ -2224,9 +2232,10 @@ void CClientShadowMgr::DestroyFlashlight( ClientShadowHandle_t shadowHandle )
 	if (g_pShaderExtension)
 	{
 		FlashlightState_t state = shadowmgr->GetFlashlightState(m_Shadows[shadowHandle].m_ShadowHandle);
-		int idx = g_pShaderExtension->GetIndexOfFlashlightState(state);
+		int idx = GetIndexOfFlashlightState(state);
 		m_ClientFlashlightStates.Remove(idx);
-		g_pShaderExtension->OnFlashlightStateDestroyed(state);
+		m_usedSlots.Clear(idx - 1);
+		g_pShaderExtension->OnFlashlightStateDestroyed(idx);
 	}
 
 	DestroyShadow( shadowHandle );
@@ -3696,6 +3705,33 @@ void CClientShadowMgr::ComputeHierarchicalBounds( IClientRenderable *pRenderable
 }
 
 
+int CClientShadowMgr::GetIndexOfFlashlightState(FlashlightState_t& flashlightState)
+{
+	const int index = flashlightState.m_nShadowQuality >> 16;
+	if (index == 0)
+	{
+		int emptySlot = -1;
+		for (int i = 0; i < 128; ++i)
+		{
+			if (!m_usedSlots.IsBitSet(i))
+			{
+				emptySlot = i;
+				break;
+			}
+		}
+
+		if (emptySlot == -1)
+			return -1;
+
+		flashlightState.m_nShadowQuality |= (emptySlot + 1) << 16;
+		//flashlightState.m_nShadowQuality = emptySlot + 1;
+		m_usedSlots.Set(emptySlot);
+		return emptySlot + 1;
+	}
+
+	return index;
+}
+
 //-----------------------------------------------------------------------------
 // Shadow update functions
 //-----------------------------------------------------------------------------
@@ -4890,7 +4926,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 	{
 		ClientShadow_t& shadow = m_Shadows[ pActiveDepthShadows[j] ];
 		FlashlightState_t engineState = shadowmgr->GetFlashlightState(shadow.m_ShadowHandle);
-		int iIndex = g_pShaderExtension->GetIndexOfFlashlightState(engineState);
+		int iIndex = GetIndexOfFlashlightState(engineState);
 		unsigned short sIDX = m_ClientFlashlightStates.Find(iIndex);
 		ClientFlashlightState_t &flashlightState = m_ClientFlashlightStates.Element(sIDX).clientState;
 
@@ -4908,7 +4944,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 
 			Assert(0);
 			shadowmgr->SetFlashlightDepthTexture( shadow.m_ShadowHandle, NULL, 0 );
-			g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(flashlightState, nullptr);
+			g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(iIndex, nullptr);
 			shadow.m_ShadowDepthTexture.Shutdown();
 			continue;
 		}
@@ -4959,7 +4995,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		}
 
 		// Set depth bias factors specific to this flashlight
-		CMatRenderContextPtr pRenderContext( materials );
+		//CMatRenderContextPtr pRenderContext( materials );
 		pRenderContext->SetShadowDepthBiasFactors( flashlightState.m_flShadowSlopeScaleDepthBias, flashlightState.m_flShadowDepthBias );
 
 		// Render to the shadow depth texture with appropriate view
@@ -4967,7 +5003,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 
 		shadow.m_ShadowDepthTexture = shadowDepthTexture;
 		flashlightState.m_flShadowMapResolution = shadowDepthTexture->GetActualWidth();
-		g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(flashlightState, shadowDepthTexture);
+		g_pShaderExtension->SetDepthTextureFallbackForFlashlightState(iIndex, shadowDepthTexture.Get());
 		shadowmgr->UpdateFlashlightState( shadow.m_ShadowHandle, flashlightState );
 
 		m_ActiveDepthTextureHandle = SHADOW_HANDLE_INVALID;

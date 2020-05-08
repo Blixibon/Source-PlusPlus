@@ -811,19 +811,6 @@ void CWorld::Precache( void )
 	ConVarRef roomtype( "room_type" );
 	roomtype.SetValue( 0 );
 
-	// Set up game rules
-	Assert( !g_pGameRules );
-	if (g_pGameRules)
-	{
-		delete g_pGameRules;
-	}
-
-	InstallGameRules();
-	Assert( g_pGameRules );
-	g_pGameRules->Init();
-
-	CSoundEnt::InitSoundEnt();
-
 	ConVarRef sv_portal_staticcollisioncache_cachebrushes("sv_portal_staticcollisioncache_cachebrushes");
 	ConVarRef sv_portal_staticcollisioncache_cachestaticprops("sv_portal_staticcollisioncache_cachestaticprops");
 
@@ -839,6 +826,19 @@ void CWorld::Precache( void )
 	}
 
 	hl2_episodic.SetValue(GetWorldEpisodic());
+
+	// Set up game rules
+	Assert( !g_pGameRules );
+	if (g_pGameRules)
+	{
+		delete g_pGameRules;
+	}
+
+	InstallGameRules();
+	Assert( g_pGameRules );
+	g_pGameRules->Init();
+
+	CSoundEnt::InitSoundEnt();
 
 	// Only allow precaching between LevelInitPreEntity and PostEntity
 	CBaseEntity::SetAllowPrecache( true );

@@ -1,0 +1,99 @@
+//-----------------------------------------------------------------------------
+//  PROCSHADER.VPC
+//
+//  Project Script
+//-----------------------------------------------------------------------------
+
+$Macro SRCDIR				"..\.."
+
+$Macro TARGET_PLATFORM "2013" 
+
+$Macro OUTBINNAME	"game_shader_dx6"
+$Macro OUTBINDIR	"$SRCDIR\..\game\spp_shared\bin"
+
+$Macro GAMENAME				"procshader"
+$Macro SRCDIRPUBLIC			"$SRCDIR\public"
+$Macro SRCDIRMATERIALSYSTEM	"$SRCDIR\materialsystem"
+$Macro SRCDIRPROCSHADER		"$SRCDIR\materialsystem\procshader"
+
+$Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
+
+$Configuration	"Debug"
+{
+	$General
+	{
+		$OutputDirectory			".\Debug_$GAMENAME_$TARGET_PLATFORM"
+		$IntermediateDirectory		".\Debug_$GAMENAME_$TARGET_PLATFORM"
+	}
+}
+
+$Configuration	"Release"
+{
+	$General
+	{
+		$OutputDirectory			".\Release_$GAMENAME_$TARGET_PLATFORM"
+		$IntermediateDirectory		".\Release_$GAMENAME_$TARGET_PLATFORM"
+	}
+}
+
+$Configuration
+{
+	$General
+	{
+		$TargetName	"$OUTBINNAME"
+	}
+	
+	$Compiler
+	{
+		$AdditionalIncludeDirectories	"$BASE;fxctmp9;vshtmp9;"	[$WIN32||$POSIX]
+//		$AdditionalIncludeDirectories	"$BASE;..\..\dx9sdk\include"	[$WIN32]
+		$AdditionalIncludeDirectories	"$BASE;fxctmp9_360;vshtmp9_360"					[$X360]
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIRMATERIALSYSTEM;$SRCDIR\game\client\shadereditor"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\public;$SRCDIR\public\tier0;$SRCDIR\public\tier1"
+		
+		$PreprocessorDefinitions		"$BASE;STDSHADER_DX9_DLL_EXPORT;FAST_MATERIALVAR_ACCESS;GAME_SHADER_DLL"
+		$PreprocessorDefinitions		"$BASE;USE_ACTUAL_DX" [($WIN32||$X360) && !$GL]
+		
+		$PreprocessorDefinitions		"$BASE;SHADER_EDITOR_DLL;SHADER_EDITOR_DLL_$TARGET_PLATFORM;PROCSHADER_DLL"
+	}
+
+	$Linker
+	{
+		$AdditionalDependencies			"$BASE version.lib winmm.lib"	[$WIN32]
+		$SystemLibraries				"iconv" [$OSXALL]
+	}
+}
+
+$Configuration "Debug"
+{
+	$Linker
+	{
+		$AdditionalDependencies			"$BASE Dbghelp.lib"	[$WIN32]
+	}
+}
+
+$Project "Shaders (Editor)"
+{
+	$Folder	"Source Files"
+	{
+		$File	"$SRCDIRPROCSHADER\basevsshader.cpp"
+		$File	"$SRCDIRPROCSHADER\basevsshader.h"
+		$File	"$SRCDIRPROCSHADER\nodeshader.cpp"
+		$File	"$SRCDIRPROCSHADER\procshader.cpp"
+		$File	"$SRCDIRPROCSHADER\prev.cpp"
+		
+		$File	"$SRCDIRMATERIALSYSTEM\ivprocshader.cpp"
+		$File	"$SRCDIRMATERIALSYSTEM\ivprocshader.h"
+		$File	"$SRCDIRMATERIALSYSTEM\procshaderinterface.cpp"
+		$File	"$SRCDIRMATERIALSYSTEM\procshaderinterface.h"
+	}
+
+	$Folder	"Link Libraries"
+	{
+		$DynamicFile	"$SRCDIR\lib\public\mathlib.lib"
+		$DynamicFile	"$SRCDIR\lib\public\shaderlib.lib"
+		$DynamicFile	"$SRCDIR\lib\public\tier0.lib"
+		$DynamicFile	"$SRCDIR\lib\public\tier1.lib"
+		$DynamicFile	"$SRCDIR\lib\public\vstdlib.lib"
+	}
+}

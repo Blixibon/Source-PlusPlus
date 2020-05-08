@@ -54,6 +54,11 @@ $Project "game_shader_dx9"
 	"materialsystem\defshaders\game_shader_dx9_deferred.vpc" 	[$DEFERRED]
 }
 
+$Project "editor_shader"
+{
+	"materialsystem\procshader\procshader.vpc"
+}
+
 $Project "glview"
 {
 	"utils\glview\glview.vpc" [$WIN32]
@@ -88,6 +93,11 @@ $Project "spp_utils"
 $Project "responserules"
 {
 	"responserules\runtime\response_rules.vpc" [$WINDOWS||$X360||$POSIX]
+}
+
+$Project "shaderlib"
+{
+	"materialsystem\shaderlib\shaderlib.vpc" [$WINDOWS||$X360||$POSIX]
 }
 
 $Project "mathlib"

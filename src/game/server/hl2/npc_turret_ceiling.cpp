@@ -122,9 +122,11 @@ public:
 	void	InputEnable( inputdata_t &inputdata );
 	void	InputDisable( inputdata_t &inputdata );
 
+#ifdef HL2_LAZUL
 	virtual void NetworkPowerOn(bool bForce) { Enable(); }
 	virtual void NetworkPowerOff(bool bForce) { Disable(); }
 	virtual LazNetworkRole_t GetNetworkRole() { return NETROLE_TURRETS; }
+#endif // HL2_LAZUL
 
 	void	SetLastSightTime();
 	

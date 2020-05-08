@@ -50,6 +50,9 @@ RecvPropInt(RECVINFO(m_nMovementCfg)),
 
 RecvPropFloat(RECVINFO(m_flEyeHeightOverride)),
 RecvPropVector(RECVINFO(m_vecLadderNormal), SPROP_NORMAL),
+
+RecvPropBool(RECVINFO(m_bInAutoMovement)),
+RecvPropQAngles(RECVINFO(m_angAutoMoveAngles)),
 END_RECV_TABLE();
 
 BEGIN_PREDICTION_DATA(C_Laz_Player)
@@ -243,6 +246,70 @@ bool C_Laz_Player::ShouldDoPortalRenderCulling()
 	return (cl_legs_enable.GetInt() < 1);
 }
 
+//-----------------------------------------------------------------------------
+// Purpose:
+// Output :
+//-----------------------------------------------------------------------------
+bool C_Laz_Player::GetIntervalMovement(float flIntervalUsed, bool& bMoveSeqFinished, Vector& newPosition, QAngle& newAngles)
+{
+	CStudioHdr* pstudiohdr = GetModelPtr();
+	if (!pstudiohdr || !pstudiohdr->SequencesAvailable())
+		return false;
+
+	float flComputedCycleRate = GetSequenceCycleRate(pstudiohdr, GetSequence());
+
+	float flNextCycle = GetCycle() + flIntervalUsed * flComputedCycleRate * GetPlaybackRate();
+
+	if ((!GetSequenceLoops()) && flNextCycle > 1.0)
+	{
+		flIntervalUsed = GetCycle() / (flComputedCycleRate * GetPlaybackRate());
+		flNextCycle = 1.0;
+		bMoveSeqFinished = true;
+	}
+	else
+	{
+		bMoveSeqFinished = false;
+	}
+
+	Vector deltaPos;
+	QAngle deltaAngles;
+	float flPoseParams[MAXSTUDIOPOSEPARAM];
+	GetPoseParameters(pstudiohdr, flPoseParams);
+	if (Studio_SeqMovement(pstudiohdr, GetSequence(), GetCycle(), flNextCycle, flPoseParams, deltaPos, deltaAngles))
+	{
+		VectorYawRotate(deltaPos, GetLocalAngles().y, deltaPos);
+		newPosition = GetLocalOrigin() + deltaPos;
+		newAngles.Init();
+		newAngles.y = GetLocalAngles().y + deltaAngles.y;
+		return true;
+	}
+	else
+	{
+		newPosition = GetLocalOrigin();
+		newAngles = GetLocalAngles();
+		return false;
+	}
+}
+
+const QAngle& C_Laz_Player::GetRenderAngles()
+{
+	if (m_bInAutoMovement && GetAnimState()->IsPlayingCustomSequence())
+	{
+		return m_angAutoMoveAngles;
+	}
+	else
+	{
+		return BaseClass::GetRenderAngles();
+	}
+}
+
+void C_Laz_Player::PostThink(void)
+{
+	BaseClass::PostThink();
+
+	PerformAutoMovement();
+}
+
 void C_Laz_Player::PreThink(void)
 {
 	BaseClass::PreThink();
@@ -296,6 +363,7 @@ void C_Laz_Player::ClientThink()
 	{
 		// Cold breath.
 		UpdateColdBreath();
+		PerformAutoMovement();
 	}
 }
 

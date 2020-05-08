@@ -14,6 +14,14 @@
 #include "ai_squad.h"
 #include "ai_utils.h"
 #include "ai_senses.h"
+#ifdef HL2_LAZUL
+#include "peter/laz_mapents.h"
+
+#define ENEMYFINDER_BASECLASS CLazNetworkEntity<CAI_BaseNPC>
+#else
+#define ENEMYFINDER_BASECLASS CAI_BaseNPC
+#endif // HL2_LAZUL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -26,16 +34,29 @@
 ConVar  ai_debug_enemyfinders( "ai_debug_enemyfinders", "0" );
 
 
-class CNPC_EnemyFinder : public CAI_BaseNPC
+class CNPC_EnemyFinder : public ENEMYFINDER_BASECLASS
 {
 public:
-	DECLARE_CLASS( CNPC_EnemyFinder, CAI_BaseNPC );
+	DECLARE_CLASS( CNPC_EnemyFinder, ENEMYFINDER_BASECLASS);
 
 	CNPC_EnemyFinder()
 	{
 		m_PlayerFreePass.SetOuter( this );
 	}
 
+#ifdef HL2_LAZUL
+	virtual void NetworkPowerOn(bool bForce) 
+	{
+		inputdata_t inputdata;
+		InputTurnOn(inputdata);
+	}
+	virtual void NetworkPowerOff(bool bForce)
+	{
+		inputdata_t inputdata;
+		InputTurnOff(inputdata);
+	}
+	virtual LazNetworkRole_t GetNetworkRole() { return NETROLE_TURRETS; }
+#endif // HL2_LAZUL
 
 	void	Precache( void );
 	void	Spawn( void );
@@ -90,24 +111,28 @@ enum
 
 IMPLEMENT_CUSTOM_AI( npc_enemyfinder, CNPC_EnemyFinder );
 
-BEGIN_DATADESC( CNPC_EnemyFinder )
+BEGIN_DATADESC(CNPC_EnemyFinder)
 
-	DEFINE_EMBEDDED( m_PlayerFreePass ),
-	DEFINE_EMBEDDED( m_ChooseEnemyTimer ),
+DEFINE_EMBEDDED(m_PlayerFreePass),
+DEFINE_EMBEDDED(m_ChooseEnemyTimer),
 
-	// Inputs
-	DEFINE_INPUT( m_nStartOn,			FIELD_INTEGER,	"StartOn" ),
-	DEFINE_INPUT( m_flFieldOfView,	FIELD_FLOAT,	"FieldOfView" ),
-	DEFINE_INPUT( m_flMinSearchDist,	FIELD_FLOAT,	"MinSearchDist" ),
-	DEFINE_INPUT( m_flMaxSearchDist,	FIELD_FLOAT,	"MaxSearchDist" ),
+// Inputs
+DEFINE_INPUT(m_nStartOn, FIELD_INTEGER, "StartOn"),
+DEFINE_INPUT(m_flFieldOfView, FIELD_FLOAT, "FieldOfView"),
+DEFINE_INPUT(m_flMinSearchDist, FIELD_FLOAT, "MinSearchDist"),
+DEFINE_INPUT(m_flMaxSearchDist, FIELD_FLOAT, "MaxSearchDist"),
 
-	DEFINE_FIELD( m_bEnemyStatus, FIELD_BOOLEAN ),
+DEFINE_FIELD(m_bEnemyStatus, FIELD_BOOLEAN),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+DEFINE_INPUTFUNC(FIELD_VOID, "TurnOn", InputTurnOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "TurnOff", InputTurnOff),
 
-	DEFINE_OUTPUT( m_OnLostEnemies, "OnLostEnemies"),
-	DEFINE_OUTPUT( m_OnAcquireEnemies, "OnAcquireEnemies"),
+DEFINE_OUTPUT(m_OnLostEnemies, "OnLostEnemies"),
+DEFINE_OUTPUT(m_OnAcquireEnemies, "OnAcquireEnemies"),
+
+#ifdef HL2_LAZUL
+DEFINE_LAZNETWORKENTITY_DATADESC(),
+#endif // HL2_LAZUL
 
 END_DATADESC()
 
@@ -454,6 +479,13 @@ void CNPC_EnemyFinder::GatherConditions()
 //-----------------------------------------------------------------------------
 Class_T	CNPC_EnemyFinder::Classify( void )
 {
+#ifdef HL2_LAZUL
+	if (m_hNetworkController.Get())
+	{
+		return m_hNetworkController->Classify();
+	}
+	else
+#endif
 	if ( GetSquad() )
 	{
 		AISquadIter_t iter;

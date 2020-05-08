@@ -30,6 +30,8 @@ $Group "game"
 $Group "shaders"
 {
 	"game_shader_dx9"
+	"editor_shader"
+	"shaderlib"
 }
 
 $Group "everything"
@@ -38,6 +40,7 @@ $Group "everything"
 	"client"
 	"fgdlib"
 	"game_shader_dx9"
+	"shaderlib"
 	"glview"
 	"height2normal"
 	"mathlib"

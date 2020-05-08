@@ -31,6 +31,13 @@
 #include "EntityFlame.h"
 #include "entityblocker.h"
 #include "eventqueue.h"
+#include "pathtrack.h"
+#ifdef HL2_LAZUL
+#include "lazuul_gamerules.h"
+#include "peter/laz_player.h"
+#include "saverestore_utlvector.h"
+#include "in/bots/bot.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -92,6 +99,8 @@ enum CRATE_TYPES
 	CRATE_SOLDIER,
 	CRATE_NONE,
 };
+
+class CDropShipPlayerSpawner;
 
 ConVar	g_debug_dropship( "g_debug_dropship", "0" );
 ConVar  sk_dropship_container_health( "sk_dropship_container_health", "750" );
@@ -266,6 +275,7 @@ public:
 	void	InputPickup( inputdata_t &inputdata );
 	void	InputSetGunRange( inputdata_t &inputdata );
 	void	InputNPCFinishDustoff( inputdata_t &inputdata );
+	void	InputPlayerFinishDustoff(inputdata_t& inputdata);
 	void	InputStopWaitingForDropoff( inputdata_t &inputdata );
 
 	void	InputHover( inputdata_t &inputdata );
@@ -338,6 +348,7 @@ private:
 	string_t	m_sNPCTemplate[ DROPSHIP_MAX_SOLDIERS ];
 	string_t	m_sNPCTemplateData[ DROPSHIP_MAX_SOLDIERS ];
 	string_t	m_sDustoffPoints[ DROPSHIP_MAX_SOLDIERS ];
+	CHandle<CBasePlayer> m_hPlayersToSpawn[DROPSHIP_MAX_SOLDIERS];
 	int			m_iCurrentTroopExiting;
 	EHANDLE		m_hLastTroopToLeave;
 
@@ -364,6 +375,8 @@ private:
 
 	COutputFloat	m_OnContainerShotDownBeforeDropoff;
 	COutputEvent	m_OnContainerShotDownAfterDropoff;
+
+	friend class CDropShipPlayerSpawner;
 
 protected:
 	// Because the combine dropship is a leaf class, we can use
@@ -788,6 +801,7 @@ BEGIN_DATADESC( CNPC_CombineDropship )
 	DEFINE_FIELD( m_sRollermineTemplateData, FIELD_STRING ),
 
 	DEFINE_ARRAY( m_sNPCTemplateData, FIELD_STRING, DROPSHIP_MAX_SOLDIERS ),
+	DEFINE_ARRAY(m_hPlayersToSpawn, FIELD_EHANDLE, DROPSHIP_MAX_SOLDIERS),
 	DEFINE_KEYFIELD( m_sNPCTemplate[0], FIELD_STRING,	"NPCTemplate" ),
 	DEFINE_KEYFIELD( m_sNPCTemplate[1], FIELD_STRING,	"NPCTemplate2" ),
 	DEFINE_KEYFIELD( m_sNPCTemplate[2], FIELD_STRING,	"NPCTemplate3" ),
@@ -823,6 +837,7 @@ BEGIN_DATADESC( CNPC_CombineDropship )
 	DEFINE_INPUTFUNC( FIELD_STRING, "Pickup", InputPickup ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetGunRange", InputSetGunRange ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "NPCFinishDustoff", InputNPCFinishDustoff ),
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "PlayerFinishDustoff", InputPlayerFinishDustoff),
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopWaitingForDropoff", InputStopWaitingForDropoff ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "Hover", InputHover ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "FlyToPathTrack", InputFlyToPathTrack ),
@@ -2390,7 +2405,7 @@ void CNPC_CombineDropship::SpawnTroop( void )
 	}
 
 	// Are we fully unloaded? If so, take off. Otherwise, tell the next troop to exit.
-	if ( m_iCurrentTroopExiting >= m_soldiersToDrop || m_sNPCTemplateData[m_iCurrentTroopExiting] == NULL_STRING )
+	if ( m_iCurrentTroopExiting >= m_soldiersToDrop || (m_sNPCTemplateData[m_iCurrentTroopExiting] == NULL_STRING && !m_hPlayersToSpawn[m_iCurrentTroopExiting].Get()) )
 	{
 		// We're done, take off.
 		m_flTimeTakeOff = gpGlobals->curtime + 0.5;
@@ -2420,8 +2435,16 @@ void CNPC_CombineDropship::SpawnTroop( void )
 
 	// Make sure there are no NPCs on the spot
 	trace_t tr;
-	CTraceFilterOnlyNPCsAndPlayer filter( this, COLLISION_GROUP_NONE );
-	AI_TraceHull( vecDeployEndPoint, vecDeployEndPoint, vecNPCMins, vecNPCMaxs, MASK_SOLID, &filter, &tr );
+	if (m_hPlayersToSpawn[m_iCurrentTroopExiting].Get())
+	{
+		CTraceFilterOnlyNPCsAndPlayer filter(this, COLLISION_GROUP_PLAYER_MOVEMENT);
+		AI_TraceHull(vecDeployEndPoint, vecDeployEndPoint, vecNPCMins, vecNPCMaxs, m_hPlayersToSpawn[m_iCurrentTroopExiting].Get()->PhysicsSolidMaskForEntity(), &filter, &tr);
+	}
+	else
+	{
+		CTraceFilterOnlyNPCsAndPlayer filter(this, COLLISION_GROUP_NONE);
+		AI_TraceHull(vecDeployEndPoint, vecDeployEndPoint, vecNPCMins, vecNPCMaxs, MASK_SOLID, &filter, &tr);
+	}
 	if ( tr.m_pEnt )
 	{
 		if ( g_debug_dropship.GetInt() == 2 )
@@ -2442,63 +2465,99 @@ void CNPC_CombineDropship::SpawnTroop( void )
 	Vector vecSpawnOrigin;
 	QAngle vecSpawnAngles;
 	m_hContainer->GetAttachment( m_iAttachmentDeployStart, vecSpawnOrigin, vecSpawnAngles );
-
-	// Spawn the templated NPC
-	CBaseEntity *pEntity = NULL;
-	MapEntity_ParseEntity( pEntity, STRING(m_sNPCTemplateData[m_iCurrentTroopExiting]), NULL );
-
-	// Increment troop count
-	m_iCurrentTroopExiting++;
-
-	if ( !pEntity )
+#ifdef HL2_LAZUL
+	if (m_hPlayersToSpawn[m_iCurrentTroopExiting].Get())
 	{
-		Warning("Dropship could not create template NPC\n" );
-		return;
-	}
-	CAI_BaseNPC	*pNPC = pEntity->MyNPCPointer();
-	Assert( pNPC );
+		CLaz_Player* pPlayer = ToLazuulPlayer(m_hPlayersToSpawn[m_iCurrentTroopExiting].Get());
 
-	// Spawn an entity blocker.
-	CBaseEntity *pBlocker = CEntityBlocker::Create( vecDeployEndPoint, vecNPCMins, vecNPCMaxs, pNPC, true );
-	g_EventQueue.AddEvent( pBlocker, "Kill", 2.5, this, this );
-	if ( g_debug_dropship.GetInt() == 2 )
+		// Spawn an entity blocker.
+		//CBaseEntity* pBlocker = CEntityBlocker::Create(vecDeployEndPoint, vecNPCMins, vecNPCMaxs, pPlayer, true);
+		//g_EventQueue.AddEvent(pBlocker, "Kill", 2.5, this, this);
+		//if (g_debug_dropship.GetInt() == 2)
+		//{
+		//	NDebugOverlay::Box(vecDeployEndPoint, vecNPCMins, vecNPCMaxs, 255, 255, 255, 64, 2.5);
+		//}
+
+		// Ensure our NPCs are standing upright
+		vecSpawnAngles[PITCH] = vecSpawnAngles[ROLL] = 0;
+
+		// Move it to the container spawnpoint
+		pPlayer->SetAbsOrigin(vecSpawnOrigin);
+
+		pPlayer->ForceRespawn();
+		int iSequence = pPlayer->LookupSequence("Dropship_Deploy");
+		float flDuration = pPlayer->SequenceDuration(iSequence);
+		pPlayer->StartAutoMovement(vecSpawnAngles, iSequence);
+
+		variant_t data;
+		data.SetEntity(pPlayer);
+		g_EventQueue.AddEvent(this, "PlayerFinishDustoff", data, flDuration, this, this);
+
+		// Increment troop count
+		m_iCurrentTroopExiting++;
+
+		m_hLastTroopToLeave = pPlayer;
+	}
+	else
+#endif
 	{
-		NDebugOverlay::Box( vecDeployEndPoint, vecNPCMins, vecNPCMaxs, 255, 255, 255, 64, 2.5 );
-	}
+		// Spawn the templated NPC
+		CBaseEntity* pEntity = NULL;
+		MapEntity_ParseEntity(pEntity, STRING(m_sNPCTemplateData[m_iCurrentTroopExiting]), NULL);
 
-	// Ensure our NPCs are standing upright
-	vecSpawnAngles[PITCH] = vecSpawnAngles[ROLL] = 0;
+		// Increment troop count
+		m_iCurrentTroopExiting++;
 
-	// Move it to the container spawnpoint
-	pNPC->SetAbsOrigin( vecSpawnOrigin );
-	pNPC->SetAbsAngles( vecSpawnAngles );
-	DispatchSpawn( pNPC );
-	pNPC->m_NPCState = NPC_STATE_IDLE;
-	pNPC->Activate();
+		if (!pEntity)
+		{
+			Warning("Dropship could not create template NPC\n");
+			return;
+		}
+		CAI_BaseNPC* pNPC = pEntity->MyNPCPointer();
+		Assert(pNPC);
+
+		// Spawn an entity blocker.
+		CBaseEntity* pBlocker = CEntityBlocker::Create(vecDeployEndPoint, vecNPCMins, vecNPCMaxs, pNPC, true);
+		g_EventQueue.AddEvent(pBlocker, "Kill", 2.5, this, this);
+		if (g_debug_dropship.GetInt() == 2)
+		{
+			NDebugOverlay::Box(vecDeployEndPoint, vecNPCMins, vecNPCMaxs, 255, 255, 255, 64, 2.5);
+		}
+
+		// Ensure our NPCs are standing upright
+		vecSpawnAngles[PITCH] = vecSpawnAngles[ROLL] = 0;
+
+		// Move it to the container spawnpoint
+		pNPC->SetAbsOrigin(vecSpawnOrigin);
+		pNPC->SetAbsAngles(vecSpawnAngles);
+		DispatchSpawn(pNPC);
+		pNPC->m_NPCState = NPC_STATE_IDLE;
+		pNPC->Activate();
 
 #if 0
-	pNPC->m_debugOverlays |= OVERLAY_TEXT_BIT;
+		pNPC->m_debugOverlays |= OVERLAY_TEXT_BIT;
 #endif
 
-	// Spawn a scripted sequence entity to make the NPC run out of the dropship
-	CAI_ScriptedSequence *pSequence = (CAI_ScriptedSequence*)CreateEntityByName( "scripted_sequence" );
-	pSequence->KeyValue( "m_iszEntity", STRING(pNPC->GetEntityName()) );
-	pSequence->KeyValue( "m_iszPlay", "Dropship_Deploy" );
-	pSequence->KeyValue( "m_fMoveTo", "4" );	// CINE_MOVETO_TELEPORT
-	pSequence->KeyValue( "OnEndSequence", CFmtStr("%s,NPCFinishDustoff,%s,0,-1", STRING(GetEntityName()), STRING(pNPC->GetEntityName())) );
-	pSequence->SetAbsOrigin( vecSpawnOrigin );
-	pSequence->SetAbsAngles( vecSpawnAngles );
-	pSequence->AddSpawnFlags( SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE );
-	pSequence->ForceSetTargetEntity(pNPC, true);
-	pSequence->Spawn();
-	pSequence->Activate();
-	variant_t emptyVariant;
-	pSequence->AcceptInput( "BeginSequence", this, this, emptyVariant, 0 );
+		// Spawn a scripted sequence entity to make the NPC run out of the dropship
+		CAI_ScriptedSequence* pSequence = (CAI_ScriptedSequence*)CreateEntityByName("scripted_sequence");
+		pSequence->KeyValue("m_iszEntity", STRING(pNPC->GetEntityName()));
+		pSequence->KeyValue("m_iszPlay", "Dropship_Deploy");
+		pSequence->KeyValue("m_fMoveTo", "4");	// CINE_MOVETO_TELEPORT
+		pSequence->KeyValue("OnEndSequence", CFmtStr("%s,NPCFinishDustoff,%s,0,-1", STRING(GetEntityName()), STRING(pNPC->GetEntityName())));
+		pSequence->SetAbsOrigin(vecSpawnOrigin);
+		pSequence->SetAbsAngles(vecSpawnAngles);
+		pSequence->AddSpawnFlags(SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE);
+		pSequence->ForceSetTargetEntity(pNPC, true);
+		pSequence->Spawn();
+		pSequence->Activate();
+		variant_t emptyVariant;
+		pSequence->AcceptInput("BeginSequence", this, this, emptyVariant, 0);
 #if 0
-	pSequence->m_debugOverlays |= OVERLAY_TEXT_BIT;
+		pSequence->m_debugOverlays |= OVERLAY_TEXT_BIT;
 #endif
 
-	m_hLastTroopToLeave = pNPC;
+		m_hLastTroopToLeave = pNPC;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -2603,6 +2662,29 @@ void CNPC_CombineDropship::InputNPCFinishDustoff( inputdata_t &inputdata )
 		};
 		pNPC->SetIgnoreConditions( g_Conditions, ARRAYSIZE(g_Conditions) );
 	}
+
+	// Unload the next troop
+	SpawnTroop();
+}
+
+void CNPC_CombineDropship::InputPlayerFinishDustoff(inputdata_t& inputdata)
+{
+	CLaz_Player* pPlayer = ToLazuulPlayer(inputdata.value.Entity());
+	if (!pPlayer)
+		return;
+
+	Vector vecNPCMins = pPlayer->WorldAlignMins();
+	Vector vecNPCMaxs = pPlayer->WorldAlignMaxs();
+
+	Vector vecDeployEndPoint;
+	QAngle vecDeployEndAngles;
+	m_hContainer->GetAttachment(m_iAttachmentTroopDeploy, vecDeployEndPoint, vecDeployEndAngles);
+	vecDeployEndPoint = GetDropoffFinishPosition(vecDeployEndPoint, NULL, vecNPCMins, vecNPCMaxs);
+
+	vecDeployEndAngles[PITCH] = vecDeployEndAngles[ROLL] = 0.f;
+
+	pPlayer->StopAutoMovement();
+	pPlayer->Teleport(&vecDeployEndPoint, &vecDeployEndAngles, &vec3_origin);
 
 	// Unload the next troop
 	SpawnTroop();
@@ -3021,5 +3103,221 @@ AI_BEGIN_CUSTOM_NPC( npc_combinedropship, CNPC_CombineDropship )
 
 AI_END_CUSTOM_NPC()
 
+#ifdef HL2_LAZUL
+class CDropShipPlayerSpawner : public CServerOnlyPointEntity, public ITeamRespawnWaveHandler
+{
+public:
+	DECLARE_CLASS(CDropShipPlayerSpawner, CServerOnlyPointEntity);
+	DECLARE_DATADESC();
 
+	virtual void Spawn();
+	virtual void Activate();
+	virtual void UpdateOnRemove();
 
+	void	SpawnPlayersThink();
+
+	// Inherited via ITeamRespawnWaveHandler
+	virtual bool RespawnPlayer(CBasePlayer* pPlayer) override;
+	virtual bool IsCurrentlyHandlingPlayer(CBasePlayer* pPlayer) override;
+	virtual bool IsEnabled() override;
+	virtual bool CanSpawnPlayersNow() override;
+
+private:
+	string_t	m_iszSpawnPath;
+	string_t	m_iszDiePath;
+	string_t	m_sDustoffPoints[DROPSHIP_MAX_SOLDIERS];
+
+	CBasePlayerHandle m_hPlayersToSpawn[DROPSHIP_MAX_SOLDIERS];
+	CHandle<CNPC_CombineDropship> m_hDropship;
+	bool	m_bSpawnedDropship;
+
+	CPathTrack* m_pEntryPath;
+	CPathTrack* m_pExitPath;
+};
+
+BEGIN_DATADESC(CDropShipPlayerSpawner)
+DEFINE_KEYFIELD(m_iszSpawnPath, FIELD_STRING, "dropship_spawn"),
+DEFINE_KEYFIELD(m_iszDiePath, FIELD_STRING, "dropship_fly"),
+
+DEFINE_KEYFIELD(m_sDustoffPoints[0], FIELD_STRING, "Dustoff1"),
+DEFINE_KEYFIELD(m_sDustoffPoints[1], FIELD_STRING, "Dustoff2"),
+DEFINE_KEYFIELD(m_sDustoffPoints[2], FIELD_STRING, "Dustoff3"),
+DEFINE_KEYFIELD(m_sDustoffPoints[3], FIELD_STRING, "Dustoff4"),
+DEFINE_KEYFIELD(m_sDustoffPoints[4], FIELD_STRING, "Dustoff5"),
+DEFINE_KEYFIELD(m_sDustoffPoints[5], FIELD_STRING, "Dustoff6"),
+
+DEFINE_ARRAY(m_hPlayersToSpawn, FIELD_EHANDLE, DROPSHIP_MAX_SOLDIERS),
+DEFINE_FIELD(m_hDropship, FIELD_EHANDLE),
+DEFINE_FIELD(m_bSpawnedDropship, FIELD_BOOLEAN),
+
+DEFINE_FIELD(m_pEntryPath, FIELD_CLASSPTR),
+DEFINE_FIELD(m_pExitPath, FIELD_CLASSPTR),
+
+DEFINE_THINKFUNC(SpawnPlayersThink),
+END_DATADESC();
+
+LINK_ENTITY_TO_CLASS(hlss_dropship_land, CDropShipPlayerSpawner);
+
+void CDropShipPlayerSpawner::Spawn()
+{
+	UTIL_PrecacheOther("npc_combinedropship");
+
+	BaseClass::Spawn();
+
+	LazuulRules()->AddRespawnWaveHandler(this, TEAM_COMBINE);
+}
+
+void CDropShipPlayerSpawner::Activate()
+{
+	BaseClass::Activate();
+
+	if (m_iszSpawnPath != NULL_STRING)
+	{
+		CBaseEntity* pTarget = gEntList.FindEntityByName(NULL, m_iszSpawnPath);
+		if (!pTarget)
+		{
+			Warning("hlss_dropship_land %s couldn't find path named %s\n", STRING(GetEntityName()), STRING(m_iszSpawnPath));
+			return;
+		}
+
+		CPathTrack* pTrack = dynamic_cast<CPathTrack*> (pTarget);
+		if (!pTrack)
+		{
+			Warning("hlss_dropship_land %s found %s, but it was not a path_track\n", STRING(GetEntityName()), STRING(m_iszSpawnPath));
+			return;
+		}
+
+		m_pEntryPath = pTrack;
+	}
+
+	if (m_iszDiePath != NULL_STRING)
+	{
+		CBaseEntity* pTarget = gEntList.FindEntityByName(NULL, m_iszDiePath);
+		if (!pTarget)
+		{
+			Warning("hlss_dropship_land %s couldn't find path named %s\n", STRING(GetEntityName()), STRING(m_iszDiePath));
+			return;
+		}
+
+		CPathTrack* pTrack = dynamic_cast<CPathTrack*> (pTarget);
+		if (!pTrack)
+		{
+			Warning("hlss_dropship_land %s found %s, but it was not a path_track\n", STRING(GetEntityName()), STRING(m_iszDiePath));
+			return;
+		}
+
+		m_pExitPath = pTrack;
+	}
+}
+
+void CDropShipPlayerSpawner::UpdateOnRemove()
+{
+	BaseClass::UpdateOnRemove();
+
+	LazuulRules()->RemoveRespawnWaveHandler(this);
+}
+
+void CDropShipPlayerSpawner::SpawnPlayersThink()
+{
+	if (!m_hDropship.Get() && !m_bSpawnedDropship)
+	{
+		CPathTrack* pSpawnTrack = m_pEntryPath;
+		CNPC_CombineDropship* pDropship = (CNPC_CombineDropship *)CreateNoSpawn("npc_combinedropship", pSpawnTrack->GetAbsOrigin(), pSpawnTrack->GetAbsAngles(), this);
+		for (int i = 0; i < DROPSHIP_MAX_SOLDIERS; i++)
+		{
+			pDropship->m_hPlayersToSpawn[i] = m_hPlayersToSpawn[i];
+			pDropship->m_sDustoffPoints[i] = m_sDustoffPoints[i];
+			if (m_hPlayersToSpawn[i].Get())
+			{
+				m_hPlayersToSpawn[i]->SetObserverTarget(pDropship);
+			}
+		}
+
+		pDropship->m_iCrateType = CRATE_SOLDIER;
+		pDropship->m_bInvulnerable = true;
+		pDropship->m_target = m_iszSpawnPath;
+		pDropship->m_iszLandTarget = GetEntityName();
+		pDropship->m_flGunRange = 1024.f;
+		pDropship->SetName(AllocPooledString(CFmtStr("%s_dropship", GetEntityName().ToCStr())));
+
+		DispatchSpawn(pDropship);
+		pDropship->Activate();
+
+		CPathTrack* pLandTrack = m_pEntryPath;
+		for (CPathTrack* pNext = pLandTrack->GetNext(); pNext != nullptr; pNext = pNext->GetNext())
+			pLandTrack = pNext;
+
+		variant_t var;
+		var.SetString(pLandTrack->GetEntityName());
+		g_EventQueue.AddEvent(pDropship, "FlyToSpecificTrackViaPath", var, 0.1f, this, this);
+		pLandTrack->KeyValue("OnPass", CFmtStr("%s,LandTakeCrate,%d,0,1", STRING(pDropship->GetEntityName()), 6));
+		CPathTrack* pDieAtTrack = m_pExitPath;
+		for (CPathTrack* pNext = pDieAtTrack->GetNext(); pNext != nullptr; pNext = pNext->GetNext())
+			pDieAtTrack = pNext;
+
+		pDropship->KeyValue("OnFinishedDropoff", CFmtStr("%s,FlyToSpecificTrackViaPath,%s,0,1", STRING(pDropship->GetEntityName()), STRING(pDieAtTrack->GetEntityName())));
+		pDieAtTrack->KeyValue("OnPass", CFmtStr("%s,Kill,,0,1", STRING(pDropship->GetEntityName())));
+
+		m_hDropship.Set(pDropship);
+		m_bSpawnedDropship = true;
+	}
+	else if (m_bSpawnedDropship && !m_hDropship.Get())
+	{
+		SetThink(NULL);
+		m_bSpawnedDropship = false;
+		m_hDropship.Term();
+
+		for (int i = 0; i < DROPSHIP_MAX_SOLDIERS; i++)
+		{
+			m_hPlayersToSpawn[i] = nullptr;
+		}
+
+		return;
+	}
+
+	SetNextThink(gpGlobals->curtime + 0.1f);
+}
+
+bool CDropShipPlayerSpawner::RespawnPlayer(CBasePlayer* pPlayer)
+{
+	for (int i = 0; i < DROPSHIP_MAX_SOLDIERS; i++)
+	{
+		if (!m_hPlayersToSpawn[i].Get())
+		{
+			m_hPlayersToSpawn[i] = pPlayer;
+			SetNextThink(gpGlobals->curtime);
+			SetThink(&CDropShipPlayerSpawner::SpawnPlayersThink);
+			return true;
+		}
+	}
+
+	return false;
+}
+bool CDropShipPlayerSpawner::IsCurrentlyHandlingPlayer(CBasePlayer* pPlayer)
+{
+	for (int i = 0; i < DROPSHIP_MAX_SOLDIERS; i++)
+	{
+		if (m_hPlayersToSpawn[i].Get() == pPlayer)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool CDropShipPlayerSpawner::IsEnabled()
+{
+	if (!m_pEntryPath || !m_pExitPath)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool CDropShipPlayerSpawner::CanSpawnPlayersNow()
+{
+	return m_hDropship.Get() == nullptr && !m_bSpawnedDropship;
+}
+#endif // HL2_LAZUL

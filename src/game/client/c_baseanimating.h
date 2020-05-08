@@ -511,6 +511,8 @@ protected:
 
 	virtual bool					CalcAttachments();
 
+	bool							GetSequenceLoops() { return m_bSequenceLoops; }
+
 private:
 	// This method should return true if the bones have changed + SetupBones needs to be called
 	virtual float					LastBoneChangedTime() { return FLT_MAX; }

@@ -101,6 +101,10 @@
 		"duck_streak_victim"	"short" // (former) duck streak count for victim
 		"rocket_jump"		"bool"		// was the victim rocket jumping
 		
+		"victim_faction"		"byte"
+		"attacker_faction"	"byte"
+		"assister_faction"	"byte"
+		
 	//	"dominated"	"short"		// did killer dominate victim with this kill
 	//	"assister_dominated" "short"	// did assister dominate victim with this kill
 	//	"revenge"	"short"		// did killer get revenge on victim with this kill
@@ -441,6 +445,10 @@
 		"assister_name"		"string"	// classname of assister
 		"assister_team"		"byte"		// team of assister
 		"show_notice"		"bool"	// show in deathnotice
+		
+		"victim_faction"		"byte"
+		"attacker_faction"	"byte"
+		"assister_faction"	"byte"
 	}
 
 	"achievement_earned"

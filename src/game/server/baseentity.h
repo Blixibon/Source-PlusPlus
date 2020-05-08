@@ -554,7 +554,7 @@ public:
 	void					DestroyAllDataObjects( void );
 
 public:
-	bool					HandleEntityCommand(KeyValues* pKeyValues) { return false; }
+	virtual bool			HandleEntityCommand(CBasePlayer *pClient, KeyValues* pKeyValues) { return false; }
 public:
 	void SetScaledPhysics( IPhysicsObject *pNewObject );
 

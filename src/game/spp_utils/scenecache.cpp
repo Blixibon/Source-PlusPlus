@@ -7,6 +7,7 @@
 #include "lzss.h"
 #include "fmtstr.h"
 #include "scenefilecache/SceneImageFile.h"
+#include "shared.h"
 
 //-----------------------------------------------------------------------------
 // Binary compiled VCDs get their strings from a pool
@@ -42,6 +43,130 @@ protected:
 };
 
 CLZSS CSceneFileCache::compressor;
+
+void DoLoadScenes(CSceneFileCache* pThis, MsgFunc_t print)
+{
+	pThis->m_ScenesLoaded = 0;
+	pThis->m_PersistantStrings.m_StringPool.RemoveAll();
+	pThis->m_SceneTable.Purge();
+
+	CUtlVector<CUtlString>	vcdFileList;
+	FindFiles("scenes/*.vcd", true, vcdFileList, "SCENES");
+	pThis->m_SceneTable.EnsureCapacity(vcdFileList.Count());
+	for (auto& file : vcdFileList)
+	{
+		CUtlBuffer buf;
+		if (g_pFullFileSystem->ReadFile(file.Get(), "SCENES", buf))
+		{
+			char szCleanName[MAX_PATH];
+			V_strncpy(szCleanName, file.Get(), sizeof(szCleanName));
+			V_strlower(szCleanName);
+			V_FixSlashes(szCleanName, '\\');
+			CRC32_t crcFilename = CRC32_ProcessSingleBuffer(szCleanName, strlen(szCleanName));
+
+			CRC32_t crcSource;
+			CRC32_Init(&crcSource);
+			CRC32_ProcessBuffer(&crcSource, buf.Base(), buf.TellMaxPut());
+			CRC32_Final(&crcSource);
+
+			SetTokenProcessorBuffer((char*)buf.Base());
+			CChoreoScene* pCacheScene = ChoreoLoadScene(szCleanName, nullptr, GetTokenProcessor(), nullptr);
+
+			pThis->AddSceneFile(crcFilename, crcSource, pCacheScene);
+			delete pCacheScene;
+		}
+	}
+	vcdFileList.Purge();
+
+	int iFileScenes = pThis->m_SceneTable.Count();
+	if (print)
+		print("Loaded %d scenes from filesystem.\n", iFileScenes);
+
+	int iBufferSize = g_pFullFileSystem->GetSearchPath("GAME", true, nullptr, 0);
+	char* pszSearchPaths = (char*)stackalloc(iBufferSize);
+	g_pFullFileSystem->GetSearchPath("GAME", true, pszSearchPaths, iBufferSize);
+	const char* pSceneImageName = IsX360() ? "scenes/scenes.360.image" : "scenes/scenes.image";
+	for (char* path = strtok(pszSearchPaths, ";"); path; path = strtok(NULL, ";"))
+	{
+		char imagePath[MAX_PATH];
+		V_ComposeFileName(path, pSceneImageName, imagePath, MAX_PATH);
+		if (g_pFullFileSystem->FileExists(imagePath, "GAME"))
+		{
+			CUtlBuffer bufImageFile;
+			if (g_pFullFileSystem->ReadFile(imagePath, "GAME", bufImageFile))
+			{
+				SceneImageHeader_t* pHeader = (SceneImageHeader_t*)bufImageFile.Base();
+				if (pHeader->nId != SCENE_IMAGE_ID ||
+					pHeader->nVersion != SCENE_IMAGE_VERSION)
+				{
+					continue;
+				}
+				SceneImageEntry_t* pEntries = (SceneImageEntry_t*)((byte*)pHeader + pHeader->nSceneEntryOffset);
+				CChoreoStringPool imagePool(pHeader);
+
+				for (int i = 0; i < pHeader->nNumScenes; i++)
+				{
+					CUtlBuffer entryBuffer;
+
+					unsigned char* pData = (unsigned char*)pHeader + pEntries[i].nDataOffset;
+					bool bIsCompressed;
+					bIsCompressed = CLZMA::IsCompressed(pData);
+					if (bIsCompressed)
+					{
+						int originalSize = CLZMA::GetActualSize(pData);
+
+						unsigned char* pOutputData = (unsigned char*)malloc(originalSize);
+						CLZMA::Uncompress(pData, pOutputData);
+						entryBuffer.Put(pOutputData, originalSize);
+						free(pOutputData);
+					}
+					else
+					{
+						entryBuffer.Put(pData, pEntries[i].nDataLength);
+					}
+
+					CRC32_t crcFilename = pEntries[i].crcFilename;
+					unsigned short sIDX = pThis->m_SceneTable.Find(crcFilename);
+					// Don't add if we already have it
+					if (!pThis->m_SceneTable.IsValidIndex(sIDX))
+					{
+						CChoreoScene* pImageScene = new CChoreoScene(nullptr);
+						CRC32_t crcSource;
+						if (CChoreoScene::GetCRCFromBinaryBuffer(entryBuffer, crcSource) && pImageScene->RestoreFromBinaryBuffer(entryBuffer, CFmtStr("scenes\\%.8x.vcd", crcFilename), &imagePool))
+						{
+							pThis->AddSceneFile(crcFilename, crcSource, pImageScene);
+						}
+
+						delete pImageScene;
+					}
+				}
+			}
+		}
+	}
+
+	if (print)
+		print("Loaded %d scenes from images.\n", pThis->m_SceneTable.Count() - iFileScenes);
+
+	for (CSceneFileCache::SceneIndex_t i = 0; i < pThis->m_SceneTable.Count(); i++)
+	{
+		pThis->m_SceneTable[i].sceneId = (int)i;
+	}
+
+	if (print)
+		print("Loaded %d scenes in total.\n", pThis->m_SceneTable.Count());
+
+	pThis->m_ScenesLoaded = 1;
+}
+
+unsigned LoadInThread(void* pParams)
+{
+	CSceneFileCache* pThis = static_cast<CSceneFileCache*> (pParams);
+	pThis->m_ThreadActive = 1;
+	DoLoadScenes(pThis, Msg);
+	pThis->m_ThreadActive = 0;
+
+	return 0;
+}
 
 InitReturnVal_t CSceneFileCache::Init()
 {
@@ -98,6 +223,8 @@ bool CSceneFileCache::GetSceneCachedData(char const* pFilename, SceneCachedData_
 
 short CSceneFileCache::GetSceneCachedSound(int iScene, int iSound)
 {
+	BlockForLoad();
+
 	CSceneFileCache::SceneIndex_t IDX = (CSceneFileCache::SceneIndex_t)iScene;
 	if (m_SceneTable.IsValidIndex(IDX))
 	{
@@ -113,119 +240,50 @@ short CSceneFileCache::GetSceneCachedSound(int iScene, int iSound)
 
 const char* CSceneFileCache::GetSceneString(short stringId)
 {
+	BlockForLoad();
+
 	return m_PersistantStrings.m_StringPool.String(stringId);
 }
 
 void CSceneFileCache::Reload()
 {
-	m_PersistantStrings.m_StringPool.RemoveAll();
-	m_SceneTable.Purge();
+	BlockForLoad();
 
-	CUtlVector<CUtlString>	vcdFileList;
-	FindFiles("scenes/*.vcd", true, vcdFileList, "SCENES");
-	m_SceneTable.EnsureCapacity(vcdFileList.Count());
-	for (auto &file : vcdFileList)
+	//if (internaldata->IsClientConnected() || internaldata->IsServerRunning())
+	//{
+		DoLoadScenes(this, Msg);
+	//}
+	//else
+	//{
+	//	m_ScenesLoaded = 0;
+	//	m_ThreadActive = 1;
+	//	m_LoaderThread = CreateSimpleThread(LoadInThread, this);
+	//}
+}
+
+void CSceneFileCache::BlockForLoad()
+{
+	if (m_LoaderThread)
 	{
-		CUtlBuffer buf;
-		if (g_pFullFileSystem->ReadFile(file.Get(), "SCENES", buf))
+		if (!m_ScenesLoaded)
 		{
-			char szCleanName[MAX_PATH];
-			V_strncpy(szCleanName, file.Get(), sizeof(szCleanName));
-			V_strlower(szCleanName);
-			V_FixSlashes(szCleanName, '\\');
-			CRC32_t crcFilename = CRC32_ProcessSingleBuffer(szCleanName, strlen(szCleanName));
-
-			CRC32_t crcSource;
-			CRC32_Init(&crcSource);
-			CRC32_ProcessBuffer(&crcSource, buf.Base(), buf.TellMaxPut());
-			CRC32_Final(&crcSource);
-
-			SetTokenProcessorBuffer((char *)buf.Base());
-			CChoreoScene* pCacheScene = ChoreoLoadScene(szCleanName, nullptr, GetTokenProcessor(), nullptr);
-
-			AddSceneFile(crcFilename, crcSource, pCacheScene);
-			delete pCacheScene;
+			ThreadJoin(m_LoaderThread);
+			ReleaseThreadHandle(m_LoaderThread);
+			m_LoaderThread = 0;
+		}
+		else
+		{
+			ThreadDetach(m_LoaderThread);
+			ReleaseThreadHandle(m_LoaderThread);
+			m_LoaderThread = 0;
 		}
 	}
-	vcdFileList.Purge();
-
-	int iFileScenes = m_SceneTable.Count();
-	Msg("Loaded %d scenes from filesystem.\n", iFileScenes);
-
-	int iBufferSize = g_pFullFileSystem->GetSearchPath("GAME", true, nullptr, 0);
-	char* pszSearchPaths = (char*)stackalloc(iBufferSize);
-	g_pFullFileSystem->GetSearchPath("GAME", true, pszSearchPaths, iBufferSize);
-	const char* pSceneImageName = IsX360() ? "scenes/scenes.360.image" : "scenes/scenes.image";
-	for (char* path = strtok(pszSearchPaths, ";"); path; path = strtok(NULL, ";"))
-	{
-		char imagePath[MAX_PATH];
-		V_ComposeFileName(path, pSceneImageName, imagePath, MAX_PATH);
-		if (g_pFullFileSystem->FileExists(imagePath, "GAME"))
-		{
-			CUtlBuffer bufImageFile;
-			if (g_pFullFileSystem->ReadFile(imagePath, "GAME", bufImageFile))
-			{
-				SceneImageHeader_t* pHeader = (SceneImageHeader_t*)bufImageFile.Base();
-				if (pHeader->nId != SCENE_IMAGE_ID ||
-					pHeader->nVersion != SCENE_IMAGE_VERSION)
-				{
-					continue;
-				}
-				SceneImageEntry_t* pEntries = (SceneImageEntry_t*)((byte*)pHeader + pHeader->nSceneEntryOffset);
-				CChoreoStringPool imagePool(pHeader);
-
-				for (int i = 0; i < pHeader->nNumScenes; i++)
-				{
-					CUtlBuffer entryBuffer;
-
-					unsigned char* pData = (unsigned char*)pHeader + pEntries[i].nDataOffset;
-					bool bIsCompressed;
-					bIsCompressed = CLZMA::IsCompressed(pData);
-					if (bIsCompressed)
-					{
-						int originalSize = CLZMA::GetActualSize(pData);
-
-						unsigned char* pOutputData = (unsigned char*)malloc(originalSize);
-						CLZMA::Uncompress(pData, pOutputData);
-						entryBuffer.Put(pOutputData, originalSize);
-						free(pOutputData);
-					}
-					else
-					{
-						entryBuffer.Put(pData, pEntries[i].nDataLength);
-					}
-
-					CRC32_t crcFilename = pEntries[i].crcFilename;
-					unsigned short sIDX = m_SceneTable.Find(crcFilename);
-					// Don't add if we already have it
-					if (!m_SceneTable.IsValidIndex(sIDX))
-					{
-						CChoreoScene* pImageScene = new CChoreoScene(nullptr);
-						CRC32_t crcSource;
-						if (CChoreoScene::GetCRCFromBinaryBuffer(entryBuffer, crcSource) && pImageScene->RestoreFromBinaryBuffer(entryBuffer, CFmtStr("scenes\\%.8x.vcd", crcFilename), &imagePool))
-						{
-							AddSceneFile(crcFilename, crcSource, pImageScene);
-						}
-
-						delete pImageScene;
-					}
-				}
-			}
-		}
-	}
-
-	Msg("Loaded %d scenes from images.\n", m_SceneTable.Count() - iFileScenes);
-
-	for (CSceneFileCache::SceneIndex_t i = 0; i < m_SceneTable.Count(); i++)
-	{
-		m_SceneTable[i].sceneId = (int)i;
-	}
-
-	Msg("Loaded %d scenes in total.\n", m_SceneTable.Count());
 }
 
 CSceneFileCache::SceneIndex_t CSceneFileCache::GetSceneIndex(char const* pFilename)
 {
+	BlockForLoad();
+
 	char szCleanName[MAX_PATH];
 	V_strncpy(szCleanName, pFilename, sizeof(szCleanName));
 	V_strlower(szCleanName);
