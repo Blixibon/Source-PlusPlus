@@ -127,12 +127,12 @@ $Project
 			$File	"multiplayer\basenetworkedragdoll.h"
 			$File	"multiplayer\basenetworkedragdoll.cpp"
 			
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_gamemove.h"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_gamemove.cpp"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_shared.h"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_shared.cpp"
-			$File	"$SRCDIR\game\shared\multiplayer\multiplayer_animstate.h"
-			$File	"$SRCDIR\game\shared\multiplayer\multiplayer_animstate.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_gamemove.h"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_gamemove.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_shared.h"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_shared.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.h"
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.cpp"
 		}
 		
 		$File	"$SRCDIR\game\shared\achievement_saverestore.cpp"

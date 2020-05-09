@@ -137,6 +137,8 @@ CHLSSInterfacePanel* GetInterfacePanel()
 
 CHLSSInterfacePanel::CHLSSInterfacePanel(vgui::Panel* parent) : vgui::Frame(parent, "HLSS_CombineInterface")
 {
+	SetSizeable(false);
+
 	for (int i = 0; i < 5; i++)
 	{
 		m_pSlotButtons[i] = new vgui::Button(this, CFmtStr("SelectSlot%i", i+1), "");

@@ -217,19 +217,13 @@ $Project
 		$File	"$SRCDIR\vgui2\game_controls\FloatSlider.cpp"
 
 		$Folder "Shader Editor"
-		{
-			$Folder "Grass Clusters"
-			{
-				$File	"ShaderEditor\Grass\CGrassCluster.cpp"
-				$File	"ShaderEditor\Grass\CGrassCluster.h"
-			}
-			
-			$File	"ShaderEditor\isedit_modelrender.h"
-			$File	"ShaderEditor\ivshadereditor.h"
-			$File	"ShaderEditor\sedit_modelrender.cpp"
-			$File	"ShaderEditor\sedit_modelrender.h"
-			$File	"ShaderEditor\shadereditorsystem.cpp"
-			$File	"ShaderEditor\shadereditorsystem.h"
+		{			
+			$File	"ShaderEditor\ISEdit_ModelRender.h"
+			$File	"ShaderEditor\IVShaderEditor.h"
+			$File	"ShaderEditor\SEdit_ModelRender.cpp"
+			$File	"ShaderEditor\SEdit_ModelRender.h"
+			$File	"ShaderEditor\ShaderEditorSystem.cpp"
+			$File	"ShaderEditor\ShaderEditorSystem.h"
 		}
 		
 		$Folder	"Multiplayer"
@@ -240,12 +234,12 @@ $Project
 			$File	"multiplayer\basenetworkedragdoll_cl.cpp"
 			
 			$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_gamemove.h"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_gamemove.cpp"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_shared.h"
-			$File	"$SRCDIR\game\shared\multiplayer\basenetworkedplayer_shared.cpp"
-			$File	"$SRCDIR\game\shared\multiplayer\multiplayer_animstate.h"
-			$File	"$SRCDIR\game\shared\multiplayer\multiplayer_animstate.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_gamemove.h"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_gamemove.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_shared.h"
+			$File	"$SRCDIR\game\shared\Multiplayer\basenetworkedplayer_shared.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.h"
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.cpp"
 		}
 
 		$Folder "Game UI" [!$TF2CLASSIC]
