@@ -57,6 +57,8 @@ tier1.lib
 vgui_controls.lib
 raytrace.lib
 fgdlib.lib
+responserules.lib
+shaderlib.lib
 
 *.vcxproj.filters
 *.pdb
@@ -86,6 +88,9 @@ server.lib
 spp_utils.pdb
 spp_utils.dll
 spp_utils.lib
+game_shader_dx6.pdb
+game_shader_dx6.dll
+game_shader_dx6.lib
 
 client.so
 client.so.dbg
