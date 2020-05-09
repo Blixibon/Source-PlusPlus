@@ -29,8 +29,8 @@ $Group "game"
 
 $Group "shaders"
 {
-	"game_shader_dx9"
 	"editor_shader"
+	"game_shader_dx9"
 	"shaderlib"
 }
 
@@ -38,6 +38,7 @@ $Group "everything"
 {
 	"captioncompiler"
 	"client"
+	"editor_shader"
 	"fgdlib"
 	"game_shader_dx9"
 	"shaderlib"
@@ -45,8 +46,8 @@ $Group "everything"
 	"height2normal"
 	"mathlib"
 	"motionmapper"
+	"particles"
 	"phonemeextractor"
-	"propper"
 	"raytrace"
 	"responserules"
 	"qc_eyes"

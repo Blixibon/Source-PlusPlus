@@ -110,6 +110,11 @@ $Project "motionmapper"
 	"utils\motionmapper\motionmapper.vpc" [$WIN32]
 }
 
+$Project "particles"
+{
+	"particles\particles.vpc"
+}
+
 $Project "phonemeextractor"
 {
 	"utils\phonemeextractor\phonemeextractor.vpc" [$WIN32]

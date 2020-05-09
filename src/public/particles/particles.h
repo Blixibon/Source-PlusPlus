@@ -23,6 +23,7 @@
 #include "materialsystem/MaterialSystemUtil.h"
 #include "trace.h"
 #include "tier1/utlsoacontainer.h"
+#include "raytrace.h"
 
 #if defined( CLIENT_DLL )
 #include "c_pixel_visibility.h"
@@ -287,6 +288,17 @@ public:
 	virtual void SetUpLightingEnvironment( const Vector& pos )
 	{
 	}
+	
+	virtual int GetRayTraceEnvironmentFromName(const char* pszRtEnvName)
+	{
+		return 0;											// == PRECIPITATION
+	}
+
+	// Traces Four Rays against a defined RayTraceEnvironment
+	virtual void TraceAgainstRayTraceEnv(
+		int envnumber,
+		const FourRays& rays, fltx4 TMin, fltx4 TMax,
+		RayTracingResult* rslt_out, int32 skip_id) const = 0;
 };
 
 
@@ -794,6 +806,18 @@ private:
 	template <typename T> friend class CParticleOperatorDefinition;
 };
 
+class CParticleInitializerOperatorInstance : public CParticleOperatorInstance
+{
+public:
+
+	virtual bool ShouldRun(bool bApplyingParentKillList) const
+	{
+		return (!bApplyingParentKillList) || m_bRunForParentApplyKillList;
+	}
+
+	bool m_bRunForParentApplyKillList;
+};
+
 class CParticleRenderOperatorInstance : public CParticleOperatorInstance
 {
 public:
@@ -878,6 +902,10 @@ private:
 
 #define END_PARTICLE_OPERATOR_UNPACK( _className )		\
 	END_DMXELEMENT_UNPACK_TEMPLATE( _className, CParticleOperatorDefinition<_className>::m_pUnpackParams )
+
+#define BEGIN_PARTICLE_INITIALIZER_OPERATOR_UNPACK( _className )									\
+	BEGIN_PARTICLE_OPERATOR_UNPACK( _className )													\
+    DMXELEMENT_UNPACK_FIELD( "run for killed parent particles", "1", bool, m_bRunForParentApplyKillList )
 
 #define BEGIN_PARTICLE_RENDER_OPERATOR_UNPACK( _className )											\
 	BEGIN_PARTICLE_OPERATOR_UNPACK( _className )													\

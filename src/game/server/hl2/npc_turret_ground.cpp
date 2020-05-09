@@ -23,6 +23,7 @@
 #include "te_effect_dispatch.h"
 
 #define GROUNDTURRET_BEAM_SPRITE "materials/effects/bluelaser2.vmt"
+#define GROUNDTURRET_BEAM_SPRITE_RED "materials/effects/redlaser2.vmt"
 
 #define GROUNDTURRET_VIEWCONE		60.0f // (degrees)
 #define GROUNDTURRET_RETIRE_TIME	7.0f
@@ -32,6 +33,9 @@ ConVar ai_newgroundturret ( "ai_newgroundturret", "0" );
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+static int s_iLaserBeamIndex = -1;
+static int s_iLaserBeamRedIndex = -1;
 
 LINK_ENTITY_TO_CLASS( npc_turret_ground, CNPC_GroundTurret );
 
@@ -59,23 +63,24 @@ DEFINE_OUTPUT(m_OnAreaClear, "OnAreaClear"),
 DEFINE_OUTPUT(m_OnEnabled, "OnEnabled"),
 DEFINE_OUTPUT(m_OnDisabled, "OnDisabled"),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
 
-	// DEFINE_FIELD( m_ShotSounds, FIELD_SHORT ),
+// DEFINE_FIELD( m_ShotSounds, FIELD_SHORT ),
 
 #ifdef HL2_LAZUL
-	DEFINE_LAZNETWORKENTITY_DATADESC(),
+DEFINE_LAZNETWORKENTITY_DATADESC(),
 #endif // HL2_LAZUL
 
-END_DATADESC()
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::Precache( void )
 {
-	PrecacheModel( GROUNDTURRET_BEAM_SPRITE );
+	s_iLaserBeamIndex = PrecacheModel( GROUNDTURRET_BEAM_SPRITE );
+	s_iLaserBeamRedIndex = PrecacheModel(GROUNDTURRET_BEAM_SPRITE_RED);
 	PrecacheModel( "models/combine_turrets/ground_turret.mdl" );
 
 	PrecacheScriptSound( "NPC_CeilingTurret.Deploy" );
@@ -581,6 +586,7 @@ void CNPC_GroundTurret::Shoot()
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::ProjectBeam( const Vector &vecStart, const Vector &vecDir, int width, int brightness, float duration )
 {
+#if 0
 	CBeam *pBeam;
 	pBeam = CBeam::BeamCreate( GROUNDTURRET_BEAM_SPRITE, width );
 	if ( !pBeam )
@@ -599,6 +605,20 @@ void CNPC_GroundTurret::ProjectBeam( const Vector &vecStart, const Vector &vecDi
 	pBeam->SetColor( 0, 145+random->RandomInt( -16, 16 ), 255 );
 	pBeam->RelinkBeam();
 	pBeam->LiveForTime( duration );
+#else
+	trace_t tr;
+	AI_TraceLine(vecStart, vecStart + vecDir * m_flSensingDist, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+
+	int iBeamModel = s_iLaserBeamIndex;
+	if (GetTeamNumber() == TF_TEAM_RED)
+	{
+		iBeamModel = s_iLaserBeamRedIndex;
+	}
+
+	CPVSFilter filter(GetAbsOrigin());
+	filter.AddRecipientsByPVS(tr.endpos);
+	te->BeamPoints(filter, 0.f, &tr.startpos, &tr.endpos, iBeamModel, -1, 0, 0, duration, width, 0.1f, 16, 0, 255, 255, 255, brightness, 1);
+#endif
 }
 
 //-----------------------------------------------------------------------------

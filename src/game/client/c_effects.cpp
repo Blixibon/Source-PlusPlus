@@ -80,7 +80,7 @@ PRECACHE_REGISTER_FN( PrecacheParticles );
 // Precipitation particle type
 //-----------------------------------------------------------------------------
 CUtlVector<CClient_Precipitation*> g_Precipitations;
-CUtlVector< RayTracingEnvironment* > g_RayTraceEnvironments;
+extern CUtlDict< RayTracingEnvironment* > g_RayTraceEnvironments;
 
 IMPLEMENT_CLIENTCLASS_DT(C_PrecipitationBlocker, DT_PrecipitationBlocker, CPrecipitationBlocker)
 END_RECV_TABLE()
@@ -1120,9 +1120,9 @@ void CClient_Precipitation::InitializeParticlePrecip()
 
 	// Sets up ray tracing environments for all func_precipitations and func_precipitation_blockers
 	RayTracingEnvironment *rtEnvRainEmission = new RayTracingEnvironment();
-	g_RayTraceEnvironments.AddToTail( rtEnvRainEmission );
+	g_RayTraceEnvironments.Insert("PRECIPITATION", rtEnvRainEmission);
 	RayTracingEnvironment *rtEnvRainBlocker = new RayTracingEnvironment();
-	g_RayTraceEnvironments.AddToTail( rtEnvRainBlocker );
+	g_RayTraceEnvironments.Insert("PRECIPITATION_BLOCKER", rtEnvRainBlocker);
 
 	rtEnvRainEmission->Flags |= RTE_FLAGS_DONT_STORE_TRIANGLE_COLORS | RTE_FLAGS_DONT_STORE_TRIANGLE_MATERIALS;	// save some ram
 	rtEnvRainBlocker->Flags |= RTE_FLAGS_DONT_STORE_TRIANGLE_COLORS | RTE_FLAGS_DONT_STORE_TRIANGLE_MATERIALS;	// save some ram

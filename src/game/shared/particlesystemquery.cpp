@@ -25,6 +25,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef CLIENT_DLL
+CUtlDict< RayTracingEnvironment* > g_RayTraceEnvironments;
+#endif
 
 //-----------------------------------------------------------------------------
 // Interface to allow the particle system to call back into the game code
@@ -54,6 +57,7 @@ public:
 		int *pHitBoxIndexOut
 		);
 
+	virtual int GetRayTraceEnvironmentFromName(const char* pszRtEnvName);
 	virtual int GetCollisionGroupFromName( const char *pszCollisionGroupName );
 
 
@@ -62,6 +66,11 @@ public:
 		int nControlPointNumber,
 		int nBufSize,										// # of output slots available
 		ModelHitBoxInfo_t *pHitBoxOutputBuffer );
+
+	virtual void TraceAgainstRayTraceEnv(
+		int envnumber,
+		const FourRays& rays, fltx4 TMin, fltx4 TMax,
+		RayTracingResult* rslt_out, int32 skip_id) const;
 
 	virtual	bool IsPointInControllingObjectHitBox( 
 		CParticleCollection *pParticles,
@@ -457,7 +466,18 @@ int CParticleSystemQuery::GetControllingObjectHitBoxInfo(
 	return nRet;
 }
 
+void CParticleSystemQuery::TraceAgainstRayTraceEnv(int envnumber, const FourRays& rays, fltx4 TMin, fltx4 TMax, RayTracingResult* rslt_out, int32 skip_id) const
+{
+#ifdef CLIENT_DLL
+	if (!g_RayTraceEnvironments.IsValidIndex(envnumber))
+		return;
 
+	RayTracingEnvironment* pEnv = g_RayTraceEnvironments[envnumber];
+
+	pEnv->Trace4Rays(rays, TMin, TMax, rslt_out, skip_id);
+#endif // CLIENT_DLL
+
+}
 
 bool CParticleSystemQuery::IsPointInControllingObjectHitBox( 
 	CParticleCollection *pParticles,
@@ -552,6 +572,15 @@ static CollisionGroupNameRecord_t s_NameMap[]={
 #endif
 };
 
+
+int CParticleSystemQuery::GetRayTraceEnvironmentFromName(const char* pszRtEnvName)
+{
+#ifdef CLIENT_DLL
+	return g_RayTraceEnvironments.Find(pszRtEnvName);
+#else
+	return 0;
+#endif // CLIENT_DLL
+}
 
 int CParticleSystemQuery::GetCollisionGroupFromName( const char *pszCollisionGroupName )
 {
