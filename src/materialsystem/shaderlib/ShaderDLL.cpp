@@ -20,6 +20,13 @@
 #include "filesystem_init.h"
 #include "../stdshaders/IShaderExtension.h"
 
+#if defined( _WIN32 ) && !defined( _X360 )
+#include <windows.h>
+#include <direct.h>
+#include <io.h>
+#include <process.h>
+#endif
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -68,6 +75,27 @@ IGameSharedUtils* spp_utils = NULL;
 // Pattern necessary because shaders register themselves in global constructors
 static CShaderDLL *s_pShaderDLL;
 
+static bool Sys_GetExecutableName(char* out, int len)
+{
+#if defined( _WIN32 )
+	if (!::GetModuleFileName((HINSTANCE)GetModuleHandle(NULL), out, len))
+	{
+		return false;
+	}
+#else
+	if (CommandLine()->GetParm(0))
+	{
+		Q_MakeAbsolutePath(out, len, CommandLine()->GetParm(0));
+	}
+	else
+	{
+		return false;
+	}
+#endif
+
+	return true;
+}
+
 
 //-----------------------------------------------------------------------------
 // Global accessor
@@ -106,6 +134,13 @@ CShaderDLL::CShaderDLL()
 {
 	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f );
 }
+#ifdef _WIN32
+#define EXE_STRING ".exe"
+#elif __linux__
+#define EXE_STRING "_linux"
+#else
+#define EXE_STRING
+#endif // _WIN32
 
 
 //-----------------------------------------------------------------------------
@@ -117,7 +152,8 @@ bool CShaderDLL::Connect( CreateInterfaceFn factory, bool bIsMaterialSystem )
 	g_pConfig = (const MaterialSystem_Config_t*)factory( MATERIALSYSTEM_CONFIG_VERSION, NULL );
 	g_pSLShaderSystem =  (IShaderSystem*)factory( SHADERSYSTEM_INTERFACE_VERSION, NULL );
 
-	if ( !bIsMaterialSystem )
+	char cExeName[MAX_PATH];
+	if ( !bIsMaterialSystem && Sys_GetExecutableName(cExeName, MAX_PATH) && V_stricmp(V_GetFileName(cExeName), "srcds" EXE_STRING) != 0)
 	{
 		ConnectTier1Libraries( &factory, 1 );
   		InitShaderLibCVars( factory );
