@@ -75,8 +75,6 @@ public:
 	Class_T Classify(void);
 	void	Weapon_Equip(CBaseCombatWeapon *pWeapon);
 
-	virtual void EnableHelmet() { SetBodygroup(2, 1); }
-
 	virtual bool	IsAmmoResupplier() { return true; }
 
 	//bool CreateBehaviors(void);
@@ -93,38 +91,6 @@ public:
 	//void 			PrescheduleThink();
 
 	void DeathSound(const CTakeDamageInfo &info);
-	/*void GatherConditions();
-	void UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void 			CommanderUse(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	bool			CanJoinPlayerSquad();
-	void			AddToPlayerSquad();
-	void			RemoveFromPlayerSquad();
-	void 			TogglePlayerSquadState();
-
-	void		ModifyOrAppendCriteria(AI_CriteriaSet& set);
-
-	void 			FixupPlayerSquad();
-	void 			ClearFollowTarget();
-	void 			UpdateFollowCommandPoint();
-	bool			IsFollowingCommandPoint();
-	bool 			TargetOrder(CBaseEntity *pTarget, CAI_BaseNPC **Allies, int numAllies);
-
-	void			OnRestore();
-
-	CAI_BaseNPC *	GetSquadCommandRepresentative();
-	bool IsCommandable()	{ return IsInPlayerSquad(); }
-
-	bool HaveCommandGoal() const
-	{
-		if (GetCommandGoal() != vec3_invalid)
-			return true;
-		return false;
-	}*/
-
-	virtual void		ProcessSceneEvents(void);
-
-	/*CAI_FuncTankBehavior		m_FuncTankBehavior;
-	COutputEvent				m_OnPlayerUse;*/
 
 	DEFINE_CUSTOM_AI;
 
@@ -155,15 +121,7 @@ protected:
 		SCHED_HGUARD_DRAW_PISTOL = BaseClass::NEXT_SCHEDULE,
 	};
 
-	//void SetupCustomCriteria(CriteriaType type);
-
-	static colleagueModel_t gm_Models[];
-
 	bool			m_fWeaponDrawn;		// Is my weapon drawn? (ready to use)
-
-	void		InitRandomFlexes();
-	bool m_bFlexInit;
-	RndFlexData	m_RndFlexData[NUM_RND_HEAD_FLEXES];
 	
 };
 
@@ -184,29 +142,7 @@ BEGIN_DATADESC(CNPC_HumanGuard)
 //						m_FuncTankBehavior
 //DEFINE_OUTPUT(m_OnPlayerUse, "OnPlayerUse"),
 DEFINE_KEYFIELD(m_fWeaponDrawn, FIELD_BOOLEAN, "weapondrawn"),
-//DEFINE_FIELD(m_iCriteriaSet,FIELD_INTEGER),
-//DEFINE_FIELD(m_hFollowSprite, FIELD_EHANDLE),
-DEFINE_EMBEDDED_AUTO_ARRAY(m_RndFlexData),
-DEFINE_FIELD(m_bFlexInit,FIELD_BOOLEAN),
-//DEFINE_USEFUNC(CommanderUse),
-//DEFINE_USEFUNC(UseFunc),
 END_DATADESC()
-
-colleagueModel_t CNPC_HumanGuard::gm_Models[] =
-{
-	// Blue Shift
-	{ HGUARD_MODEL,	"models/humans/guard_hurt.mdl", 0, 15 },
-	{ HGUARD_MODEL2,	"models/humans/guard_hurt_02.mdl", 1, 7 },
-	// First Response
-	{ "models/humans/ranked_security/rank2_guard.mdl",	"models/humans/ranked_security/rank2_guard_hurt.mdl", 0, 15 },
-	{ "models/humans/ranked_security/rank2_guard_02.mdl",	"models/humans/ranked_security/rank2_guard_hurt_02.mdl", 1, 7 },
-	// Rank 3
-	{ "models/humans/ranked_security/rank3_guard.mdl",	"models/humans/ranked_security/rank3_guard_hurt.mdl", 0, 15 },
-	{ "models/humans/ranked_security/rank3_guard_02.mdl",	"models/humans/ranked_security/rank3_guard_hurt_02.mdl", 1, 7 },
-	// Rank 4
-	{ "models/humans/ranked_security/rank4_guard.mdl",	"models/humans/ranked_security/rank4_guard_hurt.mdl", 0, 15 },
-	{ "models/humans/ranked_security/rank4_guard_02.mdl",	"models/humans/ranked_security/rank4_guard_hurt_02.mdl", 1, 7 },
-};
 
 const char* pBMSGRDPopTypes[] =
 {
@@ -218,54 +154,41 @@ const char* pBMSGRDPopTypes[] =
 
 CPopulationDefinition g_bmsSecurityPop("human_security", pBMSGRDPopTypes, ARRAYSIZE(pBMSGRDPopTypes));
 
-#define NUM_MODELSETS_PER_RANK 2
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_HumanGuard::SelectModel()
 {
-	int iFirstIndex = g_bmsSecurityPop.GetRandom() * NUM_MODELSETS_PER_RANK;
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(&gm_Models[iFirstIndex], NUM_MODELSETS_PER_RANK, m_nSkin.GetForModify())));
+	if (!pChar)
+	{
+		int iRank = g_bmsSecurityPop.GetRandom();
+		if (iRank > 0)
+		{
+			CFmtStr str("%s_%s", GetClassname(), pBMSGRDPopTypes[iRank]);
+			pChar = GetCharacterManifest()->FindCharacterModel(str.Access());
+		}
+	}
+
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, HGUARD_MODEL)));
+	m_pCharacterDefinition = pChar;
 }
 
 void CNPC_HumanGuard::Activate()
 {
-	
-	
-		//SetupCustomCriteria(TYPE_PRE);
-	
 
 	BaseClass::Activate();
-}
-
-void CNPC_HumanGuard::ProcessSceneEvents(void)
-{
-	BaseClass::ProcessSceneEvents();
-
-	if (m_bFlexInit)
-	{
-		for each (RndFlexData data in m_RndFlexData)
-		{
-			if (data.bValid)
-				SetFlexWeight((LocalFlexController_t)data.index, data.flvalue);
-		}
-	}
-}
-
-void CNPC_HumanGuard::InitRandomFlexes()
-{
-	for (int i = 0; i < ARRAYSIZE(g_szRandomFlexControls); i++)
-	{
-		if (FindFlexController(g_szRandomFlexControls[i]))
-		{
-			m_RndFlexData[i] = RndFlexData(FindFlexController(g_szRandomFlexControls[i]), RandomFloat());
-		}
-		else
-			m_RndFlexData[i] = RndFlexData(false);
-	}
-
-	m_bFlexInit = true;
 }
 
 CNPC_HumanGuard::CNPC_HumanGuard()
@@ -279,13 +202,7 @@ CNPC_HumanGuard::CNPC_HumanGuard()
 //-----------------------------------------------------------------------------
 void CNPC_HumanGuard::Spawn(void)
 {
-	//Precache();
-	//InitRandomFlexes();
-
 	m_iHealth = 80;
-
-
-
 
 	BaseClass::Spawn();
 
@@ -315,31 +232,6 @@ void CNPC_HumanGuard::Spawn(void)
 	
 
 	SetUse(&CNPC_HumanGuard::CommanderUse); 
-
-	//m_nSkin = gm_iLastChosenSkin;
-	if (RandomFloat() >= 0.75f)
-		EnableHelmet();
-
-	int iChest = FindBodygroupByName("chest");
-
-	if (iChest >= 0)
-		SetBodygroup(iChest, RandomInt(0, GetBodygroupCount(iChest) - 1));
-
-	
-
-	/*Vector vecSpriteOrigin = GetAbsOrigin();
-	vecSpriteOrigin.z += GetHullHeight();
-	vecSpriteOrigin.z += 5.0f;
-
-	m_hFollowSprite = CSprite::SpriteCreate("sprites/waypoint_move.vmt", vecSpriteOrigin, false);
-	m_hFollowSprite->SetParent(this);
-	variant_t varScale;
-	varScale.SetFloat(0.125f);
-	m_hFollowSprite->AcceptInput("SetScale", this, this, varScale, 0);
-
-	variant_t emptyvariant;
-
-	m_hFollowSprite->AcceptInput("HideSprite", this, this, emptyvariant, 0);*/
 	
 	SetNPCFootstepSounds(NPC_STEP_SOUND_MATERIAL, NPC_STEP_SOUND_MATERIAL, "NPC_MetroPolice", "NPC_MetroPolice");
 }
@@ -491,11 +383,6 @@ public:
 
 	void	SelectModel();
 	void	Spawn();
-	virtual void EnableHelmet()
-	{
-		int iHair = FindBodygroupByName("head");
-		SetBodygroup(iHair, 5);
-	}
 };
 
 //-----------------------------------------------------------------------------
@@ -503,49 +390,35 @@ public:
 //-----------------------------------------------------------------------------
 void CNPC_FemSecurity::SelectModel()
 {
-	SetModelName(AllocPooledString("models/kake/heartbit_female_guards3.mdl"));
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
+
+	if (!pChar)
+	{
+		int iRank = g_bmsSecurityPop.GetRandom();
+		if (iRank > 0)
+		{
+			CFmtStr str("%s_%s", GetClassname(), pBMSGRDPopTypes[iRank]);
+			pChar = GetCharacterManifest()->FindCharacterModel(str.Access());
+		}
+	}
+
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, "models/humans/guard_female.mdl")));
+	m_pCharacterDefinition = pChar;
 }
 
 void CNPC_FemSecurity::Spawn()
 {
 	BaseClass::Spawn();
-
-	m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
-
-	int iHair = FindBodygroupByName("head");
-
-	if (GetBodygroup(iHair) < 5)
-	{
-		switch (m_nSkin)
-		{
-		case 1:
-			SetBodygroup(iHair, 2);
-			break;
-		case 2:
-			SetBodygroup(iHair, 4);
-			break;
-		case 3:
-			SetBodygroup(iHair, 3);
-			break;
-		case 4:
-			SetBodygroup(iHair, 4);
-			break;
-		case 5:
-			SetBodygroup(iHair, 4);
-			break;
-		case 6:
-			SetBodygroup(iHair, 4);
-			break;
-		case 0:
-		default:
-			SetBodygroup(iHair, 0);
-			break;
-		}
-	}
-
-	int iGlasses = FindBodygroupByName("glasses");
-	SetBodygroup(iGlasses, RandomInt(0, 6));
-
 }
 
 LINK_ENTITY_TO_CLASS(npc_human_security_female, CNPC_FemSecurity);

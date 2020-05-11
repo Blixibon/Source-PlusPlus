@@ -209,7 +209,13 @@ inline bool FStrEq( string_t str1, string_t str2 )
 }
 #endif
 
-const char *nexttoken(char *token, const char *str, char sep);
+const char *nexttoken(char *token, const char *str, char sep, size_t iLen);
+template <size_t cchDest> inline const char* nexttoken(OUT_Z_ARRAY char(&pDest)[cchDest], const char* str, char sep)
+{
+	return nexttoken(pDest, str, sep, cchDest);
+}
+
+#define nexttoken_safe(pDest, str, sep) nexttoken(pDest, str, sep)
 
 // Misc. Prototypes
 void		UTIL_SetSize			(CBaseEntity *pEnt, const Vector &vecMin, const Vector &vecMax);

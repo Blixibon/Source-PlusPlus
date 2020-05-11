@@ -21,6 +21,10 @@
 #include "ragdoll_shared.h"
 #include "hierarchy.h"
 #include "particle_parse.h"
+#ifdef HL2_LAZUL
+#include "bms/character_manifest_system.h"
+#endif // HL2_LAZUL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -269,6 +273,16 @@ void CRagdollProp::DisableAutoFade()
 
 void CRagdollProp::Spawn( void )
 {
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
+
+	if (pChar)
+		SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, STRING(GetModelName()))));
+
 	// Starts out as the default fade scale value
 	m_flDefaultFadeScale = m_flFadeScale;
 
@@ -361,6 +375,33 @@ void CRagdollProp::Spawn( void )
 		CollisionProp()->AddSolidFlags( FSOLID_FORCE_WORLD_ALIGNED );
 		CollisionProp()->SetSurroundingBoundsType( USE_COLLISION_BOUNDS_NEVER_VPHYSICS );
 		SetCollisionBounds( vecFullMins - vecOrigin, vecFullMaxs - vecOrigin );
+	}
+
+	if (pChar)
+	{
+		for (int i = 0; i < pChar->vBodyGroups.Count(); i++)
+		{
+			auto& body = pChar->vBodyGroups[i];
+			int iGroup = FindBodygroupByName(body.strName.String());
+			if (iGroup >= 0)
+				SetBodygroup(iGroup, body.vValues.Random());
+		}
+
+		m_nSkin = pChar->vSkins.Random();
+
+		for (int i = 0; i < pChar->vMergedModels.Count(); i++)
+		{
+			CDynamicProp* pProp = static_cast<CDynamicProp*>(CreateEntityByName("prop_dynamic_override"));
+			if (pProp != NULL)
+			{
+				// Set the model
+				pProp->SetModelName(AllocPooledString(pChar->vMergedModels[i].String()));
+				pProp->SetAbsOrigin(GetAbsOrigin());
+				pProp->SetOwnerEntity(this);
+				DispatchSpawn(pProp);
+				pProp->FollowEntity(this, true);
+			}
+		}
 	}
 }
 
@@ -887,14 +928,14 @@ void CRagdollProp::InitRagdoll( const Vector &forceVector, int forceBone, const 
 	if ( m_anglesOverrideString != NULL_STRING && Q_strlen(m_anglesOverrideString.ToCStr()) > 0 )
 	{
 		char szToken[2048];
-		const char *pStr = nexttoken(szToken, STRING(m_anglesOverrideString), ',');
+		const char *pStr = nexttoken_safe(szToken, STRING(m_anglesOverrideString), ',');
 		// anglesOverride is index,angles,index,angles (e.g. "1, 22.5 123.0 0.0, 2, 0 0 0, 3, 0 0 180.0")
 		while ( szToken[0] != 0 )
 		{
 			int objectIndex = atoi(szToken);
 			// sanity check to make sure this token is an integer
 			Assert( atof(szToken) == ((float)objectIndex) );
-			pStr = nexttoken(szToken, pStr, ',');
+			pStr = nexttoken_safe(szToken, pStr, ',');
 			Assert( szToken[0] );
 			if ( objectIndex >= m_ragdoll.listCount )
 			{
@@ -921,7 +962,7 @@ void CRagdollProp::InitRagdoll( const Vector &forceVector, int forceBone, const 
 				MatrixSetColumn( out, 3, pBoneToWorld[boneIndex] );
 				element.pObject->SetPositionMatrix( pBoneToWorld[boneIndex], true );
 			}
-			pStr = nexttoken(szToken, pStr, ',');
+			pStr = nexttoken_safe(szToken, pStr, ',');
 		}
 	}
 

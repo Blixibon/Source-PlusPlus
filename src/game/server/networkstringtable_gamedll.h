@@ -47,9 +47,13 @@ enum
 {
 	MAX_FOOTSTEP_STRING_BITS = 6,
 	MAX_FOOTSTEP_STRINGS = 1 << MAX_FOOTSTEP_STRING_BITS,
+
+	MAX_FLEXDATA_STRING_BITS = 9,
+	MAX_FLEXDATA_STRINGS = 1 << MAX_FLEXDATA_STRING_BITS,
 };
 extern INetworkStringTable* g_pStringTablePlayerFootSteps;
 extern CStringTableSaveRestoreOps* g_pFootStepStringOps;
+extern INetworkStringTable* g_pStringTableHeadShapes;
 #endif
 
 #endif // NETWORKSTRINGTABLE_GAMEDLL_H

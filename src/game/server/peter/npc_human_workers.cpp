@@ -40,28 +40,27 @@ void CNPC_HumanMainT::Spawn(void)
 	NPCInit();
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
-
-	//m_nSkin = gm_iLastChosenSkin;
-	int iHelmet = FindBodygroupByName("helmet");
-	SetBodygroup(iHelmet, RandomInt(0, GetBodygroupCount(iHelmet) - 1));
 }
-
-colleagueModel_t g_mainTModel[] =
-{
-	{ "models/humans/cwork.mdl",	"models/humans/cwork_hurt.mdl", 0, 15 },
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_HumanMainT::SelectModel()
 {
-	/*if (RandomFloat() >= 0.75f)
-	SetModelName(AllocPooledString(MSCI_MODEL2));
-	else
-	SetModelName(AllocPooledString(MSCI_MODEL));*/
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_mainTModel, 1, m_nSkin.GetForModify())));
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, "models/humans/cwork.mdl")));
+	m_pCharacterDefinition = pChar;
 }
 
 class CNPC_HumanEngie : public CNPC_BaseColleague
@@ -102,28 +101,27 @@ void CNPC_HumanEngie::Spawn(void)
 	NPCInit();
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
-
-	//m_nSkin = gm_iLastChosenSkin;
-	int iHelmet = FindBodygroupByName("helmet");
-	SetBodygroup(iHelmet, RandomInt(0, GetBodygroupCount(iHelmet) - 1));
 }
-
-colleagueModel_t g_engieModel[] =
-{
-	{ "models/humans/engineer.mdl",	"models/humans/engineer_hurt.mdl", 0, 15 },
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_HumanEngie::SelectModel()
 {
-	/*if (RandomFloat() >= 0.75f)
-	SetModelName(AllocPooledString(MSCI_MODEL2));
-	else
-	SetModelName(AllocPooledString(MSCI_MODEL));*/
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_engieModel, 1, m_nSkin.GetForModify())));
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, "models/humans/engineer.mdl")));
+	m_pCharacterDefinition = pChar;
 }
 
 class CNPC_HumanOffice : public CNPC_BaseColleague
@@ -164,26 +162,25 @@ void CNPC_HumanOffice::Spawn(void)
 	NPCInit();
 
 	SetUse(&CNPC_BaseColleague::CommanderUse);
-
-	//m_nSkin = gm_iLastChosenSkin;
-	int iGlasses = FindBodygroupByName("glasses");
-	SetBodygroup(iGlasses, RandomInt(0, GetBodygroupCount(iGlasses)-1));
 }
-
-colleagueModel_t g_officeModel[] =
-{
-	{ "models/humans/worker_clean.mdl",	"models/humans/worker.mdl", 0, 15 },
-};
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_HumanOffice::SelectModel()
 {
-	/*if (RandomFloat() >= 0.75f)
-	SetModelName(AllocPooledString(MSCI_MODEL2));
-	else
-	SetModelName(AllocPooledString(MSCI_MODEL));*/
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(g_officeModel, 1, m_nSkin.GetForModify())));
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, "models/humans/worker_clean.mdl")));
+	m_pCharacterDefinition = pChar;
 }

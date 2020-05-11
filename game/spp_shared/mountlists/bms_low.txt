@@ -46,7 +46,7 @@
 		{
 			vpk		bms_cameo
 			vpk		bms_eli_fix
-			vpk		gus_redux
+			vpk		bmce_mod
 		}
 	}
 }

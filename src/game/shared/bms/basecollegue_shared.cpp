@@ -15,75 +15,18 @@
 #include "c_npc_basecollegue.h"
 #else
 #include "npc_basecollegue.h"
+#include "networkstringtable_gamedll.h"
 #endif // CLIENT_DLL
-
-//-----------------------------------------------------------------------------
-// Purpose: Helper function get get determinisitc random values for shared/prediction code
-// Input  : seedvalue - 
-//			*module - 
-//			line - 
-// Output : static int
-// Author : Valve
-//-----------------------------------------------------------------------------
-static int SeedFileLineHash(int seedvalue, const char *sharedname, int additionalSeed)
-{
-	CRC32_t retval;
-
-	CRC32_Init(&retval);
-
-	CRC32_ProcessBuffer(&retval, (void *)&seedvalue, sizeof(int));
-	CRC32_ProcessBuffer(&retval, (void *)&additionalSeed, sizeof(int));
-	CRC32_ProcessBuffer(&retval, (void *)sharedname, Q_strlen(sharedname));
-
-	CRC32_Final(&retval);
-
-	return (int)(retval);
-}
-
-BEGIN_SIMPLE_DATADESC(RndFlexData)
-DEFINE_FIELD(index, FIELD_INTEGER),
-DEFINE_FIELD(flvalue, FIELD_FLOAT),
-DEFINE_FIELD(bValid, FIELD_BOOLEAN),
-END_DATADESC()
-
-CUniformRandomStream faceRandom;
 
 IMPLEMENT_NETWORKCLASS_ALIASED(NPC_BaseColleague, DT_BaseColleague);
 
 BEGIN_NETWORK_TABLE(CNPC_BaseColleague, DT_BaseColleague)
 #ifdef CLIENT_DLL
-RecvPropInt(RECVINFO(m_iHeadRndSeed)),
+RecvPropInt(RECVINFO(m_nFlexTableIndex)),
 #else
-SendPropInt(SENDINFO(m_iHeadRndSeed)),
+SendPropInt(SENDINFO(m_nFlexTableIndex), MAX_FLEXDATA_STRING_BITS),
 #endif // CLIENT_DLL
 END_NETWORK_TABLE();
-
-#ifdef CLIENT_DLL
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-void C_NPC_BaseColleague::OnDataChanged(DataUpdateType_t type)
-{
-	BaseClass::OnDataChanged(type);
-
-	if (m_iHeadRndSeed != m_iOldRndSeed)
-	{
-		m_iOldRndSeed = m_iHeadRndSeed;
-
-		// Client-side weight generation.
-		for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
-		{
-			LocalFlexController_t controller = m_HeadFlxs[i];
-			if (controller >= 0)
-			{
-				int iSeed = SeedFileLineHash(m_iHeadRndSeed, "", controller);
-				faceRandom.SetSeed(iSeed);
-
-				m_HeadFlxWgts[i] = faceRandom.RandomFloat();
-			}
-		}
-	}
-}
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: initialize fast lookups when model changes
@@ -93,35 +36,14 @@ CStudioHdr *CNPC_BaseColleague::OnNewModel()
 {
 	CStudioHdr *hdr = BaseClass::OnNewModel();
 
-	m_iHeadRndSeed = 0;
+	m_FlexControllers.Purge();
 
 	if (hdr)
 	{
-#ifndef CLIENT_DLL
-		// Server-side seed generation.
-		int iSeed = SeedFileLineHash(GetRefEHandle().GetSerialNumber(), hdr->pszName(), 0);
-		m_iHeadRndSeed = iSeed;
-
-		DevMsg(2, "ENT %d %s seed: %d\n", entindex(), (IsServer() ? "SERVER" : "CLIENT"), iSeed);
-
-		// Server-side weight generation.
-		for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
+		for (int i = 0; i < m_FlexData.Count(); i++)
 		{
-			LocalFlexController_t controller = m_HeadFlxs[i];
-			if (controller >= 0)
-			{
-				int iSeed = SeedFileLineHash(m_iHeadRndSeed, "", controller);
-				faceRandom.SetSeed(iSeed);
-
-				m_HeadFlxWgts[i] = faceRandom.RandomFloat();
-			}
-		}
-#endif
-
-
-		for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
-		{
-			m_HeadFlxs[i] = FindFlexController(g_szRandomFlexControls[i]);
+			LocalFlexController_t controller = FindFlexController(m_FlexData[i].cName);
+			m_FlexControllers.AddToTail(controller);
 		}
 	}
 
@@ -149,17 +71,12 @@ void CNPC_BaseColleague::ProcessSceneEvents(void)
 		return;
 	}
 
-	
-
 	if (FLEX_EVENTS)
 	{
-		for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
+		Assert(m_FlexControllers.Count() == m_FlexData.Count());
+		for (int i = 0; i < m_FlexControllers.Count(); i++)
 		{
-			LocalFlexController_t controller = m_HeadFlxs[i];
-			if (controller >= 0)
-			{
-				SetFlexWeight(controller, m_HeadFlxWgts[i]);
-			}
+			SetFlexWeight(m_FlexControllers[i], m_FlexData[i].flValue);
 		}
 	}
 }

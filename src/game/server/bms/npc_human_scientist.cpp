@@ -123,8 +123,6 @@ protected:
 		SCHED_SCIENTIST_HEAL_ALLY = BaseClass::NEXT_SCHEDULE,
 	};
 
-	static colleagueModel_t gm_Models[];
-
 
 //	enum CriteriaType
 //	{
@@ -165,23 +163,25 @@ BEGIN_DATADESC(CNPC_BaseScientist)
 //DEFINE_USEFUNC(UseFunc),
 END_DATADESC()
 
-colleagueModel_t CNPC_BaseScientist::gm_Models[] =
-{
-	{ MSCI_MODEL,	"models/humans/scientist_hurt.mdl", 0, 15 },
-	{ MSCI_MODEL2,	"models/humans/scientist_hurt_02.mdl", 1, 7 },
-};
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CNPC_BaseScientist::SelectModel()
 {
-	/*if (RandomFloat() >= 0.75f)
-		SetModelName(AllocPooledString(MSCI_MODEL2));
-	else
-		SetModelName(AllocPooledString(MSCI_MODEL));*/
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
 
-	SetModelName(AllocPooledString(ChooseColleagueModel(gm_Models, 2, m_nSkin.GetForModify())));
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, MSCI_MODEL)));
+	m_pCharacterDefinition = pChar;
 }
 
 #define SCI_MAX_GLASSES 6
@@ -206,10 +206,6 @@ void CNPC_BaseScientist::Spawn(void)
 
 
 	SetUse(&CNPC_BaseScientist::CommanderUse);
-
-	//m_nSkin = gm_iLastChosenSkin;
-	int iGlasses = FindBodygroupByName("glasses");
-	SetBodygroup(iGlasses, RandomInt(0, SCI_MAX_GLASSES));
 }
 
 
@@ -435,44 +431,26 @@ public:
 //-----------------------------------------------------------------------------
 void CNPC_FemScientist::SelectModel()
 {
-	SetModelName(AllocPooledString(FSCI_MODEL));
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
+
+	if (!pChar)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(GetClassname());
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, FSCI_MODEL)));
+	m_pCharacterDefinition = pChar;
 }
 
 void CNPC_FemScientist::Spawn()
 {
 	BaseClass::Spawn();
 
-	m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
-
-	int iHair = FindBodygroupByName("hair");
-
-	switch (m_nSkin)
-	{
-	case 1:
-		SetBodygroup(iHair, 2);
-		break;
-	case 2:
-		SetBodygroup(iHair, 4);
-		break;
-	case 3:
-		SetBodygroup(iHair, 3);
-		break;
-	case 4:
-		SetBodygroup(iHair, 4);
-		break;
-	case 5:
-		SetBodygroup(iHair, 4);
-		break;
-	case 6:
-		SetBodygroup(iHair, 4);
-		break;
-	case 0:
-	default:
-		SetBodygroup(iHair, 0);
-		break;
-	}
-
-	SetBodygroup(0, RandomInt(0, 1));
 }
 
 LINK_ENTITY_TO_CLASS(npc_human_scientist_female, CNPC_FemScientist);

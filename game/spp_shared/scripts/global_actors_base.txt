@@ -9,16 +9,6 @@ globalactors
 	"monk"		"male"
 	"mossman"	"female"
 
-	"guard"			"male"
-	"guard_02"		"male"
-	"guard_hurt"		"male"
-	"scientist"		"male"
-	"scientist_02"		"male"
-	"scientist_hurt"	"male"
-	"scientist_hurt_02"	"male"
-	"scientist_female"	"female"
-	"marine_choreo"		"male"
-
 	"common_female_nurse01"				"female"
 	"common_female01"					"female"
 	"common_male_baggagehandler_01"		"male"

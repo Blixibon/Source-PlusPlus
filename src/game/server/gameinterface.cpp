@@ -1519,6 +1519,7 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 #endif
 #ifdef HL2_LAZUL
 	g_pStringTablePlayerFootSteps = networkstringtable->CreateStringTable("PlayerFootsteps", MAX_FOOTSTEP_STRINGS);
+	g_pStringTableHeadShapes = networkstringtable->CreateStringTable("character_headdata", MAX_FLEXDATA_STRINGS);
 #endif // HL2_LAZUL
 
 

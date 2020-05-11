@@ -4,6 +4,7 @@
 #include "ai_behavior_functank.h"
 #include "peter/npc_combatsupplier.h"
 #include "bms_utils.h"
+#include "character_manifest_system.h"
 
 #define SF_COLLEGUE_DONT_FOLLOW			( 1 << 16 )	//65536
 #define SF_COLLEAGUE_NO_IDLE_SPEAK 1048576
@@ -21,14 +22,6 @@ enum ColleagueExpressionTypes_t
 
 	COL_EXP_LAST_TYPE,
 };
-
-typedef struct
-{
-	const char *pszCleanModel;
-	const char *pszHurtModel;
-	int iFirstSkin;
-	int iNumSkins;
-} colleagueModel_t;
 
 class CNPC_BaseColleague : public CNPC_CombatSupplier
 {
@@ -50,8 +43,15 @@ public:
 		SetFollowerBaseUse(&CNPC_BaseColleague::UseFunc);
 
 		BaseClass::Spawn();
+
+		if (m_pCharacterDefinition)
+		{
+			SetupModelFromManifest();
+			m_pCharacterDefinition = nullptr;
+		}
 	}
 	
+	void			SetupModelFromManifest();
 
 	int				DrawDebugTextOverlays(void);
 	virtual const char *SelectRandomExpressionForState(NPC_STATE state);
@@ -61,7 +61,7 @@ public:
 	bool CreateBehaviors(void);
 	void OnChangeRunningBehavior(CAI_BehaviorBase *pOldBehavior, CAI_BehaviorBase *pNewBehavior);
 
-	void UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
+	virtual void UseFunc(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
 	virtual bool	CanJoinPlayerSquad(CBasePlayer *pPlayer = nullptr);
 	
 	virtual bool	IgnorePlayerPushing(void);
@@ -76,18 +76,7 @@ public:
 
 	
 
-	void			OnRestore()
-	{
-		BaseClass::OnRestore();
-
-		if (GetModelPtr() != NULL)
-		{
-			for (int i = 0; i < NUM_RND_HEAD_FLEXES; i++)
-			{
-				m_HeadFlxs[i] = FindFlexController(g_szRandomFlexControls[i]);
-			}
-		}
-	}
+	void			OnRestore();
 
 	
 
@@ -102,19 +91,16 @@ public:
 	void	InputEnableIdleSpeak(inputdata_t &inputdata);
 	void	InputDisableIdleSpeak(inputdata_t &inputdata);
 
-	
-
-	static const char *ChooseColleagueModel(colleagueModel_t * models, int iNumModels, int &nSkin);
-	//static int gm_iLastChosenSkin;
-
 	virtual ResponseRules::IResponseSystem* GetResponseSystem() { return m_pInstancedResponseSystem; }
 
 protected:
-	CNetworkVar(int, m_iHeadRndSeed);
-	LocalFlexController_t m_HeadFlxs[NUM_RND_HEAD_FLEXES];
-	float m_HeadFlxWgts[NUM_RND_HEAD_FLEXES];
+	CUtlVector<ManifestFlexData_t> m_FlexData;
+	CUtlVector<LocalFlexController_t> m_FlexControllers;
+	CNetworkVar(int, m_nFlexTableIndex);
 
 	ColleagueExpressionTypes_t	m_ExpressionType;
+
+	const CharacterManifest::ManifestCharacter_t* m_pCharacterDefinition; // Only valid during spawn
 
 	ResponseRules::IResponseSystem* m_pInstancedResponseSystem;
 };

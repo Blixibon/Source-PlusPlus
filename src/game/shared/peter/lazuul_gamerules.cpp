@@ -21,7 +21,9 @@
 #include "team_control_point_master.h"
 #include "peter/laz_player_resource.h"
 #include "AI_ResponseSystem.h"
+#include "networkstringtable_gamedll.h"
 #else
+#include "networkstringtable_clientdll.h"
 #include "c_team_objectiveresource.h"
 #include "peter/c_laz_player.h"
 #include "hud.h"
@@ -33,6 +35,8 @@
 #include "hl2_player_shared.h"
 #include "weapon_coop_base.h"
 #include "econ_item_system.h"
+
+#define FLEXDATA_TABLE_NAME "character_headdata"
 
 // Controls the application of the robus radius damage model.
 extern ConVar sv_robust_explosions;
@@ -253,6 +257,8 @@ void CHud::MsgFunc_ResetHUD(bf_read& msg)
 	s_iLastMod = LazuulRules()->GetGameForMap();
 }
 #endif
+
+INetworkStringTable* g_pStringTableHeadShapes = nullptr;
 
 REGISTER_GAMERULES_CLASS(CLazuul);
 
@@ -4253,6 +4259,11 @@ void CLazuul::ClientCommandKeyValues(edict_t* pEntity, KeyValues* pKeyValues)
 			}
 		}
 	}
+}
+
+void CLazuul::CreateCustomNetworkStringTables(void)
+{
+	BaseClass::CreateCustomNetworkStringTables();
 }
 
 //---------------------------------------------------------

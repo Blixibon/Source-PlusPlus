@@ -298,6 +298,7 @@ INetworkStringTable *g_pStringTableServerMapCycleMvM = NULL;
 
 #ifdef HL2_LAZUL
 INetworkStringTable *g_pStringTablePlayerFootSteps = NULL;
+extern INetworkStringTable* g_pStringTableHeadShapes;
 #endif // HL2_LAZUL
 
 CStringTableSaveRestoreOps g_ParticleStringTableOPs;
@@ -1707,8 +1708,8 @@ void CHLClient::LevelInitPostEntity( )
 	IGameSystem::LevelInitPostEntityAllSystems();
 	C_PhysPropClientside::RecreateAll();
 	internalCenterPrint->Clear();
-	static ConVarRef queuemode("mat_queue_mode");
-	queuemode.SetValue(-1);
+	//static ConVarRef queuemode("mat_queue_mode");
+	//queuemode.SetValue(-1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1735,6 +1736,7 @@ void CHLClient::ResetStringTablePointers()
 
 #ifdef HL2_LAZUL
 	g_pStringTablePlayerFootSteps = NULL;
+	g_pStringTableHeadShapes = NULL;
 #endif // HL2_LAZUL
 }
 
@@ -1752,8 +1754,8 @@ void CHLClient::LevelShutdown( void )
 	// Disable abs recomputations when everything is shutting down
 	CBaseEntity::EnableAbsRecomputations( false );
 
-	static ConVarRef queuemode("mat_queue_mode");
-	queuemode.SetValue(0);
+	//static ConVarRef queuemode("mat_queue_mode");
+	//queuemode.SetValue(0);
 
 	// Level shutdown sequence.
 	// First do the pre-entity shutdown of all systems
@@ -1990,6 +1992,10 @@ void CHLClient::InstallStringTableCallback( const char *tableName )
 	else if (!Q_strcasecmp(tableName, "PlayerFootsteps"))
 	{
 		g_pStringTablePlayerFootSteps = networkstringtable->FindTable(tableName);
+	}
+	else if (!Q_strcasecmp(tableName, "character_headdata"))
+	{
+		g_pStringTableHeadShapes = networkstringtable->FindTable("character_headdata");
 	}
 #endif
 

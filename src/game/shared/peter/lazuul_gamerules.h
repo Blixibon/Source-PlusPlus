@@ -107,6 +107,8 @@ public:
 
 	virtual void ClientCommandKeyValues(edict_t* pEntity, KeyValues* pKeyValues);
 
+	virtual void CreateCustomNetworkStringTables(void);
+
 	virtual bool			ShouldAutoAim(CBasePlayer* pPlayer, edict_t* target);
 	virtual float			GetAutoAimScale(CBasePlayer* pPlayer);
 	virtual float			GetAmmoQuantityScale(int iAmmoIndex);

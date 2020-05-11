@@ -332,7 +332,7 @@ public:
 	bool							IsRagdoll() const;
 	bool							IsAboutToRagdoll() const;
 	virtual C_BaseAnimating			*BecomeRagdollOnClient();
-	C_BaseAnimating					*CreateRagdollCopy();
+	virtual C_BaseAnimating			*CreateRagdollCopy();
 	bool							InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, const matrix3x4_t *pDeltaBones1, const matrix3x4_t *pCurrentBonePosition, float boneDt, bool bFixedConstraints=false );
 	void							IgniteRagdoll( C_BaseAnimating *pSource );
 	void							TransferDissolveFrom( C_BaseAnimating *pSource );
@@ -513,7 +513,7 @@ protected:
 
 	bool							GetSequenceLoops() { return m_bSequenceLoops; }
 
-private:
+protected:
 	// This method should return true if the bones have changed + SetupBones needs to be called
 	virtual float					LastBoneChangedTime() { return FLT_MAX; }
 
@@ -628,7 +628,6 @@ private:
 	int								m_nPrevNewSequenceParity;
 	int								m_nPrevResetEventsParity;
 
-	bool							m_builtRagdoll;
 	Vector							m_vecPreRagdollMins;
 	Vector							m_vecPreRagdollMaxs;
 
@@ -638,6 +637,8 @@ private:
 
 	// Current cycle location from server
 protected:
+	bool							m_builtRagdoll;
+
 	float							m_flCycle;
 	CInterpolatedVar< float >		m_iv_flCycle;
 	float							m_flOldCycle;

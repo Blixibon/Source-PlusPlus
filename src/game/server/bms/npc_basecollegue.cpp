@@ -3,6 +3,8 @@
 #include "bms_utils.h"
 #include "sceneentity.h"
 #include "npc_basecollegue.h"
+#include "saverestore_utlvector.h"
+#include "networkstringtable_gamedll.h"
 
 using namespace ResponseRules;
 
@@ -52,10 +54,8 @@ colleague_expression_list_t AngryExpressions[STATES_WITH_EXPRESSIONS] =
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC(CNPC_BaseColleague)
-//						m_FuncTankBehavior
 
-DEFINE_FIELD(m_iHeadRndSeed, FIELD_INTEGER),
-DEFINE_ARRAY(m_HeadFlxWgts, FIELD_FLOAT, NUM_RND_HEAD_FLEXES),
+DEFINE_UTLVECTOR(m_FlexData, FIELD_EMBEDDED),
 
 DEFINE_USEFUNC(UseFunc),
 DEFINE_KEYFIELD(m_ExpressionType, FIELD_INTEGER, "expressiontype"),
@@ -88,49 +88,9 @@ void CNPC_BaseColleague::Precache()
 		}
 	}
 
+	GetCharacterManifest()->PrecacheCharacterModels(GetClassname());
+
 	m_pInstancedResponseSystem = GetAlternateResponseSystem("scripts/talker/response_rules_bms.txt");
-}
-
-//int CNPC_BaseColleague::gm_iLastChosenSkin = 0;
-
-const char *CNPC_BaseColleague::ChooseColleagueModel(colleagueModel_t * models, int iNumModels, int& nSkin)
-{
-	int iNumSkins = 0;
-	for (int i = 0; i < iNumModels; i++)
-	{
-		colleagueModel_t& mdl = models[i];
-		iNumSkins += mdl.iNumSkins;
-	}
-
-	nSkin = RandomInt(0, iNumSkins - 1);
-
-	colleagueModel_t outMDL = models[0];
-	for (int i = 0; i < iNumModels; i++)
-	{
-		colleagueModel_t& mdl = models[i];
-		if (nSkin >= mdl.iNumSkins)
-		{
-			nSkin -= mdl.iNumSkins;
-		}
-		else
-		{
-			nSkin += mdl.iFirstSkin;
-			outMDL = mdl;
-			break;
-		}
-	}
-
-	if (IsPreDisaster())
-	{
-		return outMDL.pszCleanModel;
-	}
-	else
-	{
-		if (RandomFloat() > 0.75f)
-			return outMDL.pszHurtModel;
-		else
-			return outMDL.pszCleanModel;
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -239,6 +199,57 @@ Disposition_t CNPC_BaseColleague::IRelationType(CBaseEntity *pTarget)
 	
 
 	return disposition;
+}
+
+void CNPC_BaseColleague::SetupModelFromManifest()
+{
+	for (int i = 0; i < m_pCharacterDefinition->vBodyGroups.Count(); i++)
+	{
+		auto& body = m_pCharacterDefinition->vBodyGroups[i];
+		int iGroup = FindBodygroupByName(body.strName.String());
+		if (iGroup >= 0)
+			SetBodygroup(iGroup, body.vValues.Random());
+	}
+
+	m_nSkin = m_pCharacterDefinition->vSkins.Random();
+
+	for (int i = 0; i < m_pCharacterDefinition->vMergedModels.Count(); i++)
+	{
+		CPhysicsProp* pProp = static_cast<CPhysicsProp*>(CreateEntityByName("prop_physics_override"));
+		if (pProp != NULL)
+		{
+			// Set the model
+			pProp->SetModelName(AllocPooledString(m_pCharacterDefinition->vMergedModels[i].String()));
+			DispatchSpawn(pProp);
+			pProp->VPhysicsDestroyObject();
+			pProp->FollowEntity(this, true);
+			m_AttachedEntities.AddToTail(pProp);
+		}
+	}
+
+	m_FlexData.Purge();
+	m_FlexControllers.Purge();
+
+	for (int i = 0; i < m_pCharacterDefinition->vFlexControllers.Count(); i++)
+	{
+		m_FlexData.AddToTail(m_pCharacterDefinition->vFlexControllers[i]);
+		LocalFlexController_t controller = FindFlexController(m_pCharacterDefinition->vFlexControllers[i].cName);
+		m_FlexControllers.AddToTail(controller);
+	}
+
+	CUtlBuffer buf;
+	buf.SetBigEndian(true);
+	CRC32_t crc = CharacterManifest::EncodeFlexVector(m_FlexData, buf);
+
+	if (crc)
+	{
+		CFmtStr str("%.8x", crc);
+		m_nFlexTableIndex = g_pStringTableHeadShapes->AddString(true, str.Access(), buf.TellPut(), buf.Base());
+	}
+	else
+	{
+		m_nFlexTableIndex = -1;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -423,6 +434,32 @@ bool CNPC_BaseColleague::SelectIdleSpeech(AISpeechSelection_t *pSelection)
 			return true;
 	}
 	return false;
+}
+
+void CNPC_BaseColleague::OnRestore()
+{
+	BaseClass::OnRestore();
+
+	m_FlexControllers.Purge();
+	for (int i = 0; i < m_FlexData.Count(); i++)
+	{
+		LocalFlexController_t controller = FindFlexController(m_FlexData[i].cName);
+		m_FlexControllers.AddToTail(controller);
+	}
+
+	CUtlBuffer buf;
+	buf.SetBigEndian(true);
+	CRC32_t crc = CharacterManifest::EncodeFlexVector(m_FlexData, buf);
+
+	if (crc)
+	{
+		CFmtStr str("%.8x", crc);
+		m_nFlexTableIndex = g_pStringTableHeadShapes->AddString(true, str.Access(), buf.TellPut(), buf.Base());
+	}
+	else
+	{
+		m_nFlexTableIndex = -1;
+	}
 }
 
 void CNPC_BaseColleague::InputEnableFollow(inputdata_t &inputdata)
