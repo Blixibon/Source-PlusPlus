@@ -108,7 +108,7 @@ VS_OUTPUT main( const VS_INPUT v )
 	o.worldPos_projPosZ = float4( worldPos, vProjPos.z );
 #if !defined( _X360 )
 	// Set fixed-function fog factor
-	o.fog = CalcFog( worldPos, vProjPos, g_FogType );
+	o.fog = CalcFog( worldPos, vProjPos.xyz, g_FogType );
 #endif
 	// Needed for specular
 	o.worldVertToEyeVector_Darkening.xyz = cEyePos - worldPos;

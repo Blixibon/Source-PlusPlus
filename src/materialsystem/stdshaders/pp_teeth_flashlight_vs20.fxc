@@ -106,7 +106,7 @@ VS_OUTPUT main( const VS_INPUT v )
 	o.vProjPos = o.projPos;
 #if !defined( _X360 )
 	// Set fixed-function fog factor
-	o.fog = CalcFog( worldPos, o.projPos, g_FogType );
+    o.fog = CalcFog(worldPos, o.projPos.xyz, g_FogType);
 #endif
 	// Spotlight texture coordinates
 	o.spotTexCoord.x = dot( cSpotlightProj1, float4(worldPos, 1) );
