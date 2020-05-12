@@ -1,0 +1,49 @@
+"PP_Water"
+{
+	"%tooltexture" "liquids/greenslime_color"
+	"$refracttexture" "_rt_WaterRefraction"
+	"$refractamount" "1.2"
+	"$refracttint" "[0.4 1.0 0.3]"
+
+	"$reflecttexture" "_rt_WaterReflection"
+	"$reflectamount" "1"
+	"$reflecttint" "[0.7 1.0 0.8]"
+
+	"$scale" "[1 1]"
+
+	"$bumpmap" "dev/water_dudv"
+	"$normalmap" "liquids/water_calm_normal"
+	
+	$abovewater 1
+
+	"%compilewater" 1
+	"$surfaceprop" "water"
+	"$bottommaterial" "liquids/slime_beneath"
+	//"$subdivsize" 64
+	"$bumpframe" "0"
+
+	"$fogenable" 1
+	"$fogcolor" "{64 255 32}"
+	"$fogstart" 10.00
+	"$fogend" 500.00
+
+	"$bumpoffset" "[0 0]"
+	
+	$flowmap "liquids/toxic_rep_flowmapr"
+	$flow_normaluvscale 160.0
+	$flow_worlduvscale 8
+	$flow_timeintervalinseconds 1
+	$flow_uvscrolldistance 0.1
+	$flow_bumpstrength 1
+	$flow_noise_texture "liquids/water_noise"
+	$flow_noise_scale 0.0082
+	$flow_debug 0
+	$basetexture "liquids/greenslime_color"
+	$color_flow_uvscale 100
+	$color_flow_timeintervalinseconds 4.0
+	$color_flow_uvscrolldistance 0.33
+	$color_flow_lerpexp 0.98 
+	$color_flow_displacebynormalstrength 0.07
+	
+	$chromaticscale .6
+}

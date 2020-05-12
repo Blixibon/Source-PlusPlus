@@ -1,0 +1,4 @@
+"scripts/character_manifest.txt"
+{
+	"file"	"scripts/characters_bmce.txt"
+}

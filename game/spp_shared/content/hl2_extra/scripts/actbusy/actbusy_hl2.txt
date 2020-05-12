@@ -17,6 +17,9 @@
 //							"BA_INT_PLAYER"		break out of this anim if I can see the player, or I'm threatened
 //							"BA_INT_AMBUSH"		someone please define this - I have no idea what it does
 //							"BA_INT_COMBAT"		break out of this anim if combat occurs in my line of sight (bullet hits, grenades, etc), -OR- the max time is reached
+//
+//		"use_automovement"	Set to 1, the NPC navigation system will be used as the actor animates, preventing them moving into solids. Should be used in 
+//					all cases except those where the actor will be interpenetrating another object (such as sitting on a chair).
 // }
 //
 // 

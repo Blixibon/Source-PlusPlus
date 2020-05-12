@@ -1,0 +1,6 @@
+#base "global_actors_base.txt"
+#base "global_actors_bmce.txt"
+
+globalactors
+{
+}

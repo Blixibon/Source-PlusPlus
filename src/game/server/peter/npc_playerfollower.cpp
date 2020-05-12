@@ -969,7 +969,6 @@ void CNPC_PlayerFollower::AddToPlayerSquad(CBasePlayer *pPlayer)
 
 	FixupPlayerSquad();
 
-
 	SetCondition(COND_PLAYER_ADDED_TO_SQUAD);
 }
 
@@ -1142,6 +1141,8 @@ void CNPC_PlayerFollower::BuildScheduleTestBits()
 	if (GetCurSchedule()->HasInterrupt(COND_IDLE_INTERRUPT))
 	{
 		SetCustomInterruptCondition(COND_BETTER_WEAPON_AVAILABLE);
+		SetCustomInterruptCondition(COND_PLAYER_REMOVED_FROM_SQUAD);
+		SetCustomInterruptCondition(COND_PLAYER_ADDED_TO_SQUAD);
 	}
 }
 

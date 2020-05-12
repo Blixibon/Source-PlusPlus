@@ -11,4 +11,5 @@
     "prop_scalable"         "prop_dynamic_special"
     "npc_sniper"            "npc_sniper_hecu"
     "proto_sniper"          "npc_sniper_hecu"
+    "npc_houndeye"          "npc_houndeye_bms"
 }
