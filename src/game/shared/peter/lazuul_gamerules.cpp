@@ -442,6 +442,9 @@ int CLazuul::GetNumTeams()
 {
 	switch (GetGameMode())
 	{
+	case LAZ_GM_DEATHMATCH:
+		return 4;
+		break;
 	case LAZ_GM_SINGLEPLAYER:
 	case LAZ_GM_CAMPAIGN:
 		return 1;
@@ -5535,7 +5538,7 @@ CAmmoDef* GetAmmoDef()
 		def.AddAmmoType("12mmRound", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE_AND_WHIZ, NULL, "sk_npc_dmg_12mm_bullet", NULL, BULLET_IMPULSE(300, 1200), 0);
 
 		// BMS
-		def.AddAmmoType("9mm", DMG_BULLET | DMG_NEVERGIB, TRACER_LINE, "sk_plr_dmg_9mm_bullet", "sk_npc_dmg_9mm_bullet", "sk_max_9mm_bullet", BULLET_IMPULSE(500, 1325), 0);
+		def.AddAmmoType("9mm", DMG_BULLET, TRACER_LINE, "sk_plr_dmg_9mm_bullet", "sk_npc_dmg_9mmAR_bullet", "sk_max_9mm_bullet", BULLET_IMPULSE(500, 1325), 0);
 		def.AddAmmoType("grenade_mp5", DMG_BURN, TRACER_NONE, "sk_plr_dmg_smg1_grenade", "sk_npc_dmg_smg1_grenade", "sk_max_smg1_grenade", 0, 0);
 	}
 

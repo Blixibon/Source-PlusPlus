@@ -1,0 +1,13 @@
+"Multiplayer.BurnPain"
+{
+	"channel"		"CHAN_AUTO"
+	"volume"		"0.9"
+	"soundlevel"		"SNDLVL_75dB"
+
+	"rndwave"
+	{
+		"wave"		"player/pl_burnpain1_no_vo.wav"
+		"wave"		"player/pl_burnpain2_no_vo.wav"
+		"wave"		"player/pl_burnpain3_no_vo.wav"
+	}
+}

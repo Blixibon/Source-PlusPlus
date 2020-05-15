@@ -96,8 +96,8 @@ void CRichPresense::InitDiscord(const char* applicationId)
 	Discord_Initialize(applicationId, &handlers, 0, appid);
 	ResetTimeStamp();
 
-	m_Signal = 1;
-	m_UpdateThread = CreateSimpleThread(CRichPresense::UpdateThread, this);
+	//m_Signal = 1;
+	//m_UpdateThread = CreateSimpleThread(CRichPresense::UpdateThread, this);
 
 	m_bStarted = true;
 }
@@ -107,9 +107,9 @@ void CRichPresense::ShutdownDiscord()
 	if (!m_bStarted)
 		return;
 
-	m_Signal = 0;
-	ThreadJoin(m_UpdateThread);
-	ReleaseThreadHandle(m_UpdateThread);
+	//m_Signal = 0;
+	//ThreadJoin(m_UpdateThread);
+	//ReleaseThreadHandle(m_UpdateThread);
 
 	Discord_Shutdown();
 
@@ -118,33 +118,47 @@ void CRichPresense::ShutdownDiscord()
 
 void CRichPresense::SetServerPorts(int iGame, int iSpectate)
 {
-	m_Lock.LockForWrite();
+	//m_Lock.LockForWrite();
 	m_iGamePort = iGame;
 	m_iHLTVPort = iSpectate;
-	m_Lock.UnlockWrite();
+	//m_Lock.UnlockWrite();
 }
 
 void CRichPresense::ResetTimeStamp()
 {
-	m_Lock.LockForWrite();
+	//m_Lock.LockForWrite();
 	m_liTimeStamp = time(0);
-	m_Lock.UnlockWrite();
+	//m_Lock.UnlockWrite();
 }
 
-unsigned CRichPresense::UpdateThread(void* pParams)
+void CRichPresense::InternalInit(IInternalSharedData* pInternalData)
 {
-	CRichPresense* pThis = static_cast<CRichPresense*> (pParams);
-	IVEngineClient* engineclient = pThis->m_pEnginePointers->engineclient;
-	IServerGameDLL* gameserver = pThis->m_pEnginePointers->gameserver;
-	IServer* internalserver = pThis->m_pEnginePointers->engineserver->GetIServer();
+	m_pEnginePointers = &pInternalData->GetEnginePointers();
+	m_pInternalData = pInternalData;
+}
 
-	while (pThis->m_Signal)
+void CRichPresense::InitiateConnection(const char* pszServer)
+{
+	netadr_t address(pszServer);
+	if (address.IsValid())
 	{
+		m_pServerBrowser->JoinGame(address.GetIPHostByteOrder(), address.GetPort(), "");
+	}
+}
+
+void CRichPresense::RunCallbacks()
+{
+	if (m_bStarted)
+	{
+		IVEngineClient* engineclient = m_pEnginePointers->engineclient;
+		IServerGameDLL* gameserver = m_pEnginePointers->gameserver;
+		IServer* internalserver = m_pEnginePointers->engineserver->GetIServer();
+
 		DiscordRichPresence data;
 		memset(&data, 0, sizeof(data));
 		CUtlString dynStrings[5];
 
-		if ((engineclient->IsConnected() || pThis->m_pInternalData->IsServerRunning()) && !engineclient->IsLevelMainMenuBackground())
+		if ((engineclient->IsConnected() || m_pInternalData->IsServerRunning()) && !engineclient->IsLevelMainMenuBackground())
 		{
 			dynStrings[3].SetLength(64);
 			V_StripExtension(V_UnqualifiedFileName(engineclient->GetLevelName()), dynStrings[3].GetForModify(), 64);
@@ -166,24 +180,20 @@ unsigned CRichPresense::UpdateThread(void* pParams)
 						netadr_t addr(pNet->GetAddress());
 						if (!pNet->IsLoopback())
 						{
-							pThis->m_Lock.LockForRead();
 							if (!engineclient->IsHLTV())
 							{
-								dynStrings[1].Format("%s:%i", addr.ToString(true), pThis->m_iGamePort);
+								dynStrings[1].Format("%s:%i", addr.ToString(true), m_iGamePort);
 								data.joinSecret = dynStrings[1].Get();
 							}
-							if (pThis->m_iHLTVPort > 0)
+							if (m_iHLTVPort > 0)
 							{
-								dynStrings[2].Format("%s:%i", addr.ToString(true), pThis->m_iHLTVPort);
+								dynStrings[2].Format("%s:%i", addr.ToString(true), m_iHLTVPort);
 								data.spectateSecret = dynStrings[2].Get();
 							}
-							pThis->m_Lock.UnlockRead();
 						}
 					}
 
-					pThis->m_Lock.LockForRead();
-					data.startTimestamp = pThis->m_liTimeStamp;
-					pThis->m_Lock.UnlockRead();
+					data.startTimestamp = m_liTimeStamp;
 					data.partyMax = engineclient->GetMaxClients();
 
 					data.state = dynStrings[3].Get();
@@ -194,11 +204,11 @@ unsigned CRichPresense::UpdateThread(void* pParams)
 			{
 				if (!engineclient->IsInGame() || engineclient->IsDrawingLoadingImage())
 				{
-					if (pThis->m_pInternalData->IsServerRunning() && !internalserver->IsMultiplayer())
+					if (m_pInternalData->IsServerRunning() && !internalserver->IsMultiplayer())
 					{
 						data.details = "Singleplayer";
 
-						dynStrings[4].Format("Loading %s", pThis->m_pInternalData->GetServerLevel());
+						dynStrings[4].Format("Loading %s", m_pInternalData->GetServerLevel());
 						data.state = dynStrings[4].Get();
 					}
 					else
@@ -212,7 +222,7 @@ unsigned CRichPresense::UpdateThread(void* pParams)
 					data.details = "Singleplayer";
 					char cMapTitle[64];
 					gameserver->GetTitleName(dynStrings[3].Get(), cMapTitle, 64);
-					const char *pchLocalized = g_pVGuiLocalize->FindAsUTF8(cMapTitle);
+					const char* pchLocalized = g_pVGuiLocalize->FindAsUTF8(cMapTitle);
 					if (pchLocalized)
 						dynStrings[4].Set(pchLocalized);
 					else
@@ -229,29 +239,8 @@ unsigned CRichPresense::UpdateThread(void* pParams)
 		}
 
 		Discord_UpdatePresence(&data);
-		ThreadSleep(1000);
+
+		s_pRichPresence = this;
+		Discord_RunCallbacks();
 	}
-
-	return 0;
-}
-
-void CRichPresense::InternalInit(IInternalSharedData* pInternalData)
-{
-	m_pEnginePointers = &pInternalData->GetEnginePointers();
-	m_pInternalData = pInternalData;
-}
-
-void CRichPresense::InitiateConnection(const char* pszServer)
-{
-	netadr_t address(pszServer);
-	if (address.IsValid())
-	{
-		m_pServerBrowser->JoinGame(address.GetIPHostByteOrder(), address.GetPort(), "");
-	}
-}
-
-void CRichPresense::RunCallbacks()
-{
-	s_pRichPresence = this;
-	Discord_RunCallbacks();
 }

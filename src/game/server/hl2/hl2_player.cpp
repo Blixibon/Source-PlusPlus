@@ -2460,13 +2460,13 @@ int CHL2_Player::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			EmitSound( "Player.DrownContinue" );
 		}
 	}
-
+#ifndef HL2_LAZUL
 	// Burnt
 	if ( info.GetDamageType() & DMG_BURN )
 	{
 		EmitSound( "HL2Player.BurnPain" );
 	}
-
+#endif
 
 	if( (info.GetDamageType() & DMG_SLASH) && hl2_episodic.GetBool() )
 	{

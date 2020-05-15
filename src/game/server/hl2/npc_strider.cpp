@@ -3330,8 +3330,8 @@ bool CNPC_Strider::ShouldExplodeFromDamage( const CTakeDamageInfo &info )
 
 	// Stickybombs make us explode
 	CBaseEntity *pAttacker = info.GetAttacker();
-	if ( pAttacker != NULL && (FClassnameIs( pAttacker, "weapon_striderbuster" ) ||
-								FClassnameIs( pAttacker, "npc_grenade_magna" )))
+	if ( pAttacker != NULL && (FClassnameIs(pInflictor, "weapon_striderbuster" ) ||
+								FClassnameIs(pInflictor, "npc_grenade_magna" )))
 		return true;
 
 	if ( pInflictor == this && pAttacker == this )

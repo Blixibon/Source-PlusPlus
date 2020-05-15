@@ -20,6 +20,9 @@
 #include <vgui/ISurface.h>
 #include <vgui/IVGui.h>
 #include <vgui_controls/SectionedListPanel.h>
+#include <vgui_controls/ImageList.h>
+
+#include "vgui_avatarimage.h"
 
 #include "voice_status.h"
 
@@ -322,6 +325,45 @@ void CLazClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	SetBorder( pScheme->GetBorder( "BaseBorder" ) );
 }
 
+void CLazClientScoreBoardDialog::UpdatePlayerAvatar(int playerIndex, KeyValues* kv)
+{
+	// Update their avatar
+	if (kv && ShowAvatars() && steamapicontext->SteamFriends() && steamapicontext->SteamUtils())
+	{
+		player_info_t pi;
+		if (engine->GetPlayerInfo(playerIndex, &pi))
+		{
+			if (pi.friendsID)
+			{
+				CSteamID steamIDForPlayer(pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual);
+
+				// See if we already have that avatar in our list
+				int iMapIndex = m_mapAvatarsToImageList.Find(steamIDForPlayer);
+				int iImageIndex;
+				if (iMapIndex == m_mapAvatarsToImageList.InvalidIndex())
+				{
+					CAvatarImage* pImage = new CAvatarImage();
+					pImage->SetDrawFriend(false);
+					pImage->SetAvatarSteamID(steamIDForPlayer);
+					pImage->SetAvatarSize(32, 32);	// Deliberately non scaling
+					iImageIndex = m_pImageList->AddImage(pImage);
+
+					m_mapAvatarsToImageList.Insert(steamIDForPlayer, iImageIndex);
+				}
+				else
+				{
+					iImageIndex = m_mapAvatarsToImageList[iMapIndex];
+				}
+
+				kv->SetInt("avatar", iImageIndex);
+
+				CAvatarImage* pAvIm = (CAvatarImage*)m_pImageList->GetImage(iImageIndex);
+				pAvIm->UpdateFriendStatus();
+			}
+		}
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 // Purpose: sets up base sections
@@ -343,6 +385,13 @@ void CLazClientScoreBoardDialog::InitScoreboardSections()
 		// add the team sections
 		AddSection(TYPE_TEAM, LazuulRules()->GetProtaganistTeam());
 		AddSection( TYPE_TEAM, LazuulRules()->GetAntagonistTeam());
+	}
+	else if (LazuulRules()->GetNumTeams() == 4)
+	{
+		AddSection(TYPE_TEAM, TEAM_COMBINE);
+		AddSection(TYPE_TEAM, TEAM_REBELS);
+		AddSection(TYPE_TEAM, TEAM_MILITARY);
+		AddSection(TYPE_TEAM, TEAM_ZOMBIES);
 	}
 	else
 	{
@@ -475,10 +524,10 @@ void CLazClientScoreBoardDialog::AddSection(int teamType, int teamNumber)
 	{
  		m_pPlayerList->AddSection(sectionID, "", StaticPlayerSortFunc);
 
-		//m_pPlayerList->AddColumnToSection(sectionID, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, m_iAvatarWidth);
+		m_pPlayerList->AddColumnToSection(sectionID, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_RIGHT, m_iAvatarWidth);
 
 		// setup the columns
-		m_pPlayerList->AddColumnToSection(sectionID, "name", "", 0, scheme()->GetProportionalScaledValueEx( GetScheme(), CSTRIKE_NAME_WIDTH ), hFallbackFont );
+		m_pPlayerList->AddColumnToSection(sectionID, "name", "", 0, scheme()->GetProportionalScaledValueEx( GetScheme(), CSTRIKE_NAME_WIDTH - m_iAvatarWidth), hFallbackFont );
 		m_pPlayerList->AddColumnToSection(sectionID, "class", "" , 0, scheme()->GetProportionalScaledValueEx( GetScheme(), CSTRIKE_CLASS_WIDTH ) );
 		m_pPlayerList->AddColumnToSection(sectionID, "frags", "", SectionedListPanel::COLUMN_RIGHT, scheme()->GetProportionalScaledValueEx( GetScheme(), CSTRIKE_SCORE_WIDTH ) );
 		m_pPlayerList->AddColumnToSection(sectionID, "deaths", "", SectionedListPanel::COLUMN_RIGHT, scheme()->GetProportionalScaledValueEx( GetScheme(), CSTRIKE_DEATH_WIDTH ) );
@@ -621,7 +670,7 @@ void CLazClientScoreBoardDialog::UpdatePlayerInfo()
 			// add the player to the list
 			KeyValues *playerData = new KeyValues("data");
 			GetPlayerScoreInfo( i, playerData );
-			//UpdatePlayerAvatar(i, playerData);
+			UpdatePlayerAvatar(i, playerData);
 			int itemID = FindItemIDForPlayerIndex( i );
   			int sectionID = GetSectionFromTeamNumber( g_PR->GetTeam( i ) );
 						

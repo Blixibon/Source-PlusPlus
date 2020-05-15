@@ -1,12 +1,31 @@
 #ifndef C_HLMS_PLAYER_H
 #define C_HLMS_PLAYER_H
+#pragma once
 #include "c_basehlplayer.h"
 #include "c_portal_player.h"
 #include "laz_player_shared.h"
 #include "networkstringtabledefs.h"
+#include "hl2_vehicle_radar.h"
 #include "iinput.h"
 
 extern INetworkStringTable *g_pStringTablePlayerFootSteps;
+
+class C_Laz_PlayerLocalData
+{
+public:
+	DECLARE_CLASS_NOBASE(C_Laz_PlayerLocalData);
+	DECLARE_EMBEDDED_NETWORKVAR();
+
+	C_Laz_PlayerLocalData();
+
+	float m_flTapePos[LOCATOR_MAX_CONTACTS];
+
+	int m_iNumLocatorContacts;
+	EHANDLE m_hLocatorEntities[LOCATOR_MAX_CONTACTS];
+	Vector m_vLocatorPositions[LOCATOR_MAX_CONTACTS];
+	int m_iLocatorContactType[LOCATOR_MAX_CONTACTS];
+	float m_flLocatorRange;
+};
 
 class C_Laz_Player : public C_Portal_Player
 {
@@ -105,10 +124,12 @@ public:
 	const LazSpeedData_t GetLazMoveData();
 
 	//virtual void PostThink(void);
-
+public:
 	bool m_bHasLongJump;
 
 	int m_iPlayerSoundType;
+
+	C_Laz_PlayerLocalData m_LazLocal;
 
 protected:
 	void HandleTaunting(void);

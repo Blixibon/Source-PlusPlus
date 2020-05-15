@@ -38,6 +38,8 @@ protected:
 	virtual void PaintBorder();
 	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 
+	virtual void UpdatePlayerAvatar(int playerIndex, KeyValues* kv);
+
 private:
 	virtual void AddHeader(); // add the start header of the scoreboard
 	virtual void AddSection(int teamType, int teamNumber); // add a new section header for a team

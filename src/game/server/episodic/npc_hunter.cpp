@@ -5888,7 +5888,7 @@ void CNPC_Hunter::Event_Killed( const CTakeDamageInfo &info )
 			m_EscortBehavior.GetEscortTarget()->AlertSound();
 			if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
 			{
-				m_EscortBehavior.GetEscortTarget()->UpdateEnemyMemory( UTIL_GetLocalPlayer(), UTIL_GetLocalPlayer()->GetAbsOrigin(), this );
+				m_EscortBehavior.GetEscortTarget()->UpdateEnemyMemory(info.GetAttacker(), info.GetAttacker()->GetAbsOrigin(), this );
 			}
 		}
 	}

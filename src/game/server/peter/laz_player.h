@@ -1,10 +1,13 @@
 #ifndef HLMS_PLAYER_H
 #define HLMS_PLAYER_H
+#pragma once
+
 #include "cbase.h"
 #include "hl2_player.h"
 #include "portalbase/portal_player.h"
 #include "laz_player_shared.h"
 #include "player_models.h"
+#include "hl2_vehicle_radar.h"
 
 //#define MIN_FLING_SPEED 290
 
@@ -55,6 +58,22 @@ public:
 	void (CLaz_Player::*pfnPreThink)();	// Do a PreThink() in this state.
 };
 
+class CLaz_PlayerLocalData
+{
+public:
+	DECLARE_CLASS_NOBASE(CLaz_PlayerLocalData);
+	DECLARE_EMBEDDED_NETWORKVAR();
+	DECLARE_DATADESC();
+
+	CLaz_PlayerLocalData();
+
+	CNetworkVar(int, m_iNumLocatorContacts);
+	CNetworkArray(EHANDLE, m_hLocatorEntities, LOCATOR_MAX_CONTACTS);
+	CNetworkArray(Vector, m_vLocatorPositions, LOCATOR_MAX_CONTACTS);
+	CNetworkArray(int, m_iLocatorContactType, LOCATOR_MAX_CONTACTS);
+	CNetworkVar(float, m_flLocatorRange);
+};
+
 class CLaz_Player : public CPortal_Player
 {
 public:
@@ -102,6 +121,7 @@ public:
 
 	virtual void PostThink(void);
 	virtual void PreThink(void);
+	void	UpdateLocator();
 
 	virtual bool HandleCommand_JoinTeam(int team);
 
@@ -250,12 +270,25 @@ public:
 
 public:
 	static EHANDLE gm_hLastRandomSpawn;
+
+	CNetworkVarEmbedded(CLaz_PlayerLocalData, m_LazLocal);
+	
+	static string_t		gm_iszStrider;
+	static string_t		gm_iszBigEnemies[];
+	static string_t		gm_iszHealthkits[];
+	static string_t		gm_iszAmmoPoints[];
+	static string_t		gm_iszItemCrate;
+	static string_t		gm_iszPropDynamic;
+	static string_t		gm_iszTriggerHurt;
+	static string_t		gm_iszRadarTarget;
+	static string_t		gm_iszMagnussonDevice;
 protected:
 	//CSoundPatch		*m_pWooshSound;
 
 	CNetworkVar(int, m_iPlayerSoundType);
 
 	float				m_flNextPainSoundTime;
+	float				m_flNextLocatorUpdateTime;
 
 	string_t			m_iszVoiceType;
 	string_t			m_iszSuitVoice;

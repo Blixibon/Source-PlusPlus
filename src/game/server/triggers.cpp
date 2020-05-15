@@ -5007,7 +5007,7 @@ void CTriggerApplyImpulse::InputApplyImpulse( inputdata_t& )
 	}
 }
 
-#ifdef HL1_DLL
+//#ifdef HL1_DLL
 //----------------------------------------------------------------------------------
 // func_friction
 //----------------------------------------------------------------------------------
@@ -5073,7 +5073,7 @@ void CFrictionModifier::EndTouch( CBaseEntity *pOther )
 	}
 }
 
-#endif //HL1_DLL
+//#endif //HL1_DLL
 
 bool IsTriggerClass( CBaseEntity *pEntity )
 {

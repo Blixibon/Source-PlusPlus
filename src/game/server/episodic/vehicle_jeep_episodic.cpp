@@ -42,39 +42,6 @@ ConVar jalopy_blocked_exit_max_speed( "jalopy_blocked_exit_max_speed", "50" );
 
 static const char *s_szHazardSprite = "sprites/light_glow01.vmt";
 
-enum
-{
-	RADAR_MODE_NORMAL	= 0,
-	RADAR_MODE_STICKY,
-};
-
-//=========================================================
-//=========================================================
-class CRadarTarget : public CPointEntity
-{
-	DECLARE_CLASS( CRadarTarget, CPointEntity );
-
-public:
-	void	Spawn();
-
-	bool	IsDisabled()	{ return m_bDisabled; }
-	int		GetType()		{ return m_iType; }
-	int		GetMode()		{ return m_iMode; }
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
-	int		ObjectCaps();
-
-private:
-	bool	m_bDisabled;
-	int		m_iType;
-	int		m_iMode;
-
-public:
-	float	m_flRadius;
-
-	DECLARE_DATADESC();
-};
-
 LINK_ENTITY_TO_CLASS( info_radar_target, CRadarTarget );
 
 BEGIN_DATADESC( CRadarTarget )

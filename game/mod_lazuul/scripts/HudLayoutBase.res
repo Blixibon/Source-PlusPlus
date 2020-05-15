@@ -434,8 +434,8 @@
 		"ypos"	"5"
 		"wide"	"80"
 		"tall"  "40"
-		"visible" "1"
-		"enabled" "1"
+		"visible" "0"
+		"enabled" "0"
 
 		"PaintBackgroundType"	"2"
 

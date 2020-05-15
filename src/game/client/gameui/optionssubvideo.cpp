@@ -33,6 +33,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#define ENABLE_FLOAT_HDR 0
+
 using namespace vgui;
 
 //-----------------------------------------------------------------------------
@@ -394,7 +396,7 @@ public:
 		{
 			m_pHDR->AddItem("#GameUI_hdr_level2", NULL);
 		}
-#if 0
+#if ENABLE_FLOAT_HDR
 		if ( materials->SupportsHDRMode( HDR_TYPE_FLOAT ) )
 		{
 			m_pHDR->AddItem("#GameUI_hdr_level3", NULL);
@@ -649,9 +651,11 @@ public:
 
 		if (nDXLevel >= 90)
 		{
-			/*if (materials->SupportsHDRMode(HDR_TYPE_FLOAT))
+#if ENABLE_FLOAT_HDR
+			if (materials->SupportsHDRMode(HDR_TYPE_FLOAT))
 				SetComboItemAsRecommended(m_pHDR, 3);
-			else*/
+			else
+#endif
 				SetComboItemAsRecommended(m_pHDR, 2);
 		}
 		else

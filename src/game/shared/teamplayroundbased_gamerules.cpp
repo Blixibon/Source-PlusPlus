@@ -53,6 +53,11 @@
 	#endif // GAME_DLL
 #endif
 
+#ifdef HL2_LAZUL
+#include "lazuul_gamerules.h"
+#endif // HL2_LAZUL
+
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -3621,6 +3626,11 @@ bool CTeamplayRoundBasedRules::WouldChangeUnbalanceTeams( int iNewTeam, int iCur
 	if (TFGameRules())
 		iTeamCount = TFGameRules()->IsFourTeamGame() ? 5 : 3;
 	for (pTeam = GetGlobalTeam(i); i <= iTeamCount; pTeam = GetGlobalTeam(++i))
+#elif HL2_LAZUL
+	int iTeamCount = GetNumberOfTeams();
+	if (LazuulRules())
+		iTeamCount = LAST_SHARED_TEAM + LazuulRules()->GetNumTeams();
+	for (pTeam = GetGlobalTeam(i); i <= iTeamCount; pTeam = GetGlobalTeam(++i))
 #else
 	for (pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i))
 #endif
@@ -3673,6 +3683,11 @@ bool CTeamplayRoundBasedRules::AreTeamsUnbalanced( int &iHeaviestTeam, int &iLig
 	if (TFGameRules())
 		iTeamCount = TFGameRules()->IsFourTeamGame() ? 5 : 3;
 	for (CTeam *pTeam = GetGlobalTeam(i); i <= iTeamCount; pTeam = GetGlobalTeam(++i))
+#elif HL2_LAZUL
+	int iTeamCount = GetNumberOfTeams();
+	if (LazuulRules())
+		iTeamCount = LAST_SHARED_TEAM + LazuulRules()->GetNumTeams();
+	for (CTeam* pTeam = GetGlobalTeam(i); i <= iTeamCount; pTeam = GetGlobalTeam(++i))
 #else
 	for (CTeam *pTeam = GetGlobalTeam(i); pTeam != NULL; pTeam = GetGlobalTeam(++i))
 #endif

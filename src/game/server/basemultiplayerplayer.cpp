@@ -96,7 +96,7 @@ bool CBaseMultiplayerPlayer::SpeakConcept( AI_Response &response, int iConcept )
 	m_iCurrentConcept = iConcept;
 	CAI_Concept concept(g_pszMPConcepts[iConcept]);
 	concept.SetSpeaker(this);
-	return FindResponse( response, concept );
+	return SpeakFindResponse( response, concept );
 }
 
 //-----------------------------------------------------------------------------

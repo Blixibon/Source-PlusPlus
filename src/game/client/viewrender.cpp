@@ -1991,7 +1991,18 @@ void CViewRender::SetupMain3DView( const CNewViewSetup &view, int &nClearFlags )
 	// instead of whatever was previously the render target
 	if( g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_FLOAT )
 	{
-		render->Push3DView( view, nClearFlags, GetFullFrameFrameBufferTexture( 0 ), GetFrustum() );
+		// Indicates that the render target is already HDR
+		/*if (view.m_bHDRTarget)
+		{
+			render->Push3DView(view, nClearFlags, NULL, GetFrustum());
+		}
+		else*/
+		{
+			CMatRenderContextPtr pRenderContext(materials);
+			pRenderContext->SetIntRenderingParameter(INT_RENDERPARM_BACK_BUFFER_INDEX, BACK_BUFFER_INDEX_HDR);
+			pRenderContext.SafeRelease(); // don't want to hold for long periods in case in a locking active share thread mode
+			render->Push3DView(view, nClearFlags, NULL, GetFrustum());
+		}
 	}
 	else
 	{
@@ -2017,6 +2028,14 @@ void CViewRender::SetupMain3DView( const CNewViewSetup &view, int &nClearFlags )
 
 void CViewRender::CleanupMain3DView( const CNewViewSetup &view )
 {
+	// Make sure we reset from the HDR rendertarget back to the main backbuffer
+	if (g_pMaterialSystemHardwareConfig->GetHDRType() == HDR_TYPE_FLOAT)
+	{
+		CMatRenderContextPtr pRenderContext(materials);
+		pRenderContext->SetIntRenderingParameter(INT_RENDERPARM_BACK_BUFFER_INDEX, BACK_BUFFER_INDEX_DEFAULT);
+		pRenderContext.SafeRelease(); // don't want to hold for long periods in case in a locking active share thread mode
+	}
+
 	render->PopView( GetFrustum() );
 }
 

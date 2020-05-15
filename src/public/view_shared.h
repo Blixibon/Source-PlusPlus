@@ -146,6 +146,7 @@ public:
 		m_nDoFQuality = 0;
 
 		m_bDoDepthOfField = false;
+		m_bHDRTarget = false;
 		m_bDrawVolumetrics = false;
 	}
 
@@ -164,6 +165,7 @@ public:
 	int			m_nDoFQuality;
 
 	bool		m_bDoDepthOfField : 1;
+	bool		m_bHDRTarget : 1;
 
 	bool		m_bDrawVolumetrics;
 };

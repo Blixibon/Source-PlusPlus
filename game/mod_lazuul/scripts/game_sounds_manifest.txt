@@ -315,4 +315,6 @@ game_sounds_manifest
 	
 	"preload_file"		"scripts/killstreak/game_sounds_killstreak_marine.txt"
 	"preload_file"		"scripts/killstreak/game_sounds_killstreak_scientist.txt"
+	
+	"precache_file"		"scripts/game_sounds_player_lazuul.txt"
 }

@@ -506,7 +506,7 @@ void CPortal_CollisionEvent::AddDamageEvent(CBaseEntity* pEntity, const CTakeDam
 	CTakeDamageInfo ReplacementDamageInfo; //only used some of the time
 
 	if ((info.GetDamageType() & DMG_CRUSH) &&
-		(pInflictorPhysics->GetGameFlags() & FVPHYSICS_IS_SHADOWCLONE) &&
+		(pInflictorPhysics && pInflictorPhysics->GetGameFlags() & FVPHYSICS_IS_SHADOWCLONE) &&
 		(!info.BaseDamageIsValid()) &&
 		(info.GetDamageForce().LengthSqr() > (20000.0f * 20000.0f))
 		)

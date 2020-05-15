@@ -22,6 +22,39 @@ class CSteamJet;
 
 #define NUM_WHEEL_EFFECTS	2
 #define NUM_HAZARD_LIGHTS	4
+enum
+
+{
+	RADAR_MODE_NORMAL = 0,
+	RADAR_MODE_STICKY,
+};
+
+//=========================================================
+//=========================================================
+class CRadarTarget : public CPointEntity
+{
+	DECLARE_CLASS(CRadarTarget, CPointEntity);
+
+public:
+	void	Spawn();
+
+	bool	IsDisabled() { return m_bDisabled; }
+	int		GetType() { return m_iType; }
+	int		GetMode() { return m_iMode; }
+	void	InputEnable(inputdata_t& inputdata);
+	void	InputDisable(inputdata_t& inputdata);
+	int		ObjectCaps();
+
+private:
+	bool	m_bDisabled;
+	int		m_iType;
+	int		m_iMode;
+
+public:
+	float	m_flRadius;
+
+	DECLARE_DATADESC();
+};
 
 //=============================================================================
 // Episodic jeep

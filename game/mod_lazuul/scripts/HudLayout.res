@@ -110,6 +110,7 @@
 	{
 		"fieldName" "HudFlashlight"
 		"visible" "1"
+		"enabled" "1"
 		"PaintBackgroundType"	"2"
 		"xpos"	"270"		[$WIN32]
 		"ypos"	"444"		[$WIN32]

@@ -105,6 +105,7 @@ $Project
 		$File	"weapon_sheen_pass_helper.h"
 
 		$File	"SkyMask.cpp"
+		$File	"Engine_Post_dx9.cpp"
 	}
 
 	$Folder	"Header Files"

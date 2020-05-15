@@ -11,6 +11,9 @@
 #include	"cbase.h"
 #include	"npcevent.h"
 #include	"ai_basenpc.h"
+#include	"igamesystem.h"
+
+class CLaz_Player;
 
 #define SF_OLIVIA_TAKE_DAMAGE						(1 << 16)	
 #define SF_OLIVIA_INFLICT_DAMAGE_ON_PLAYER			(1 << 17)
@@ -174,5 +177,21 @@ protected:
 	DEFINE_CUSTOM_AI;
 };
 
+class COliviaSystem : public CAutoGameSystemPerFrame
+{
+	DECLARE_CLASS_GAMEROOT(COliviaSystem, CAutoGameSystemPerFrame);
+public:
+	COliviaSystem();
 
+	bool InvokeOlivia(CLaz_Player* pInvoker);
+
+	// Called each frame before entities think
+	virtual void FrameUpdatePreEntityThink();
+	// called after entities think
+	virtual void FrameUpdatePostEntityThink();
+
+	virtual void LevelShutdownPreEntity();
+};
+
+COliviaSystem* GetMPOliviaManager();
 #endif

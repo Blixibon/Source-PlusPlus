@@ -469,6 +469,7 @@ $Project
 		$File	"colorcorrectionmgr.cpp"
 		$File	"commentary_modelviewer.cpp"
 		$File	"commentary_modelviewer.h"
+		$File	"convarproxy.cpp"
 		$File	"$SRCDIR\game\shared\collisionproperty.cpp"
 		$File	"$SRCDIR\game\shared\death_pose.cpp"
 		$File	"$SRCDIR\game\shared\debugoverlay_shared.cpp"

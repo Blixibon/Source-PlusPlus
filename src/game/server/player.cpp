@@ -995,7 +995,7 @@ void CBasePlayer::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &v
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CBasePlayer::DamageEffect(float flDamage, int fDamageType)
+void CBasePlayer::DamageEffect(float flDamage, int64 fDamageType)
 {
 	if (fDamageType & DMG_CRUSH)
 	{

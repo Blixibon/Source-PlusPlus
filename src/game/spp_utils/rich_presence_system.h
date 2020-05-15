@@ -18,16 +18,14 @@ public:
 	// Inherited via IDiscordPresence
 	virtual void RunCallbacks() override;
 
-	static unsigned UpdateThread(void* pParams);
-
 	void	InternalInit(IInternalSharedData* pInternalData);
 
 	void	InitiateConnection(const char* pszServer);
 
 private:
-	ThreadHandle_t m_UpdateThread;
-	CThreadRWLock m_Lock;
-	CInterlockedInt m_Signal;
+	//ThreadHandle_t m_UpdateThread;
+	//CThreadRWLock m_Lock;
+	//CInterlockedInt m_Signal;
 
 	int m_iGamePort;
 	int m_iHLTVPort;

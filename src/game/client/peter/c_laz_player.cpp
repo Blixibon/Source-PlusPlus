@@ -38,9 +38,45 @@ extern ConVar cl_meathook_neck_pivot_ingame_fwd;
 
 ConVar	cl_legs_enable("cl_legs_enable", "1", FCVAR_ARCHIVE, "0 hides the legs, 1 shows the legs, 2 shows the legs and hair", true, 0.f, true, 2.f);
 
+C_Laz_PlayerLocalData::C_Laz_PlayerLocalData()
+{
+	m_iNumLocatorContacts = 0;
+	for (int i = 0; i < LOCATOR_MAX_CONTACTS; i++)
+	{
+		m_vLocatorPositions[i] = vec3_invalid;
+	}
+}
+
 IMPLEMENT_NETWORKCLASS_ALIASED(Laz_Player, DT_Laz_Player);
 
+void RecvProxy_LocatorContacts(const CRecvProxyData* pData, void* pStruct, void* pOut)
+{
+	RecvProxy_Int32ToInt32(pData, pStruct, pOut);
+
+	C_Laz_PlayerLocalData* pLocalData = static_cast<C_Laz_PlayerLocalData*> (pStruct);
+	if (pLocalData)
+	{
+		for (int i = pData->m_Value.m_Int; i < LOCATOR_MAX_CONTACTS; i++)
+		{
+			pLocalData->m_hLocatorEntities[i] = nullptr;
+			pLocalData->m_iLocatorContactType[i] = 0;
+			pLocalData->m_vLocatorPositions[i] = vec3_invalid;
+			pLocalData->m_flTapePos[i] = -1.f;
+		}
+	}
+}
+
+BEGIN_RECV_TABLE_NOBASE(C_Laz_PlayerLocalData, DT_LazLocal)
+RecvPropInt(RECVINFO(m_iNumLocatorContacts), 0, RecvProxy_LocatorContacts),
+RecvPropArray3(RECVINFO_ARRAY(m_hLocatorEntities), RecvPropEHandle(RECVINFO(m_hLocatorEntities[0]))),
+RecvPropArray3(RECVINFO_ARRAY(m_vLocatorPositions), RecvPropVector(RECVINFO(m_vLocatorPositions[0]))),
+RecvPropArray3(RECVINFO_ARRAY(m_iLocatorContactType), RecvPropInt(RECVINFO(m_iLocatorContactType[0]))),
+RecvPropFloat(RECVINFO(m_flLocatorRange)),
+END_RECV_TABLE()
+
 BEGIN_RECV_TABLE(C_Laz_Player, DT_Laz_Player)
+RecvPropDataTable(RECVINFO_DT(m_LazLocal), 0, &REFERENCE_RECV_TABLE(DT_LazLocal)),
+
 RecvPropInt(RECVINFO(m_bHasLongJump)),
 RecvPropInt(RECVINFO(m_iPlayerSoundType)),
 

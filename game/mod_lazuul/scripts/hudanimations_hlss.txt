@@ -63,7 +63,7 @@ event OpenWeaponSelectionMenu
 
 	Animate HudWeaponSelection LargeBoxTallAnim	"54"		Linear 0.1 0.4
 
-	Animate HudLocator Position "c54 r0" Linear 0.0 0.1
+	Animate HudLocator Position "c64 r0" Linear 0.0 0.1
 
 	//TERO: hide ammo
 	Animate 	HudAmmoHE			Alpha	0 	Linear 0.0 0.2
@@ -138,3 +138,46 @@ event SuitAuxPowerThreeItemsActive
 	Animate HudSuitPower Position			"52 4"			Linear 0.0 0.4
 }
 
+event SquadRowsOne
+{
+	StopEvent	SquadRowsTwo	0.0
+	StopEvent	SquadRowsThree	0.0
+	StopEvent	SquadRowsFour	0.0
+	
+	//Animate		HudSquadStatus	ypos	"380"		Linear 0.0 0.5
+	Animate		HudSquadStatus	tall	"46"		Linear 0.0 0.5
+	Animate		HudSquadStatus	text_ypos	"34"		Linear 0.0 0.5
+}
+
+event SquadRowsTwo
+{
+	StopEvent	SquadRowsOne	0.0
+	StopEvent	SquadRowsThree	0.0
+	StopEvent	SquadRowsFour	0.0
+	
+	//Animate		HudSquadStatus	ypos	"356"		Linear 0.0 0.5
+	Animate		HudSquadStatus	tall	"70"		Linear 0.0 0.5
+	Animate		HudSquadStatus	text_ypos	"58"		Linear 0.0 0.5
+}
+
+event SquadRowsThree
+{
+	StopEvent	SquadRowsTwo	0.0
+	StopEvent	SquadRowsOne	0.0
+	StopEvent	SquadRowsFour	0.0
+	
+	//Animate		HudSquadStatus	ypos	"332"		Linear 0.0 0.5
+	Animate		HudSquadStatus	tall	"94"		Linear 0.0 0.5
+	Animate		HudSquadStatus	text_ypos	"82"		Linear 0.0 0.5
+}
+
+event SquadRowsFour
+{
+	StopEvent	SquadRowsTwo	0.0
+	StopEvent	SquadRowsThree	0.0
+	StopEvent	SquadRowsOne	0.0
+	
+	//Animate		HudSquadStatus	ypos	"308"		Linear 0.0 0.5
+	Animate		HudSquadStatus	tall	"118"		Linear 0.0 0.5
+	Animate		HudSquadStatus	text_ypos	"106"		Linear 0.0 0.5
+}

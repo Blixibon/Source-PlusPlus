@@ -31,6 +31,10 @@
 #include "viewport_panel_names.h"
 #include "vphysics/constraints.h"
 #include "physics_saverestore.h"
+#include "npc_strider.h"
+#include "triggers.h"
+#include "vehicle_jeep_episodic.h"
+#include "Human_Error/npc_olivia.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -86,6 +90,12 @@ public:
 			*pStringIndex = m_pStringTable->AddString(CBaseEntity::IsServer(), pTemp);
 		}
 	}
+
+	virtual bool IsEmpty(const SaveRestoreFieldInfo_t& fieldInfo)
+	{
+		int* pStringIndex = (int*)fieldInfo.pField;
+		return IsInvalidString(*pStringIndex) && *pStringIndex >= -1;
+	}
 };
 
 CFootstepStringTableSaveRestoreOps g_FootStepStringOps;
@@ -111,6 +121,16 @@ const char* g_pszFlashLightSounds[FLASHLIGHT_TYPE_COUNT] = {
 	"HL2Player.NightVision%s",
 	"HL2Player.FlashLight%s"
 };
+
+CLaz_PlayerLocalData::CLaz_PlayerLocalData()
+{
+	m_iNumLocatorContacts = 0;
+	m_flLocatorRange = 1200.f;
+	for (int i = 0; i < LOCATOR_MAX_CONTACTS; i++)
+	{
+		m_vLocatorPositions.Set(i, vec3_invalid);
+	}
+}
 
 LINK_ENTITY_TO_CLASS(info_player_combine, CPointEntity);
 LINK_ENTITY_TO_CLASS(info_player_rebel, CPointEntity);
@@ -146,9 +166,27 @@ DEFINE_FIELD(m_hPullObject, FIELD_EHANDLE),
 DEFINE_FIELD(m_bIsPullingObject, FIELD_BOOLEAN),
 
 DEFINE_FIELD(m_nMovementCfg, FIELD_INTEGER),
+
+DEFINE_FIELD(m_flNextLocatorUpdateTime, FIELD_TIME),//TE120
 END_DATADESC();
 
+BEGIN_DATADESC_NO_BASE(CLaz_PlayerLocalData)
+DEFINE_FIELD(m_iNumLocatorContacts, FIELD_INTEGER),
+DEFINE_FIELD(m_flLocatorRange, FIELD_FLOAT),
+DEFINE_ARRAY(m_iLocatorContactType, FIELD_INTEGER, LOCATOR_MAX_CONTACTS),
+DEFINE_ARRAY(m_vLocatorPositions, FIELD_POSITION_VECTOR, LOCATOR_MAX_CONTACTS),
+END_DATADESC();
+
+BEGIN_SEND_TABLE_NOBASE(CLaz_PlayerLocalData, DT_LazLocal)
+SendPropInt(SENDINFO(m_iNumLocatorContacts)),
+SendPropArray3(SENDINFO_ARRAY3(m_hLocatorEntities), SendPropEHandle(SENDINFO_ARRAY(m_hLocatorEntities))),
+SendPropArray3(SENDINFO_ARRAY3(m_vLocatorPositions), SendPropVector(SENDINFO_ARRAY(m_vLocatorPositions))),
+SendPropArray3(SENDINFO_ARRAY3(m_iLocatorContactType), SendPropInt(SENDINFO_ARRAY(m_iLocatorContactType), LOCATOR_CONTACT_TYPE_BITS)),
+SendPropFloat(SENDINFO(m_flLocatorRange)),
+END_SEND_TABLE()
+
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
+SendPropDataTable(SENDINFO_DT(m_LazLocal), &REFERENCE_SEND_TABLE(DT_LazLocal), SendProxy_SendLocalDataTable),
 SendPropInt(SENDINFO(m_bHasLongJump), 1, SPROP_UNSIGNED),
 SendPropInt(SENDINFO(m_iPlayerSoundType)/*, MAX_FOOTSTEP_STRING_BITS + 1*/),
 SendPropInt(SENDINFO(m_nFlashlightType)),
@@ -237,6 +275,16 @@ string_t		CLaz_Player::gm_iszDefaultAbility = NULL_STRING;
 HSOUNDSCRIPTHANDLE CLaz_Player::gm_hsFlashLightSoundHandles[] = { SOUNDEMITTER_INVALID_HANDLE };
 int			CLaz_Player::gm_iGordonFreemanModel = -1;
 
+string_t CLaz_Player::gm_iszStrider = NULL_STRING;
+string_t CLaz_Player::gm_iszBigEnemies[] = { NULL_STRING , NULL_STRING, NULL_STRING };
+string_t CLaz_Player::gm_iszHealthkits[] = { NULL_STRING , NULL_STRING , NULL_STRING , NULL_STRING , NULL_STRING };
+string_t CLaz_Player::gm_iszAmmoPoints[] = { NULL_STRING , NULL_STRING , NULL_STRING };
+string_t CLaz_Player::gm_iszItemCrate = NULL_STRING;
+string_t CLaz_Player::gm_iszPropDynamic = NULL_STRING;
+string_t CLaz_Player::gm_iszTriggerHurt = NULL_STRING;
+string_t CLaz_Player::gm_iszRadarTarget = NULL_STRING;
+string_t CLaz_Player::gm_iszMagnussonDevice = NULL_STRING;
+
 extern CSuitPowerDevice SuitDeviceFlashlight;
 
 CLaz_Player::CLaz_Player()
@@ -253,10 +301,29 @@ void CLaz_Player::Precache(void)
 	gm_iszDefaultAbility = AllocPooledString_StaticConstantStringPointer(DEFAULT_ABILITY);
 	gm_iGordonFreemanModel = PrecacheModel("models/sirgibs/ragdolls/gordon_survivor_player.mdl");
 
+	gm_iszStrider = AllocPooledString("npc_strider");
+	gm_iszBigEnemies[0] = AllocPooledString("npc_combinegunship");
+	gm_iszBigEnemies[1] = AllocPooledString("npc_combinedropship");
+	gm_iszBigEnemies[2] = AllocPooledString("npc_helicopter");
+	gm_iszHealthkits[0] = AllocPooledString("item_healthkit");
+	gm_iszHealthkits[1] = AllocPooledString("item_healthvial");
+	gm_iszHealthkits[2] = AllocPooledString("item_healthcharger");
+	gm_iszHealthkits[3] = AllocPooledString("func_healthcharger");
+	gm_iszHealthkits[4] = AllocPooledString("item_healthcharger_bms");
+	gm_iszAmmoPoints[0] = AllocPooledString("item_rpg_round");
+	gm_iszAmmoPoints[1] = AllocPooledString("weapon_rpg");
+	gm_iszAmmoPoints[2] = AllocPooledString("item_ammo_crate");
+	gm_iszItemCrate = AllocPooledString("item_item_crate");
+	gm_iszPropDynamic = AllocPooledString("prop_dynamic");
+	gm_iszTriggerHurt = AllocPooledString("trigger_hurt");
+	gm_iszRadarTarget = AllocPooledString("info_radar_target");
+	gm_iszMagnussonDevice = AllocPooledString("weapon_striderbuster");
+
 	PrecacheFootStepSounds();
 	PrecacheScriptSound("TFPlayer.FreezeCam");
 	PrecacheScriptSound("JumpLand.HighVelocityImpact");
 	PrecacheScriptSound("PortalPlayer.FallRecover");
+	PrecacheScriptSound("Multiplayer.BurnPain");
 
 	PrecacheParticleSystem("blood_impact_zombie_01");
 
@@ -393,6 +460,8 @@ void CLaz_Player::Spawn(void)
 
 		SetViewOffset(GetPlayerEyeHeight());
 	}
+
+	m_flNextLocatorUpdateTime = gpGlobals->curtime - 1.0f;//TE120
 }
 
 void CLaz_Player::InitialSpawn(void)
@@ -726,8 +795,174 @@ void CLaz_Player::PreThink(void)
 
 	State_PreThink();
 
+	UpdateLocator();
+
 	if (!g_pGameRules->IsMultiplayer())
 		UpdatePlayerColor();
+}
+
+void CLaz_Player::UpdateLocator()
+{
+	if (!IsSuitEquipped() || IsObserver() || m_LazLocal.m_flLocatorRange.Get() <= 0.f)
+	{
+		m_LazLocal.m_iNumLocatorContacts = 0;
+		return;
+	}
+
+	if (gpGlobals->curtime < m_flNextLocatorUpdateTime)
+		return;
+
+	// Count the targets on radar. If any more targets come on the radar, we beep.
+	//int iNumOldRadarContacts = m_LazLocal.m_iNumLocatorContacts;
+
+	m_flNextLocatorUpdateTime = gpGlobals->curtime + LOCATOR_UPDATE_FREQUENCY;
+	m_LazLocal.m_iNumLocatorContacts = 0;
+
+	const Vector vecCenter = EyePosition();
+	for (CBaseEntity* pEntity = gEntList.FindEntityInSphere(nullptr, vecCenter, m_LazLocal.m_flLocatorRange.Get()); pEntity != nullptr; pEntity = gEntList.FindEntityInSphere(pEntity, vecCenter, m_LazLocal.m_flLocatorRange.Get()))
+	{
+		int type = LOCATOR_CONTACT_NONE;
+		Vector vecPos = pEntity->WorldSpaceCenter();
+		Vector vecLocatorPos = vec3_invalid;
+
+		// DevMsg( "className: %s\n", pEnt->m_iClassname );
+
+		if (pEntity->m_iClassname == gm_iszStrider)
+		{
+			CNPC_Strider* pStrider = assert_cast<CNPC_Strider*>(pEntity);
+
+			if (!pStrider || !pStrider->CarriedByDropship() && !pStrider->IsPlayerAlly(this))
+			{
+				// Ignore striders which are carried by dropships.
+				type = LOCATOR_CONTACT_LARGE_ENEMY;
+			}
+		}
+		else if (pEntity->m_iClassname == gm_iszItemCrate)
+		{
+			type = LOCATOR_CONTACT_GENERIC;
+		}
+		else if (pEntity->m_iClassname == gm_iszPropDynamic)
+		{
+			string_t iszRadiationName = FindPooledString("radiation");
+			if (pEntity->GetEntityName() != NULL_STRING)
+			{
+				if (pEntity->GetEntityName() == iszRadiationName)
+				{
+					// DevMsg( "pEnt->GetEntityName(): %s\n", pEnt->GetEntityName() );
+					type = LOCATOR_CONTACT_RADIATION;
+
+					// get range to player;
+					float flRange = (vecPos - vecCenter).Length();
+					flRange *= 3.0f;
+					NotifyNearbyRadiationSource(flRange);
+				}
+			}
+		}
+		else if (pEntity->m_iClassname == gm_iszTriggerHurt)
+		{
+			CTriggerHurt* pHurt = assert_cast<CTriggerHurt*> (pEntity);
+			if (pHurt && pHurt->m_bitsDamageInflict & DMG_RADIATION)
+			{
+				type = LOCATOR_CONTACT_RADIATION;
+				pHurt->CollisionProp()->CalcNearestPoint(vecCenter + (EyeDirection2D() * 16.f), &vecLocatorPos);
+			}
+		}
+		else if (pEntity->m_iClassname == gm_iszRadarTarget)
+		{
+			CRadarTarget* pTarget = assert_cast<CRadarTarget*> (pEntity);
+			if (pTarget && !pTarget->IsDisabled())
+			{
+				switch (pTarget->GetType())
+				{
+				/*case RADAR_CONTACT_MAGNUSSEN_RDU:
+					type = LOCATOR_CONTACT_MAGNUSSEN_RDU;
+					break;*/
+				case RADAR_CONTACT_ALLY_INSTALLATION:
+					type = LOCATOR_CONTACT_ALLY_INSTALLATION;
+					break;
+				case RADAR_CONTACT_DOG:
+					type = LOCATOR_CONTACT_DOG;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		else if (pEntity->m_iClassname == gm_iszMagnussonDevice)
+		{
+			type = LOCATOR_CONTACT_MAGNUSSEN_RDU;
+		}
+		else
+		{
+			bool bFound = false;
+			for (string_t iszFlyingEnemy : gm_iszBigEnemies)
+			{
+				if (pEntity->m_iClassname == iszFlyingEnemy && IRelationType(pEntity) == D_HT)
+				{
+					bFound = true;
+					type = LOCATOR_CONTACT_LARGE_ENEMY;
+					break;
+				}
+			}
+
+			if (!bFound)
+			{
+				for (string_t iszTestClassname : gm_iszHealthkits)
+				{
+					if (pEntity->m_iClassname == iszTestClassname)
+					{
+						bFound = true;
+						type = LOCATOR_CONTACT_HEALTH;
+						break;
+					}
+				}
+			}
+
+			if (!bFound && !pEntity->GetOwnerEntity() && !pEntity->IsEffectActive(EF_NODRAW))
+			{
+				for (string_t iszTestClassname : gm_iszAmmoPoints)
+				{
+					if (pEntity->m_iClassname == iszTestClassname)
+					{
+						bFound = true;
+						type = LOCATOR_CONTACT_AMMO;
+						break;
+					}
+				}
+			}
+		}
+
+		if (type != RADAR_CONTACT_NONE)
+		{
+			float x_diff = vecPos.x - GetAbsOrigin().x;
+			float y_diff = vecPos.y - GetAbsOrigin().y;
+			float flDist = sqrt(pow(x_diff, 2) + pow(y_diff, 2));
+
+			if (flDist <= m_LazLocal.m_flLocatorRange.Get())
+			{
+				// DevMsg( "Adding %s : %s to locator list.\n", pEnt->GetClassname(), pEnt->GetEntityName() );
+
+				m_LazLocal.m_hLocatorEntities.Set(m_LazLocal.m_iNumLocatorContacts, pEntity);
+
+				if (vecLocatorPos != vec3_invalid)
+					m_LazLocal.m_vLocatorPositions.Set(m_LazLocal.m_iNumLocatorContacts, vecLocatorPos);
+				else
+					m_LazLocal.m_vLocatorPositions.Set(m_LazLocal.m_iNumLocatorContacts, vec3_invalid);
+
+				m_LazLocal.m_iLocatorContactType.Set(m_LazLocal.m_iNumLocatorContacts, type);
+				m_LazLocal.m_iNumLocatorContacts++;
+
+				if (m_LazLocal.m_iNumLocatorContacts == LOCATOR_MAX_CONTACTS)
+					break;
+			}
+		}
+	}
+
+	/*if( m_LazLocal.m_iNumLocatorContacts > iNumOldRadarContacts )
+	{
+		CSingleUserRecipientFilter filter(this);
+		EmitSound(filter, entindex(), "Geiger.BeepLow");
+	}*/
 }
 
 //-----------------------------------------------------------------------------
@@ -763,7 +998,7 @@ void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo
 	if (g_pGameRules->PlayerRelationship(this, pVictim) == GR_TEAMMATE)
 		return;
 
-	if (pVictim->IsNPC() || pVictim->IsPlayer())
+	if ((pVictim->IsNPC() || pVictim->IsPlayer()) && CanSpeakAfterMyself())
 	{
 		CFmtStrN<128> modifiers("playerenemy:%s", pVictim->GetResponseClassname(this));
 		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_TAUNTS, modifiers);
@@ -1429,8 +1664,7 @@ void CLaz_Player::PainSound(const CTakeDamageInfo & info)
 
 	if (info.GetDamageType() & DMG_BURN)
 	{
-		// Looping fire pain sound is done in CTFPlayerShared::ConditionThink
-		return;
+		EmitSound("Multiplayer.BurnPain");
 	}
 
 	CMultiplayer_Expresser *pExpresser = GetMultiplayerExpresser();
@@ -1499,7 +1733,10 @@ void CLaz_Player::DeathSound(const CTakeDamageInfo & info)
 	else
 	{
 		AI_Response resp;
+		int iLifeState = m_lifeState;
+		m_lifeState = LIFE_ALIVE;
 		SpeakConcept(resp, MP_CONCEPT_DIED);
+		m_lifeState = iLifeState;
 		const char *szResponse = resp.GetResponsePtr();
 		soundlevel_t soundlevel = resp.GetSoundLevel();
 		switch (resp.GetType())
@@ -1608,12 +1845,23 @@ void CLaz_Player::Special()
 		if (m_hMinion && m_hMinion->IsAlive())
 			return;
 
+		if (IsInAVehicle())
+			return;
+
 		int iSequence = SelectWeightedSequence(ACT_METROPOLICE_DEPLOY_MANHACK);
 		if (iSequence != ACT_INVALID)
 		{
 			m_flNextSpecialAttackTime = gpGlobals->curtime + SequenceDuration(iSequence) + 2.0f;
 			SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_CAST_MONOCULOUS);
 			DoAnimationEvent(PLAYERANIMEVENT_CUSTOM_SEQUENCE, iSequence);
+		}
+	}
+		break;
+	case LAZ_SPECIAL_OLIVIA:
+	{
+		if (GetMPOliviaManager()->InvokeOlivia(this))
+		{
+			m_flNextSpecialAttackTime = gpGlobals->curtime + 30.f;
 		}
 	}
 		break;
@@ -1643,7 +1891,7 @@ void CLaz_Player::FlashlightTurnOn(void)
 	EmitSound(CFmtStr(g_pszFlashLightSounds[m_nFlashlightType], "On"), gm_hsFlashLightSoundHandles[m_nFlashlightType]);
 
 	variant_t flashlighton;
-	flashlighton.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+	flashlighton.SetFloat((Flashlight_UseLegacyVersion() ? m_HL2Local.m_flSuitPower : m_HL2Local.m_flFlashBattery) / 100.0f);
 	FirePlayerProxyOutput("OnFlashlightOn", flashlighton, this, this);
 }
 
@@ -1664,7 +1912,7 @@ void CLaz_Player::FlashlightTurnOff(void)
 	EmitSound(CFmtStr(g_pszFlashLightSounds[m_nFlashlightType], "Off"), gm_hsFlashLightSoundHandles[m_nFlashlightType + FLASHLIGHT_TYPE_COUNT]);
 
 	variant_t flashlightoff;
-	flashlightoff.SetFloat(m_HL2Local.m_flSuitPower / 100.0f);
+	flashlightoff.SetFloat((Flashlight_UseLegacyVersion() ? m_HL2Local.m_flSuitPower : m_HL2Local.m_flFlashBattery) / 100.0f);
 	FirePlayerProxyOutput("OnFlashlightOff", flashlightoff, this, this);
 }
 
@@ -2008,7 +2256,8 @@ void CLaz_Player::SetAnimation(PLAYER_ANIM playerAnim)
 
 	if (playerAnim == PLAYER_RELOAD && GetEnemy())
 	{
-		SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_RELOAD);
+		if (!IsSpeaking())
+			SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_RELOAD);
 	}
 }
 
@@ -2072,16 +2321,6 @@ int CLaz_Player::OnTakeDamage(const CTakeDamageInfo & inputInfo)
 		float flScale = 1.0f;
 		CALL_ATTRIB_HOOK_FLOAT(flScale, mult_dmgtaken_from_fire);
 		inputInfoCopy.ScaleDamage(flScale);
-	}
-
-	CBaseEntity *pAttacker = inputInfoCopy.GetAttacker();
-	CBaseEntity *pInflictor = inputInfoCopy.GetInflictor();
-
-	// Refuse damage from prop_glados_core.
-	if ((pAttacker && FClassnameIs(pAttacker, "prop_glados_core")) ||
-		(pInflictor && FClassnameIs(pInflictor, "prop_glados_core")))
-	{
-		inputInfoCopy.SetDamage(0.0f);
 	}
 
 	bool bTookDamage = (BaseClass::OnTakeDamage(inputInfoCopy) != 0);

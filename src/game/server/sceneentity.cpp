@@ -552,6 +552,8 @@ public:
 	void					SetBreakOnNonIdle( bool bBreakOnNonIdle ) { m_bBreakOnNonIdle = bBreakOnNonIdle; }
 	bool					ShouldBreakOnNonIdle( void ) { return m_bBreakOnNonIdle; }
 
+	virtual bool			IsInstancedScene() { return false; }
+
 	// Inputs
 	void InputStartPlayback( inputdata_t &inputdata );
 	void InputPausePlayback( inputdata_t &inputdata );
@@ -1847,10 +1849,7 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 	// Emit sound
 	if ( actor )
 	{
-		// This used to be an attenuation filter, but that broke NPCs on monitors in multiplayer
-		CRecipientFilter filter;
-		CPASAttenuationFilter basefilter(actor->GetSoundEmissionOrigin(), iSoundlevel);
-		filter.CopyFrom(basefilter);
+		CPASAttenuationFilter filter(actor->GetSoundEmissionOrigin(), iSoundlevel);
 
 		if ( m_pRecipientFilter )
 		{
@@ -1879,14 +1878,18 @@ void CSceneEntity::DispatchStartSpeak( CChoreoScene *scene, CBaseFlex *actor, CC
 		}
 		else if (gpGlobals->maxClients > 1)
 		{
-			CUtlVector<Vector> vSpeakers;
-			Vector vecSoundOrigin = actor->GetSoundEmissionOrigin();
-			CEnvMicrophone::TestMicrophones(actor->entindex(), iSoundlevel, 1.f, &vecSoundOrigin, vSpeakers);
-			for (auto& vSpeaker : vSpeakers)
+			if (IsInstancedScene())
 			{
-				CPASAttenuationFilter micfilter(vSpeaker, iSoundlevel);
-				filter.CopyFrom(micfilter);
+				CUtlVector<Vector> vSpeakers;
+				Vector vecSoundOrigin = actor->GetSoundEmissionOrigin();
+				CEnvMicrophone::TestMicrophones(actor->entindex(), iSoundlevel, 1.f, &vecSoundOrigin, vSpeakers);
+				for (auto& vSpeaker : vSpeakers)
+				{
+					filter.AddRecipientsByPAS(vSpeaker);
+				}
 			}
+			else
+				filter.AddAllPlayers();
 		}
 
 		float time_in_past = m_flCurrentTime - event->GetStartTime() ;
@@ -4628,6 +4631,8 @@ public:
 	float					m_flPreDelay;
 	char					m_szInstanceFilename[ CChoreoScene::MAX_SCENE_FILENAME ];
 	bool					m_bIsBackground;
+
+	virtual bool			IsInstancedScene() { return true; }
 
 	virtual void			StartPlayback( void );
 	virtual void			DoThink( float frametime );

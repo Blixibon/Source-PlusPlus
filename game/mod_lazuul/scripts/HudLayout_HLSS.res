@@ -105,7 +105,7 @@
 		"PaintBackgroundType"	"2"
 		"xpos"	"c64"	
 		"ypos"	"r36"
-		"wide"	"64"
+		"wide"	"128"
 		"tall"  "24"
 	}
 	
@@ -229,5 +229,23 @@
 		"dmg_wide" "36"
 		"dmg_tall1" "240"
 		"dmg_tall2" "200"
+	}
+	
+	HudAR2AltFire	
+	{
+		"fieldName" "HudAR2AltFire"
+		"xpos"	"r90"
+		"ypos"	"5"
+		"wide"	"80"
+		"tall"  "40"
+		"visible" "1"
+		"enabled" "1"
+
+		"PaintBackgroundType"	"2"
+
+		"digi_xpos" 		"4"
+		"digi_ypos" 		"2"
+		"icon_xpos" 		"2"
+		"icon_ypos" 		"2"
 	}
 }
