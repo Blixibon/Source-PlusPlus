@@ -268,6 +268,9 @@ public:
 
 	int			GetMovementConfig();
 
+	int			GetSpecialAttack() { return m_nSpecialAttack; }
+	float		GetNextSpecialTime() { return m_flNextSpecialAttackTime; }
+
 public:
 	static EHANDLE gm_hLastRandomSpawn;
 

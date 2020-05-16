@@ -16,6 +16,9 @@
 #include "ai_route.h"
 #include "ai_moveprobe.h"
 
+#include "peter/laz_player.h"
+#include "scripted.h"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -160,7 +163,7 @@ void CNPC_Olivia::GatherConditions( void )
 //-----------------------------------------------------------------------------
 int CNPC_Olivia::SelectSchedule()
 {
-	if (!HasCondition(COND_OLIVIA_STOP_CIRCLE_AROUND_PLAYER))
+	if (!HasCondition(COND_OLIVIA_STOP_CIRCLE_AROUND_PLAYER) && GetState() != NPC_STATE_SCRIPT && !m_hCine.Get())
 	{
 		return SCHED_OLIVIA_CIRCLE_AROUND_PLAYER;
 	}
@@ -186,7 +189,7 @@ void CNPC_Olivia::StartTask( const Task_t *pTask )
 
 void CNPC_Olivia::CircleAroundPlayer()
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = GetBestPlayer();
 
 	if (pPlayer)
 	{
@@ -473,7 +476,7 @@ void CNPC_Olivia::NPCThink( void )
 
 	BaseClass::NPCThink();
 
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+	CBasePlayer *pPlayer = GetBestPlayer();
 
 	if (!pPlayer)
 		return;
@@ -849,6 +852,11 @@ void CNPC_Olivia::NPCThink( void )
 #endif
 }
 
+CBasePlayer* CNPC_Olivia::GetBestPlayer()
+{
+	return AI_GetSinglePlayer();
+}
+
 //-----------------------------------------------------------------------------
 // Classify - indicates this NPC's place in the 
 // relationship table.
@@ -1097,7 +1105,7 @@ int	CNPC_Olivia::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 			pPlayer->TakeDamage( CTakeDamageInfo( pPlayer, pPlayer, 25, DMG_GENERIC ) );
 		}*/
 
-		if (info.GetAttacker() && info.GetAttacker()->IsPlayer())
+		if (info.GetAttacker() && info.GetAttacker() == GetBestPlayer())
 		{
 			m_flDamageToGive += (info.GetDamage() * OLIVIA_DAMAGE_INFLIC_SCALAR);
 		}
@@ -1685,4 +1693,552 @@ AI_BEGIN_CUSTOM_NPC( npc_olivia, CNPC_Olivia )
 		"		COND_OLIVIA_STOP_CIRCLE_AROUND_PLAYER"
 	)
 
-AI_END_CUSTOM_NPC()
+AI_END_CUSTOM_NPC();
+
+class CNPC_MPOlivia : public CNPC_Olivia
+{
+public:
+	DECLARE_CLASS(CNPC_MPOlivia, CNPC_Olivia);
+
+	virtual CBasePlayer* GetBestPlayer();
+
+	virtual CBasePlayer* GetBestPlayer() const
+	{
+		return const_cast<CNPC_MPOlivia*>(this)->GetBestPlayer();
+	}
+
+	void					SetPlayer(CBasePlayer* pPlayer) { m_hPlayer.Set(pPlayer); }
+	virtual int				UpdateTransmitState();
+	virtual int				ShouldTransmit(const CCheckTransmitInfo* pInfo);
+	virtual void			UpdateTeam();
+
+	virtual void	Appear();
+
+	virtual void	SetupWithoutParent(void);
+protected:
+	CBasePlayerHandle	m_hPlayer;
+};
+
+LINK_ENTITY_TO_CLASS(npc_olivia_mp, CNPC_MPOlivia);
+
+CBasePlayer* CNPC_MPOlivia::GetBestPlayer()
+{
+	return m_hPlayer.Get();
+}
+
+int CNPC_MPOlivia::UpdateTransmitState()
+{
+	// If you get this assert, you should be calling DispatchUpdateTransmitState
+	// instead of UpdateTransmitState.
+	Assert(g_nInsideDispatchUpdateTransmitState > 0);
+
+	// If an object is the moveparent of something else, don't skip it just because it's marked EF_NODRAW or else
+	//  the client won't have a proper origin for the child since the hierarchy won't be correctly transmitted down
+	if (IsEffectActive(EF_NODRAW) || !m_hPlayer.Get())
+	{
+		return SetTransmitState(FL_EDICT_DONTSEND);
+	}
+
+	return SetTransmitState(FL_EDICT_FULLCHECK);
+}
+
+int CNPC_MPOlivia::ShouldTransmit(const CCheckTransmitInfo* pInfo)
+{
+	if (m_hPlayer.Get() && m_hPlayer->edict() == pInfo->m_pClientEnt)
+	{
+		return FL_EDICT_PVSCHECK;
+	}
+
+	// check if recipient spectates the own of this viewmodel
+	CBaseEntity* pRecipientEntity = CBaseEntity::Instance(pInfo->m_pClientEnt);
+
+	if (pRecipientEntity->IsPlayer())
+	{
+		CBasePlayer* pPlayer = static_cast<CBasePlayer*>(pRecipientEntity);
+#ifndef _XBOX
+		if (pPlayer->IsHLTV() || pPlayer->IsReplay())
+		{
+			// if this is the HLTV client, transmit all viewmodels in our PVS
+			return FL_EDICT_PVSCHECK;
+		}
+#endif
+		if ((pPlayer->GetObserverMode() == OBS_MODE_IN_EYE || pPlayer->GetObserverMode() == OBS_MODE_CHASE) && (pPlayer->GetObserverTarget() == m_hPlayer.Get()))
+		{
+			return FL_EDICT_PVSCHECK;
+		}
+	}
+
+	// Don't send to anyone else except the local player or his spectators
+	return FL_EDICT_DONTSEND;
+}
+
+void CNPC_MPOlivia::UpdateTeam()
+{
+	// This is the most logical team for a ghost to be on
+	ChangeTeam(TEAM_SPECTATOR);
+}
+
+void CNPC_MPOlivia::Appear()
+{
+	if (HasSpawnFlags(SF_OLIVIA_INVISIBLE))
+	{
+		RemoveSpawnFlags(SF_OLIVIA_INVISIBLE);
+
+		RemoveEffects(EF_NODRAW);
+		SetSolid(SOLID_BBOX);
+
+		m_OnAppear.FireOutput(this, this);
+
+		m_bShouldAppear = false;
+
+		m_iAppearBehindPlayerTries = 0;
+
+		if (HasSpawnFlags(SF_OLIVIA_SMOKING))
+		{
+			m_bSmoking = true;
+		}
+
+		if (HasSpawnFlags(SF_OLIVIA_LIGHT))
+		{
+			m_bOliviaLight = true;
+			m_flAppearedTime = gpGlobals->curtime;
+		}
+
+		if (HasSpawnFlags(SF_OLIVIA_COLOR_CORRECTION))
+		{
+			m_bOliviaColorCorrection = true;
+		}
+
+		if (HasSpawnFlags(SF_OLIVIA_DANDELIONS)) //m_bDandelions)
+		{
+			m_bDandelions = true;
+		}
+	}
+}
+
+void CNPC_MPOlivia::SetupWithoutParent(void)
+{
+	if (HasSpawnFlags(SF_OLIVIA_INVISIBLE))
+	{
+		SetSolid(SOLID_NONE);
+		AddEffects(EF_NODRAW);
+	}
+	else
+	{
+		RemoveEffects(EF_NODRAW);
+		SetSolid(SOLID_BBOX);
+	}
+
+	AddSolidFlags(FSOLID_NOT_STANDABLE|FSOLID_NOT_SOLID);
+
+	SetMoveType(MOVETYPE_STEP);
+
+	CapabilitiesAdd(bits_CAP_MOVE_GROUND | bits_CAP_OPEN_DOORS | bits_CAP_ANIMATEDFACE | bits_CAP_TURN_HEAD);
+	CapabilitiesAdd(bits_CAP_FRIENDLY_DMG_IMMUNE);
+
+	AddFlag(FL_NOTARGET);
+}
+
+CNPC_MPOlivia* CreateOlivia()
+{
+	CNPC_MPOlivia* pOlivia = (CNPC_MPOlivia *)CreateEntityByName("npc_olivia_mp");
+	pOlivia->AddSpawnFlags(SF_OLIVIA_INVISIBLE | SF_OLIVIA_LIGHT);
+	return pOlivia;
+}
+
+class COliviaTarget : public CBaseAnimating
+{
+public:
+	DECLARE_CLASS(COliviaTarget, CBaseAnimating);
+	DECLARE_DATADESC();
+
+	COliviaTarget();
+	~COliviaTarget();
+
+	COliviaTarget* m_pNext;
+
+	void	Precache();
+	void	Spawn();
+	void	Activate();
+
+	virtual int				UpdateTransmitState();
+	virtual int				ShouldTransmit(const CCheckTransmitInfo* pInfo);
+
+	bool			IsActive();
+	CBaseEntity*	GetLookTarget() { return m_hLookTarget; }
+	void			SetupScriptedSequence(CAI_ScriptedSequence* pCine);
+
+	void			InputEnable(inputdata_t& inputdata);
+	void			InputDisable(inputdata_t& inputdata);
+	void			InputSequenceFinished(inputdata_t& inputdata);
+
+protected:
+	enum MoveAnim_e
+	{
+		MOVE_WALK = 0,
+		MOVE_RUN,
+		MOVE_DANCE,
+		MOVE_LEAD,
+	};
+
+	bool		m_bEnabled;
+	int			m_iMovement;
+	string_t	m_iszAnimation;
+	string_t	m_iszLookTarget;
+	EHANDLE		m_hLookTarget;
+	float		m_flDelay;
+	float		m_flTimeNextActive;
+	int			m_iGiveItem;
+
+	COutputEvent	m_OnOliviaUsed;
+};
+
+CEntityClassList<COliviaTarget> g_OTargetList;
+template <> COliviaTarget* CEntityClassList<COliviaTarget>::m_pClassList = nullptr;
+
+BEGIN_DATADESC(COliviaTarget)
+DEFINE_KEYFIELD(m_bEnabled, FIELD_BOOLEAN, "enabled"),
+DEFINE_KEYFIELD(m_iszLookTarget, FIELD_STRING, "glowentity"),
+DEFINE_KEYFIELD(m_flDelay, FIELD_FLOAT, "delay"),
+DEFINE_KEYFIELD(m_iszAnimation, FIELD_STRING, "animation"),
+DEFINE_KEYFIELD(m_iMovement, FIELD_INTEGER, "movement"),
+DEFINE_KEYFIELD(m_iGiveItem, FIELD_INTEGER, "item_give"),
+
+DEFINE_FIELD(m_flTimeNextActive, FIELD_TIME),
+DEFINE_FIELD(m_hLookTarget, FIELD_EHANDLE),
+
+DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
+DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
+DEFINE_INPUTFUNC(FIELD_STRING, "SequenceFinished", InputSequenceFinished),
+
+DEFINE_OUTPUT(m_OnOliviaUsed, "OnOliviaUsed"),
+END_DATADESC();
+
+LINK_ENTITY_TO_CLASS(hlss_olivia_target, COliviaTarget);
+
+COliviaTarget::COliviaTarget()
+{
+	m_pNext = nullptr;
+	g_OTargetList.Insert(this);
+
+	SetCycle(0.5f);
+}
+
+COliviaTarget::~COliviaTarget()
+{
+	g_OTargetList.Remove(this);
+}
+
+void COliviaTarget::Precache()
+{
+	BaseClass::Precache();
+
+	PrecacheModel("models/olivia.mdl");
+
+	UTIL_PrecacheOther("npc_olivia_mp");
+}
+
+void COliviaTarget::Spawn()
+{
+	Precache();
+
+	SetModel("models/olivia.mdl");
+	SetSolid(SOLID_NONE);
+	SetPlaybackRate(0.f);
+
+	if (GetEntityName() == NULL_STRING)
+	{
+		SetName(AllocPooledString(CFmtStr("auto_olivia_target_%i", entindex())));
+	}
+
+	m_takedamage = DAMAGE_NO;
+	m_nRenderFX = kRenderFxHologram;
+
+	int iSequence = LookupSequence(STRING(m_iszAnimation));
+	SetSequence(iSequence);
+	
+	if (!m_bEnabled)
+	{
+		AddEffects(EF_NODRAW);
+	}
+}
+
+void COliviaTarget::Activate()
+{
+	BaseClass::Activate();
+
+	if (m_iszLookTarget != NULL_STRING)
+	{
+		CBaseEntity* pTarget = gEntList.FindEntityByName(nullptr, m_iszLookTarget, this);
+		if (pTarget)
+		{
+			m_hLookTarget = pTarget;
+		}
+		else
+		{
+			Warning("hlss_olivia_target (%s) unable to find entity named %s.\n", GetDebugName(), STRING(m_iszLookTarget));
+		}
+	}
+}
+
+int COliviaTarget::UpdateTransmitState()
+{
+	// If you get this assert, you should be calling DispatchUpdateTransmitState
+	// instead of UpdateTransmitState.
+	Assert(g_nInsideDispatchUpdateTransmitState > 0);
+
+	// If an object is the moveparent of something else, don't skip it just because it's marked EF_NODRAW or else
+	//  the client won't have a proper origin for the child since the hierarchy won't be correctly transmitted down
+	if (IsEffectActive(EF_NODRAW))
+	{
+		return SetTransmitState(FL_EDICT_DONTSEND);
+	}
+
+	return SetTransmitState(FL_EDICT_FULLCHECK);
+}
+
+int COliviaTarget::ShouldTransmit(const CCheckTransmitInfo* pInfo)
+{
+	if (IsActive())
+	{
+		// check if recipient spectates the own of this viewmodel
+		CBaseEntity* pRecipientEntity = CBaseEntity::Instance(pInfo->m_pClientEnt);
+
+		if (pRecipientEntity->IsPlayer())
+		{
+			CLaz_Player* pPlayer = static_cast<CLaz_Player*>(pRecipientEntity);
+#ifndef _XBOX
+			if (pPlayer->IsHLTV() || pPlayer->IsReplay())
+			{
+				// if this is the HLTV client, transmit all viewmodels in our PVS
+				return FL_EDICT_PVSCHECK;
+			}
+#endif
+			if ((pPlayer->GetObserverMode() == OBS_MODE_IN_EYE || pPlayer->GetObserverMode() == OBS_MODE_CHASE) && (pPlayer->GetObserverTarget() && pPlayer->GetObserverTarget()->IsPlayer()))
+			{
+				pPlayer = ToLazuulPlayer(pPlayer->GetObserverTarget());
+			}
+
+			if (pPlayer->IsAlive() && pPlayer->GetSpecialAttack() == LAZ_SPECIAL_OLIVIA && pPlayer->GetNextSpecialTime() <= gpGlobals->curtime)
+			{
+				return FL_EDICT_PVSCHECK;
+			}
+		}
+	}
+
+	// Don't send to anyone else except the local player or his spectators
+	return FL_EDICT_DONTSEND;
+}
+
+bool COliviaTarget::IsActive()
+{
+	return m_bEnabled && (gpGlobals->curtime >= m_flTimeNextActive);
+}
+
+void COliviaTarget::SetupScriptedSequence(CAI_ScriptedSequence* pCine)
+{
+	pCine->KeyValue("m_iszPlay", STRING(m_iszAnimation));
+	switch (m_iMovement)
+	{
+	case MOVE_WALK:
+	default:
+		pCine->KeyValue("m_fMoveTo", "1");
+		break;
+	case MOVE_RUN:
+		pCine->KeyValue("m_fMoveTo", "2");
+		break;
+	case MOVE_DANCE:
+		pCine->KeyValue("m_fMoveTo", "3");
+		pCine->KeyValue("m_iszCustomMove", "olivia_dance");
+		break;
+	}
+	pCine->SetAbsOrigin(GetAbsOrigin());
+	pCine->SetAbsAngles(GetAbsAngles());
+
+	m_flTimeNextActive = gpGlobals->curtime + m_flDelay;
+}
+
+void COliviaTarget::InputEnable(inputdata_t& inputdata)
+{
+	m_bEnabled = true;
+	RemoveEffects(EF_NODRAW);
+}
+
+void COliviaTarget::InputDisable(inputdata_t& inputdata)
+{
+	m_bEnabled = false;
+	AddEffects(EF_NODRAW);
+}
+
+void COliviaTarget::InputSequenceFinished(inputdata_t& inputdata)
+{
+	CBasePlayer* pPlayer = ToBasePlayer(gEntList.FindEntityByName(nullptr, inputdata.value.StringID(), this));
+
+	m_OnOliviaUsed.FireOutput(pPlayer ? pPlayer : inputdata.pActivator, this);
+
+	if (pPlayer)
+	{
+		static char* pszItemsToGive[] = {
+				"weapon_medkit",
+				"weapon_smg1",
+				"weapon_shotgun",
+				"weapon_ar2",
+				"weapon_rpg",
+				"weapon_alyxemp"
+		};
+
+		if (m_iGiveItem > 0 && m_iGiveItem <= ARRAYSIZE(pszItemsToGive))
+		{
+			pPlayer->GiveNamedItem(pszItemsToGive[m_iGiveItem - 1]);
+		}
+	}
+}
+
+COliviaSystem::COliviaSystem() : CAutoGameSystemPerFrame("OliviaSystem"), m_PlayerOlivias(DefLessFunc(int))
+{
+}
+
+extern CBaseEntity* FindPickerEntity(CBasePlayer* pPlayer);
+bool COliviaSystem::InvokeOlivia(CLaz_Player* pInvoker)
+{
+	if (!pInvoker || pInvoker->GetSpecialAttack() != LAZ_SPECIAL_OLIVIA)
+		return false;
+
+	MapIndex_t IDX = m_PlayerOlivias.Find(pInvoker->GetUserID());
+	if (m_PlayerOlivias.IsValidIndex(IDX))
+	{
+		CNPC_MPOlivia* pOlivia = (CNPC_MPOlivia*)m_PlayerOlivias.Element(IDX).Get();
+		CBaseEntity* pPicker = FindPickerEntity(pInvoker);
+		if (pPicker)
+		{
+			for (COliviaTarget* pTarget = g_OTargetList.m_pClassList; pTarget != nullptr; pTarget = pTarget->m_pNext)
+			{
+				if (pTarget->IsActive() && pTarget->GetLookTarget() == pPicker)
+				{
+					variant_t var;
+					pOlivia->AcceptInput("StopCircleAroundPlayer", pOlivia, pOlivia, var, 0);
+
+					// Spawn a scripted sequence entity to make the NPC run out of the dropship
+					CAI_ScriptedSequence* pSequence = (CAI_ScriptedSequence*)CreateEntityByName("scripted_sequence");
+					pSequence->KeyValue("m_iszEntity", STRING(pOlivia->GetEntityName()));
+					pSequence->KeyValue("OnEndSequence", CFmtStr("%s,SequenceFinished,%s,0,-1", STRING(pTarget->GetEntityName()), STRING(pInvoker->GetEntityName())));
+					pTarget->SetupScriptedSequence(pSequence);
+					pSequence->AddSpawnFlags(SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE);
+					pSequence->ForceSetTargetEntity(pOlivia, false);
+					pSequence->Spawn();
+					pSequence->Activate();
+					variant_t emptyVariant;
+					pSequence->AcceptInput("BeginSequence", pInvoker, pTarget, emptyVariant, 0);
+
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+void COliviaSystem::FrameUpdatePreEntityThink()
+{
+	if (!GameRules()->FAllowNPCs() || !GameRules()->IsMultiplayer())
+		return;
+
+	if (gpGlobals->curtime - m_flTimeLastUpdate < 1.f)
+		return;
+
+	m_flTimeLastUpdate = gpGlobals->curtime;
+
+	int iValidUserIDs[MAX_PLAYERS];
+	int iNumValidUsers = 0;
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	{
+		CLaz_Player* pPlayer = ToLazuulPlayer(UTIL_PlayerByIndex(i));
+		if (pPlayer && pPlayer->IsConnected() && pPlayer->GetSpecialAttack() == LAZ_SPECIAL_OLIVIA)
+		{
+			iValidUserIDs[iNumValidUsers++] = pPlayer->GetUserID();
+		}
+	}
+
+	int iNullUserIDs[MAX_PLAYERS];
+	int iNumNullUsers = 0;
+	for (unsigned int i = 0; i < m_PlayerOlivias.Count(); i++)
+	{
+		int iUserID = m_PlayerOlivias.Key(i);
+		CLaz_Player* pPlayer = ToLazuulPlayer(UTIL_PlayerByUserId(iUserID));
+		if (!pPlayer || !pPlayer->IsConnected() || pPlayer->GetSpecialAttack() != LAZ_SPECIAL_OLIVIA)
+		{
+			iNullUserIDs[iNumNullUsers++] = iUserID;
+		}
+	}
+
+	for (int i = 0; i < iNumNullUsers; i++)
+	{
+		MapIndex_t IDX = m_PlayerOlivias.Find(iNullUserIDs[i]);
+		CBaseEntity* pOlivia = m_PlayerOlivias.Element(IDX);
+		if (pOlivia)
+		{
+			UTIL_Remove(pOlivia);
+		}
+
+		m_PlayerOlivias.RemoveAt(IDX);
+	}
+
+	for (int i = 0; i < iNumValidUsers; i++)
+	{
+		MapIndex_t IDX = m_PlayerOlivias.Find(iValidUserIDs[i]);
+		CLaz_Player* pPlayer = ToLazuulPlayer(UTIL_PlayerByUserId(iValidUserIDs[i]));
+		CNPC_MPOlivia* pOlivia = nullptr;
+
+		// If this player is not in the list or their Olivia went missing
+		if (!m_PlayerOlivias.IsValidIndex(IDX) || !m_PlayerOlivias.Element(IDX).Get())
+		{
+			pOlivia = CreateOlivia(); // Create an Olivia
+			pOlivia->SetPlayer(pPlayer);
+			pOlivia->SetAbsOrigin(pPlayer->GetAbsOrigin());
+			pOlivia->SetName(AllocPooledString(CFmtStr("mp_olivia_%i", iValidUserIDs[i])));
+			DispatchSpawn(pOlivia);
+
+			IDX = m_PlayerOlivias.InsertOrReplace(iValidUserIDs[i], pOlivia); // Put it in the list
+		}
+		else
+		{
+			pOlivia = static_cast<CNPC_MPOlivia*> (m_PlayerOlivias.Element(IDX).Get());
+		}
+
+		if (pOlivia && !pOlivia->m_hCine.Get())
+		{
+			variant_t var;
+			if (pPlayer->GetNextSpecialTime() < gpGlobals->curtime)
+			{
+				if (pOlivia->HasSpawnFlags(SF_OLIVIA_INVISIBLE))
+				{
+					pOlivia->AcceptInput("StartCircleAroundPlayer", pOlivia, pOlivia, var, 0);
+					pOlivia->AcceptInput("Appear", pOlivia, pOlivia, var, 0);
+				}
+			}
+			else if (!pOlivia->HasSleepFlags(SF_OLIVIA_INVISIBLE))
+			{
+				pOlivia->AcceptInput("StopCircleAroundPlayer", pOlivia, pOlivia, var, 0);
+				pOlivia->AcceptInput("Disappear", pOlivia, pOlivia, var, 0);
+			}
+		}
+	}
+}
+
+void COliviaSystem::LevelInitPreEntity()
+{
+}
+
+void COliviaSystem::LevelShutdownPreEntity()
+{
+	m_PlayerOlivias.Purge();
+	m_flTimeLastUpdate = 0.f;
+}
+
+
+COliviaSystem g_OliviaManager;
+COliviaSystem* GetMPOliviaManager()
+{
+	return &g_OliviaManager;
+}

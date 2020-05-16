@@ -1040,7 +1040,7 @@ bool CAI_MoveProbe::MoveLimit( Navigation_t navType, const Vector &vecStart,
 		uMask |= MASK_YELLOWTEAMSOLID;
 		break;
 
-	default:
+	case TEAM_UNASSIGNED:
 		uMask = MASK_ALLTEAMS;
 		break;
 	}

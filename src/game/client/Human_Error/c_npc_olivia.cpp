@@ -140,7 +140,7 @@ void C_NPC_Olivia::ClientThink()
 
 	float flScale = 0.0f;
 
-	if ( pPlayer && (m_bOliviaColorCorrection || m_bOliviaLight))
+	if ( pPlayer && (m_bOliviaColorCorrection || m_bOliviaLight) && !IsDormant())
 	{
 		Vector vecForward;
 		pPlayer->EyeVectors(&vecForward, NULL, NULL);
@@ -153,7 +153,7 @@ void C_NPC_Olivia::ClientThink()
 		//flScale *= clamp(gpGlobals->curtime - m_flAppearedTime, 0.0f, 1.0f);
 	}
 
-	if (pPlayer && m_bOliviaColorCorrection)
+	if (pPlayer && m_bOliviaColorCorrection && !IsDormant())
 	{
 		if ( m_CCHandle == INVALID_CLIENT_CCHANDLE )
 		{
@@ -173,7 +173,7 @@ void C_NPC_Olivia::ClientThink()
 		}
 	}
 
-	if (pPlayer && m_bOliviaLight)
+	if (pPlayer && m_bOliviaLight && !IsDormant())
 	{
 		
 
@@ -336,7 +336,7 @@ void C_NPC_Olivia::OnRestore( void )
 
 void C_NPC_Olivia::UpdateParticleEffects()
 {
-	if (m_bDandelions)
+	if (m_bDandelions && !IsDormant())
 	{
 		if (!m_hDandelions)
 		{
@@ -358,7 +358,7 @@ void C_NPC_Olivia::UpdateParticleEffects()
 		}
 	}
 
-	if (m_bSmoking)
+	if (m_bSmoking && !IsDormant())
 	{
 		if (!m_hSmoke)
 		{

@@ -64,12 +64,19 @@ public:
 	Class_T Classify ( void );
 	void	HandleAnimEvent( animevent_t *pEvent );
 	int		GetSoundInterests( void );
-	void	SetupWithoutParent( void );
+	virtual void	SetupWithoutParent( void );
 	void	PrescheduleThink( void );
 
 	int		SelectSchedule( void );
 
 	void	NPCThink( void );
+
+	virtual CBasePlayer* GetBestPlayer();
+
+	virtual CBasePlayer* GetBestPlayer() const
+	{
+		return const_cast<CNPC_Olivia*>(this)->GetBestPlayer();
+	}
 
 	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator);
 	int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
@@ -78,8 +85,8 @@ public:
 
 	int		ObjectCaps( void ) { return UsableNPCObjectCaps(BaseClass::ObjectCaps()); }
 
-	void	Appear();
-	void	Disappear();
+	virtual void	Appear();
+	virtual void	Disappear();
 
 	// Inputs
 	void	InputForceAppear( inputdata_t &inputdata );
@@ -187,10 +194,16 @@ public:
 
 	// Called each frame before entities think
 	virtual void FrameUpdatePreEntityThink();
-	// called after entities think
-	virtual void FrameUpdatePostEntityThink();
+
+	virtual void LevelInitPreEntity();
 
 	virtual void LevelShutdownPreEntity();
+
+protected:
+	typedef unsigned short MapIndex_t;
+
+	CUtlMap<int, EHANDLE, MapIndex_t> m_PlayerOlivias;
+	float	m_flTimeLastUpdate;
 };
 
 COliviaSystem* GetMPOliviaManager();

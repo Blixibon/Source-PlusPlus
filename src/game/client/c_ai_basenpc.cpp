@@ -85,7 +85,7 @@ unsigned int C_AI_BaseNPC::PhysicsSolidMaskForEntity( void ) const
 			uMask |= MASK_YELLOWTEAMSOLID;
 			break;
 
-		default:
+		case TEAM_UNASSIGNED:
 			uMask = MASK_ALLTEAMS;
 			break;
 		}

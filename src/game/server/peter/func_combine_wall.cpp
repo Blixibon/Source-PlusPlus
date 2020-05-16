@@ -151,7 +151,7 @@ IterationRetval_t CWallEnumerator::EnumElement(IHandleEntity* pHandleEntity)
 			if (pEntity == m_pOuter)
 				return ITERATION_CONTINUE;
 
-			if (m_pOuter->InSameTeam(pEntity))
+			if (m_pOuter->InSameTeam(pEntity) || pEntity->GetTeamNumber() == TEAM_SPECTATOR)
 				return ITERATION_CONTINUE;
 
 			if (!pEntity->IsPlayer() && !pEntity->IsNPC())

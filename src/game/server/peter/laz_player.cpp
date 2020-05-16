@@ -1891,7 +1891,7 @@ void CLaz_Player::FlashlightTurnOn(void)
 	EmitSound(CFmtStr(g_pszFlashLightSounds[m_nFlashlightType], "On"), gm_hsFlashLightSoundHandles[m_nFlashlightType]);
 
 	variant_t flashlighton;
-	flashlighton.SetFloat((Flashlight_UseLegacyVersion() ? m_HL2Local.m_flSuitPower : m_HL2Local.m_flFlashBattery) / 100.0f);
+	flashlighton.SetFloat((Flashlight_UseLegacyVersion() ? m_HL2Local.m_flSuitPower.Get() : m_HL2Local.m_flFlashBattery.Get()) / 100.0f);
 	FirePlayerProxyOutput("OnFlashlightOn", flashlighton, this, this);
 }
 
@@ -1912,7 +1912,7 @@ void CLaz_Player::FlashlightTurnOff(void)
 	EmitSound(CFmtStr(g_pszFlashLightSounds[m_nFlashlightType], "Off"), gm_hsFlashLightSoundHandles[m_nFlashlightType + FLASHLIGHT_TYPE_COUNT]);
 
 	variant_t flashlightoff;
-	flashlightoff.SetFloat((Flashlight_UseLegacyVersion() ? m_HL2Local.m_flSuitPower : m_HL2Local.m_flFlashBattery) / 100.0f);
+	flashlightoff.SetFloat((Flashlight_UseLegacyVersion() ? m_HL2Local.m_flSuitPower.Get() : m_HL2Local.m_flFlashBattery.Get()) / 100.0f);
 	FirePlayerProxyOutput("OnFlashlightOff", flashlightoff, this, this);
 }
 
