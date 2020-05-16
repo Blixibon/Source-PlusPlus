@@ -2064,6 +2064,8 @@ static EventNameMap_t g_NameMap[] =
 	{ CChoreoEvent::STOPPOINT,			"stoppoint" },
 	{ CChoreoEvent::PERMIT_RESPONSES,	"permitresponses" },
 	{ CChoreoEvent::GENERIC,			"generic" },
+	{ CChoreoEvent::CAMERA,				"camera" },
+	{ CChoreoEvent::SCRIPT,				"script" },
 };
 
 //-----------------------------------------------------------------------------
@@ -3667,14 +3669,14 @@ bool CChoreoEvent::PreventTagOverlap( void )
 		{
 			tag->SetPercentage( minP );
 
-			minDp = MIN( 0.01, minP / (i + 1) );
+			minDp = MIN( 0.01f, minP / (i + 1) );
 			bHadOverlap = true;
 		}
 		else
 		{
 			minP = tag->GetPercentage();
 		}
-		minP = MAX( minP - minDp, 0 );
+		minP = MAX( minP - minDp, 0.f );
 	}
 
 	return bHadOverlap;

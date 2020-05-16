@@ -14,6 +14,10 @@
 //CGlobalVarsBase* gpClientGlobals = nullptr;
 //CGlobalVars* gpServerGlobals = nullptr;
 
+// This is to ensure a dependency exists between the vscript library and the game DLLs
+extern int vscript_token;
+int vscript_token_hack = vscript_token;
+
 class CGameSharedUtils : public CTier3AppSystem<IGameSharedUtils>, public IInternalSharedData
 {
 	typedef CTier3AppSystem<IGameSharedUtils> BaseClass;
@@ -242,7 +246,7 @@ void* CGameSharedUtils::QueryInterface(const char* pInterfaceName)
 	}
 	else
 	{
-		return nullptr;
+		return Sys_GetFactoryThis()(pInterfaceName, NULL);
 	}
 }
 

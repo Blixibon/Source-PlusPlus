@@ -174,6 +174,8 @@ public:
 
 	virtual bool InRoundRestart( void ) { return false; }
 
+	virtual void RegisterScriptFunctions(void) { };
+
 	//Allow thirdperson camera.
 	virtual bool AllowThirdPersonCamera( void ) { return false; }
 

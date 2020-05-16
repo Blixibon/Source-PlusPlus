@@ -25,6 +25,8 @@ $Group "game"
 	"vgui_controls"
 	"fgdlib"
 	"responserules"
+	"choreoobjects"
+	"vscript"
 }
 
 $Group "shaders"
@@ -37,6 +39,7 @@ $Group "shaders"
 $Group "everything"
 {
 	"captioncompiler"
+	"choreoobjects"
 	"client"
 	"editor_shader"
 	"fgdlib"
@@ -67,15 +70,18 @@ $Group "everything"
 	"vtfdiff"
 	"vvis_dll"
 	"vvis_launcher"
+	"vscript"
 }
 
 $Group "dedicated"
 {
+	"choreoobjects"
 	"mathlib"
 	"server"
 	"spp_utils"
 	"tier1"
 	"fgdlib"
 	"responserules"
+	"vscript"
 }
 

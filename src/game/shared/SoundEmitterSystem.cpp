@@ -1321,6 +1321,19 @@ void CBaseEntity::EmitSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle, 
 	EmitSound( filter, entindex(), params, handle );
 }
 
+#if !defined ( CLIENT_DLL )
+void CBaseEntity::ScriptEmitSound(const char* soundname)
+{
+	EmitSound(soundname);
+}
+
+float CBaseEntity::ScriptSoundDuration(const char* soundname, const char* actormodel)
+{
+	float duration = CBaseEntity::GetSoundDuration(soundname, actormodel);
+	return duration;
+}
+#endif // !CLIENT
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 // Input  : filter - 
@@ -1584,6 +1597,14 @@ HSOUNDSCRIPTHANDLE CBaseEntity::PrecacheScriptSound( const char *soundname )
 	return soundemitterbase->GetSoundIndex( soundname );
 #endif
 }
+
+#if !defined ( CLIENT_DLL )
+// Same as server version of above, but signiture changed so it can be deduced by the macros
+void CBaseEntity::VScriptPrecacheScriptSound(const char* soundname)
+{
+	g_SoundEmitterSystem.PrecacheScriptSound(soundname);
+}
+#endif // !CLIENT_DLL
 
 void CBaseEntity::PrefetchScriptSound( const char *soundname )
 {

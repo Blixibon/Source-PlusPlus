@@ -194,6 +194,7 @@ IServerPluginHelpers *serverpluginhelpers = NULL;
 IServerEngineTools *serverenginetools = NULL;
 ISceneFileCache *scenefilecache = NULL;
 IXboxSystem *xboxsystem = NULL;	// Xbox 360 only
+IScriptManager* scriptmanager = NULL;
 IMatchmaking *matchmaking = NULL;	// Xbox 360 only
 #if defined( REPLAY_ENABLED )
 IReplaySystem *g_pReplay = NULL;
@@ -669,6 +670,11 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if (!spp_utils->InitServer(engine, this, pGlobals))
 		return false;
 
+	if (!CommandLine()->CheckParm("-noscripting"))
+	{
+		scriptmanager = (IScriptManager*)spp_utils->QueryInterface(VSCRIPT_INTERFACE_VERSION);
+	}
+
 	// Yes, both the client and game .dlls will try to Connect, the soundemittersystem.dll will handle this gracefully
 	if ( !soundemitterbase->Connect( appSystemFactory ) )
 		return false;
@@ -725,6 +731,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetCommentarySaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetEventQueueSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetAchievementSaveRestoreBlockHandler() );
+	g_pGameSaveRestoreBlockSet->AddBlockHandler(GetVScriptSaveRestoreBlockHandler());
 
 	g_pGameTypeSystem->Init();
 
@@ -812,6 +819,7 @@ void CServerGameDLL::DLLShutdown( void )
 	// Due to dependencies, these are not autogamesystems
 	ModelSoundsCacheShutdown();
 
+	g_pGameSaveRestoreBlockSet->RemoveBlockHandler(GetVScriptSaveRestoreBlockHandler());
 	g_pGameSaveRestoreBlockSet->RemoveBlockHandler( GetAchievementSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->RemoveBlockHandler( GetCommentarySaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->RemoveBlockHandler( GetEventQueueSaveRestoreBlockHandler() );

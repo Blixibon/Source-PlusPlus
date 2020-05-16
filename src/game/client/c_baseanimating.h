@@ -101,6 +101,7 @@ public:
 	DECLARE_PREDICTABLE();
 	DECLARE_INTERPOLATION();
 	DECLARE_DATADESC();
+	DECLARE_ENT_SCRIPTDESC();
 
 	enum
 	{
@@ -492,6 +493,8 @@ public:
 	virtual void					UpdateOnRemove( void );
 
 	virtual void					TransformToLightingOrigin(matrix3x4_t & matLightingOffset);
+
+	void							ScriptSetPoseParameter(const char* szName, float fValue);
 
 protected:
 	// View models scale their attachment positions to account for FOV. To get the unmodified

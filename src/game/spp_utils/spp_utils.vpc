@@ -75,6 +75,7 @@ $Project "SPP Utils"
 		$Lib	tier2
 		$Lib	tier3
 		$Lib	mathlib
+		$Lib	vscript
 
 		$Lib	discord-rpc		[$WIN32]
 		$Lib	libdiscord-rpc	[$LINUXALL]

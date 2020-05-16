@@ -286,6 +286,8 @@ protected:
 public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	// script description
+	DECLARE_ENT_SCRIPTDESC();
 #ifdef INSOURCE_BOTS
 protected:
 	IBot * m_pBotController; 
@@ -488,6 +490,7 @@ virtual CAI_Senses *GetSenses() {
 	void					ViewPunchReset( float tolerance = 0 );
 	void					ShowViewModel( bool bShow );
 	void					ShowCrosshair( bool bShow );
+	bool					ScriptIsPlayerNoclipping(void);
 
 	// View model prediction setup
 	void					CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov );

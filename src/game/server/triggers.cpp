@@ -2878,72 +2878,6 @@ void CAI_ChangeHintGroup::InputActivate( inputdata_t &inputdata )
 #define SF_CAMERA_PLAYER_NOT_SOLID		32
 #define SF_CAMERA_PLAYER_INTERRUPT		64
 
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-class CTriggerCamera : public CBaseEntity
-{
-public:
-	DECLARE_CLASS( CTriggerCamera, CBaseEntity );
-
-	void Spawn( void );
-	bool KeyValue( const char *szKeyName, const char *szValue );
-	void Enable( void );
-	void Disable( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void FollowTarget( void );
-	void Move(void);
-
-	// Always transmit to clients so they know where to move the view to
-	virtual int UpdateTransmitState();
-	
-	DECLARE_DATADESC();
-
-	// Input handlers
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
-
-private:
-	EHANDLE m_hPlayer;
-	EHANDLE m_hTarget;
-
-	// used for moving the camera along a path (rail rides)
-	CBaseEntity *m_pPath;
-	string_t m_sPath;
-	float m_flWait;
-	float m_flReturnTime;
-	float m_flStopTime;
-	float m_moveDistance;
-	float m_targetSpeed;
-	float m_initialSpeed;
-	float m_acceleration;
-	float m_deceleration;
-	int	  m_state;
-	Vector m_vecMoveDir;
-
-
-	string_t m_iszTargetAttachment;
-	int	  m_iAttachmentIndex;
-	bool  m_bSnapToGoal;
-
-#if HL2_EPISODIC
-	bool  m_bInterpolatePosition;
-
-	// these are interpolation vars used for interpolating the camera over time
-	Vector m_vStartPos, m_vEndPos;
-	float m_flInterpStartTime;
-
-	const static float kflPosInterpTime; // seconds
-#endif
-
-	int   m_nPlayerButtons;
-	int m_nOldTakeDamage;
-
-private:
-	COutputEvent m_OnEndFollow;
-};
-
 #if HL2_EPISODIC
 const float CTriggerCamera::kflPosInterpTime = 2.0f;
 #endif
@@ -2987,6 +2921,12 @@ BEGIN_DATADESC( CTriggerCamera )
 	DEFINE_OUTPUT( m_OnEndFollow, "OnEndFollow" ),
 
 END_DATADESC()
+
+// VScript: publish class and select members to script language
+BEGIN_ENT_SCRIPTDESC(CTriggerCamera, CBaseEntity, "Server-side camera entity")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetFov, "GetFov", "get camera's current fov setting as integer")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetFov, "SetFov", "set camera's current fov in integer degrees and fov change rate as float")
+END_SCRIPTDESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -3395,6 +3335,59 @@ void CTriggerCamera::FollowTarget( )
 	SetNextThink( gpGlobals->curtime );
 
 	Move();
+}
+
+void CTriggerCamera::StartCameraShot(const char* pszShotType, CBaseEntity* pSceneEntity, CBaseEntity* pActor1, CBaseEntity* pActor2, float duration)
+{
+	// called from SceneEntity in response to a CChoreoEvent::CAMERA sent from a VCD.
+	// talk to vscript, start a camera move
+
+	HSCRIPT hStartCameraShot = NULL;
+
+	// switch to this camera
+	// Enable();
+
+	// get script module associated with this ent, lookup function in module
+	if (m_iszVScripts != NULL_STRING)
+	{
+		hStartCameraShot = m_ScriptScope.LookupFunction("ScriptStartCameraShot");
+	}
+
+	// call the script function to begin the camera move
+	if (hStartCameraShot)
+	{
+		g_pScriptVM->Call(hStartCameraShot, m_ScriptScope, true, NULL, pszShotType, ToHScript(pSceneEntity), ToHScript(pActor1), ToHScript(pActor2), duration);
+		g_pScriptVM->ReleaseFunction(hStartCameraShot);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: vscript callback to get the player's fov
+//-----------------------------------------------------------------------------
+int CTriggerCamera::ScriptGetFov(void)
+{
+	if (m_hPlayer)
+	{
+		CBasePlayer* pBasePlayer = (CBasePlayer*)m_hPlayer.Get();
+		int iFOV = pBasePlayer->GetFOV();
+		return iFOV;
+	}
+	return 0;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: vscript callback to slam the player's fov
+//-----------------------------------------------------------------------------
+void CTriggerCamera::ScriptSetFov(int iFOV, float fovSpeed)
+{
+	if (m_hPlayer)
+	{
+		/*m_fov = iFOV;
+		m_fovSpeed = fovSpeed;*/
+
+		CBasePlayer* pBasePlayer = (CBasePlayer*)m_hPlayer.Get();
+		pBasePlayer->SetFOV(this, iFOV, fovSpeed);
+	}
 }
 
 void CTriggerCamera::Move()

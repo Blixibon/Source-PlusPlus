@@ -36,6 +36,9 @@
 #include "toolframework/itoolentity.h"
 #include "tier0/threadtools.h"
 
+#include "vscript/ivscript.h"
+#include "vscript_shared.h"
+
 class C_Team;
 class IPhysicsObject;
 class IClientVehicle;
@@ -185,6 +188,8 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
+	// script description
+	DECLARE_ENT_SCRIPTDESC();
 
 									C_BaseEntity();
 	virtual							~C_BaseEntity();
@@ -259,6 +264,11 @@ public:
 	virtual void					SetClassname( const char *className );
 
 	string_t						m_iClassname;
+
+	HSCRIPT GetScriptInstance();
+
+	HSCRIPT			m_hScriptInstance;
+	string_t		m_iszScriptId;
 
 // IClientUnknown overrides.
 public:
@@ -1123,6 +1133,10 @@ public:
 	virtual int GetBody() { return 0; }
 	virtual int GetSkin() { return 0; }
 
+	const Vector& ScriptGetForward(void) { static Vector vecForward; GetVectors(&vecForward, NULL, NULL); return vecForward; }
+	const Vector& ScriptGetLeft(void) { static Vector vecLeft; GetVectors(NULL, &vecLeft, NULL); return vecLeft; }
+	const Vector& ScriptGetUp(void) { static Vector vecUp; GetVectors(NULL, NULL, &vecUp); return vecUp; }
+
 	// Stubs on client
 	void	NetworkStateManualMode( bool activate )		{ }
 	void	NetworkStateChanged()						{ }
@@ -1280,6 +1294,7 @@ public:
 	void SetRenderMode( RenderMode_t nRenderMode, bool bForceUpdate = false );
 	RenderMode_t GetRenderMode() const;
 
+	const char* GetEntityName();
 public:	
 
 	// Determine what entity this corresponds to
@@ -1661,6 +1676,8 @@ private:
 	// The owner!
 	EHANDLE							m_hOwnerEntity;
 	CNetworkArray(EHANDLE, m_hEffectEntity, ENT_EFFECT_MAX);
+
+	char							m_iName[MAX_PATH];
 	
 	// This is a random seed used by the networking code to allow client - side prediction code
 	//  randon number generators to spit out the same random numbers on both sides for a particular
@@ -2214,6 +2231,11 @@ inline bool C_BaseEntity::ShouldRecordInTools() const
 #else
 	return true;
 #endif
+}
+
+inline const char* C_BaseEntity::GetEntityName()
+{
+	return m_iName;
 }
 
 C_BaseEntity *CreateEntityByName( const char *className );

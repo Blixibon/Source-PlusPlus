@@ -232,6 +232,8 @@ IReplaySystem *g_pReplay = NULL;
 CSysModule* spp_utils_module = NULL;
 IGameSharedUtils* spp_utils = NULL;
 
+IScriptManager* scriptmanager = NULL;
+
 IHaptics* haptics = NULL;// NVNT haptics system interface singleton
 
 //=============================================================================
@@ -986,6 +988,11 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 
 	if (!spp_utils->InitClient(engine, this, pGlobals))
 		return false;
+
+	if (!CommandLine()->CheckParm("-noscripting"))
+	{
+		scriptmanager = (IScriptManager*)spp_utils->QueryInterface(VSCRIPT_INTERFACE_VERSION);
+	}
 
 	// it's ok if this is NULL. That just means the sourcevr.dll wasn't found
 	g_pSourceVR = (ISourceVirtualReality *)appSystemFactory(SOURCE_VIRTUAL_REALITY_INTERFACE_VERSION, NULL);
