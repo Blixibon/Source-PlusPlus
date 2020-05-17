@@ -27,6 +27,13 @@
 
 #include "glow_outline_effect.h"
 
+#include "iinput.h"
+#include "IGameUIFuncs.h"
+#include "inputsystem/iinputsystem.h"
+#include "vgui/ILocalize.h"
+#include "tier2/tier2.h"
+#include "tier3/tier3.h"
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -481,4 +488,160 @@ void C_NPC_Olivia::UpdateOnRemove( void )
 	BaseClass::UpdateOnRemove();
 }
 
+class C_OliviaTarget : public C_BaseAnimating
+{
+public:
+	DECLARE_CLASS(C_OliviaTarget, C_BaseAnimating);
+	DECLARE_CLIENTCLASS();
 
+	C_OliviaTarget();
+
+	virtual void	ClientThink(void);
+	virtual void	OnDataChanged(DataUpdateType_t updateType);
+
+protected:
+	void	RegenerateDisplayText();
+
+	char m_cDescription[DT_MAX_STRING_BUFFERSIZE];
+	char m_cDisplayText[256];
+};
+
+//void RecvProxy_Description(const CRecvProxyData* pData, void* pStruct, void* pOut)
+//{
+//	char* pStrOut = (char*)pOut;
+//	if (pData->m_pRecvProp->m_StringBufferSize <= 0)
+//	{
+//		return;
+//	}
+//
+//	for (int i = 0; i < pData->m_pRecvProp->m_StringBufferSize; i++)
+//	{
+//		pStrOut[i] = pData->m_Value.m_pString[i];
+//		if (pStrOut[i] == '/')
+//		{
+//			pStrOut[i] == '\n';
+//		}
+//
+//		if (pStrOut[i] == 0)
+//			break;
+//	}
+//
+//	pStrOut[pData->m_pRecvProp->m_StringBufferSize - 1] = 0;
+//}
+
+IMPLEMENT_CLIENTCLASS_DT(C_OliviaTarget, DT_OliviaTarget, COliviaTarget)
+RecvPropString(RECVINFO_NAME(m_cDescription, m_iszDescription)),
+END_RECV_TABLE();
+
+C_OliviaTarget::C_OliviaTarget()
+{
+	m_EntClientFlags |= ENTCLIENTFLAG_DONTUSEIK | ENTCLIENTFLAG_DISABLEJIGGLEBONES;
+}
+
+void C_OliviaTarget::ClientThink(void)
+{
+	if (!IsDormant() && C_BasePlayer::GetLocalPlayer() && WorldSpaceCenter().DistToSqr(C_BasePlayer::GetLocalPlayer()->EyePosition()) <= Sqr(300.f))
+	{
+		char token[256];
+		int iLine = 0;
+		for (const char* p = nexttoken(token, m_cDisplayText, '/'); p && token[0]; p = nexttoken(token, p, '/'))
+		{
+			V_StrTrim(token);
+			debugoverlay->AddEntityTextOverlay(entindex(), iLine++, gpGlobals->frametime, 200, 200, 200, 255, token);
+		}
+	}
+}
+
+void C_OliviaTarget::OnDataChanged(DataUpdateType_t updateType)
+{
+	BaseClass::OnDataChanged(updateType);
+
+	RegenerateDisplayText();
+
+	SetNextClientThink(CLIENT_THINK_ALWAYS);
+}
+
+void C_OliviaTarget::RegenerateDisplayText()
+{
+	V_memset(m_cDisplayText, '\0', sizeof(m_cDisplayText));
+
+	const char* binding = "special_attack";
+	char szKeyBuff[256];
+	if (::input->EnableJoystickMode())
+	{
+		int iNumBinds = 0;
+
+		char szBuff[512];
+
+		for (int iCode = JOYSTICK_FIRST; iCode <= JOYSTICK_LAST; ++iCode)
+		{
+			ButtonCode_t code = static_cast<ButtonCode_t>(iCode);
+
+			bool bUseThisKey = false;
+
+			// Only check against bind name if we haven't already forced this binding to be used
+			const char* pBinding = gameuifuncs->GetBindingForButtonCode(code);
+
+			if (!pBinding)
+				continue;
+
+			bUseThisKey = (Q_stricmp(pBinding, binding) == 0);
+
+			//if (!bUseThisKey &&
+			//	(Q_stricmp(pBinding, "+duck") == 0 || Q_stricmp(pBinding, "toggle_duck") == 0) &&
+			//	(Q_stricmp(binding, "+duck") == 0 || Q_stricmp(binding, "toggle_duck") == 0))
+			//{
+			//	// +duck and toggle_duck are interchangable
+			//	bUseThisKey = true;
+			//}
+
+			//if (!bUseThisKey &&
+			//	(Q_stricmp(pBinding, "+zoom") == 0 || Q_stricmp(pBinding, "toggle_zoom") == 0) &&
+			//	(Q_stricmp(binding, "+zoom") == 0 || Q_stricmp(binding, "toggle_zoom") == 0))
+			//{
+			//	// +zoom and toggle_zoom are interchangable
+			//	bUseThisKey = true;
+			//}
+
+			// Don't use this bind in out list
+			if (!bUseThisKey)
+				continue;
+
+			// Turn localized string into icon character
+			Q_snprintf(szBuff, sizeof(szBuff), "#GameUI_KeyNames_%s", g_pInputSystem->ButtonCodeToString(static_cast<ButtonCode_t>(iCode)));
+			const char* pszButtonName = g_pVGuiLocalize->FindAsUTF8(szBuff);
+			if (pszButtonName)
+			{
+				V_strcpy_safe(szKeyBuff, pszButtonName);
+				++iNumBinds;
+			}
+		}
+
+		if (iNumBinds == 0)
+		{
+			V_strcpy_safe(szKeyBuff, g_pVGuiLocalize->FindAsUTF8("#GameUI_Icons_NONE"));
+		}
+	}
+	else
+	{
+		const char* key = engine->Key_LookupBinding(*binding == '+' ? binding + 1 : binding);
+		if (!key)
+		{
+			V_strcpy_safe(szKeyBuff, g_pVGuiLocalize->FindAsUTF8("#GameUI_Icons_NONE"));
+		}
+		else
+			V_strcpy_safe(szKeyBuff, key);
+	}
+
+	V_sprintf_safe(m_cDisplayText, g_pVGuiLocalize->FindAsUTF8("#Olivia_Ask"), szKeyBuff);
+
+	const char* pszDescription = g_pVGuiLocalize->FindAsUTF8(m_cDescription);
+	if (pszDescription)
+	{
+		V_strcat_safe(m_cDisplayText, pszDescription);
+	}
+	else
+	{
+		V_strcat_safe(m_cDisplayText, m_cDescription);
+	}
+}

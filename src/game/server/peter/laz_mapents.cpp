@@ -146,6 +146,69 @@ void CLazComputerNetwork::InputDisable(inputdata_t& inputdata)
 		SetPowerEnabled(false);
 }
 
+class CLazNetworkEndpoint : public CLazNetworkEntity< CLogicalEntity >
+{
+public:
+	DECLARE_CLASS(CLazNetworkEndpoint, CLazNetworkEntity< CLogicalEntity >);
+	DECLARE_DATADESC();
+
+	virtual void ChangeTeam(int iTeam);
+
+	void	SetPowerEnabled(bool bPower);
+
+	virtual void NetworkPowerOn(bool bForce) { SetPowerEnabled(true); }
+	virtual void NetworkPowerOff(bool bForce) { SetPowerEnabled(false); }
+	virtual LazNetworkRole_t GetNetworkRole() { return (LazNetworkRole_t)m_iNetRole; }
+
+protected:
+	bool	m_bIsDisabled;
+	int		m_iNetRole;
+
+	COutputEvent	m_OnEnabled;
+	COutputEvent	m_OnDisabled;
+	COutputInt		m_OnTeamChanged;
+};
+
+BEGIN_DATADESC(CLazNetworkEndpoint)
+DEFINE_KEYFIELD(m_bIsDisabled, FIELD_BOOLEAN, "StartDisabled"),
+DEFINE_KEYFIELD(m_iNetRole, FIELD_INTEGER, "NetworkRole"),
+
+DEFINE_OUTPUT(m_OnEnabled, "OnPowerEnabled"),
+DEFINE_OUTPUT(m_OnDisabled, "OnPowerDisabled"),
+DEFINE_OUTPUT(m_OnTeamChanged, "OnTeamChanged"),
+
+DEFINE_LAZNETWORKENTITY_DATADESC(),
+END_DATADESC();
+
+LINK_ENTITY_TO_CLASS(laz_network_endpoint, CLazNetworkEndpoint);
+
+void CLazNetworkEndpoint::SetPowerEnabled(bool bPower)
+{
+	if (m_bIsDisabled == bPower)
+	{
+		m_bIsDisabled = !bPower;
+
+		if (bPower)
+		{
+			m_OnEnabled.FireOutput(this, this);
+		}
+		else
+		{
+			m_OnDisabled.FireOutput(this, this);
+		}
+	}
+}
+
+void CLazNetworkEndpoint::ChangeTeam(int iTeam)
+{
+	int iOldTeam = GetTeamNumber();
+	BaseClass::ChangeTeam(iTeam);
+	if (iOldTeam != iTeam)
+	{
+		m_OnTeamChanged.Set(iTeam, this, this);
+	}
+}
+
 // ###################################################################
 //	> FilterName
 // ###################################################################

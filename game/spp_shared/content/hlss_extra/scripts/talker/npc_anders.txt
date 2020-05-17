@@ -1,0 +1,306 @@
+//============================================================================================================
+// Anders Questions & Responses speech
+//============================================================================================================
+response "AndersQuestion"
+{
+	speak NPC_Anders.Question noscene delay 2
+}
+
+rule AndersQuestion
+{
+	criteria		IsAnders ConceptTalkQuestion IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response 		AndersQuestion
+}
+
+//------------------------------------------------------------------------------------------------------------
+response "AndersAnswer"
+{
+	speak NPC_Anders.Answer noscene delay 4
+}
+
+//---------------------
+rule AndersAnswer
+{
+	criteria		IsAnders ConceptTalkAnswer IsGordonCriminal PlayerAlive Combat_Talk_Allowed
+	response		AndersAnswer
+}
+
+
+
+
+//============================================================================================================
+// Anders Reloads Weapon
+//============================================================================================================
+response "AndersHideAndReload" 
+{
+  	speak NPC_Anders.Reloading noscene delay 4
+}
+
+rule AndersHideAndReload
+{
+	criteria		IsAnders ConceptHideAndReload Combat_Talk_Allowed
+	response		AndersHideAndReload
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response AndersOuch
+{
+   	speak NPC_Anders.Pain delay 4 noscene
+}
+
+rule AndersWound
+{
+	criteria		IsAnders  ConceptTalkWound Combat_Talk_Allowed
+   	response AndersOuch
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+response "AndersShotArm"
+{
+	speak NPC_Anders.Pain delay 6 noscene
+}
+
+rule AndersShotArm
+{
+   criteria    IsAnders ConceptShot ShotInArm Combat_Talk_Allowed
+   response    AndersShotArm
+}
+
+response "AndersShotLeg"
+{
+   	speak NPC_Anders.Pain delay 6 noscene
+}
+
+
+rule AndersShotLeg
+{
+   criteria    IsAnders ConceptShot ShotInLeg Combat_Talk_Allowed
+   response    AndersShotLeg
+}
+
+response "AndersShotGut"
+{
+   	speak NPC_Anders.Pain delay 6 noscene
+}
+
+rule AndersShotGut
+{
+   criteria    IsAnders ConceptShot ShotInGut Combat_Talk_Allowed
+   response    AndersShotGut
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Anders_Hostiles
+{
+	speak NPC_Anders.Hostiles delay 3 weight 1.2 noscene
+	speak NPC_Anders.Outbreak delay 3 weight 1 noscene
+}
+
+
+//------------------------------------------------------------------------------------------------------------
+
+response Anders_RebelsGroup
+{
+	speak NPC_Anders.AntiCitizen delay 4 weight 2 noscene
+	speak NPC_Anders.Hostiles delay 6 weight 1.2 noscene
+	speak NPC_Anders.Outbreak delay 6 weight 1 noscene
+}
+
+response Anders_Rebels
+{
+   response Anders_RebelsGroup respeakdelay 300
+}
+
+rule AndersStartCombatRebel
+{
+	criteria    IsAnders ConceptStartCombat IsGordonCriminal Combat_Talk_Allowed
+	enemy npc_citizen required
+	response    Anders_Rebels
+}
+
+//------------------------------------------------------------------------------------------------------------
+
+response Anders_XeniansGroup
+{
+	speak NPC_Anders.Xenoform delay 4 weight 2 noscene
+	speak NPC_Anders.Hostiles delay 6 weight 1.2 noscene
+	speak NPC_Anders.Outbreak delay 6 weight 1 noscene
+}
+
+response Anders_Xenians
+{
+   response Anders_XeniansGroup respeakdelay 300
+}
+
+rule Anders_StartCombatAlienGrunt
+{
+	criteria    IsAnders ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_aliengrunt required
+	response    Anders_Xenians
+}
+
+rule Anders_StartCombatVortigaunts
+{
+	criteria    IsAnders ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_vortigaunt required
+	response    Anders_Xenians
+}
+
+rule Anders_StartCombatAlienController
+{
+	criteria    IsAnders ConceptStartCombatCombat_Talk_Allowed
+	enemy npc_aliencontroller required
+	response    Anders_Xenians
+}
+
+rule Anders_StartCombatDog
+{
+	criteria    IsAnders ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_dog required
+	response    Anders_Hostiles
+}
+
+rule Anders_StartCombatAlyx
+{
+	criteria    IsAnders ConceptStartCombat Combat_Talk_Allowed
+	enemy npc_alyx required
+	response    Anders_Rebels
+}
+
+
+//HLSS MEDIC
+
+response "Anders_ShoutMedic"
+{
+	speak NPC_Anders.Medic delay 1 weight 3 noscene
+   	speak NPC_Anders.Pain delay 3 weight 1 noscene
+}
+
+rule Anders_NeedMedic
+{
+   criteria    IsAnders ConceptNeedMedic Combat_Talk_Allowed
+   response    Anders_ShoutMedic 
+}
+
+//============================================================================================================
+// Recharge
+//============================================================================================================
+
+
+response "Anders_Recharge"
+{
+   	speak NPC_Anders.Recharge_Generator noscene
+}
+
+rule Rule_Anders_Recharge
+{
+	criteria		IsAnders ConceptRecharge 
+	response		Anders_Recharge
+	rescenedelay 		3
+}
+
+//============================================================================================================
+// Generator Offline
+//============================================================================================================
+
+
+response "Anders_GeneratorOffline"
+{
+	speak NPC_Anders.Generator_Offline noscene
+}
+
+rule Rule_Anders_GeneratorOffline
+{
+	criteria		IsAnders ConceptGeneratorOffline
+	response		Anders_GeneratorOffline
+	rescenedelay 		3
+}
+
+
+//============================================================================================================
+// She's the traitor
+//============================================================================================================
+
+
+response "Anders_Female_Traitor"
+{
+   	speak NPC_Anders.Traitor delay 5 noscene
+	speak NPC_Anders.She_Traitor delay 5 noscene
+}
+
+rule Rule_Anders_Female_Traitor
+{
+	criteria		IsAnders ConceptTraitor_Female
+	response		Anders_Female_Traitor
+	rescenedelay 		6
+}
+
+//============================================================================================================
+// He's the traitor
+//============================================================================================================
+
+
+response "Anders_Male_Traitor"
+{
+   	speak NPC_Anders.Traitor delay 5 noscene
+	speak NPC_Anders.He_Traitor delay 5 noscene
+}
+
+rule Rule_Anders_Male_Traitor
+{
+	criteria		IsAnders ConceptTraitor_Male
+	response		Anders_Male_Traitor
+	rescenedelay 		6
+}
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------------------
+response "Anders_LeadAttractPlayer"
+{
+	speak NPC_Anders.Over_Here delay 1 noscene
+}
+
+rule Anders_LeadAttractPlayer
+{
+	criteria		IsAnders ConceptLeadAttractPlayer Combat_Talk_Allowed
+	response		Anders_LeadAttractPlayer
+}
+
+
+response "Anders_Come"
+{
+	speak NPC_Anders.Come_On delay 3 noscene
+}
+
+rule Rule_Anders_Come
+{
+	criteria		IsAnders ConceptLeadComingBack Combat_Talk_Allowed
+	response		Anders_Come
+}
+
+
+response "Anders_LetsGo"
+{
+	speak NPC_Anders.Lets_Go delay 1 noscene
+}
+
+rule Rule_Anders_LetsGo
+{
+	criteria		IsAnders ConceptLeadRetrieve Combat_Talk_Allowed
+	response		Anders_LetsGo
+}
+
+rule Rule_Anders_StartLead
+{
+	criteria		IsAnders ConceptLeadStart Combat_Talk_Allowed
+	response		Anders_LetsGo
+}

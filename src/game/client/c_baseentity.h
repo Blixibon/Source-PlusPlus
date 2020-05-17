@@ -172,6 +172,7 @@ struct thinkfunc_t
 #define ENTCLIENTFLAG_GETTINGSHADOWRENDERBOUNDS	0x0001		// Tells us if we're getting the real ent render bounds or the shadow render bounds.
 #define ENTCLIENTFLAG_DONTUSEIK					0x0002		// Don't use IK on this entity even if its model has IK.
 #define ENTCLIENTFLAG_ALWAYS_INTERPOLATE		0x0004		// Used by view models.
+#define ENTCLIENTFLAG_DISABLEJIGGLEBONES		0x0008		// Don't simulate jiggle bones
 
 //-----------------------------------------------------------------------------
 // Purpose: Base client side entity object

@@ -1,3 +1,5 @@
+// THIS FILE IS NO LONGER USED
+
 "scripts/shared_sounds_manifest.txt"
 {
 	"precache_file"		"scripts/game_sounds_world_portal2.txt"

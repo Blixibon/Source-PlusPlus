@@ -48,6 +48,43 @@
 	]
 ]
 
+@PointClass base(Targetname, ComputerNetwork) size(-8 -8 -8, 8 8 8) = laz_network_endpoint :
+	"An entity that defines a computer network."
+[
+	TeamNum(choices) : "Team" : 0 : "Starting Team" =
+	[
+		0 : "Neutral"
+		1 : "Rogue"
+		2 : "Combine"
+		3 : "Rebels"
+		4 : "Military"
+		5 : "Zombies"
+	]
+
+	StartDisabled(choices) : "Start Disabled" : 0 =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
+
+	NetworkRole(choices) : "Network Role" : 0 =
+	[
+		0 : "Generic"
+		1 : "Shields"
+		2 : "Turrets"
+	]
+
+	output OnPowerEnabled(void) : "Fires when the endpoint is activated."
+	output OnPowerDisabled(void) : "Fires when the endpoint is deactivated."
+	output OnTeamChanged(integer) : "Fires when the endpoint changes team. Outputs the new team number."
+]
+
+@FilterClass base(Targetname, BaseFilter, ComputerNetwork) size(-8 -8 -8, 8 8 8) = filter_computer_network :
+"A filter that tests an entity's team against a computer network's."
+[
+
+]
+
 @NPCClass base(Parentname, BaseNPC, ComputerNetwork) size(-16 -16 -16, 16 16 16) color(255 150 0) = npc_enemyfinder : "EnemyFinder"
 [
 	spawnflags(flags) =

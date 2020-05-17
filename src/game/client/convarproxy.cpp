@@ -94,6 +94,7 @@ public:
 
 	virtual void Release()
 	{
+		delete this;
 	}
 
 protected:
@@ -101,4 +102,4 @@ protected:
 	ConVarRef m_conVarRef;
 };
 
-EXPOSE_MATERIAL_PROXY( CConVarMaterialProxy, ConVar );
+EXPOSE_MATERIAL_PROXY( CConVarMaterialProxy, GetConVar );

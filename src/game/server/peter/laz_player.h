@@ -268,7 +268,7 @@ public:
 
 	int			GetMovementConfig();
 
-	int			GetSpecialAttack() { return m_nSpecialAttack; }
+	int			GetSpecialAttack();
 	float		GetNextSpecialTime() { return m_flNextSpecialAttackTime; }
 
 public:

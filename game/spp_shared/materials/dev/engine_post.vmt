@@ -31,17 +31,17 @@ pp_engine_post
 		"EnginePost"
 		{
 		}
-		ConVar
+		"GetConVar"
 		{
 			resultVar $localcontrastenable
 			convar mat_local_contrast_enable
 		}
-		ConVar
+		"GetConVar"
 		{
 			resultVar $noiseEnable
 			convar mat_grain_enable
 		}
-		ConVar
+		"GetConVar"
 		{
 			resultVar $vignetteEnable
 			convar mat_vignette_enable

@@ -1591,7 +1591,8 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 			Assert( fabsf( pos[i].z ) < 100000 );
 
 			if ( (hdr->boneFlags( i ) & BONE_ALWAYS_PROCEDURAL) && 
-				 (hdr->pBone( i )->proctype & STUDIO_PROC_JIGGLE) )
+				 (hdr->pBone( i )->proctype & STUDIO_PROC_JIGGLE) &&
+				!(m_EntClientFlags & ENTCLIENTFLAG_DISABLEJIGGLEBONES))
 			{
 				//
 				// Physics-based "jiggle" bone

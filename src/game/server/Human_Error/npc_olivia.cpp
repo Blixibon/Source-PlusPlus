@@ -1762,7 +1762,7 @@ int CNPC_MPOlivia::ShouldTransmit(const CCheckTransmitInfo* pInfo)
 			return FL_EDICT_PVSCHECK;
 		}
 #endif
-		if ((pPlayer->GetObserverMode() == OBS_MODE_IN_EYE || pPlayer->GetObserverMode() == OBS_MODE_CHASE) && (pPlayer->GetObserverTarget() == m_hPlayer.Get()))
+		if ((pPlayer->GetObserverMode() == OBS_MODE_IN_EYE) && (pPlayer->GetObserverTarget() == m_hPlayer.Get()))
 		{
 			return FL_EDICT_PVSCHECK;
 		}
@@ -1851,6 +1851,7 @@ class COliviaTarget : public CBaseAnimating
 public:
 	DECLARE_CLASS(COliviaTarget, CBaseAnimating);
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
 
 	COliviaTarget();
 	~COliviaTarget();
@@ -1889,12 +1890,17 @@ protected:
 	float		m_flDelay;
 	float		m_flTimeNextActive;
 	int			m_iGiveItem;
+	CNetworkVar(string_t, m_iszDescription);
 
 	COutputEvent	m_OnOliviaUsed;
 };
 
 CEntityClassList<COliviaTarget> g_OTargetList;
 template <> COliviaTarget* CEntityClassList<COliviaTarget>::m_pClassList = nullptr;
+
+IMPLEMENT_SERVERCLASS_ST(COliviaTarget, DT_OliviaTarget)
+SendPropStringT(SENDINFO(m_iszDescription)),
+END_SEND_TABLE();
 
 BEGIN_DATADESC(COliviaTarget)
 DEFINE_KEYFIELD(m_bEnabled, FIELD_BOOLEAN, "enabled"),
@@ -1903,6 +1909,7 @@ DEFINE_KEYFIELD(m_flDelay, FIELD_FLOAT, "delay"),
 DEFINE_KEYFIELD(m_iszAnimation, FIELD_STRING, "animation"),
 DEFINE_KEYFIELD(m_iMovement, FIELD_INTEGER, "movement"),
 DEFINE_KEYFIELD(m_iGiveItem, FIELD_INTEGER, "item_give"),
+DEFINE_KEYFIELD(m_iszDescription, FIELD_STRING, "description"),
 
 DEFINE_FIELD(m_flTimeNextActive, FIELD_TIME),
 DEFINE_FIELD(m_hLookTarget, FIELD_EHANDLE),
@@ -1953,6 +1960,7 @@ void COliviaTarget::Spawn()
 
 	m_takedamage = DAMAGE_NO;
 	m_nRenderFX = kRenderFxHologram;
+	SetRenderMode(kRenderTransAdd);
 
 	int iSequence = LookupSequence(STRING(m_iszAnimation));
 	SetSequence(iSequence);
@@ -2014,7 +2022,7 @@ int COliviaTarget::ShouldTransmit(const CCheckTransmitInfo* pInfo)
 				return FL_EDICT_PVSCHECK;
 			}
 #endif
-			if ((pPlayer->GetObserverMode() == OBS_MODE_IN_EYE || pPlayer->GetObserverMode() == OBS_MODE_CHASE) && (pPlayer->GetObserverTarget() && pPlayer->GetObserverTarget()->IsPlayer()))
+			if ((pPlayer->GetObserverMode() == OBS_MODE_IN_EYE) && (pPlayer->GetObserverTarget() && pPlayer->GetObserverTarget()->IsPlayer()))
 			{
 				pPlayer = ToLazuulPlayer(pPlayer->GetObserverTarget());
 			}

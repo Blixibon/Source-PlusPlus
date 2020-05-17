@@ -223,7 +223,7 @@ public:
 	virtual bool Init()
 	{
 		Assert( soundemitterbase );
-#if !defined( CLIENT_DLL )
+#if !defined( CLIENT_DLL ) && 0
 		m_bLogPrecache = CommandLine()->CheckParm( "-makereslists" ) != NULL;
 		
 		{

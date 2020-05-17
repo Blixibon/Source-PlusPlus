@@ -1621,7 +1621,7 @@ void CLaz_Player::AnswerQuestion(CBaseCombatCharacter* pQuestioner, int iQARando
 	//m_iQARandomNumber = iQARandomNum;
 
 	// The activator is the person we're responding to
-	if (SpeakFindResponse(selection, "TLK_PLAYER_ANSWER", CFmtStr("speechtarget:%s", pQuestioner->GetClassname())))
+	if (SpeakFindResponse(selection, "TLK_PLAYER_ANSWER", CFmtStr("speechtarget:%s", pQuestioner->GetResponseClassname(this))))
 	{
 		if (rr_debug_qa.GetBool())
 		{
@@ -1829,6 +1829,20 @@ bool CLaz_Player::ChooseEnemy()
 	return false;
 }
 
+int CLaz_Player::GetSpecialAttack()
+{
+	if (!IsAlive())
+	{
+		return LAZ_SPECIAL_NONE;
+	}
+
+	int iSpecial = m_nSpecialAttack;
+	if (sv_forcedspecialattack.GetInt() >= 0)
+		iSpecial = sv_forcedspecialattack.GetInt();
+
+	return iSpecial;
+}
+
 void CLaz_Player::Special()
 {
 	if (gpGlobals->curtime < m_flNextSpecialAttackTime)
@@ -1845,7 +1859,7 @@ void CLaz_Player::Special()
 		if (m_hMinion && m_hMinion->IsAlive())
 			return;
 
-		if (IsInAVehicle())
+		if (IsInAVehicle() || m_bInAutoMovement.Get())
 			return;
 
 		int iSequence = SelectWeightedSequence(ACT_METROPOLICE_DEPLOY_MANHACK);
