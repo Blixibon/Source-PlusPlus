@@ -159,6 +159,13 @@ CON_COMMAND( script_client, "Run the text as a script" )
 CON_COMMAND( script, "Run the text as a script" )
 #endif
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	if ( !*args[1] )
 	{
 		Warning( "No function name specified\n" );
@@ -214,6 +221,13 @@ CON_COMMAND( script, "Run the text as a script" )
 
 CON_COMMAND_SHARED( script_execute, "Run a vscript file" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	if ( !*args[1] )
 	{
 		Warning( "No script specified\n" );
@@ -231,6 +245,13 @@ CON_COMMAND_SHARED( script_execute, "Run a vscript file" )
 
 CON_COMMAND_SHARED( script_debug, "Connect the vscript VM to the script debugger" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	if ( !g_pScriptVM )
 	{
 		Warning( "Scripting disabled or no server running\n" );
@@ -241,6 +262,13 @@ CON_COMMAND_SHARED( script_debug, "Connect the vscript VM to the script debugger
 
 CON_COMMAND_SHARED( script_help, "Output help for script functions, optionally with a search string" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	if ( !g_pScriptVM )
 	{
 		Warning( "Scripting disabled or no server running\n" );
@@ -257,6 +285,13 @@ CON_COMMAND_SHARED( script_help, "Output help for script functions, optionally w
 
 CON_COMMAND_SHARED( script_dump_all, "Dump the state of the VM to the console" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	if ( !g_pScriptVM )
 	{
 		Warning( "Scripting disabled or no server running\n" );

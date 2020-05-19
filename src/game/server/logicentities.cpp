@@ -136,7 +136,7 @@ DEFINE_KEYFIELD(m_iszGroupMembers[11], FIELD_STRING, "Group11"),
 DEFINE_KEYFIELD(m_iszGroupMembers[12], FIELD_STRING, "Group12"),
 DEFINE_KEYFIELD(m_iszGroupMembers[13], FIELD_STRING, "Group13"),
 DEFINE_KEYFIELD(m_iszGroupMembers[14], FIELD_STRING, "Group14"),
-DEFINE_KEYFIELD(m_iszGroupMembers[15], FIELD_STRING, "Group16"),
+DEFINE_KEYFIELD(m_iszGroupMembers[15], FIELD_STRING, "Group15"),
 
 END_DATADESC()
 

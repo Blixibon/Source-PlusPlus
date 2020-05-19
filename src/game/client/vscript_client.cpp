@@ -54,6 +54,11 @@ static const char *DoUniqueString( const char *pszBase )
 	return szBuf;
 }
 
+static bool IsServer()
+{
+	return false;
+}
+
 bool DoIncludeScript( const char *pszScript, HSCRIPT hScope )
 {
 	if ( !VScriptRunScript( pszScript, hScope, true ) )
@@ -105,6 +110,7 @@ bool VScriptClientInit()
 				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
+				ScriptRegisterFunction(g_pScriptVM, IsServer, "Returns true if the script is running on the server");
 				
 				if ( GameRules() )
 				{

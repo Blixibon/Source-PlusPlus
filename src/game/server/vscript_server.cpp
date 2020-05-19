@@ -389,6 +389,11 @@ static float ScriptTraceLine( const Vector &vecStart, const Vector &vecEnd, HSCR
 	}
 }
 
+static bool IsServer()
+{
+	return true;
+}
+
 bool VScriptServerInit()
 {
 	VMPROF_START
@@ -443,6 +448,7 @@ bool VScriptServerInit()
 				ScriptRegisterFunctionNamed( g_pScriptVM, NDebugOverlay::Line, "DebugDrawLine", "Draw a debug overlay box" );
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
 				ScriptRegisterFunction( g_pScriptVM, CreateProp, "Create a physics prop" );
+				ScriptRegisterFunction(g_pScriptVM, IsServer, "Returns true if the script is running on the server");
 
 				
 				if ( GameRules() )
@@ -515,6 +521,13 @@ bool VScriptServerReplaceClosures( const char *pszScriptName, HSCRIPT hScope, bo
 
 CON_COMMAND( script_reload_code, "Execute a vscript file, replacing existing functions with the functions in the run script" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	if ( !*args[1] )
 	{
 		Warning( "No script specified\n" );
@@ -532,6 +545,13 @@ CON_COMMAND( script_reload_code, "Execute a vscript file, replacing existing fun
 
 CON_COMMAND( script_reload_entity_code, "Execute all of this entity's VScripts, replacing existing functions with the functions in the run scripts" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
 
 	const char *pszTarget = "";
@@ -570,6 +590,13 @@ CON_COMMAND( script_reload_entity_code, "Execute all of this entity's VScripts, 
 
 CON_COMMAND( script_reload_think, "Execute an activation script, replacing existing functions with the functions in the run script" )
 {
+#ifndef CLIENT_DLL
+	if (!UTIL_IsCommandIssuedByServerAdmin() || !sv_cheats->GetBool())
+	{
+		return;
+	}
+#endif // !CLIENT_DLL
+
 	extern CBaseEntity *GetNextCommandEntity( CBasePlayer *pPlayer, const char *name, CBaseEntity *ent );
 
 	const char *pszTarget = "";
