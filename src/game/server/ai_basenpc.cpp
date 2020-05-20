@@ -6433,6 +6433,13 @@ void CAI_BaseNPC::ResolveActivityToSequence(Activity NewActivity, int &iSequence
 {
 	AI_PROFILE_SCOPE( CAI_BaseNPC_ResolveActivityToSequence );
 
+	if (NewActivity == ACT_SPECIFIC_SEQUENCE)
+	{
+		translatedActivity = weaponActivity = ACT_SPECIFIC_SEQUENCE;
+		iSequence = m_nIdealSequence;
+		return;
+	}
+
 	iSequence = ACTIVITY_NOT_AVAILABLE;
 
 	translatedActivity = TranslateActivity( NewActivity, &weaponActivity );

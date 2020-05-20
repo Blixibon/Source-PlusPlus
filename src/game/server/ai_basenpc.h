@@ -984,7 +984,8 @@ public:
 	Activity			GetActivity( void ) { return m_Activity; }
 	virtual void		SetActivity( Activity NewActivity );
 	Activity			GetIdealActivity( void ) { return m_IdealActivity; }
-	void				SetIdealActivity( Activity NewActivity );
+	void				SetIdealActivity( Activity NewActivity ); 
+	void				SetIdealSequence(int iSequence, bool bReset = false) { if (bReset) ResetIdealActivity(ACT_SPECIFIC_SEQUENCE); else SetIdealActivity(ACT_SPECIFIC_SEQUENCE); m_nIdealSequence = iSequence; }
 	void				ResetIdealActivity( Activity newIdealActivity );
 	void				SetSequenceByName( const char *szSequence );
 	void				SetSequenceById( int iSequence );

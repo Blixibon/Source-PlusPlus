@@ -387,6 +387,7 @@ void ActivityList_RegisterSharedActivities( void )
 	REGISTER_SHARED_ACTIVITY( ACT_BARNACLE_CHEW );
 
 	REGISTER_SHARED_ACTIVITY( ACT_DO_NOT_DISTURB );
+	REGISTER_SHARED_ACTIVITY(ACT_SPECIFIC_SEQUENCE);
 
 	// Viewmodel activities may belong elsewhere, but since where is unclear right now,
 	// they'll be placed here.

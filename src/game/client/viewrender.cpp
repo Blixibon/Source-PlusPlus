@@ -2440,7 +2440,8 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 				pRenderContext.SafeRelease();
 			}
 
-			g_GlowObjectManager.RenderGlowEffects(&view, 0);
+			if (whatToDraw & RENDERVIEW_DRAWHUD)
+				g_GlowObjectManager.RenderGlowEffects(&view, 0);
 
 			if (g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE)
 			{

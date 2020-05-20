@@ -66,6 +66,12 @@ public:
 			m_flMarkTolerance = tolerance;
 		}
 	}
+
+	void SetMark(const Vector& vecPos, float tolerance)
+	{
+		m_vMark = vecPos;
+		m_flMarkTolerance = tolerance;
+	}
 	
 	void ClearMark()
 	{
@@ -94,6 +100,28 @@ public:
 		{
 			float distance = ( m_vMark.AsVector2D() - pEntity->GetAbsOrigin().AsVector2D() ).Length();
 			if ( distance > m_flMarkTolerance )
+				return true;
+		}
+		return false;
+	}
+
+	bool TargetMoved(const Vector& vecPos)
+	{
+		if (IsMarkSet())
+		{
+			float distance = (m_vMark - vecPos).Length();
+			if (distance > m_flMarkTolerance)
+				return true;
+		}
+		return false;
+	}
+
+	bool TargetMoved2D(const Vector& vecPos)
+	{
+		if (IsMarkSet())
+		{
+			float distance = (m_vMark.AsVector2D() - vecPos.AsVector2D()).Length();
+			if (distance > m_flMarkTolerance)
 				return true;
 		}
 		return false;

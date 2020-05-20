@@ -81,7 +81,7 @@ protected:
 		return m_actors;
 	}
 	
-private:
+protected:
 	enum Flags_t
 	{
 		ACTIVE			= 0x01,
@@ -95,9 +95,9 @@ private:
 		ST_CLASSNAME,
 	};
 
-	void DelayedRefresh();
-	void PruneActors();
-	void ResolveNames();
+	virtual void DelayedRefresh();
+	virtual void PruneActors();
+	virtual void ResolveNames();
 	
 	// From Worldcraft
 	string_t				m_iszActor;

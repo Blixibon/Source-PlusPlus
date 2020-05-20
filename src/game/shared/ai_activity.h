@@ -215,6 +215,7 @@ typedef enum
 	// is, though. So if you set ideal activity to DO_NOT_DISTURB, the AI will not interfere
 	// with the NPC's current sequence. (SJB)
 	ACT_DO_NOT_DISTURB,
+	ACT_SPECIFIC_SEQUENCE,
 
 	// viewmodel (weapon) activities
 	// FIXME: move these to the specific viewmodels, no need to make global

@@ -170,6 +170,8 @@ $Project
 			$File	"ai_behavior_assault.h"
 			$File	"ai_behavior_fear.cpp"
 			$File	"ai_behavior_fear.h"
+			$File	"ai_behavior_fightfromcover.cpp"
+			$File	"ai_behavior_fightfromcover.h"
 			$File	"ai_behavior_follow.cpp"
 			$File	"ai_behavior_follow.h"
 			$File	"ai_behavior_lead.cpp"

@@ -33,8 +33,11 @@ CHintCriteria::CHintCriteria( void )
 	m_iFirstHintType = HINT_NONE;
 	m_iLastHintType = HINT_NONE;
 	m_strGroup		= NULL_STRING;
+	m_strGenericType = NULL_STRING;
 	m_iFlags		= 0;
 	m_HintTypes.Purge();
+	m_pfnFilter = NULL;
+	m_pFilterContext = NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -96,7 +99,7 @@ bool CHintCriteria::MatchesSingleHintType() const
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CHintCriteria::MatchesHintType( int hintType ) const
+bool CHintCriteria::MatchesHintType( int hintType, string_t iszGenericType) const
 {
 	int c = m_HintTypes.Count();
  	for ( int i = 0; i < c; ++i )
@@ -119,6 +122,11 @@ bool CHintCriteria::MatchesHintType( int hintType ) const
 			// This search is for a range of hint types.
 			if( hintType < GetFirstHintType() || hintType > GetLastHintType() )
 				return false;
+		}
+
+		if (hintType == HINT_GENERIC && iszGenericType != m_strGenericType)
+		{
+			return false;
 		}
 
 		return true;
@@ -1152,7 +1160,7 @@ bool CAI_Hint::HintMatchesCriteria( CAI_BaseNPC *pNPC, const CHintCriteria &hint
 		return false;
 	}
 
-	if ( !bIgnoreHintType && !hintCriteria.MatchesHintType( HintType() ) )
+	if ( !bIgnoreHintType && !hintCriteria.MatchesHintType( HintType(), m_NodeData.iszGenericType ) )
 	{
 		return false;
 	}
@@ -1199,6 +1207,26 @@ bool CAI_Hint::HintMatchesCriteria( CAI_BaseNPC *pNPC, const CHintCriteria &hint
 		REPORTFAILURE( "NPC doesn't know how to handle that type." );
 		return false;
 	}
+
+	// Test against generic filter
+	if (!hintCriteria.PassesFilter(this))
+	{
+		REPORTFAILURE("Failed filter test");
+		return false;
+	}
+
+	//int nRadius = GetRadius();
+	//if (nRadius != 0)
+	//{
+	//	// Calculate our distance
+	//	float distance = (GetAbsOrigin() - position).LengthSqr();
+
+	//	if (distance > nRadius * nRadius)
+	//	{
+	//		REPORTFAILURE("NPC is not within the node's radius.");
+	//		return false;
+	//	}
+	//}
 
 	if ( hintCriteria.HasFlag(bits_HINT_NPC_IN_NODE_FOV) )
 	{
