@@ -1105,6 +1105,8 @@ bool C_BaseEntity::Init( int entnum, int iSerialNum )
 
 	m_nCreationTick = gpGlobals->tickcount;
 
+	m_hScriptInstance = NULL;
+
 	return true;
 }
 
