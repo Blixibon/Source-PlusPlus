@@ -80,12 +80,14 @@ void CBoneMergeCache::UpdateCache()
 			m_nFollowBoneSetupMask = BONE_USED_BY_BONE_MERGE;
 			for ( int i = 0; i < m_pOwnerHdr->numbones(); i++ )
 			{
-				int parentBoneIndex = GetParentBone( m_pFollowHdr, pOwnerBones[i].pszName() );
+				boneextradata_t data;
+				int parentBoneIndex = GetParentBone( m_pFollowHdr, pOwnerBones[i].pszName(), data);
 				if ( parentBoneIndex < 0 )
 					continue;
 
 				// Add a merged bone here.
 				CMergedBone mergedBone;
+				mergedBone.m_ExtraData = data;
 				mergedBone.m_iMyBone = i;
 				mergedBone.m_iParentBone = parentBoneIndex;
 				m_MergedBones.AddToTail( mergedBone );
@@ -174,12 +176,16 @@ void CBoneMergeCache::MergeMatchingBones(int boneMask, CBoneBitList &boneCompute
 		{
 			int iOwnerBone = m_MergedBones[i].m_iMyBone;
 			int iParentBone = m_MergedBones[i].m_iParentBone;
+			const boneextradata_t &data = m_MergedBones[i].m_ExtraData;
 		
 			// Only update bones reference by the bone mask.
 			if ( !( m_pOwnerHdr->boneFlags( iOwnerBone ) & boneMask ) )
 				continue;
 
-			MatrixCopy( m_pFollow->GetBone( iParentBone ), m_pOwner->GetBoneForWrite( iOwnerBone ) );
+			if (data.m_iFlags & BONE_FLAG_OFFSET_MATRIX)
+				ConcatTransforms(m_pFollow->GetBone(iParentBone), data.m_matOffset, m_pOwner->GetBoneForWrite(iOwnerBone));
+			else
+				MatrixCopy(m_pFollow->GetBone(iParentBone), m_pOwner->GetBoneForWrite(iOwnerBone));
 
 			boneComputed.Set(iOwnerBone);
 		}
@@ -289,7 +295,7 @@ bool CBoneMergeCache::GetRootBone( matrix3x4_t &rootBone )
 	return true;
 }
 
-int CBoneMergeCache::GetParentBone(CStudioHdr * pHdr, const char * pszName)
+int CBoneMergeCache::GetParentBone(CStudioHdr * pHdr, const char * pszName, boneextradata_t& extraData)
 {
 	return Studio_BoneIndexByName(pHdr, pszName);
 }

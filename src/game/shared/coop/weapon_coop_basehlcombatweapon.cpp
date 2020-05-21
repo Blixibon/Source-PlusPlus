@@ -302,7 +302,7 @@ const WeaponProficiencyInfo_t *CWeaponCoopBaseHLCombat::GetProficiencyValues()
 
 void CWeaponCoopBaseHLCombat::AddViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles)
 {
-	if (viewmodel->GetSequenceActivity(viewmodel->GetSequence()) == GetSprintActivity())
+	if (GetSprintActivity() != ACT_INVALID && viewmodel->GetSequenceActivity(viewmodel->GetSequence()) == GetSprintActivity())
 		return;
 
 	switch (GetCoopWpnData().m_iViewmodelBobMode)

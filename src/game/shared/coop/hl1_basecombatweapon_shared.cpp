@@ -148,8 +148,22 @@ void CCoopHL1CombatWeapon::EjectShell(CBaseEntity* pPlayer, int iType)
 }
 
 #if defined( CLIENT_DLL )
-
-
+void CCoopHL1CombatWeapon::AddViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles)
+{
+	switch (GetCoopWpnData().m_iViewmodelBobMode)
+	{
+	case BOBMODE_HL2:
+		AddHL2ViewmodelBob(viewmodel, origin, angles);
+		break;
+	default:
+	case BOBMODE_HL1:
+		AddHL1ViewmodelBob(viewmodel, origin, angles);
+		break;
+	case BOBMODE_PORTAL:
+		AddPortalViewmodelBob(viewmodel, origin, angles);
+		break;
+	}
+}
 #else
 
 Vector CCoopHL1CombatWeapon::GetSoundEmissionOrigin() const

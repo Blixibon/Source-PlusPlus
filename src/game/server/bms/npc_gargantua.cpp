@@ -90,7 +90,7 @@ public:
 	void Spawn();
 	void Precache();
 
-	Class_T Classify() { return garg_ally.GetBool() ? CLASS_VORTIGAUNT : CLASS_ANTLION; }
+	Class_T Classify() { return garg_ally.GetBool() ? CLASS_VORTIGAUNT : CLASS_ALIEN_MILITARY; }
 
 	virtual bool		ShowInDeathnotice() { return true; }
 

@@ -44,6 +44,8 @@ class CBaseTrigger : public CBaseToggle
 	DECLARE_CLASS( CBaseTrigger, CBaseToggle );
 public:
 	CBaseTrigger();
+
+	DECLARE_ENT_SCRIPTDESC();
 	
 	void Activate( void );
 	virtual void PostClientActive( void );
@@ -84,6 +86,8 @@ public:
 	bool		m_bDisabled;
 	string_t	m_iFilterName;
 	CHandle<class CBaseFilter>	m_hFilter;
+
+	bool ScriptIsTouching(HSCRIPT hEntity);
 
 protected:
 

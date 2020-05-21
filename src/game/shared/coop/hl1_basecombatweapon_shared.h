@@ -42,7 +42,7 @@ public:
 
 	Vector GetSoundEmissionOrigin() const;
 #else
-
+	virtual void AddViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles);
 #endif
 };
 

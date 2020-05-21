@@ -128,6 +128,11 @@ BEGIN_DATADESC( CBaseTrigger )
 
 END_DATADESC()
 
+BEGIN_ENT_SCRIPTDESC(CBaseTrigger, CBaseEntity, "Entity class for triggers.")
+DEFINE_SCRIPTFUNC(Enable, "Enable the trigger")
+DEFINE_SCRIPTFUNC(Disable, "Disable the trigger")
+DEFINE_SCRIPTFUNC_NAMED(ScriptIsTouching, "IsTouching", "Checks whether the passed entity is touching the trigger.")
+END_SCRIPTDESC();
 
 LINK_ENTITY_TO_CLASS( trigger, CBaseTrigger );
 
@@ -321,6 +326,17 @@ bool CBaseTrigger::PointIsWithin( const Vector &vecPoint )
 	ray.Init( vecPoint, vecPoint );
 	enginetrace->ClipRayToCollideable( ray, MASK_ALL, pCollide, &tr );
 	return ( tr.startsolid );
+}
+
+bool CBaseTrigger::ScriptIsTouching(HSCRIPT hEntity)
+{
+	CBaseEntity* pEnt = ToEnt(hEntity);
+	if (pEnt)
+	{
+		return IsTouching(pEnt);
+	}
+
+	return false;
 }
 
 

@@ -531,3 +531,20 @@ void FileWeaponInfo_t::Parse( KeyValues *pKeyValuesData, const char *szWeaponNam
 	}
 }
 
+CON_COMMAND_SHARED(weapon_reload_scripts, "Reloads all weapon scripts.")
+{
+	static ConVarRef cheats("sv_cheats");
+
+	if (!g_pGameRules || !cheats.GetBool())
+	{
+		return;
+	}
+
+	for (unsigned int i = 0; i < m_WeaponInfoDatabase.Count(); i++)
+	{
+		m_WeaponInfoDatabase[i]->bParsedScript = false;
+
+		WEAPON_FILE_INFO_HANDLE handle;
+		ReadWeaponDataFromFileForSlot(filesystem, m_WeaponInfoDatabase.GetElementName(i), &handle, g_pGameRules->GetEncryptionKey());
+	}
+}

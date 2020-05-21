@@ -593,7 +593,7 @@ void ConcatRotations (const float in1[3][3], const float in2[3][3], float out[3]
 				in1[2][2] * in2[2][2];
 }
 
-void ConcatTransforms_Aligned( const matrix3x4_t &m0, const matrix3x4_t &m1, matrix3x4_t &out )
+void ConcatTransforms_Aligned( const matrix3x4a_t&m0, const matrix3x4a_t&m1, matrix3x4a_t&out )
 {
 	Assert( (((size_t)&m0) % 16) == 0 );
 	Assert( (((size_t)&m1) % 16) == 0 );

@@ -286,6 +286,14 @@ struct matrix3x4_t
 	float m_flMatVal[3][4];
 };
 
+class ALIGN16 matrix3x4a_t : public matrix3x4_t
+{
+public:
+	/*
+	matrix3x4a_t() { if (((size_t)Base()) % 16 != 0) { Error( "matrix3x4a_t missaligned" ); } }
+	*/
+	matrix3x4a_t& operator=(const matrix3x4_t& src) { memcpy(Base(), src.Base(), sizeof(float) * 3 * 4); return *this; };
+};
 
 #ifndef M_PI
 	#define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
@@ -584,6 +592,7 @@ void MatrixScaleByZero ( matrix3x4_t &out );
 //void DecomposeRotation( const matrix3x4_t &mat, float *out );
 void ConcatRotations (const matrix3x4_t &in1, const matrix3x4_t &in2, matrix3x4_t &out);
 void ConcatTransforms (const matrix3x4_t &in1, const matrix3x4_t &in2, matrix3x4_t &out);
+void ConcatTransforms_Aligned(const matrix3x4a_t& in1, const matrix3x4a_t& in2, matrix3x4a_t& out);
 
 // For identical interface w/ VMatrix
 inline void MatrixMultiply ( const matrix3x4_t &in1, const matrix3x4_t &in2, matrix3x4_t &out )

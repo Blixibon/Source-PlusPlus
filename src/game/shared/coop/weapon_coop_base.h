@@ -34,6 +34,18 @@ public:
 
 public:
 	int m_iViewmodelBobMode;
+
+#ifdef CLIENT_DLL
+	struct bonemergeHelper_t
+	{
+		char szParentBone[MAX_WEAPON_STRING];
+		Vector vecOffsetPos;
+		QAngle angOffsetRot;
+	};
+
+	CUtlDict<bonemergeHelper_t> m_BonemergeMod;
+#endif // CLIENT_DLL
+
 };
 
 //================================================================================
@@ -64,6 +76,16 @@ public:
 
 	virtual void	AddHL1ViewmodelBob(CBaseViewModel* viewmodel, Vector& origin, QAngle& angles);
 	virtual	float	CalcHL1ViewmodelBob(void);
+
+	class CWeaponMergeCache : public CBoneMergeCache
+	{
+	protected:
+		virtual int	GetParentBone(CStudioHdr* pHdr, const char* pszName, boneextradata_t& extraData);
+
+		CWeaponCoopBase* GetWeapon() { return assert_cast<CWeaponCoopBase*> (m_pOwner); }
+	};
+
+	virtual void CalcBoneMerge(CStudioHdr* hdr, int boneMask, CBoneBitList& boneComputed);
     #endif
 
 	const CCoopWeaponData &GetCoopWpnData() const;

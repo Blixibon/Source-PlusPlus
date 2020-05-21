@@ -220,7 +220,7 @@ public:
 	class CHandsMergeCache : public CBoneMergeCache
 	{
 	protected:
-		virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName);
+		virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName, boneextradata_t& extraData);
 	};
 };
 
@@ -301,9 +301,9 @@ void C_ViewHands::ApplyBoneMatrixTransform(matrix3x4_t& transform)
 	}
 }
 
-int C_ViewHands::CHandsMergeCache::GetParentBone(CStudioHdr *pHdr, const char *pszName)
+int C_ViewHands::CHandsMergeCache::GetParentBone(CStudioHdr *pHdr, const char *pszName, boneextradata_t& extraData)
 {
-	int iBone = CBoneMergeCache::GetParentBone(pHdr, pszName);
+	int iBone = CBoneMergeCache::GetParentBone(pHdr, pszName, extraData);
 	if (iBone < 0)
 	{
 		char name[128];

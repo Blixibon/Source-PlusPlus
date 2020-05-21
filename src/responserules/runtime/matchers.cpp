@@ -10,7 +10,10 @@
 #include "convar.h"
 #include "responserules/matchers.h"
 #include "fmtstr.h"
+
+#include "valve_minmax_off.h"
 #include <regex>
+#include "valve_minmax_on.h"
 
 ConVar mapbase_wildcards_enabled("rr_wildcards_enabled", "1", FCVAR_NONE, "Toggles Mapbase's '?' wildcard and true '*' features. Useful for maps that have '?' in their targetnames.");
 ConVar mapbase_regex_enabled("rr_regex_enabled", "1", FCVAR_NONE, "Toggles Mapbase's regex matching handover.");

@@ -23,6 +23,7 @@ extern IVModelInfo* modelinfo;
 	#include "hud_crosshair.h"
 #include "c_rumble.h"
 #include "prediction.h"
+#include "bone_setup.h"
 #else
 	#include "vphysics/constraints.h"
     #include "ilagcompensationmanager.h"
@@ -440,6 +441,55 @@ void CWeaponCoopBase::AddHL1ViewmodelBob(CBaseViewModel* viewmodel, Vector& orig
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
 	// with view model distortion, this may be a cause. (SJB). 
 	origin[2] -= 1;
+}
+
+// return true if this vector is (0,0,0) within tolerance
+bool IsZero(const QAngle &angle, float tolerance = 0.01f)
+{
+	return (angle.x > -tolerance && angle.x < tolerance&&
+		angle.y > -tolerance && angle.y < tolerance&&
+		angle.z > -tolerance && angle.z < tolerance);
+}
+
+int CWeaponCoopBase::CWeaponMergeCache::GetParentBone(CStudioHdr* pHdr, const char* pszName, boneextradata_t& extraData)
+{
+	const auto &MergeMod = GetWeapon()->GetCoopWpnData().m_BonemergeMod;
+	int iIndex = MergeMod.Find(pszName);
+	if (MergeMod.IsValidIndex(iIndex))
+	{
+		const auto& data = MergeMod.Element(iIndex);
+		if (!data.vecOffsetPos.IsZero() || !IsZero(data.angOffsetRot))
+		{
+			extraData.m_iFlags |= BONE_FLAG_OFFSET_MATRIX;
+			AngleMatrix(data.angOffsetRot, data.vecOffsetPos, extraData.m_matOffset);
+		}
+
+		return Studio_BoneIndexByName(pHdr, data.szParentBone);
+	}
+
+	return Studio_BoneIndexByName(pHdr, pszName);
+}
+
+void CWeaponCoopBase::CalcBoneMerge(CStudioHdr* hdr, int boneMask, CBoneBitList& boneComputed)
+{
+	bool boneMerge = IsEffectActive(EF_BONEMERGE);
+	if (boneMerge || m_pBoneMergeCache)
+	{
+		if (boneMerge)
+		{
+			if (!m_pBoneMergeCache)
+			{
+				m_pBoneMergeCache = new CWeaponMergeCache;
+				m_pBoneMergeCache->Init(this);
+			}
+			m_pBoneMergeCache->MergeMatchingBones(boneMask, boneComputed);
+		}
+		else
+		{
+			delete m_pBoneMergeCache;
+			m_pBoneMergeCache = NULL;
+		}
+	}
 }
 #endif
 
@@ -1943,4 +1993,26 @@ void CCoopWeaponData::Parse(KeyValues* pKeyValuesData, const char* szWeaponName)
 	FileWeaponInfo_t::Parse(pKeyValuesData, szWeaponName);
 
 	m_iViewmodelBobMode = pKeyValuesData->GetInt("viewmodel_bobmode", BOBMODE_HL2);
+
+#ifdef CLIENT_DLL
+	KeyValues* pkvMergeMod = pKeyValuesData->FindKey("worldmodel_bonemerge");
+	if (pkvMergeMod)
+	{
+		for (KeyValues* pBoneDef = pkvMergeMod->GetFirstTrueSubKey(); pBoneDef; pBoneDef = pBoneDef->GetNextTrueSubKey())
+		{
+			int iIndex = m_BonemergeMod.Find(pBoneDef->GetName());
+			if (!m_BonemergeMod.IsValidIndex(iIndex))
+				iIndex = m_BonemergeMod.Insert(pBoneDef->GetName());
+
+			if (!m_BonemergeMod.IsValidIndex(iIndex))
+				continue;
+
+			auto& newData = m_BonemergeMod.Element(iIndex);
+			V_strcpy_safe(newData.szParentBone, pBoneDef->GetString("parent"));
+			UTIL_StringToVector(newData.vecOffsetPos.Base(), pBoneDef->GetString("offsetpos", "0 0 0"));
+			UTIL_StringToVector(newData.angOffsetRot.Base(), pBoneDef->GetString("offsetang", "0 0 0"));
+
+		}
+	}
+#endif // CLIENT_DLL
 }

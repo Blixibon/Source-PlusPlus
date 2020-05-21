@@ -21,6 +21,16 @@ class CBoneBitList;
 class CBoneMergeCache
 {
 public:
+	enum MergedBoneFlags_e
+	{
+		BONE_FLAG_OFFSET_MATRIX = (1 << 0),
+	};
+
+	struct boneextradata_t
+	{
+		matrix3x4_t m_matOffset;
+		unsigned int m_iFlags = 0;
+	};
 
 	CBoneMergeCache();
 	
@@ -46,7 +56,7 @@ public:
 	bool GetRootBone( matrix3x4_t &rootBone );
 
 protected:
-	virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName);
+	virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName, boneextradata_t &extraData);
 
 	// This is the entity that we're keeping the cache updated for.
 	C_BaseAnimating *m_pOwner;
@@ -67,6 +77,7 @@ protected:
 	public:
 		unsigned short m_iMyBone;
 		unsigned short m_iParentBone;
+		boneextradata_t m_ExtraData;
 	};
 
 	CUtlVector<CMergedBone> m_MergedBones;
