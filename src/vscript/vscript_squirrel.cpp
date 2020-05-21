@@ -1200,6 +1200,14 @@ HSCRIPT SquirrelVM::CreateScope(const char* pszScope, HSCRIPT hParent)
 		sq_pushroottable(vm_);
 	}
 
+	sq_pushstring(vm_, pszScope, -1);
+	sq_push(vm_, -3);
+	sq_rawset(vm_, -3);
+
+	sq_pushstring(vm_, "__vname", -1);
+	sq_pushstring(vm_, pszScope, -1);
+	sq_rawset(vm_, -4);
+
 	if (SQ_FAILED(sq_setdelegate(vm_, -2)))
 	{
 		sq_pop(vm_, 2);
@@ -1220,6 +1228,14 @@ void SquirrelVM::ReleaseScope(HSCRIPT hScript)
 	SquirrelSafeCheck safeCheck(vm_);
 	if (!hScript) return;
 	HSQOBJECT* obj = (HSQOBJECT*)hScript;
+	sq_pushobject(vm_, *obj);
+
+	sq_getdelegate(vm_, -1);
+
+	sq_pushstring(vm_, "__vname", -1);
+	sq_rawdeleteslot(vm_, -2, SQFalse);
+
+	sq_pop(vm_, 2);
 	sq_release(vm_, obj);
 	delete obj;
 }
@@ -1911,6 +1927,17 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 			}
 		}
 
+		if (_closure(obj)->_env)
+		{
+			sq_pushobject(vm_, _closure(obj)->_env->_obj);
+		}
+		else
+		{
+			sq_pushnull(vm_);
+		}
+		WriteObject(pBuffer, writeState, -1);
+		sq_poptop(vm_);
+
 		break;
 	}
 	case OT_NATIVECLOSURE:
@@ -2057,7 +2084,11 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 
 			if (pClassInstanceData)
 			{
-				if (pClassInstanceData->instanceId)
+				if (pClassInstanceData->desc->m_pszDescription[0] == SCRIPT_SINGLETON[0])
+				{
+					// Do nothing, singleton should be created from just the class
+				}
+				else if (!pClassInstanceData->instanceId.IsEmpty())
 				{
 					pBuffer->PutString(pClassInstanceData->instanceId);
 				}
@@ -2129,6 +2160,12 @@ void SquirrelVM::WriteState(CUtlBuffer* pBuffer)
 
 	sq_pushroottable(vm_);
 
+	// Not really a check cache, but adds the root
+	HSQOBJECT obj;
+	sq_resetobject(&obj);
+	sq_getstackobj(vm_, -1, &obj);
+	writeState.CheckCache(pBuffer, _table(obj));
+
 	int count = sq_getsize(vm_, 1);
 	sq_pushnull(vm_);
 	pBuffer->PutInt(count);
@@ -2183,6 +2220,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		int size = pBuffer->GetInt();
 		char* buffer = new char[size + 1];
 		pBuffer->Get(buffer, size);
+		buffer[size] = 0;
 		sq_pushstring(vm_, buffer, size);
 		delete[] buffer;
 		break;
@@ -2280,6 +2318,16 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			sq_pushobject(vm_, *obj);
 		}
 
+		ReadObject(pBuffer, readState);
+		HSQOBJECT env;
+		sq_resetobject(&env);
+		sq_getstackobj(vm_, -1, &env);
+		if (!sq_isnull(env))
+		{
+			_closure(*obj)->_env = _refcounted(env)->GetWeakRef(sq_type(env));
+		}
+		sq_poptop(vm_);
+
 		break;
 	}
 	case OT_NATIVECLOSURE:
@@ -2371,6 +2419,49 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		ReadObject(pBuffer, readState);
 
+		SQUserPointer typetag;
+		sq_gettypetag(vm_, -1, &typetag);
+
+		if (typetag && typetag != TYPETAG_VECTOR &&
+			((ScriptClassDesc_t*)typetag)->m_pszDescription[0] == SCRIPT_SINGLETON[0])
+		{
+			HSQOBJECT klass;
+			sq_resetobject(&klass);
+			sq_getstackobj(vm_, -1, &klass);
+			sq_poptop(vm_);
+
+			Assert(sq_isclass(klass));
+
+			// singleton, lets find an equivlent in the root
+			bool foundSingleton = false;
+			sq_pushroottable(vm_);
+			sq_pushnull(vm_);
+			HSQOBJECT singleton;
+			sq_resetobject(&singleton);
+			while (SQ_SUCCEEDED(sq_next(vm_, -2)))
+			{
+				sq_getstackobj(vm_, -1, &singleton);
+				if (sq_isinstance(singleton) && _instance(singleton)->_class == _class(klass))
+				{
+					foundSingleton = true;
+					*obj = singleton;
+					sq_pop(vm_, 2);
+					break;
+				}
+				sq_pop(vm_, 2);
+			}
+			sq_pop(vm_, 2);
+
+			if (!foundSingleton)
+			{
+				Warning("SquirrelVM::ReadObject: Failed to find singleton for %s\n",
+					((ScriptClassDesc_t*)typetag)->m_pszScriptName);
+			}
+
+			sq_pushobject(vm_, *obj);
+			break;
+		}
+
 		sq_createinstance(vm_, -1);
 		sq_getstackobj(vm_, -1, obj);
 
@@ -2388,9 +2479,6 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_pop(vm_, 1);
 			}
 		}
-
-		SQUserPointer typetag;
-		sq_gettypetag(vm_, -1, &typetag);
 
 		if (typetag == TYPETAG_VECTOR)
 		{
@@ -2429,6 +2517,10 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_getinstanceup(vm_, -1, &p, 0);
 				new(p) ClassInstanceData(instance, pClassDesc, instanceName);
 			}
+			else
+			{
+				sq_setinstanceup(vm_, -1, nullptr);
+			}
 		}
 
 		break;
@@ -2457,6 +2549,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		}
 
 		vm_->Push(ret);
+		sq_getstackobj(vm_, -1, obj);
 	}
 	case OT_OUTER: //internal usage only
 	{
@@ -2476,6 +2569,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		outer->_valptr = &(outer->_value);
 		sq_poptop(vm_);
 		vm_->Push(outer);
+		sq_getstackobj(vm_, -1, obj);
 
 		break;
 	}
@@ -2496,6 +2590,10 @@ void SquirrelVM::ReadState(CUtlBuffer* pBuffer)
 	ReadStateMap readState;
 
 	sq_pushroottable(vm_);
+
+	HSQOBJECT* obj = nullptr;
+	readState.CheckCache(pBuffer, &obj);
+	sq_getstackobj(vm_, -1, obj);
 
 	int count = pBuffer->GetInt();
 
