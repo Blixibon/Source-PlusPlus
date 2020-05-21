@@ -299,7 +299,7 @@ void CHudAmmoHE::UpdatePlayerAmmo( C_BasePlayer *player )
 
 		if (bLabel) //FClassnameIs( wpn, "weapon_alyxgun" ))
 		{
-			wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_TITLE_%s", GetAmmoDef()->m_AmmoType[wpn->GetPrimaryAmmoType()].pName));
+			wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_%s", GetAmmoDef()->m_AmmoType[wpn->GetPrimaryAmmoType()].pName));
 			if (tempString)
 				SetLabel(tempString);
 			else
@@ -393,7 +393,7 @@ void CHudAmmoHE::UpdateVehicleAmmo( C_BasePlayer *player, IClientVehicle *pVehic
 		}
 
 		SetIcon( IsAPC ? L"u" : L"*");
-		wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_TITLE_%s", GetAmmoDef()->m_AmmoType[pVehicle->GetPrimaryAmmoType()].pName));
+		wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_%s", GetAmmoDef()->m_AmmoType[pVehicle->GetPrimaryAmmoType()].pName));
 		if (tempString)
 			SetLabel(tempString, IsAPC);
 		else
@@ -650,7 +650,7 @@ protected:
 					icon[0] = (pTex && pTex->bRenderUsingFont) ? pTex->cCharacterInFont : L'\0';
 					icon[1] = L'\0';
 					SetIcon(icon);
-					wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_TITLE_%s", GetAmmoDef()->m_AmmoType[wpn->GetSecondaryAmmoType()].pName));
+					wchar_t* tempString = g_pVGuiLocalize->Find(CFmtStr("#AMMO_%s", GetAmmoDef()->m_AmmoType[wpn->GetSecondaryAmmoType()].pName));
 					if (tempString)
 						SetLabel(tempString);
 					else
