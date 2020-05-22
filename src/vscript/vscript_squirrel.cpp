@@ -1846,6 +1846,9 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 		{
 			break;
 		}
+		sq_getdelegate(vm_, idx);
+		WriteObject(pBuffer, writeState, -1);
+		sq_poptop(vm_);
 		int count = sq_getsize(vm_, idx);
 		sq_push(vm_, idx);
 		sq_pushnull(vm_);
@@ -1868,9 +1871,6 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 		{
 			break;
 		}
-		sq_getdelegate(vm_, idx);
-		WriteObject(pBuffer, writeState, -1);
-		sq_poptop(vm_);
 		int count = sq_getsize(vm_, idx);
 		pBuffer->PutInt(count);
 		sq_push(vm_, idx);
@@ -2234,9 +2234,16 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			break;
 		}
 
+		ReadObject(pBuffer, readState);
+
 		int count = pBuffer->GetInt();
 		sq_newtableex(vm_, count);
 		sq_getstackobj(vm_, -1, obj);
+
+		sq_push(vm_, -2);
+		sq_setdelegate(vm_, -2);
+
+		sq_remove(vm_, -2);
 
 		for (int i = 0; i < count; ++i)
 		{
@@ -2244,6 +2251,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			ReadObject(pBuffer, readState);
 			sq_rawset(vm_, -3);
 		}
+
 		break;
 	}
 	case OT_ARRAY:
@@ -2255,16 +2263,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			break;
 		}
 
-		ReadObject(pBuffer, readState);
-
 		int count = pBuffer->GetInt();
 		sq_newarray(vm_, count);
 		sq_getstackobj(vm_, -1, obj);
-
-		sq_push(vm_, -2);
-		sq_setdelegate(vm_, -2);
-
-		sq_remove(vm_, -2);
 
 		for (int i = 0; i < count; ++i)
 		{
@@ -2344,6 +2345,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			sq_pushnull(vm_);
 		}
 		sq_remove(vm_, -2);
+
 		break;
 	}
 	case OT_CLASS:
@@ -2480,6 +2482,8 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			}
 		}
 
+
+
 		if (typetag == TYPETAG_VECTOR)
 		{
 			float x = pBuffer->GetFloat();
@@ -2513,9 +2517,12 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 					break;
 				}
 
-				SQUserPointer p;
-				sq_getinstanceup(vm_, -1, &p, 0);
-				new(p) ClassInstanceData(instance, pClassDesc, instanceName);
+				{
+					SQUserPointer p;
+					sq_getinstanceup(vm_, -1, &p, 0);
+					new(p) ClassInstanceData(instance, pClassDesc, instanceName);
+				}
+				sq_setreleasehook(vm_, -1, &destructor_stub);
 			}
 			else
 			{

@@ -1,4 +1,5 @@
 "scripts/character_manifest.txt"
 {
 	"file"	"scripts/characters_bmce.txt"
+	"file"	"scripts/characters_ep2.txt"
 }

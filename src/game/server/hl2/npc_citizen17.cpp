@@ -336,6 +336,33 @@ bool CNPC_Citizen::ShouldAutosquad()
 	return npc_citizen_auto_player_squad.GetBool();
 }
 
+void CNPC_Citizen::SetupModelFromManifest()
+{
+	for (int i = 0; i < m_pCharacterDefinition->vBodyGroups.Count(); i++)
+	{
+		auto& body = m_pCharacterDefinition->vBodyGroups[i];
+		int iGroup = FindBodygroupByName(body.strName.String());
+		if (iGroup >= 0)
+			SetBodygroup(iGroup, body.vValues.Random());
+	}
+
+	m_nSkin = m_pCharacterDefinition->vSkins.Random();
+
+	for (int i = 0; i < m_pCharacterDefinition->vMergedModels.Count(); i++)
+	{
+		CPhysicsProp* pProp = static_cast<CPhysicsProp*>(CreateEntityByName("prop_physics_override"));
+		if (pProp != NULL)
+		{
+			// Set the model
+			pProp->SetModelName(AllocPooledString(m_pCharacterDefinition->vMergedModels[i].String()));
+			DispatchSpawn(pProp);
+			pProp->VPhysicsDestroyObject();
+			pProp->FollowEntity(this, true);
+			m_AttachedEntities.AddToTail(pProp);
+		}
+	}
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
@@ -351,7 +378,7 @@ bool CNPC_Citizen::CreateBehaviors()
 //-----------------------------------------------------------------------------
 void CNPC_Citizen::Precache()
 {
-	SelectModel();
+	//SelectModel();
 	SelectExpressionType();
 
 	if ( !npc_citizen_dont_precache_all.GetBool() )
@@ -453,9 +480,12 @@ void CNPC_Citizen::Spawn()
 		gm_PlayerSquadEvaluateTimer.Force();
 	}
 
-	/*if ( IsAmmoResupplier() )
-		m_nSkin = 2;*/
-	if (m_Type <= CT_LOYALIST && m_Type != CT_UNIQUE)
+	if (m_pCharacterDefinition)
+	{
+		SetupModelFromManifest();
+		m_pCharacterDefinition = nullptr;
+	}
+	else if (m_Type <= CT_LOYALIST && m_Type != CT_UNIQUE)
 	{
 		m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
 
@@ -655,7 +685,40 @@ void CNPC_Citizen::SelectModel()
 #endif
 	}
 
-	if (m_Type <= CT_LOYALIST)
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
+
+	if (!pChar)
+	{
+		int iRank = m_Type;
+		if (iRank != CT_UNIQUE)
+		{
+			const char* pszTypeNames[] = {
+				"default",
+				"downtrodden",
+				"refugee",
+				"rebel",
+				"",
+				"hostage",
+				"loyalist",
+				"gasmask"
+			};
+
+			CFmtStr str("%s_%s", GetClassname(), pszTypeNames[iRank]);
+			pChar = GetCharacterManifest()->FindCharacterModel(str.Access());
+		}
+	}
+
+	if (pChar)
+	{
+		SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar)));
+		m_pCharacterDefinition = pChar;
+	}
+	else if (m_Type <= CT_LOYALIST)
 	{
 		if (HasSpawnFlags(SF_CITIZEN_RANDOM_HEAD | SF_CITIZEN_RANDOM_HEAD_MALE | SF_CITIZEN_RANDOM_HEAD_FEMALE) || GetModelName() == NULL_STRING)
 		{

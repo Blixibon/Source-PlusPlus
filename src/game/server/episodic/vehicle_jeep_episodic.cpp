@@ -24,6 +24,11 @@
 #include "ai_dynamiclink.h"
 #include "smoke_trail.h"
 #include "steamjet.h"
+#ifdef PORTAL
+#include "portal_player.h"
+#include "prop_portal.h"
+#endif // PORTAL
+
 
 extern ConVar phys_upimpactforcescale;
 
@@ -1165,25 +1170,33 @@ void CPropJeepEpisodic::ReleasePropFromCargoHold( void )
 // Purpose: If the player is trying to pull the cargo out of the hold using the physcannon, let him
 // Output : Returns the cargo to pick up, if all the conditions are met
 //-----------------------------------------------------------------------------
-CBaseEntity *CPropJeepEpisodic::OnFailedPhysGunPickup( Vector vPhysgunPos )
+CBaseEntity *CPropJeepEpisodic::OnFailedPhysGunPickup( Vector vPhysgunPos, Vector vPhysgunPosActual)
 {
 	// Make sure we're available to open
 	if ( m_hCargoProp != NULL )
 	{
 		// Player's forward direction
 		Vector vecPlayerForward;
-		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(vPhysgunPos);
+		CBasePlayer *pPlayer = UTIL_GetNearestPlayer(vPhysgunPosActual);
 		if ( pPlayer == NULL )
 			return NULL;
 
 		pPlayer->EyeVectors( &vecPlayerForward );
+
+#ifdef PORTAL
+		CProp_Portal* pPortal = ToPortalPlayer(pPlayer)->GetHeldObjectPortal();
+		if (pPortal)
+		{
+			UTIL_Portal_VectorTransform(pPortal->MatrixThisToLinked(), vecPlayerForward, vecPlayerForward);
+		}
+#endif // PORTAL
 
 		// Origin and facing of the cargo hold
 		Vector vecCargoOrigin;
 		Vector vecCargoForward;
 		GetAttachment( "cargo", vecCargoOrigin, &vecCargoForward );
 
-		// Direction from the cargo to the player's position
+		// Direction from the cargo to the physgun's position
 		Vector vecPickupDir = ( vecCargoOrigin - vPhysgunPos );
 		float flDist = VectorNormalize( vecPickupDir );
 
@@ -1206,7 +1219,7 @@ CBaseEntity *CPropJeepEpisodic::OnFailedPhysGunPickup( Vector vPhysgunPos )
 		}
 	}
 
-	return BaseClass::OnFailedPhysGunPickup( vPhysgunPos );
+	return BaseClass::OnFailedPhysGunPickup( vPhysgunPos, vPhysgunPosActual );
 }
 
 // adds a collision solver for any small props that are stuck under the vehicle

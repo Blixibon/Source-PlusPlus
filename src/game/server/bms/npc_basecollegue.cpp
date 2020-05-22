@@ -503,3 +503,66 @@ void CNPC_BaseColleague::InputDisableIdleSpeak(inputdata_t &inputdata)
 {
 	AddSpawnFlags(SF_COLLEAGUE_NO_IDLE_SPEAK);
 }
+
+class CBMSActor : public CNPC_BaseColleague
+{
+public:
+	DECLARE_CLASS(CBMSActor, CNPC_BaseColleague);
+
+	void	Spawn(void);
+	void	SelectModel();
+	Class_T Classify(void);
+	int		GetSoundInterests(void);
+
+	string_t			m_strHullName;
+
+	DECLARE_DATADESC();
+};
+
+LINK_ENTITY_TO_CLASS(generic_actor_bms, CBMSActor);
+
+BEGIN_DATADESC(CBMSActor)
+DEFINE_KEYFIELD(m_strHullName, FIELD_STRING, "hull_name"),
+END_DATADESC();
+
+void CBMSActor::Spawn(void)
+{
+	m_iHealth = 8;
+
+	BaseClass::Spawn();
+
+	if (m_strHullName != NULL_STRING)
+	{
+		SetHullType(NAI_Hull::LookupId(STRING(m_strHullName)));
+	}
+	else
+	{
+		SetHullType(HULL_HUMAN);
+	}
+	SetHullSizeNormal();
+
+	NPCInit();
+}
+
+void CBMSActor::SelectModel()
+{
+	const CharacterManifest::ManifestCharacter_t* pChar = nullptr;
+	string_t iszName = GetEntityName();
+	if (iszName != NULL_STRING)
+	{
+		pChar = GetCharacterManifest()->FindCharacterModel(STRING(iszName));
+	}
+
+	SetModelName(AllocPooledString(CharacterManifest::GetScriptModel(pChar, STRING(GetModelName()))));
+	m_pCharacterDefinition = pChar;
+}
+
+Class_T CBMSActor::Classify(void)
+{
+	return CLASS_NONE;
+}
+
+int CBMSActor::GetSoundInterests(void)
+{
+	return NULL;
+}

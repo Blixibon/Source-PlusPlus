@@ -199,7 +199,7 @@ public:
 	void	Precache( void );
 
 	void	PrimaryAttack( void );
-	virtual float GetFireRate( void ) { return 1; };
+	virtual float GetFireRate( void ) { return 4.f; };
 	void	ItemPostFrame( void );
 
 	void	Activate( void );

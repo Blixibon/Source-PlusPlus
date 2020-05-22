@@ -140,7 +140,7 @@ public:
 	void InputStartSprint ( inputdata_t &inputdata );
 	void InputPullGrenade ( inputdata_t &inputdata );
 
-	virtual CBaseEntity *OnFailedPhysGunPickup ( Vector vPhysgunPos );
+	virtual CBaseEntity *OnFailedPhysGunPickup ( Vector vPhysgunPos, Vector vPhysgunPosActual);
 
 	virtual Vector BodyTarget(const Vector &posSrc, bool bNoisy);
 	virtual Vector HeadTarget(const Vector &posSrc);
@@ -1022,7 +1022,7 @@ void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
 	}
 }
 
-CBaseEntity *CNPC_Zombine::OnFailedPhysGunPickup( Vector vPhysgunPos )
+CBaseEntity *CNPC_Zombine::OnFailedPhysGunPickup( Vector vPhysgunPos, Vector vPhysgunPosActual)
 {
 	CBaseEntity *pGrenade = m_hGrenade;
 	ReleaseGrenade( vPhysgunPos );

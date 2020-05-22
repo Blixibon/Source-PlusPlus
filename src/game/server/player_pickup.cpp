@@ -89,12 +89,12 @@ bool Pickup_OnAttemptPhysGunPickup( CBaseEntity *pPickedUpObject, CBasePlayer *p
 	return true;
 }
 
-CBaseEntity	*Pickup_OnFailedPhysGunPickup( CBaseEntity *pPickedUpObject, Vector vPhysgunPos )
+CBaseEntity	*Pickup_OnFailedPhysGunPickup( CBaseEntity *pPickedUpObject, Vector vPhysgunPos, Vector vPhysgunPosActual)
 {
 	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pPickedUpObject);
 	if ( pPickup )
 	{
-		return pPickup->OnFailedPhysGunPickup( vPhysgunPos );
+		return pPickup->OnFailedPhysGunPickup( vPhysgunPos, vPhysgunPosActual);
 	}
 
 	return NULL;

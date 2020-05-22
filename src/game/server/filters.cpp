@@ -157,7 +157,7 @@ DEFINE_KEYFIELD(m_iFilterName[3], FIELD_STRING, "Filter04"),
 DEFINE_KEYFIELD(m_iFilterName[4], FIELD_STRING, "Filter05"),
 DEFINE_ARRAY(m_hFilter, FIELD_EHANDLE, MAX_FILTERS),
 
-END_DATADESC()
+END_DATADESC();
 
 
 
@@ -310,7 +310,7 @@ BEGIN_DATADESC(CFilterName)
 // Keyfields
 DEFINE_KEYFIELD(m_iFilterName, FIELD_STRING, "filtername"),
 
-END_DATADESC()
+END_DATADESC();
 
 
 
@@ -344,7 +344,7 @@ BEGIN_DATADESC(CFilterClass)
 // Keyfields
 DEFINE_KEYFIELD(m_iFilterClass, FIELD_STRING, "filterclass"),
 
-END_DATADESC()
+END_DATADESC();
 
 
 // ###################################################################
@@ -377,7 +377,7 @@ BEGIN_DATADESC(FilterTeam)
 // Keyfields
 DEFINE_KEYFIELD(m_iFilterTeam, FIELD_INTEGER, "filterteam"),
 
-END_DATADESC()
+END_DATADESC();
 
 
 // ###################################################################
@@ -413,7 +413,7 @@ BEGIN_DATADESC(CFilterMassGreater)
 // Keyfields
 DEFINE_KEYFIELD(m_fFilterMass, FIELD_FLOAT, "filtermass"),
 
-END_DATADESC()
+END_DATADESC();
 
 
 // ###################################################################
@@ -484,7 +484,7 @@ BEGIN_DATADESC(FilterDamageType)
 DEFINE_CUSTOM_KEYFIELD(m_iDamageType, &g_Int64SaveOps, "damagetype"),
 DEFINE_KEYFIELD(m_iFilterType, FIELD_INTEGER, "FilterType"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterEnemy
@@ -733,7 +733,7 @@ DEFINE_KEYFIELD(m_flOuterRadius, FIELD_FLOAT, "filter_outer_radius"),
 DEFINE_KEYFIELD(m_nMaxSquadmatesPerEnemy, FIELD_INTEGER, "filter_max_per_enemy"),
 DEFINE_FIELD(m_iszPlayerName, FIELD_STRING),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterModel
@@ -775,7 +775,7 @@ DEFINE_KEYFIELD(m_iFilterModel, FIELD_STRING, "filtermodel"),
 DEFINE_KEYFIELD(m_iFilterModel, FIELD_STRING, "filtername"),
 DEFINE_KEYFIELD(m_strFilterSkin, FIELD_STRING, "skin"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterContext
@@ -834,7 +834,7 @@ BEGIN_DATADESC(CFilterContext)
 // Keyfields
 DEFINE_KEYFIELD(m_bAny, FIELD_BOOLEAN, "any"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterSquad
@@ -884,7 +884,7 @@ BEGIN_DATADESC(CFilterSquad)
 DEFINE_KEYFIELD(m_iFilterName, FIELD_STRING, "filtername"),
 DEFINE_KEYFIELD(m_bAllowSilentSquadMembers, FIELD_BOOLEAN, "allowsilentmembers"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterHintGroup
@@ -941,7 +941,7 @@ BEGIN_DATADESC(CFilterHintGroup)
 DEFINE_KEYFIELD(m_iFilterName, FIELD_STRING, "filtername"),
 DEFINE_KEYFIELD(m_fHintLimiting, FIELD_INTEGER, "hintlimiting"),
 
-END_DATADESC()
+END_DATADESC();
 
 //extern bool ReadUnregisteredKeyfields(CBaseEntity* pTarget, const char* szKeyName, variant_t* variant);
 
@@ -979,7 +979,7 @@ BEGIN_DATADESC(CFilterKeyfield)
 DEFINE_KEYFIELD(m_iFilterKey, FIELD_STRING, "keyname"),
 DEFINE_KEYFIELD(m_iFilterValue, FIELD_STRING, "value"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterRelationship
@@ -1068,7 +1068,7 @@ DEFINE_KEYFIELD(m_bInvertTarget, FIELD_BOOLEAN, "inverttarget"),
 DEFINE_KEYFIELD(m_bReciprocal, FIELD_BOOLEAN, "Reciprocal"),
 DEFINE_FIELD(m_hTarget, FIELD_EHANDLE),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterClassify
@@ -1100,7 +1100,7 @@ BEGIN_DATADESC(CFilterClassify)
 // Keyfields
 DEFINE_KEYFIELD(m_iFilterClassify, FIELD_INTEGER, "filterclassify"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterCriteria
@@ -1197,7 +1197,7 @@ BEGIN_DATADESC(CFilterCriteria)
 DEFINE_KEYFIELD(m_bAny, FIELD_BOOLEAN, "any"),
 DEFINE_KEYFIELD(m_bFull, FIELD_BOOLEAN, "full"),
 
-END_DATADESC()
+END_DATADESC();
 
 extern bool TestEntityTriggerIntersection_Accurate(CBaseEntity* pTrigger, CBaseEntity* pEntity);
 
@@ -1255,7 +1255,7 @@ BEGIN_DATADESC(CFilterInVolume)
 // Keyfields
 DEFINE_KEYFIELD(m_iszVolumeTester, FIELD_STRING, "tester"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterSurfaceProp
@@ -1337,7 +1337,7 @@ BEGIN_DATADESC(CFilterSurfaceData)
 DEFINE_KEYFIELD(m_iFilterSurface, FIELD_STRING, "filterstring"),
 DEFINE_KEYFIELD(m_iSurfaceType, FIELD_INTEGER, "SurfaceType"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ===================================================================
 // Redirect filters
@@ -1636,7 +1636,7 @@ DEFINE_KEYFIELD(m_iMaxEntities, FIELD_INTEGER, "MaxEntities"),
 DEFINE_KEYFIELD(m_iSecondaryFilterMode, FIELD_INTEGER, "SecondaryFilterMode"),
 DEFINE_KEYFIELD(m_bCallerDamageAllowed, FIELD_BOOLEAN, "CallerDamageAllowed"),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterBloodControl
@@ -1682,7 +1682,7 @@ DEFINE_KEYFIELD(m_bSecondaryFilterIsDamageFilter, FIELD_BOOLEAN, "SecondaryFilte
 DEFINE_INPUTFUNC(FIELD_VOID, "DisableBlood", InputDisableBlood),
 DEFINE_INPUTFUNC(FIELD_VOID, "EnableBlood", InputEnableBlood),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterDamageMod
@@ -1701,6 +1701,14 @@ public:
 		return true;
 	}
 
+	bool PassesDamageFilterImpl(CBaseEntity* pCaller, const CTakeDamageInfo& info)
+	{
+		if (GetTargetFilter() && m_iSecondaryFilterMode == REDIRECT_MUST_PASS_TO_DAMAGE_CALLER)
+			return RedirectToDamageFilter(pCaller, info);
+
+		return true;
+	}
+
 	bool DamageMod(CBaseEntity* pCaller, CTakeDamageInfo& info)
 	{
 		if (GetTargetFilter())
@@ -1710,9 +1718,9 @@ public:
 			switch (m_iSecondaryFilterMode)
 			{
 			case REDIRECT_MUST_PASS_TO_DAMAGE_CALLER:
-			case REDIRECT_MUST_PASS_TO_ACT:				bPass = (RedirectToDamageFilter(pCaller, info));
+			case REDIRECT_MUST_PASS_TO_ACT:				bPass = (RedirectToDamageFilter(pCaller, info)); break;
 
-			case REDIRECT_MUST_PASS_ACTIVATORS:			bPass = (info.GetAttacker() && RedirectToFilter(pCaller, info.GetAttacker()));
+			case REDIRECT_MUST_PASS_ACTIVATORS:			bPass = (info.GetAttacker() && RedirectToFilter(pCaller, info.GetAttacker())); break;
 			}
 
 			if (!bPass)
@@ -1779,7 +1787,7 @@ DEFINE_INPUTFUNC(FIELD_STRING, "SetNewAttacker", InputSetNewAttacker),
 DEFINE_INPUTFUNC(FIELD_STRING, "SetNewInflictor", InputSetNewInflictor),
 DEFINE_INPUTFUNC(FIELD_STRING, "SetNewWeapon", InputSetNewWeapon),
 
-END_DATADESC()
+END_DATADESC();
 
 // ###################################################################
 //	> CFilterDamageLogic
@@ -1890,4 +1898,52 @@ DEFINE_OUTPUT(m_OutDamagePosition, "OutDamagePosition"),
 
 DEFINE_OUTPUT(m_OutForceFriendlyFire, "OutForceFriendlyFire"),
 
-END_DATADESC()
+END_DATADESC();
+
+class CFilterScript : public CBaseFilter
+{
+public:
+	DECLARE_CLASS(CFilterScript, CBaseFilter);
+
+	bool CallFilterFunction(const char* pFunctionName, ScriptVariant_t* pFunctionReturn, HSCRIPT hCaller, HSCRIPT hEntity)
+	{
+		if (!ValidateScriptScope())
+		{
+			DevMsg("\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n");
+			return false;
+		}
+
+		HSCRIPT hFunc = m_ScriptScope.LookupFunction(pFunctionName);
+
+		if (hFunc)
+		{
+			m_ScriptScope.Call(hFunc, pFunctionReturn, hCaller, hEntity);
+			m_ScriptScope.ReleaseFunction(hFunc);
+			return true;
+		}
+
+		return false;
+	}
+
+	bool PassesDamageFilterImpl(CBaseEntity* pCaller, const CTakeDamageInfo& info)
+	{
+		return BaseClass::PassesDamageFilterImpl(pCaller, info);
+	}
+
+	bool PassesFilterImpl(CBaseEntity* pCaller, CBaseEntity* pEntity)
+	{
+		if (m_ScriptScope.IsInitialized())
+		{
+			ScriptVariant_t functionReturn;
+
+			if (CallFilterFunction("PassesFilter", &functionReturn, ToHScript(pCaller), ToHScript(pEntity)))
+			{
+				return functionReturn.m_bool;
+			}
+		}
+
+		return false;
+	}
+};
+
+LINK_ENTITY_TO_CLASS(filter_activator_scripted, CFilterScript);

@@ -100,7 +100,7 @@ public:
 
 	void			AddPropToCargoHold( CPhysicsProp *pProp );
 
-	virtual CBaseEntity *OnFailedPhysGunPickup( Vector vPhysgunPos );
+	virtual CBaseEntity *OnFailedPhysGunPickup( Vector vPhysgunPos, Vector vPhysgunPosActual);
 	virtual void	DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased );
 	virtual int DrawDebugTextOverlays( void );
 

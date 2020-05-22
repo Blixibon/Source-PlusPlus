@@ -41,8 +41,9 @@ enum
 //--------------
 // HL2 SPECIFIC
 //--------------
-#define DMG_SNIPER		0x0000000100000000Ui64	//(DMG_LASTGENERICFLAG<<1Ui64)	// This is sniper damage. Displays headshots in deathnotice.
+#define DMG_SNIPER			0x0000000100000000Ui64	//(DMG_LASTGENERICFLAG<<1Ui64)	// This is sniper damage. Displays headshots in deathnotice.
 #define DMG_MISSILEDEFENSE	0x0000000200000000Ui64	//(DMG_LASTGENERICFLAG<<2Ui64)	// The only kind of damage missiles take. (special missile defense)
+#define DMG_HEAVYWEAPON		0x0000000400000000Ull	//(DMG_LASTGENERICFLAG<<3Ull)	// Damage from a heavy weapon
 
 
 

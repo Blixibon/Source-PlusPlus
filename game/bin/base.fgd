@@ -5107,6 +5107,11 @@
 	]
 ]
 
+@FilterClass base(BaseFilter) iconsprite("editor/filter_generic.vmt") = filter_activator_scripted :
+	"A filter that calls into its script scope to test entities. The script should have a function named 'PassesFilter' that takes two entity handles and returns a bool."
+[
+]
+
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 

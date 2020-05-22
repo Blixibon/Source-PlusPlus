@@ -63,6 +63,7 @@
 #include "c_portal_player.h"
 #else
 #include "portal_player.h"
+#include "physicsshadowclone.h"
 #endif
 #include "weapon_portalgun.h"
 #endif // PORTAL
@@ -277,31 +278,63 @@ extern ConVar hl2_walkspeed;
 	//-----------------------------------------------------------------------------
 // Purpose: Trace a line the special physcannon way!
 //-----------------------------------------------------------------------------
+#ifdef PORTAL
+	void UTIL_PhyscannonTraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, CBaseEntity* pTraceOwner, trace_t* pTrace, CProp_Portal *pPortal = nullptr)
+#else
 	void UTIL_PhyscannonTraceLine(const Vector &vecAbsStart, const Vector &vecAbsEnd, CBaseEntity *pTraceOwner, trace_t *pTrace)
+#endif
 	{
-		// Default to HL2 vanilla
-		if (hl2_episodic.GetBool() == false)
+#ifdef PORTAL
+		if (pPortal)
 		{
-			CTraceFilterNoOwnerTest filter(pTraceOwner, COLLISION_GROUP_NONE);
-			UTIL_TraceLine(vecAbsStart, vecAbsEnd, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
-			return;
-		}
+			// First, trace against entities
+			CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
+			Ray_t ray;
+			ray.Init(vecAbsStart, vecAbsEnd);
 
-		// First, trace against entities
-		CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
-		UTIL_TraceLine(vecAbsStart, vecAbsEnd, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+			UTIL_Portal_TraceRay_With(pPortal, ray, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
 
-		// If we've hit something, test again to make sure no brushes block us
-		if (pTrace->m_pEnt != NULL)
-		{
-			trace_t testTrace;
-			CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
-			UTIL_TraceLine(pTrace->startpos, pTrace->endpos, MASK_SHOT, &brushFilter, &testTrace);
-
-			// If we hit a brush, replace the trace with that result
-			if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+			// If we've hit something, test again to make sure no brushes block us
+			if (pTrace->m_pEnt != NULL)
 			{
-				*pTrace = testTrace;
+				trace_t testTrace;
+				CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
+				UTIL_Portal_TraceRay_With(pPortal, ray, MASK_SHOT, &brushFilter, &testTrace);
+
+				// If we hit a brush, replace the trace with that result
+				if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+				{
+					*pTrace = testTrace;
+				}
+			}
+		}
+		else
+#endif // PORTAL
+		{
+			// Default to HL2 vanilla
+			if (hl2_episodic.GetBool() == false)
+			{
+				CTraceFilterNoOwnerTest filter(pTraceOwner, COLLISION_GROUP_NONE);
+				UTIL_TraceLine(vecAbsStart, vecAbsEnd, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+				return;
+			}
+
+			// First, trace against entities
+			CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
+			UTIL_TraceLine(vecAbsStart, vecAbsEnd, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+
+			// If we've hit something, test again to make sure no brushes block us
+			if (pTrace->m_pEnt != NULL)
+			{
+				trace_t testTrace;
+				CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
+				UTIL_TraceLine(pTrace->startpos, pTrace->endpos, MASK_SHOT, &brushFilter, &testTrace);
+
+				// If we hit a brush, replace the trace with that result
+				if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+				{
+					*pTrace = testTrace;
+				}
 			}
 		}
 	}
@@ -309,31 +342,64 @@ extern ConVar hl2_walkspeed;
 	//-----------------------------------------------------------------------------
 	// Purpose: Trace a hull for the physcannon
 	//-----------------------------------------------------------------------------
+#ifdef PORTAL
+	void UTIL_PhyscannonTraceHull(const Vector& vecAbsStart, const Vector& vecAbsEnd, const Vector& vecAbsMins, const Vector& vecAbsMaxs, CBaseEntity* pTraceOwner, trace_t* pTrace, CProp_Portal* pPortal = nullptr)
+#else
 	void UTIL_PhyscannonTraceHull(const Vector &vecAbsStart, const Vector &vecAbsEnd, const Vector &vecAbsMins, const Vector &vecAbsMaxs, CBaseEntity *pTraceOwner, trace_t *pTrace)
+#endif
 	{
-		// Default to HL2 vanilla
-		if (hl2_episodic.GetBool() == false)
+#ifdef PORTAL
+		if (pPortal)
 		{
-			CTraceFilterNoOwnerTest filter(pTraceOwner, COLLISION_GROUP_NONE);
-			UTIL_TraceHull(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
-			return;
-		}
+			// First, trace against entities
+			CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
+			
+			Ray_t ray;
+			ray.Init(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs);
 
-		// First, trace against entities
-		CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
-		UTIL_TraceHull(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+			UTIL_Portal_TraceRay_With(pPortal, ray, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
 
-		// If we've hit something, test again to make sure no brushes block us
-		if (pTrace->m_pEnt != NULL)
-		{
-			trace_t testTrace;
-			CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
-			UTIL_TraceHull(pTrace->startpos, pTrace->endpos, vecAbsMins, vecAbsMaxs, MASK_SHOT, &brushFilter, &testTrace);
-
-			// If we hit a brush, replace the trace with that result
-			if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+			// If we've hit something, test again to make sure no brushes block us
+			if (pTrace->m_pEnt != NULL)
 			{
-				*pTrace = testTrace;
+				trace_t testTrace;
+				CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
+				UTIL_Portal_TraceRay_With(pPortal, ray, MASK_SHOT, &brushFilter, &testTrace);
+
+				// If we hit a brush, replace the trace with that result
+				if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+				{
+					*pTrace = testTrace;
+				}
+			}
+		}
+		else
+#endif // PORTAL
+		{
+			// Default to HL2 vanilla
+			if (hl2_episodic.GetBool() == false)
+			{
+				CTraceFilterNoOwnerTest filter(pTraceOwner, COLLISION_GROUP_NONE);
+				UTIL_TraceHull(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+				return;
+			}
+
+			// First, trace against entities
+			CTraceFilterPhyscannon filter(pTraceOwner, COLLISION_GROUP_NONE);
+			UTIL_TraceHull(vecAbsStart, vecAbsEnd, vecAbsMins, vecAbsMaxs, (MASK_SHOT | CONTENTS_GRATE), &filter, pTrace);
+
+			// If we've hit something, test again to make sure no brushes block us
+			if (pTrace->m_pEnt != NULL)
+			{
+				trace_t testTrace;
+				CTraceFilterOnlyBrushes brushFilter(COLLISION_GROUP_NONE);
+				UTIL_TraceHull(pTrace->startpos, pTrace->endpos, vecAbsMins, vecAbsMaxs, MASK_SHOT, &brushFilter, &testTrace);
+
+				// If we hit a brush, replace the trace with that result
+				if (testTrace.fraction < 1.0f || testTrace.startsolid || testTrace.allsolid)
+				{
+					*pTrace = testTrace;
+				}
 			}
 		}
 	}
@@ -1594,6 +1660,8 @@ public:
 
 	// Wait until we're done upgrading
 	void	WaitForUpgradeThink();
+
+	bool	AttachObject(CBaseEntity* pObject, const Vector& vPosition);
 #endif
 	virtual void SetViewModel( void );
 	virtual const char *GetShootSound( int iIndex ) const;
@@ -1641,7 +1709,6 @@ protected:
 	void	CheckForTarget( void );
 	
 #ifndef CLIENT_DLL
-	bool	AttachObject( CBaseEntity *pObject, const Vector &vPosition );
 	FindObjectResult_t		FindObject( void );
 	CBaseEntity *FindObjectInCone( const Vector &vecOrigin, const Vector &vecDir, float flCone );
 	CBaseEntity* MegaPhysCannonFindObjectInCone(const Vector& vecOrigin, const Vector& vecDir, float flCone, float flCombineBallCone, bool bOnlyCombineBalls);
@@ -2623,7 +2690,7 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 		pOwner->EyeVectors( &forward );
 #ifdef PORTAL
 		// If throwing from the opposite side of a portal, reorient the direction
-		if (((CPortal_Player*)pOwner)->IsHeldObjectOnOppositeSideOfPortal())
+		if (((CPortal_Player*)pOwner)->IsHeldObjectOnOppositeSideOfPortal() && ((CPortal_Player*)pOwner)->GetHeldObjectPortal())
 		{
 			CProp_Portal* pHeldPortal = ((CPortal_Player*)pOwner)->GetHeldObjectPortal();
 			UTIL_Portal_VectorTransform(pHeldPortal->MatrixThisToLinked(), forward, forward);
@@ -2686,10 +2753,26 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	CAutoScopeLagComp lagScope(pOwner);
 #endif
 
-	//CTraceFilterNoOwnerTest filter( pOwner, COLLISION_GROUP_NONE );
+#ifdef PORTAL
+	Ray_t rayPortalTest;
+	rayPortalTest.Init(start, end);
+
+	float fMustBeCloserThan = 2.0f;
+
+	CProp_Portal* pPortal = UTIL_Portal_FirstAlongRay(rayPortalTest, fMustBeCloserThan);
+	if (pPortal)
+	{
+		UTIL_Portal_VectorTransform(pPortal->MatrixThisToLinked(), forward, forward);
+	}
+#endif
+
 	trace_t tr;
-	//UTIL_TraceHull( start, end, -Vector(8,8,8), Vector(8,8,8), MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+#ifdef PORTAL
+	UTIL_PhyscannonTraceHull(start, end, -Vector(8, 8, 8), Vector(8, 8, 8), pOwner, &tr, pPortal);
+#else
 	UTIL_PhyscannonTraceHull(start, end, -Vector(8, 8, 8), Vector(8, 8, 8), pOwner, &tr);
+#endif // PORTAL
+
 	bool bValid = true;
 	CBaseEntity *pEntity = tr.m_pEnt;
 	if ( tr.fraction == 1 || !tr.m_pEnt || tr.m_pEnt->IsEFlagSet( EFL_NO_PHYSCANNON_INTERACTION ) )
@@ -2704,8 +2787,11 @@ void CWeaponPhysCannon::PrimaryAttack( void )
 	// If the entity we've hit is invalid, try a traceline instead
 	if ( !bValid )
 	{
-		//UTIL_TraceLine( start, end, MASK_SHOT|CONTENTS_GRATE, &filter, &tr );
+#ifdef PORTAL
+		UTIL_PhyscannonTraceLine(start, end, pOwner, &tr, pPortal);
+#else
 		UTIL_PhyscannonTraceLine(start, end, pOwner, &tr);
+#endif
 		if ( tr.fraction == 1 || !tr.m_pEnt || tr.m_pEnt->IsEFlagSet( EFL_NO_PHYSCANNON_INTERACTION ) )
 		{
 			// Play dry-fire sequence
@@ -2971,12 +3057,19 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 	Assert( pPlayer );
 	if ( pPlayer == NULL )
 		return OBJECT_NOT_FOUND;
+
+#ifdef PORTAL
+	CPortal_Player* pPortalPlayer = ToPortalPlayer(pPlayer);
+	pPortalPlayer->SetHeldObjectPortal(nullptr);
+	pPortalPlayer->SetHeldObjectOnOppositeSideOfPortal(false);
+#endif // PORTAL
 	
 	Vector forward;
 	pPlayer->EyeVectors( &forward );
 
 	// Setup our positions
 	Vector	start = pPlayer->Weapon_ShootPosition();
+	Vector	startActual = start;
 	float	testLength = TraceLength() * 4.0f;
 	Vector	end = start + forward * testLength;
 
@@ -3039,17 +3132,72 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 			bPull = true;
 		}
 	}
+#ifdef PORTAL
+	else if (!pEntity)
+	{
+		Ray_t rayPortalTest;
+		rayPortalTest.Init(start, end);
+
+		float fMustBeCloserThan = 2.0f;
+		CProp_Portal* pPortal = UTIL_Portal_FirstAlongRay(rayPortalTest, fMustBeCloserThan);
+		if (pPortal)
+		{
+			pPortalPlayer->SetHeldObjectPortal(pPortal);
+
+			UTIL_PhyscannonTraceLine(start, end, pPlayer, &tr, pPortal);
+
+			// Try again with a hull trace
+			if ((tr.fraction == 1.0) || (tr.m_pEnt == NULL) || (tr.m_pEnt->IsWorld()))
+			{
+				UTIL_PhyscannonTraceHull(start, end, -Vector(4, 4, 4), Vector(4, 4, 4), pPlayer, &tr, pPortal);
+			}
+
+			pEntity = tr.m_pEnt ? tr.m_pEnt->GetRootMoveParent() : NULL;
+
+			// If we hit something, pick it up or pull it
+			if ((tr.fraction != 1.0f) && (tr.m_pEnt) && (tr.m_pEnt->IsWorld() == false))
+			{
+				// Attempt to attach if within range
+				if (tr.fraction <= 0.25f)
+				{
+					bAttach = true;
+				}
+				else if (tr.fraction > 0.25f)
+				{
+					bPull = true;
+				}
+			}
+
+			UTIL_Portal_PointTransform(pPortalPlayer->GetHeldObjectPortal()->MatrixThisToLinked(), startActual, start);
+		}
+
+		if (pEntity && bAttach)
+		{
+			pPortalPlayer->SetHeldObjectOnOppositeSideOfPortal(true);
+		}
+	}
+#endif
 
 	if ( CanPickupObject( pEntity ) == false )
 	{
-		// Make a noise to signify we can't pick this up
-		if ( !m_flLastDenySoundPlayed )
-		{
-			m_flLastDenySoundPlayed = true;
-			WeaponSound( SPECIAL3 );
-		}
+		CBaseEntity* pNewObject = Pickup_OnFailedPhysGunPickup(pEntity, start, startActual);
 
-		return OBJECT_NOT_FOUND;
+		if (pNewObject && CanPickupObject(pNewObject))
+		{
+			pEntity = pNewObject;
+		}
+		else
+		{
+			// Make a noise to signify we can't pick this up
+			if (!m_flLastDenySoundPlayed)
+			{
+				CDisablePredictionFiltering disable(true);
+				m_flLastDenySoundPlayed = true;
+				WeaponSound(SPECIAL3);
+			}
+
+			return OBJECT_NOT_FOUND;
+		}
 	}
 
 	// Check to see if the object is constrained + needs to be ripped off...
@@ -3423,7 +3571,7 @@ bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 
 #ifdef PORTAL
 	// Translate hold position and angles across portal
-	if (pPortalPlayer->IsHeldObjectOnOppositeSideOfPortal())
+	if (pPortalPlayer->IsHeldObjectOnOppositeSideOfPortal() && pPortal)
 	{
 		CProp_Portal* pPortalLinked = pPortal->m_hLinkedPortal;
 		if (pPortal && pPortal->m_bActivated && pPortalLinked != NULL)
@@ -3506,8 +3654,8 @@ void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
 
 	if( pOwner != NULL )
 	{
-		pOwner->EnableSprint( true );
-		pOwner->SetMaxSpeed( hl2_normspeed.GetFloat() );
+		//pOwner->EnableSprint( true );
+		//pOwner->SetMaxSpeed( hl2_normspeed.GetFloat() );
 #ifdef PORTAL
 		CPortal_Player* pPortalPlayer = ToPortalPlayer(pOwner);
 		pPortalPlayer->SetHeldObjectOnOppositeSideOfPortal(false);
@@ -5037,6 +5185,20 @@ void PhysCannonForceDrop( CBaseCombatWeapon *pActiveWeapon, CBaseEntity *pOnlyIf
 			pCannon->ForceDrop();
 		}
 	}
+}
+
+void PhysCannonPickupObject(CBasePlayer* pPlayer, CBaseEntity* pObject)
+{
+#ifdef GAME_DLL
+	CWeaponPhysCannon* pCannon = dynamic_cast<CWeaponPhysCannon*>(pPlayer->GetActiveWeapon());
+	if (pCannon)
+	{
+		if (!pCannon->GetGrabController().GetAttached())
+		{
+			pCannon->AttachObject(pObject, pObject->WorldSpaceCenter());
+		}
+	}
+#endif
 }
 
 void PhysCannonBeginUpgrade(CBaseAnimating* pAnim)

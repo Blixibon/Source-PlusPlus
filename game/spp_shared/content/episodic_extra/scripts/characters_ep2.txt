@@ -1,0 +1,21 @@
+"character_manifest"
+{
+	"mirt"
+	{
+		skin		20
+		model "models/minic23/citizens/male_09.mdl"
+		
+		bodygroup_data
+		{
+			"torso"		"6"
+			"legs"		"4"
+			"hands"		"1"
+			"beanies"	"2"
+		}
+		
+		bonemerge_data
+		{
+			"models/bloocobalt/citizens/male_09_glasses.mdl",
+		}
+	}
+}

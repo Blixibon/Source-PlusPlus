@@ -149,7 +149,7 @@ bool CHudLocator::ShouldDraw( void )
 			return false;
 	}
 	
-	return true;
+	return CHudElement::ShouldDraw();
 }
 
 //-----------------------------------------------------------------------------

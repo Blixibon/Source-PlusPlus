@@ -12,4 +12,6 @@
     "npc_sniper"            "npc_sniper_hecu"
     "proto_sniper"          "npc_sniper_hecu"
     "npc_houndeye"          "npc_houndeye_bms"
+
+    "generic_actor"         "generic_actor_bms"
 }

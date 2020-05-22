@@ -9,6 +9,7 @@
 #define	NPC_CITIZEN_H
 
 #include "peter\npc_combatsupplier.h"
+#include "character_manifest_system.h"
 
 #include "ai_behavior_functank.h"
 
@@ -74,6 +75,7 @@ public:
 	CNPC_Citizen()
 	 :	m_iHead( -1 )
 	{
+		m_pCharacterDefinition = nullptr;
 	}
 
 	//---------------------------------
@@ -88,6 +90,7 @@ public:
 	virtual void	OnGivenWeapon( CBaseCombatWeapon *pNewWeapon );
 	void			FixupMattWeapon();
 	virtual bool	ShouldAutosquad();
+	void			SetupModelFromManifest();
 
 #ifdef HL2_EPISODIC
 	virtual float	GetJumpGravity() const		{ return 1.8f; }
@@ -284,6 +287,8 @@ private:
 		TASK_CIT_SPEAK_MOURNING,
 
 	};
+
+	const CharacterManifest::ManifestCharacter_t* m_pCharacterDefinition; // Only valid during spawn
 
 	//-----------------------------------------------------
 	

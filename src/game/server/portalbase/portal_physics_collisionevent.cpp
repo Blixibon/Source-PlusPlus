@@ -437,6 +437,10 @@ static void ModifyWeight_PreCollision(vcollisionevent_t* pEvent)
 				CBasePlayer* pHoldingPlayer = GetPlayerHoldingEntity(pLookingForEntity);
 				if (pHoldingPlayer)
 					pGrabController = GetGrabControllerForPlayer(pHoldingPlayer);
+				if (!pGrabController)
+				{
+					pGrabController = GetGrabControllerForPhysCannon(pHoldingPlayer->GetActiveWeapon());
+				}
 
 				float fSavedMass, fSavedRotationalDamping;
 

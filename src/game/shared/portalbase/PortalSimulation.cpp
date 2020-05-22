@@ -19,6 +19,7 @@
 #include "vphysics/virtualmesh.h"
 #include "physics_shared.h"
 #include "portal_placement.h"
+#include "weapon_physcannon.h"
 
 #ifndef CLIENT_DLL
 
@@ -124,7 +125,7 @@ const char* PS_SD_Static_World_StaticProps_ClippedProp_t::szTraceSurfaceName = "
 const int PS_SD_Static_World_StaticProps_ClippedProp_t::iTraceSurfaceFlags = 0;
 CBaseEntity* PS_SD_Static_World_StaticProps_ClippedProp_t::pTraceEntity = NULL;
 
-ConVar portal_clone_displacements("portal_clone_displacements", "0", FCVAR_REPLICATED | FCVAR_CHEAT);
+ConVar portal_clone_displacements("portal_clone_displacements", "1", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar portal_environment_radius("portal_environment_radius", "75", FCVAR_REPLICATED | FCVAR_CHEAT);
 ConVar portal_ghosts_scale("portal_ghosts_scale", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Scale the bounds of objects ghosted in portal environments for the purposes of hit testing.");
 ConVar portal_ghost_force_hitbox("portal_ghost_force_hitbox", "0", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "(1 = Legacy behavior) Force potentially ghosted renderables to use their hitboxes to test against portal holes instead of collision AABBs");
@@ -1901,7 +1902,7 @@ void CPortalSimulator::TakePhysicsOwnership(CBaseEntity* pEntity)
 			CPhysicsShadowClone* pClone = CPhysicsShadowClone::CreateShadowClone(m_pLinkedPortal->m_InternalData.Simulation.pPhysicsEnvironment, hEnt, "CPortalSimulator::TakePhysicsOwnership(): To Linked Portal", &m_InternalData.Placement.matThisToLinked.As3x4());
 			if (pClone)
 			{
-				//bool bHeldByPhyscannon = false;
+				bool bHeldByPhyscannon = false;
 				CBaseEntity* pHeldEntity = NULL;
 				CPortal_Player* pPlayer = (CPortal_Player*)GetPlayerHoldingEntity(pEntity);
 
@@ -1915,8 +1916,8 @@ void CPortalSimulator::TakePhysicsOwnership(CBaseEntity* pEntity)
 					pHeldEntity = GetPlayerHeldEntity(pPlayer);
 					if ( !pHeldEntity )
 					{
-						//pHeldEntity = PhysCannonGetHeldEntity( pPlayer->GetActiveWeapon() );
-						//bHeldByPhyscannon = true;
+						pHeldEntity = PhysCannonGetHeldEntity( pPlayer->GetActiveWeapon() );
+						bHeldByPhyscannon = true;
 					}
 
 					if (pHeldEntity)
@@ -1937,11 +1938,11 @@ void CPortalSimulator::TakePhysicsOwnership(CBaseEntity* pEntity)
 
 				if (pHeldEntity)
 				{
-					/*if ( bHeldByPhyscannon )
+					if ( bHeldByPhyscannon )
 					{
 						PhysCannonPickupObject( pPlayer, pHeldEntity );
 					}
-					else*/
+					else
 					{
 						PlayerPickupObject(pPlayer, pHeldEntity);
 					}
@@ -2007,7 +2008,7 @@ void CPortalSimulator::ReleasePhysicsOwnership(CBaseEntity* pEntity, bool bConti
 						DBG_CODE_NOSCOPE(bFoundAlready = true; );
 						DBG_CODE_NOSCOPE(szLastFoundMarker = pClone->m_szDebugMarker);
 
-						//bool bHeldByPhyscannon = false;
+						bool bHeldByPhyscannon = false;
 						CBaseEntity* pHeldEntity = NULL;
 						CPortal_Player* pPlayer = (CPortal_Player*)GetPlayerHoldingEntity(pEntity);
 
@@ -2020,11 +2021,11 @@ void CPortalSimulator::ReleasePhysicsOwnership(CBaseEntity* pEntity, bool bConti
 						{
 							pHeldEntity = GetPlayerHeldEntity(pPlayer);
 
-							/*if ( !pHeldEntity )
+							if ( !pHeldEntity )
 							{
 								pHeldEntity = PhysCannonGetHeldEntity( pPlayer->GetActiveWeapon() );
 								bHeldByPhyscannon = true;
-							}*/
+							}
 
 							if (pHeldEntity)
 							{
@@ -2047,11 +2048,11 @@ void CPortalSimulator::ReleasePhysicsOwnership(CBaseEntity* pEntity, bool bConti
 
 						if (pHeldEntity)
 						{
-							/*if ( bHeldByPhyscannon )
+							if ( bHeldByPhyscannon )
 							{
 								PhysCannonPickupObject( pPlayer, pHeldEntity );
 							}
-							else*/
+							else
 							{
 								PlayerPickupObject(pPlayer, pHeldEntity);
 							}

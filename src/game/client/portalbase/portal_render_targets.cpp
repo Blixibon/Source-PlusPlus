@@ -200,7 +200,7 @@ void CPortalRenderTargets::InitClientRenderTargets( IMaterialSystem* pMaterialSy
 	}
 
 	// Water effects & camera from the base class (standard HL2 targets)
-	BaseClass::InitClientRenderTargets( pMaterialSystem, pHardwareConfig, 512, 256 );
+	BaseClass::InitClientRenderTargets( pMaterialSystem, pHardwareConfig, 1024, 256 );
 }
 
 //-----------------------------------------------------------------------------

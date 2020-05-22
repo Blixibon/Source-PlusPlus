@@ -1,0 +1,22 @@
+"SolidEnergy"
+//"Modulate"
+{
+	"$baseTexture" "Models/props_combine/combine_fenceglow"
+	"$detail1" "Models/props_combine/combine_fenceglow6"
+	"$nocull" "1"	
+	"$nodecal" "1"
+	"$additive" "1"
+	"$translucent" "1"
+	"$modelformat" "1"
+	"$no_fullbright" 1
+
+	"Proxies"
+	{
+		"TextureScroll"
+		{
+			"texturescrollvar" "$detail1texturetransform"
+			"texturescrollrate" -1
+			"texturescrollangle" 0
+		}
+	}
+}
