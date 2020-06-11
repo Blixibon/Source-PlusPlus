@@ -341,7 +341,7 @@ void CNPC_Gargantua::Precache()
 
 Class_T  CNPC_Gargantua::Classify ( void )
 {
-	return CLASS_ALIEN_MONSTER;
+	return CLASS_ALIEN_MILITARY;
 }
 
 void CNPC_Gargantua::OnRestore()

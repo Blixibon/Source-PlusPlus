@@ -2294,7 +2294,7 @@ int CBaseEntity::BloodColor()
 }
 
 
-void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType )
+void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int64 bitsDamageType )
 {
 	if ((BloodColor() == DONT_BLEED) || (BloodColor() == BLOOD_COLOR_MECH))
 	{
@@ -2346,7 +2346,7 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 		cCount = 4;
 	}
 
-	float flTraceDist = (bitsDamageType & DMG_AIRBOAT) ? 384 : 172;
+	float flTraceDist = (bitsDamageType & (DMG_AIRBOAT|DMG_HEAVYWEAPON)) ? 384 : 172;
 	for ( i = 0 ; i < cCount ; i++ )
 	{
 		vecTraceDir = vecDir * -1;// trace in the opposite direction the shot came from (the direction the shot is going)
@@ -2356,11 +2356,27 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 		vecTraceDir.z += random->RandomFloat( -flNoise, flNoise );
 
 		// Don't bleed on grates.
-		AI_TraceLine( ptr->endpos, ptr->endpos + vecTraceDir * -flTraceDist, MASK_SOLID_BRUSHONLY & ~CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &Bloodtr);
+		AI_TraceLine( ptr->endpos, ptr->endpos + vecTraceDir * -flTraceDist, MASK_SOLID & ~CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &Bloodtr);
 
 		if ( Bloodtr.fraction != 1.0 )
 		{
 			UTIL_BloodDecalTrace( &Bloodtr, BloodColor() );
+		}
+
+		if (RandomInt(0,3) == 3)
+		{
+			Vector vecRandBlood;
+			RandomVectorInUnitSphere(&vecRandBlood);
+			float flDot = DotProduct(vecRandBlood, -vecTraceDir.Normalized());
+			float flDist = RemapVal(flDot, -1.f, 1.f, 32.f, flTraceDist);
+
+			// Don't bleed on grates.
+			AI_TraceLine(ptr->endpos, ptr->endpos + vecTraceDir * -flDist, MASK_SOLID & ~CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &Bloodtr);
+
+			if (Bloodtr.fraction != 1.0)
+			{
+				UTIL_BloodDecalTrace(&Bloodtr, BloodColor());
+			}
 		}
 	}
 }

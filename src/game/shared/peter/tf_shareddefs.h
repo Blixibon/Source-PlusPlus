@@ -391,7 +391,6 @@ enum
 };
 
 extern const char *g_aWeaponNames[];
-extern int g_aWeaponDamageTypes[];
 extern const Vector g_vecFixedWpnSpreadPellets[];
 
 int GetWeaponId( const char *pszWeaponName );
@@ -855,13 +854,13 @@ extern const char *g_pszHintMessages[];
 //#define DMG_UNUSED					(DMG_LASTGENERICFLAG<<2)
 // We can't add anymore dmg flags, because we'd be over the 32 bit limit.
 // So lets re-use some of the old dmg flags in TF
-#define DMG_USE_HITLOCATIONS	(DMG_AIRBOAT)
-#define DMG_HALF_FALLOFF		(DMG_RADIATION)
-#define DMG_CRITICAL			(DMG_ACID)
-#define DMG_RADIUS_MAX			(DMG_ENERGYBEAM)
-#define DMG_IGNITE				(DMG_PLASMA)
-#define DMG_USEDISTANCEMOD		(DMG_SLOWBURN)		// NEED TO REMOVE CALTROPS
-#define DMG_NOCLOSEDISTANCEMOD	(DMG_POISON)
+#define DMG_USE_HITLOCATIONS	(DMG_SNIPER)
+//#define DMG_HALF_FALLOFF		(DMG_RADIATION)
+#define DMG_CRITICAL			(DMG_LASTHL2<<1Ull)
+//#define DMG_RADIUS_MAX			(DMG_ENERGYBEAM)
+//#define DMG_IGNITE				(DMG_PLASMA)
+//#define DMG_USEDISTANCEMOD		(DMG_SLOWBURN)		// NEED TO REMOVE CALTROPS
+//#define DMG_NOCLOSEDISTANCEMOD	(DMG_POISON)
 
 #define TF_DMG_SENTINEL_VALUE	0xFFFFFFFF
 

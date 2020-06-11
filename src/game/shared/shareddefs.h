@@ -425,7 +425,7 @@ enum PLAYER_ANIM
 
 #define DMG_PHYSGUN			(1Ui64<<23Ui64)		// Hit by manipulator. Usually doesn't do any damage.
 #define DMG_PLASMA			(1Ui64<<24Ui64)		// Shot by Cremator
-#define DMG_AIRBOAT			(1Ui64<<25Ui64)		// Hit by the airboat's gun
+#define DMG_HEAVYWEAPON		(1Ui64<<25Ui64)		// Hit by the airboat's gun
 
 #define DMG_DISSOLVE		(1Ui64<<26Ui64)		// Dissolving!
 #define DMG_BLAST_SURFACE	(1Ui64<<27Ui64)		// A blast on the surface of water that cannot harm things underwater

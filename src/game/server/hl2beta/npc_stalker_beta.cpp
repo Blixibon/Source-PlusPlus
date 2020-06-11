@@ -90,8 +90,8 @@ enum
 // -----------------------------------------------
 enum SquadSlot_T
 {
-	SQUAD_SLOT_CHASE_ENEMY_1	= LAST_SHARED_SQUADSLOT,
-	SQUAD_SLOT_CHASE_ENEMY_2,
+	SQUAD_SLOT_BSTALK_CHASE_1	= LAST_SHARED_SQUADSLOT,
+	SQUAD_SLOT_BSTALK_CHASE_2,
 };
 
 //-----------------------------------------------------------------------------
@@ -362,8 +362,8 @@ int CNPC_BetaStalker::GetSlotSchedule(int slotID)
 	switch (slotID)
 	{
 
-		case SQUAD_SLOT_CHASE_ENEMY_1:
-		case SQUAD_SLOT_CHASE_ENEMY_2:
+		case SQUAD_SLOT_BSTALK_CHASE_1:
+		case SQUAD_SLOT_BSTALK_CHASE_2:
 			return SCHED_STALKER_BETA_CHASE_ENEMY;
 			break;
 	}
@@ -1556,8 +1556,8 @@ AI_BEGIN_CUSTOM_NPC( npc_stalker_beta, CNPC_BetaStalker )
 
 	DECLARE_ACTIVITY(ACT_STALKER_WORK)
 
-	DECLARE_SQUADSLOT(SQUAD_SLOT_CHASE_ENEMY_1)
-	DECLARE_SQUADSLOT(SQUAD_SLOT_CHASE_ENEMY_2)
+	DECLARE_SQUADSLOT(SQUAD_SLOT_BSTALK_CHASE_1)
+	DECLARE_SQUADSLOT(SQUAD_SLOT_BSTALK_CHASE_2)
 
 
 	//=========================================================

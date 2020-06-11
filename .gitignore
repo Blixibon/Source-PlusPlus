@@ -59,6 +59,8 @@ raytrace.lib
 fgdlib.lib
 responserules.lib
 shaderlib.lib
+vscript.lib
+choreoobjects.lib
 
 *.vcxproj.filters
 *.pdb
@@ -124,4 +126,3 @@ game/spp_shared/content/background_movies/media/hl1_background01.bik
 game/bin/.vs/ProjectSettings.json
 game/bin/.vs/slnx.sqlite
 game/bin/.vs/VSWorkspaceState.json
-src/lib/public/vscript.lib

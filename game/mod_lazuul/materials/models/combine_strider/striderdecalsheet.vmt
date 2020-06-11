@@ -10,9 +10,12 @@
 	//"$envmaptint" "[0.4 0.4 0.4]"
 	"$envmapcontrast" 1
 	"$phong"     "1"
-	"$phongexponent"  "10"
-	"$phongboost"   "4"
-	"$phongfresnelranges"   "[1 .7 .3]"
-	"$phongwarptexture"  "models/Combine_strider/mini_iridescence"
+	"$phongexponenttexture" "Models/Combine_Strider/striderPhong"
+	"$phongboost"   "5"
+	"$phongfresnelranges"   "[.6 .7 .3]"
+
+	$rimlight               1
+	$rimlightexponent       2
+	$rimlightboost          .4
 	}
 }

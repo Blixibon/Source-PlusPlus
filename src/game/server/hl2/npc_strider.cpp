@@ -3039,7 +3039,7 @@ void CNPC_Strider::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &
 
 #endif	//HL2_EPISODIC
 
-	if ( (info.GetDamageType() & DMG_BULLET) && ricochetBullets )
+	if ( (info.GetDamageType() & DMG_BULLET) && !(info.GetDamageType() & DMG_HEAVYWEAPON) && ricochetBullets )
 	{
 		g_pEffects->Ricochet(ptr->endpos,ptr->plane.normal);
 		if ( ptr->hitgroup != HITGROUP_HEAD )
@@ -3063,7 +3063,7 @@ int CNPC_Strider::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	if ( UTIL_IsCombineBall( info.GetInflictor() ) )
 		return TakeDamageFromCombineBall( info );
 
-	if ( info.GetDamageType() == DMG_GENERIC )
+	if ( info.GetDamageType() == DMG_GENERIC || info.GetDamageType() & DMG_HEAVYWEAPON)
 		return BaseClass::OnTakeDamage_Alive( info );
 
 	if( IsUsingAggressiveBehavior() )
@@ -4354,7 +4354,7 @@ void CNPC_Strider::StompHit( int followerBoneIndex )
 	CPASAttenuationFilter filter( this, "NPC_Strider.Skewer" );
 	EmitSound( filter, 0, "NPC_Strider.Skewer", &hitPosition );
 
-	CTakeDamageInfo damageInfo( this, this, 500, DMG_CRUSH );
+	CTakeDamageInfo damageInfo( this, this, 500, DMG_CRUSH | DMG_HEAVYWEAPON);
 	Vector forward;
 	pEnemy->GetVectors( &forward, NULL, NULL );
 	damageInfo.SetDamagePosition( hitPosition );

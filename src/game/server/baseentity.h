@@ -1037,7 +1037,7 @@ public:
 	// UNDONE: Make this data?
 	virtual int				BloodColor( void );
 
-	void					TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType );
+	void					TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int64 bitsDamageType );
 	virtual bool			IsTriggered( CBaseEntity *pActivator ) {return true;}
 	virtual bool			IsNPC( void ) const { return false; }
 	CAI_BaseNPC				*MyNPCPointer( void ); 

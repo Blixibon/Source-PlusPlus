@@ -41,7 +41,7 @@
 const float GARG_ATTACKDIST = 90.0;
 
 // Gargantua is immune to any damage but this
-#define GARG_DAMAGE					(DMG_ENERGYBEAM|DMG_BLAST|DMG_ACID)
+#define GARG_DAMAGE					(DMG_ENERGYBEAM|DMG_BLAST|DMG_ACID|DMG_HEAVYWEAPON)
 #define GARG_MODEL					"models/xenians/garg.mdl"
 //#define GARG_EYE_SPRITE_NAME		"sprites/gargeye1.vmt"
 //#define GARG_BEAM_SPRITE_NAME		"sprites/xbeam3.vmt"
