@@ -5024,7 +5024,7 @@ float GetSceneDuration( char const *pszScene )
 	SceneCachedData_t cachedData;
 	if (scenefilecache->GetSceneCachedData(pszScene, &cachedData))
 	{
-		flSecs = (float)cachedData.msecs * 0.001f;
+		flSecs = cachedData.msecs / 1000.f;
 	}
 #endif // 0
 
@@ -5041,7 +5041,7 @@ float GetSceneSpeechDuration(char const* pszScene)
 {
 	float flSecs = 0.0f;
 
-#if 1
+#if 0
 	CChoreoScene* pScene = CSceneEntity::LoadScene(pszScene, nullptr);
 	if (pScene)
 	{
@@ -5058,11 +5058,10 @@ float GetSceneSpeechDuration(char const* pszScene)
 		delete pScene;
 	}
 #else
-	FileNameHandle_t hName = g_SceneFileCache.Find(pszScene);
-	CSceneFileCache::sceneData_t* pData = g_SceneFileCache.GetSceneData(hName);
-	if (pData)
+	SceneCachedData_t cachedData;
+	if (scenefilecache->GetSceneCachedData(pszScene, &cachedData))
 	{
-		flSecs = pData->speech_msecs / 1000.f;
+		flSecs = cachedData.speech_msecs / 1000.f;
 	}
 #endif // 0
 

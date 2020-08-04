@@ -14,7 +14,7 @@ class IVEngineServer;
 class IServerGameDLL;
 class CGlobalVars;
 
-#define SPP_UTILS_INTERFACE "VGameSharedUtils004"
+#define SPP_UTILS_INTERFACE "VGameSharedUtils005"
 
 class IGameSharedUtils : public IAppSystem
 {
@@ -23,11 +23,11 @@ public:
 	virtual IHolidayEvents* GetEventSystem() = 0;
 
 	// Version 3
-	virtual bool	InitServer(IVEngineServer *pSVEngine, IServerGameDLL* pGame, CGlobalVars *pGlobals) = 0;
+	virtual bool	InitServer(CreateInterfaceFn engineFactory, CreateInterfaceFn gameFactory, CGlobalVars *pGlobals) = 0;
 	virtual bool	ServerLevelInit(const char* pMapName, char const* pOldLevel, bool loadGame, bool background) = 0;
 	virtual void	ServerLevelShutdown() = 0;
 
-	virtual bool	InitClient(IVEngineClient* pCLEngine, IBaseClientDLL* pClient, CGlobalVarsBase* pGlobals) = 0;
+	virtual bool	InitClient(CreateInterfaceFn engineFactory, CreateInterfaceFn clientFactory, CGlobalVarsBase* pGlobals) = 0;
 	virtual bool	ClientLevelInit(char const* pMapName) = 0;
 	virtual void	ClientLevelShutdown() = 0;
 

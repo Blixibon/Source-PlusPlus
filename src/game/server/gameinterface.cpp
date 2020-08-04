@@ -667,7 +667,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if (!spp_utils->Connect(appSystemFactory))
 		return false;
 
-	if (!spp_utils->InitServer(engine, this, pGlobals))
+	if (!spp_utils->InitServer(appSystemFactory, Sys_GetFactoryThis(), pGlobals))
 		return false;
 
 	if (!CommandLine()->CheckParm("-noscripting"))
@@ -1850,56 +1850,58 @@ static TITLECOMMENT gTitleComments[] =
 
 void CServerGameDLL::GetTitleName( const char *pMapName, char* pTitleBuff, int titleBuffSize )
 {
-	// Try to find a matching title comment for this mapname
-	for ( int i = 0; i < ARRAYSIZE(gTitleComments); i++ )
+	const NewMapData_t& mapData = g_pGameTypeSystem->LookupMapData(pMapName);
+
+	if (mapData.m_iChapterIndex == -1)
 	{
-		if ( !Q_strnicmp( pMapName, gTitleComments[i].pBSPName, strlen(gTitleComments[i].pBSPName) ) )
+		// Try to find a matching title comment for this mapname
+		for (int i = 0; i < ARRAYSIZE(gTitleComments); i++)
 		{
-			Q_strncpy( pTitleBuff, gTitleComments[i].pTitleName, titleBuffSize );
-			return;
+			if (!Q_strnicmp(pMapName, gTitleComments[i].pBSPName, strlen(gTitleComments[i].pBSPName)))
+			{
+				Q_strncpy(pTitleBuff, gTitleComments[i].pTitleName, titleBuffSize);
+				return;
+			}
 		}
+		Q_strncpy(pTitleBuff, pMapName, titleBuffSize);
 	}
-	Q_strncpy( pTitleBuff, pMapName, titleBuffSize );
+	else if (mapData.m_iChapterIndex == -2)
+	{
+		V_snprintf(pTitleBuff, titleBuffSize, "#%s_Training_Title", mapData.m_GameDef.String());
+	}
+	else if (mapData.m_iChapterIndex == -3)
+	{
+		V_snprintf(pTitleBuff, titleBuffSize, "#%s_Bonus_Title", mapData.m_GameDef.String());
+	}
+	else
+	{
+		if (mapData.m_iChapterIndex < 10 || V_strncmp(mapData.m_GameDef.String(), "hl2", 3) != 0)
+			V_snprintf(pTitleBuff, titleBuffSize, "#%s_Chapter%d_Title", mapData.m_GameDef.String(), mapData.m_iChapterIndex);
+		else if (mapData.m_iChapterIndex > 10)
+			V_snprintf(pTitleBuff, titleBuffSize, "#HL2_Chapter%d_Title", mapData.m_iChapterIndex - 1);
+		else
+			V_strncpy(pTitleBuff, "#HL2_Chapter9a_Title", titleBuffSize);
+	}
 }
 
 void CServerGameDLL::GetSaveComment( char *text, int maxlength, float flMinutes, float flSeconds, bool bNoTime )
 {
 	char comment[64];
-	const char	*pName;
-	int		i;
+	const char	*pName = comment;
+	//int		i;
 
 	char const *mapname = STRING( gpGlobals->mapname );
 
-	pName = NULL;
+	GetTitleName(mapname, comment, sizeof(comment));
 
-	// Try to find a matching title comment for this mapname
-	for ( i = 0; i < ARRAYSIZE(gTitleComments) && !pName; i++ )
+	int j = 0;
+	// Strip out CRs
+	while (j < 64 && comment[j])
 	{
-		if ( !Q_strnicmp( mapname, gTitleComments[i].pBSPName, strlen(gTitleComments[i].pBSPName) ) )
-		{
-			// found one
-			int j;
-
-			// Got a message, post-process it to be save name friendly
-			Q_strncpy( comment, gTitleComments[i].pTitleName, sizeof( comment ) );
-			pName = comment;
-			j = 0;
-			// Strip out CRs
-			while ( j < 64 && comment[j] )
-			{
-				if ( comment[j] == '\n' || comment[j] == '\r' )
-					comment[j] = 0;
-				else
-					j++;
-			}
-			break;
-		}
-	}
-	
-	// If we didn't get one, use the designer's map name, or the BSP name itself
-	if ( !pName )
-	{
-		pName = mapname;
+		if (comment[j] == '\n' || comment[j] == '\r')
+			comment[j] = 0;
+		else
+			j++;
 	}
 
 	if ( bNoTime )

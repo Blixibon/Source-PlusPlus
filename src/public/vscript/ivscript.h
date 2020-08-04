@@ -154,6 +154,11 @@ public:
 DECLARE_POINTER_HANDLE( HSCRIPT );
 #define INVALID_HSCRIPT ((HSCRIPT)-1)
 
+template <typename T> T* HScriptToClass(HSCRIPT hObj)
+{
+	return (hObj) ? (T*)g_pScriptVM->GetInstanceValue(hObj, GetScriptDesc((T*)NULL)) : NULL;
+}
+
 //-----------------------------------------------------------------------------
 // 
 //-----------------------------------------------------------------------------
@@ -181,6 +186,7 @@ DECLARE_DEDUCE_FIELDTYPE( FIELD_VECTOR,		const Vector &);
 DECLARE_DEDUCE_FIELDTYPE( FIELD_INTEGER,	int );
 DECLARE_DEDUCE_FIELDTYPE( FIELD_BOOLEAN,	bool );
 DECLARE_DEDUCE_FIELDTYPE( FIELD_CHARACTER,	char );
+DECLARE_DEDUCE_FIELDTYPE(FIELD_INT64, int64);
 DECLARE_DEDUCE_FIELDTYPE( FIELD_HSCRIPT,	HSCRIPT );
 DECLARE_DEDUCE_FIELDTYPE( FIELD_VARIANT,	ScriptVariant_t );
 
@@ -202,6 +208,7 @@ DECLARE_NAMED_FIELDTYPE( const Vector&,	"vector" );
 DECLARE_NAMED_FIELDTYPE( int,	"integer" );
 DECLARE_NAMED_FIELDTYPE( bool,	"boolean" );
 DECLARE_NAMED_FIELDTYPE( char,	"character" );
+DECLARE_NAMED_FIELDTYPE(int64, "int64");
 DECLARE_NAMED_FIELDTYPE( HSCRIPT,	"hscript" );
 DECLARE_NAMED_FIELDTYPE( ScriptVariant_t,	"variant" );
 
@@ -216,6 +223,7 @@ inline const char * ScriptFieldTypeName( int16 eType)
 	case FIELD_INTEGER:	return "integer";
 	case FIELD_BOOLEAN:	return "boolean";
 	case FIELD_CHARACTER:	return "character";
+	case FIELD_INT64: return "int64";
 	case FIELD_HSCRIPT:	return "hscript";
 	case FIELD_VARIANT:	return "variant";
 	default:	return "unknown_script_type";
@@ -315,6 +323,7 @@ struct ScriptVariant_t
 	ScriptVariant_t( char val ) :			m_flags( 0 ), m_type( FIELD_CHARACTER )	{ m_char = val; }
 	ScriptVariant_t( bool val ) :			m_flags( 0 ), m_type( FIELD_BOOLEAN )	{ m_bool = val; }
 	ScriptVariant_t( HSCRIPT val ) :		m_flags( 0 ), m_type( FIELD_HSCRIPT )	{ m_hScript = val; }
+	ScriptVariant_t(int64 val) :			m_flags(0), m_type(FIELD_INT64)			{ m_int64 = val; }
 
 	ScriptVariant_t( const Vector &val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pVector = &val; } else { m_pVector = new Vector( val ); m_flags |= SV_FREE; } }
 	ScriptVariant_t( const Vector *val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pVector = val; } else { m_pVector = new Vector( *val ); m_flags |= SV_FREE; } }
@@ -329,6 +338,7 @@ struct ScriptVariant_t
 	operator char() const					{ Assert( m_type == FIELD_CHARACTER );	return m_char; }
 	operator bool() const					{ Assert( m_type == FIELD_BOOLEAN );	return m_bool; }
 	operator HSCRIPT() const				{ Assert( m_type == FIELD_HSCRIPT );	return m_hScript; }
+	operator int64() const					{ Assert(m_type == FIELD_INT64);	return m_int64; }
 
 	void operator=( int i ) 				{ m_type = FIELD_INTEGER; m_int = i; }
 	void operator=( float f ) 				{ m_type = FIELD_FLOAT; m_float = f; }
@@ -339,6 +349,7 @@ struct ScriptVariant_t
 	void operator=( char c )				{ m_type = FIELD_CHARACTER; m_char = c; }
 	void operator=( bool b ) 				{ m_type = FIELD_BOOLEAN; m_bool = b; }
 	void operator=( HSCRIPT h ) 			{ m_type = FIELD_HSCRIPT; m_hScript = h; }
+	void operator=(int64 i)					{ m_type = FIELD_INT64; m_int64 = i; }
 
 	void Free()								{ if ( ( m_flags & SV_FREE ) && ( m_type == FIELD_HSCRIPT || m_type == FIELD_VECTOR || m_type == FIELD_CSTRING ) ) delete m_pszString; } // Generally only needed for return results
 
@@ -416,6 +427,21 @@ struct ScriptVariant_t
 		}
 	}
 
+	bool AssignTo(int64* pDest)
+	{
+		switch (m_type)
+		{
+		case FIELD_VOID:		*pDest = 0; return false;
+		case FIELD_INTEGER:		*pDest = m_int; return true;
+		case FIELD_FLOAT:		*pDest = m_float; return true;
+		case FIELD_BOOLEAN:		*pDest = m_bool; return true;
+		case FIELD_INT64:		*pDest = m_int64; return true;
+		default:
+			DevWarning("No conversion from %s to int64 now\n", ScriptFieldTypeName(m_type));
+			return false;
+		}
+	}
+
 	bool AssignTo( bool *pDest )
 	{
 		switch( m_type )
@@ -468,6 +494,7 @@ struct ScriptVariant_t
 		char			m_char;
 		bool			m_bool;
 		HSCRIPT			m_hScript;
+		int64			m_int64;
 	};
 
 	int16				m_type;

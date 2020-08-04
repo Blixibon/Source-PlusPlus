@@ -1,0 +1,15 @@
+response t0a1a_fallnag
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a1a/falldmg_nag01.vcd" 
+   scene "scenes/hazardcourse/t0a1a/falldmg_nag02.vcd" 
+   scene "scenes/hazardcourse/t0a1a/falldmg_nag03.vcd" 
+}
+
+criterion TLK_t0a1a_FALLNAG concept TLK_t0a1a_FALLNAG required
+rule TLK_t0a1a_FALLNAG
+{
+	criteria TLK_t0a1a_FALLNAG
+	response t0a1a_fallnag
+}

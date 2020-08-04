@@ -5394,6 +5394,8 @@ static int g_FieldSizes[FIELD_TYPECOUNT] =
 	sizeof(matrix3x4_t),// FIELD_MATRIX3X4_WORLDSPACE	// NOTE: Use array(FIELD_FLOAT, 12) for matrix3x4_t NOT in worldspace
 	sizeof(interval_t), // FIELD_INTERVAL
 	sizeof(int),		// FIELD_MODELINDEX
+	sizeof(Vector2D),
+	sizeof(int64),
 };
 
 //-----------------------------------------------------------------------------
@@ -5452,6 +5454,7 @@ int C_BaseEntity::ComputePackedSize_R( datamap_t *map )
 		case FIELD_EDICT:
 		case FIELD_POSITION_VECTOR:
 		case FIELD_FUNCTION:
+		case FIELD_INT64:
 			AssertOnce( 0 );
 			break;
 

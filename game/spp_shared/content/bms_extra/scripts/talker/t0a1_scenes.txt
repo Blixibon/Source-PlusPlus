@@ -1,0 +1,17 @@
+response t0a1_suitnag
+{
+    sequential
+    norepeat
+    scene "scenes/hazardcourse/t0a1/hev_simo_nag1.vcd" 
+    scene "scenes/hazardcourse/t0a1/hev_bick_nag1.vcd" 
+    scene "scenes/hazardcourse/t0a1/hev_simo_nag2.vcd" 
+    scene "scenes/hazardcourse/t0a1/hev_simo_nag3.vcd" 
+    scene "scenes/hazardcourse/t0a1/hev_bick_nag2.vcd" 
+}
+
+criterion TLK_t0a1_SUITNAG concept TLK_t0a1_SUITNAG required
+rule TLK_t0a1_SUITNAG
+{
+	criteria TLK_t0a1_SUITNAG
+	response t0a1_suitnag
+}

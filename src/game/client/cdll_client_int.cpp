@@ -986,7 +986,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	if (!spp_utils->Connect(appSystemFactory))
 		return false;
 
-	if (!spp_utils->InitClient(engine, this, pGlobals))
+	if (!spp_utils->InitClient(appSystemFactory, Sys_GetFactoryThis(), pGlobals))
 		return false;
 
 	if (!CommandLine()->CheckParm("-noscripting"))

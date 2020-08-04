@@ -58,7 +58,7 @@ bool IsTextypeUsingCustomTexture( int textype );
 void BindTextureByAutoType( bool bPreview, IShaderDynamicAPI *pShaderAPI, CBaseVSShader *pShader,
 							int type, int sampleridx, int TextureVar, int FrameVar = -1, bool bPS = true );
 void UpdateConstantByIdentifier( CBaseVSShader *pShader, IShaderDynamicAPI* pShaderAPI, IMaterialVar **params, SimpleEnvConstant *pConst, CProceduralContext *pContext,
-								bool bPS, int iFirstMutable = -1, int iFirstStatic = -1 );
+								bool bPS, int iFirstMutable = -1, int iFirstStatic = -1, int iTimeVar = -1 );
 
 extern IUniformRandomStream *random;
 extern IFileSystem *g_pFullFileSystem;

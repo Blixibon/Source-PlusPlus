@@ -1,5 +1,12 @@
+@chapter:1
+@location:coast
 metastasis_1
+@chapter:2
+@location:c17/nexus
 metastasis_2
+@chapter:3
+@location:citadel
 metastasis_3
+@chapter:4
 metastasis_4a
 metastasis_4b

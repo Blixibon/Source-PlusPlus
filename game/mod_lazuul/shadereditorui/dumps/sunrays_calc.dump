@@ -1,10 +1,10 @@
 "sunrays_calc"
 {
-	"vs_name"		"sunrays_calc_vs30"
-	"ps_name"		"sunrays_calc_ps30"
+	"vs_name"		"sunrays_calc_vs20"
+	"ps_name"		"sunrays_calc_ps20b"
 	"shader_filename"		"shadereditorui\canvas\post_processing_shaders\sunrays_calc.txt"
 	"dump_version"		"dumpver#001"
-	"i_sm"		"1"
+	"i_sm"		"0"
 	"i_cull"		"0"
 	"i_ablend"		"0"
 	"fl_atestref"		"0.500000"

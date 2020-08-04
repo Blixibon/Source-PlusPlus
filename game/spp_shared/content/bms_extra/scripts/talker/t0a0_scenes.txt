@@ -1,0 +1,267 @@
+criterion Is_t0a0 "map" "hc_t0a0" required weight 5
+criterion IsPostHCBriefing "hc_postbriefing" "1" required
+
+
+//========================================================
+//00 - Kleiner's post-brief dialog
+//========================================================
+criterion Ishc_lobby_isaac name "hc_lobby_isaac" required
+
+response kleiner_t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/klein_goodtosee.vcd" 
+   scene "scenes/hazardcourse/t0a0/klein_catchup.vcd" 
+   scene "scenes/hazardcourse/t0a0/klein_misslecture.vcd" 
+}
+
+rule kleiner_t0a0_talk
+{
+   criteria TLK_VITALIDLE Ishc_lobby_isaac Is_t0a0 IsPostHCBriefing
+   response kleiner_t0a0_talk
+}
+//========================================================
+//01 - Human Resources Rep post-brief dialog
+//========================================================
+criterion IsHCSci04 name "SCI04_HCOBSRV" required
+
+response HCSci04_t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/hrrep_goodluck.vcd" 
+   scene "scenes/hazardcourse/t0a0/hrrep_questions.vcd" 
+   scene "scenes/hazardcourse/t0a0/hrrep_troublingsilence.vcd" 
+}
+
+rule HCSci04_t0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCSci04  Is_t0a0 IsPostHCBriefing
+   response HCSci04_t0a0_talk
+}
+//========================================================
+//02 - Observer Post-Breif Lines
+//========================================================
+criterion IsHCSci01 name "SCI01_HCOBSRV" required
+
+response HCSci01_t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/sci01_hcobsrv_tour.vcd" 
+   scene "scenes/hazardcourse/t0a0/sci01_hcobsrv_notall.vcd" 
+   scene "scenes/hazardcourse/t0a0/sci01_hcobsrv_moveon.vcd" 
+}
+
+rule HCSci01_t0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCSci01  Is_t0a0 IsPostHCBriefing
+   response HCSci01_t0a0_talk
+}
+//========================================================
+//03 - Observer 2 Post-Breif Lines - I should delete this comments, they waste space.
+//========================================================
+criterion IsHCSci02 name "SCI02_HCOBSRV" required
+
+response HCSci02_t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/sci02_hcobsrv_admin.vcd" 
+   scene "scenes/hazardcourse/t0a0/sci02_hcobsrv_perks.vcd" 
+   scene "scenes/hazardcourse/t0a0/sci02_hcobsrv_onsite.vcd" 
+}
+
+rule HCSci02_t0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCSci02  Is_t0a0 IsPostHCBriefing
+   response HCSci02_t0a0_talk
+}
+//========================================================
+//04 - Bitchford Post-Brief Lines 
+//========================================================
+criterion IsHCScibickford name "hc_sci_bickford" required
+
+response HCScibickford_t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/bickford_getthisover.vcd" 
+   scene "scenes/hazardcourse/t0a0/bickford_elevator.vcd" 
+  //Bickford's third line is part of Simowitz's third line. Because that shakes things up a bit.
+}
+
+rule HCScibickford_t0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCScibickford  Is_t0a0 IsPostHCBriefing
+   response HCScibickford_t0a0_talk
+}
+//========================================================
+//04 - Simowitz Post-Brief Lines 
+//========================================================
+criterion IsHCSciSimowitz name "hc_lobby_simowitz" required
+
+response HCSciSimowitzt0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/simowitz_pleasure.vcd" 
+   scene "scenes/hazardcourse/t0a0/simowitz_courseiseasy.vcd" 
+    scene "scenes/hazardcourse/t0a0/simowitz_locks.vcd" 
+}
+
+rule HCSciSimowitzt0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCSciSimowitz Is_t0a0 IsPostHCBriefing
+   response HCSciSimowitzt0a0_talk
+}
+//========================================================
+//05 - Banannas are guard!
+//========================================================
+criterion IsHCLobbyGuard01 name "GRD_HC_LOBBY01" required
+
+response HCLobbyGuard01t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/guard1_breakfast.vcd" 
+   scene "scenes/hazardcourse/t0a0/guard1_banannas.vcd" 
+    scene "scenes/hazardcourse/t0a0/guard1_dontask.vcd" 
+}
+
+rule HCLobbyGuard01t0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCLobbyGuard01 Is_t0a0 IsPostHCBriefing
+   response HCLobbyGuard01t0a0_talk
+}
+//========================================================
+//06 - Guard 02
+//========================================================
+criterion IsHCLobbyGuard02 name "GRD_HC_LOBBY02" required
+
+response HCLobbyGuard02t0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/guard02_hcentrance.vcd" 
+   scene "scenes/hazardcourse/t0a0/guard02_observationele.vcd" 
+   scene "scenes/hazardcourse/t0a0/guard02_notgood.vcd" 
+    scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd"  
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+   scene "scenes/hazardcourse/t0a0/guard02_numbnuts.vcd" 
+}
+
+rule HCLobbyGuard02t0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCLobbyGuard02 Is_t0a0 
+   response HCLobbyGuard02t0a0_talk
+}
+//========================================================
+//07 - Guy in the booth
+//========================================================
+criterion IsHCSci01a name "hc_lobby_sci01a" required
+
+response HCSci01at0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/hc_lobby_sci01a_ugly.vcd" 
+  
+}
+
+rule HCSci01at0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCSci01a Is_t0a0 IsPostHCBriefing
+   response HCSci01at0a0_talk
+}
+//========================================================
+//08 - DoomGuy
+//========================================================
+criterion IsHCSci01c name "hc_lobby_sci01c" required
+
+response HCSci01ct0a0_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/hc_lobby_sci01c_freshmeat.vcd" 
+   scene "scenes/hazardcourse/t0a0/hc_lobby_sci01c_doom.vcd" 
+   scene "scenes/hazardcourse/t0a0/hc_lobby_sci01c_notcomplaining.vcd" 
+  
+}
+
+rule HCSci01ct0a0_talk
+{
+   criteria TLK_VITALIDLE IsHCSci01c Is_t0a0 IsPostHCBriefing
+   response HCSci01ct0a0_talk
+}
+//========================================================
+//09 -  Mister Irritated
+//========================================================
+criterion IsIrritated name "hc_sci_irritated" required
+
+response HCIrritated_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/irra_01.vcd" 
+   scene "scenes/hazardcourse/t0a0/irra_02.vcd" 
+   scene "scenes/hazardcourse/t0a0/irra_03.vcd" 
+  
+}
+
+rule HCIrritated_talk
+{
+   criteria TLK_VITALIDLE IsIrritated Is_t0a0
+   response HCIrritated_talk
+}
+
+//Make sure nobody speaks after their lines, because SOME NPCS STILL HAVE TROUBLE WITH THIS.
+response t0a0_nospeak_fallback
+{
+   scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule t0a0_nospeak_fallback
+{
+   criteria TLK_USE Is_t0a0
+   response t0a0_nospeak_fallback
+}
+
+//========================================================
+//10 -  S Wimmer
+//========================================================
+criterion IsSWIMMER name "hc_dr_wimmer" required
+
+response HCWIMMER_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a0/recep_use01.vcd" 
+   scene "scenes/hazardcourse/t0a0/recep_use02.vcd" 
+   scene "scenes/hazardcourse/t0a0/recep_use03.vcd" 
+  
+}
+
+rule HCWIMMER_talk
+{
+   criteria TLK_VITALIDLE IsSWIMMER Is_t0a0
+   response HCWIMMER_talk
+}
+
+//HR Rep Nag
+response hazardcourse_hrrepnag
+{
+   scene "scenes/hazardcourse/t0a0/hrrep_thisway01.vcd"  
+   scene "scenes/hazardcourse/t0a0/hrrep_thisway02.vcd" 
+   scene "scenes/hazardcourse/t0a0/hrrep_thisway03.vcd" 	
+}
+
+criterion TLK_HC_HRNAG concept TLK_HC_HRNAG required
+rule TLK_HC_HRNAG
+{
+	criteria TLK_HC_HRNAG
+	response hazardcourse_hrrepnag
+}

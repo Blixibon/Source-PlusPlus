@@ -1499,7 +1499,7 @@ private:
 class CPhysCannonEffectBeam
 {
 public:
-	CPhysCannonEffectBeam( void ) : m_pBeam() {};
+	CPhysCannonEffectBeam( void ) : m_pBeam(), m_bVisible(true) {};
 
 	~CPhysCannonEffectBeam( void )
 	{
@@ -1574,18 +1574,13 @@ public:
 		m_pBeam[firstPerson ? 0 : 1] = beams->CreateBeamEntPoint( beamInfo );
 	}
 
-	void SetVisible( bool state = true )
-	{
-		if ( m_pBeam[0] != NULL )
-			m_pBeam[0]->brightness = (state) ? 255.0f : 0.0f;
-
-		if (m_pBeam[1] != NULL)
-			m_pBeam[1]->brightness = (state) ? 255.0f : 0.0f;
-	}
+	void SetVisible(bool visible = true) { m_bVisible = visible; }
+	int IsVisible(void) const { return m_bVisible || gpGlobals->curtime < m_flForceVisibleUntil; }
+	void ForceVisibleUntil(float flTime) { m_flForceVisibleUntil = flTime; }
 
 	void DrawBeam(bool bFirstPerson)
 	{
-		if (m_pBeam[bFirstPerson ? 0 : 1] == NULL)
+		if (!IsVisible() || m_pBeam[bFirstPerson ? 0 : 1] == NULL)
 			return;
 
 		beams->DrawBeam(m_pBeam[bFirstPerson ? 0 : 1]);
@@ -1593,6 +1588,8 @@ public:
 
 private:
 	Beam_t	*m_pBeam[2];
+	bool				m_bVisible;
+	float				m_flForceVisibleUntil;
 };
 
 #endif
@@ -3968,7 +3965,7 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 
 	const float flScaleFactor = SPRITE_SCALE;
 
-	//if ( ShouldDrawUsingViewModel() )
+	if ( IsVisible() )
 	{
 		// Turn on the glow sprites
 		for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_PHYS_GLOW_SPRITES); i++ )
@@ -4006,60 +4003,14 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 			// Randomly arc between the elements and core
 			if (m_EffectState != EFFECT_HOLDING && random->RandomInt(0, 100) == 0 && !engine->IsPaused())
 			{
-				// Create our beams
-				CBaseEntity* pBeamEnt = nullptr;
-				if (ShouldDrawUsingViewModel())
-				{
-					CBasePlayer* pOwner = ToBasePlayer(GetOwner());
-					pBeamEnt = pOwner->GetViewModel();
-				}
-				else
-				{
-					pBeamEnt = this;
-				}
+				int iBeam = RandomInt(0, NUM_PHYSCANNON_BEAMS-1);
+				int	sprite = iBeam + PHYSCANNON_ENDCAP1;
+				float lifetime = gpGlobals->curtime + random->RandomFloat(0.2f, 0.4f);
 
-				if (pBeamEnt)
-				{
-					CBeam* pBeam = CBeam::BeamCreate(ShouldDrawUsingViewModel() ? MEGACANNON_BEAM_SPRITE_NOZ : MEGACANNON_BEAM_SPRITE, 1);
-
-					pBeam->EntsInit(pBeamEnt, pBeamEnt);
-
-					int	startAttachment;
-					int	sprite;
-
-					if (random->RandomInt(0, 1))
-					{
-						startAttachment = LookupAttachment("fork1t");
-						sprite = PHYSCANNON_ENDCAP1;
-					}
-					else
-					{
-						startAttachment = LookupAttachment("fork2t");
-						sprite = PHYSCANNON_ENDCAP2;
-					}
-
-					int endAttachment = 1;
-
-					pBeam->SetStartAttachment(startAttachment);
-					pBeam->SetEndAttachment(endAttachment);
-					pBeam->SetNoise(random->RandomFloat(8.0f, 16.0f));
-					pBeam->SetColor(255, 255, 255);
-					pBeam->SetScrollRate(25);
-					pBeam->SetBrightness(128);
-					pBeam->SetWidth(1);
-					pBeam->SetEndWidth(random->RandomFloat(2, 8));
-
-					float lifetime = random->RandomFloat(0.2f, 0.4f);
-
-					pBeam->LiveForTime(lifetime);
-
-					{
-						// Turn on the sprite for awhile
-						m_Parameters[sprite].ForceVisibleUntil(gpGlobals->curtime + lifetime);
-						//m_flEndSpritesOverride[sprite] = gpGlobals->curtime + lifetime;
-						EmitSound("Weapon_MegaPhysCannon.ChargeZap");
-					}
-				}
+				// Turn on the sprite for awhile
+				m_Parameters[sprite].ForceVisibleUntil(lifetime);
+				m_Beams[iBeam].ForceVisibleUntil(lifetime);
+				EmitSound("Weapon_MegaPhysCannon.ChargeZap");
 			}
 
 			//if (m_hCenterSprite != NULL)
@@ -5092,7 +5043,9 @@ void CWeaponPhysCannon::DrawEffectSprite( EffectType_t effectID, bool b3rdPerson
 void CWeaponPhysCannon::DrawEffects(bool b3rdPerson)
 {
 	// Draw the core effects
-	DrawEffectSprite( PHYSCANNON_CORE, b3rdPerson);
+	if (!b3rdPerson)
+		DrawEffectSprite( PHYSCANNON_CORE, b3rdPerson);
+
 	DrawEffectSprite( PHYSCANNON_BLAST, b3rdPerson);
 	
 	// Draw the glows

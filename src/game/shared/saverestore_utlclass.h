@@ -58,7 +58,8 @@ public:
 		type == FIELD_COLOR32 ||\
 		type == FIELD_EMBEDDED ||\
 		type == FIELD_MODELINDEX ||\
-		type == FIELD_MATERIALINDEX\
+		type == FIELD_MATERIALINDEX||\
+		type == FIELD_INT64\
 	)
 
 //-------------------------------------

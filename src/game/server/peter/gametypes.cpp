@@ -20,9 +20,11 @@ CUtlFilenameSymbolTable CGameTypeManager::sm_FilenameTable;
 
 //CUtlVectorAutoPurge<char *> vecGames;
 
-CGameTypeManager::CGameTypeManager() : m_MapNameToGameConfig(GTSLessFunc), m_NewGameConfigs(GTSLessFunc)
+CGameTypeManager::CGameTypeManager() : m_NewMapConfigs(GTSLessFunc), m_NewGameConfigs(GTSLessFunc)
 {
 }
+
+#define IF_PARAMS_VALID(params, i) if (params.Count() < i + 1) { Warning("Command must have %d parameters.\n", i); } else
 
 bool CGameTypeManager::Init()
 {
@@ -166,14 +168,52 @@ bool CGameTypeManager::Init()
 				CGTSymbol GameDefName(fileName);
 				m_NewGameConfigs.InsertOrReplace(GameDefName, GameDef);
 
+				NewMapData_t mapData;
+				mapData.m_GameDef = GameDefName;
+
 				char szMapName[MAX_MAP_NAME];
 				do {
 					buf.GetLine(szMapName, MAX_MAP_NAME);
+
+					// Handle comments and empty lines
+					if (V_strncmp(szMapName, "//", 2) == 0 || szMapName[0] == '\n')
+						continue;
+
 					const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
 					if (pszLineEnd)
 						const_cast<char*>(pszLineEnd)[0] = 0;
 
-					m_MapNameToGameConfig.InsertOrReplace(CGTSymbol(szMapName), GameDefName);
+					// Handle commands
+					if (szMapName[0] == '@')
+					{
+						CUtlStringList params;
+						V_SplitString(szMapName + 1, ":", params);
+
+						const char* pszCommand = params[0];						
+						if (V_strnicmp(pszCommand, "chapter", 7) == 0)
+						{
+							IF_PARAMS_VALID(params, 1)
+								mapData.m_iChapterIndex = atoi(params[1]);
+						}
+						else if (V_strnicmp(pszCommand, "location", 8) == 0)
+						{
+							IF_PARAMS_VALID(params, 1)
+								mapData.m_PopulationPath = params[1];
+						}
+						else if (V_strncmp(pszCommand, "optset", 6) == 0)
+						{
+							IF_PARAMS_VALID(params, 2)
+								mapData.GetOrCreateOptions()->SetString(params[1], params[2]);
+						}
+						else if (V_strncmp(pszCommand, "optclr", 6) == 0)
+						{
+							mapData.NukeOptions();
+						}
+
+						continue;
+					}
+
+					m_NewMapConfigs.InsertOrReplace(CGTSymbol(szMapName), mapData);
 				} while (buf.IsValid());
 			}
 		}
@@ -226,6 +266,82 @@ int CGameTypeManager::LookupGametype(const char *pchGame)
 	return GAME_INVALID;
 }
 
+const NewMapData_t& CGameTypeManager::LookupMapData(const char* pszMapname) const
+{
+	int iIndex = m_NewMapConfigs.Find(pszMapname);
+	if (!m_NewMapConfigs.IsValidIndex(iIndex))
+	{
+		static NewMapData_t staticData;
+		staticData.m_iChapterIndex = -1;
+		return staticData;
+	}
+
+	return m_NewMapConfigs.Element(iIndex);
+}
+
+int CGameTypeManager::GetMapOptionInt(const char* keyName, int defaultValue) const
+{
+	if (!m_CurrentMap.m_pOptions)
+	{
+		return defaultValue;
+	}
+
+	return m_CurrentMap.m_pOptions->GetInt(keyName, defaultValue);
+}
+
+uint64 CGameTypeManager::GetMapOptionUint64(const char* keyName, uint64 defaultValue) const
+{
+	if (!m_CurrentMap.m_pOptions)
+	{
+		return defaultValue;
+	}
+
+	return m_CurrentMap.m_pOptions->GetUint64(keyName, defaultValue);
+}
+
+float CGameTypeManager::GetMapOptionFloat(const char* keyName, float defaultValue) const
+{
+	if (!m_CurrentMap.m_pOptions)
+	{
+		return defaultValue;
+	}
+
+	return m_CurrentMap.m_pOptions->GetFloat(keyName, defaultValue);
+}
+
+const char* CGameTypeManager::GetMapOptionString(const char* keyName, const char* defaultValue) const
+{
+	if (!m_CurrentMap.m_pOptions)
+	{
+		return defaultValue;
+	}
+
+	return m_CurrentMap.m_pOptions->GetString(keyName, defaultValue);
+}
+
+bool CGameTypeManager::GetMapOptionBool(const char* keyName, bool defaultValue, bool* optGotDefault) const
+{
+	if (!m_CurrentMap.m_pOptions)
+	{
+		if (optGotDefault)
+			*optGotDefault = true;
+
+		return defaultValue;
+	}
+
+	return m_CurrentMap.m_pOptions->GetBool(keyName, defaultValue, optGotDefault);
+}
+
+bool CGameTypeManager::HasMapOption(const char* keyName) const
+{
+	if (!m_CurrentMap.m_pOptions)
+	{
+		return false;
+	}
+
+	return (m_CurrentMap.m_pOptions->FindKey(keyName, false) != nullptr);
+}
+
 void CGameTypeManager::Reload()
 {
 	Shutdown();
@@ -254,27 +370,6 @@ CON_COMMAND(gametype_print, "Prints info\n")
 			Msg("	%s: %s\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix.String(), g_pGameTypeSystem->m_vecGames[g_pGameTypeSystem->m_PrefixVector[i]->Type]);
 		else
 			Msg("	%s: %i\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix.String(), (int)g_pGameTypeSystem->m_PrefixVector[i]->Type);
-	}
-	Msg("Valid Areas:\n");
-	FOR_EACH_VEC(g_pGameTypeSystem->m_vecAreaNames, i)
-	{
-		char *pchArea = g_pGameTypeSystem->m_vecAreaNames[i];
-		if (pchArea && pchArea[0])
-		{
-			Msg("	%s\n", pchArea);
-		}
-	}
-	Msg("Current Areas:\n");
-	FOR_EACH_VEC(g_pGameTypeSystem->m_vecAreaNames, i)
-	{
-		char *pchArea = g_pGameTypeSystem->m_vecAreaNames[i];
-		if (pchArea && pchArea[0])
-		{
-			if (g_pGameTypeSystem->IsMapInArea(i))
-			{
-				Msg("	%s\n", pchArea);
-			}
-		}
 	}
 }
 
@@ -365,23 +460,23 @@ void CGameTypeManager::SelectGameType()
 		}
 	}
 
-	m_symConfigName = "default";
+	//m_symConfigName = "default";
 
 	CGTSymbol symMapName(szMapName);
-	unsigned short usIDX = m_MapNameToGameConfig.Find(symMapName);
-	if (m_MapNameToGameConfig.IsValidIndex(usIDX))
+	unsigned short usIDX = m_NewMapConfigs.Find(symMapName);
+	if (m_NewMapConfigs.IsValidIndex(usIDX))
 	{
-		CGTSymbol symGameType = m_MapNameToGameConfig.Element(usIDX);
-		unsigned short usIDX2 = m_NewGameConfigs.Find(symGameType);
+		m_CurrentMap = m_NewMapConfigs.Element(usIDX);
+		unsigned short usIDX2 = m_NewGameConfigs.Find(m_CurrentMap.m_GameDef);
 		if (!m_NewGameConfigs.IsValidIndex(usIDX2))
 		{
 			m_CurrentGame = NewGameDef_t();
 			return;
 		}
-
-		m_CurrentGame = m_NewGameConfigs.Element(usIDX2);
-
-		m_symConfigName = symGameType;
+		else
+		{
+			m_CurrentGame = m_NewGameConfigs.Element(usIDX2);
+		}
 	}
 	else
 	{
@@ -412,18 +507,16 @@ void CGameTypeManager::SelectGameType()
 		}
 
 		m_CurrentGame = NewGameDef_t();
-
-		if (vecCandidates.Count() == 0)
-		{
-			//m_iGameMod = m_iGameType = GAME_DEFAULT;
-			return;
-		}
+		m_CurrentMap = NewMapData_t();
+		m_CurrentMap.m_GameDef = "default";
+		m_CurrentMap.m_PopulationPath = m_vecAreaNames.Element(m_iFirstArea);
+		m_CurrentMap.m_iChapterIndex = -1;
 
 		if (vecCandidates.Count() == 1)
 		{
 			m_CurrentGame.m_BaseGame = m_CurrentGame.m_GameMod = (GameType)vecCandidates.Head().Type;
 		}
-		else
+		else if (vecCandidates.Count() > 0)
 		{
 			GameType BestType = GAME_DEFAULT;
 			int iBestPriority = 0;
@@ -441,6 +534,19 @@ void CGameTypeManager::SelectGameType()
 			m_CurrentGame.m_BaseGame = m_CurrentGame.m_GameMod = BestType;
 		}
 	}
+
+	char szMapadd[128];
+	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", STRING(gpGlobals->mapname));
+	KeyValues* pMapAdd = new KeyValues("MapData");
+	if (pMapAdd->LoadFromFile(filesystem, szMapadd, "GAME"))
+	{
+		KeyValues* pkvMapOptions = m_CurrentMap.GetOrCreateOptions();
+		FOR_EACH_VALUE(pMapAdd, pkvOption)
+		{
+			pkvMapOptions->SetString(pkvOption->GetName(), pkvOption->GetString());
+		}
+	}
+	pMapAdd->deleteThis();
 }
 
 

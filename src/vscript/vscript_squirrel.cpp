@@ -1,9 +1,9 @@
 #include "vscript/ivscript.h"
-#include "tier1/utlstring.h"
 #include "tier1/utlbuffer.h"
 #include "tier1/utlmap.h"
-#include "tier1/convar.h"
+#include "tier1/utlstring.h"
 
+#define assert Assert
 #include "squirrel.h"
 #include "sqstdaux.h"
 //#include "sqstdblob.h"
@@ -13,7 +13,6 @@
 #include "sqstdstring.h"
 
 // HACK: Include internal parts of squirrel for serialization
-#define assert(a) Assert(a)
 #include "squirrel/squirrel/sqobject.h"
 #include "squirrel/squirrel/sqstate.h"
 #include "squirrel/squirrel/sqtable.h"
@@ -26,10 +25,6 @@
 #include "tier1/utlbuffer.h"
 
 #include <cstdarg>
-
-#include "init_nut.h"
-
-ConVar developer("developer", "0");
 
 struct WriteStateMap
 {
@@ -58,8 +53,18 @@ struct WriteStateMap
 struct ReadStateMap
 {
 	CUtlMap<int, HSQOBJECT> cache;
-	ReadStateMap() : cache(DefLessFunc(int))
+	HSQUIRRELVM vm_;
+	ReadStateMap(HSQUIRRELVM vm) : cache(DefLessFunc(int)), vm_(vm)
 	{}
+
+	~ReadStateMap()
+	{
+		FOR_EACH_MAP_FAST(cache, i)
+		{
+			HSQOBJECT& obj = cache[i];
+			sq_release(vm_, &obj);
+		}
+	}
 
 	bool CheckCache(CUtlBuffer* pBuffer, HSQOBJECT** obj)
 	{
@@ -189,11 +194,13 @@ public:
 
 	virtual bool RaiseException(const char* pszExceptionText) override;
 
+
 	void WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQInteger idx);
 	void ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState);
 	HSQUIRRELVM vm_ = nullptr;
 	HSQOBJECT lastError_;
 	HSQOBJECT vectorClass_;
+	HSQOBJECT regexpClass_;
 };
 
 SQUserPointer TYPETAG_VECTOR = "VectorTypeTag";
@@ -509,6 +516,19 @@ namespace SQVector
 		return 1;
 	}
 
+	SQInteger ToKVString(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 1 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector)");
+		}
+
+		sqstd_pushstringf(vm, "%f %f %f", v1->x, v1->y, v1->z);
+		return 1;
+	}
 
 	SQInteger Cross(HSQUIRRELVM vm)
 	{
@@ -532,6 +552,70 @@ namespace SQVector
 		return 1;
 	}
 
+	SQInteger ToString(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 1 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector)");
+		}
+
+		sqstd_pushstringf(vm, "(vector: (%f, %f, %f))", v1->x, v1->y, v1->z);
+		return 1;
+	}
+
+	SQInteger TypeOf(HSQUIRRELVM vm)
+	{
+		sq_pushstring(vm, "Vector", -1);
+		return 1;
+	}
+
+	SQInteger Nexti(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 2 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector)");
+		}
+
+		HSQOBJECT obj;
+		sq_resetobject(&obj);
+		sq_getstackobj(vm, 2, &obj);
+
+		const char* curkey = nullptr;
+
+		if (sq_isnull(obj))
+		{
+			curkey = "w";
+		}
+		else if (sq_isstring(obj))
+		{
+			curkey = sq_objtostring(&obj);
+		}
+		else
+		{
+			return sq_throwerror(vm, "Invalid iteartor");
+		}
+
+		Assert(curkey && curkey[0] >= 'w' && curkey[0] <= 'z');
+
+		if (curkey[0] == 'z')
+		{
+			// Reached the end
+			sq_pushnull(vm);
+			return 1;
+		}
+
+		char newkey = curkey[0] + 1;
+		sq_pushstring(vm, &newkey, 1);
+
+		return 1;
+	}
+
 	static const SQRegFunction funcs[] = {
 		{_SC("constructor"), Construct,0,nullptr},
 		{_SC("_get"), Get, 2, _SC(".s")},
@@ -545,9 +629,14 @@ namespace SQVector
 		{_SC("Length2D"), Length2D, 1, _SC(".")},
 		{_SC("Length2DSqr"), Length2DSqr, 1, _SC(".")},
 		{_SC("Normalized"), Normalized, 1, _SC(".")},
+		{_SC("Norm"), Normalized, 1, _SC(".")},
 		{_SC("_div"), Divide, 2, _SC("..")},
 		{_SC("Dot"), Dot, 2, _SC("..")},
 		{_SC("Cross"), Cross, 2, _SC("..")},
+		{_SC("ToKVString"), ToKVString, 1, _SC(".")},
+		{_SC("_tostring"), ToString, 1, _SC(".")},
+		{_SC("_typeof"), TypeOf, 1, _SC(".")},
+		{_SC("_nexti"), Nexti, 2, _SC("..")},
 
 		{nullptr,(SQFUNCTION)0,0,nullptr}
 	};
@@ -609,6 +698,9 @@ bool CreateParamCheck(const ScriptFunctionBinding_t& func, char* output)
 		case FIELD_INTEGER:
 			*output++ = 'i'; // could use 'n' also which is int or float
 			break;
+		case FIELD_INT64:
+			*output++ = 's'; // could use 'n' also which is int or float
+			break;
 		case FIELD_BOOLEAN:
 			*output++ = 'b';
 			break;
@@ -654,6 +746,11 @@ void PushVariant(HSQUIRRELVM vm, const ScriptVariant_t& value)
 	}
 	case FIELD_INTEGER:
 		sq_pushinteger(vm, value.m_int);
+		break;
+	case FIELD_INT64:
+		char buf[64];
+		V_snprintf(buf, 64, "%lld", value.m_int64);
+		sq_pushstring(vm, value, -1);
 		break;
 	case FIELD_BOOLEAN:
 		sq_pushbool(vm, value.m_bool);
@@ -714,7 +811,7 @@ bool getVariant(HSQUIRRELVM vm, SQInteger idx, ScriptVariant_t& variant)
 		{
 			return false;
 		}
-		variant = (bool)val;
+		variant = val ? true : false;
 		return true;
 	}
 	case OT_STRING:
@@ -740,7 +837,6 @@ bool getVariant(HSQUIRRELVM vm, SQInteger idx, ScriptVariant_t& variant)
 			tag == TYPETAG_VECTOR &&
 			SQ_SUCCEEDED(sq_getinstanceup(vm, idx, (SQUserPointer*)&v, TYPETAG_VECTOR)))
 		{
-			// TODO: This actually ends up pointing to the same data it seems error prone
 			variant = new Vector(*v);
 			variant.m_flags |= SV_FREE;
 			return true;
@@ -819,12 +915,20 @@ SQInteger function_stub(HSQUIRRELVM vm)
 			params[i] = (int)val;
 			break;
 		}
+		case FIELD_INT64:
+		{
+			const char* val;
+			if (SQ_FAILED(sq_getstring(vm, i + 2, &val)))
+				return sq_throwerror(vm, "Expected string");
+			params[i] = atoll(val);
+			break;
+		}
 		case FIELD_BOOLEAN:
 		{
 			SQBool val = 0;
 			if (SQ_FAILED(sq_getbool(vm, i + 2, &val)))
 				return sq_throwerror(vm, "Expected bool");
-			params[i] = (bool)val;
+			params[i] = val ? true : false;
 			break;
 		}
 		case FIELD_CHARACTER:
@@ -911,14 +1015,12 @@ SQInteger destructor_stub_instance(SQUserPointer p, SQInteger size)
 	auto classInstanceData = (ClassInstanceData*)p;
 	// We don't call destructor here because this is owned by the game
 	classInstanceData->~ClassInstanceData();
-
 	return 0;
 }
 
 SQInteger constructor_stub(HSQUIRRELVM vm)
 {
 	ScriptClassDesc_t* pClassDesc = nullptr;
-
 	sq_gettypetag(vm, 1, (SQUserPointer*)&pClassDesc);
 
 	if (!pClassDesc->m_pfnConstruct)
@@ -941,13 +1043,45 @@ SQInteger constructor_stub(HSQUIRRELVM vm)
 		return sq_throwobject(vm);
 	}
 
-	SQUserPointer p;
-	sq_getinstanceup(vm, 1, &p, 0);
-	new(p) ClassInstanceData(instance, pClassDesc);
+	{
+		SQUserPointer p;
+		sq_getinstanceup(vm, 1, &p, 0);
+		new(p) ClassInstanceData(instance, pClassDesc);
+	}
 
 	sq_setreleasehook(vm, 1, &destructor_stub);
 
 	return 0;
+}
+
+SQInteger tostring_stub(HSQUIRRELVM vm)
+{
+	ClassInstanceData* classInstanceData = nullptr;
+	sq_getinstanceup(vm, 1, (SQUserPointer*)&classInstanceData, 0);
+
+	char buffer[128] = "";
+
+	if (classInstanceData &&
+		classInstanceData->instance &&
+		classInstanceData->desc->pHelper &&
+		classInstanceData->desc->pHelper->ToString(classInstanceData->instance, buffer, sizeof(buffer)))
+	{
+		sq_pushstring(vm, buffer, -1);
+	}
+	else if (classInstanceData)
+	{
+		sqstd_pushstringf(vm, "(%s : 0x%p)", classInstanceData->desc->m_pszScriptName, classInstanceData->instance);
+	}
+	else
+	{
+		HSQOBJECT obj;
+		sq_resetobject(&obj);
+		sq_getstackobj(vm, 1, &obj);
+		// Semi-based on SQVM::ToString default case
+		sqstd_pushstringf(vm, "(%s: 0x%p)", IdType2Name(obj._type), (void*)_rawval(obj));
+	}
+
+	return 1;
 }
 
 struct SquirrelSafeCheck
@@ -979,28 +1113,79 @@ void printfunc(HSQUIRRELVM SQ_UNUSED_ARG(v), const SQChar* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	char buffer[256];
-	vsprintf(buffer, format, args);
-	Msg("vscript: %s", buffer);
+	MsgV(format, args);
 	va_end(args);
 }
 
 void errorfunc(HSQUIRRELVM SQ_UNUSED_ARG(v), const SQChar* format, ...)
 {
+	// NOTE: This is only separate from printfunc to make it easier to add breakpoints
 	va_list args;
 	va_start(args, format);
-	char buffer[256];
-	vsprintf(buffer, format, args);
-	Msg("vscript: (ERROR) %s", buffer);
+	WarningV(format, args);
 	va_end(args);
 }
 
-static SQInteger GetDeveloper(HSQUIRRELVM hVM)
+const char * ScriptDataTypeToName(ScriptDataType_t datatype)
 {
-	int iReturn = developer.GetInt();
-	sq_pushinteger(hVM, iReturn);
-	return 1;
+	switch (datatype)
+	{
+	case FIELD_VOID:		return "void";
+	case FIELD_FLOAT:		return "float";
+	case FIELD_CSTRING:		return "string";
+	case FIELD_VECTOR:		return "Vector";
+	case FIELD_INTEGER:		return "int";
+	case FIELD_BOOLEAN:		return "bool";
+	case FIELD_CHARACTER:	return "char";
+	case FIELD_HSCRIPT:		return "handle";
+	default:				return "<unknown>";
+	}
 }
+
+void RegisterDocumentation(HSQUIRRELVM vm, const ScriptFuncDescriptor_t& pFuncDesc, ScriptClassDesc_t* pClassDesc = nullptr)
+{
+	SquirrelSafeCheck safeCheck(vm);
+
+	if (pFuncDesc.m_pszDescription && pFuncDesc.m_pszDescription[0] == SCRIPT_HIDE[0])
+		return;
+
+	char name[256] = "";
+
+	if (pClassDesc)
+	{
+		V_strcat_safe(name, pClassDesc->m_pszScriptName);
+		V_strcat_safe(name, "::");
+	}
+
+	V_strcat_safe(name, pFuncDesc.m_pszScriptName);
+
+
+	char signature[256] = "";
+	V_snprintf(signature, sizeof(signature), "%s %s(", ScriptDataTypeToName(pFuncDesc.m_ReturnType), name);
+
+	for (int i = 0; i < pFuncDesc.m_Parameters.Count(); ++i)
+	{
+		if (i != 0)
+			V_strcat_safe(signature, ", ");
+
+		V_strcat_safe(signature, ScriptDataTypeToName(pFuncDesc.m_Parameters[i]));
+	}
+
+	V_strcat_safe(signature, ")");
+
+	// RegisterHelp(name, signature, description)
+	sq_pushroottable(vm);
+	sq_pushstring(vm, "RegisterHelp", -1);
+	sq_get(vm, -2);
+	sq_remove(vm, -2);
+	sq_pushroottable(vm);
+	sq_pushstring(vm, name, -1);
+	sq_pushstring(vm, signature, -1);
+	sq_pushstring(vm, pFuncDesc.m_pszDescription ? pFuncDesc.m_pszDescription : "", -1);
+	sq_call(vm, 4, SQFalse, SQFalse);
+	sq_pop(vm, 1);
+}
+
 
 bool SquirrelVM::Init()
 {
@@ -1035,23 +1220,141 @@ bool SquirrelVM::Init()
 		//sqstd_register_iolib(vm_);
 		//sqstd_register_systemlib(vm_);
 
-		sq_pushstring(vm_, "developer", -1);
-		sq_newclosure(vm_, &GetDeveloper, 0);
-		sq_setnativeclosurename(vm_, -1, "developer");
-		sq_createslot(vm_, -3);
-
 
 		sqstd_seterrorhandlers(vm_);
+
+		{
+			// Unfortunately we can not get the pattern from a regexp instance
+			// so we need to wrap it with our own to get it.
+			if (Run(R"script(
+				class regexp extends regexp  
+				{
+					constructor(pattern) 
+					{
+						base.constructor(pattern);
+						pattern_ = pattern;
+					}
+					pattern_="";
+				}
+			)script") == SCRIPT_ERROR)
+			{
+				this->Shutdown();
+				return false;
+			}
+
+			sq_resetobject(&regexpClass_);
+			sq_pushstring(vm_, "regexp", -1);
+			sq_rawget(vm_, -2);
+			sq_getstackobj(vm_, -1, &regexpClass_);
+			sq_addref(vm_, &regexpClass_);
+			sq_pop(vm_, 1);
+		}
 
 		sq_pop(vm_, 1);
 	}
 
-	if (Run((char *)g_Script_init) != SCRIPT_DONE)
+	if (Run(
+		R"script(
+		function printl( text )
+		{
+			return print(text + "\n");
+		}
+
+		class CSimpleCallChainer
+		{
+			function constructor(prefixString, scopeForThis, exactMatch)
+			{
+				prefix = prefixString;
+				scope = scopeForThis;
+				chain = [];
+				scope["Dispatch" + prefixString] <- Call.bindenv(this);
+			}
+
+			function PostScriptExecute()
+			{
+				local func = null;
+				try {
+					func = scope[prefix];
+				} catch(e) {
+					return;
+				}
+				if (typeof(func) != "function")
+					return;
+				chain.push(func);
+			}
+
+			function Call()
+			{
+				foreach (func in chain)
+				{
+					func.pcall(scope);
+				}
+			}
+			prefix = null;
+			scope= null;
+			chain = [];
+		}
+
+		DocumentedFuncs <- {}
+
+		function RegisterHelp(name, signature, description)
+		{
+			if (description.len() && description[0] == '#')
+			{
+				// This is an alias function, could use split() if we could guarantee
+				// that ':' would not occur elsewhere in the description and Squirrel had
+				// a convience join() function -- It has split()
+				local colon = description.find(":");
+				if (colon == null)
+					colon = description.len();
+				local alias = description.slice(1, colon);
+				description = description.slice(colon + 1);
+				name = alias;
+				signature = null;
+			}
+			DocumentedFuncs[name] <- [signature, description];
+		}
+
+		function PrintHelp(pattern = "*")
+		{
+			local foundMatches = false;
+			foreach(name, doc in DocumentedFuncs)
+			{
+				if (pattern == "*" || name.tolower().find(pattern.tolower()) != null)
+				{
+					foundMatches = true;
+					printl("Function:    " + name);
+					if (doc[0] == null)
+					{
+						// Is an aliased function
+						print("Signature:   function " + name + "(");
+						foreach(k,v in this[name].getinfos()["parameters"])
+						{
+							if (k == 0 && v == "this") continue;
+							if (k > 1) print(", ");
+							print(v);
+						}
+						printl(")");
+					}
+					else
+					{
+						printl("Signature:   " + doc[0]);
+					}
+					if (doc[1].len())
+						printl("Description: " + doc[1]);
+					print("\n");
+				}
+			}
+
+			if (!foundMatches)
+				printl("Pattern " + pattern + " not found");
+		}
+
+		)script") != SCRIPT_DONE)
 	{
 		this->Shutdown();
 		return false;
 	}
-
 
 	return true;
 }
@@ -1060,6 +1363,9 @@ void SquirrelVM::Shutdown()
 {
 	if (vm_)
 	{
+		sq_release(vm_, &vectorClass_);
+		sq_release(vm_, &regexpClass_);
+
 		sq_close(vm_);
 		vm_ = nullptr;
 	}
@@ -1067,11 +1373,13 @@ void SquirrelVM::Shutdown()
 
 bool SquirrelVM::ConnectDebugger()
 {
+	// TODO: Debugger support
 	return false;
 }
 
 void SquirrelVM::DisconnectDebugger()
 {
+	// TODO: Debugger support
 }
 
 ScriptLanguage_t SquirrelVM::GetLanguage()
@@ -1086,10 +1394,12 @@ const char* SquirrelVM::GetLanguageName()
 
 void SquirrelVM::AddSearchPath(const char* pszSearchPath)
 {
+	// TODO: Search path support
 }
 
 bool SquirrelVM::Frame(float simTime)
 {
+	// TODO: Frame support
 	return false;
 }
 
@@ -1115,7 +1425,7 @@ ScriptStatus_t SquirrelVM::Run(const char* pszScript, bool bWait)
 HSCRIPT SquirrelVM::CompileScript(const char* pszScript, const char* pszId)
 {
 	SquirrelSafeCheck safeCheck(vm_);
-	// TODO: sq_setcompilererrorhandler
+
 	Assert(vm_);
 	if (pszId == nullptr) pszId = "<unnamed>";
 	if (SQ_FAILED(sq_compilebuffer(vm_, pszScript, strlen(pszScript), pszId, SQTrue)))
@@ -1161,7 +1471,6 @@ ScriptStatus_t SquirrelVM::Run(HSCRIPT hScript, HSCRIPT hScope, bool bWait)
 	sq_pop(vm_, 1);
 	if (SQ_FAILED(result))
 	{
-		// TODO: sq_getlasterror
 		return SCRIPT_ERROR;
 	}
 	return SCRIPT_DONE;
@@ -1177,7 +1486,6 @@ ScriptStatus_t SquirrelVM::Run(HSCRIPT hScript, bool bWait)
 	sq_pop(vm_, 1);
 	if (SQ_FAILED(result))
 	{
-		// TODO: sq_getlasterror
 		return SCRIPT_ERROR;
 	}
 	return SCRIPT_DONE;
@@ -1236,6 +1544,7 @@ void SquirrelVM::ReleaseScope(HSCRIPT hScript)
 	sq_rawdeleteslot(vm_, -2, SQFalse);
 
 	sq_pop(vm_, 2);
+
 	sq_release(vm_, obj);
 	delete obj;
 }
@@ -1365,6 +1674,8 @@ void SquirrelVM::RegisterFunction(ScriptFunctionBinding_t* pScriptFunction)
 	sq_newslot(vm_, -3, isStatic);
 
 	sq_pop(vm_, 1);
+
+	RegisterDocumentation(vm_, pScriptFunction->m_desc);
 }
 
 bool SquirrelVM::RegisterClass(ScriptClassDesc_t* pClassDesc)
@@ -1377,8 +1688,16 @@ bool SquirrelVM::RegisterClass(ScriptClassDesc_t* pClassDesc)
 	// Check if class name is already taken
 	if (sq_get(vm_, -2) == SQ_OK)
 	{
-		sq_pop(vm_, 2);
-		return false;
+		HSQOBJECT obj;
+		sq_resetobject(&obj);
+		sq_getstackobj(vm_, -1, &obj);
+		if (!sq_isnull(obj))
+		{
+			sq_pop(vm_, 2);
+			return false;
+		}
+
+		sq_pop(vm_, 1);
 	}
 
 	// Register base in case it doesn't exist
@@ -1409,6 +1728,11 @@ bool SquirrelVM::RegisterClass(ScriptClassDesc_t* pClassDesc)
 	sq_newclosure(vm_, constructor_stub, 0);
 	sq_newslot(vm_, -3, SQFalse);
 
+	sq_pushstring(vm_, "_tostring", -1);
+	sq_newclosure(vm_, tostring_stub, 0);
+	sq_newslot(vm_, -3, SQFalse);
+
+
 	for (int i = 0; i < pClassDesc->m_FunctionBindings.Count(); ++i)
 	{
 		auto& scriptFunction = pClassDesc->m_FunctionBindings[i];
@@ -1431,6 +1755,8 @@ bool SquirrelVM::RegisterClass(ScriptClassDesc_t* pClassDesc)
 		sq_setparamscheck(vm_, scriptFunction.m_desc.m_Parameters.Count() + 1, typemask);
 		bool isStatic = false;
 		sq_newslot(vm_, -3, isStatic);
+
+		RegisterDocumentation(vm_, scriptFunction.m_desc, pClassDesc);
 	}
 
 	sq_pushstring(vm_, pClassDesc->m_pszScriptName, -1);
@@ -1468,9 +1794,11 @@ HSCRIPT SquirrelVM::RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance)
 		return nullptr;
 	}
 
-	SQUserPointer p;
-	sq_getinstanceup(vm_, -1, &p, 0);
-	new(p) ClassInstanceData(pInstance, pDesc);
+	{
+		SQUserPointer p;
+		sq_getinstanceup(vm_, -1, &p, 0);
+		new(p) ClassInstanceData(pInstance, pDesc);
+	}
 
 	sq_setreleasehook(vm_, -1, &destructor_stub_instance);
 
@@ -1486,7 +1814,7 @@ HSCRIPT SquirrelVM::RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance)
 void SquirrelVM::SetInstanceUniqeId(HSCRIPT hInstance, const char* pszId)
 {
 	SquirrelSafeCheck safeCheck(vm_);
-	
+
 	if (!hInstance) return;
 	HSQOBJECT* obj = (HSQOBJECT*)hInstance;
 	sq_pushobject(vm_, *obj);
@@ -1689,13 +2017,40 @@ int	SquirrelVM::GetNumTableEntries(HSCRIPT hScope)
 int SquirrelVM::GetKeyValue(HSCRIPT hScope, int nIterator, ScriptVariant_t* pKey, ScriptVariant_t* pValue)
 {
 	SquirrelSafeCheck safeCheck(vm_);
-	// TODO: How does this work does it expect to output to pKey and pValue as an array from nIterator
-	// elements or does it expect nIterator to be an index in hScrope, if so how does that work without
-	// without depending on squirrel internals not public API for getting the iterator (which is opaque)
-	// or do you iterate until that point and output the value? If it should be iterator then this should
-	// be a HSCRIPT for ease of use.
-	Assert(!"GetKeyValue is not implemented");
-	return 0;
+
+	if (hScope)
+	{
+		Assert(hScope != INVALID_HSCRIPT);
+		HSQOBJECT* scope = (HSQOBJECT*)hScope;
+		sq_pushobject(vm_, *scope);
+	}
+	else
+	{
+		sq_pushroottable(vm_);
+	}
+
+	if (nIterator == -1)
+	{
+		sq_pushnull(vm_);
+	}
+	else
+	{
+		sq_pushinteger(vm_, nIterator);
+	}
+
+	SQInteger nextiter = -1;
+
+	if (SQ_SUCCEEDED(sq_next(vm_, -2)))
+	{
+		if (pKey) getVariant(vm_, -2, *pKey);
+		if (pValue) getVariant(vm_, -1, *pValue);
+
+		sq_getinteger(vm_, -3, &nextiter);
+		sq_pop(vm_, 2);
+	}
+	sq_pop(vm_, 2);
+
+	return nextiter;
 }
 
 bool SquirrelVM::GetValue(HSCRIPT hScope, const char* pszKey, ScriptVariant_t* pValue)
@@ -1814,7 +2169,7 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 	case OT_INTEGER:
 	{
 		pBuffer->PutInt(OT_INTEGER);
-		pBuffer->PutInt64(sq_objtointeger(&obj));
+		pBuffer->PutInt(sq_objtointeger(&obj));
 		break;
 	}
 	case OT_FLOAT:
@@ -1979,18 +2334,9 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 			// so we just check against the only class we need to deal with at the moment
 			// which is "regexp"
 			const char* builtinName = nullptr;
+			if (_class(obj) == _class(regexpClass_))
 			{
-				HSQOBJECT builtin;
-				sq_resetobject(&builtin);
-				sq_pushroottable(vm_);
-				sq_pushstring(vm_, "regexp", -1);
-				sq_rawget(vm_, -2);
-				sq_getstackobj(vm_, -1, &builtin);
-				sq_pop(vm_, 2);
-				if (_class(obj) == _class(builtin))
-				{
-					builtinName = "regexp";
-				}
+				builtinName = "regexp";
 			}
 
 			if (builtinName)
@@ -2054,6 +2400,16 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 		sq_getclass(vm_, idx);
 		WriteObject(pBuffer, writeState, -1);
 		sq_pop(vm_, 1);
+
+		if (_instance(obj)->_class == _class(regexpClass_))
+		{
+			sq_push(vm_, idx);
+			sq_pushstring(vm_, "pattern_", -1);
+			sq_rawget(vm_, -2);
+			WriteObject(pBuffer, writeState, -1);
+			sq_pop(vm_, 2);
+			break;
+		}
 
 		{
 			// HACK: No way to get the default values part from accessing the class directly
@@ -2156,6 +2512,7 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 void SquirrelVM::WriteState(CUtlBuffer* pBuffer)
 {
 	SquirrelSafeCheck safeCheck(vm_);
+
 	WriteStateMap writeState;
 
 	sq_pushroottable(vm_);
@@ -2202,7 +2559,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_INTEGER:
 	{
-		sq_pushinteger(vm_, pBuffer->GetInt64());
+		sq_pushinteger(vm_, pBuffer->GetInt());
 		break;
 	}
 	case OT_FLOAT:
@@ -2239,6 +2596,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		int count = pBuffer->GetInt();
 		sq_newtableex(vm_, count);
 		sq_getstackobj(vm_, -1, obj);
+		sq_addref(vm_, obj);
 
 		sq_push(vm_, -2);
 		sq_setdelegate(vm_, -2);
@@ -2266,6 +2624,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		int count = pBuffer->GetInt();
 		sq_newarray(vm_, count);
 		sq_getstackobj(vm_, -1, obj);
+		sq_addref(vm_, obj);
 
 		for (int i = 0; i < count; ++i)
 		{
@@ -2293,6 +2652,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				break;
 			}
 			sq_getstackobj(vm_, -1, obj);
+			sq_addref(vm_, obj);
 		}
 		else
 		{
@@ -2316,6 +2676,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			}
 
 			*obj = ret;
+			sq_addref(vm_, obj);
 			sq_pushobject(vm_, *obj);
 		}
 
@@ -2377,6 +2738,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			}
 			sq_remove(vm_, -2);
 			sq_getstackobj(vm_, -1, obj);
+			sq_addref(vm_, obj);
 		}
 		else if (classType == ScriptClassType)
 		{
@@ -2389,6 +2751,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 			sq_newclass(vm_, hasBase);
 			sq_getstackobj(vm_, -1, obj);
+			sq_addref(vm_, obj);
 
 			sq_pushnull(vm_);
 			ReadObject(pBuffer, readState);
@@ -2421,15 +2784,29 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		ReadObject(pBuffer, readState);
 
+		HSQOBJECT klass;
+		sq_resetobject(&klass);
+		sq_getstackobj(vm_, -1, &klass);
+		if (_class(klass) == _class(regexpClass_))
+		{
+			sq_pushnull(vm_);
+			ReadObject(pBuffer, readState);
+			sq_call(vm_, 2, SQTrue, SQFalse);
+
+			sq_getstackobj(vm_, -1, obj);
+			sq_addref(vm_, obj);
+
+			sq_remove(vm_, -2);
+
+			break;
+		}
+
 		SQUserPointer typetag;
 		sq_gettypetag(vm_, -1, &typetag);
 
 		if (typetag && typetag != TYPETAG_VECTOR &&
 			((ScriptClassDesc_t*)typetag)->m_pszDescription[0] == SCRIPT_SINGLETON[0])
 		{
-			HSQOBJECT klass;
-			sq_resetobject(&klass);
-			sq_getstackobj(vm_, -1, &klass);
 			sq_poptop(vm_);
 
 			Assert(sq_isclass(klass));
@@ -2447,6 +2824,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				{
 					foundSingleton = true;
 					*obj = singleton;
+					sq_addref(vm_, obj);
 					sq_pop(vm_, 2);
 					break;
 				}
@@ -2466,6 +2844,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		sq_createinstance(vm_, -1);
 		sq_getstackobj(vm_, -1, obj);
+		sq_addref(vm_, obj);
 
 		sq_remove(vm_, -2);
 
@@ -2481,8 +2860,6 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_pop(vm_, 1);
 			}
 		}
-
-
 
 		if (typetag == TYPETAG_VECTOR)
 		{
@@ -2557,6 +2934,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		vm_->Push(ret);
 		sq_getstackobj(vm_, -1, obj);
+		sq_addref(vm_, obj);
 	}
 	case OT_OUTER: //internal usage only
 	{
@@ -2577,6 +2955,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		sq_poptop(vm_);
 		vm_->Push(outer);
 		sq_getstackobj(vm_, -1, obj);
+		sq_addref(vm_, obj);
 
 		break;
 	}
@@ -2593,14 +2972,15 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 void SquirrelVM::ReadState(CUtlBuffer* pBuffer)
 {
 	SquirrelSafeCheck safeCheck(vm_);
-	
-	ReadStateMap readState;
+
+	ReadStateMap readState(vm_);
 
 	sq_pushroottable(vm_);
 
 	HSQOBJECT* obj = nullptr;
 	readState.CheckCache(pBuffer, &obj);
 	sq_getstackobj(vm_, -1, obj);
+	sq_addref(vm_, obj);
 
 	int count = pBuffer->GetInt();
 
@@ -2625,16 +3005,19 @@ void SquirrelVM::RemoveOrphanInstances()
 void SquirrelVM::DumpState()
 {
 	SquirrelSafeCheck safeCheck(vm_);
+	// TODO: Dump state
 }
 
 void SquirrelVM::SetOutputCallback(ScriptOutputFunc_t pFunc)
 {
 	SquirrelSafeCheck safeCheck(vm_);
+	// TODO: Support output callbacks
 }
 
 void SquirrelVM::SetErrorCallback(ScriptErrorFunc_t pFunc)
 {
 	SquirrelSafeCheck safeCheck(vm_);
+	// TODO: Support error callbacks
 }
 
 bool SquirrelVM::RaiseException(const char* pszExceptionText)

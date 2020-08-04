@@ -1,0 +1,410 @@
+criterion IsHC "IsHC" "1" required weight 100
+
+response hazardcourse_playerdeath
+{
+   scene "scenes/hazardcourse/misc/playerdeath01.vcd" 
+   scene "scenes/hazardcourse/misc/playerdeath02.vcd" 
+   scene "scenes/hazardcourse/misc/playerdeath03.vcd" 
+}
+
+criterion TLK_HC_PLAYERDEAD concept TLK_HC_PLAYERDEAD required
+rule TLK_HC_PLAYERDEAD
+{
+	criteria TLK_HC_PLAYERDEAD
+	response hazardcourse_playerdeath
+}
+
+response hazardcourse_emitterdestroyed
+{
+	sequential
+	norepeat
+    scene "scenes/hazardcourse/misc/emitter_shot.vcd" 
+    scene "scenes/hazardcourse/misc/dont01.vcd" 
+    scene "scenes/hazardcourse/misc/dont02.vcd" 
+    scene "scenes/hazardcourse/misc/dont03.vcd" 
+    scene "scenes/hazardcourse/misc/dont04.vcd" 
+}
+
+criterion TLK_HC_EMITTERBROKEN concept TLK_HC_EMITTERBROKEN required
+rule TLK_HC_EMITTERBROKEN
+{
+	criteria TLK_HC_EMITTERBROKEN
+	response hazardcourse_emitterdestroyed
+}
+
+response hazardcourse_buttondestroyed
+{
+    sequential
+    norepeat
+    scene "scenes/hazardcourse/misc/button_shot01.vcd" 
+    scene "scenes/hazardcourse/misc/button_shot02.vcd" 
+    scene "scenes/hazardcourse/misc/button_shot03.vcd" 
+    scene "scenes/hazardcourse/misc/dont03.vcd" 
+}
+
+criterion TLK_HC_BUTTONBROKEN concept TLK_HC_BUTTONBROKEN required
+rule TLK_HC_BUTTONBROKEN
+{
+	criteria TLK_HC_BUTTONBROKEN
+	response hazardcourse_buttondestroyed
+}
+
+response hazardcourse_cameradestroyed
+{
+	sequential
+	norepeat
+    scene "scenes/hazardcourse/misc/camerashot01.vcd"  
+    scene "scenes/hazardcourse/misc/camerashot02.vcd"
+    scene "scenes/hazardcourse/misc/camerashot03.vcd"
+    scene "scenes/hazardcourse/misc/camerashot04.vcd"
+    scene "scenes/hazardcourse/misc/camerashot05.vcd"
+    scene "scenes/hazardcourse/misc/exploit_generic_05.vcd"
+    scene "scenes/hazardcourse/misc/button_shot03.vcd"
+    scene "scenes/hazardcourse/misc/dont01.vcd"
+}
+
+criterion TLK_HC_CAMERASHOT concept TLK_HC_CAMERASHOT required
+rule TLK_HC_CAMERASHOT
+{
+	criteria TLK_HC_CAMERASHOT
+	response hazardcourse_cameradestroyed
+}
+
+response hazardcourse_genericexploit
+{
+   scene "scenes/hazardcourse/misc/exploit_generic_01.vcd"  
+   scene "scenes/hazardcourse/misc/exploit_generic_02.vcd"
+   scene "scenes/hazardcourse/misc/exploit_generic_03.vcd"
+   scene "scenes/hazardcourse/misc/exploit_generic_04.vcd"
+   scene "scenes/hazardcourse/misc/exploit_generic_05.vcd"
+   scene "scenes/hazardcourse/misc/exploit_generic_06.vcd"
+}
+
+criterion TLK_HC_EXPLOIT concept TLK_HC_EXPLOIT required
+rule TLK_HC_EXPLOIT
+{
+	criteria TLK_HC_EXPLOIT
+	response hazardcourse_genericexploit
+}
+
+response hazardcourse_misbehave
+{
+    scene "scenes/hazardcourse/misc/dont01.vcd" 
+    scene "scenes/hazardcourse/misc/dont02.vcd" 
+    scene "scenes/hazardcourse/misc/dont03.vcd" 
+    scene "scenes/hazardcourse/misc/dont04.vcd" 
+}
+
+criterion TLK_HC_MISBEHAVE concept TLK_HC_MISBEHAVE required
+rule TLK_HC_MISBEHAVE
+{
+	criteria TLK_HC_MISBEHAVE
+	response hazardcourse_misbehave
+}
+
+response hazardcourse_noclip
+{
+
+   scene "scenes/hazardcourse/misc/noclip01.vcd"  
+   scene "scenes/hazardcourse/misc/noclip02.vcd"  
+   scene "scenes/hazardcourse/misc/noclip03.vcd"  
+   scene "scenes/hazardcourse/misc/noclip04.vcd"  
+   scene "scenes/hazardcourse/misc/noclip05.vcd"  
+   scene "scenes/hazardcourse/misc/noclip06.vcd"  
+   scene "scenes/hazardcourse/misc/noclip07.vcd"  
+
+}
+
+criterion TLK_HC_NOCLIP concept TLK_HC_NOCLIP required
+rule TLK_HC_NOCLIP
+{
+	criteria TLK_HC_NOCLIP
+	response hazardcourse_noclip
+}
+
+//Global STFU NPC AI stuff
+
+rule SECURITY_PHYSATTACK_HC
+{
+	criteria SECURITY IsPreDisaster TLK_PLYR_PHYSATK IsHC 
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+
+}
+
+rule SECURITY_PLPUSH_HC
+{
+	criteria SECURITY TLK_PLPUSH SeenByPlayer IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_PLHURT_HC
+{
+	criteria SECURITY TLK_PLHURT IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_PLRELOAD_HC
+{
+	criteria SECURITY TLK_PLRELOAD NearPlayer SeenByPlayer SeePlayer NotProvoked NoRecentCombat IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_WOUND_HC
+{
+	criteria SECURITY TLK_WOUND IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_SHOT_IN_ARM_HC
+{
+	criteria SECURITY TLK_SHOT ShotInArm IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_SHOT_IN_GUT_HC
+{
+	criteria SECURITY TLK_SHOT ShotInGut IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_SHOT_IN_LEG_HC
+{
+	criteria SECURITY TLK_SHOT ShotInLeg IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_MORTAL_HC
+{
+	criteria SECURITY TLK_MORTAL IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+rule SECURITY_DANGER_HC
+{
+	criteria SECURITY TLK_DANGER IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_HELP_ME_HC
+{
+	criteria SECURITY TLK_HELP_ME NotProvoked IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_ENEMY_DEAD_HC
+{
+	criteria SECURITY TLK_ENEMY_DEAD IsHC
+
+			scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_FRIENDLYFIRE_HC
+{
+	criteria SECURITY TLK_FRIENDLYFIRE IsHC
+
+			scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_NOSHOOT_HC
+{
+	criteria SECURITY TLK_NOSHOOT IsHC
+
+			scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_WATCHOUT_HC
+{
+	criteria SECURITY TLK_WATCHOUT IsHC
+
+			scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_BETRAYED_HC
+{
+	criteria SECURITY TLK_BETRAYED IsHC
+    response NullResponse
+			// scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENCE_PHYSATTACK_HC
+{
+	criteria SCIENTIST TLK_PLYR_PHYSATK IsHC
+	
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_FRIENDLYFIRE_HC
+{
+	criteria SCIENTIST TLK_FRIENDLYFIRE IsHC
+
+}
+
+rule SCIENCE_HEAL_HC
+{
+	criteria SCIENTIST TLK_HEAL IsHC
+	
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_PLRELOAD_HC
+{
+	criteria SCIENTIST TLK_PLRELOAD NearPlayer SeenByPlayer SeePlayer NotProvoked NoRecentCombat IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_WOUND_HC
+{
+	criteria SCIENTIST TLK_WOUND IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_SHOT_IN_ARM_HC
+{
+	criteria SCIENTIST TLK_SHOT ShotInArm RandomChance50 IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_SHOT_IN_GUT_HC
+{
+	criteria SCIENTIST TLK_SHOT ShotInGut RandomChance50 IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_SHOT_IN_LEG_HC
+{
+	criteria SCIENTIST TLK_SHOT ShotInLeg RandomChance50 IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_MORTAL_HC
+{
+	criteria SCIENTIST TLK_MORTAL IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_PLAYER_KILLED_NPC_HC
+{
+	criteria SCIENTIST TLK_PLAYER_KILLED_NPC IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_BETRAYED_HC
+{
+	criteria SCIENTIST TLK_BETRAYED IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_PLPUSH_HC
+{
+	criteria SCIENTIST TLK_PLPUSH SeenByPlayer IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SCIENTIST_FEMALE_FRIENDLYFIRE_HC
+{
+	criteria SCIENTIST_FEMALE TLK_FRIENDLYFIRE IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_FEMALE_PHYSATTACK_HC
+{
+	criteria SCIENTIST_FEMALE IsPreDisaster TLK_PLYR_PHYSATK IsHC
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_FEMALE_PLRELOAD_HC
+{
+	criteria SCIENTIST_FEMALE TLK_PLRELOAD NearPlayer SeenByPlayer SeePlayer NotProvoked NoRecentCombat IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_FEMALE_WOUND_HC
+{
+	criteria SCIENTIST_FEMALE TLK_WOUND IsHC
+	
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_FEMALE_SHOT_IN_GUT_HC
+{
+	criteria SCIENTIST_FEMALE TLK_SHOT ShotInGut RandomChance50 IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_FEMALE_PLAYER_KILLED_NPC_HC
+{
+	criteria SCIENTIST_FEMALE TLK_PLAYER_KILLED_NPC IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_FEMALE_BETRAYED_HC
+{
+	criteria SCIENTIST_FEMALE TLK_BETRAYED IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+
+}
+rule SCIENTIST_FEMALE_PLPUSH_HC
+{
+	criteria SCIENTIST_FEMALE TLK_PLPUSH SeenByPlayer IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SECURITY_POST_IDLE_FOLLOW_HC
+{
+	criteria SECURITY TLK_IDLE IsPostDisaster NotProvoked NoRecentCombat IsFollowingPlayer IsStopped NearPlayer RandomChance50 IsHC
+
+		scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENCE_PRE_QUESTION_HC
+{
+	criteria SCIENTIST TLK_QUESTION IsPreDisaster NotProvoked NearPlayer NearPlayer AllowQuestions AllowGeneralIdleTalk IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_PRE_HELLO_HC
+{
+	criteria SCIENTIST TLK_HELLO IsPreDisaster IsPlayerReallyNear SeenByPlayer IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENTIST_POST_HELLO_HC
+{
+	criteria SCIENTIST TLK_HELLO IsPostDisaster NotProvoked NoRecentCombat IsPlayerReallyNear SeenByPlayer IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}
+
+rule SCIENCE_ANSWER_HC
+{
+	criteria SCIENTIST TLK_ANSWER NotProvoked NoRecentCombat AllowAnswers IsHC
+
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd"
+}

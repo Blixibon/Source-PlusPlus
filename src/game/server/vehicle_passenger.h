@@ -47,6 +47,9 @@ public:
 	virtual void DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased ); // Driving Button handling
 	virtual bool IsVehicleBodyInWater( void ) { return false; }
 
+	// Do the right thing for the gun
+	virtual void	UpdateGunState(CUserCmd* ucmd) { return; }
+
 // IPassengerVehicle
 public:
 	//to make non passenger vehicles back compatible

@@ -1512,7 +1512,7 @@ bool CAI_PlayerAlly::IsOkToSpeak( ConceptCategory_t category, bool fRespondingTo
 
 	if ( category == SPEECH_IDLE )
 	{
-		if ( GetState() != NPC_STATE_IDLE && GetState() != NPC_STATE_ALERT )
+		if ( GetState() != NPC_STATE_IDLE && GetState() != NPC_STATE_ALERT && GetState() != NPC_STATE_SCRIPT)
 			return false;
 		if ( GetSpeechFilter() && GetSpeechFilter()->GetIdleModifier() < 0.001 )
 			return false;

@@ -1,0 +1,419 @@
+criterion Is_t0a3 "map" "hc_t0a3" required weight 5
+criterion hc_t0a3_notrampant "t0a3_rampant" "0" required weight 10
+criterion hc_t0a3_followavailable "followguardtalk" "1" required
+criterion IsGRD_HC_FOLLOW name "GRD_HC_FOLLOW" required weight 7
+criterion Player_Vandal "Player_Vandal" "1" required weight 4
+criterion hc_t0a3_rampant "t0a3_rampant" "1" required weight 12
+criterion IsNotRepteam "t0a3_rampant_stage2" "!=1" required weight 12s
+criterion IsRepteam "t0a3_rampant_stage2" "1" required weight 15s
+
+
+//========================================================
+//00 - Booth guard
+//========================================================
+criterion Ishc_guard_booth name "hc_guard_booth" required
+
+response t0a3_guardbooth_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a3/guard_busy_convo01.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_busy_convo02.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_busy_convo03.vcd" 
+}
+
+rule t0a3_guardbooth_talk
+{
+   criteria TLK_VITALIDLE Ishc_guard_booth hc_t0a3_notrampant IsHC Is_t0a3
+   response t0a3_guardbooth_talk
+}
+
+//========================================================
+//01 - Weapons Deposit Guard
+//========================================================
+criterion IsGRD_HC_GUNDEPOSIT name "GRD_HC_GUNDEPOSIT" required
+
+response t0a3_gundeposit_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a3/guard_booth_convo01.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_booth_convo02.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_booth_convo03.vcd" 
+}
+
+rule t0a3_gundeposit_talk
+{
+   criteria TLK_VITALIDLE IsGRD_HC_GUNDEPOSIT hc_t0a3_notrampant IsHC Is_t0a3
+   response t0a3_gundeposit_talk
+}
+
+response t0a3_boothmrfriendly
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a3/guard_booth_ff01.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_booth_ff02.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_booth_ff03.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_booth_ff04.vcd"
+}
+
+criterion TLK_t0a3_BOOTHFF concept TLK_t0a3_BOOTHFF required
+rule TLK_t0a3_BOOTHFF
+{
+	criteria TLK_t0a3_BOOTHFF
+	response t0a3_boothmrfriendly
+}
+
+//========================================================
+//03 - Follow Guard
+//========================================================
+
+
+response t0a3_followguard_talk
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a3/guard_flw_convo01.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_flw_convo02.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_flw_convo03.vcd" 
+}
+
+rule t0a3_followguard_talk
+{
+   criteria TLK_VITALIDLE IsGRD_HC_FOLLOW hc_t0a3_notrampant IsHC Is_t0a3
+   response t0a3_followguard_talk
+}
+
+rule SECURITY_STARTFOLLOW
+{
+	criteria SECURITY TLK_STARTFOLLOW NotInCombat IsPostDisaster IsHC Is_t0a3
+
+   scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_STOPFOLLOW
+{
+	criteria SECURITY TLK_STOPFOLLOW NotInCombat IsPostDisaster IsHC Is_t0a3
+
+	   scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+response HC_SECURITY_STARTFOLLOW
+{
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow02.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow03.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow04.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow05.vcd" weight 1
+}
+
+rule HC_SECURITY_STARTFOLLOW
+{
+	criteria SECURITY TLK_STARTFOLLOW NotInCombat IsGRD_HC_FOLLOW IsPostDisaster IsHC Is_t0a3
+	response HC_SECURITY_STARTFOLLOW
+}
+
+response HC_SECURITY_STOPFOLLOW
+{
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait02.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait03.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait04.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait05.vcd" weight 1
+}
+
+rule HC_SECURITY_STOPFOLLOW
+{
+	criteria SECURITY TLK_STOPFOLLOW NotInCombat IsGRD_HC_FOLLOW IsPostDisaster IsHC Is_t0a3
+	response HC_SECURITY_STOPFOLLOW
+}
+
+//Player is a dirty vandal
+response HC_SECURITY_STARTFOLLOW_PISSED
+{
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow_pissed.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow_pissed02.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow_pissed03.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow_pissed04.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_follow_pissed05.vcd" weight 1
+}
+
+rule HC_SECURITY_STARTFOLLOW_PISSED
+{
+	criteria SECURITY TLK_STARTFOLLOW NotInCombat IsGRD_HC_FOLLOW IsPostDisaster IsHC Is_t0a3 Player_Vandal
+	response HC_SECURITY_STARTFOLLOW_PISSED
+}
+
+response HC_SECURITY_STOPFOLLOW_PISSED
+{
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait_pissed.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait_pissed02.vcd" weight 1 
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait_pissed03.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait_pissed04.vcd" weight 1
+	scene "scenes/hazardcourse/t0a3/guard_flw_wait_pissed05.vcd" weight 1
+}
+
+rule HC_SECURITY_STOPFOLLOW_PISSED
+{
+	criteria SECURITY TLK_STOPFOLLOW NotInCombat IsGRD_HC_FOLLOW IsPostDisaster IsHC Is_t0a3 Player_Vandal
+	response HC_SECURITY_STOPFOLLOW_PISSED
+}
+
+response t0a3_vandal
+{
+sequential
+norepeat
+	scene "scenes/hazardcourse/t0a3/guard_flw_vandal01.vcd"
+	scene "scenes/hazardcourse/t0a3/guard_flw_vandal03.vcd"
+	scene "scenes/hazardcourse/t0a3/guard_flw_vandal02.vcd"
+	scene "scenes/hazardcourse/t0a3/guard_flw_vandal05.vcd"
+	scene "scenes/hazardcourse/t0a3/guard_flw_vandal04.vcd"
+	scene "scenes/hazardcourse/t0a3/guard_flw_vandal06.vcd"
+}
+
+criterion TLK_t0a3_VANDAL concept TLK_t0a3_VANDAL required
+rule TLK_t0a3_VANDAL
+{
+	criteria TLK_t0a3_VANDAL hc_t0a3_notrampant
+	response t0a3_vandal
+}
+
+response t0a3_followguard_talk_pissed
+{
+   sequential
+   norepeat
+   scene "scenes/hazardcourse/t0a3/guard_flw_convopissed01.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_flw_convopissed02.vcd" 
+   scene "scenes/hazardcourse/t0a3/guard_flw_convopissed03.vcd" 
+}
+
+rule t0a3_followguard_talk_pissed
+{
+   criteria TLK_VITALIDLE IsGRD_HC_FOLLOW hc_t0a3_notrampant IsHC Is_t0a3 Player_Vandal
+   response t0a3_followguard_talk_pissed
+}
+
+//Post-scanner lines
+
+response t0a3_followgoodbye
+{
+sequential
+norepeat
+scene "scenes/hazardcourse/t0a3/guard_flw_thanksforcoming.vcd" 
+}
+
+criterion TLK_t0a3_FLW_GOODBYE concept TLK_t0a3_FLW_GOODBYE required
+rule TLK_t0a3_FLW_GOODBYE
+{
+	criteria TLK_t0a3_FLW_GOODBYE
+	response t0a3_followgoodbye
+}
+
+//Experimental: Same rule name, different criteria and response.
+response t0a3_followgoodbye_pissed
+{
+sequential
+norepeat
+scene "scenes/hazardcourse/t0a3/guard_flw_thanksforcoming_pissed.vcd" 
+}
+
+rule TLK_t0a3_FLW_GOODBYE_PISSED
+{
+	criteria TLK_t0a3_FLW_GOODBYE Player_Vandal
+	response t0a3_followgoodbye_pissed 
+}
+
+//Gordon goes beserk and starts shooting people
+
+response t0a3_rampant
+{
+	scene "scenes/hazardcourse/t0a3/player_rampant_01.vcd"
+	scene "scenes/hazardcourse/t0a3/player_rampant_02.vcd"
+	scene "scenes/hazardcourse/t0a3/player_rampant_03.vcd"
+	scene "scenes/hazardcourse/t0a3/player_rampant_04.vcd"
+	scene "scenes/hazardcourse/t0a3/player_rampant_05.vcd"
+	scene "scenes/hazardcourse/t0a3/player_rampant_06.vcd"
+}
+
+criterion TLK_t0a3_RAMPANT concept TLK_t0a3_RAMPANT required
+rule TLK_t0a3_RAMPANT
+{
+	criteria TLK_t0a3_RAMPANT
+	response t0a3_rampant
+}
+
+response t0a3_rampant_sci_betrayal
+{
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant01.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant02.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant03.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant06.vcd"
+}
+
+response t0a3_rampant_sci_comment
+{
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant01.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant04.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant06.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant07.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant09.vcd"
+}
+
+response t0a3_rampant_sci_injured
+{
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant05.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant07.vcd"
+	scene "scenes/hazardcourse/t0a3/sci_cat_rampant08.vcd"
+}
+
+response t0a3_rampant_responseteam
+{
+ 	//scene "scenes/hazardcourse/t0a3/repteam_g_attack01.vcd" respeakdelay 15
+ 	scene "scenes/hazardcourse/t0a3/repteam_g_attack02.vcd" respeakdelay 15
+ 	scene "scenes/hazardcourse/t0a3/repteam_g_sighted01.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_g_sighted02.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_g_sighted03.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_g_sighted04.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_g_sighted05.vcd" respeakdelay 15
+ 	scene "scenes/hazardcourse/t0a3/repteam_r_attack01.vcd" respeakdelay 15
+ 	scene "scenes/hazardcourse/t0a3/repteam_r_attack02.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_r_sighted01.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_r_sighted02.vcd" respeakdelay 15 weight 8
+	scene "scenes/hazardcourse/t0a3/repteam_r_sighted03.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_r_sighted04.vcd" respeakdelay 15
+	scene "scenes/hazardcourse/t0a3/repteam_r_sighted05.vcd" respeakdelay 15
+}
+
+//Make sure nobody speaks with the default voice for AI stuff.
+
+rule SECURITY_PHYSATTACK_RAMPANT
+{
+	criteria SECURITY IsPreDisaster TLK_PLYR_PHYSATK IsHC Is_t0a3 IsNotRepteam 
+	response t0a3_rampant
+
+}
+
+rule SECURITY_PLPUSH_RAMPANT
+{
+	criteria SECURITY TLK_PLPUSH SeenByPlayer IsHC Is_t0a3 IsNotRepteam
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_BETRAYED_RAMPANT
+{
+	criteria SECURITY TLK_BETRAYED IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+
+}
+
+rule SECURITY_NOSHOOT_RAMPANT
+{
+	criteria SECURITY TLK_NOSHOOT IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+}
+
+rule SECURITY_FRIENDLYFIRE_RAMPANT
+{
+	criteria SECURITY TLK_FRIENDLYFIRE IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+}
+
+rule SECURITY_PLHURT
+{
+	criteria SECURITY TLK_PLHURT IsHC Is_t0a3
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_PLRELOAD
+{
+	criteria SECURITY TLK_PLRELOAD NearPlayer SeenByPlayer SeePlayer NotProvoked NoRecentCombat IsHC Is_t0a3
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_WOUND_RAMPANT
+{
+	criteria SECURITY TLK_WOUND IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+}
+
+rule SECURITY_SHOT_IN_ARM_RAMPANT
+{
+	criteria SECURITY TLK_SHOT ShotInArm IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+}
+
+rule SECURITY_SHOT_IN_GUT_RAMPANT
+{
+	criteria SECURITY TLK_SHOT ShotInGut IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+}
+
+rule SECURITY_SHOT_IN_LEG_RAMPANT
+{
+	criteria SECURITY TLK_SHOT ShotInLeg IsHC Is_t0a3 IsNotRepteam
+	response t0a3_rampant
+}
+
+rule SECURITY_MORTAL
+{
+	criteria SECURITY TLK_MORTAL IsHC Is_t0a3
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+rule SECURITY_DANGER
+{
+	criteria SECURITY TLK_DANGER IsHC Is_t0a3
+	scene "scenes/hazardcourse/t0a3/nulluse.vcd" 
+}
+
+rule SECURITY_STARTCOMBAT_RAMPANT
+{
+	criteria SECURITY TLK_STARTCOMBAT IsHC Is_t0a3 EnemyIsPlayer IsNotRepteam
+	response t0a3_rampant
+}
+
+criterion TLK_t0a3_REPSIGHT concept TLK_t0a3_REPSIGHT required
+rule TLK_t0a3_REPSIGHT
+{
+	criteria TLK_t0a3_REPSIGHT
+	response t0a3_rampant_responseteam
+}
+
+// Catwalk sci
+
+rule SCIENCE_FEMALE_NOSHOOT_RAMPANT
+{
+	criteria SCIENTIST_FEMALE TLK_NOSHOOT IsHC Is_t0a3
+	response t0a3_rampant_sci_injured
+}
+
+rule SCIENTIST_FEMALE_FRIENDLYFIRE_RAMPANT
+{
+	criteria SCIENTIST_FEMALE TLK_FRIENDLYFIRE IsHC Is_t0a3
+	response t0a3_rampant_sci_betrayal
+}
+
+rule SCIENTIST_FEMALE_PLRELOAD
+{
+	criteria SCIENTIST_FEMALE TLK_PLRELOAD NearPlayer SeenByPlayer SeePlayer NotProvoked NoRecentCombat IsHC Is_t0a3
+	response NullResponse
+}
+
+rule SCIENTIST_FEMALE_WOUND_RAMPANT
+{
+	criteria SCIENTIST_FEMALE TLK_WOUND IsHC Is_t0a3
+	response t0a3_rampant_sci_injured
+}
+
+rule SCIENTIST_FEMALE_BETRAYED_RAMPANT
+{
+	criteria SCIENTIST_FEMALE TLK_BETRAYED IsHC Is_t0a3
+	response t0a3_rampant_sci_betrayal
+}
+
+criterion TLK_t0a3_RAMPANT_SCI concept TLK_t0a3_RAMPANT_SCI required 
+rule TLK_t0a3_RAMPANT_SCI
+{
+	criteria TLK_t0a3_RAMPANT_SCI
+	response t0a3_rampant_sci_comment
+}

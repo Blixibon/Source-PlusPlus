@@ -458,6 +458,8 @@ bool VScriptServerInit()
 
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 
+				RegisterSharedScriptFunctions();
+
 				if ( scriptLanguage == SL_SQUIRREL )
 				{
 					g_pScriptVM->Run( g_Script_vscript_server );
@@ -656,8 +658,13 @@ public:
 
 CVScriptGameSystem g_VScriptGameSystem;
 
+ConVar script_allow_entity_creation_midgame("script_allow_entity_creation_midgame", "1", FCVAR_NOT_CONNECTED, "Allows VScript files to create entities mid-game, as opposed to only creating entities on startup.");
+
 bool IsEntityCreationAllowedInScripts( void )
 {
+	if (script_allow_entity_creation_midgame.GetBool())
+		return true;
+
 	return g_VScriptGameSystem.m_bAllowEntityCreationInScripts;
 }
 

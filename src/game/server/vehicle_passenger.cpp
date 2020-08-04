@@ -58,10 +58,10 @@ void CPropVehiclePassenger::DriveVehicle( CBasePlayer *pPlayer, CUserCmd *ucmd )
 		return;
 
 	//player is not the driver
-	if( pPlayer != m_hPlayer )
-		return;
-
-	DriveVehicle( TICK_INTERVAL, ucmd, pPlayer->m_afButtonPressed, pPlayer->m_afButtonReleased );
+	if (pPlayer == m_hPlayer)
+		DriveVehicle(TICK_INTERVAL, ucmd, pPlayer->m_afButtonPressed, pPlayer->m_afButtonReleased);
+	else if (pPlayer == GetPassenger(VEHICLE_ROLE_GUNNER))
+		UpdateGunState(ucmd);
 }
 
 //-----------------------------------------------------------------------------

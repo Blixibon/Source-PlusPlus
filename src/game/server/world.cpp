@@ -594,28 +594,28 @@ void CWorld::RegisterSharedEvents( void )
 }
 
 
-void CWorld::Spawn( void )
+void CWorld::Spawn(void)
 {
-	SetLocalOrigin( vec3_origin );
-	SetLocalAngles( vec3_angle );
+	SetLocalOrigin(vec3_origin);
+	SetLocalAngles(vec3_angle);
 	// NOTE:  SHOULD NEVER BE ANYTHING OTHER THAN 1!!!
-	SetModelIndex( 1 );
+	SetModelIndex(1);
 	// world model
-	SetModelName( AllocPooledString( modelinfo->GetModelName( GetModel() ) ) );
-	AddFlag( FL_WORLDBRUSH );
+	SetModelName(AllocPooledString(modelinfo->GetModelName(GetModel())));
+	AddFlag(FL_WORLDBRUSH);
 
 	g_EventQueue.Init();
-	Precache( );
-	GlobalEntity_Add( "is_console", STRING(gpGlobals->mapname), ( IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
-	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
+	Precache();
+	GlobalEntity_Add("is_console", STRING(gpGlobals->mapname), (IsConsole()) ? GLOBAL_ON : GLOBAL_OFF);
+	GlobalEntity_Add("is_pc", STRING(gpGlobals->mapname), (!IsConsole()) ? GLOBAL_ON : GLOBAL_OFF);
 
 	// Half-Life: Source uses chapter based population tags
 	if (g_pGameTypeSystem->GetCurrentModGameType() == GAME_HL1 && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
 	{
 		struct chapterID_s
 		{
-			const char *pszName;
-			const char *pszChapter;
+			const char* pszName;
+			const char* pszChapter;
 		};
 
 		chapterID_s chapters[] = {
@@ -704,18 +704,10 @@ void CWorld::Spawn( void )
 		}
 	}
 
-	char szMapadd[128];
-	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", STRING(gpGlobals->mapname));
-	KeyValues *pMapAdd = new KeyValues("MapData");
-	if (pMapAdd->LoadFromFile(filesystem, szMapadd, "GAME"))
-	{
-		if (pMapAdd->FindKey("population"))
-			m_iszPopulationTag = AllocPooledString(pMapAdd->GetString("population"));
-		if (pMapAdd->FindKey("cold_override"))
-			m_bColdWorld = pMapAdd->GetBool("cold_override");
-	}
-
-	pMapAdd->deleteThis();
+	if (g_pGameTypeSystem->HasMapOption("population"))
+		m_iszPopulationTag = AllocPooledString(g_pGameTypeSystem->GetMapOptionString("population"));
+	if (g_pGameTypeSystem->HasMapOption("cold_override"))
+		m_bColdWorld = g_pGameTypeSystem->GetMapOptionBool("cold_override");
 }
 
 //-----------------------------------------------------------------------------

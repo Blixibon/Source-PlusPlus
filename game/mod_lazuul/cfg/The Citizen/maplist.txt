@@ -1,3 +1,4 @@
+@chapter:1
 thecitizen_Intro
 thecitizen_part1
 thecitizen_part2
@@ -9,6 +10,7 @@ thecitizen_part7
 thecitizen_part8
 thecitizen_part9
 thecitizen_part10
+@chapter:2
 thecitizen_part11
 thecitizen_part12
 thecitizen_part13

@@ -261,19 +261,54 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 					if (g_pFullFileSystem->ReadFile(cControlFile, "MOD", buf))
 					{
 						char szMapName[MAX_MAP_NAME];
-						buf.GetLine(szMapName, MAX_MAP_NAME);
-						const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
-						if (pszLineEnd)
-							const_cast<char*>(pszLineEnd)[0] = 0;
+						do {
+							buf.GetLine(szMapName, MAX_MAP_NAME);
+							// Handle comments and empty lines
+							if (V_strncmp(szMapName, "//", 2) == 0 || szMapName[0] == '\n')
+								continue;
 
-						char mapname[MAX_PATH];
-						V_ComposeFileName("maps/", szMapName, mapname, MAX_PATH);
-						V_SetExtension(mapname, ".bsp", MAX_PATH);
+							// Handle commands
+							if (szMapName[0] == '@')
+							{
+								/*CUtlStringList params;
+								V_SplitString(szMapName + 1, ":", params);
 
-						if (filesystem->FileExists(mapname, "GAME") && (!m_bCommentaryMode || filesystem->FileExists(CFmtStr("maps" CORRECT_PATH_SEPARATOR_S "%s_commentary.txt", szMapName), "GAME")))
-						{
-							bCreate = true;
-						}
+								const char* pszCommand = params[0];
+								if (V_strnicmp(pszCommand, "chapter", 7) == 0)
+								{
+									IF_PARAMS_VALID(params, 1)
+										mapData.m_iChapterIndex = atoi(params[1]);
+								}
+								else if (V_strnicmp(pszCommand, "location", 8) == 0)
+								{
+									IF_PARAMS_VALID(params, 1)
+										mapData.m_PopulationPath = params[1];
+								}
+								else if (V_strncmp(pszCommand, "optset", 6) == 0)
+								{
+									IF_PARAMS_VALID(params, 2)
+										mapData.GetOrCreateOptions()->SetString(params[1], params[2]);
+								}
+								else if (V_strncmp(pszCommand, "optclr", 6) == 0)
+								{
+									mapData.NukeOptions();
+								}*/
+
+								continue;
+							}
+							const char* pszLineEnd = V_strnchr(szMapName, '\n', MAX_MAP_NAME);
+							if (pszLineEnd)
+								const_cast<char*>(pszLineEnd)[0] = 0;
+
+							char mapname[MAX_PATH];
+							V_ComposeFileName("maps/", szMapName, mapname, MAX_PATH);
+							V_SetExtension(mapname, ".bsp", MAX_PATH);
+
+							if (filesystem->FileExists(mapname, "GAME") && (!m_bCommentaryMode || filesystem->FileExists(CFmtStr("maps" CORRECT_PATH_SEPARATOR_S "%s_commentary.txt", szMapName), "GAME")))
+							{
+								bCreate = true;
+							}
+						} while (buf.IsValid() && !bCreate);
 					}
 					else
 					{

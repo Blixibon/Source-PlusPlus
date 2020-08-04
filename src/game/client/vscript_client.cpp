@@ -117,6 +117,8 @@ bool VScriptClientInit()
 					GameRules()->RegisterScriptFunctions();
 				}
 
+				RegisterSharedScriptFunctions();
+
 				//g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 
 				if ( scriptLanguage == SL_SQUIRREL )

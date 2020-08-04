@@ -34,6 +34,10 @@ void CByteswap::SwapFieldToTargetEndian( void* pOutputBuffer, void *pData, typed
 		SwapBufferToTargetEndian<int>( (int*)pOutputBuffer, (int*)pData, pField->fieldSize );
 		break;
 
+	case FIELD_INT64:
+		SwapBufferToTargetEndian<int64>((int64*)pOutputBuffer, (int64*)pData, pField->fieldSize);
+		break;
+
 	case FIELD_VECTOR:
 		SwapBufferToTargetEndian<uint>( (uint*)pOutputBuffer, (uint*)pData, pField->fieldSize * 3 );
 		break;

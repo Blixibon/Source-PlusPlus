@@ -114,7 +114,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 
 		// If it's null, ask the gametype system for the area it got from the level's name.
 		if (pchTag == nullptr)
-			pchTag = g_pGameTypeSystem->GetFirstArea();
+			pchTag = g_pGameTypeSystem->GetPopulationLocation();
 
 		if (FStrEq(pchTag, ""))
 		{

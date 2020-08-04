@@ -1,0 +1,77 @@
+criterion t0a2CanalDrown "t0a2CanalDrown" "1" required weight 4
+response hazardcourse_playerdeath_canal
+{
+   scene "scenes/hazardcourse/misc/playerdeath_canal.vcd" 
+}
+
+rule TLK_HC_PLAYERDEAD_CANAL
+{
+	criteria TLK_HC_PLAYERDEAD t0a2CanalDrown
+	response hazardcourse_playerdeath_canal
+}
+
+response t0a2_bickford_range_nag
+{
+    sequential
+    norepeat
+    scene "scenes/hazardcourse/t0a2/range_nag01.vcd"
+    scene "scenes/hazardcourse/t0a2/range_nag02.vcd"
+}
+
+criterion TLK_t0a2_BICKFORD_RANGE_NAG concept TLK_t0a2_BICKFORD_RANGE_NAG required
+rule TLK_t0a2_BICKFORD_RANGE_NAG
+{
+    criteria TLK_t0a2_BICKFORD_RANGE_NAG
+    response t0a2_bickford_range_nag
+}
+
+response t0a2_friendlyfire
+{
+    sequential
+    norepeat
+    scene "scenes/hazardcourse/t0a2/range_fi_ff01.vcd" 
+    scene "scenes/hazardcourse/t0a2/range_fi_ff02.vcd" 
+    scene "scenes/hazardcourse/t0a2/range_fi_ff03.vcd" 
+    scene "scenes/hazardcourse/t0a2/range_fi_ff04.vcd" 
+    scene "scenes/hazardcourse/t0a2/range_fi_ff05.vcd"
+}
+
+criterion TLK_t0a2_FF concept TLK_t0a2_FF required
+rule TLK_t0a2_FF
+{
+    criteria TLK_t0a2_FF
+    response t0a2_friendlyfire
+}
+
+response t0a2_friendlyfire_rguard
+{
+    sequential
+    norepeat
+    scene "scenes/hazardcourse/t0a2/rguard_ff01.vcd" 
+    scene "scenes/hazardcourse/t0a2/rguard_ff02.vcd" 
+    scene "scenes/hazardcourse/t0a2/rguard_ff03.vcd" 
+    scene "scenes/hazardcourse/t0a2/rguard_ff04.vcd" 
+}
+
+criterion TLK_t0a2_FF_RG concept TLK_t0a2_FF_RG required
+rule TLK_t0a2_FF_RG
+{
+    criteria TLK_t0a2_FF_RG
+    response t0a2_friendlyfire_rguard
+}
+
+response t0a2_rangenag
+{
+    sequential
+    norepeat
+    scene "scenes/hazardcourse/t0a2/range_nag01.vcd" 
+    scene "scenes/hazardcourse/t0a2/range_nag02.vcd" 
+}
+
+criterion TLK_t0a2_RANGENAG concept TLK_t0a2_RANGENAG required
+rule TLK_t0a2_RANGENAG
+{
+    criteria TLK_t0a2_RANGENAG
+    response t0a2_rangenag
+}
+

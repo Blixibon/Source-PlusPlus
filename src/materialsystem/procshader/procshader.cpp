@@ -30,7 +30,7 @@ public:
 #endif
 
 void UpdateConstantByIdentifier( CBaseVSShader *pShader, IShaderDynamicAPI* pShaderAPI, IMaterialVar **params, SimpleEnvConstant *pConst, CProceduralContext *pContext,
-							bool bPS, int iFirstMutable, int iFirstStatic )
+							bool bPS, int iFirstMutable, int iFirstStatic, int iTimeVar)
 {
 	float data[4][4] = { 0, 0, 0, 0,
 						0, 0, 0, 0,
@@ -43,7 +43,10 @@ void UpdateConstantByIdentifier( CBaseVSShader *pShader, IShaderDynamicAPI* pSha
 	default:
 		Assert(0);
 	case HLSLENV_TIME:
-		data[0][ 0 ] = pShaderAPI->CurrentTime();
+	{
+		float flTime = GetFloatParam(iTimeVar, params);
+		data[0][0] = (flTime > 0.f) ? flTime : pShaderAPI->CurrentTime();
+	}
 		break;
 	case HLSLENV_VIEW_ORIGIN:
 	case HLSLENV_VIEW_FWD:
@@ -481,6 +484,7 @@ BEGIN_VS_SHADER( EDITOR_SHADER, "" )
 
 		SHADER_PARAM( BUMPMAP, SHADER_PARAM_TYPE_TEXTURE, "", "" )
 		SHADER_PARAM( ENVMAP, SHADER_PARAM_TYPE_TEXTURE, "", "" )
+		SHADER_PARAM(TIME, SHADER_PARAM_TYPE_FLOAT, "", "")
 
 		SHADER_PARAM( SHADERNAME, SHADER_PARAM_TYPE_STRING, "", "" )
 		SHADER_PARAM( ISCUSTOMSHADERREADY, SHADER_PARAM_TYPE_BOOL, "0", "" )
@@ -1239,7 +1243,7 @@ BEGIN_VS_SHADER( EDITOR_SHADER, "" )
 			for ( ; constCount > 0; constCount--, _constBase++ )
 			{
 				_const = *_constBase;
-				UpdateConstantByIdentifier( this, pShaderAPI, params, _const, pContext, true, MUTABLE_01, VPSTATIC_00 );
+				UpdateConstantByIdentifier( this, pShaderAPI, params, _const, pContext, true, MUTABLE_01, VPSTATIC_00, TIME );
 			}
 
 			constCount = hConst_VS.Count();
@@ -1248,7 +1252,7 @@ BEGIN_VS_SHADER( EDITOR_SHADER, "" )
 			for ( ; constCount > 0; constCount--, _constBase++ )
 			{
 				_const = *_constBase;
-				UpdateConstantByIdentifier( this, pShaderAPI, params, _const, pContext, false, MUTABLE_01, VPSTATIC_00 );
+				UpdateConstantByIdentifier( this, pShaderAPI, params, _const, pContext, false, MUTABLE_01, VPSTATIC_00, TIME);
 			}
 
 #ifdef SHADER_EDITOR_DLL_SWARM

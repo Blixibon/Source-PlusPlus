@@ -99,17 +99,17 @@ public:
 	virtual IDiscordPresence* GetRichPresence() { return &m_Presence; }
 
 	// Inherited via IGameSharedUtils
-	virtual bool InitClient(IVEngineClient* pCLEngine, IBaseClientDLL* pClient, CGlobalVarsBase* pGlobals) override
+	virtual bool InitClient(CreateInterfaceFn engineFactory, CreateInterfaceFn clientFactory, CGlobalVarsBase* pGlobals) override
 	{
-		m_EnginePointers.engineclient = pCLEngine;
-		m_EnginePointers.gameclient = pClient;
+		m_EnginePointers.engineclient = (IVEngineClient*)engineFactory(VENGINE_CLIENT_INTERFACE_VERSION, NULL);
+		m_EnginePointers.gameclient = (IBaseClientDLL*)clientFactory(CLIENT_DLL_INTERFACE_VERSION, NULL);
 		m_EnginePointers.gpClientGlobals = pGlobals;
 		return true;
 	}
-	virtual bool InitServer(IVEngineServer* pSVEngine, IServerGameDLL* pGame, CGlobalVars* pGlobals) override
+	virtual bool InitServer(CreateInterfaceFn engineFactory, CreateInterfaceFn gameFactory, CGlobalVars* pGlobals) override
 	{
-		m_EnginePointers.engineserver = pSVEngine;
-		m_EnginePointers.gameserver = pGame;
+		m_EnginePointers.engineserver = (IVEngineServer*)engineFactory(INTERFACEVERSION_VENGINESERVER, NULL);
+		m_EnginePointers.gameserver = (IServerGameDLL*)gameFactory(INTERFACEVERSION_SERVERGAMEDLL, NULL);
 		m_EnginePointers.gpServerGlobals = pGlobals;
 		return true;
 	}

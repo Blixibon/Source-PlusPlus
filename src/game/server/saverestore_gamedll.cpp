@@ -75,6 +75,10 @@ bool ParseKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, c
 				(*(int *)((char *)pObject + fieldOffset)) = atoi( szValue );
 				return true;
 
+			case FIELD_INT64:
+				(*(int64*)((char*)pObject + fieldOffset)) = atoll(szValue);
+				return true;
+
 			case FIELD_POSITION_VECTOR:
 			case FIELD_VECTOR:
 				UTIL_StringToVector( (float *)((char *)pObject + fieldOffset), szValue );
@@ -183,6 +187,10 @@ bool ExtractKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields,
 			case FIELD_INTEGER:
 			case FIELD_TICK:
 				Q_snprintf( szValue, iMaxLen, "%d", (*(int *)((char *)pObject + fieldOffset)) );
+				return true;
+
+			case FIELD_INT64:
+				Q_snprintf(szValue, iMaxLen, "%lld", (*(int64*)((char*)pObject + fieldOffset)));
 				return true;
 
 			case FIELD_POSITION_VECTOR:

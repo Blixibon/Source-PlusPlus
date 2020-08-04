@@ -2149,7 +2149,7 @@ bool COliviaSystem::InvokeOlivia(CLaz_Player* pInvoker)
 
 void COliviaSystem::FrameUpdatePreEntityThink()
 {
-	if (!GameRules()->FAllowNPCs() || !GameRules()->IsMultiplayer())
+	if (!GameRules()->FAllowNPCs() || !GameRules()->IsMultiplayer() || !g_OTargetList.m_pClassList)
 		return;
 
 	if (gpGlobals->curtime - m_flTimeLastUpdate < 1.f)

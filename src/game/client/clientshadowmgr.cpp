@@ -5273,11 +5273,18 @@ const Vector &CClientShadowMgr::GetShadowDirection( ClientShadowHandle_t shadowH
 		return GetShadowDirection( pRenderable );
 	}
 
+	// This will cause blobby shadows to always project straight down
+	static Vector s_vecDown(0, 0, -1);
+
 	Vector &vecResult = AllocTempVector();
-	vecResult = m_Shadows[shadowHandle].m_ShadowDir;
+	ShadowType_t type = GetActualShadowCastType(shadowHandle);
+	if (type == SHADOWS_RENDER_TO_TEXTURE)
+		vecResult = m_Shadows[shadowHandle].m_ShadowDir;
+	else
+		vecResult = s_vecDown;
 
 	// Allow the renderable to override the default
-	pRenderable->GetShadowCastDirection( &vecResult, GetActualShadowCastType( pRenderable ) );
+	pRenderable->GetShadowCastDirection( &vecResult, type );
 
 	return vecResult;
 }
@@ -5301,7 +5308,7 @@ void CClientShadowMgr::UpdateShadowDirectionFromLocalLightSource( ClientShadowHa
 	}
 
 	// Invisible things do not have shadows
-	if ( !pRenderable->ShouldDraw() )
+	if ( !pRenderable->ShouldDraw() || GetActualShadowCastType(shadowHandle) != SHADOWS_RENDER_TO_TEXTURE)
 		return;
 
 	matrix3x4_t matLightingOffset;

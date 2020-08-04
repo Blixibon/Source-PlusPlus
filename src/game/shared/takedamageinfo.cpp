@@ -33,6 +33,59 @@ DEFINE_FIELD(m_iAmmoType, FIELD_INTEGER),
 DEFINE_FIELD(m_iDamagedOtherPlayers, FIELD_INTEGER),
 END_DATADESC();
 
+BEGIN_SCRIPTDESC_ROOT(CTakeDamageInfo, "Damage information handler.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetInflictor, "GetInflictor", "Gets the inflictor.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetInflictor, "SetInflictor", "Sets the inflictor.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetWeapon, "GetWeapon", "Gets the weapon.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetWeapon, "SetWeapon", "Sets the weapon.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetAttacker, "GetAttacker", "Gets the attacker.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetAttacker, "SetAttacker", "Sets the attacker.")
+
+DEFINE_SCRIPTFUNC(GetDamage, "Gets the damage.")
+DEFINE_SCRIPTFUNC(SetDamage, "Sets the damage.")
+DEFINE_SCRIPTFUNC(GetMaxDamage, "Gets the max damage.")
+DEFINE_SCRIPTFUNC(SetMaxDamage, "Sets the max damage.")
+DEFINE_SCRIPTFUNC(ScaleDamage, "Scales the damage.")
+DEFINE_SCRIPTFUNC(AddDamage, "Adds to the damage.")
+DEFINE_SCRIPTFUNC(SubtractDamage, "Removes from the damage.")
+DEFINE_SCRIPTFUNC(GetDamageBonus, "Gets the damage bonus.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetDamageBonusProvider, "GetDamageBonusProvider", "Gets the damage bonus provider.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetDamageBonus, "SetDamageBonus", "Sets the damage bonus.")
+
+DEFINE_SCRIPTFUNC(GetBaseDamage, "Gets the base damage.")
+DEFINE_SCRIPTFUNC(BaseDamageIsValid, "Checks if the base damage is valid.")
+
+DEFINE_SCRIPTFUNC(GetDamageForce, "Gets the damage force.")
+DEFINE_SCRIPTFUNC(SetDamageForce, "Sets the damage force.")
+DEFINE_SCRIPTFUNC(ScaleDamageForce, "Scales the damage force.")
+
+DEFINE_SCRIPTFUNC(GetDamagePosition, "Gets the damage position.")
+DEFINE_SCRIPTFUNC(SetDamagePosition, "Sets the damage position.")
+
+DEFINE_SCRIPTFUNC(GetReportedPosition, "Gets the reported damage position.")
+DEFINE_SCRIPTFUNC(SetReportedPosition, "Sets the reported damage position.")
+
+DEFINE_SCRIPTFUNC(GetDamageType, "Gets the damage type.")
+DEFINE_SCRIPTFUNC(SetDamageType, "Sets the damage type.")
+DEFINE_SCRIPTFUNC(AddDamageType, "Adds to the damage type.")
+DEFINE_SCRIPTFUNC(GetDamageCustom, "Gets the damage custom.")
+DEFINE_SCRIPTFUNC(SetDamageCustom, "Sets the damage custom.")
+DEFINE_SCRIPTFUNC(GetDamageStats, "Gets the damage stats.")
+DEFINE_SCRIPTFUNC(SetDamageStats, "Sets the damage stats.")
+DEFINE_SCRIPTFUNC(IsForceFriendlyFire, "Gets force friendly fire.")
+DEFINE_SCRIPTFUNC(SetForceFriendlyFire, "Sets force friendly fire.")
+
+DEFINE_SCRIPTFUNC(GetAmmoType, "Gets the ammo type.")
+DEFINE_SCRIPTFUNC(SetAmmoType, "Sets the ammo type.")
+DEFINE_SCRIPTFUNC(GetAmmoName, "Gets the ammo type name.")
+
+DEFINE_SCRIPTFUNC(GetPlayerPenetrationCount, "Gets the player penetration count.")
+DEFINE_SCRIPTFUNC(SetPlayerPenetrationCount, "Sets the player penetration count.")
+
+DEFINE_SCRIPTFUNC(GetDamagedOtherPlayers, "Gets whether other players have been damaged.")
+DEFINE_SCRIPTFUNC(SetDamagedOtherPlayers, "Sets whether other players have been damaged.")
+END_SCRIPTDESC();
+
 void CTakeDamageInfo::Init( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int64 bitsDamageType, int iCustomDamage )
 {
 	m_hInflictor = pInflictor;
@@ -167,6 +220,58 @@ const char *CTakeDamageInfo::GetAmmoName() const
 	}
 
 	return pszAmmoType;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+HSCRIPT CTakeDamageInfo::ScriptGetInflictor() const
+{
+	return ToHScript(GetInflictor());
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CTakeDamageInfo::ScriptSetInflictor(HSCRIPT pInflictor)
+{
+	SetInflictor(ToEnt(pInflictor));
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+HSCRIPT CTakeDamageInfo::ScriptGetWeapon() const
+{
+	return ToHScript(GetWeapon());
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CTakeDamageInfo::ScriptSetWeapon(HSCRIPT pWeapon)
+{
+	SetWeapon(ToEnt(pWeapon));
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+HSCRIPT CTakeDamageInfo::ScriptGetAttacker() const
+{
+	return ToHScript(GetAttacker());
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CTakeDamageInfo::ScriptSetAttacker(HSCRIPT pAttacker)
+{
+	SetAttacker(ToEnt(pAttacker));
+}
+
+HSCRIPT CTakeDamageInfo::ScriptGetDamageBonusProvider() const
+{
+	return ToHScript(GetDamageBonusProvider());
+}
+
+void CTakeDamageInfo::ScriptSetDamageBonus(float flBonus, HSCRIPT hProvider)
+{
+	SetDamageBonus(flBonus, ToEnt(hProvider));
 }
 
 // -------------------------------------------------------------------------------------------------- //
@@ -409,7 +514,7 @@ static const char * const s_DamageTypeToStrTable[] =
 	"SLOWFREEZE"
 	"PHYSGUN",
 	"PLASMA",
-	"AIRBOAT",
+	"HEAVYWEAPON",
 	"DISSOLVE",
 	"BLAST_SURFACE",
 	"DIRECT",

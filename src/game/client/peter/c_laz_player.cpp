@@ -902,24 +902,22 @@ ConVar cl_blobbyshadows("cl_blobbyshadows", "0", FCVAR_CLIENTDLL);
 ShadowType_t C_Laz_Player::ShadowCastType(void)
 {
 	// Removed the GetPercentInvisible - should be taken care off in BindProxy now.
-	if (!IsVisible() /*|| GetPercentInvisible() > 0.0f*/ || IsLocalPlayer())
+	if (!IsVisible() /*|| GetPercentInvisible() > 0.0f*/)
 		return SHADOWS_NONE;
 
 	if (IsEffectActive(EF_NODRAW | EF_NOSHADOW))
 		return SHADOWS_NONE;
 
 	// If in ragdoll mode.
-	if (m_nRenderFX == kRenderFxRagdoll)
+	if (m_nRenderFX == kRenderFxRagdoll || m_hRagdoll.Get())
 		return SHADOWS_NONE;
-
-	C_BasePlayer *pLocalPlayer = GetLocalPlayer();
 
 	// if we're first person spectating this player
-	if (pLocalPlayer &&
-		pLocalPlayer->GetObserverTarget() == this &&
-		pLocalPlayer->GetObserverMode() == OBS_MODE_IN_EYE)
+	if (InFirstPersonView() &&
+		!ShouldDrawThisPlayer() &&
+		cl_legs_enable.GetInt() == 0)
 	{
-		return SHADOWS_NONE;
+		return SHADOWS_SIMPLE;
 	}
 
 	if (cl_blobbyshadows.GetBool())
@@ -1012,8 +1010,14 @@ int C_Laz_Player::DrawModel(int flags)
 	if (IsRenderingMyFlashlight())
 		return 0;
 
-	if (CurrentViewID() == VIEW_REFLECTION && !g_pPortalRender->IsRenderingPortal())
-		return 0;
+	if (IsLocalPlayer() && ShouldDoPortalRenderCulling())
+	{
+		if (!C_BasePlayer::ShouldDrawLocalPlayer())
+		{
+			if (CurrentViewID() == VIEW_REFLECTION && !g_pPortalRender->IsRenderingPortal())
+				return 0;
+		}
+	}
 
 	return BaseClass::DrawModel(flags);
 }
@@ -1499,8 +1503,8 @@ void C_Laz_Player::BuildFirstPersonMeathookTransformations(CStudioHdr* hdr, Vect
 	vRealPivotPoint = MainViewOrigin() - (vUp * cl_meathook_neck_pivot_ingame_up.GetFloat()) - (vForward * cl_meathook_neck_pivot_ingame_fwd.GetFloat());
 
 
-	if (m_Local.m_bDucking && GetGroundEntity())
-		vRealPivotPoint.z += 21;
+	if (m_Local.m_bDucked && GetGroundEntity())
+		vRealPivotPoint.z += 20;
 
 	Vector vDeltaToAdd = vRealPivotPoint - vHeadTransformTranslation;
 

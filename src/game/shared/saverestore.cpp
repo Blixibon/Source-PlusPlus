@@ -91,6 +91,7 @@ static int gSizes[FIELD_TYPECOUNT] =
 	FIELD_SIZE( FIELD_MATERIALINDEX ),
 
 	FIELD_SIZE( FIELD_VECTOR2D ),
+	FIELD_SIZE(FIELD_INT64),
 };
 
 
@@ -296,6 +297,14 @@ void CSave::Log( const char *pName, fieldtype_t fieldType, void *value, int coun
 				Q_strncat( szBuf, szTempBuf, sizeof( szTempBuf ), COPY_ALL_CHARACTERS );
 				break;
 			}
+		case FIELD_INT64:
+		{
+			int64* pValue = (int64*)(value);
+			int64 nValue = pValue[iCount];
+			Q_snprintf(szTempBuf, sizeof(szTempBuf), "%lld", nValue);
+			Q_strncat(szBuf, szTempBuf, sizeof(szTempBuf), COPY_ALL_CHARACTERS);
+			break;
+		}
 		case FIELD_STRING:
 			{
 				string_t *pValue = ( string_t* )( value );
@@ -734,6 +743,10 @@ bool CSave::WriteBasicField( const char *pname, void *pData, datamap_t *pRootMap
 
 		case FIELD_INTEGER:
 			WriteInt( pField->fieldName, (int *)pData, pField->fieldSize );
+			break;
+
+		case FIELD_INT64:
+			WriteData(pField->fieldName, sizeof(int64) * pField->fieldSize, (const char *)pData);
 			break;
 
 		case FIELD_BOOLEAN:
@@ -1393,6 +1406,12 @@ void CRestore::ReadBasicField( const SaveRestoreRecordHeader_t &header, void *pD
 		case FIELD_INTEGER:
 		{
 			ReadInt( (int *)pDest, pField->fieldSize, header.size );
+			break;
+		}
+
+		case FIELD_INT64:
+		{
+			ReadSimple((int64*)pDest, pField->fieldSize, header.size);
 			break;
 		}
 

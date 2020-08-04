@@ -11,6 +11,7 @@
 #pragma once
 #endif
 
+#include "vscript/ivscript.h"
 
 #include "networkvar.h" // todo: change this when DECLARE_CLASS is moved into a better location.
 #include "isaverestore.h"
@@ -144,7 +145,14 @@ public:
 	// For designer debug output.
 	static void		DebugGetDamageTypeString(uint64 DamageType, char *outbuf, int outbuflength );
 
-
+	HSCRIPT			ScriptGetInflictor() const;
+	void			ScriptSetInflictor(HSCRIPT pInflictor);
+	HSCRIPT			ScriptGetWeapon() const;
+	void			ScriptSetWeapon(HSCRIPT pWeapon);
+	HSCRIPT			ScriptGetAttacker() const;
+	void			ScriptSetAttacker(HSCRIPT pAttacker);
+	HSCRIPT			ScriptGetDamageBonusProvider() const;
+	void			ScriptSetDamageBonus(float flBonus, HSCRIPT hProvider);
 //private:
 	void			CopyDamageToBaseDamage();
 

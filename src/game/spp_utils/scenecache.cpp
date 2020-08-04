@@ -7,7 +7,10 @@
 #include "lzss.h"
 #include "fmtstr.h"
 #include "scenefilecache/SceneImageFile.h"
+#include "filesystem.h"
 #include "shared.h"
+
+#include "memdbgon.h"
 
 //-----------------------------------------------------------------------------
 // Binary compiled VCDs get their strings from a pool
@@ -44,6 +47,35 @@ protected:
 
 CLZSS CSceneFileCache::compressor;
 
+void AsyncSceneLoadCallback(const FileAsyncRequest_t& request, int nBytesRead, FSAsyncStatus_t err)
+{
+	CSceneFileCache* pThis = (CSceneFileCache*)request.pContext;
+
+	if (err == FSASYNC_OK)
+	{
+		char szCleanName[MAX_PATH];
+		V_strncpy(szCleanName, request.pszFilename, sizeof(szCleanName));
+		V_strlower(szCleanName);
+		V_FixSlashes(szCleanName, '\\');
+		CRC32_t crcFilename = CRC32_ProcessSingleBuffer(szCleanName, strlen(szCleanName));
+
+		CRC32_t crcSource;
+		CRC32_Init(&crcSource);
+		CRC32_ProcessBuffer(&crcSource, request.pData, nBytesRead);
+		CRC32_Final(&crcSource);
+
+		SetTokenProcessorBuffer((char*)request.pData);
+		CChoreoScene* pCacheScene = ChoreoLoadScene(szCleanName, nullptr, GetTokenProcessor(), nullptr);
+
+		pThis->AddSceneFile(crcFilename, crcSource, pCacheScene);
+		delete pCacheScene;
+	}
+	else if (err < FSASYNC_OK)
+	{
+
+	}
+}
+
 void DoLoadScenes(CSceneFileCache* pThis, MsgFunc_t print)
 {
 	pThis->m_ScenesLoaded = 0;
@@ -52,30 +84,26 @@ void DoLoadScenes(CSceneFileCache* pThis, MsgFunc_t print)
 
 	CUtlVector<CUtlString>	vcdFileList;
 	FindFiles("scenes/*.vcd", true, vcdFileList, "SCENES");
-	pThis->m_SceneTable.EnsureCapacity(vcdFileList.Count());
-	for (auto& file : vcdFileList)
+	int iSceneCount = vcdFileList.Count();
+
+	if (print)
+		print("Found %d scenes on filesystem.\n", iSceneCount);
+
+	pThis->m_SceneTable.EnsureCapacity(iSceneCount);
+	FileAsyncRequest_t* pRequests = new FileAsyncRequest_t[iSceneCount];
+	for (int i = 0; i < iSceneCount; i++)
 	{
-		CUtlBuffer buf;
-		if (g_pFullFileSystem->ReadFile(file.Get(), "SCENES", buf))
-		{
-			char szCleanName[MAX_PATH];
-			V_strncpy(szCleanName, file.Get(), sizeof(szCleanName));
-			V_strlower(szCleanName);
-			V_FixSlashes(szCleanName, '\\');
-			CRC32_t crcFilename = CRC32_ProcessSingleBuffer(szCleanName, strlen(szCleanName));
-
-			CRC32_t crcSource;
-			CRC32_Init(&crcSource);
-			CRC32_ProcessBuffer(&crcSource, buf.Base(), buf.TellMaxPut());
-			CRC32_Final(&crcSource);
-
-			SetTokenProcessorBuffer((char*)buf.Base());
-			CChoreoScene* pCacheScene = ChoreoLoadScene(szCleanName, nullptr, GetTokenProcessor(), nullptr);
-
-			pThis->AddSceneFile(crcFilename, crcSource, pCacheScene);
-			delete pCacheScene;
-		}
+		pRequests[i].pszPathID = "SCENES";
+		pRequests[i].pszFilename = vcdFileList[i].Get();
+		pRequests[i].flags = FSASYNC_FLAGS_NULLTERMINATE | FSASYNC_FLAGS_FREEDATAPTR;
+		pRequests[i].pContext = pThis;
+		pRequests[i].pfnCallback = AsyncSceneLoadCallback;
 	}
+
+	g_pFullFileSystem->AsyncReadMultiple(pRequests, iSceneCount);
+	delete[] pRequests;
+	g_pFullFileSystem->AsyncFinishAll();
+
 	vcdFileList.Purge();
 
 	int iFileScenes = pThis->m_SceneTable.Count();
@@ -221,6 +249,18 @@ bool CSceneFileCache::GetSceneCachedData(char const* pFilename, SceneCachedData_
 	return false;
 }
 
+bool CSceneFileCache::GetSceneCachedData_V1(char const* pFilename, SceneCachedDataV1_t* pData)
+{
+	CSceneFileCache::SceneIndex_t IDX = GetSceneIndex(pFilename);
+	if (m_SceneTable.IsValidIndex(IDX))
+	{
+		*pData = m_SceneTable.Element(IDX);
+		return true;
+	}
+
+	return false;
+}
+
 short CSceneFileCache::GetSceneCachedSound(int iScene, int iSound)
 {
 	BlockForLoad();
@@ -346,6 +386,17 @@ void CSceneFileCache::AddSceneFile(CRC32_t crcFilename, CRC32_t crcSource, CChor
 	}
 	data.numSounds = data.sounds.Count();
 	data.msecs = RoundFloatToUnsignedLong(pScene->FindStopTime() * 1000.0f + 0.5f);
+
+	for (int i = pScene->GetNumEvents() - 1; i >= 0; i--)
+	{
+		CChoreoEvent* pEvent = pScene->GetEvent(i);
+
+		if (pEvent->GetType() == CChoreoEvent::SPEAK)
+		{
+			data.speech_msecs = RoundFloatToUnsignedLong(pEvent->GetEndTime() * 1000.0f + 0.5f);
+			break;
+		}
+	}
 
 	CUtlBuffer binBuf;
 	pScene->SaveToBinaryBuffer(binBuf, crcSource, &m_PersistantStrings);

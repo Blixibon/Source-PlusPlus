@@ -3227,10 +3227,6 @@ void CDropShipPlayerSpawner::SpawnPlayersThink()
 		{
 			pDropship->m_hPlayersToSpawn[i] = m_hPlayersToSpawn[i];
 			pDropship->m_sDustoffPoints[i] = m_sDustoffPoints[i];
-			if (m_hPlayersToSpawn[i].Get())
-			{
-				m_hPlayersToSpawn[i]->SetObserverTarget(pDropship);
-			}
 		}
 
 		pDropship->m_iCrateType = CRATE_SOLDIER;
@@ -3242,6 +3238,14 @@ void CDropShipPlayerSpawner::SpawnPlayersThink()
 
 		DispatchSpawn(pDropship);
 		pDropship->Activate();
+
+		for (int i = 0; i < DROPSHIP_MAX_SOLDIERS; i++)
+		{
+			if (m_hPlayersToSpawn[i].Get())
+			{
+				m_hPlayersToSpawn[i]->SetObserverTarget(pDropship);
+			}
+		}
 
 		CPathTrack* pLandTrack = m_pEntryPath;
 		for (CPathTrack* pNext = pLandTrack->GetNext(); pNext != nullptr; pNext = pNext->GetNext())

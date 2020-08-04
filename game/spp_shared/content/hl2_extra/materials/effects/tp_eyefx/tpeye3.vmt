@@ -1,0 +1,6 @@
+"EDITOR_SHADER"
+{
+	"$shadername"	"postproc_warp"
+	"$tint_color1"	"[0 0.64 1]"
+	"$tint_color2"	"[0.43 0.279672 0.1032]"
+}

@@ -702,6 +702,8 @@ $Project
 		$File	"c_movie_display.h"
 		$File	"vgui_movie_display.cpp"
 		
+		$File	"$SRCDIR\game\shared\vscript_funcs_shared.cpp"
+		
 		// Files not using precompiled header cbase.h
 
 		$File	"$SRCDIR\public\bone_setup.cpp"						\
@@ -735,7 +737,8 @@ $Project
 				"$SRCDIR\public\renamed_recvtable_compat.cpp"		\
 				"rendertexture.cpp"									\
 				"$SRCDIR\public\phonemeconverter.cpp"				\
-				"$SRCDIR\public\lumpfiles.cpp"
+				"$SRCDIR\public\lumpfiles.cpp"						\
+				"$SRCDIR\responserules\runtime\matchers.cpp"
 				{
 					$Configuration
 					{

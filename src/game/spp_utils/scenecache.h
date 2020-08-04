@@ -23,9 +23,12 @@ public:
 	virtual size_t GetSceneBufferSize(char const* filename) override;
 	virtual bool GetSceneData(char const* filename, byte* buf, size_t bufsize) override;
 	virtual bool GetSceneCachedData(char const* pFilename, SceneCachedData_t* pData) override;
+	virtual bool GetSceneCachedData_V1(char const* pFilename, SceneCachedDataV1_t* pData) override;
 	virtual short GetSceneCachedSound(int iScene, int iSound) override;
 	virtual const char* GetSceneString(short stringId) override;
 	virtual void Reload() override;
+
+	void	AddSceneFile(CRC32_t crcFilename, CRC32_t crcSource, CChoreoScene* pScene);
 
 	CInterlockedInt m_ThreadActive;
 protected:
@@ -42,7 +45,6 @@ protected:
 	typedef CUtlMap<CRC32_t, internalSceneData_t>::IndexType_t SceneIndex_t;
 
 	SceneIndex_t	GetSceneIndex(char const* pFilename);
-	void	AddSceneFile(CRC32_t crcFilename, CRC32_t crcSource, CChoreoScene *pScene);
 
 	class CCacheStringPool : public IChoreoStringPool
 	{

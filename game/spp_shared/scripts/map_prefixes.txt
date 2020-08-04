@@ -1,4 +1,5 @@
 // This file is now obsolete
+// But it still exists to preserve old behavior
 
 "MapPrefixes"
 {

@@ -81,6 +81,77 @@ typedef struct NewGameDef_s
 	}
 } NewGameDef_t;
 
+typedef struct NewMapData_s
+{
+	CGTSymbol m_GameDef;
+	CGTSymbol m_PopulationPath;
+	int	m_iChapterIndex; // Chapter index. -1 specifies invalid map. -2 specifies training room. -3 specifies bonus map.
+	KeyValues* m_pOptions;
+
+	KeyValues* GetOrCreateOptions()
+	{
+		if (!m_pOptions)
+		{
+			m_pOptions = new KeyValues("MapOptions");
+		}
+
+		return m_pOptions;
+	}
+
+	void	NukeOptions()
+	{
+		if (m_pOptions)
+		{
+			m_pOptions->deleteThis();
+			m_pOptions = nullptr;
+		}
+	}
+
+	NewMapData_s()
+	{
+		m_iChapterIndex = -1;
+		m_pOptions = nullptr;
+	}
+
+	~NewMapData_s()
+	{
+		if (m_pOptions)
+		{
+			m_pOptions->deleteThis();
+			m_pOptions = nullptr;
+		}
+	}
+
+	NewMapData_s &operator=(NewMapData_s const& other)
+	{
+		if (m_pOptions)
+		{
+			m_pOptions->deleteThis();
+			m_pOptions = nullptr;
+		}
+
+		m_GameDef = other.m_GameDef;
+		m_PopulationPath = other.m_PopulationPath;
+		m_iChapterIndex = other.m_iChapterIndex;
+
+		if (other.m_pOptions)
+		{
+			m_pOptions = other.m_pOptions->MakeCopy();
+		}
+		else
+		{
+			m_pOptions = nullptr;
+		}
+
+		return *this;
+	}
+
+	NewMapData_s(NewMapData_s const& other)
+	{
+		*this = other;
+	}
+} NewMapData_t;
+
 class CGameTypeManager /*: public CBaseGameSystem*/
 {
 public:
@@ -94,6 +165,9 @@ public:
 		m_PrefixVector.PurgeAndDeleteElements();
 		m_vecGames.RemoveAll();
 		m_AreaNameVector.PurgeAndDeleteElements();
+
+		m_NewGameConfigs.Purge();
+		m_NewMapConfigs.Purge();
 	}
 
 	void LevelInitPreEntity();
@@ -109,21 +183,21 @@ public:
 	int LookupGametype(const char *);
 	const char* GetGameTypeName(int);
 
-	const char* GetCurrentConfigName() { return m_symConfigName.String(); }
+	const char* GetCurrentConfigName() { return m_CurrentMap.m_GameDef.String(); }
 	int		GetSoundOverrideScripts(CUtlStringList& scripts);
 	const char* GetPopulationSet() { return m_CurrentGame.m_PopSet.String(); }
-
 	bool WorldShouldExpectPortals() { return m_CurrentGame.m_bExpectPortals; }
 
-	bool IsMapInArea(int iArea)
-	{
-		return m_bitAreas.IsBitSet(iArea);
-	}
+	const char* GetPopulationLocation() { return m_CurrentMap.m_PopulationPath.String(); }
+	const NewMapData_t& LookupMapData(const char* pszMapname) const;
 
-	const char *GetFirstArea()
-	{
-		return m_vecAreaNames.Element(m_iFirstArea);
-	}
+	// Data access
+	int   GetMapOptionInt(const char* keyName, int defaultValue = 0) const;
+	uint64 GetMapOptionUint64(const char* keyName, uint64 defaultValue = 0) const;
+	float GetMapOptionFloat(const char* keyName, float defaultValue = 0.0f) const;
+	const char* GetMapOptionString(const char* keyName, const char* defaultValue = "") const;
+	bool GetMapOptionBool(const char* keyName, bool defaultValue = false, bool* optGotDefault = NULL) const;
+	bool HasMapOption(const char* keyName) const;
 
 	void Reload();
 
@@ -148,13 +222,14 @@ protected:
 
 private:
 	CUtlMap<CGTSymbol, NewGameDef_t> m_NewGameConfigs;
-	CUtlMap<CGTSymbol, CGTSymbol>	m_MapNameToGameConfig;
-	CGTSymbol						m_symConfigName;
+	CUtlMap<CGTSymbol, NewMapData_t>	m_NewMapConfigs;
+	//CGTSymbol						m_symConfigName;
 
 	CUtlVectorAutoPurge<MapPrefix_t *> m_PrefixVector;
 	CUtlVector<AreaName_t *> m_AreaNameVector;
 	CUtlStringList m_vecGames;
 	NewGameDef_t	m_CurrentGame;
+	NewMapData_t	m_CurrentMap;
 
 	CBitVec<MAX_CODE_AREAS> m_bitAreas;
 	int						m_iFirstArea;
