@@ -4334,6 +4334,13 @@ void CWeaponPhysCannon::OpenElements( void )
 //-----------------------------------------------------------------------------
 void CWeaponPhysCannon::CloseElements( void )
 {
+	// The mega cannon cannot be closed!
+	if (IsMegaPhysCannon())
+	{
+		OpenElements();
+		return;
+	}
+
 	if ( m_bOpen == false )
 		return;
 

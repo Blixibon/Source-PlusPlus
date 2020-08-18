@@ -22,6 +22,7 @@
 #include "peter/laz_player_resource.h"
 #include "AI_ResponseSystem.h"
 #include "networkstringtable_gamedll.h"
+#include "world.h"
 #else
 #include "networkstringtable_clientdll.h"
 #include "c_team_objectiveresource.h"
@@ -855,7 +856,7 @@ bool CLazuul::ShouldBurningPropsEmitLight()
 	if (IsAlyxInDarknessMode())
 		return true;
 
-	return false;
+	return GetWorldEntity()->GetWorldFlag(WORLD_BURING_DLIGHTS);
 }
 
 //=========================================================

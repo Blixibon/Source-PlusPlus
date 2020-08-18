@@ -25,6 +25,7 @@ enum WorldServerBools
 	WORLD_DISPLAY_TITLE = 0,
 	WORLD_IS_EPISODIC,
 	WORLD_EXPECTS_PORTALS,
+	WORLD_BURING_DLIGHTS,
 
 	NUM_WORLD_BOOLS
 };
@@ -87,9 +88,10 @@ public:
 	}
 
 	int		GetMapVersion() { return m_nMapVersion; }
+
+	bool GetWorldFlag(int iFlag, bool* bDefined = nullptr) const;
 protected:
 	void SetWorldFlag(int iFlag, bool bValue);
-	bool GetWorldFlag(int iFlag, bool *bDefined = nullptr) const;
 	bool GetWorldFlagDefault(int iFlag) const;
 
 private:

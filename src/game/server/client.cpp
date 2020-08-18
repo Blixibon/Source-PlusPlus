@@ -397,6 +397,7 @@ void ClientPrecache( void )
 	CBaseEntity::PrecacheModel("models/ryu-gi/effect_props/incendiary/bullet_tracer.mdl");
 
 	PrecacheParticleSystem("dissolve");
+	PrecacheParticleSystem("gluon_zap_sequence");
 
 	PrecacheNewShells();
 	ClientGamePrecache();

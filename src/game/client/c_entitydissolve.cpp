@@ -24,6 +24,14 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+const char* g_pszDissolveParticles[NUM_ENTITY_DISSOLVE_TYPES] = {
+	"dissolve",
+	"dissolve",
+	"dissolve",
+	"dissolve",
+	"gluon_zap_sequence"
+};
+
 CLIENTEFFECT_REGISTER_BEGIN( PrecacheEffectBuild )
 CLIENTEFFECT_MATERIAL( "effects/tesla_glow_noz" )
 CLIENTEFFECT_MATERIAL( "effects/spark" )
@@ -89,7 +97,7 @@ void C_EntityDissolve::OnDataChanged( DataUpdateType_t updateType )
 
 		if (m_nDissolveType != ENTITY_DISSOLVE_CORE)
 		{
-			m_hEffect = ParticleProp()->Create("dissolve", PATTACH_ABSORIGIN);
+			m_hEffect = ParticleProp()->Create(g_pszDissolveParticles[m_nDissolveType], PATTACH_ABSORIGIN);
 			// Skip the effect ahead if we're restarting it
 			float flTimeDelta = gpGlobals->curtime - m_flStartTime;
 			if (flTimeDelta > 0.01f)
@@ -530,7 +538,7 @@ void C_EntityDissolve::ClientThink( void )
 
 	// NOTE: IsRagdoll means *client-side* ragdoll. We shouldn't be trying to fight
 	// the server ragdoll (or any server physics) on the client
-	if (( !m_pController ) && ( m_nDissolveType == ENTITY_DISSOLVE_NORMAL ) && bIsRagdoll )
+	if (( !m_pController ) && ( m_nDissolveType == ENTITY_DISSOLVE_NORMAL || m_nDissolveType == ENTITY_DISSOLVE_GLUON) && bIsRagdoll )
 	{
 		IPhysicsObject *ppList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
 		int nCount = pEnt->VPhysicsGetObjectList( ppList, ARRAYSIZE(ppList) );
@@ -619,7 +627,7 @@ void C_EntityDissolve::ClientThink( void )
 int C_EntityDissolve::DrawModel( int flags )
 {
 	// See if we should draw
-	if ( gpGlobals->frametime == 0 || m_bReadyToDraw == false || m_nDissolveType == ENTITY_DISSOLVE_NORMAL)
+	if ( gpGlobals->frametime == 0 || m_bReadyToDraw == false || m_nDissolveType == ENTITY_DISSOLVE_NORMAL || m_nDissolveType > ENTITY_DISSOLVE_CORE)
 		return 0;
 
 	C_BaseAnimating *pAnimating = GetMoveParent() ? GetMoveParent()->GetBaseAnimating() : NULL;

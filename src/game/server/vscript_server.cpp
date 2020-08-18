@@ -458,6 +458,8 @@ bool VScriptServerInit()
 
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 
+				g_pScriptVM->RegisterAllClasses();
+
 				RegisterSharedScriptFunctions();
 
 				if ( scriptLanguage == SL_SQUIRREL )

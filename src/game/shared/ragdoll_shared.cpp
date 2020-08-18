@@ -1367,6 +1367,15 @@ void C_BaseAnimating::TransferElectricsFrom(C_BaseAnimating* pSource)
 					pDissolve->SetRenderMode(pDissolveChild->GetRenderMode());
 					pDissolve->m_nRenderFX = pDissolveChild->m_nRenderFX;
 					pDissolve->SetRenderColor(255, 255, 255, 255);
+					if (pDissolveChild->IsEffectActive(EF_DIMLIGHT))
+					{
+						pDissolve->AddEffects(EF_DIMLIGHT);
+					}
+					if (pDissolveChild->IsEffectActive(EF_BRIGHTLIGHT))
+					{
+						pDissolve->AddEffects(EF_BRIGHTLIGHT);
+					}
+
 					pDissolveChild->SetRenderColorA(0);
 				}
 			}

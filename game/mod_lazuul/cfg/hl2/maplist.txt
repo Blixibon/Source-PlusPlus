@@ -28,6 +28,8 @@ d1_eli_01
 d1_eli_02
 @location:zombietown
 @chapter:6
+@optset:cold_override:1
+@optset:burningdlights:1
 d1_town_01
 d1_town_01a
 d1_town_02
@@ -35,6 +37,7 @@ d1_town_02a
 d1_town_03
 d1_town_04
 @location:coast
+@optclr
 d1_town_05
 @chapter:7
 @optset:disablelocalshadows:1
@@ -48,10 +51,12 @@ d2_coast_08
 d2_coast_09
 d2_coast_10
 d2_coast_11
+@optset:cold_override:1
+@optset:disablelocalshadows:0
 d2_coast_12
-@optclr
 @location:prison
 d2_prison_01
+@optclr
 @chapter:9
 d2_prison_02
 d2_prison_03

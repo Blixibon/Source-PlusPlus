@@ -465,6 +465,9 @@ bool CWorld::GetWorldFlagDefault(int iFlag) const
 	case WORLD_EXPECTS_PORTALS:
 		return g_pGameTypeSystem->WorldShouldExpectPortals();
 		break;
+	case WORLD_BURING_DLIGHTS:
+		return g_pGameTypeSystem->GetMapOptionBool("burningdlights");
+		break;
 	default:
 		return false;
 		break;
@@ -517,6 +520,11 @@ bool CWorld::KeyValue( const char *szKeyName, const char *szValue )
 	{
 		bool bValue = (atoi(szValue) != 0);
 		SetWorldFlag(WORLD_EXPECTS_PORTALS, bValue);
+	}
+	else if (FStrEq(szKeyName, "burningdlights"))
+	{
+		bool bValue = (atoi(szValue) != 0);
+		SetWorldFlag(WORLD_BURING_DLIGHTS, bValue);
 	}
 	else
 		return BaseClass::KeyValue( szKeyName, szValue );

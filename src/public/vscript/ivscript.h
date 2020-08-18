@@ -154,9 +154,9 @@ public:
 DECLARE_POINTER_HANDLE( HSCRIPT );
 #define INVALID_HSCRIPT ((HSCRIPT)-1)
 
-template <typename T> T* HScriptToClass(HSCRIPT hObj)
+template <typename T> T *HScriptToClass( HSCRIPT hObj )
 {
-	return (hObj) ? (T*)g_pScriptVM->GetInstanceValue(hObj, GetScriptDesc((T*)NULL)) : NULL;
+	return (hObj) ? (T*)g_pScriptVM->GetInstanceValue( hObj, GetScriptDesc( (T*)NULL ) ) : NULL;
 }
 
 //-----------------------------------------------------------------------------
@@ -189,13 +189,15 @@ DECLARE_DEDUCE_FIELDTYPE( FIELD_CHARACTER,	char );
 DECLARE_DEDUCE_FIELDTYPE(FIELD_INT64, int64);
 DECLARE_DEDUCE_FIELDTYPE( FIELD_HSCRIPT,	HSCRIPT );
 DECLARE_DEDUCE_FIELDTYPE( FIELD_VARIANT,	ScriptVariant_t );
+DECLARE_DEDUCE_FIELDTYPE( FIELD_VECTOR,		QAngle );
+DECLARE_DEDUCE_FIELDTYPE( FIELD_VECTOR,		const QAngle& );
 
 #define ScriptDeduceType( T ) ScriptDeducer<T>::FIELD_TYPE
 
 template <typename T>
 inline const char * ScriptFieldTypeName() 
 {
-	T::using_unknown_script_type(); 
+	return T::using_unknown_script_type();
 }
 
 #define DECLARE_NAMED_FIELDTYPE( fieldType, strName ) template <> inline const char * ScriptFieldTypeName<fieldType>() { return strName; }
@@ -211,6 +213,8 @@ DECLARE_NAMED_FIELDTYPE( char,	"character" );
 DECLARE_NAMED_FIELDTYPE(int64, "int64");
 DECLARE_NAMED_FIELDTYPE( HSCRIPT,	"hscript" );
 DECLARE_NAMED_FIELDTYPE( ScriptVariant_t,	"variant" );
+DECLARE_NAMED_FIELDTYPE( QAngle, "vector" );
+DECLARE_NAMED_FIELDTYPE( const QAngle&, "vector" );
 
 inline const char * ScriptFieldTypeName( int16 eType)
 {
@@ -290,7 +294,10 @@ public:
 
 struct ScriptClassDesc_t
 {
-	ScriptClassDesc_t() : m_pszScriptName( 0 ), m_pszClassname( 0 ), m_pszDescription( 0 ), m_pBaseDesc( 0 ), m_pfnConstruct( 0 ), m_pfnDestruct( 0 ), pHelper(NULL) {}
+	ScriptClassDesc_t() : m_pszScriptName( 0 ), m_pszClassname( 0 ), m_pszDescription( 0 ), m_pBaseDesc( 0 ), m_pfnConstruct( 0 ), m_pfnDestruct( 0 ), pHelper(NULL) 
+	{
+		AllClassesDesc().AddToTail(this);
+	}
 
 	const char *						m_pszScriptName;
 	const char *						m_pszClassname;
@@ -301,6 +308,12 @@ struct ScriptClassDesc_t
 	void *(*m_pfnConstruct)();
 	void (*m_pfnDestruct)( void *);
 	IScriptInstanceHelper *				pHelper; // optional helper
+
+	static CUtlVector<ScriptClassDesc_t*>& AllClassesDesc()
+	{
+		static CUtlVector<ScriptClassDesc_t*> classes;
+		return classes;
+	}
 };
 
 //---------------------------------------------------------
@@ -323,11 +336,14 @@ struct ScriptVariant_t
 	ScriptVariant_t( char val ) :			m_flags( 0 ), m_type( FIELD_CHARACTER )	{ m_char = val; }
 	ScriptVariant_t( bool val ) :			m_flags( 0 ), m_type( FIELD_BOOLEAN )	{ m_bool = val; }
 	ScriptVariant_t( HSCRIPT val ) :		m_flags( 0 ), m_type( FIELD_HSCRIPT )	{ m_hScript = val; }
-	ScriptVariant_t(int64 val) :			m_flags(0), m_type(FIELD_INT64)			{ m_int64 = val; }
+	ScriptVariant_t(int64 val) : m_flags(0), m_type(FIELD_INT64) { m_int64 = val; }
 
 	ScriptVariant_t( const Vector &val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pVector = &val; } else { m_pVector = new Vector( val ); m_flags |= SV_FREE; } }
 	ScriptVariant_t( const Vector *val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pVector = val; } else { m_pVector = new Vector( *val ); m_flags |= SV_FREE; } }
 	ScriptVariant_t( const char *val , bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_CSTRING )	{ if ( !bCopy ) { m_pszString = val; } else { m_pszString = strdup( val ); m_flags |= SV_FREE; } }
+
+	ScriptVariant_t( const QAngle &val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pAngle = &val; } else { m_pAngle = new QAngle( val ); m_flags |= SV_FREE; } }
+	ScriptVariant_t( const QAngle *val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pAngle = val; } else { m_pAngle = new QAngle( *val ); m_flags |= SV_FREE; } }
 
 	bool IsNull() const						{ return (m_type == FIELD_VOID ); }
 
@@ -338,7 +354,8 @@ struct ScriptVariant_t
 	operator char() const					{ Assert( m_type == FIELD_CHARACTER );	return m_char; }
 	operator bool() const					{ Assert( m_type == FIELD_BOOLEAN );	return m_bool; }
 	operator HSCRIPT() const				{ Assert( m_type == FIELD_HSCRIPT );	return m_hScript; }
-	operator int64() const					{ Assert(m_type == FIELD_INT64);	return m_int64; }
+	operator const QAngle &() const			{ Assert( m_type == FIELD_VECTOR );		static QAngle vecNull(0, 0, 0); return (m_pAngle) ? *m_pAngle : vecNull; }
+	operator int64() const { Assert(m_type == FIELD_INT64);	return m_int64; }
 
 	void operator=( int i ) 				{ m_type = FIELD_INTEGER; m_int = i; }
 	void operator=( float f ) 				{ m_type = FIELD_FLOAT; m_float = f; }
@@ -349,7 +366,9 @@ struct ScriptVariant_t
 	void operator=( char c )				{ m_type = FIELD_CHARACTER; m_char = c; }
 	void operator=( bool b ) 				{ m_type = FIELD_BOOLEAN; m_bool = b; }
 	void operator=( HSCRIPT h ) 			{ m_type = FIELD_HSCRIPT; m_hScript = h; }
-	void operator=(int64 i)					{ m_type = FIELD_INT64; m_int64 = i; }
+	void operator=( const QAngle &vec )		{ m_type = FIELD_VECTOR; m_pAngle = &vec; }
+	void operator=( const QAngle *vec )		{ m_type = FIELD_VECTOR; m_pAngle = vec; }
+	void operator=(int64 i) { m_type = FIELD_INT64; m_int64 = i; }
 
 	void Free()								{ if ( ( m_flags & SV_FREE ) && ( m_type == FIELD_HSCRIPT || m_type == FIELD_VECTOR || m_type == FIELD_CSTRING ) ) delete m_pszString; } // Generally only needed for return results
 
@@ -495,6 +514,8 @@ struct ScriptVariant_t
 		bool			m_bool;
 		HSCRIPT			m_hScript;
 		int64			m_int64;
+		// This uses FIELD_VECTOR, so it's considered a Vector in the VM (just like save/restore)
+		const QAngle *	m_pAngle;
 	};
 
 	int16				m_type;
@@ -871,6 +892,14 @@ public:
 		return ExecuteFunction( hFunction, args, ARRAYSIZE(args), pReturn, hScope, bWait );
 	}
 
+	void RegisterAllClasses()
+	{
+		CUtlVector<ScriptClassDesc_t*>& classDescs = ScriptClassDesc_t::AllClassesDesc();
+		FOR_EACH_VEC(classDescs, i)
+		{
+			RegisterClass(classDescs[i]);
+		}
+	}
 };
 
 

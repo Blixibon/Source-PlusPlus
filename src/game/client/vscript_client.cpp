@@ -117,6 +117,8 @@ bool VScriptClientInit()
 					GameRules()->RegisterScriptFunctions();
 				}
 
+				g_pScriptVM->RegisterAllClasses();
+
 				RegisterSharedScriptFunctions();
 
 				//g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );

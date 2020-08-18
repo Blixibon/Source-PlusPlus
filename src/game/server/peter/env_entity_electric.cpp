@@ -36,7 +36,7 @@ void CEntElectric::Precache()
 
 	PrecacheParticleSystem("tfa_lightning_model");
 	PrecacheParticleSystem("vortigaunt_zap");
-	PrecacheParticleSystem("aliencontroller_zap");
+	PrecacheParticleSystem("electrical_zap");
 }
 
 //-----------------------------------------------------------------------------
@@ -45,7 +45,6 @@ void CEntElectric::Precache()
 //-----------------------------------------------------------------------------
 CEntElectric *CEntElectric::Create(CBaseEntity *pTarget, float flStartTime, int nDissolveType)
 {
-
 	CEntElectric *pDissolve = (CEntElectric *)CreateEntityByName("entityshock");
 
 	if (pDissolve == NULL)
@@ -53,14 +52,15 @@ CEntElectric *CEntElectric::Create(CBaseEntity *pTarget, float flStartTime, int 
 
 	pDissolve->m_nShockType = nDissolveType;
 
-	
+	if (g_pGameRules->ShouldBurningPropsEmitLight())
+		pDissolve->AddEffects(EF_DIMLIGHT);
+
 	pDissolve->AttachToEntity(pTarget);
 	pDissolve->SetStartTime(flStartTime);
 	pDissolve->Spawn();
 
 	// Send to the client even though we don't have a model
 	pDissolve->AddEFlags(EFL_FORCE_CHECK_TRANSMIT);
-
 
 	return pDissolve;
 }

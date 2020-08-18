@@ -500,6 +500,22 @@ namespace SQVector
 		return 1;
 	}
 
+	SQInteger Norm(HSQUIRRELVM vm)
+	{
+		Vector* v1 = nullptr;
+
+		if (sq_gettop(vm) != 1 ||
+			SQ_FAILED(sq_getinstanceup(vm, 1, (SQUserPointer*)&v1, TYPETAG_VECTOR)))
+		{
+			return sq_throwerror(vm, "Expected (Vector)");
+		}
+
+		float len = v1->NormalizeInPlace();
+		sq_pushfloat(vm, len);
+
+		return 1;
+	}
+
 	SQInteger Dot(HSQUIRRELVM vm)
 	{
 		Vector* v1 = nullptr;
@@ -629,7 +645,7 @@ namespace SQVector
 		{_SC("Length2D"), Length2D, 1, _SC(".")},
 		{_SC("Length2DSqr"), Length2DSqr, 1, _SC(".")},
 		{_SC("Normalized"), Normalized, 1, _SC(".")},
-		{_SC("Norm"), Normalized, 1, _SC(".")},
+		{_SC("Norm"), Norm, 1, _SC(".")},
 		{_SC("_div"), Divide, 2, _SC("..")},
 		{_SC("Dot"), Dot, 2, _SC("..")},
 		{_SC("Cross"), Cross, 2, _SC("..")},
@@ -1081,6 +1097,14 @@ SQInteger tostring_stub(HSQUIRRELVM vm)
 		sqstd_pushstringf(vm, "(%s: 0x%p)", IdType2Name(obj._type), (void*)_rawval(obj));
 	}
 
+	return 1;
+}
+
+SQInteger IsValid_stub(HSQUIRRELVM vm)
+{
+	ClassInstanceData* classInstanceData = nullptr;
+	sq_getinstanceup(vm, 1, (SQUserPointer*)&classInstanceData, 0);
+	sq_pushbool(vm, classInstanceData != nullptr);
 	return 1;
 }
 
@@ -1732,6 +1756,10 @@ bool SquirrelVM::RegisterClass(ScriptClassDesc_t* pClassDesc)
 	sq_newclosure(vm_, tostring_stub, 0);
 	sq_newslot(vm_, -3, SQFalse);
 
+	sq_pushstring(vm_, "IsValid", -1);
+	sq_newclosure(vm_, IsValid_stub, 0);
+	sq_newslot(vm_, -3, SQFalse);
+
 
 	for (int i = 0; i < pClassDesc->m_FunctionBindings.Count(); ++i)
 	{
@@ -2250,7 +2278,7 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 
 		SQInteger nparams = 0, nfreevars = 0;
 		sq_getclosureinfo(vm_, idx, &nparams, &nfreevars);
-		if (nfreevars == 0)
+		if (nfreevars == 0 && _closure(obj)->_function->_defaultparams == 0)
 		{
 			pBuffer->PutChar(0);
 
@@ -2277,6 +2305,14 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 			for (int i = 0; i < noutervalues; ++i)
 			{
 				sq_pushobject(vm_, _closure(obj)->_outervalues[i]);
+				WriteObject(pBuffer, writeState, -1);
+				sq_poptop(vm_);
+			}
+
+			int ndefaultparams = _closure(obj)->_function->_ndefaultparams;
+			for (int i = 0; i < ndefaultparams; ++i)
+			{
+				sq_pushobject(vm_, _closure(obj)->_defaultparams[i]);
 				WriteObject(pBuffer, writeState, -1);
 				sq_poptop(vm_);
 			}
@@ -2672,6 +2708,17 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				sq_resetobject(&obj);
 				sq_getstackobj(vm_, -1, &obj);
 				_closure(ret)->_outervalues[i] = obj;
+				sq_poptop(vm_);
+			}
+
+			int ndefaultparams = _closure(ret)->_function->_ndefaultparams;
+			for (int i = 0; i < ndefaultparams; ++i)
+			{
+				ReadObject(pBuffer, readState);
+				HSQOBJECT obj;
+				sq_resetobject(&obj);
+				sq_getstackobj(vm_, -1, &obj);
+				_closure(ret)->_defaultparams[i] = obj;
 				sq_poptop(vm_);
 			}
 

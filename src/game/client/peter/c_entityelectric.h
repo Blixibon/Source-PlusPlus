@@ -42,6 +42,8 @@ protected:
 
 	void	CreateEffect(void);
 	void	StopEffect(void);
+
+	float	m_flLastFlashTime;
 };
 
 #endif

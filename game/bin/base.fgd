@@ -936,6 +936,12 @@
 		0 : "No"
 		1 : "Yes"
 	]
+
+	burningdlights(choices) : "Dynamic Fire Lights" : 1 : "If set, burning props emit a dynamic light. Looks good in very dark levels." =
+	[
+		0 : "No"
+		1 : "Yes"
+	]
 	
 	levelversion(integer)	readonly	: "FGD Version"      : 1  : "(Don't change). Differentiates between shipping HL2 maps and maps using new engine features."
 ]

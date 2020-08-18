@@ -4722,9 +4722,10 @@
 	dissolvetype(choices) : "Dissolve Type" : "Energy" =
 	[
 		0 : "Energy"
-		1 : "Heavy electrical"
-		2 : "Light electrical"
+		1 : "Heavy Electrical"
+		2 : "Light Electrical"
 		3 : "Core Effect"
+		4 : "Gluon Gun"
 	]
 ]
 

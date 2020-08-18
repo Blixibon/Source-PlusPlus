@@ -1,6 +1,8 @@
 #include "cbase.h"
 #include "particle_property.h"
 #include "c_entityelectric.h"
+#include "iefx.h"
+#include "dlight.h"
 
 IMPLEMENT_CLIENTCLASS_DT(C_EntityElectric, DT_EntityElectric, CEntElectric)
 RecvPropInt(RECVINFO(m_nShockType)),
@@ -11,7 +13,13 @@ static const char *g_sParticleNames[MAX_SHOCK] =
 {
 	"tfa_lightning_model",
 	"vortigaunt_zap",
-	"aliencontroller_zap"
+	"electrical_zap"
+};
+
+ColorRGBExp32 g_clrDlightFlashColors[MAX_SHOCK] = {
+	{0, 168, 255, 1},
+	{184, 255, 114, 0},
+	{214, 113, 13, 0}
 };
 
 //-----------------------------------------------------------------------------
@@ -147,21 +155,45 @@ void C_EntityElectric::Simulate(void)
 	if (gpGlobals->frametime <= 0.0f)
 		return;
 
-//#ifdef HL2_EPISODIC 
-//
-//	if (IsEffectActive(EF_BRIGHTLIGHT) || IsEffectActive(EF_DIMLIGHT))
-//	{
-//		dlight_t *dl = effects->CL_AllocDlight(index);
-//		dl->origin = GetAbsOrigin();
-//		dl->origin[2] += 16;
-//		dl->color.r = 254;
-//		dl->color.g = 174;
-//		dl->color.b = 10;
-//		dl->radius = random->RandomFloat(400, 431);
-//		dl->die = gpGlobals->curtime + 0.001;
-//	}
-//
-//#endif // HL2_EPISODIC 
+	if ((IsEffectActive(EF_BRIGHTLIGHT) || IsEffectActive(EF_DIMLIGHT)) && gpGlobals->curtime - m_flLastFlashTime >= 0.01f && GetRenderColor().a > 0)
+	{
+		m_flLastFlashTime = gpGlobals->curtime;
+
+		C_BaseAnimating* pAnimating = GetMoveParent() ? GetMoveParent()->GetBaseAnimating() : NULL;
+		if (!pAnimating)
+			return;
+
+		studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel(pAnimating->GetModel());
+		if (!pStudioHdr)
+			return;
+
+		mstudiohitboxset_t* set = pStudioHdr->pHitboxSet(pAnimating->GetHitboxSet());
+		if (!set)
+			return;
+
+		matrix3x4_t* hitboxbones[MAXSTUDIOBONES];
+		if (!pAnimating->HitboxToWorldTransforms(hitboxbones))
+			return;
+
+		for (int i = 0; i < 2; i++)
+		{
+			int iHitBox = random->RandomInt(1, set->numhitboxes) - 1;
+			mstudiobbox_t* pBox = set->pHitbox(iHitBox);
+
+			// Select a random point somewhere in the hitboxes of the entity.
+			Vector vecLocalPosition, vecWorldPosition;
+			vecLocalPosition.x = Lerp(random->RandomFloat(-0.1f, 1.1f), pBox->bbmin.x, pBox->bbmax.x);
+			vecLocalPosition.y = Lerp(random->RandomFloat(-0.1f, 1.1f), pBox->bbmin.y, pBox->bbmax.y);
+			vecLocalPosition.z = Lerp(random->RandomFloat(-0.1f, 1.1f), pBox->bbmin.z, pBox->bbmax.z);
+			VectorTransform(vecLocalPosition, *hitboxbones[pBox->bone], vecWorldPosition);
+
+			dlight_t* dl = effects->CL_AllocDlight((i == 0) ? index : -index);
+			dl->origin = vecWorldPosition;
+			dl->color = g_clrDlightFlashColors[m_nShockType];
+			dl->radius = random->RandomFloat(200, 245);
+			dl->die = gpGlobals->curtime + 0.01f;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
