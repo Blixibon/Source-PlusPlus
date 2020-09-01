@@ -1997,6 +1997,7 @@ void CBaseCombatWeapon::ItemBusyFrame( void )
 
 void CBaseCombatWeapon::HandleUserHolster()
 {
+#ifndef CLIENT_DLL
 	CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 	if (!pOwner)
 		return;
@@ -2019,6 +2020,8 @@ void CBaseCombatWeapon::HandleUserHolster()
 		else
 			Holster();
 	}
+#endif // !CLIENT_DLL
+
 }
 
 //-----------------------------------------------------------------------------

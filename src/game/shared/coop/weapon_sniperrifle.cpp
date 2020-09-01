@@ -455,7 +455,7 @@ bool CWeaponComSniper::IsViewModelForLocalPlayer()
 
 Vector CWeaponComSniper::GetLaserEndPoint()
 {
-	if (IsViewModelForLocalPlayer())
+	if (GetOwner() && GetOwner()->IsPlayer())
 	{
 		CBasePlayer* pOwner = ToBasePlayer(GetOwner());
 		Vector vecEye, vecForward;

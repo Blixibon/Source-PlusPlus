@@ -510,13 +510,22 @@ void CWeaponCoopBase::Spawn()
 //================================================================================
 void CWeaponCoopBase::WeaponSound( WeaponSound_t sound_type, float soundtime ) 
 {
+	// If we have some sounds from the weapon classname.txt file, play a random one of them
+	const char* shootsound = GetShootSound(sound_type);
+	const char* nonownershootsound = nullptr;
+
+	if (sound_type == SINGLE || sound_type == WPN_DOUBLE || sound_type == RELOAD)
+	{
+		nonownershootsound = GetShootSound(sound_type + 1);
+	}
+
+	if (!shootsound || !shootsound[0])
+		return;
+
+	if (!nonownershootsound || !nonownershootsound[0])
+		nonownershootsound = shootsound;
+
 #ifdef CLIENT_DLL
-		// If we have some sounds from the weapon classname.txt file, play a random one of them
-		const char *shootsound = GetShootSound( sound_type );
-
-		if ( !shootsound || !shootsound[0] )
-			return;
-
 		CBroadcastRecipientFilter filter; // this is client side only
 
 		if ( !te->CanPredict() )
@@ -524,7 +533,67 @@ void CWeaponCoopBase::WeaponSound( WeaponSound_t sound_type, float soundtime )
 				
 		CBaseEntity::EmitSound( filter, GetOwner()->entindex(), shootsound, &GetOwner()->GetAbsOrigin() ); 
 #else
-		BaseClass::WeaponSound( sound_type, soundtime );
+	CSoundParameters params;
+
+	if (!GetParametersForSound(shootsound, params, NULL))
+		return;
+
+	if (params.play_to_owner_only)
+	{
+		// Am I only to play to my owner?
+		if (GetOwner() && GetOwner()->IsPlayer())
+		{
+			CSingleUserRecipientFilter filter(ToBasePlayer(GetOwner()));
+			if (IsPredicted() && CBaseEntity::GetPredictionPlayer())
+			{
+				filter.UsePredictionRules();
+			}
+			EmitSound(filter, GetOwner()->entindex(), shootsound, NULL, soundtime);
+		}
+	}
+	else
+	{
+		// Play weapon sound from the owner
+		if (GetOwner())
+		{
+			CPASAttenuationFilter filter(GetOwner(), params.soundlevel);
+			if (IsPredicted() && CBaseEntity::GetPredictionPlayer())
+			{
+				filter.UsePredictionRules();
+			}
+
+			if (GetOwner()->IsPlayer())
+			{
+				filter.RemoveRecipient(ToBasePlayer(GetOwner()));
+
+				CSingleUserRecipientFilter filter2(ToBasePlayer(GetOwner()));
+				if (IsPredicted() && CBaseEntity::GetPredictionPlayer())
+				{
+					filter2.UsePredictionRules();
+				}
+				EmitSound(filter2, GetOwner()->entindex(), shootsound, NULL, soundtime);
+			}
+
+			EmitSound(filter, GetOwner()->entindex(), nonownershootsound, NULL, soundtime);
+
+#if !defined( CLIENT_DLL )
+			if (sound_type == EMPTY)
+			{
+				CSoundEnt::InsertSound(SOUND_COMBAT, GetOwner()->GetAbsOrigin(), SOUNDENT_VOLUME_EMPTY, 0.2, GetOwner());
+			}
+#endif
+		}
+		// If no owner play from the weapon (this is used for thrown items)
+		else
+		{
+			CPASAttenuationFilter filter(this, params.soundlevel);
+			if (IsPredicted() && CBaseEntity::GetPredictionPlayer())
+			{
+				filter.UsePredictionRules();
+			}
+			EmitSound(filter, entindex(), nonownershootsound, NULL, soundtime);
+		}
+	}
 #endif
 }
 

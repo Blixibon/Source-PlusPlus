@@ -1534,6 +1534,15 @@ void CClientShadowMgr::InitDepthTextureShadows()
 		m_bDepthTextureActive = true;
 
 		ImageFormat dstFormat = materials->GetShadowDepthTextureFormat();	// Vendor-dependent depth texture format
+		if (dstFormat == IMAGE_FORMAT_NV_DST16)
+		{
+			dstFormat = IMAGE_FORMAT_NV_DST24;
+		}
+		else if (dstFormat == IMAGE_FORMAT_ATI_DST16)
+		{
+			dstFormat = IMAGE_FORMAT_ATI_DST24;
+		}
+
 #if !defined( _X360 )
 		ImageFormat nullFormat = materials->GetNullTextureFormat();			// Vendor-dependent null texture format (takes as little memory as possible)
 #endif

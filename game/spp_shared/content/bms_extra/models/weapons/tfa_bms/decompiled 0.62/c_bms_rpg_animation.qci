@@ -37,7 +37,7 @@ $Sequence "gun_reload" {
 	activity "ACT_VM_RELOAD" 1
 	{ event AE_CL_PLAYSOUND 0 "weapon_rpg_bms.Reload" }
 	//{ event 1 10 "0" }
-	{ event AE_CL_ENABLE_BODYGROUP 10 "rocket" }
+	{ event AE_VM_ENABLE_BODYGROUP 10 "rocket" }
 	{ event 3110 23 "" }
 	fadein 0.2
 	fadeout 0.2
@@ -48,7 +48,7 @@ $Sequence "gun_reload" {
 $Sequence "fire1" {
 	"c_bms_rpg_anims\fire1.smd"
 	activity "ACT_VM_PRIMARYATTACK" 1
-	{ event AE_CL_DISABLE_BODYGROUP 0 "rocket" }
+	{ event AE_VM_DISABLE_BODYGROUP 0 "rocket" }
 	{ event AE_MUZZLEFLASH 0 "RPG MUZZLE" }
 	fadein 0.2
 	fadeout 0.2
@@ -60,7 +60,7 @@ $Sequence "fire1" {
 $Sequence "fire2" {
 	"c_bms_rpg_anims\fire2.smd"
 	activity "ACT_VM_PRIMARYATTACK" 1
-	{ event AE_CL_DISABLE_BODYGROUP 0 "rocket" }
+	{ event AE_VM_DISABLE_BODYGROUP 0 "rocket" }
 	{ event AE_MUZZLEFLASH 0 "RPG MUZZLE" }
 	fadein 0.2
 	fadeout 0.2
@@ -92,8 +92,8 @@ $Sequence "draw1" {
 $Sequence "draw_admire" {
 	"c_bms_rpg_anims\draw_admire.smd"
 	activity "ACT_VM_DRAW_DEPLOYED" 1
-	{ event AE_CL_DISABLE_BODYGROUP 0 "rocket" }
-	{ event AE_CL_ENABLE_BODYGROUP 117 "rocket" }
+	{ event AE_VM_DISABLE_BODYGROUP 0 "rocket" }
+	{ event AE_VM_ENABLE_BODYGROUP 117 "rocket" }
 	{ event AE_CL_PLAYSOUND 0 "weapon_rpg_bms.DrawAdmire" }
 	fadein 0.2
 	fadeout 0.2

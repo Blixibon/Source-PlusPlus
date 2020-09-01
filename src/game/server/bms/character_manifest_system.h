@@ -18,13 +18,23 @@ namespace CharacterManifest
 		CCopyableUtlVector<int> vValues;
 	};
 
+	struct ManifestBodyPropagate_t
+	{
+		CManifestSymbol srcName;
+		CManifestSymbol dstName;
+	};
+
 	struct ManifestCharacter_t
 	{
 		CManifestSymbol strModelName;
 		CCopyableUtlVector<int> vSkins;
 		CCopyableUtlVector<ManifestBodyData_t> vBodyGroups;
+		CCopyableUtlVector<ManifestBodyPropagate_t> vBodyGroupSync;
 		CCopyableUtlVector<ManifestFlexData_t> vFlexControllers;
 		CCopyableUtlVector<CManifestSymbol> vMergedModels;
+		CCopyableUtlVector<CManifestSymbol> vModelTags;
+
+		bool	ApplyToModel(CStudioHdr* pHdr, int& nSkin, int& nBody) const;
 	};
 
 	inline const char* GetScriptModel(const ManifestCharacter_t* pChar, const char* pszDefault = "models/error.mdl")
@@ -51,12 +61,14 @@ namespace CharacterManifest
 		void	Shutdown();
 
 		const ManifestCharacter_t* FindCharacterModel(const char* pszCharName) const;
+		const ManifestCharacter_t* FindCharacterModel(const char* pszCharName, CUtlVector<CManifestSymbol>* pvIncludeTags, CUtlVector<CManifestSymbol>* pvExcludeTags, CUtlVector<CManifestSymbol>* pvPreferTags) const;
 		void	PrecacheCharacterModels(const char* pszCharName) const;
 
 	protected:
 		void	LoadDataFromFile(const char* pszFileName);
 
 		typedef CCopyableUtlVector<ManifestCharacter_t> characterList_t;
+		typedef CUtlVector<const ManifestCharacter_t*> characterPtrList_t;
 		CUtlDict<characterList_t> m_ManifestDict;
 	};
 }

@@ -489,7 +489,7 @@ static void TraceCollideAgainstBBox( const CPhysCollide *pCollide, const Vector 
 // player can reach down 2ft below his feet (otherwise he'll hold the object above the bottom)
 #define PLAYER_REACH_DOWN_DISTANCE	24
 
-static void ComputePlayerMatrix( CBasePlayer *pPlayer, matrix3x4_t &out )
+void ComputePlayerMatrix( CBasePlayer *pPlayer, matrix3x4_t &out )
 {
 	if ( !pPlayer )
 		return;
@@ -1800,6 +1800,7 @@ protected:
 
 	int				m_nOldEffectState;	// Used for parity checks
 	bool			m_bOldOpen;			// Used for parity checks
+	bool			m_bOldMegaState;	// Used for parity checks
 
 	void			NotifyShouldTransmit( ShouldTransmitState_t state );
 
@@ -2056,6 +2057,16 @@ void CWeaponPhysCannon::OnDataChanged( DataUpdateType_t type )
 
 		m_bOldOpen = (bool) m_bOpen;
 	}
+
+	if (m_bOldMegaState != IsMegaPhysCannon())
+	{
+		// Free our beams
+		m_Beams[0].Release();
+		m_Beams[1].Release();
+		m_Beams[2].Release();
+
+		m_bOldMegaState = IsMegaPhysCannon();
+	}
 }
 #endif
 
@@ -2064,7 +2075,7 @@ void CWeaponPhysCannon::OnDataChanged( DataUpdateType_t type )
 //-----------------------------------------------------------------------------
 inline float CWeaponPhysCannon::SpriteScaleFactor() 
 {
-	return IsMegaPhysCannon() ? 1.15f : 1.0f;
+	return IsMegaPhysCannon() ? 1.1f : 1.0f;
 }
 
 

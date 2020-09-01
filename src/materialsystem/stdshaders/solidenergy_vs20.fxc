@@ -8,6 +8,7 @@
 // STATIC:  "VERTEXCOLOR"			"0..1"
 // STATIC:  "FLOWMAP"				"0..1"
 // STATIC:  "MODELFORMAT"			"0..1"
+// STATIC:	"REFRACT"				"0..1"
 
 // DYNAMIC: "COMPRESSED_VERTS"		"0..1"
 // DYNAMIC: "SKINNING"				"0..1"
@@ -18,6 +19,8 @@
 // SKIP: ( $TANGENTTOPACITY && $TANGENTSOPACITY )
 // SKIP: ( $FLOWMAP && ( $DETAIL1 || $DETAIL2 ) )
 // SKIP: ( ( $FLOWMAP == 0 ) && ( $VORTEX1 || $VORTEX2 ) )
+// SKIP: ( ( $FLOWMAP == 0 ) && ( $REFRACT != 0 ) )
+// SKIP: ( $REFRACT && ( $TANGENTSOPACITY || $TANGENTTOPACITY || $FRESNELOPACITY ) )
 
 #include "common_fog_vs_fxc.h"
 #include "common_vs_fxc.h"
@@ -57,17 +60,21 @@ struct VS_OUTPUT
 	float4 vUV0_UV1								: TEXCOORD0;
 	float4 vFlowUV_UV2							: TEXCOORD1;
 	float4 vIteratedProjPos						: TEXCOORD2;
-	#if ( VORTEX1 )
+#if ( VORTEX1 )
 		float3 vVortexPositions1				: TEXCOORD3;
 	#endif
-	#if ( VORTEX2 )
+#if ( VORTEX2 )
 		float3 vVortexPositions2				: TEXCOORD4;
 	#endif
 	#if ( TANGENTSOPACITY || TANGENTTOPACITY || FRESNELOPACITY )
 		float4 vWorldNormal_worldEyeX			: TEXCOORD5;
 		float4 vWorldTangent_worldEyeY			: TEXCOORD6;
 		float4 vTangentAlignedView_worldEyeZ	: TEXCOORD7;
-	#endif
+#endif
+#if ( REFRACT )
+    float2 vRefractXY : TEXCOORD5;
+	float3 vWorldPos							: TEXCOORD6;
+#endif
 	#if ( VERTEXCOLOR )
 		float4 vColor						: COLOR0;
 	#endif
@@ -216,7 +223,18 @@ VS_OUTPUT main( const VS_INPUT i )
 			o.vVortexPositions2.xyz = -float3( dot( vVPos2, vWorldTangentS.xyz ), dot( vVPos2.xyz, vWorldTangentT.xyz ), dot( vVPos2.xyz, vWorldNormal.xyz ) );
 		}
 		#endif
-	}
+		
+		#if ( REFRACT )
+		// Map projected position to the refraction texture
+        float2 vRefractPos;
+        vRefractPos.x = projPos.x;
+        vRefractPos.y = -projPos.y; // invert Y
+        vRefractPos = (vRefractPos + projPos.w) * 0.5f;
+		
+        o.vRefractXY = vRefractPos;
+		o.vWorldPos = worldPos;
+		#endif
+    }
 	#else
 	{
 		o.vFlowUV_UV2.xy = float2( 0.0f, 0.0f );

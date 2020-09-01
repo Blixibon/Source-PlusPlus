@@ -223,7 +223,7 @@ void CHudLocator::DrawGraduations( float flYawPlayerFacing )
 	const float angleStep = 360.0f / NUM_GRADUATIONS;
 	bool tallLine = true;
 
-	for( float angle = -180 ; angle <= 180 ; angle += angleStep )
+	for( float angle = -180 ; angle < 180 ; angle += angleStep )
 	{
 		yPos = (element_tall>>1);
 

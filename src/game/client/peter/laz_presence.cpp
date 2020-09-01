@@ -31,7 +31,7 @@ public:
 	IDiscordPresence* m_pDiscord;
 };
 
-CLazPresence g_LazPresence;
+//CLazPresence g_LazPresence;
 
 bool CLazPresence::Init()
 {

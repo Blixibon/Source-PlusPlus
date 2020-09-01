@@ -405,6 +405,48 @@ void C_BaseViewModel::FireEvent( const Vector& origin, const QAngle& angles, int
 			return;
 		}
 	}
+	else if (event == AE_VM_BODYGROUP_SET)
+	{
+		int value;
+		char token[256];
+		char szBodygroupName[256];
+
+		const char* p = options;
+
+		// Bodygroup Name
+		p = nexttoken(token, p, ' ');
+		Q_strncpy(szBodygroupName, token, sizeof(szBodygroupName));
+
+		// Get the desired value
+		p = nexttoken(token, p, ' ');
+		value = token[0] ? atoi(token) : 0;
+
+		int index = FindBodygroupByName(szBodygroupName);
+		if (index >= 0)
+		{
+			SetBodygroup(index, value);
+		}
+
+		return;
+	}
+	else if (event == AE_VM_DISABLE_BODYGROUP)
+	{
+		int index = FindBodygroupByName(options);
+		if (index >= 0)
+		{
+			SetBodygroup(index, 0);
+		}
+		return;
+	}
+	else if (event == AE_VM_ENABLE_BODYGROUP)
+	{
+		int index = FindBodygroupByName(options);
+		if (index >= 0)
+		{
+			SetBodygroup(index, 1);
+		}
+		return;
+	}
 
 	// Otherwise pass the event to our associated weapon
 	C_BaseCombatWeapon *pWeapon = GetActiveWeapon();

@@ -253,6 +253,27 @@ public:
 		m_bFLOW_CHEAP = true;
 #endif
 	}
+private:
+	int m_nREFRACT;
+#ifdef _DEBUG
+	bool m_bREFRACT;
+#endif
+public:
+	void SetREFRACT( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nREFRACT = i;
+#ifdef _DEBUG
+		m_bREFRACT = true;
+#endif
+	}
+	void SetREFRACT( bool i )
+	{
+		m_nREFRACT = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bREFRACT = true;
+#endif
+	}
 public:
 	solidenergy_ps30_Static_Index( )
 	{
@@ -304,19 +325,23 @@ public:
 		m_bFLOW_CHEAP = false;
 #endif // _DEBUG
 		m_nFLOW_CHEAP = 0;
+#ifdef _DEBUG
+		m_bREFRACT = false;
+#endif // _DEBUG
+		m_nREFRACT = 0;
 	}
 	int GetIndex()
 	{
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllStaticVarsDefined = m_bADDITIVE && m_bDETAIL1 && m_bDETAIL1BLENDMODE && m_bDETAIL2 && m_bDETAIL2BLENDMODE && m_bTANGENTTOPACITY && m_bTANGENTSOPACITY && m_bFRESNELOPACITY && m_bDEPTHBLEND && m_bVERTEXCOLOR && m_bFLOWMAP && m_bFLOW_CHEAP;
+		bool bAllStaticVarsDefined = m_bADDITIVE && m_bDETAIL1 && m_bDETAIL1BLENDMODE && m_bDETAIL2 && m_bDETAIL2BLENDMODE && m_bTANGENTTOPACITY && m_bTANGENTSOPACITY && m_bFRESNELOPACITY && m_bDEPTHBLEND && m_bVERTEXCOLOR && m_bFLOWMAP && m_bFLOW_CHEAP && m_bREFRACT;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 32 * m_nADDITIVE ) + ( 64 * m_nDETAIL1 ) + ( 128 * m_nDETAIL1BLENDMODE ) + ( 256 * m_nDETAIL2 ) + ( 512 * m_nDETAIL2BLENDMODE ) + ( 1024 * m_nTANGENTTOPACITY ) + ( 2048 * m_nTANGENTSOPACITY ) + ( 4096 * m_nFRESNELOPACITY ) + ( 8192 * m_nDEPTHBLEND ) + ( 8192 * m_nVERTEXCOLOR ) + ( 16384 * m_nFLOWMAP ) + ( 32768 * m_nFLOW_CHEAP ) + 0;
+		return ( 32 * m_nADDITIVE ) + ( 64 * m_nDETAIL1 ) + ( 128 * m_nDETAIL1BLENDMODE ) + ( 256 * m_nDETAIL2 ) + ( 512 * m_nDETAIL2BLENDMODE ) + ( 1024 * m_nTANGENTTOPACITY ) + ( 2048 * m_nTANGENTSOPACITY ) + ( 4096 * m_nFRESNELOPACITY ) + ( 8192 * m_nDEPTHBLEND ) + ( 8192 * m_nVERTEXCOLOR ) + ( 16384 * m_nFLOWMAP ) + ( 32768 * m_nFLOW_CHEAP ) + ( 65536 * m_nREFRACT ) + 0;
 	}
 };
-#define shaderStaticTest_solidenergy_ps30 psh_forgot_to_set_static_ADDITIVE + psh_forgot_to_set_static_DETAIL1 + psh_forgot_to_set_static_DETAIL1BLENDMODE + psh_forgot_to_set_static_DETAIL2 + psh_forgot_to_set_static_DETAIL2BLENDMODE + psh_forgot_to_set_static_TANGENTTOPACITY + psh_forgot_to_set_static_TANGENTSOPACITY + psh_forgot_to_set_static_FRESNELOPACITY + psh_forgot_to_set_static_DEPTHBLEND + psh_forgot_to_set_static_VERTEXCOLOR + psh_forgot_to_set_static_FLOWMAP + psh_forgot_to_set_static_FLOW_CHEAP + 0
+#define shaderStaticTest_solidenergy_ps30 psh_forgot_to_set_static_ADDITIVE + psh_forgot_to_set_static_DETAIL1 + psh_forgot_to_set_static_DETAIL1BLENDMODE + psh_forgot_to_set_static_DETAIL2 + psh_forgot_to_set_static_DETAIL2BLENDMODE + psh_forgot_to_set_static_TANGENTTOPACITY + psh_forgot_to_set_static_TANGENTSOPACITY + psh_forgot_to_set_static_FRESNELOPACITY + psh_forgot_to_set_static_DEPTHBLEND + psh_forgot_to_set_static_VERTEXCOLOR + psh_forgot_to_set_static_FLOWMAP + psh_forgot_to_set_static_FLOW_CHEAP + psh_forgot_to_set_static_REFRACT + 0
 class solidenergy_ps30_Dynamic_Index
 {
 private:

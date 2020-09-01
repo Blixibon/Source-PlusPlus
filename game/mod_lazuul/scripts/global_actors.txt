@@ -1,4 +1,5 @@
 #base "global_actors_base.txt"
+#base "global_actors_minic23_citizens.txt"
 #base "global_actors_bmce.txt"
 
 globalactors

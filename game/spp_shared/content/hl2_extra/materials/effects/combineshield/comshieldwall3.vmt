@@ -3,6 +3,7 @@
 	"$basetexture" "Effects/Combineshield/comshieldwall_alpha"
 	//"$detail1" "Effects/Combineshield/comshieldwall"
 //	"$texture2" "Effects/Combineshield/comshieldwall"
+	"$normalmap"	"effects/combineshield/shield_normal"
 
 	$flowbounds "effects/xen_shield_bounds2"
 	$flowmap "effects/fizzler_flow"
@@ -21,6 +22,8 @@
 	
 	$FLOW_VORTEX1 1
 	$FLOW_VORTEX2 0
+
+	$FLOW_REFRACT 1
 	
 	$OUTPUTINTENSITY 1
 

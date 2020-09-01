@@ -45,6 +45,7 @@ void InitParamsSolidEnergy( CBaseVSShader *pShader, IMaterialVar** params, const
 	SET_PARAM_INT_IF_NOT_DEFINED( info.m_nFlowCheap, nGPULevel < 2 );
 	SET_PARAM_INT_IF_NOT_DEFINED( info.m_nModel, 0 );
 	SET_PARAM_FLOAT_IF_NOT_DEFINED( info.m_nOutputIntensity, 1.0f );
+	SET_PARAM_INT_IF_NOT_DEFINED(info.m_nFlowRefract, 0);
 
 	if ( nGPULevel < 2 )
 	{
@@ -78,6 +79,13 @@ void InitSolidEnergy( CBaseVSShader *pShader, IMaterialVar** params, SolidEnergy
 		{
 			pShader->LoadTexture( info.m_nFlowBoundsTexture );
 		}
+		if ((info.m_nNormalMap != 1) && params[info.m_nNormalMap]->IsDefined() && GetIntParam(info.m_nFlowRefract, params) != 0)
+		{
+			pShader->LoadTexture(info.m_nNormalMap);
+			CLEAR_FLAGS(MATERIAL_VAR_ADDITIVE);
+			SET_FLAGS2(MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE);
+			SET_FLAGS(MATERIAL_VAR_TRANSLUCENT);
+		}
 	}
 
 	if ( ( info.m_nModel != -1 ) && ( params[info.m_nModel]->GetIntValue() != 0 ) )
@@ -107,6 +115,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 	
 	bool bHasFlowmap = !bDetail1 && ( info.m_nFlowMap != -1 ) && params[info.m_nFlowMap]->IsTexture();
 	bool bHasCheapFlow = !( IsGameConsole() ) && bHasFlowmap && ( params[info.m_nFlowCheap]->GetIntValue() != 0 );
+	bool bDoRefract = bHasFlowmap && (GetIntParam(info.m_nFlowRefract, params) != 0);
 
 	if ( pShader->IsSnapshotting() || (! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) )
 	{
@@ -115,14 +124,14 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 		bool bHasVertexAlpha = IS_FLAG_SET( MATERIAL_VAR_VERTEXALPHA );
 		bool bModel = IS_FLAG_SET( MATERIAL_VAR_MODEL );
 
-		bool bTangentT = ( info.m_nNeedsTangentT != -1 ) && params[info.m_nNeedsTangentT]->GetIntValue();
-		bool bTangentS = ( info.m_nNeedsTangentS != -1 ) && params[info.m_nNeedsTangentS]->GetIntValue();
+		bool bTangentT = ( info.m_nNeedsTangentT != -1 ) && params[info.m_nNeedsTangentT]->GetIntValue() && !bDoRefract;
+		bool bTangentS = ( info.m_nNeedsTangentS != -1 ) && params[info.m_nNeedsTangentS]->GetIntValue() && !bDoRefract;
 		if ( bTangentS && bTangentT ) // If both on, T wins
 		{
 			bTangentS = false;
 		}
 
-		bool bFresnel = !bTangentS && !bTangentT && ( info.m_nNeedsNormals != -1 ) && params[info.m_nNeedsNormals]->GetIntValue();
+		bool bFresnel = !bTangentS && !bTangentT && ( info.m_nNeedsNormals != -1 ) && params[info.m_nNeedsNormals]->GetIntValue() && !bDoRefract;
 		int nDetail1BlendMode = ( info.m_nDetail1BlendMode != -1 ) ? params[info.m_nDetail1BlendMode]->GetIntValue() : kDefaultDetailBlendMode;
 		nDetail1BlendMode = bDetail1 ? clamp( nDetail1BlendMode, 0, kMaxDetailBlendMode ) : 0;
 		int nDetail2BlendMode = ( info.m_nDetail2BlendMode != -1 ) ? params[info.m_nDetail2BlendMode]->GetIntValue() : kDefaultDetailBlendMode;
@@ -171,6 +180,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				SET_STATIC_VERTEX_SHADER_COMBO( MODELFORMAT, bModel );
 				SET_STATIC_VERTEX_SHADER_COMBO(DOPIXELFOG, g_pHardwareConfig->SupportsPixelShaders_2_b());
 				SET_STATIC_VERTEX_SHADER_COMBO(HARDWAREFOGBLEND, !g_pHardwareConfig->SupportsPixelShaders_2_b());
+				SET_STATIC_VERTEX_SHADER_COMBO(REFRACT, bDoRefract);
 				SET_STATIC_VERTEX_SHADER( solidenergy_vs20 );
 			}
 #if !defined( _GAMECONSOLE )
@@ -187,6 +197,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				SET_STATIC_VERTEX_SHADER_COMBO( MODELFORMAT, bModel );
 				SET_STATIC_VERTEX_SHADER_COMBO(DOPIXELFOG, 1);
 				SET_STATIC_VERTEX_SHADER_COMBO(HARDWAREFOGBLEND, 0);
+				SET_STATIC_VERTEX_SHADER_COMBO(REFRACT, bDoRefract);
 				SET_STATIC_VERTEX_SHADER( solidenergy_vs30 );
 			}
 #endif
@@ -209,6 +220,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				SET_STATIC_PIXEL_SHADER_COMBO( DEPTHBLEND, bDepthBlend );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, bHasFlowmap );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_CHEAP, bHasCheapFlow );
+				SET_STATIC_PIXEL_SHADER_COMBO(REFRACT, bDoRefract);
 				SET_STATIC_PIXEL_SHADER( solidenergy_ps20b );
 			}
 #if !defined( _GAMECONSOLE )
@@ -227,6 +239,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				SET_STATIC_PIXEL_SHADER_COMBO( DEPTHBLEND, bDepthBlend );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOWMAP, bHasFlowmap );
 				SET_STATIC_PIXEL_SHADER_COMBO( FLOW_CHEAP, bHasCheapFlow );
+				SET_STATIC_PIXEL_SHADER_COMBO(REFRACT, bDoRefract);
 				SET_STATIC_PIXEL_SHADER( solidenergy_ps30 );
 			}
 #endif
@@ -265,7 +278,23 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				pShaderShadow->EnableSRGBRead( SHADER_SAMPLER7, false );
 			}
 
-			if ( bAlphaBlend )
+			if (bDoRefract)
+			{
+				// source render target that contains the image that we are warping.
+				pShaderShadow->EnableTexture(SHADER_SAMPLER8, true);
+				pShaderShadow->EnableSRGBRead(SHADER_SAMPLER8, true);
+
+				// normal map
+				pShaderShadow->EnableTexture(SHADER_SAMPLER9, true);
+			}
+
+			if (bDoRefract)
+			{
+				pShader->DisableAlphaBlending();
+				pShaderShadow->EnableAlphaWrites(false);
+				pShaderShadow->EnableDepthWrites(false);
+			}
+			else if ( bAlphaBlend )
 			{
 				if ( bAdditiveBlend )
 				{
@@ -326,6 +355,12 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 				pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER5, info.m_nFlowMap, info.m_nFlowMapFrame );
 				pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER6, info.m_nFlowNoiseTexture, -1 );
 				pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER7, info.m_nFlowBoundsTexture, -1 );
+			}
+
+			if (bDoRefract)
+			{
+				pContextData->m_SemiStaticCmdsOut.BindStandardTexture(SHADER_SAMPLER8, TEXTURE_FRAME_BUFFER_FULL_TEXTURE_0);
+				pContextData->m_SemiStaticCmdsOut.BindTexture(pShader, SHADER_SAMPLER9, info.m_nNormalMap, -1);
 			}
 
 			if( IS_PARAM_DEFINED( info.m_nTangentTOpacityRanges ) )
@@ -463,6 +498,7 @@ void DrawSolidEnergy(  CBaseVSShader *pShader, IMaterialVar** params, IShaderDyn
 		pShaderAPI->GetWorldSpaceCameraPosition( flConsts );
 		flConsts[3] = 0.0f;
 		DynamicCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, flConsts, 1 );
+		DynamicCmdsOut.SetPixelShaderConstant(PSREG_EYEPOS_SPEC_EXPONENT, flConsts, 1);
 
 		// Compute viewport mad that takes projection space coords (post divide by W) into normalized screenspace, taking into account the currently set viewport.
 		/*flConsts[0] =  .5f * ( ( float )nViewportWidth / ( float )nRtWidth );

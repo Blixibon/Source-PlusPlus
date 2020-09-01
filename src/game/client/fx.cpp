@@ -468,8 +468,8 @@ void MuzzleFlashCallback( const CEffectData &data )
 
 		if ( data.m_nAttachmentIndex )
 		{
-			//FIXME: We also need to allocate these particles into an attachment space setup
-			pRenderable->GetAttachment( data.m_nAttachmentIndex, vecOrigin, vecAngles );
+			tempents->MuzzleFlash(data.m_fFlags & (~MUZZLEFLASH_FIRSTPERSON), data.m_hEntity, data.m_nAttachmentIndex, (data.m_fFlags & MUZZLEFLASH_FIRSTPERSON) != 0);
+			return;
 		}
 		else
 		{

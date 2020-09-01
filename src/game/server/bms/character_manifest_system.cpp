@@ -1,6 +1,7 @@
 #include "cbase.h"
 #include "character_manifest_system.h"
 #include "checksum_crc.h"
+#include "animation.h"
 
 using namespace CharacterManifest;
 
@@ -8,11 +9,11 @@ using namespace CharacterManifest;
 
 IMPLEMENT_PRIVATE_SYMBOLTYPE(CManifestSymbol);
 
-CCharacterManifestSystem::CCharacterManifestSystem() : CAutoGameSystem("CharacterManifestSystem")
+CharacterManifest::CCharacterManifestSystem::CCharacterManifestSystem() : CAutoGameSystem("CharacterManifestSystem")
 {
 }
 
-bool CCharacterManifestSystem::Init()
+bool CharacterManifest::CCharacterManifestSystem::Init()
 {
 	KeyValues* manifest = new KeyValues(CHARACTER_MANIFEST_FILE);
 	if (manifest->LoadFromFile(filesystem, CHARACTER_MANIFEST_FILE, "MOD"))
@@ -40,7 +41,7 @@ void CharacterManifest::CCharacterManifestSystem::Shutdown()
 	m_ManifestDict.Purge();
 }
 
-const ManifestCharacter_t* CCharacterManifestSystem::FindCharacterModel(const char* pszCharName) const
+const ManifestCharacter_t* CharacterManifest::CCharacterManifestSystem::FindCharacterModel(const char* pszCharName) const
 {
 	int iElement = m_ManifestDict.Find(pszCharName);
 	if (m_ManifestDict.IsValidIndex(iElement))
@@ -49,6 +50,74 @@ const ManifestCharacter_t* CCharacterManifestSystem::FindCharacterModel(const ch
 		if (List.Count())
 		{
 			return &List.Random();
+		}
+	}
+
+	return nullptr;
+}
+
+const ManifestCharacter_t* CharacterManifest::CCharacterManifestSystem::FindCharacterModel(const char* pszCharName, CUtlVector<CManifestSymbol>* pvIncludeTags, CUtlVector<CManifestSymbol>* pvExcludeTags, CUtlVector<CManifestSymbol>* pvPreferTags) const
+{
+	int iElement = m_ManifestDict.Find(pszCharName);
+	if (m_ManifestDict.IsValidIndex(iElement))
+	{
+		auto& List = m_ManifestDict.Element(iElement);
+		if (List.Count())
+		{
+			characterPtrList_t vFilteredList;
+			characterPtrList_t vFilteredListHigh;
+			for (auto& Model : List)
+			{
+				bool bValid = (Model.vModelTags.Count() > 0) || !pvIncludeTags || pvIncludeTags->Count() == 0;
+				bool bLowPriority = true;
+				for (auto& tag : Model.vModelTags)
+				{
+					if (pvIncludeTags && pvIncludeTags->Count())
+					{
+						int iIndex = pvIncludeTags->Find(tag);
+						if (iIndex == pvIncludeTags->InvalidIndex())
+						{
+							bValid = false;
+							break;
+						}
+					}
+
+					if (pvExcludeTags && pvExcludeTags->Count())
+					{
+						int iIndex = pvExcludeTags->Find(tag);
+						if (iIndex != pvExcludeTags->InvalidIndex())
+						{
+							bValid = false;
+							break;
+						}
+					}
+
+					if (pvPreferTags && pvPreferTags->Count())
+					{
+						int iIndex = pvPreferTags->Find(tag);
+						if (iIndex != pvPreferTags->InvalidIndex())
+						{
+							bLowPriority = false;
+						}
+					}
+				}
+
+				if (bValid)
+				{
+					vFilteredList.AddToTail(&Model);
+					if (!bLowPriority)
+						vFilteredListHigh.AddToTail(&Model);
+				}
+			}
+
+			if (vFilteredListHigh.Count())
+			{
+				return vFilteredListHigh.Random();
+			}
+			else if (vFilteredList.Count())
+			{
+				return vFilteredList.Random();
+			}
 		}
 	}
 
@@ -69,7 +138,7 @@ void CharacterManifest::CCharacterManifestSystem::PrecacheCharacterModels(const 
 	}
 }
 
-void CCharacterManifestSystem::LoadDataFromFile(const char* pszFileName)
+void CharacterManifest::CCharacterManifestSystem::LoadDataFromFile(const char* pszFileName)
 {
 	KeyValuesAD pKV("character_manifest");
 	if (pKV->LoadFromFile(filesystem, pszFileName, "GAME"))
@@ -102,8 +171,20 @@ void CCharacterManifestSystem::LoadDataFromFile(const char* pszFileName)
 				{
 					if (szToken[0])
 					{
-						int iSkin = atoi(szToken);
-						data.vSkins.AddToTail(iSkin);
+						CUtlStringList strings;
+						V_SplitString(szToken, ":", strings);
+						if (strings.Count() == 2)
+						{
+							for (int i = atoi(strings[0]); i <= atoi(strings[1]); i++)
+							{
+								data.vSkins.AddToTail(i);
+							}
+						}
+						else
+						{
+							int iSkin = atoi(szToken);
+							data.vSkins.AddToTail(iSkin);
+						}
 					}
 
 					pchToken = nexttoken(szToken, pchToken, ',');
@@ -126,12 +207,35 @@ void CCharacterManifestSystem::LoadDataFromFile(const char* pszFileName)
 					{
 						if (szToken[0])
 						{
-							int iBody = atoi(szToken);
-							Body.vValues.AddToTail(iBody);
+							CUtlStringList strings;
+							V_SplitString(szToken, ":", strings);
+							if (strings.Count() == 2)
+							{
+								for (int i = atoi(strings[0]); i <= atoi(strings[1]); i++)
+								{
+									Body.vValues.AddToTail(i);
+								}
+							}
+							else
+							{
+								int iBody = atoi(szToken);
+								Body.vValues.AddToTail(iBody);
+							}
 						}
 
 						pchToken = nexttoken(szToken, pchToken, ',');
 					}
+				}
+			}
+
+			KeyValues* pkvBodySync = pkvCharDef->FindKey("bodygroup_sync");
+			if (pkvBodySync)
+			{
+				for (KeyValues* pkvSync = pkvBodySync->GetFirstValue(); pkvSync; pkvSync = pkvSync->GetNextValue())
+				{
+					auto& bodySync = data.vBodyGroupSync[data.vBodyGroupSync.AddToTail()];
+					bodySync.srcName = pkvSync->GetName();
+					bodySync.dstName = pkvSync->GetString();
 				}
 			}
 
@@ -152,6 +256,15 @@ void CCharacterManifestSystem::LoadDataFromFile(const char* pszFileName)
 				for (KeyValues* pkvMergeModel = pkvMergeData->GetFirstSubKey(); pkvMergeModel; pkvMergeModel = pkvMergeModel->GetNextKey())
 				{
 					data.vMergedModels.AddToTail(pkvMergeModel->GetName());
+				}
+			}
+
+			KeyValues* pkvModelTags = pkvCharDef->FindKey("tags");
+			if (pkvModelTags)
+			{
+				for (KeyValues* pkvTag = pkvModelTags->GetFirstSubKey(); pkvTag; pkvTag = pkvTag->GetNextKey())
+				{
+					data.vModelTags.AddToTail(pkvTag->GetName());
 				}
 			}
 		}
@@ -176,4 +289,41 @@ CRC32_t CharacterManifest::EncodeFlexVector(CUtlVector<ManifestFlexData_t>& vDat
 	}
 	CRC32_Final(&crc);
 	return crc;
+}
+
+bool CharacterManifest::ManifestCharacter_t::ApplyToModel(CStudioHdr* pHdr, int& nSkin, int& nBody) const
+{
+	if (!pHdr)
+		return false;
+
+	for (int i = 0; i < vBodyGroups.Count(); i++)
+	{
+		auto& body = vBodyGroups[i];
+		int iGroup = FindBodygroupByName(pHdr, body.strName.String());
+		if (iGroup >= 0)
+			SetBodygroup(pHdr, nBody,iGroup, body.vValues.Random());
+	}
+
+	for (int i = 0; i < vBodyGroupSync.Count(); i++)
+	{
+		auto& sync = vBodyGroupSync[i];
+		int iSrcGroup = FindBodygroupByName(pHdr, sync.srcName.String());
+		int iDstGroup = FindBodygroupByName(pHdr, sync.dstName.String());
+		if (iSrcGroup >= 0 && iDstGroup >= 0)
+			SetBodygroup(pHdr, nBody, iDstGroup, GetBodygroup(pHdr, nBody, iSrcGroup));
+	}
+
+	if (vSkins.Count())
+	{
+		if (vSkins[0] < 0)
+		{
+			nSkin = RandomInt(0, pHdr->numskinfamilies() - 1);
+		}
+		else
+		{
+			nSkin = vSkins.Random();
+		}
+	}
+
+	return true;
 }

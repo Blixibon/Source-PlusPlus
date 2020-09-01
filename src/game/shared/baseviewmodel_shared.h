@@ -109,6 +109,8 @@ public:
 	void					SetHandsBodygroupByName(const char *pchGroup, int iValue);
 	void					LockHandHdr();
 	void					UnlockHandHdr();
+
+	virtual void HandleAnimEvent(animevent_t* pEvent);
 #else
 
 	virtual RenderGroup_t	GetRenderGroup();

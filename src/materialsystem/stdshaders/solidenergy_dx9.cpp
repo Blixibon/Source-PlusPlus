@@ -62,6 +62,9 @@ BEGIN_VS_SHADER( SolidEnergy_dx9, "SolidEnergy" )
 		SHADER_PARAM( FLOW_VORTEX_POS2, SHADER_PARAM_TYPE_VEC3, "", "" )
 		SHADER_PARAM( FLOW_CHEAP, SHADER_PARAM_TYPE_BOOL, "", "" )
 
+		SHADER_PARAM(FLOW_REFRACT, SHADER_PARAM_TYPE_BOOL, "0", "")
+		SHADER_PARAM(NORMALMAP, SHADER_PARAM_TYPE_TEXTURE, "dev/water_normal", "normal map")
+
 		SHADER_PARAM( MODELFORMAT, SHADER_PARAM_TYPE_BOOL, "", "" )
 		SHADER_PARAM( OUTPUTINTENSITY, SHADER_PARAM_TYPE_FLOAT, "1.0", "" );
 
@@ -113,6 +116,8 @@ BEGIN_VS_SHADER( SolidEnergy_dx9, "SolidEnergy" )
 		info.m_nFlowCheap = FLOW_CHEAP;
 		info.m_nModel = MODELFORMAT;
 		info.m_nOutputIntensity = OUTPUTINTENSITY;
+		info.m_nFlowRefract = FLOW_REFRACT;
+		info.m_nNormalMap = NORMALMAP;
 	}
 
 	SHADER_INIT_PARAMS()

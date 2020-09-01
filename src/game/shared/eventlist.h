@@ -110,6 +110,10 @@ typedef enum
 	AE_NPC_RESPONSE,	// Play a response system concept if we're not speaking
 	AE_NPC_RESPONSE_FORCED,		// Always play a response system concept
 
+	AE_VM_ENABLE_BODYGROUP,
+	AE_VM_DISABLE_BODYGROUP,
+	AE_VM_BODYGROUP_SET,
+
 	LAST_SHARED_ANIMEVENT,
 } Animevent;
 

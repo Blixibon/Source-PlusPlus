@@ -203,15 +203,7 @@ Disposition_t CNPC_BaseColleague::IRelationType(CBaseEntity *pTarget)
 
 void CNPC_BaseColleague::SetupModelFromManifest()
 {
-	for (int i = 0; i < m_pCharacterDefinition->vBodyGroups.Count(); i++)
-	{
-		auto& body = m_pCharacterDefinition->vBodyGroups[i];
-		int iGroup = FindBodygroupByName(body.strName.String());
-		if (iGroup >= 0)
-			SetBodygroup(iGroup, body.vValues.Random());
-	}
-
-	m_nSkin = m_pCharacterDefinition->vSkins.Random();
+	m_pCharacterDefinition->ApplyToModel(GetModelPtr(), m_nSkin.GetForModify(), m_nBody.GetForModify());
 
 	for (int i = 0; i < m_pCharacterDefinition->vMergedModels.Count(); i++)
 	{

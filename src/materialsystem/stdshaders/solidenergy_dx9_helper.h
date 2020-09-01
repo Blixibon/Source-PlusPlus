@@ -70,6 +70,9 @@ struct SolidEnergyVars_t
 	int m_nFlowCheap;
 	int m_nModel;
 	int m_nOutputIntensity;
+
+	int m_nFlowRefract;
+	int m_nNormalMap;
 };
 
 // default shader param values

@@ -12,6 +12,7 @@
 // STATIC:  "VERTEXCOLOR"			"0..1"
 // STATIC:  "FLOWMAP"				"0..1"
 // STATIC:  "FLOW_CHEAP"			"0..1"  [PC]
+// STATIC:	"REFRACT"				"0..1"
 
 // DYNAMIC: "ACTIVE"				"0..1"
 // DYNAMIC: "POWERUP"				"0..1"
@@ -27,6 +28,9 @@
 // SKIP: ( $FLOW_CHEAP && !$FLOWMAP )
 // SKIP: ( ( $FLOWMAP == 0 ) && ( $VORTEX1 || $VORTEX2 || $POWERUP ) )
 // SKIP: ( ( $ACTIVE == 0 ) && ( $VORTEX1 || $VORTEX2 || $POWERUP ) )
+// SKIP: ( ( $FLOWMAP == 0 ) && ( $REFRACT != 0 ) )
+// SKIP: ( $REFRACT && ( $TANGENTSOPACITY || $TANGENTTOPACITY || $FRESNELOPACITY ) )
+// SKIP: ( $ADDITIVE && $REFRACT )
 
 #include "common_fog_ps_fxc.h"
 
@@ -47,6 +51,10 @@ sampler g_tBase				: register( s0 );
 	sampler g_tFlowMap			: register( s5 );
 	sampler g_tFlowNoise		: register( s6 );
 	sampler g_tFlowBounds		: register( s7 );
+#endif
+#if REFRACT
+sampler RefractSampler : register(s8);
+sampler NormalSampler : register(s9);
 #endif
 
 // SHADER CONSTANTS
@@ -83,22 +91,38 @@ const float4 g_vVortexParams		: register( c9 );
 #define g_cVortex		( g_vVortexParams.xyz )
 #define g_flVortexSize	( g_vVortexParams.w )
 
+const float3 g_vEyePos : register(PSREG_EYEPOS_SPEC_EXPONENT);
+
+float2 UnpackNormal2D(float2 vNormal)
+{
+    return ((vNormal.xy * 2.0) - 1.0);
+}
+
+float3 UnpackNormal3D(float3 vNormal)
+{
+    return ((vNormal.xyz * 2.0) - 1.0);
+}
+
 struct PS_INPUT
 {
 	float4 vUV0_UV1							: TEXCOORD0;
 	float4 vFlowUV_UV2						: TEXCOORD1;
-	float4 vIteratedProjPos					: TEXCOORD2;
-	#if ( VORTEX1 )
+    float4 vIteratedProjPos : TEXCOORD2;
+#if ( VORTEX1 )
 		float3 vVortexPositions1				: TEXCOORD3;
-	#endif
-	#if ( VORTEX2 )
+#endif
+#if ( VORTEX2 )
 		float3 vVortexPositions2				: TEXCOORD4;
-	#endif
-	#if ( TANGENTSOPACITY || TANGENTTOPACITY || FRESNELOPACITY )
+#endif
+#if ( TANGENTSOPACITY || TANGENTTOPACITY || FRESNELOPACITY )
 		float4 vWorldNormal_worldEyeX			: TEXCOORD5;
 		float4 vWorldTangent_worldEyeY			: TEXCOORD6;
 		float4 vTangentAlignedView_worldEyeZ	: TEXCOORD7;
-	#endif
+#endif
+#if ( REFRACT )
+    float2 vRefractXY : TEXCOORD5;
+    float3 vWorldPos : TEXCOORD6;
+#endif
 	#if ( VERTEXCOLOR )
 		float4 vColor						: COLOR0;
 	#endif
@@ -118,7 +142,8 @@ float4 main( PS_INPUT i ) : COLOR
 	vWorldTangent = i.vWorldTangent_worldEyeY.xyz;
 #endif
 
-	float fBackfaceRatio = 0.0f;
+    float fBackfaceRatio = 0.0f;
+    float flCameraFade = ComputeCameraFade(i.vIteratedProjPos);
 	
 	#if ( ACTIVE )
 	{
@@ -206,8 +231,17 @@ float4 main( PS_INPUT i ) : COLOR
 			}
 			#endif
 
-			cBase.rgba = tex2D( g_tBase, vFlowUV0 ) * flWeight1;
-			cBase.rgba += tex2D( g_tBase, vFlowUV1 ) * flWeight2;
+			float4 cFlowBase = tex2D( g_tBase, vFlowUV0 ) * flWeight1;
+            cFlowBase.rgba += tex2D(g_tBase, vFlowUV1) * flWeight2;
+			
+			#if ( REFRACT )
+            float4 vNormalTexel1 = tex2D(NormalSampler, vFlowUV0);
+            float4 vNormalTexel2 = tex2D(NormalSampler, vFlowUV1);
+            float4 vNormal = lerp(vNormalTexel1, vNormalTexel2, flWeight2);
+            vNormal.xyz = UnpackNormal3D(vNormal.xyz);
+			
+            cFlowBase.b = (vNormal.a + flVortexIntensity);
+			#endif
 
 			#if ( POWERUP )
 			{
@@ -217,29 +251,56 @@ float4 main( PS_INPUT i ) : COLOR
 				float flPowerUpRange1 = smoothstep( 0.02f, 0.0f, abs( flNoiseReveal - g_flPowerUp ) );
 				float flPowerUpRange2 = smoothstep( 0.02f, 0.0f, ( flNoiseReveal - g_flPowerUp ) );
 
-				cBase.ag += flPowerUpRange1 * g_flPowerUp * (1.0f - g_flPowerUp );
-				cBase.ag *= flPowerStage2 * flPowerUpRange2;
-				cBase.ag += vBoundsTexel.g * flPowerStage2;
-			}
+				cFlowBase.ag += flPowerUpRange1 * g_flPowerUp * (1.0f - g_flPowerUp );
+				cFlowBase.ag *= flPowerStage2 * flPowerUpRange2;
+				cFlowBase.ag += vBoundsTexel.g * flPowerStage2;
+            }
 			#else
 			{
-				cBase.ag += vBoundsTexel.g;
-			}
+                cFlowBase.ag += vBoundsTexel.g;
+            }
+			#endif
+			
+			#if ( REFRACT )
+            float flEyeDist = length(i.vWorldPos.xyz - g_vEyePos.xyz);
+            float flRefractAmount = cFlowBase.b * vBoundsTexel.b * g_flIntensity * flCameraFade * g_flPowerUp * smoothstep(300, 200, flEyeDist);
 			#endif
 
-			float3 cFlowField = cBase.a * g_cFlow.rgb;
+            float3 cFlowField = cFlowBase.a * g_cFlow.rgb;
 			#if( VORTEX1 || VORTEX2 )
 			{
-				float3 cVortex = cBase.g * g_cVortex.rgb;
-				cBase.rgb = lerp( cFlowField, cVortex, flVortexIntensity );
+				float3 cVortex = cFlowBase.g * g_cVortex.rgb;
+				cFlowBase.rgb = lerp( cFlowField, cVortex, flVortexIntensity );
 			}
 			#else
 			{
-				cBase.rgb = cFlowField;
+                cFlowBase.rgb = cFlowField;
+            }
+			#endif
+            cFlowBase.rgb *= vBoundsTexel.b * g_flIntensity;
+			
+#if ( REFRACT )
+			// Perform division by W only once
+            float ooW = 1.0f / i.vIteratedProjPos.w;
+	
+			// Compute coordinates for sampling refraction
+            float2 vRefractTexCoordNoWarp = i.vRefractXY * ooW;
+            float2 vRefractTexCoord = vNormal.xy;
+            vRefractTexCoord *= flRefractAmount;
+            vRefractTexCoord += vRefractTexCoordNoWarp;
+           
+            float3 colorWarp = tex2D(RefractSampler, vRefractTexCoord.xy);
+			#if ( SHADER_SRGB_READ == 1 )
+			{
+				colorWarp = GammaToLinear( colorWarp );
 			}
 			#endif
-			cBase.rgb *= vBoundsTexel.b * g_flIntensity;
-		}
+			
+            cBase.rgb = colorWarp + (cFlowBase.rgb * flCameraFade);
+#else
+			cBase = cFlowBase;
+#endif
+        }
 		#else
 		{
 			cBase = tex2D( g_tBase, i.vUV0_UV1.xy );
@@ -299,8 +360,6 @@ float4 main( PS_INPUT i ) : COLOR
 		#if ( !FLOWMAP && !TANGENTTOPACITY && !TANGENTSOPACITY && !FRESNELOPACITY && !( DETAIL1 && DETAIL1BLENDMODE == 1 ) )
 			alpha *= cBase.a;
 		#endif
-		
-		float flCameraFade = ComputeCameraFade( i.vIteratedProjPos );
 
 		//color
 		float4 cDetail1 = float4( 0.0f, 0.0f, 0.0f, 0.0f );

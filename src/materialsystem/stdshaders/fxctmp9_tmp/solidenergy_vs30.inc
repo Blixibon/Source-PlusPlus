@@ -170,6 +170,27 @@ public:
 #endif
 	}
 private:
+	int m_nREFRACT;
+#ifdef _DEBUG
+	bool m_bREFRACT;
+#endif
+public:
+	void SetREFRACT( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nREFRACT = i;
+#ifdef _DEBUG
+		m_bREFRACT = true;
+#endif
+	}
+	void SetREFRACT( bool i )
+	{
+		m_nREFRACT = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bREFRACT = true;
+#endif
+	}
+private:
 	int m_nDOPIXELFOG;
 #ifdef _DEBUG
 	bool m_bDOPIXELFOG;
@@ -247,6 +268,10 @@ public:
 #endif // _DEBUG
 		m_nMODELFORMAT = 0;
 #ifdef _DEBUG
+		m_bREFRACT = false;
+#endif // _DEBUG
+		m_nREFRACT = 0;
+#ifdef _DEBUG
 		m_bDOPIXELFOG = false;
 #endif // _DEBUG
 		m_nDOPIXELFOG = 0;
@@ -260,13 +285,13 @@ public:
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllStaticVarsDefined = m_bDETAIL1 && m_bDETAIL2 && m_bTANGENTTOPACITY && m_bTANGENTSOPACITY && m_bFRESNELOPACITY && m_bVERTEXCOLOR && m_bFLOWMAP && m_bMODELFORMAT && m_bDOPIXELFOG && m_bHARDWAREFOGBLEND;
+		bool bAllStaticVarsDefined = m_bDETAIL1 && m_bDETAIL2 && m_bTANGENTTOPACITY && m_bTANGENTSOPACITY && m_bFRESNELOPACITY && m_bVERTEXCOLOR && m_bFLOWMAP && m_bMODELFORMAT && m_bREFRACT && m_bDOPIXELFOG && m_bHARDWAREFOGBLEND;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 32 * m_nDETAIL1 ) + ( 64 * m_nDETAIL2 ) + ( 128 * m_nTANGENTTOPACITY ) + ( 256 * m_nTANGENTSOPACITY ) + ( 512 * m_nFRESNELOPACITY ) + ( 1024 * m_nVERTEXCOLOR ) + ( 2048 * m_nFLOWMAP ) + ( 4096 * m_nMODELFORMAT ) + ( 8192 * m_nDOPIXELFOG ) + ( 16384 * m_nHARDWAREFOGBLEND ) + 0;
+		return ( 32 * m_nDETAIL1 ) + ( 64 * m_nDETAIL2 ) + ( 128 * m_nTANGENTTOPACITY ) + ( 256 * m_nTANGENTSOPACITY ) + ( 512 * m_nFRESNELOPACITY ) + ( 1024 * m_nVERTEXCOLOR ) + ( 2048 * m_nFLOWMAP ) + ( 4096 * m_nMODELFORMAT ) + ( 8192 * m_nREFRACT ) + ( 16384 * m_nDOPIXELFOG ) + ( 32768 * m_nHARDWAREFOGBLEND ) + 0;
 	}
 };
-#define shaderStaticTest_solidenergy_vs30 vsh_forgot_to_set_static_DETAIL1 + vsh_forgot_to_set_static_DETAIL2 + vsh_forgot_to_set_static_TANGENTTOPACITY + vsh_forgot_to_set_static_TANGENTSOPACITY + vsh_forgot_to_set_static_FRESNELOPACITY + vsh_forgot_to_set_static_VERTEXCOLOR + vsh_forgot_to_set_static_FLOWMAP + vsh_forgot_to_set_static_MODELFORMAT + vsh_forgot_to_set_static_DOPIXELFOG + vsh_forgot_to_set_static_HARDWAREFOGBLEND + 0
+#define shaderStaticTest_solidenergy_vs30 vsh_forgot_to_set_static_DETAIL1 + vsh_forgot_to_set_static_DETAIL2 + vsh_forgot_to_set_static_TANGENTTOPACITY + vsh_forgot_to_set_static_TANGENTSOPACITY + vsh_forgot_to_set_static_FRESNELOPACITY + vsh_forgot_to_set_static_VERTEXCOLOR + vsh_forgot_to_set_static_FLOWMAP + vsh_forgot_to_set_static_MODELFORMAT + vsh_forgot_to_set_static_REFRACT + vsh_forgot_to_set_static_DOPIXELFOG + vsh_forgot_to_set_static_HARDWAREFOGBLEND + 0
 class solidenergy_vs30_Dynamic_Index
 {
 private:

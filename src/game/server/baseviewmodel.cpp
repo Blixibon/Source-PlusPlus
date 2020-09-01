@@ -15,6 +15,8 @@
 #include "vguiscreen.h"
 #include "saverestore_utlvector.h"
 #include "hltvdirector.h"
+#include "npcevent.h"
+#include "eventlist.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -210,4 +212,55 @@ void CBaseViewModel::UnlockHandHdr()
 			}
 		}
 	}
+}
+
+void CBaseViewModel::HandleAnimEvent(animevent_t* pEvent)
+{
+	if (pEvent->type & AE_TYPE_NEWEVENTSYSTEM)
+	{
+		if (pEvent->event == AE_VM_BODYGROUP_SET)
+		{
+			int value;
+			char token[256];
+			char szBodygroupName[256];
+
+			const char* p = pEvent->options;
+
+			// Bodygroup Name
+			p = nexttoken(token, p, ' ');
+			Q_strncpy(szBodygroupName, token, sizeof(szBodygroupName));
+
+			// Get the desired value
+			p = nexttoken(token, p, ' ');
+			value = token[0] ? atoi(token) : 0;
+
+			int index = FindBodygroupByName(szBodygroupName);
+			if (index >= 0)
+			{
+				SetBodygroup(index, value);
+			}
+
+			return;
+		}
+		else if (pEvent->event == AE_VM_DISABLE_BODYGROUP)
+		{
+			int index = FindBodygroupByName(pEvent->options);
+			if (index >= 0)
+			{
+				SetBodygroup(index, 0);
+			}
+			return;
+		}
+		else if (pEvent->event == AE_VM_ENABLE_BODYGROUP)
+		{
+			int index = FindBodygroupByName(pEvent->options);
+			if (index >= 0)
+			{
+				SetBodygroup(index, 1);
+			}
+			return;
+		}
+	}
+
+	BaseClass::HandleAnimEvent(pEvent);
 }
