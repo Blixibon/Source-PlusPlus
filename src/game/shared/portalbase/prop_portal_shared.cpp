@@ -8,6 +8,7 @@
 #include "cbase.h"
 #include "prop_portal_shared.h"
 #include "portal_shareddefs.h"
+#include "iextpropportallocator.h"
 
 #ifdef CLIENT_DLL
 #include "c_basedoor.h"
@@ -75,6 +76,20 @@ bool CProp_Portal_Shared::IsEntityTeleportable( CBaseEntity *pEntity )
 	return true;
 }
 
+class CExtPropPortalLocator : public IPortalServerDllPropPortalLocator
+{
+public:
+	virtual void LocateAllPortals(CUtlVector<PortalInfo_t>& arrPortals)
+	{
+		for (auto pPortal : CProp_Portal_Shared::AllPortals)
+		{
+			PortalInfo_t& info = arrPortals[arrPortals.AddToTail()];
+			info.iLinkageGroupId = pPortal->GetLinkageGroup();
+			info.nPortal = pPortal->m_bIsPortal2 ? 1 : 0;
+			info.vecOrigin = pPortal->GetAbsOrigin();
+			info.vecAngle = pPortal->GetAbsAngles();
+		}
+	}
+};
 
-
-
+EXPOSE_SINGLE_INTERFACE(CExtPropPortalLocator, IPortalServerDllPropPortalLocator, IEXTPROPPORTALLOCATOR_INTERFACE_NAME);

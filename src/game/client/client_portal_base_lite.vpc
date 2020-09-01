@@ -15,7 +15,11 @@ $Project
 			$File	"portalbase\c_npc_portal_turret_floor.cpp"
 			//$File	"portalbase\c_npc_rocket_turret.cpp"
 			$File	"portalbase\c_prop_energy_ball.cpp"
+			$File	"portalbase\c_portal_radio.cpp"
 			$File	"peter\c_npc_personality_core.cpp"
+
+			$File	"portalbase\c_prop_weightedcube.cpp"
+			$File	"portalbase\c_prop_weightedcube.h"
 		}
 	}
 	

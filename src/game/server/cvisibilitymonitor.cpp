@@ -28,6 +28,7 @@ struct visibility_target_t
 	EHANDLE						entity;
 	float						minDistSqr;
 	int							memory;// A bit vector that remembers which clients have seen this thing already.
+	bool						bNotVisibleThroughGlass;
 	VisibilityMonitorCallback	pfnCallback;
 	VisibilityMonitorEvaluator  pfnEvaluator;
 };
@@ -56,7 +57,7 @@ public:
 	virtual void LevelShutdownPreEntity();
 
 	// Visibility Monitor Methods
-	void AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator );
+	void AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator, bool bNotVisibleThroughGlass = false);
 	void RemoveEntity( CBaseEntity *pEntity );
 
 	bool IsTrackingEntity( CBaseEntity *pEntity, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator);
@@ -257,8 +258,13 @@ bool CVisibilityMonitor::EntityIsVisibleToPlayer( const visibility_target_t &tar
 		// Increment the counter of traces done during this polling cycle
 		*numTraces += 1;
 
-		trace_t tr;
 		int mask = MASK_BLOCKLOS_AND_NPCS & ~CONTENTS_BLOCKLOS;
+		if (target.bNotVisibleThroughGlass)
+		{
+			mask |= CONTENTS_WINDOW;
+		}
+
+		trace_t tr;
 		UTIL_TraceLine( vecPlayerOrigin, vecTargetOrigin, mask, pEyeEntity, COLLISION_GROUP_NONE, &tr );
 
 		if( tr.fraction == 1.0f || tr.m_pEnt == target.entity )
@@ -304,7 +310,7 @@ void CVisibilityMonitor::LevelShutdownPreEntity()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CVisibilityMonitor::AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator )
+void CVisibilityMonitor::AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator, bool bNotVisibleThroughGlass)
 {
 	Assert( pEntity != NULL );
 
@@ -317,6 +323,7 @@ void CVisibilityMonitor::AddEntity( CBaseEntity *pEntity, float flMinDist, Visib
 		newTarget.memory = NO_VISIBILITY_MEMORY;
 		newTarget.pfnCallback = pfnCallback;
 		newTarget.pfnEvaluator = pfnEvaluator;
+		newTarget.bNotVisibleThroughGlass = bNotVisibleThroughGlass;
 
 		m_Entities.AddToTail( newTarget );
 
@@ -373,6 +380,11 @@ bool CVisibilityMonitor::IsTrackingEntity( CBaseEntity *pEntity, VisibilityMonit
 void VisibilityMonitor_AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator )
 {
 	VisibilityMonitor.AddEntity( pEntity, flMinDist, pfnCallback, pfnEvaluator );
+}
+
+void VisibilityMonitor_AddEntity_NotVisibleThroughGlass(CBaseEntity* pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator)
+{
+	VisibilityMonitor.AddEntity(pEntity, flMinDist, pfnCallback, pfnEvaluator, true);
 }
 
 //---------------------------------------------------------

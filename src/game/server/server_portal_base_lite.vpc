@@ -18,7 +18,11 @@ $Project
 			$File	"portalbase\npc_security_camera.cpp"
 			$File	"portalbase\prop_energy_ball.cpp"
 			$File	"portalbase\prop_glados_core.cpp"
+			$File	"portalbase\portal_radio.cpp"
 			$File	"peter\npc_personality_core.cpp"
+
+			$File	"portalbase\prop_weightedcube.cpp"
+			$File	"portalbase\prop_weightedcube.h"
 		}
 	}
 }

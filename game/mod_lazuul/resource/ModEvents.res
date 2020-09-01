@@ -666,7 +666,8 @@
 	
 	"portal_player_portaled"		// player traveled through a portal
 	{
-		"userid"	"short"		// user ID on server
+		"userid"		"short"		// user ID on server
+		"pairid"		"byte"		// portal linkage group ID
 		"portal2"	"bool"		// false for portal1 (blue)
 	}
 	
@@ -688,5 +689,19 @@
 	
 	"security_camera_detached"
 	{
+	}
+	"challenge_map_complete"
+	{
+		"numbronze"	"short"
+		"numsilver"	"short"
+		"numgold"	"short"
+	}
+	"advanced_map_complete"
+	{
+		"numadvanced"	"short"
+	}
+	"dinosaur_signal_found"
+	{
+		"id"	"short"
 	}
 }

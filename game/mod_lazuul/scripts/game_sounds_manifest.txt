@@ -291,6 +291,7 @@ game_sounds_manifest
 	"precache_file"		"scripts/game_sounds_footsteps_hl1.soundscript"
 	
 	// Portal content sounds
+	"precache_file"		"scripts/game_sounds_portal.txt"
 	"precache_file"		"scripts/level_sounds_music_portal.txt"
 	"precache_file"		"scripts/level_sounds_escape.txt"
 	"precache_file"		"scripts/npc_sounds_aperture_ai.txt"

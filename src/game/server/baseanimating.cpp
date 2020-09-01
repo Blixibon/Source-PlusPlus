@@ -32,6 +32,8 @@
 #ifdef HL2_DLL
 #include "vehicle_jeep.h"
 #include "npc_vortigaunt_episodic.h"
+#include "hl2_player.h"
+#include "weapon_physcannon.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -220,6 +222,10 @@ BEGIN_DATADESC( CBaseAnimating )
 	DEFINE_INPUTFUNC( FIELD_VECTOR, "SetModelScale", InputSetModelScale ),
 
 	DEFINE_FIELD( m_fBoneCacheFlags, FIELD_SHORT ),
+
+	DEFINE_INPUTFUNC(FIELD_VOID, "Dissolve", InputDissolve),
+	DEFINE_INPUTFUNC(FIELD_VOID, "SilentDissolve", InputSilentDissolve),
+	DEFINE_OUTPUT(m_OnFizzled, "OnFizzled"),
 
 	END_DATADESC()
 
@@ -651,6 +657,17 @@ void CBaseAnimating::InputSetModelScale( inputdata_t &inputdata )
 	inputdata.value.Vector3D( vecScale );
 
 	SetModelScale( vecScale.x, vecScale.y );
+}
+
+void CBaseAnimating::InputDissolve(inputdata_t& inputdata)
+{
+	CleanserDissolve(inputdata.pActivator);
+}
+
+void CBaseAnimating::InputSilentDissolve(inputdata_t& inputdata)
+{
+	OnFizzled(inputdata.pActivator);
+	UTIL_Remove(this);
 }
 
 
@@ -1236,7 +1253,7 @@ void CBaseAnimating::HandleAnimEvent( animevent_t *pEvent )
 
 	// Failed to find a handler
 	const char *pName = EventList_NameForIndex( pEvent->event );
-	if ( pName)
+	if ( pName && (pEvent->type & AE_TYPE_NEWEVENTSYSTEM))
 	{
 		DevWarning( 1, "Unhandled animation event %s for %s\n", pName, GetClassname() );
 	}
@@ -3912,5 +3929,74 @@ void CBaseAnimating::DoDamageFX(const CTakeDamageInfo& info)
 		CEntElectric* pElectric = CEntElectric::Create(this, gpGlobals->curtime, iShockType);
 
 		SetEffectEntity(pElectric, ENT_EFFECT_SHOCK);
+	}
+}
+
+void CBaseAnimating::CleanserDissolve(CBaseEntity* pActivator)
+{
+	if (IsDissolving())
+	{
+		return;
+	}
+
+	Vector vOldVel;
+	AngularImpulse vOldAng;
+	GetVelocity(&vOldVel, &vOldAng);
+
+	IPhysicsObject* pOldPhys = VPhysicsGetObject();
+
+	if (pOldPhys && (pOldPhys->GetGameFlags() & FVPHYSICS_PLAYER_HELD))
+	{
+		CHL2_Player* pPlayer = (CHL2_Player*)GetPlayerHoldingEntity(this);
+		if (pPlayer)
+		{
+			// Modify the velocity for held objects so it gets away from the player
+			pPlayer->ForceDropOfCarriedPhysObjects(this);
+
+			pPlayer->GetAbsVelocity();
+			vOldVel = pPlayer->GetAbsVelocity() + Vector(pPlayer->EyeDirection2D().x * 4.0f, pPlayer->EyeDirection2D().y * 4.0f, -32.0f);
+		}
+	}
+
+	// Swap object with an disolving physics model to avoid touch logic
+	CBaseAnimating* pDisolvingAnimating = dynamic_cast<CBaseAnimating*> (CreateEntityByName("simple_physics_prop"));
+	if (pDisolvingAnimating)
+	{
+		pDisolvingAnimating->KeyValue("model", STRING(GetModelName()));
+		pDisolvingAnimating->SetAbsOrigin(GetAbsOrigin());
+		pDisolvingAnimating->SetAbsAngles(GetAbsAngles());
+		DispatchSpawn(pDisolvingAnimating);
+		pDisolvingAnimating->VPhysicsInitNormal(SOLID_VPHYSICS, 0, false);
+
+		// Remove old prop, transfer name and children to the new simple prop
+		pDisolvingAnimating->SetName(GetEntityName());
+		UTIL_TransferPoseParameters(this, pDisolvingAnimating);
+		TransferChildren(this, pDisolvingAnimating);
+		pDisolvingAnimating->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS);
+		AddSolidFlags(FSOLID_NOT_SOLID);
+		AddEffects(EF_NODRAW);
+
+		IPhysicsObject* pPhys = pDisolvingAnimating->VPhysicsGetObject();
+		if (pPhys)
+		{
+			pPhys->EnableGravity(false);
+
+			Vector vVel = vOldVel;
+			AngularImpulse vAng = vOldAng;
+
+			// Disolving hurts, damp and blur the motion a little
+			vVel *= 0.5f;
+			vAng.z += 20.0f;
+
+			pPhys->SetVelocity(&vVel, &vAng);
+		}
+
+		pDisolvingAnimating->Dissolve("", gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL);
+		DissolveSound(pDisolvingAnimating);
+
+		OnFizzled(pActivator);
+
+		AddFlag(FL_DISSOLVING);
+		UTIL_Remove(this);
 	}
 }

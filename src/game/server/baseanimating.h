@@ -350,6 +350,14 @@ public:
 
 	virtual void 	DoDamageFX(const CTakeDamageInfo &info);
 
+	// Do the dissolve effects as if we just passed
+	// through a trigger_portal_cleanser
+	virtual void	CleanserDissolve(CBaseEntity *pActivator);
+	virtual void	DissolveSound(CBaseAnimating* pDissolvingProp) { return; }
+
+protected:
+	virtual void	OnFizzled(CBaseEntity* pActivator) { m_OnFizzled.FireOutput(pActivator, this); }
+
 private:
 	void LockStudioHdr();
 	void UnlockStudioHdr();
@@ -358,6 +366,9 @@ private:
 	void InputSetLightingOriginRelative( inputdata_t &inputdata );
 	void InputSetLightingOrigin( inputdata_t &inputdata );
 	void InputSetModelScale( inputdata_t &inputdata );
+
+	void InputDissolve(inputdata_t& inputdata);
+	void InputSilentDissolve(inputdata_t& inputdata);
 
 	bool CanSkipAnimation( void );
 
@@ -440,6 +451,7 @@ protected:
 
 public:
 	COutputEvent m_OnIgnite;
+	COutputEvent m_OnFizzled;
 
 private:
 	CStudioHdr			*m_pStudioHdr;

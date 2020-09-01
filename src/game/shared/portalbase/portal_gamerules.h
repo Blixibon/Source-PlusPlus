@@ -36,8 +36,13 @@ public:
 	DECLARE_NETWORKCLASS();
 };
 
+class IPortalRules
+{
+public:
+	virtual bool ShouldRemoveRadio(void) = 0;
+};
 
-class CPortalGameRules : public CHalfLife2
+class CPortalGameRules : public CHalfLife2, public IPortalRules
 {
 public:
 	DECLARE_CLASS( CPortalGameRules, CSingleplayRules );
@@ -84,6 +89,8 @@ private:
 	virtual float			GetAmmoDamage( CBaseEntity *pAttacker, CBaseEntity *pVictim, int nAmmoType );
 
 	virtual bool			ShouldBurningPropsEmitLight();
+
+	virtual bool			ShouldRemoveRadio(void) { return false; }
 	
 public:
 
@@ -101,9 +108,9 @@ private:
 //-----------------------------------------------------------------------------
 // Gets us at the Half-Life 2 game rules
 //-----------------------------------------------------------------------------
-inline CPortalGameRules* PortalGameRules()
+inline IPortalRules* PortalGameRules()
 {
-	return static_cast<CPortalGameRules*>(g_pGameRules);
+	return dynamic_cast<IPortalRules*>(g_pGameRules);
 }
 
 

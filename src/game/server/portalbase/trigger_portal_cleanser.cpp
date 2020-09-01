@@ -203,61 +203,7 @@ void CTriggerPortalCleanser::Touch( CBaseEntity *pOther )
 			m_OnDissolveBox.FireOutput( pOther, this );
 		}
 
-		Vector vOldVel;
-		AngularImpulse vOldAng;
-		pBaseAnimating->GetVelocity( &vOldVel, &vOldAng );
-
-		IPhysicsObject* pOldPhys = pBaseAnimating->VPhysicsGetObject();
-
-		if ( pOldPhys && ( pOldPhys->GetGameFlags() & FVPHYSICS_PLAYER_HELD ) )
-		{
-			CPortal_Player *pPlayer = (CPortal_Player *)GetPlayerHoldingEntity( pBaseAnimating );
-			if( pPlayer )
-			{
-				// Modify the velocity for held objects so it gets away from the player
-				pPlayer->ForceDropOfCarriedPhysObjects( pBaseAnimating );
-
-				pPlayer->GetAbsVelocity();
-				vOldVel = pPlayer->GetAbsVelocity() + Vector( pPlayer->EyeDirection2D().x * 4.0f, pPlayer->EyeDirection2D().y * 4.0f, -32.0f );
-			}
-		}
-
-		// Swap object with an disolving physics model to avoid touch logic
-		CBaseEntity *pDisolvingObj = ConvertToSimpleProp( pBaseAnimating );
-		if ( pDisolvingObj )
-		{
-			// Remove old prop, transfer name and children to the new simple prop
-			pDisolvingObj->SetName( pBaseAnimating->GetEntityName() );
-			UTIL_TransferPoseParameters( pBaseAnimating, pDisolvingObj );
-			TransferChildren( pBaseAnimating, pDisolvingObj );
-			pDisolvingObj->SetCollisionGroup( COLLISION_GROUP_INTERACTIVE_DEBRIS );
-			pBaseAnimating->AddSolidFlags( FSOLID_NOT_SOLID );
-			pBaseAnimating->AddEffects( EF_NODRAW );
-
-			IPhysicsObject* pPhys = pDisolvingObj->VPhysicsGetObject();
-			if ( pPhys )
-			{
-				pPhys->EnableGravity( false );
-
-				Vector vVel = vOldVel;
-				AngularImpulse vAng = vOldAng;
-
-				// Disolving hurts, damp and blur the motion a little
-				vVel *= 0.5f;
-				vAng.z += 20.0f;
-
-				pPhys->SetVelocity( &vVel, &vAng );
-			}
-
-			pBaseAnimating->AddFlag( FL_DISSOLVING );
-			UTIL_Remove( pBaseAnimating );
-		}
-		
-		CBaseAnimating *pDisolvingAnimating = dynamic_cast<CBaseAnimating*>( pDisolvingObj );
-		if ( pDisolvingAnimating ) 
-		{
-			pDisolvingAnimating->Dissolve( "", gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
-		}
+		pBaseAnimating->CleanserDissolve(this);
 
 		m_OnDissolve.FireOutput( pOther, this );
 	}

@@ -43,6 +43,11 @@
 #include "vehicle_base.h"
 #include "cvisibilitymonitor.h"
 #include "Human_Error/hlss_debris_maker.h"
+#ifdef PORTAL
+#include "prop_portal.h"
+#include "prop_portal_shared.h"
+#endif // PORTAL
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -80,6 +85,11 @@ ConVar func_breakdmg_club( "func_breakdmg_club", "1.5" );
 ConVar func_breakdmg_explosive( "func_breakdmg_explosive", "1.25" );
 
 ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_REPLICATED, "Turns on turbo physics" );
+
+#ifdef PORTAL
+ConVar	sv_props_funnel_into_portals("sv_props_funnel_into_portals", "1", FCVAR_CHEAT);
+ConVar	sv_props_funnel_into_portals_deceleration("sv_props_funnel_into_portals_deceleration", "2.0f", FCVAR_CHEAT, "When a funneling prop is leaving a portal, decelerate any velocity that is in opposition to funneling by this amount per second");
+#endif // PORTAL
 
 #ifdef HL2_EPISODIC
 	#define PROP_FLARE_LIFETIME 30.0f
@@ -2447,6 +2457,10 @@ BEGIN_DATADESC( CPhysicsProp )
 	DEFINE_KEYFIELD( m_damageType, FIELD_INTEGER, "Damagetype" ),
 	DEFINE_KEYFIELD( m_iszOverrideScript, FIELD_STRING, "overridescript" ),
 
+#ifdef PORTAL
+	DEFINE_KEYFIELD(m_bAllowPortalFunnel, FIELD_BOOLEAN, "allowfunnel"),
+#endif // PORTAL2
+
 	DEFINE_KEYFIELD( m_damageToEnableMotion, FIELD_INTEGER, "damagetoenablemotion" ),
 	DEFINE_KEYFIELD( m_flForceToEnableMotion, FIELD_FLOAT, "forcetoenablemotion" ),
 	DEFINE_OUTPUT( m_OnAwakened, "OnAwakened" ),
@@ -2481,6 +2495,13 @@ bool PropIsGib( CBaseEntity *pEntity )
 		return pProp->IsGib();
 	}
 	return false;
+}
+
+CPhysicsProp::CPhysicsProp(void)
+{
+#ifdef PORTAL
+	m_bAllowPortalFunnel = true;
+#endif // PORTAL2
 }
 
 CPhysicsProp::~CPhysicsProp()
@@ -2975,6 +2996,145 @@ void CPhysicsProp::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	{
 		m_OnOutOfWorld.FireOutput( this, this );
 	}
+
+#ifdef PORTAL
+	const float	FUNNEL_MIN_VELOCITY_THRESHOLD = 64.0f;
+	const float FUNNEL_MIN_DIST_THRESHOLD = 128.0f;
+
+	static float g_flLastPropFunnelTime = 0.0f;
+
+	// Allow props to funnel toward a portal they're falling into
+	if (sv_props_funnel_into_portals.GetBool() && m_bAllowPortalFunnel)
+	{
+		Vector vVelocity;
+		pPhysics->GetVelocity(&vVelocity, NULL);
+
+		// Make sure we're mostly going straight up or straight down
+		bool bFallingStraightDown = (vVelocity.Length2DSqr() < Square(FUNNEL_MIN_VELOCITY_THRESHOLD));
+		bool bFalling = vVelocity[2] < 0.0f;
+
+		if ((fabs(vVelocity[2]) >= 1.0f) && bFallingStraightDown)
+		{
+			float flSpeedSqr = vVelocity.Length2DSqr();
+			float flRampPerc = RemapValClamped(flSpeedSqr, Square(FUNNEL_MIN_VELOCITY_THRESHOLD * 2), 0.0f, 0.0f, 1.0f);
+
+			Vector vPropOrigin;
+			pPhysics->GetPosition(&vPropOrigin, NULL);
+
+			int iPortalCount = CProp_Portal_Shared::AllPortals.Count();
+			if (iPortalCount != 0)
+			{
+				CProp_Portal* pFunnelInto = NULL;
+				Vector vPropToFunnelPortal = vec3_origin;
+				float fClosestFunnelPortalDistSqr = FLT_MAX;
+
+				CProp_Portal** pPortals = CProp_Portal_Shared::AllPortals.Base();
+				for (int i = 0; i != iPortalCount; ++i)
+				{
+					CProp_Portal* pTempPortal = pPortals[i];
+					if (pTempPortal->IsActivedAndLinked())
+					{
+						// Make sure it's a floor or ceiling portal
+						if (pTempPortal->m_PortalSimulator.GetInternalData().Placement.vForward.z < 0.8f)
+							continue;
+
+						Vector vPropToPortal = pTempPortal->m_PortalSimulator.GetInternalData().Placement.ptCenter - vPropOrigin;
+
+						// make sure that the portal isn't too far away and we aren't past it.
+						if ((vPropToPortal.z < -1024.0f) || (vPropToPortal.z >= 0.0f))
+							continue;
+
+						Vector vPortalRight = pTempPortal->m_PortalSimulator.GetInternalData().Placement.vRight;
+						vPortalRight.z = 0.0f;
+						VectorNormalize(vPortalRight);
+
+						float fTestDist = pTempPortal->m_PortalSimulator.GetInternalData().Placement.fHalfWidth * 1.5f;
+						fTestDist *= fTestDist;
+						// Make sure we're in the 2D portal rectangle
+						if ((vPropToPortal.Dot(vPortalRight) * vPortalRight).LengthSqr() > fTestDist)
+							continue;
+
+						Vector vPortalUp = pTempPortal->m_PortalSimulator.GetInternalData().Placement.vUp;
+						vPortalUp.z = 0.0f;
+						VectorNormalize(vPortalUp);
+
+						fTestDist = pTempPortal->m_PortalSimulator.GetInternalData().Placement.fHalfHeight * 1.5f;
+						fTestDist *= fTestDist;
+						if ((vPropToPortal.Dot(vPortalUp) * vPortalUp).LengthSqr() > fTestDist)
+							continue;
+
+						float fDistSqr = vPropToPortal.LengthSqr();
+						if (fDistSqr < fClosestFunnelPortalDistSqr)
+						{
+							fClosestFunnelPortalDistSqr = fDistSqr;
+							pFunnelInto = pTempPortal;
+							vPropToFunnelPortal = vPropToPortal;
+						}
+					}
+				}
+
+				if (pFunnelInto)
+				{
+
+					if (bFalling)
+					{
+						// Funnel toward the portal
+						float fFunnelX = vPropToFunnelPortal.x - vVelocity[0];
+						float fFunnelY = vPropToFunnelPortal.y - vVelocity[1];
+
+						// Ramp out as we get near the portal
+						float flDistRamp = RemapValClamped(vPropToFunnelPortal.z, -FUNNEL_MIN_DIST_THRESHOLD, -FUNNEL_MIN_DIST_THRESHOLD * 2.0f, 0.0f, 1.0f);
+
+						vVelocity.x += fFunnelX * (flRampPerc * flDistRamp);
+						vVelocity.y += fFunnelY * (flRampPerc * flDistRamp);
+
+						// Take the new velocity
+						pPhysics->SetVelocity(&vVelocity, NULL);
+					}
+					else //shave off outward velocity while the object is going up
+					{
+						const float fMaxDeceleration = sv_props_funnel_into_portals_deceleration.GetFloat();
+						if (fMaxDeceleration > 0.0f)
+						{
+							const VPlane& portalPlane = pFunnelInto->m_PortalSimulator.GetInternalData().Placement.PortalPlane;
+							float fVelocityInPlaneDirection = portalPlane.m_Normal.Dot(vVelocity);
+							Vector vPlanarVelocity = (vVelocity - (portalPlane.m_Normal * fVelocityInPlaneDirection));
+							//to cancel all movement in the plane we would just subtract vPlanarVelocity. But we want to be pickier, and only cancel movement heading away from the portal
+
+							Vector vDistOnPlane = vPropToFunnelPortal - (vPropToFunnelPortal.Dot(portalPlane.m_Normal) * portalPlane.m_Normal);
+							float fCancelDot = vPlanarVelocity.Dot(vDistOnPlane);
+
+							if (fCancelDot < 0.0f) //less than zero because the distance vector is prop to portal instead of portal to prop
+							{
+								fCancelDot /= -(vDistOnPlane.Length());
+
+								if (fCancelDot > (fMaxDeceleration * TICK_INTERVAL))
+								{
+									fCancelDot = (fMaxDeceleration * TICK_INTERVAL);
+								}
+
+								Vector vCancel = fCancelDot * vDistOnPlane; //project existing velocity onto position offset vector, which is the direction we want to cancel outward movement on
+
+								pPhysics->AddVelocity(&vCancel, NULL);
+							}
+						}
+					}
+
+					if (g_flLastPropFunnelTime < gpGlobals->curtime)
+					{
+						// Msg( "Attempted to funnel physics prop towards approaching portal\n" );
+						g_flLastPropFunnelTime = gpGlobals->curtime + 2.0f;
+					}
+				}
+			}
+		}
+		else
+		{
+			// Reset the counter so we can warn again later
+			g_flLastPropFunnelTime = 0.0f;
+		}
+	}
+#endif // PORTAL
 }
 
 //-----------------------------------------------------------------------------

@@ -36,6 +36,9 @@
 #include "hl2_player_shared.h"
 #include "weapon_coop_base.h"
 #include "econ_item_system.h"
+#include "achievementmgr.h"
+#include "hl2orange.spa.h"
+#include "props_shared.h"
 
 #define FLEXDATA_TABLE_NAME "character_headdata"
 
@@ -189,6 +192,94 @@ ConVar sk_max_satchel("sk_max_satchel", "0", FCVAR_REPLICATED);
 ConVar sk_npc_dmg_12mm_bullet("sk_npc_dmg_12mm_bullet", "0", FCVAR_REPLICATED);
 
 ConVar	sk_max_slam("sk_max_slam", "15", FCVAR_REPLICATED);
+
+#ifdef PORTAL
+#define PORTAL_WEIGHT_BOX_MODEL_NAME "models/props/metal_box.mdl"
+
+// Portal-only con commands
+
+#ifndef CLIENT_DLL
+// Create the box used for portal puzzles, named 'box'. Used for easy debugging of portal puzzles.
+void CC_Create_PortalWeightBox(void)
+{
+	MDLCACHE_CRITICAL_SECTION();
+
+	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
+	CBaseEntity::SetAllowPrecache(true);
+
+	// Try to create entity
+	CBaseEntity* entity = dynamic_cast<CBaseEntity*>(CreateEntityByName("prop_physics"));
+	if (entity)
+	{
+		entity->PrecacheModel(PORTAL_WEIGHT_BOX_MODEL_NAME);
+		entity->SetModel(PORTAL_WEIGHT_BOX_MODEL_NAME);
+		entity->SetName(MAKE_STRING("box"));
+		entity->AddSpawnFlags(SF_PHYSPROP_ENABLE_PICKUP_OUTPUT);
+		entity->Precache();
+		DispatchSpawn(entity);
+
+		// Now attempt to drop into the world
+		CBasePlayer* pPlayer = UTIL_GetCommandClient();
+		trace_t tr;
+		Vector forward;
+		pPlayer->EyeVectors(&forward);
+		UTIL_TraceLine(pPlayer->EyePosition(),
+			pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_SOLID,
+			pPlayer, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction != 1.0)
+		{
+			tr.endpos.z += 12;
+			entity->Teleport(&tr.endpos, NULL, NULL);
+			UTIL_DropToFloor(entity, MASK_SOLID);
+		}
+	}
+	CBaseEntity::SetAllowPrecache(allowPrecache);
+}
+static ConCommand ent_create_portal_weight_box("ent_create_portal_weight_box", CC_Create_PortalWeightBox, "Creates a weight box used in portal puzzles at the location the player is looking.", FCVAR_GAMEDLL | FCVAR_CHEAT);
+#endif // CLIENT_DLL
+
+#define PORTAL_METAL_SPHERE_MODEL_NAME "models/props/sphere.mdl"
+
+#ifndef CLIENT_DLL
+// Create a very reflective bouncy metal sphere
+void CC_Create_PortalMetalSphere(void)
+{
+	MDLCACHE_CRITICAL_SECTION();
+
+	bool allowPrecache = CBaseEntity::IsPrecacheAllowed();
+	CBaseEntity::SetAllowPrecache(true);
+
+	// Try to create entity
+	CBaseEntity* entity = dynamic_cast<CBaseEntity*>(CreateEntityByName("prop_physics"));
+	if (entity)
+	{
+		entity->PrecacheModel(PORTAL_METAL_SPHERE_MODEL_NAME);
+		entity->SetModel(PORTAL_METAL_SPHERE_MODEL_NAME);
+		entity->SetName(MAKE_STRING("sphere"));
+		entity->AddSpawnFlags(SF_PHYSPROP_ENABLE_PICKUP_OUTPUT);
+		entity->Precache();
+		DispatchSpawn(entity);
+
+		// Now attempt to drop into the world
+		CBasePlayer* pPlayer = UTIL_GetCommandClient();
+		trace_t tr;
+		Vector forward;
+		pPlayer->EyeVectors(&forward);
+		UTIL_TraceLine(pPlayer->EyePosition(),
+			pPlayer->EyePosition() + forward * MAX_TRACE_LENGTH, MASK_SOLID,
+			pPlayer, COLLISION_GROUP_NONE, &tr);
+		if (tr.fraction != 1.0)
+		{
+			tr.endpos.z += 12;
+			entity->Teleport(&tr.endpos, NULL, NULL);
+			UTIL_DropToFloor(entity, MASK_SOLID);
+		}
+	}
+	CBaseEntity::SetAllowPrecache(allowPrecache);
+}
+static ConCommand ent_create_portal_metal_sphere("ent_create_portal_metal_sphere", CC_Create_PortalMetalSphere, "Creates a reflective metal sphere where the player is looking.", FCVAR_GAMEDLL | FCVAR_CHEAT);
+#endif // CLIENT_DLL
+#endif
 
 class CEconItemInitializerSystem : public CAutoGameSystem
 {
@@ -629,6 +720,16 @@ bool CLazuul::ShouldCollide(int collisionGroup0, int collisionGroup1)
 	{
 		return false;
 	}
+
+	// Cubes shouldn't collide with debris but should otherwise act like COLLISION_GROUP_NONE
+	if (collisionGroup1 == COLLISION_GROUP_WEIGHTED_CUBE && collisionGroup0 == COLLISION_GROUP_DEBRIS)
+		return false;
+
+	if (collisionGroup0 == COLLISION_GROUP_WEIGHTED_CUBE)
+		collisionGroup0 = COLLISION_GROUP_NONE;
+
+	if (collisionGroup1 == COLLISION_GROUP_WEIGHTED_CUBE)
+		collisionGroup1 = COLLISION_GROUP_NONE;
 
 	if (!IsMultiplayer())
 	{
@@ -5426,6 +5527,18 @@ const char* CLazuul::GetGameConfigName()
 	return m_iszGameConfig.Get().ToCStr();
 #endif // !CLIENT_DLL
 
+}
+
+bool CLazuul::ShouldRemoveRadio(void)
+{
+	IAchievementMgr* pAchievementMgr = engine->GetAchievementMgr();
+	if (pAchievementMgr)
+	{
+		IAchievement* pHeartbreaker = pAchievementMgr->GetAchievementByID(ACHIEVEMENT_PORTAL_BEAT_GAME);
+		return pHeartbreaker && pHeartbreaker->IsAchieved();
+	}
+
+	return false;
 }
 
 // shared ammo definition

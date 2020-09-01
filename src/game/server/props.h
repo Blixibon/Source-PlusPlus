@@ -337,9 +337,7 @@ class CPhysicsProp : public CBreakableProp, public IPhysicsPropAutoList, public 
 
 public:
 	~CPhysicsProp();
-	CPhysicsProp( void ) 
-	{
-	}
+	CPhysicsProp(void);
 
 	void Spawn( void );
 	void Precache();
@@ -416,6 +414,11 @@ private:
 protected:
 	CNetworkVar( bool, m_bAwake );
 	CNetworkVar(bool, m_bNetCanPickup);
+
+#ifdef PORTAL
+	bool		m_bAllowPortalFunnel;
+#endif // PORTAL
+
 };
 
 

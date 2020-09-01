@@ -10,7 +10,7 @@
 #endif
 
 #include "shareddefs.h"
-#include "hl2_shareddefs.h"
+#include "portal_shareddefs.h"
 #include "mp_shareddefs.h"
 
 // Using MAP_DEBUG mode?
@@ -973,7 +973,7 @@ enum
 
 enum
 {
-	TF_COLLISIONGROUP_GRENADES = HL2COLLISION_GROUP_COMBINE_BALL_NPC + 1,
+	TF_COLLISIONGROUP_GRENADES = LAST_PORTAL_COLLSION_GROUP,
 	TFCOLLISION_GROUP_OBJECT,
 	TFCOLLISION_GROUP_OBJECT_SOLIDTOPLAYERMOVEMENT,
 	TFCOLLISION_GROUP_COMBATOBJECT,

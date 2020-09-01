@@ -268,6 +268,7 @@ void CPortal_Player::NotifySystemEvent(CBaseEntity *pNotify, notify_system_event
 		if ( event )
 		{
 			event->SetInt( "userid", GetUserID() );
+			event->SetInt("pairid", pEnteredPortal->GetLinkageGroup());
 			event->SetBool( "portal2", pEnteredPortal->m_bIsPortal2 );
 			gameeventmanager->FireEvent( event );
 		}

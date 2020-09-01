@@ -330,7 +330,8 @@ enum
 	NUM_ENTITY_DISSOLVE_TYPES,
 
 	// NOTE: Be sure to up the bits if you make more dissolve types
-	ENTITY_DISSOLVE_BITS = 3
+	ENTITY_DISSOLVE_BITS = 3,
+	ENTITY_DISSOLVE_MAX = 1<<ENTITY_DISSOLVE_BITS
 };
 
 // ---------------------------

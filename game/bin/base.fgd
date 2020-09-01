@@ -42,9 +42,12 @@
 	input EnableShadow(void) : "Turn shadow on."
 	input AlternativeSorting(bool) : "Used to attempt to fix sorting problems when rendering. True activates, false deactivates"
 	input SetModelScale(string) : "Takes two values separated by a space. The first is the target model scale. The second value is the number of seconds the change in scale will be spread over."
+	input Dissolve(void) : "Dissolves the prop like trigger_portal_cleanser."
+	input SilentDissolve(void) : "Kills the prop and fires its OnFizzled output."
 
 	// Outputs
 	output OnIgnite(void) : "Fired when this object catches fire."
+	output OnFizzled(void) : "Fired when the prop is fizzled."
 ]
 
 @BaseClass = BasePlat

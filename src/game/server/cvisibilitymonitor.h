@@ -22,6 +22,7 @@ typedef bool (*VisibilityMonitorCallback)( CBaseEntity *pVisibleEntity, CBasePla
 typedef bool (*VisibilityMonitorEvaluator)( CBaseEntity *pVisibleEntity, CBasePlayer *pViewingPlayer );
 
 extern void VisibilityMonitor_AddEntity( CBaseEntity *pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator );
+extern void VisibilityMonitor_AddEntity_NotVisibleThroughGlass(CBaseEntity* pEntity, float flMinDist, VisibilityMonitorCallback pfnCallback, VisibilityMonitorEvaluator pfnEvaluator);
 extern void VisibilityMonitor_RemoveEntity( CBaseEntity *pEntity );
 
 namespace VismonDefaultCallback

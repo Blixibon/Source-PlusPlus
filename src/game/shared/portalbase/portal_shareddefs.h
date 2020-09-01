@@ -10,6 +10,8 @@
 #pragma once
 #endif
 
+#include "hl2_shareddefs.h"
+
 
 #define PORTAL_HALF_WIDTH 32.0f
 #define PORTAL_HALF_HEIGHT 54.0f
@@ -78,5 +80,13 @@ enum PortalChallengeType
 };
 
 extern char *g_ppszPortalPassThroughMaterials[];
+
+enum
+{
+	COLLISION_GROUP_PLAYER_HELD = LAST_HL2_COLLISION_GROUP,		// Held objects that shouldn't collide with players
+	COLLISION_GROUP_WEIGHTED_CUBE,		// Cubes need a collision group that acts roughly like COLLISION_GROUP_NONE but doesn't collide with debris or interactive
+
+	LAST_PORTAL_COLLSION_GROUP
+};
 
 #endif // PORTAL_SHAREDDEFS_H

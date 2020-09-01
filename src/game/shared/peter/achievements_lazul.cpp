@@ -9,42 +9,9 @@
 #include "lazuul_gamerules.h"
 #include "weapon_coop_base.h"
 #include "ammodef.h"
+#include "c_prop_portal.h"
 
 #include "memdbgon.h"
-
-enum
-{
-	LAST_SHARED_ACHIEVEMENT = ACHIEVEMENT_TF_LAST_ORANGEBOX,
-	ACHIEVEMENT_BMS_FLAVOR_TRANSFORMATION,
-	ACHIEVEMENT_BMS_RESONANCE_PROCRASTINATOR,
-	ACHIEVEMENT_BMS_PRESS_THEIR_BUTTONS,
-	ACHIEVEMENT_BMS_ETHICALLY_QUESTIONABLE,
-	ACHIEVEMENT_BMS_BROWN_MOTION,
-	ACHIEVEMENT_BMS_KILL_IT_WITH_FIRE,
-	ACHIEVEMENT_BMS_LITTLE_FRIEND,
-	ACHIEVEMENT_BMS_MEGA_HERTZ,
-	ACHIEVEMENT_BMS_INDIGESTION,
-	ACHIEVEMENT_BMS_FRIENDS_LIKE_THESE,
-	ACHIEVEMENT_BMS_NUCLEAR_FISHIN,
-	ACHIEVEMENT_BMS_KINETIC_REPULSION,
-	ACHIEVEMENT_BMS_CHARGING_MY_LASER,
-	ACHIEVEMENT_BMS_GRAY_MATTER_PROPULSION,
-	ACHIEVEMENT_BMS_PERMEABLE_INFRASTRUCTURE,
-	ACHIEVEMENT_BMS_CALCULATED_TRAJECTORY,
-	ACHIEVEMENT_BMS_DEAD_RECKONING,
-	ACHIEVEMENT_BMS_CENTRIPETAL_ATTRACTION,
-	ACHIEVEMENT_BMS_DIGITAL_WIZARDRY,
-	ACHIEVEMENT_BMS_CAFFEINE_FREAK,
-	ACHIEVEMENT_BMS_RARE_SPECIMEN,
-	ACHIEVEMENT_BMS_PROPHYLACTIC_SUGGESTED,
-	ACHIEVEMENT_BMS_QUANTUM_CAPACITANCE,
-	ACHIEVEMENT_BMS_INSTABILITY_PARADIGM,
-	ACHIEVEMENT_BMS_HYPER_SATURATION_CONUNDRUM,
-	ACHIEVEMENT_BMS_COUPLING_THEORUM,
-
-	ACHIEVEMENT_BMS_ONE_STEP_AHEAD,
-	ACHIEVEMENT_BMS_WELL_DONE,
-};
 
 #pragma region MANAGER
 void MsgFunc_AchievementMapEvent(bf_read &msg)
@@ -448,66 +415,7 @@ public:
 };
 #pragma endregion
 
-#pragma region ORANGEBOX
-class CAchievementTFGetHeadshots : public CBaseAchievement
-{
-	void Init()
-	{
-		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
-		SetGoal(25);
-	}
-
-	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
-	{
-		// was this a headshot by this player?
-		if ((pAttacker == C_BasePlayer::GetLocalPlayer()) && (event->GetInt("customkill") == TF_DMG_CUSTOM_HEADSHOT))
-		{
-			// Increment count.  Count will also get slammed whenever we get a stats update from server.  They should generally agree,
-			// but server is authoritative.
-			IncrementCount();
-		}
-	}
-};
-DECLARE_ACHIEVEMENT(CAchievementTFGetHeadshots, ACHIEVEMENT_TF_GET_HEADSHOTS, "TF_GET_HEADSHOTS", 5);
-
-
-class CAchievementTFGetConsecutiveKillsNoDeaths : public CBaseAchievement
-{
-	void Init()
-	{
-		SetFlags(ACH_LISTEN_KILL_EVENTS | ACH_SAVE_GLOBAL);
-		SetGoal(1);
-		m_iConsecutiveKills = 0;
-	}
-
-	virtual bool IsActive()
-	{
-		if (gpGlobals->maxClients <= 1)
-			return false;
-
-		return CBaseAchievement::IsActive();
-	}
-
-	virtual void Event_EntityKilled(CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event)
-	{
-		C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
-		if (pLocalPlayer == pVictim)
-		{
-			m_iConsecutiveKills = 0;
-		}
-		else if (pLocalPlayer == pAttacker && pVictim->IsPlayer())
-		{
-			m_iConsecutiveKills++;
-			if (5 == m_iConsecutiveKills)
-			{
-				IncrementCount();
-			}
-		}
-	}
-	int m_iConsecutiveKills;
-};
-DECLARE_ACHIEVEMENT(CAchievementTFGetConsecutiveKillsNoDeaths, ACHIEVEMENT_TF_GET_CONSECUTIVEKILLS_NODEATHS, "TF_GET_CONSECUTIVEKILLS_NODEATHS", 10);
-
+#pragma region HALFLIFE2
 class CAchievementTFGetMultipleKills : public CBaseAchievement
 {
 	void Init()
@@ -518,57 +426,6 @@ class CAchievementTFGetMultipleKills : public CBaseAchievement
 	}
 };
 DECLARE_ACHIEVEMENT(CAchievementTFGetMultipleKills, ACHIEVEMENT_TF_GET_MULTIPLEKILLS, "TF_GET_MULTIPLEKILLS", 15);
-
-
-class CAchievementPortalDetachAllCameras : public CBaseAchievement
-{
-protected:
-	virtual void ListenForEvents()
-	{
-		ListenForGameEvent("security_camera_detached");
-	}
-
-	void FireGameEvent_Internal(IGameEvent *event)
-	{
-		if (0 == Q_strcmp(event->GetName(), "security_camera_detached"))
-		{
-			IncrementCount();
-		}
-	}
-public:
-	virtual void Init()
-	{
-		SetFlags(ACH_SAVE_WITH_GAME);
-		SetGoal(33);
-		ListenForGameEvent("security_camera_detached");
-	}
-};
-DECLARE_ACHIEVEMENT(CAchievementPortalDetachAllCameras, ACHIEVEMENT_PORTAL_DETACH_ALL_CAMERAS, "PORTAL_DETACH_ALL_CAMERAS", 5);
-
-class CAchievementPortalHitTurretWithTurret : public CBaseAchievement
-{
-protected:
-	virtual void ListenForEvents()
-	{
-		ListenForGameEvent("turret_hit_turret");
-	}
-
-	void FireGameEvent_Internal(IGameEvent *event)
-	{
-		if (0 == Q_strcmp(event->GetName(), "turret_hit_turret"))
-		{
-			IncrementCount();
-		}
-	}
-public:
-	virtual void Init()
-	{
-		SetFlags(ACH_SAVE_GLOBAL);
-		SetGoal(1);
-		ListenForGameEvent("turret_hit_turret");
-	}
-};
-DECLARE_ACHIEVEMENT(CAchievementPortalHitTurretWithTurret, ACHIEVEMENT_PORTAL_HIT_TURRET_WITH_TURRET, "PORTAL_HIT_TURRET_WITH_TURRET", 5);
 
 class CAchievementEp1BeatCitizenEscortNoCitizenDeaths : public CFailableAchievement
 {
@@ -966,6 +823,333 @@ DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_HL2_KILL_ALLC1709SNIPERS, "HL2_K
 DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_HL2_BEAT_SUPRESSIONDEVICE, "HL2_BEAT_SUPRESSIONDEVICE", 10);
 DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_HL2_BEAT_C1713STRIDERSTANDOFF, "HL2_BEAT_C1713STRIDERSTANDOFF", 10);
 DECLARE_REBEL_MAP_EVENT_ACHIEVEMENT_HIDDEN(ACHIEVEMENT_HL2_BEAT_GAME, "HL2_BEAT_GAME", 25);
+#pragma endregion
+
+#pragma region TF2
+class CAchievementTFGetHeadshots : public CBaseAchievement
+{
+	void Init()
+	{
+		SetFlags(ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_GLOBAL);
+		SetGoal(25);
+	}
+
+	virtual void Event_EntityKilled(CBaseEntity* pVictim, CBaseEntity* pAttacker, CBaseEntity* pInflictor, IGameEvent* event)
+	{
+		// was this a headshot by this player?
+		if ((pAttacker == C_BasePlayer::GetLocalPlayer()) && (event->GetInt("customkill") == TF_DMG_CUSTOM_HEADSHOT))
+		{
+			// Increment count.  Count will also get slammed whenever we get a stats update from server.  They should generally agree,
+			// but server is authoritative.
+			IncrementCount();
+		}
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementTFGetHeadshots, ACHIEVEMENT_TF_GET_HEADSHOTS, "TF_GET_HEADSHOTS", 5);
+
+
+class CAchievementTFGetConsecutiveKillsNoDeaths : public CBaseAchievement
+{
+	void Init()
+	{
+		SetFlags(ACH_LISTEN_KILL_EVENTS | ACH_SAVE_GLOBAL);
+		SetGoal(1);
+		m_iConsecutiveKills = 0;
+	}
+
+	virtual bool IsActive()
+	{
+		if (gpGlobals->maxClients <= 1)
+			return false;
+
+		return CBaseAchievement::IsActive();
+	}
+
+	virtual void Event_EntityKilled(CBaseEntity* pVictim, CBaseEntity* pAttacker, CBaseEntity* pInflictor, IGameEvent* event)
+	{
+		C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+		if (pLocalPlayer == pVictim)
+		{
+			m_iConsecutiveKills = 0;
+		}
+		else if (pLocalPlayer == pAttacker && pVictim->IsPlayer())
+		{
+			m_iConsecutiveKills++;
+			if (5 == m_iConsecutiveKills)
+			{
+				IncrementCount();
+			}
+		}
+	}
+	int m_iConsecutiveKills;
+};
+DECLARE_ACHIEVEMENT(CAchievementTFGetConsecutiveKillsNoDeaths, ACHIEVEMENT_TF_GET_CONSECUTIVEKILLS_NODEATHS, "TF_GET_CONSECUTIVEKILLS_NODEATHS", 10);
+#pragma endregion
+
+#pragma region PORTAL
+class CAchievementPortalInfiniteFall : public CBaseAchievement
+{
+	DECLARE_CLASS(CAchievementPortalInfiniteFall, CBaseAchievement);
+
+public:
+	void Init()
+	{
+		SetFlags(ACH_SAVE_WITH_GAME);
+		SetGoal(1);
+		m_fAccumulatedDistance = 0.0f;
+		m_bIsFlinging = false;
+	}
+	virtual void ListenForEvents()
+	{
+		ListenForGameEvent("portal_player_portaled");
+		ListenForGameEvent("portal_player_touchedground");
+	}
+	virtual void PreRestoreSavedGame()
+	{
+		m_fAccumulatedDistance = 0.0f;
+		m_bIsFlinging = false;
+		BaseClass::PreRestoreSavedGame();
+	}
+
+protected:
+	virtual void FireGameEvent(IGameEvent* event)
+	{
+		const char* name = event->GetName();
+		if (0 == Q_strcmp(name, "portal_player_portaled"))
+		{
+			bool bIsPortal2 = event->GetBool("portal2", false);
+			unsigned char ucLinkageID = event->GetInt("pairid");
+			// Get the portals that they teleported through
+			CProp_Portal* pInPortal = C_Prop_Portal::FindPortal(ucLinkageID, bIsPortal2, false);
+			CProp_Portal* pOutPortal = CProp_Portal::FindPortal(ucLinkageID, !bIsPortal2, false);
+
+			if (pInPortal && pOutPortal)
+			{
+				if (m_bIsFlinging)
+				{
+					// Add up how far we traveled since the last teleport
+					m_fAccumulatedDistance += m_fZPortalPosition - pInPortal->GetAbsOrigin().z;
+
+					if (m_fAccumulatedDistance > 30000.0f * 12)
+						IncrementCount();
+				}
+
+				// Remember the Z position to get the distance when the teleport again or land
+				m_fZPortalPosition = pOutPortal->GetAbsOrigin().z;
+				m_bIsFlinging = true;
+			}
+		}
+		else if (0 == Q_strcmp(name, "portal_player_touchedground"))
+		{
+			if (m_bIsFlinging)
+			{
+				C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+
+				if (pLocalPlayer)
+				{
+					m_fAccumulatedDistance += m_fZPortalPosition - pLocalPlayer->GetAbsOrigin().z;
+
+					if (m_fAccumulatedDistance > 30000.0f * 12)
+						IncrementCount();
+
+					m_fAccumulatedDistance = 0.0f;
+					m_bIsFlinging = false;
+				}
+			}
+		}
+	}
+
+private:
+	bool		m_bIsFlinging;
+	float		m_fAccumulatedDistance;
+	float		m_fZPortalPosition;
+};
+DECLARE_ACHIEVEMENT(CAchievementPortalInfiniteFall, ACHIEVEMENT_PORTAL_INFINITEFALL, "PORTAL_INFINITEFALL", 5);
+
+class CAchievementPortalLongJump : public CBaseAchievement
+{
+	DECLARE_CLASS(CAchievementPortalLongJump, CBaseAchievement);
+
+public:
+	void Init()
+	{
+		SetFlags(ACH_SAVE_WITH_GAME);
+		SetGoal(1);
+		m_fAccumulatedDistance = 0.0f;
+		m_bIsFlinging = false;
+	}
+	virtual void ListenForEvents()
+	{
+		ListenForGameEvent("portal_player_portaled");
+		ListenForGameEvent("portal_player_touchedground");
+	}
+	virtual void PreRestoreSavedGame()
+	{
+		m_fAccumulatedDistance = 0.0f;
+		m_bIsFlinging = false;
+		BaseClass::PreRestoreSavedGame();
+	}
+
+protected:
+	virtual void FireGameEvent(IGameEvent* event)
+	{
+		const char* name = event->GetName();
+		if (0 == Q_strcmp(name, "portal_player_portaled"))
+		{
+			bool bIsPortal2 = event->GetBool("portal2", false);
+			unsigned char ucLinkageID = event->GetInt("pairid");
+			// Get the portals that they teleported through
+			CProp_Portal* pInPortal = C_Prop_Portal::FindPortal(ucLinkageID, bIsPortal2, false);
+			CProp_Portal* pOutPortal = CProp_Portal::FindPortal(ucLinkageID, !bIsPortal2, false);
+
+			if (pInPortal && pOutPortal)
+			{
+				if (m_bIsFlinging)
+				{
+					// Add up how far we traveled since the last teleport
+					float flDist = pInPortal->GetAbsOrigin().AsVector2D().DistTo(m_vec2DPortalPosition);
+
+					// Ignore small distances that can be caused by microadjustments in infinite falls
+					if (flDist > 63.0f)
+					{
+						m_fAccumulatedDistance += flDist;
+					}
+
+					if (m_fAccumulatedDistance > 300.0f * 12)
+						IncrementCount();
+				}
+
+				// Remember the 2D position to get the distance when the teleport again or land
+				m_vec2DPortalPosition = pOutPortal->GetAbsOrigin().AsVector2D();
+				m_bIsFlinging = true;
+			}
+		}
+		else if (0 == Q_strcmp(name, "portal_player_touchedground"))
+		{
+			if (m_bIsFlinging)
+			{
+				C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+
+				if (pLocalPlayer)
+				{
+					float flDist = pLocalPlayer->GetAbsOrigin().AsVector2D().DistTo(m_vec2DPortalPosition);
+
+					// Ignore small distances that can be caused by microadjustments in infinite falls
+					if (flDist > 63.0f)
+					{
+						m_fAccumulatedDistance += flDist;
+					}
+
+					if (m_fAccumulatedDistance > 300.0f * 12)
+						IncrementCount();
+
+					m_fAccumulatedDistance = 0.0f;
+					m_bIsFlinging = false;
+				}
+			}
+		}
+	}
+
+private:
+	bool		m_bIsFlinging;
+	float		m_fAccumulatedDistance;
+	Vector2D	m_vec2DPortalPosition;
+};
+DECLARE_ACHIEVEMENT(CAchievementPortalLongJump, ACHIEVEMENT_PORTAL_LONGJUMP, "PORTAL_LONGJUMP", 5);
+
+class CAchievementPortalDetachAllCameras : public CBaseAchievement
+{
+protected:
+	virtual void ListenForEvents()
+	{
+		ListenForGameEvent("security_camera_detached");
+	}
+
+	void FireGameEvent_Internal(IGameEvent* event)
+	{
+		if (0 == Q_strcmp(event->GetName(), "security_camera_detached"))
+		{
+			IncrementCount();
+		}
+	}
+public:
+	virtual void Init()
+	{
+		SetFlags(ACH_SAVE_WITH_GAME);
+		SetGoal(33);
+		ListenForGameEvent("security_camera_detached");
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementPortalDetachAllCameras, ACHIEVEMENT_PORTAL_DETACH_ALL_CAMERAS, "PORTAL_DETACH_ALL_CAMERAS", 5);
+
+class CAchievementPortalHitTurretWithTurret : public CBaseAchievement
+{
+protected:
+	virtual void ListenForEvents()
+	{
+		ListenForGameEvent("turret_hit_turret");
+	}
+
+	void FireGameEvent_Internal(IGameEvent* event)
+	{
+		if (0 == Q_strcmp(event->GetName(), "turret_hit_turret"))
+		{
+			IncrementCount();
+		}
+	}
+public:
+	virtual void Init()
+	{
+		SetFlags(ACH_SAVE_GLOBAL);
+		SetGoal(1);
+		ListenForGameEvent("turret_hit_turret");
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementPortalHitTurretWithTurret, ACHIEVEMENT_PORTAL_HIT_TURRET_WITH_TURRET, "PORTAL_HIT_TURRET_WITH_TURRET", 5);
+
+class CAchievementPortalFindAllDinosaurs : public CBaseAchievement
+{
+	DECLARE_CLASS(CAchievementPortalFindAllDinosaurs, CBaseAchievement);
+	void Init()
+	{
+		SetFlags(ACH_HAS_COMPONENTS | ACH_SAVE_GLOBAL);
+		m_iNumComponents = 26;
+		SetStoreProgressInSteam(true);
+		SetGoal(m_iNumComponents);
+		BaseClass::Init();
+		m_iProgressMsgMinimum = 1;
+	}
+	virtual void ListenForEvents()
+	{
+		ListenForGameEvent("dinosaur_signal_found");
+	}
+	virtual void FireGameEvent_Internal(IGameEvent* event)
+	{
+		if (0 == Q_strcmp(event->GetName(), "dinosaur_signal_found"))
+		{
+			int id = event->GetInt("id", -1);
+			Assert(id >= 0 && id < m_iNumComponents);
+			if (id >= 0 && id < m_iNumComponents)
+			{
+				EnsureComponentBitSetAndEvaluate(id);
+
+				// Update our Steam stat
+				steamapicontext->SteamUserStats()->SetStat("PORTAL_TRANSMISSION_RECEIVED_STAT", m_iCount);
+			}
+			else
+			{
+				Warning("Failed to set achievement progress. Dinosaur ID(%d) out of range (0 to %d)\n", id, m_iNumComponents);
+			}
+		}
+	}
+	virtual void CalcProgressMsgIncrement()
+	{
+		// Show progress every tick
+		m_iProgressMsgIncrement = 1;
+	}
+};
+DECLARE_ACHIEVEMENT(CAchievementPortalFindAllDinosaurs, ACHIEVEMENT_PORTAL_TRANSMISSION_RECEIVED, "PORTAL_TRANSMISSION_RECEIVED", 10);
+
 DECLARE_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_PORTAL_GET_PORTALGUNS, "PORTAL_GET_PORTALGUNS", 5);
 DECLARE_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_PORTAL_KILL_COMPANIONCUBE, "PORTAL_KILL_COMPANIONCUBE", 5);
 DECLARE_MAP_EVENT_ACHIEVEMENT(ACHIEVEMENT_PORTAL_ESCAPE_TESTCHAMBERS, "PORTAL_ESCAPE_TESTCHAMBERS", 5);
