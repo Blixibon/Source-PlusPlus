@@ -29,6 +29,7 @@ makefil*
 inclist.txt
 filestocopy.txt
 *.enc
+*.vcxproj.FileListAbsolute.txt
 
 GameState.txt
 ep1_gamestats.dat
@@ -52,6 +53,7 @@ sound.cache
 *.vpk.sound.cache
 user_custom
 
+particles.lib
 mathlib.lib
 tier1.lib
 vgui_controls.lib
