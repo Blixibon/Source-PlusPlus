@@ -1483,9 +1483,7 @@ public:
 			CNodeEnt::m_nNodeCount = 0;
 
 			CRespawnEntitiesFilter filter;
-			CUtlStringList vecEvents;
-			UTIL_GetAllActiveHolidayStrings(vecEvents);
-			MapEntity_ParseAllEntities( spp_utils->DoMapEdit(STRING(gpGlobals->mapname), engine->GetMapEntitiesString(), vecEvents), &filter, true );
+			MapEntity_ParseAllEntities( spp_utils->DoMapEdit(STRING(gpGlobals->mapname), engine->GetMapEntitiesString()), &filter, true );
 
 			// Allocate a CBasePlayer for pev, and call spawn
 			if ( nPlayerIndex >= 0 )

@@ -180,7 +180,7 @@ public:
 	float		  ClampCycle( float cycle, bool isLooping );
 	virtual void GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM] );
 	virtual void CalcBoneMerge(CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed);
-	virtual void BuildTransformations(CStudioHdr * hdr, Vector * pos, Quaternion * q, const matrix3x4_t & cameraTransform, int boneMask, CBoneBitList & boneComputed);
+	virtual void BuildTransformations(CStudioHdr * hdr, Vector * pos, Quaternion * q, const matrix3x4a_t & cameraTransform, int boneMask, CBoneBitList & boneComputed);
 	virtual void ApplyBoneMatrixTransform( matrix3x4_t& transform );
  	virtual int	VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
 
@@ -430,8 +430,8 @@ public:
 	void							GetCachedBoneMatrix( int boneIndex, matrix3x4_t &out );
 
 	// Wrappers for CBoneAccessor.
-	const matrix3x4_t&				GetBone( int iBone ) const;
-	matrix3x4_t&					GetBoneForWrite( int iBone );
+	const matrix3x4a_t&				GetBone( int iBone ) const;
+	matrix3x4a_t&					GetBoneForWrite( int iBone );
 
 	// Used for debugging. Will produce asserts if someone tries to setup bones or
 	// attachments before it's allowed.
@@ -653,7 +653,7 @@ protected:
 	CBoneMergeCache					*m_pBoneMergeCache;	// This caches the strcmp lookups that it has to do
 														// when merg
 	
-	CUtlVector< matrix3x4_t >		m_CachedBoneData; // never access this directly. Use m_BoneAccessor.
+	CUtlVector< matrix3x4a_t, CUtlMemoryAligned<matrix3x4a_t, 16> >		m_CachedBoneData; // never access this directly. Use m_BoneAccessor.
 	memhandle_t						m_hitboxBoneCacheHandle;
 	float							m_flLastBoneSetupTime;
 	CJiggleBones					*m_pJiggleBones;
@@ -775,12 +775,12 @@ inline void C_BaseAnimating::SetPlaybackRate( float rate )
 	m_flPlaybackRate = rate;
 }
 
-inline const matrix3x4_t& C_BaseAnimating::GetBone( int iBone ) const
+inline const matrix3x4a_t& C_BaseAnimating::GetBone( int iBone ) const
 {
 	return m_BoneAccessor.GetBone( iBone );
 }
 
-inline matrix3x4_t& C_BaseAnimating::GetBoneForWrite( int iBone )
+inline matrix3x4a_t& C_BaseAnimating::GetBoneForWrite( int iBone )
 {
 	return m_BoneAccessor.GetBoneForWrite( iBone );
 }

@@ -495,7 +495,7 @@ public:
 	void GetRenderBounds( Vector& theMins, Vector& theMaxs );
 	virtual void AddEntity( void );
 	virtual void AccumulateLayers( IBoneSetup &boneSetup, Vector pos[], Quaternion q[], float currentTime );
-	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4_t &cameraTransform, int boneMask, CBoneBitList &boneComputed );
+	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4a_t &cameraTransform, int boneMask, CBoneBitList &boneComputed );
 	IPhysicsObject *GetElement( int elementNum );
 	virtual void UpdateOnRemove();
 	virtual float LastBoneChangedTime();
@@ -671,11 +671,11 @@ void C_ServerRagdoll::AccumulateLayers( IBoneSetup &boneSetup, Vector pos[], Qua
 	}
 }
 
-void C_ServerRagdoll::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t &cameraTransform, int boneMask, CBoneBitList &boneComputed )
+void C_ServerRagdoll::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4a_t &cameraTransform, int boneMask, CBoneBitList &boneComputed )
 {
 	if ( !hdr )
 		return;
-	matrix3x4_t bonematrix;
+	matrix3x4a_t bonematrix;
 	bool boneSimulated[MAXSTUDIOBONES];
 
 	// no bones have been simulated
@@ -732,11 +732,11 @@ void C_ServerRagdoll::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 
 			if (pbones[i].parent == -1) 
 			{
-				ConcatTransforms( cameraTransform, bonematrix, GetBoneForWrite( i ) );
+				ConcatTransforms_Aligned( cameraTransform, bonematrix, GetBoneForWrite( i ) );
 			} 
 			else 
 			{
-				ConcatTransforms( GetBone( pbones[i].parent ), bonematrix, GetBoneForWrite( i ) );
+				ConcatTransforms_Aligned( GetBone( pbones[i].parent ), bonematrix, GetBoneForWrite( i ) );
 			}
 		}
 
@@ -820,7 +820,7 @@ public:
 		return BaseClass::SetupBones( pBoneToWorldOut, nMaxBones, boneMask, currentTime );
 	}
 
-	virtual void BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed )
+	virtual void BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion q[], const matrix3x4a_t& cameraTransform, int boneMask, CBoneBitList &boneComputed )
 	{
 		VPROF_BUDGET( "C_ServerRagdollAttached::SetupBones", VPROF_BUDGETGROUP_CLIENT_ANIMATION );
 

@@ -118,13 +118,18 @@ public:
 		m_takedamage = DAMAGE_EVENTS_ONLY;
 		SetSequence(LookupSequence("fizzler_anim_a"));
 		SetPlaybackRate(0.f);
+		m_flEndCycle = RandomFloat(0.5f, 1.0f);
 	}
+
+private:
+	CNetworkVar(float, m_flEndCycle);
 };
 
 LINK_ENTITY_TO_CLASS(cube_dissolveanim, CCubeDissolveModel);
 
 IMPLEMENT_SERVERCLASS_ST(CCubeDissolveModel, DT_CubeDissolveModel)
 SendPropExclude("DT_ServerAnimationData", "m_flCycle"),
+SendPropFloat(SENDINFO(m_flEndCycle), ANIMATION_CYCLE_BITS, SPROP_ROUNDDOWN, 0.0f, 1.0f),
 END_SEND_TABLE();
 
 LINK_ENTITY_TO_CLASS( cube_rotationcontroller, CCubeRotationController );

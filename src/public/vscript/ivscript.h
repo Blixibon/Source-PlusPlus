@@ -337,6 +337,7 @@ struct ScriptVariant_t
 	ScriptVariant_t( bool val ) :			m_flags( 0 ), m_type( FIELD_BOOLEAN )	{ m_bool = val; }
 	ScriptVariant_t( HSCRIPT val ) :		m_flags( 0 ), m_type( FIELD_HSCRIPT )	{ m_hScript = val; }
 	ScriptVariant_t(int64 val) : m_flags(0), m_type(FIELD_INT64) { m_int64 = val; }
+	ScriptVariant_t(uint64 val) : m_flags(0), m_type(FIELD_INT64) { m_int64 = val; }
 
 	ScriptVariant_t( const Vector &val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pVector = &val; } else { m_pVector = new Vector( val ); m_flags |= SV_FREE; } }
 	ScriptVariant_t( const Vector *val, bool bCopy = false ) :	m_flags( 0 ), m_type( FIELD_VECTOR )	{ if ( !bCopy ) { m_pVector = val; } else { m_pVector = new Vector( *val ); m_flags |= SV_FREE; } }
@@ -369,6 +370,7 @@ struct ScriptVariant_t
 	void operator=( const QAngle &vec )		{ m_type = FIELD_VECTOR; m_pAngle = &vec; }
 	void operator=( const QAngle *vec )		{ m_type = FIELD_VECTOR; m_pAngle = vec; }
 	void operator=(int64 i) { m_type = FIELD_INT64; m_int64 = i; }
+	void operator=(uint64 i) { m_type = FIELD_INT64; m_int64 = i; }
 
 	void Free()								{ if ( ( m_flags & SV_FREE ) && ( m_type == FIELD_HSCRIPT || m_type == FIELD_VECTOR || m_type == FIELD_CSTRING ) ) delete m_pszString; } // Generally only needed for return results
 
@@ -404,6 +406,7 @@ struct ScriptVariant_t
 			case FIELD_CHARACTER:	*pDest = m_char; return true;
 			case FIELD_BOOLEAN:		*pDest = m_bool; return true;
 			case FIELD_HSCRIPT:		*pDest = m_hScript; return true;
+			case FIELD_INT64:		*pDest = m_int64; return true;
 			}
 		}
 		else
@@ -426,6 +429,7 @@ struct ScriptVariant_t
 		case FIELD_INTEGER:		*pDest = m_int; return true;
 		case FIELD_FLOAT:		*pDest = m_float; return true;
 		case FIELD_BOOLEAN:		*pDest = m_bool; return true;
+		case FIELD_INT64:		*pDest = m_int64; return true;
 		default:
 			DevWarning( "No conversion from %s to float now\n", ScriptFieldTypeName( m_type ) );
 			return false;
@@ -440,6 +444,7 @@ struct ScriptVariant_t
 		case FIELD_INTEGER:		*pDest = m_int; return true;
 		case FIELD_FLOAT:		*pDest = m_float; return true;
 		case FIELD_BOOLEAN:		*pDest = m_bool; return true;
+		case FIELD_INT64:		*pDest = m_int64; return true;
 		default:
 			DevWarning( "No conversion from %s to int now\n", ScriptFieldTypeName( m_type ) );
 			return false;
@@ -469,6 +474,7 @@ struct ScriptVariant_t
 		case FIELD_INTEGER:		*pDest = m_int; return true;
 		case FIELD_FLOAT:		*pDest = m_float; return true;
 		case FIELD_BOOLEAN:		*pDest = m_bool; return true;
+		case FIELD_INT64:		*pDest = m_int64; return true;
 		default:
 			DevWarning( "No conversion from %s to bool now\n", ScriptFieldTypeName( m_type ) );
 			return false;
@@ -499,7 +505,7 @@ struct ScriptVariant_t
 		}
 		else
 		{
-			pDest->m_int = m_int;
+			pDest->m_int64 = m_int64;
 		}
 		return false;
 	}
@@ -525,6 +531,37 @@ private:
 };
 
 #define SCRIPT_VARIANT_NULL ScriptVariant_t()
+
+//---------------------------------------------------------
+struct ScriptConstantBinding_t
+{
+	const char* m_pszScriptName;
+	const char* m_pszDescription;
+	ScriptVariant_t		m_data;
+	unsigned			m_flags;
+};
+
+//---------------------------------------------------------
+struct ScriptEnumDesc_t
+{
+	ScriptEnumDesc_t() : m_pszScriptName(0), m_pszDescription(0), m_flags(0)
+	{
+		AllEnumsDesc().AddToTail(this);
+	}
+
+	virtual void		RegisterDesc() = 0;
+
+	const char* m_pszScriptName;
+	const char* m_pszDescription;
+	CUtlVector<ScriptConstantBinding_t> m_ConstantBindings;
+	unsigned			m_flags;
+
+	static CUtlVector<ScriptEnumDesc_t*>& AllEnumsDesc()
+	{
+		static CUtlVector<ScriptEnumDesc_t*> enums;
+		return enums;
+	}
+};
 
 #pragma warning(pop)
 
@@ -559,6 +596,44 @@ private:
 
 #define ScriptRegisterFunction( pVM, func, description )									ScriptRegisterFunctionNamed( pVM, func, #func, description )
 #define ScriptRegisterFunctionNamed( pVM, func, scriptName, description )					do { static ScriptFunctionBinding_t binding; binding.m_desc.m_pszDescription = description; binding.m_desc.m_Parameters.RemoveAll(); ScriptInitFunctionBindingNamed( &binding, func, scriptName ); pVM->RegisterFunction( &binding ); } while (0)
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+
+#define ScriptRegisterConstant( pVM, constant, description )									ScriptRegisterConstantNamed( pVM, constant, #constant, description )
+#define ScriptRegisterConstantNamed( pVM, constant, scriptName, description )					do { static ScriptConstantBinding_t binding; binding.m_pszScriptName = scriptName; binding.m_pszDescription = description; binding.m_data = constant; pVM->RegisterConstant( &binding ); } while (0)
+
+//-----------------------------------------------------------------------------
+// 
+//-----------------------------------------------------------------------------
+
+#define BEGIN_SCRIPTENUM( enumName, description ) \
+		struct ScriptEnum##enumName##Desc_t : public ScriptEnumDesc_t \
+		{ \
+			void RegisterDesc(); \
+		}; \
+		ScriptEnum##enumName##Desc_t g_##enumName##_EnumDesc; \
+		\
+		void ScriptEnum##enumName##Desc_t::RegisterDesc() \
+		{ \
+			static bool bInitialized; \
+			if ( bInitialized ) \
+				return; \
+			\
+			bInitialized = true; \
+			\
+			m_pszScriptName = #enumName; \
+			m_pszDescription = description; \
+
+#define DEFINE_ENUMCONST( constant, description )							DEFINE_ENUMCONST_NAMED( constant, #constant, description )
+#define DEFINE_ENUMCONST_NAMED( constant, scriptName, description )			do { ScriptConstantBinding_t *pBinding = &(m_ConstantBindings[m_ConstantBindings.AddToTail()]); pBinding->m_pszScriptName = scriptName; pBinding->m_pszDescription = description; pBinding->m_data = constant; pBinding->m_flags = SF_MEMBER_FUNC; } while (0);
+
+#define END_SCRIPTENUM() \
+		} \
+
+
+#define GetScriptDescForEnum( enumName ) GetScriptDesc( ( className *)NULL )
 
 //-----------------------------------------------------------------------------
 // 
@@ -732,13 +807,27 @@ public:
 	virtual bool RegisterClass( ScriptClassDesc_t *pClassDesc ) = 0;
 
 	//--------------------------------------------------------
+	// External constants
+	//--------------------------------------------------------
+	virtual void RegisterConstant(ScriptConstantBinding_t* pScriptConstant) = 0;
+
+	//--------------------------------------------------------
+	// External enums
+	//--------------------------------------------------------
+	virtual void RegisterEnum(ScriptEnumDesc_t* pEnumDesc) = 0;
+
+	//--------------------------------------------------------
 	// External instances. Note class will be auto-registered.
 	//--------------------------------------------------------
 
-	virtual HSCRIPT RegisterInstance( ScriptClassDesc_t *pDesc, void *pInstance ) = 0;
-	virtual void SetInstanceUniqeId( HSCRIPT hInstance, const char *pszId ) = 0;
-	template <typename T> HSCRIPT RegisterInstance( T *pInstance )																	{ return RegisterInstance( GetScriptDesc( pInstance ), pInstance );	}
-	template <typename T> HSCRIPT RegisterInstance( T *pInstance, const char *pszInstance, HSCRIPT hScope = NULL)					{ HSCRIPT hInstance = RegisterInstance( GetScriptDesc( pInstance ), pInstance ); SetValue( hScope, pszInstance, hInstance ); return hInstance; }
+	// When a RegisterInstance instance is deleted, VScript normally treats it as a strong reference and only deregisters the instance itself, preserving the registered data
+	// it points to so the game can continue to use it.
+	// bAllowDestruct is supposed to allow VScript to treat it as a weak reference created by the script, destructing the registered data automatically like any other type.
+	// This is useful for classes pretending to be primitive types.
+	virtual HSCRIPT RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance, bool bAllowDestruct = false) = 0;
+	virtual void SetInstanceUniqeId(HSCRIPT hInstance, const char* pszId) = 0;
+	template <typename T> HSCRIPT RegisterInstance(T* pInstance, bool bAllowDestruct = false) { return RegisterInstance(GetScriptDesc(pInstance), pInstance, bAllowDestruct); }
+	template <typename T> HSCRIPT RegisterInstance(T* pInstance, const char* pszInstance, HSCRIPT hScope = NULL, bool bAllowDestruct = false) { HSCRIPT hInstance = RegisterInstance(GetScriptDesc(pInstance), pInstance, bAllowDestruct); SetValue(hScope, pszInstance, hInstance); return hInstance; }
 	virtual void RemoveInstance( HSCRIPT ) = 0;
 	void RemoveInstance( HSCRIPT hInstance, const char *pszInstance, HSCRIPT hScope = NULL )										{ ClearValue( hScope, pszInstance ); RemoveInstance( hInstance ); }
 	void RemoveInstance( const char *pszInstance, HSCRIPT hScope = NULL )															{ ScriptVariant_t val; if ( GetValue( hScope, pszInstance, &val ) ) { if ( val.m_type == FIELD_HSCRIPT ) { RemoveInstance( val, pszInstance, hScope ); } ReleaseValue( val ); } }
@@ -898,6 +987,16 @@ public:
 		FOR_EACH_VEC(classDescs, i)
 		{
 			RegisterClass(classDescs[i]);
+		}
+	}
+
+	void RegisterAllEnums()
+	{
+		CUtlVector<ScriptEnumDesc_t*>& enumDescs = ScriptEnumDesc_t::AllEnumsDesc();
+		FOR_EACH_VEC(enumDescs, i)
+		{
+			enumDescs[i]->RegisterDesc();
+			RegisterEnum(enumDescs[i]);
 		}
 	}
 };

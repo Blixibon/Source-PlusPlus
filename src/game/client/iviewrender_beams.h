@@ -173,6 +173,7 @@ public:
 
 	virtual void	AddBeamListener(IBeamRemovedCallback*) = 0;
 	virtual void	RemoveBeamListener(IBeamRemovedCallback*) = 0;
+	virtual void	ForceUpdateBeamPositions(Beam_t* pBeam, C_BaseEntity *pStartEntOverride = nullptr, C_BaseEntity *pEndEntOverride = nullptr) = 0;
 };
 
 extern IViewRenderBeams *beams;

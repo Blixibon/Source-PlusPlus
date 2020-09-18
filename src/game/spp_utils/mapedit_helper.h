@@ -10,7 +10,7 @@ public:
 	CMapEditHelper() : m_bufEntities(0, 0, CUtlBuffer::TEXT_BUFFER), m_strLastMap()
 	{}
 
-	virtual const char* DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>& vecVariants);
+	virtual const char* DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<const char*>& vecVariants);
 private:
 	CUtlBuffer m_bufEntities;
 	CUtlString m_strLastMap;

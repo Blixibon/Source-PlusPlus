@@ -468,7 +468,7 @@ void MapEdit_RunCommandList(Map_t* pMap, CUtlVector<edtCommand_t>* pCommandList)
 	}
 }
 
-bool MapHasAnyEdits(const char* pMapName, CUtlVector<char*>& vecVariants)
+bool MapHasAnyEdits(const char* pMapName, CUtlVector<const char*>& vecVariants)
 {
 	CFmtStr edtPath("maps/%s.edt", pMapName);
 	if (g_pFullFileSystem->FileExists(edtPath, "GAME"))
@@ -488,7 +488,7 @@ bool MapHasAnyEdits(const char* pMapName, CUtlVector<char*>& vecVariants)
 	return false;
 }
 
-CUtlString BuildCompiledFilename(const char* pMapName, CUtlVector<char*>& vecVariants, const char* pszExtension)
+CUtlString BuildCompiledFilename(const char* pMapName, CUtlVector<const char*>& vecVariants, const char* pszExtension)
 {
 	CFmtStr str("edt_cache/%s", pMapName);
 	for (int i = 0; i < vecVariants.Count(); i++)
@@ -501,7 +501,7 @@ CUtlString BuildCompiledFilename(const char* pMapName, CUtlVector<char*>& vecVar
 	return ret;
 }
 
-void PruneActiveVariants(const char* pMapName, CUtlVector<char*>& vecVariants)
+void PruneActiveVariants(const char* pMapName, CUtlVector<const char*>& vecVariants)
 {
 	for (int i = vecVariants.Count()-1; i >= 0 ; i--)
 	{
@@ -513,13 +513,10 @@ void PruneActiveVariants(const char* pMapName, CUtlVector<char*>& vecVariants)
 	}
 }
 
-const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>& vecVariantsIn)
+const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<const char*>& vecVariants)
 {
 	char szMapName[MAX_PATH];
 	V_FileBase(pMapName, szMapName, MAX_PATH);
-
-	CUtlVector<char*> vecVariants;
-	vecVariants.AddVectorToTail(vecVariantsIn);
 
 	PruneActiveVariants(pMapName, vecVariants);
 

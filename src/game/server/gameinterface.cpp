@@ -203,6 +203,7 @@ IServerReplayContext *g_pReplayServerContext = NULL;
 
 CSysModule* spp_utils_module = NULL;
 IGameSharedUtils* spp_utils = NULL;
+IHolidayEvents* g_pHolidayEvents = NULL;
 
 IGameSystem *SoundEmitterSystem();
 
@@ -664,10 +665,13 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if ((spp_utils = (IGameSharedUtils*)Sys_GetFactory(spp_utils_module)(SPP_UTILS_INTERFACE, NULL)) == NULL)
 		return false;
 
+	if ((g_pHolidayEvents = (IHolidayEvents*)spp_utils->QueryInterface(HOLIDAYEVENTS_INTERFACE_VERSION)) == NULL)
+		return false;
+
 	if (!spp_utils->Connect(appSystemFactory))
 		return false;
 
-	if (!spp_utils->InitServer(appSystemFactory, Sys_GetFactoryThis(), pGlobals))
+	if (!spp_utils->InitServer(appSystemFactory, Sys_GetFactoryThis(), pGlobals, usermessages))
 		return false;
 
 	if (!CommandLine()->CheckParm("-noscripting"))
@@ -1047,10 +1051,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	//Tony; parse custom manifest if exists!
 	ParseParticleEffectsMap( pMapName, false );
 
-	CUtlStringList vecEvents;
-	UTIL_GetAllActiveHolidayStrings(vecEvents);
-
-	pMapEntities = spp_utils->DoMapEdit(pMapName, pMapEntities, vecEvents);
+	pMapEntities = spp_utils->DoMapEdit(pMapName, pMapEntities);
 
 	// IGameSystem::LevelInitPreEntityAllSystems() is called when the world is precached
 	// That happens either in LoadGameState() or in MapEntity_ParseAllEntities()

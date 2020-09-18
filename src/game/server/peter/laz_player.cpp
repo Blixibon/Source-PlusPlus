@@ -2669,6 +2669,8 @@ void CLaz_Player::StateEnterDYING(void)
 {
 	SetMoveType(MOVETYPE_NONE);
 	AddSolidFlags(FSOLID_NOT_SOLID);
+
+	StopWaterDeathSounds();
 }
 
 void CLaz_Player::StateThinkDYING(void)

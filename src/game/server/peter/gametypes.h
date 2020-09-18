@@ -201,6 +201,23 @@ public:
 
 	void Reload();
 
+	// Script Functions
+	int   ScriptGetMapOptionInt(const char* keyName) const { return GetMapOptionInt(keyName); }
+	int64 ScriptGetMapOptionInt64(const char* keyName) const { return GetMapOptionUint64(keyName); }
+	float ScriptGetMapOptionFloat(const char* keyName) const { return GetMapOptionFloat(keyName); }
+	const char* ScriptGetMapOptionString(const char* keyName) const { return GetMapOptionString(keyName); }
+	bool ScriptGetMapOptionBool(const char* keyName) const { return GetMapOptionBool(keyName); }
+
+	const char* ScriptGetBaseGameType() { return GetGameTypeName(GetCurrentBaseGameType()); }
+	const char* ScriptGetModGameType() { return GetGameTypeName(GetCurrentModGameType()); }
+	const char* ScriptRemapEntityClass(const char* pszClassname)
+	{
+		const char* pszNewClass = RemapEntityClass(pszClassname);
+		return (pszNewClass != nullptr) ? pszNewClass : pszClassname;
+	}
+
+
+
 	static CUtlFilenameSymbolTable sm_FilenameTable;
 
 protected:

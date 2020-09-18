@@ -166,7 +166,7 @@ public:
 	}
 
 	// model specific
-	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed );
+	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4a_t& cameraTransform, int boneMask, CBoneBitList &boneComputed );
 	static void		LinkToGlobalFlexControllers( CStudioHdr *hdr );
 	virtual	void	SetupWeights( const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights );
 	virtual	bool	SetupGlobalWeights( const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights );

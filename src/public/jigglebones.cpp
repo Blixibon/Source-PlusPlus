@@ -57,7 +57,7 @@ JiggleData * CJiggleBones::GetJiggleData( int bone, float currenttime, const Vec
  * Do spring physics calculations and update "jiggle bone" matrix
  * (Michael Booth, Turtle Rock Studios)
  */
-void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime, const mstudiojigglebone_t *jiggleInfo, const matrix3x4_t &goalMX, matrix3x4_t &boneMX )
+void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime, const mstudiojigglebone_t *jiggleInfo, const matrix3x4a_t &goalMX, matrix3x4a_t &boneMX )
 {
 	Vector goalBasePosition;
 	MatrixPosition( goalMX, goalBasePosition );
@@ -241,7 +241,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 					SinCos( yaw, &sy, &cy );
 
 					// yaw matrix
-					matrix3x4_t yawMatrix;
+					matrix3x4a_t yawMatrix;
 
 					yawMatrix[0][0] = cy;
 					yawMatrix[1][0] = 0;
@@ -260,8 +260,8 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 					yawMatrix[2][3] = 0;
 
 					// global coordinates of limit
-					matrix3x4_t limitMatrix;					
-					ConcatTransforms( goalMX, yawMatrix, limitMatrix );
+					matrix3x4a_t limitMatrix;					
+					ConcatTransforms_Aligned( goalMX, yawMatrix, limitMatrix );
 
 					Vector limitLeft( limitMatrix.m_flMatVal[0][0], 
 									  limitMatrix.m_flMatVal[1][0],
@@ -336,7 +336,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 					SinCos( pitch, &sp, &cp );
 
 					// pitch matrix
-					matrix3x4_t pitchMatrix;
+					matrix3x4a_t pitchMatrix;
 
 					pitchMatrix[0][0] = 1.0f;
 					pitchMatrix[1][0] = 0;
@@ -355,8 +355,8 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 					pitchMatrix[2][3] = 0;
 
 					// global coordinates of limit
-					matrix3x4_t limitMatrix;					
-					ConcatTransforms( goalMX, pitchMatrix, limitMatrix );
+					matrix3x4a_t limitMatrix;					
+					ConcatTransforms_Aligned( goalMX, pitchMatrix, limitMatrix );
 
 					Vector limitLeft( limitMatrix.m_flMatVal[0][0], 
 									  limitMatrix.m_flMatVal[1][0],
@@ -666,7 +666,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 
 			Vector boingOtherSide = CrossProduct( data->boingDir, boingSide );
 
-			matrix3x4_t xfrmToBoingCoordsMX;
+			matrix3x4a_t xfrmToBoingCoordsMX;
 
 			xfrmToBoingCoordsMX[0][0] = boingSide.x;
 			xfrmToBoingCoordsMX[0][1] = boingSide.y;
@@ -685,7 +685,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 			xfrmToBoingCoordsMX[2][3] = 0.0f;
 
 			// build squash and stretch transform in "boing space"
-			matrix3x4_t boingMX;
+			matrix3x4a_t boingMX;
 
 			boingMX[0][0] = squash;
 			boingMX[1][0] = 0.0f;
@@ -704,7 +704,7 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 			boingMX[2][3] = 0.0f;
 
 			// transform back from boing space (inverse is transpose since orthogonal)
-			matrix3x4_t xfrmFromBoingCoordsMX;
+			matrix3x4a_t xfrmFromBoingCoordsMX;
 			xfrmFromBoingCoordsMX[0][0] = xfrmToBoingCoordsMX[0][0];
 			xfrmFromBoingCoordsMX[1][0] = xfrmToBoingCoordsMX[0][1];
 			xfrmFromBoingCoordsMX[2][0] = xfrmToBoingCoordsMX[0][2];
@@ -722,10 +722,10 @@ void CJiggleBones::BuildJiggleTransformations( int boneIndex, float currenttime,
 			xfrmFromBoingCoordsMX[2][3] = 0.0f;
 
 			// put it all together
-			matrix3x4_t xfrmMX;
-			MatrixMultiply( xfrmToBoingCoordsMX, boingMX, xfrmMX );
-			MatrixMultiply( xfrmMX, xfrmFromBoingCoordsMX, xfrmMX );
-			MatrixMultiply( boneMX, xfrmMX, boneMX );
+			matrix3x4a_t xfrmMX;
+			ConcatTransforms_Aligned( xfrmToBoingCoordsMX, boingMX, xfrmMX );
+			ConcatTransforms_Aligned( xfrmMX, xfrmFromBoingCoordsMX, xfrmMX );
+			ConcatTransforms_Aligned( boneMX, xfrmMX, boneMX );
 
 #ifdef CLIENT_DLL
 			if ( cl_jiggle_bone_debug.GetBool() )

@@ -120,6 +120,7 @@ bool VScriptClientInit()
 				g_pScriptVM->RegisterAllClasses();
 
 				RegisterSharedScriptFunctions();
+				RegisterSharedScriptConstants();
 
 				//g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 

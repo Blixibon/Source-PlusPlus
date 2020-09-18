@@ -138,7 +138,7 @@ public:
 		bool bAllStaticVarsDefined = m_bNORMALMAP && m_bWORLDVERTEXTRANSITION && m_bSEAMLESS && m_bDETAIL && m_bPHONG;
 		Assert( bAllStaticVarsDefined );
 #endif // _DEBUG
-		return ( 2 * m_nNORMALMAP ) + ( 4 * m_nWORLDVERTEXTRANSITION ) + ( 8 * m_nSEAMLESS ) + ( 16 * m_nDETAIL ) + ( 32 * m_nPHONG ) + 0;
+		return ( 4 * m_nNORMALMAP ) + ( 8 * m_nWORLDVERTEXTRANSITION ) + ( 16 * m_nSEAMLESS ) + ( 32 * m_nDETAIL ) + ( 64 * m_nPHONG ) + 0;
 	}
 };
 #define shaderStaticTest_pp_lightmappedadv_flashlight_vs20 vsh_forgot_to_set_static_NORMALMAP + vsh_forgot_to_set_static_WORLDVERTEXTRANSITION + vsh_forgot_to_set_static_SEAMLESS + vsh_forgot_to_set_static_DETAIL + vsh_forgot_to_set_static_PHONG + 0
@@ -165,6 +165,27 @@ public:
 		m_bDOWATERFOG = true;
 #endif
 	}
+private:
+	int m_nORTHO;
+#ifdef _DEBUG
+	bool m_bORTHO;
+#endif
+public:
+	void SetORTHO( int i )
+	{
+		Assert( i >= 0 && i <= 1 );
+		m_nORTHO = i;
+#ifdef _DEBUG
+		m_bORTHO = true;
+#endif
+	}
+	void SetORTHO( bool i )
+	{
+		m_nORTHO = i ? 1 : 0;
+#ifdef _DEBUG
+		m_bORTHO = true;
+#endif
+	}
 public:
 	pp_lightmappedadv_flashlight_vs20_Dynamic_Index()
 	{
@@ -172,16 +193,20 @@ public:
 		m_bDOWATERFOG = false;
 #endif // _DEBUG
 		m_nDOWATERFOG = 0;
+#ifdef _DEBUG
+		m_bORTHO = false;
+#endif // _DEBUG
+		m_nORTHO = 0;
 	}
 	int GetIndex()
 	{
 		// Asserts to make sure that we aren't using any skipped combinations.
 		// Asserts to make sure that we are setting all of the combination vars.
 #ifdef _DEBUG
-		bool bAllDynamicVarsDefined = m_bDOWATERFOG;
+		bool bAllDynamicVarsDefined = m_bDOWATERFOG && m_bORTHO;
 		Assert( bAllDynamicVarsDefined );
 #endif // _DEBUG
-		return ( 1 * m_nDOWATERFOG ) + 0;
+		return ( 1 * m_nDOWATERFOG ) + ( 2 * m_nORTHO ) + 0;
 	}
 };
-#define shaderDynamicTest_pp_lightmappedadv_flashlight_vs20 vsh_forgot_to_set_dynamic_DOWATERFOG + 0
+#define shaderDynamicTest_pp_lightmappedadv_flashlight_vs20 vsh_forgot_to_set_dynamic_DOWATERFOG + vsh_forgot_to_set_dynamic_ORTHO + 0

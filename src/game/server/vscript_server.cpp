@@ -15,6 +15,7 @@
 #include "sceneentity.h"		// for exposing scene precache function
 #include "isaverestore.h"
 #include "gamerules.h"
+#include "peter/gametypes.h"
 
 #include "vscript_server_nut.h"
 #include "spawn_helper_nut.h"
@@ -457,10 +458,12 @@ bool VScriptServerInit()
 				}
 
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
+				g_pScriptVM->RegisterInstance(g_pGameTypeSystem, "GameTypes");
 
 				g_pScriptVM->RegisterAllClasses();
 
 				RegisterSharedScriptFunctions();
+				RegisterSharedScriptConstants();
 
 				if ( scriptLanguage == SL_SQUIRREL )
 				{

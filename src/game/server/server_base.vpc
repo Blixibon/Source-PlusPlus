@@ -745,6 +745,7 @@ $Project
 		$File	"$SRCDIR\game\shared\vscript_shared.cpp"
 		$File	"$SRCDIR\game\shared\vscript_shared.h"
 		$File	"$SRCDIR\game\shared\vscript_funcs_shared.cpp"
+		$File	"$SRCDIR\game\shared\vscript_consts_shared.cpp"
 		$File	"waterbullet.cpp"
 		$File	"waterbullet.h"
 		$File	"WaterLODControl.cpp"

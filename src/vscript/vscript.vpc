@@ -13,6 +13,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	"$BASE;.\squirrel\include"
+		$PreprocessorDefinitions		"$BASE;_SQ64"
 	}
 }
 

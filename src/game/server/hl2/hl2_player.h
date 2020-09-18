@@ -81,6 +81,7 @@ class CHL2_Player : public CBaseNetworkedPlayer, public IHasAttributes
 {
 public:
 	DECLARE_CLASS( CHL2_Player, CBaseNetworkedPlayer);
+	DECLARE_ENT_SCRIPTDESC();
 
 	CHL2_Player();
 	~CHL2_Player( void );
@@ -340,7 +341,7 @@ protected:	// Jeep: Portal_Player needs access to this variable to overload Play
 	CHL2PlayerAnimState m_AnimState;
 
 	bool				m_bFlashlightDisabled;
-private:
+protected:
 
 	CAI_Squad *			m_pPlayerAISquad;
 	CSimpleSimTimer		m_CommanderUpdateTimer;

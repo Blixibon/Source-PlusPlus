@@ -45,12 +45,14 @@ $Project "SPP Utils"
 {
 	$Folder	"Source Files"
 	{
+		$File	"shared.h"
+
 		$File 	"mapedit_helper.cpp"
 		$File	"mapedit_helper.h"
 		$File	"holiday_event_system.cpp"
 		$File	"holiday_event_system.h"
-		$File	"rich_presence_system.cpp"
-		$File	"rich_presence_system.h"
+		//$File	"rich_presence_system.cpp"
+		//$File	"rich_presence_system.h"
 		$File	"scenecache.cpp"
 		$File	"scenecache.h"
 		$File	"filehelpers.cpp"
@@ -63,8 +65,10 @@ $Project "SPP Utils"
 
 	$Folder	"Header Files"
 	{
+		$File	"$SRCDIR\materialsystem\stdshaders\IShaderExtension.h"
 		$File	"$SRCDIR\public\spp_utils\spp_utils.h"
-		$File	"shared.h"
+		$File	"$SRCDIR\public\spp_utils\holiday_events.h"
+		$File	"$SRCDIR\public\scenefilecache\ISceneFileCache.h"
 	}
 
 	$Folder	"Link Libraries"
@@ -77,7 +81,7 @@ $Project "SPP Utils"
 		$Lib	mathlib
 		$Lib	vscript
 
-		$Lib	discord-rpc		[$WIN32]
-		$Lib	libdiscord-rpc	[$LINUXALL]
+		//$Lib	discord-rpc		[$WIN32]
+		//$Lib	libdiscord-rpc	[$LINUXALL]
 	}
 }

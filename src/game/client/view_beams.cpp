@@ -120,6 +120,8 @@ public:
 	virtual void	AddBeamListener(IBeamRemovedCallback* pListener);
 	virtual void	RemoveBeamListener(IBeamRemovedCallback* pListener);
 
+	virtual void	ForceUpdateBeamPositions(Beam_t* pBeam, C_BaseEntity* pStartEntOverride = nullptr, C_BaseEntity* pEndEntOverride = nullptr);
+
 private:
 	void					FreeDeadTrails( BeamTrail_t **trail );
 	void					UpdateBeam( Beam_t *pbeam, float frametime );
@@ -2091,6 +2093,28 @@ void CViewRenderBeams::AddBeamListener(IBeamRemovedCallback* pListener)
 void CViewRenderBeams::RemoveBeamListener(IBeamRemovedCallback* pListener)
 {
 	m_beamListeners.FindAndRemove(pListener);
+}
+
+void CViewRenderBeams::ForceUpdateBeamPositions(Beam_t* pBeam, C_BaseEntity* pStartEntOverride, C_BaseEntity* pEndEntOverride)
+{
+	if (pBeam->flags & FBEAM_STARTENTITY)
+	{
+		if (ComputeBeamEntPosition((pStartEntOverride) ? pStartEntOverride : pBeam->entity[0], pBeam->attachmentIndex[0], (pBeam->flags & FBEAM_USE_HITBOXES) != 0, pBeam->attachment[0]))
+		{
+			pBeam->flags |= FBEAM_STARTVISIBLE;
+		}
+	}
+
+	if (pBeam->flags & FBEAM_ENDENTITY)
+	{
+		if (ComputeBeamEntPosition((pEndEntOverride) ? pEndEntOverride : pBeam->entity[1], pBeam->attachmentIndex[1], (pBeam->flags & FBEAM_USE_HITBOXES) != 0, pBeam->attachment[1]))
+		{
+			pBeam->flags |= FBEAM_ENDVISIBLE;
+		}
+	}
+
+	// Compute segments from the new endpoints
+	VectorSubtract(pBeam->attachment[1], pBeam->attachment[0], pBeam->delta);
 }
 
 

@@ -341,7 +341,13 @@ int C_PortalGhostRenderable::DrawModel( int flags )
 			}
 		}
 
-		return C_BaseAnimating::DrawModel( flags );
+		int iRet = C_BaseAnimating::DrawModel(flags);
+		if (iRet && m_bSourceIsBaseWeapon)
+		{
+			m_pGhostedRenderable->MyCombatWeaponPointer()->DrawWeaponEffectsOnModel(this, flags, m_matGhostTransform.As3x4());
+		}
+
+		return iRet;
 	}
 	else
 	{

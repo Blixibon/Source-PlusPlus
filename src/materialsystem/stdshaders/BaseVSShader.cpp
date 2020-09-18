@@ -2313,11 +2313,45 @@ bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const 
 ITexture* GetDepthTextureFromState(FlashlightState_t const& state)
 {
 	if (!g_pShaderExtension)
-		return false;
+		return nullptr;
 
 	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
 	if (!pData)
 		return nullptr;
 
 	return pData->pDepth;
+}
+
+bool GetFlashlightOrtho(FlashlightState_t const& state)
+{
+	if (!g_pShaderExtension)
+		return false;
+
+	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+	if (!pData)
+		return false;
+
+	return pData->m_bOrtho;
+}
+
+bool GetFlashlightOrtho(FlashlightState_t const& state, float& fOrthoLeft, float& fOrthoRight, float& fOrthoTop, float& fOrthoBottom)
+{
+	if (!g_pShaderExtension)
+		return false;
+
+	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+	if (!pData)
+		return false;
+
+	if (pData->m_bOrtho)
+	{
+		fOrthoLeft = pData->m_fOrthoLeft;
+		fOrthoRight = pData->m_fOrthoRight;
+		fOrthoTop = pData->m_fOrthoTop;
+		fOrthoBottom = pData->m_fOrthoBottom;
+
+		return true;
+	}
+
+	return false;
 }

@@ -5172,9 +5172,9 @@ void PrecacheInstancedScene( char const *pszScene )
 		CSceneEntity::PrecacheScene(pScene);
 		delete pScene;
 	}
+#endif
 
 	g_pStringTableClientSideChoreoScenes->AddString( CBaseEntity::IsServer(), pszScene );
-#endif
 }
 
 //-----------------------------------------------------------------------------

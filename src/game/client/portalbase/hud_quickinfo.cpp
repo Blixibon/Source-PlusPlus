@@ -81,12 +81,12 @@ private:
 
 	CHudTexture	*m_icon_c;
 
-	CHudTexture	* m_icon_prbi;	// right bracket
-	CHudTexture	* m_icon_plbi;	// left bracket
+	CHudTexture	* m_icon_prbi;	// right portal bracket
+	CHudTexture	* m_icon_plbi;	// left portal bracket
 
-	CHudTexture	* m_icon_prbv;		// right bracket, full
-	CHudTexture	* m_icon_plbv;		// left bracket, full
-	CHudTexture	* m_icon_plp;	// right bracket, empty
+	CHudTexture	* m_icon_prbv;		// right portal bracket, full
+	CHudTexture	* m_icon_plbv;		// left portal bracket, full
+	CHudTexture	* m_icon_plp;	// last placed portal
 
 	CHudTexture* m_icon_rbn;	// right bracket
 	CHudTexture* m_icon_lbn;	// left bracket
@@ -105,7 +105,7 @@ CHUDQuickInfo::CHUDQuickInfo( const char *pElementName ) :
 	vgui::Panel *pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 
-	SetHiddenBits( HIDEHUD_CROSSHAIR );
+	SetHiddenBits(HIDEHUD_CROSSHAIR | HIDEHUD_PLAYERDEAD);
 
 	m_fLastPlacedAlpha[0] = m_fLastPlacedAlpha[1] = 80;
 	m_bLastPlacedAlphaCountingUp[0] = m_bLastPlacedAlphaCountingUp[1] = true;
@@ -435,7 +435,7 @@ void CHUDQuickInfo::Paint()
 	}
 	else
 	{
-		//yCenter = (int)fY - m_icon_c->Height() * 0.6f;
+		yCenter = (int)fY - (m_icon_plbv->Height() / 2);
 	}
 
 	UpdateEventTime();

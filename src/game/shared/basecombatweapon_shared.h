@@ -562,6 +562,7 @@ public:
 	virtual void			OverrideMouseInput( float *x, float *y ) { return; };
 	virtual int				KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding ) { return 1; }
 	virtual bool			AddLookShift( void ) { return true; };
+	virtual int				DrawWeaponEffectsOnModel(C_BaseAnimating* pAnim, int flags, const matrix3x4_t& matWeaponToEffect) { return 0; }
 
 	virtual void			GetViewmodelBoneControllers(C_BaseViewModel *pViewModel, float controllers[MAXSTUDIOBONECTRLS]) { return; }
 

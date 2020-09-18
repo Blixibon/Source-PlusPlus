@@ -461,7 +461,8 @@ int CWeaponCoopBase::CWeaponMergeCache::GetParentBone(CStudioHdr* pHdr, const ch
 		if (!data.vecOffsetPos.IsZero() || !IsZero(data.angOffsetRot))
 		{
 			extraData.m_iFlags |= BONE_FLAG_OFFSET_MATRIX;
-			AngleMatrix(data.angOffsetRot, data.vecOffsetPos, extraData.m_matOffset);
+			extraData.m_nMatrixIndex = m_MergeOffsetMatrices.AddToTail();
+			AngleMatrix(data.angOffsetRot, data.vecOffsetPos, m_MergeOffsetMatrices[extraData.m_nMatrixIndex]);
 		}
 
 		return Studio_BoneIndexByName(pHdr, data.szParentBone);

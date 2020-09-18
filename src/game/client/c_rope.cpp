@@ -1059,7 +1059,7 @@ bool CRopeManager::IsHolidayLightMode( void )
 			m_bDrawHolidayLights = true;
 			m_nHolidayLightsStyle = 0;
 		}
-		else if (GameRules()->IsHolidayActive(kHoliday_Halloween))
+		else if (GameRules()->IsHolidayActive(kHoliday_HalloweenOrFullMoon))
 		{
 			m_bDrawHolidayLights = true;
 			m_nHolidayLightsStyle = 1;

@@ -516,7 +516,15 @@ int C_BaseCombatWeapon::DrawModel( int flags )
 	if (ShouldDrawUsingViewModel())
 		return false;
 
-	return BaseClass::DrawModel( flags );
+	int iRet = BaseClass::DrawModel(flags);
+	if (iRet)
+	{
+		matrix3x4_t matIdentity;
+		SetIdentityMatrix(matIdentity);
+		DrawWeaponEffectsOnModel(this, flags, matIdentity);
+	}
+
+	return iRet;
 }
 
 void C_BaseCombatWeapon::DoAnimationEvents(CStudioHdr* pStudio)

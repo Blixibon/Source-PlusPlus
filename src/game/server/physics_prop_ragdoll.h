@@ -46,7 +46,7 @@ public:
 	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &dir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
 	virtual void Teleport( const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity );
-	virtual void SetupBones( matrix3x4_t *pBoneToWorld, int boneMask );
+	virtual void SetupBones( matrix3x4a_t *pBoneToWorld, int boneMask );
 	virtual void VPhysicsUpdate( IPhysicsObject *pPhysics );
 	virtual int VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
 

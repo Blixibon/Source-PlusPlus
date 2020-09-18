@@ -108,7 +108,7 @@ private:
 	friend class C_NPC_BaseColleague;
 };
 
-LINK_ENTITY_TO_CLASS(collegue_client_ragdoll, C_CollegueClientRagdoll);
+LINK_ENTITY_TO_CLASS_CLIENTONLY(collegue_client_ragdoll, C_CollegueClientRagdoll);
 
 BEGIN_DATADESC(C_CollegueClientRagdoll)
 DEFINE_FIELD(m_bFadeOut, FIELD_BOOLEAN),

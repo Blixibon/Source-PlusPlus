@@ -44,6 +44,7 @@ protected:
 	void	StopEffect(void);
 
 	float	m_flLastFlashTime;
+	float	m_flNextZapTime;
 };
 
 #endif

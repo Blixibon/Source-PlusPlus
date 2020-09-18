@@ -318,6 +318,14 @@ void DrawLightmappedAdvFlashlight_DX9_Internal( CBaseVSShader *pShader, IMateria
 			pShaderAPI->SetPixelShaderConstant( PSREG_FLASHLIGHT_SCREEN_SCALE, vScreenScale, 1 );
 		}
 
+		bool bOrthoLight = GetFlashlightOrtho(flashlightState);
+		if (bOrthoLight)
+		{
+			VMatrix textureToWorld;
+			MatrixInverseGeneral(worldToTexture, textureToWorld);
+			pShaderAPI->SetVertexShaderConstant(217, textureToWorld.Base(), 4);
+		}
+
 		if ( params[BASETEXTURE]->IsTexture() && mat_fullbright.GetInt() != 2 )
 		{
 			pShader->BindTexture( SHADER_SAMPLER1, BASETEXTURE, FRAME );
@@ -360,12 +368,14 @@ void DrawLightmappedAdvFlashlight_DX9_Internal( CBaseVSShader *pShader, IMateria
 		{
 			DECLARE_DYNAMIC_VERTEX_SHADER( pp_lightmappedadv_flashlight_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO(ORTHO, bOrthoLight);
 			SET_DYNAMIC_VERTEX_SHADER( pp_lightmappedadv_flashlight_vs30 );
 		}
 		else
 		{
 			DECLARE_DYNAMIC_VERTEX_SHADER( pp_lightmappedadv_flashlight_vs20 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO(ORTHO, bOrthoLight);
 			SET_DYNAMIC_VERTEX_SHADER( pp_lightmappedadv_flashlight_vs20 );
 		}
 

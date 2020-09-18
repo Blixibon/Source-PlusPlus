@@ -28,7 +28,7 @@ public:
 
 	struct boneextradata_t
 	{
-		matrix3x4_t m_matOffset;
+		int	m_nMatrixIndex;
 		unsigned int m_iFlags = 0;
 	};
 
@@ -57,6 +57,7 @@ public:
 
 protected:
 	virtual int	GetParentBone(CStudioHdr *pHdr, const char *pszName, boneextradata_t &extraData);
+	void		GetFollowBone(int iMergeBone, matrix3x4a_t& matBoneOut);
 
 	// This is the entity that we're keeping the cache updated for.
 	C_BaseAnimating *m_pOwner;
@@ -82,6 +83,7 @@ protected:
 
 	CUtlVector<CMergedBone> m_MergedBones;
 	CUtlVector<unsigned char> m_BoneMergeBits;	// One bit for each bone. The bit is set if the bone gets merged.
+	CUtlVector<matrix3x4a_t, CUtlMemoryAligned<matrix3x4a_t, 16>> m_MergeOffsetMatrices;
 };
 
 

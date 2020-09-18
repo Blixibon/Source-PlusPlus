@@ -50,43 +50,52 @@ extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
 //LINK_ENTITY_TO_CLASS( player, CPortal_Player );
 
 IMPLEMENT_SERVERCLASS_ST(CPortal_Player, DT_Portal_Player)
-SendPropBool( SENDINFO( m_bHeldObjectOnOppositeSideOfPortal) ),
-SendPropEHandle( SENDINFO( m_pHeldObjectPortal ) ),
-SendPropBool( SENDINFO( m_bPitchReorientation ) ),
-SendPropEHandle( SENDINFO( m_hPortalEnvironment ) ),
-SendPropEHandle( SENDINFO( m_hSurroundingLiquidPortal ) ),
-SendPropBool( SENDINFO( m_bSuppressCrosshair ) ),
+SendPropBool(SENDINFO(m_bHeldObjectOnOppositeSideOfPortal)),
+SendPropEHandle(SENDINFO(m_pHeldObjectPortal)),
+SendPropBool(SENDINFO(m_bPitchReorientation)),
+SendPropEHandle(SENDINFO(m_hPortalEnvironment)),
+SendPropEHandle(SENDINFO(m_hSurroundingLiquidPortal)),
+SendPropBool(SENDINFO(m_bSuppressCrosshair)),
 
 END_SEND_TABLE()
 
-BEGIN_DATADESC( CPortal_Player )
+BEGIN_DATADESC(CPortal_Player)
 
-	DEFINE_SOUNDPATCH( m_pWooshSound ),
+DEFINE_SOUNDPATCH(m_pWooshSound),
 
-	DEFINE_FIELD( m_bHeldObjectOnOppositeSideOfPortal, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_pHeldObjectPortal, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bIntersectingPortalPlane, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bStuckOnPortalCollisionObject, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fTimeLastHurt, FIELD_TIME ),
-	DEFINE_FIELD( m_StatsThisLevel.iNumPortalsPlaced, FIELD_INTEGER ),
-	DEFINE_FIELD( m_StatsThisLevel.iNumStepsTaken, FIELD_INTEGER ),
-	DEFINE_FIELD( m_StatsThisLevel.fNumSecondsTaken, FIELD_FLOAT ),
-	DEFINE_FIELD( m_fTimeLastNumSecondsUpdate, FIELD_TIME ),
-	DEFINE_FIELD( m_iNumCamerasDetatched, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bPitchReorientation, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIsRegenerating, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fNeuroToxinDamageTime, FIELD_TIME ),
-	DEFINE_FIELD( m_hPortalEnvironment, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecTotalBulletForce, FIELD_VECTOR ),
-	DEFINE_FIELD( m_bSilentDropAndPickup, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_hRagdoll, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_qPrePortalledViewAngles, FIELD_VECTOR ),
-	DEFINE_FIELD( m_bFixEyeAnglesFromPortalling, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_matLastPortalled, FIELD_VMATRIX_WORLDSPACE ),
-	DEFINE_FIELD( m_vWorldSpaceCenterHolder, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_hSurroundingLiquidPortal, FIELD_EHANDLE ),
+DEFINE_FIELD(m_bHeldObjectOnOppositeSideOfPortal, FIELD_BOOLEAN),
+DEFINE_FIELD(m_pHeldObjectPortal, FIELD_EHANDLE),
+DEFINE_FIELD(m_bIntersectingPortalPlane, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bStuckOnPortalCollisionObject, FIELD_BOOLEAN),
+DEFINE_FIELD(m_fTimeLastHurt, FIELD_TIME),
+DEFINE_FIELD(m_StatsThisLevel.iNumPortalsPlaced, FIELD_INTEGER),
+DEFINE_FIELD(m_StatsThisLevel.iNumStepsTaken, FIELD_INTEGER),
+DEFINE_FIELD(m_StatsThisLevel.fNumSecondsTaken, FIELD_FLOAT),
+DEFINE_FIELD(m_fTimeLastNumSecondsUpdate, FIELD_TIME),
+DEFINE_FIELD(m_iNumCamerasDetatched, FIELD_INTEGER),
+DEFINE_FIELD(m_bPitchReorientation, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsRegenerating, FIELD_BOOLEAN),
+DEFINE_FIELD(m_fNeuroToxinDamageTime, FIELD_TIME),
+DEFINE_FIELD(m_hPortalEnvironment, FIELD_EHANDLE),
+DEFINE_FIELD(m_vecTotalBulletForce, FIELD_VECTOR),
+DEFINE_FIELD(m_bSilentDropAndPickup, FIELD_BOOLEAN),
+DEFINE_FIELD(m_hRagdoll, FIELD_EHANDLE),
+DEFINE_FIELD(m_qPrePortalledViewAngles, FIELD_VECTOR),
+DEFINE_FIELD(m_bFixEyeAnglesFromPortalling, FIELD_BOOLEAN),
+DEFINE_FIELD(m_matLastPortalled, FIELD_VMATRIX_WORLDSPACE),
+DEFINE_FIELD(m_vWorldSpaceCenterHolder, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_hSurroundingLiquidPortal, FIELD_EHANDLE),
 
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC(CPortal_Player, CHL2_Player, "A Portal player")
+DEFINE_SCRIPTFUNC(NumPortalsPlaced, "")
+DEFINE_SCRIPTFUNC(NumStepsTaken, "")
+DEFINE_SCRIPTFUNC(NumSecondsTaken, "")
+
+DEFINE_SCRIPTFUNC(IncNumCamerasDetatched, "")
+DEFINE_SCRIPTFUNC(GetNumCamerasDetatched, "")
+END_SCRIPTDESC();
 
 ConVar sv_regeneration_wait_time ("sv_regeneration_wait_time", "1.0", FCVAR_REPLICATED );
 
@@ -151,7 +160,7 @@ void CPortal_Player::CreateSounds()
 	{
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
 
-		CPASAttenuationFilter filter( this );
+		CSingleUserRecipientFilter filter( this );
 
 		m_pWooshSound = controller.SoundCreate( filter, entindex(), "PortalPlayer.Woosh" );
 		controller.Play( m_pWooshSound, 0, 100 );
@@ -579,7 +588,7 @@ void CPortal_Player::NoteWeaponFired( void )
 // Purpose: Override setup bones so that is uses the render angles from
 //			the Portal animation state to setup the hitboxes.
 //-----------------------------------------------------------------------------
-void CPortal_Player::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
+void CPortal_Player::SetupBones( matrix3x4a_t *pBoneToWorld, int boneMask )
 {
 	if (!GetAnimState())
 	{
@@ -1016,6 +1025,17 @@ bool CPortal_Player::UseFoundEntity( CBaseEntity *pUseEntity )
 	}
 #endif
 
+	if (usedSomething)
+	{
+		IGameEvent* pEvent = gameeventmanager->CreateEvent("player_use");
+		if (pEvent)
+		{
+			pEvent->SetInt("userid", GetUserID());
+			pEvent->SetInt("entity", pUseEntity->entindex());
+			gameeventmanager->FireEvent(pEvent);
+		}
+	}
+
 	return usedSomething;
 }
 
@@ -1099,6 +1119,13 @@ void CPortal_Player::PlayerUse( void )
 		{
 			return;
 		}
+	}
+
+	if (m_flTimeUseSuspended > gpGlobals->curtime)
+	{
+		// Something has temporarily stopped us being able to USE things.
+		// Obviously, this should be used very carefully.(sjb)
+		return;
 	}
 
 	CBaseEntity *pUseEntity = FindUseEntity();

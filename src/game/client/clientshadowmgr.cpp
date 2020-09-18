@@ -1914,7 +1914,7 @@ const Vector &CClientShadowMgr::GetShadowDirection() const
 //-----------------------------------------------------------------------------
 float CClientShadowMgr::GetShadowDistance( IClientRenderable *pRenderable ) const
 {
-	float flDist = m_flShadowCastDist;
+	float flDist = GetShadowDistance();
 
 	// Allow the renderable to override the default
 	pRenderable->GetShadowCastDistance( &flDist, GetActualShadowCastType( pRenderable ) );
@@ -2192,9 +2192,10 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 	}
 
 	int iStateIndex = GetIndexOfFlashlightState(procState);
-	g_pShaderExtension->SetUberlightParamsForFlashlightState(iStateIndex, flashlightState.m_UberlightState);
-
 	shadowmgr->UpdateFlashlightState(shadow.m_ShadowHandle, procState);
+
+	g_pShaderExtension->SetUberlightParamsForFlashlightState(iStateIndex, flashlightState.m_UberlightState);
+	g_pShaderExtension->SetOrthoDataForFlashlight(iStateIndex, flashlightState.m_bOrtho, flashlightState.m_fOrthoLeft, flashlightState.m_fOrthoRight, flashlightState.m_fOrthoTop, flashlightState.m_fOrthoBottom);
 
 	InternalFlashlightState_t newState;
 	newState.clientState = flashlightState;

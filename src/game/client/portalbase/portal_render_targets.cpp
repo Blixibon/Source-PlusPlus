@@ -100,11 +100,14 @@ void CPortalRenderTargets::InitPortalWaterTextures( IMaterialSystem* pMaterialSy
 		return;
 	}
 
+	// 512
+	// 256
+
 	//Reflections
 	m_WaterReflectionTextures[0].Init( 
 		pMaterialSystem->CreateNamedRenderTargetTextureEx2(
 			"_rt_PortalWaterReflection_Depth1",
-			512, 512, RT_SIZE_PICMIP,
+			1024, 1024, RT_SIZE_PICMIP,
 			pMaterialSystem->GetBackBufferFormat(), 
 			MATERIAL_RT_DEPTH_SEPARATE, 
 			TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT,
@@ -113,7 +116,7 @@ void CPortalRenderTargets::InitPortalWaterTextures( IMaterialSystem* pMaterialSy
 	m_WaterReflectionTextures[1].Init( 
 		pMaterialSystem->CreateNamedRenderTargetTextureEx2(
 			"_rt_PortalWaterReflection_Depth2",
-			256, 256, RT_SIZE_PICMIP,
+			1024, 1024, RT_SIZE_PICMIP,
 			pMaterialSystem->GetBackBufferFormat(), 
 			MATERIAL_RT_DEPTH_SEPARATE,
 			TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT,
@@ -124,7 +127,7 @@ void CPortalRenderTargets::InitPortalWaterTextures( IMaterialSystem* pMaterialSy
 	m_WaterRefractionTextures[0].Init( 
 		pMaterialSystem->CreateNamedRenderTargetTextureEx2(
 			"_rt_PortalWaterRefraction_Depth1",
-			512, 512, RT_SIZE_PICMIP,
+			1024, 1024, RT_SIZE_PICMIP,
 			// This is different than reflection because it has to have alpha for fog factor.
 			IMAGE_FORMAT_RGBA8888, 
 			MATERIAL_RT_DEPTH_SEPARATE,
@@ -134,7 +137,7 @@ void CPortalRenderTargets::InitPortalWaterTextures( IMaterialSystem* pMaterialSy
 	m_WaterRefractionTextures[1].Init( 
 		pMaterialSystem->CreateNamedRenderTargetTextureEx2(
 			"_rt_PortalWaterRefraction_Depth2",
-			256, 256, RT_SIZE_PICMIP,
+			1024, 1024, RT_SIZE_PICMIP,
 			// This is different than reflection because it has to have alpha for fog factor.
 			IMAGE_FORMAT_RGBA8888, 
 			MATERIAL_RT_DEPTH_SEPARATE,

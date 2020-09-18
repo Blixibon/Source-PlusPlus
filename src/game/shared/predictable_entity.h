@@ -143,7 +143,27 @@ class SendTable;
 // On the client .dll this creates a mapping between a classname and
 //  a client side class.  Probably could be templatized at some point.
 
-#define LINK_ENTITY_TO_CLASS( localName, className )						\
+#define INTERNAL_LINK_ENTITY_TO_CLASS( localName, className )				\
+	extern ClientClass __g_##className##ClientClass;						\
+	static C_BaseEntity *C##className##Factory( void )						\
+	{																		\
+		return static_cast< C_BaseEntity * >( new className );				\
+	};																		\
+	class C##localName##Foo													\
+	{																		\
+	public:																	\
+		C##localName##Foo( void )											\
+		{																	\
+			GetClassMap().Add( #localName, #className, sizeof( className ),	\
+				&C##className##Factory );									\
+			__g_##className##ClientClass.m_pMapClassname = #localName;		\
+		}																	\
+	};																		\
+	static C##localName##Foo g_C##localName##Foo;
+
+#define LINK_ENTITY_TO_CLASS( localName, className ) INTERNAL_LINK_ENTITY_TO_CLASS(localName, className)
+
+#define INTERNAL_LINK_ENTITY_TO_CLASS_CLIENTONLY( localName, className )	\
 	static C_BaseEntity *C##className##Factory( void )						\
 	{																		\
 		return static_cast< C_BaseEntity * >( new className );				\
@@ -158,6 +178,8 @@ class SendTable;
 		}																	\
 	};																		\
 	static C##localName##Foo g_C##localName##Foo;
+
+#define LINK_ENTITY_TO_CLASS_CLIENTONLY( localName, className ) INTERNAL_LINK_ENTITY_TO_CLASS_CLIENTONLY(localName, className)
 
 #define BEGIN_NETWORK_TABLE( className, tableName ) BEGIN_RECV_TABLE( className, tableName )
 #define BEGIN_NETWORK_TABLE_NOBASE( className, tableName ) BEGIN_RECV_TABLE_NOBASE( className, tableName )

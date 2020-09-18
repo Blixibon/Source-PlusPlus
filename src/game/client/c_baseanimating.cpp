@@ -281,7 +281,7 @@ BEGIN_PREDICTION_DATA( C_BaseAnimating )
 
 END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS( client_ragdoll, C_ClientRagdoll );
+LINK_ENTITY_TO_CLASS_CLIENTONLY( client_ragdoll, C_ClientRagdoll );
 
 BEGIN_DATADESC( C_ClientRagdoll )
 	DEFINE_FIELD( m_bFadeOut, FIELD_BOOLEAN ),
@@ -1510,14 +1510,14 @@ void C_BaseAnimating::GetCachedBoneMatrix( int boneIndex, matrix3x4_t &out )
 //-----------------------------------------------------------------------------
 // Purpose:	move position and rotation transforms into global matrices
 //-----------------------------------------------------------------------------
-void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion *q, const matrix3x4_t &cameraTransform, int boneMask, CBoneBitList &boneComputed )
+void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quaternion *q, const matrix3x4a_t &cameraTransform, int boneMask, CBoneBitList &boneComputed )
 {
 	VPROF_BUDGET( "C_BaseAnimating::BuildTransformations", VPROF_BUDGETGROUP_CLIENT_ANIMATION );
 
 	if ( !hdr )
 		return;
 
-	matrix3x4_t bonematrix;
+	matrix3x4a_t bonematrix;
 	bool boneSimulated[MAXSTUDIOBONES];
 
 	// no bones have been simulated
@@ -1601,17 +1601,17 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 				//
 
 				// compute desired bone orientation
-				matrix3x4_t goalMX;
+				matrix3x4a_t goalMX;
 
 				if (pbones[i].parent == -1) 
 				{
-					ConcatTransforms( cameraTransform, bonematrix, goalMX );
+					ConcatTransforms_Aligned( cameraTransform, bonematrix, goalMX );
 				}
 				else 
 				{
 					// If the parent bone has been scaled (like with BuildBigHeadTransformations)
 					// scale it back down so the jiggly bones show up non-scaled in the correct location.
-					matrix3x4_t parentMX = GetBone( pbones[i].parent );
+					matrix3x4a_t parentMX = GetBone( pbones[i].parent );
 
 					float fScale = Square( parentMX[0][0] ) + Square( parentMX[1][0] ) + Square( parentMX[2][0] );
 					if ( fScale > Square( 1.0001f ) )
@@ -1620,7 +1620,7 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 						MatrixScaleBy( fScale, parentMX );
 					}
 
-					ConcatTransforms( parentMX, bonematrix, goalMX );
+					ConcatTransforms_Aligned( parentMX, bonematrix, goalMX );
 				}
 
 				// get jiggle properties from QC data
@@ -1637,11 +1637,11 @@ void C_BaseAnimating::BuildTransformations( CStudioHdr *hdr, Vector *pos, Quater
 			}
 			else if (hdr->boneParent(i) == -1) 
 			{
-				ConcatTransforms( cameraTransform, bonematrix, GetBoneForWrite( i ) );
+				ConcatTransforms_Aligned( cameraTransform, bonematrix, GetBoneForWrite( i ) );
 			} 
 			else 
 			{
-				ConcatTransforms( GetBone( hdr->boneParent(i) ), bonematrix, GetBoneForWrite( i ) );
+				ConcatTransforms_Aligned( GetBone( hdr->boneParent(i) ), bonematrix, GetBoneForWrite( i ) );
 			}
 		}
 
@@ -1762,8 +1762,8 @@ void C_BaseAnimating::CreateUnragdollInfo( C_BaseAnimating *pRagdoll )
 
 	for ( int i = 0;  i < numbones; i++ )
 	{
-		matrix3x4_t inverted;
-		matrix3x4_t output;
+		matrix3x4a_t inverted;
+		matrix3x4a_t output;
 
 		if ( hdr->boneParent(i) == -1 )
 		{
@@ -1775,7 +1775,7 @@ void C_BaseAnimating::CreateUnragdollInfo( C_BaseAnimating *pRagdoll )
 			MatrixInvert( pRagdoll->m_BoneAccessor.GetBone( hdr->boneParent(i) ), inverted );
 		}
 
-		ConcatTransforms( inverted, pRagdoll->m_BoneAccessor.GetBone( i ), output );
+		ConcatTransforms_Aligned( inverted, pRagdoll->m_BoneAccessor.GetBone( i ), output );
 
 		MatrixAngles( output, 
 			m_pRagdollInfo->m_rgBoneQuaternion[ i ],
@@ -2962,7 +2962,7 @@ bool C_BaseAnimating::SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, i
 			return false;
 
 		// Setup our transform based on render angles and origin.
-		matrix3x4_t parentTransform;
+		matrix3x4a_t parentTransform;
 		AngleMatrix( GetRenderAngles(), GetRenderOrigin(), parentTransform );
 
 		// Load the boneMask with the total of what was asked for last frame.

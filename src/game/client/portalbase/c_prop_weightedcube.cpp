@@ -103,9 +103,13 @@ class C_CubeDissolveModel : public C_BaseAnimating
 public:
 	virtual void	OnDataChanged(DataUpdateType_t updateType);
 	virtual void	ClientThink();
+
+private:
+	float m_flEndCycle;
 };
 
 IMPLEMENT_CLIENTCLASS_DT(C_CubeDissolveModel, DT_CubeDissolveModel, CCubeDissolveModel)
+RecvPropFloat(RECVINFO(m_flEndCycle)),
 END_RECV_TABLE();
 
 void C_CubeDissolveModel::OnDataChanged(DataUpdateType_t updateType)
@@ -128,7 +132,7 @@ void C_CubeDissolveModel::ClientThink()
 	C_EntityDissolve* pEffect = static_cast<C_EntityDissolve*> (GetEffectEntity(ENT_EFFECT_DISSOLVE));
 	if (pEffect)
 	{
-		float flAnimPct = RemapValClamped(gpGlobals->curtime, pEffect->m_flStartTime, pEffect->m_flStartTime + pEffect->m_flFadeOutModelStart + pEffect->m_flFadeOutModelLength, 0.f, 1.0f);
+		float flAnimPct = RemapValClamped(gpGlobals->curtime, pEffect->m_flStartTime, pEffect->m_flStartTime + pEffect->m_flFadeOutModelStart + pEffect->m_flFadeOutModelLength, 0.f, m_flEndCycle);
 		SetCycle(flAnimPct);
 	}
 }

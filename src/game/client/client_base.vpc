@@ -703,6 +703,7 @@ $Project
 		$File	"vgui_movie_display.cpp"
 		
 		$File	"$SRCDIR\game\shared\vscript_funcs_shared.cpp"
+		$File	"$SRCDIR\game\shared\vscript_consts_shared.cpp"
 		
 		// Files not using precompiled header cbase.h
 

@@ -42,7 +42,7 @@ protected:
 		size_t	uncompressedSize;
 	};
 
-	typedef CUtlMap<CRC32_t, internalSceneData_t>::IndexType_t SceneIndex_t;
+	typedef unsigned short SceneIndex_t;
 
 	SceneIndex_t	GetSceneIndex(char const* pFilename);
 
@@ -82,7 +82,7 @@ protected:
 	};
 
 	CCacheStringPool m_PersistantStrings;
-	CUtlMap<CRC32_t, internalSceneData_t> m_SceneTable;
+	CUtlMap<CRC32_t, internalSceneData_t, SceneIndex_t> m_SceneTable;
 	CInterlockedInt m_ScenesLoaded;
 	ThreadHandle_t m_LoaderThread;
 

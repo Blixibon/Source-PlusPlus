@@ -18,7 +18,20 @@ CGameTypeManager *g_pGameTypeSystem = &g_GTManager;
 
 CUtlFilenameSymbolTable CGameTypeManager::sm_FilenameTable;
 
-//CUtlVectorAutoPurge<char *> vecGames;
+BEGIN_SCRIPTDESC_ROOT(CGameTypeManager, SCRIPT_SINGLETON "Information about the currently running map")
+DEFINE_SCRIPTFUNC(HasMapOption, "Given a key name, return if that option exists")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetMapOptionInt, "GetMapOptionInt", "Given a key name, return the integer value")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetMapOptionInt64, "GetMapOptionInt64", "Given a key name, return the 64-bit integer value")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetMapOptionFloat, "GetMapOptionFloat", "Given a key name, return the float value")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetMapOptionString, "GetMapOptionString", "Given a key name, return the string value")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetMapOptionBool, "GetMapOptionBool", "Given a key name, return the boolean value")
+
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetBaseGameType, "GetBaseGameType", "Returns the name of the base gametype")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetModGameType, "GetModGameType", "Returns the name of the mod gametype")
+DEFINE_SCRIPTFUNC(GetPopulationLocation, "Returns the current population tag")
+
+DEFINE_SCRIPTFUNC_NAMED(ScriptRemapEntityClass, "RemapEntityClass", "Returns the mod-specific classname to use")
+END_SCRIPTDESC();
 
 CGameTypeManager::CGameTypeManager() : m_NewMapConfigs(GTSLessFunc), m_NewGameConfigs(GTSLessFunc)
 {

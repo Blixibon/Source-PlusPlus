@@ -99,9 +99,9 @@ CBoneCache *CBoneCache::CreateResource( const bonecacheparams_t &params )
 	int tableSizeStudio = sizeof(short) * params.pStudioHdr->numbones();
 	int tableSizeCached = sizeof(short) * cachedBoneCount;
 	int matrixSize = sizeof(matrix3x4_t) * cachedBoneCount;
-	int size = ( sizeof(CBoneCache) + tableSizeStudio + tableSizeCached + matrixSize + 3 ) & ~3;
-	
-	CBoneCache *pMem = (CBoneCache *)malloc( size );
+	size_t size = AlignValue(sizeof(CBoneCache) + tableSizeStudio + tableSizeCached, 16) + matrixSize;
+
+	CBoneCache* pMem = (CBoneCache*)MemAlloc_AllocAligned(size, 16);
 	Construct( pMem );
 	pMem->Init( params, size, studioToCachedIndex, cachedToStudioIndex, cachedBoneCount );
 	return pMem;
@@ -115,7 +115,7 @@ unsigned int CBoneCache::EstimatedSize( const bonecacheparams_t &params )
 
 void CBoneCache::DestroyResource()
 {
-	free( this );
+	MemAlloc_FreeAligned( this );
 }
 
 
@@ -139,25 +139,35 @@ void CBoneCache::Init( const bonecacheparams_t &params, unsigned int size, short
 	int cachedTableSize = cachedBoneCount * sizeof(short);
 	memcpy( CachedToStudio(), pCachedToStudio, cachedTableSize );
 
-	m_matrixOffset = ( m_cachedToStudioOffset + cachedTableSize + 3 ) & ~3;
+	m_matrixOffset = AlignValue(sizeof(CBoneCache) + m_cachedToStudioOffset + cachedTableSize, 16);
 	
 	UpdateBones( params.pBoneToWorld, params.pStudioHdr->numbones(), params.curtime );
 }
 
-void CBoneCache::UpdateBones( const matrix3x4_t *pBoneToWorld, int numbones, float curtime )
+void CBoneCache::UpdateBones(const matrix3x4a_t* pBoneToWorld, int numbones, float curtime)
 {
-	matrix3x4_t *pBones = BoneArray();
-	const short *pCachedToStudio = CachedToStudio();
+	matrix3x4a_t* pBones = BoneArray();
+	const short* pCachedToStudio = CachedToStudio();
 
-	for ( int i = 0; i < m_cachedBoneCount; i++ )
+	for (int i = 0; i < m_cachedBoneCount; i++)
 	{
 		int index = pCachedToStudio[i];
-		MatrixCopy( pBoneToWorld[index], pBones[i] );
+		//MatrixCopy( pBoneToWorld[index], pBones[i] );
+
+		const float* pInput = pBoneToWorld[index].Base();
+		float* pOutput = pBones[i].Base();
+
+		fltx4 fl4Tmp0 = LoadAlignedSIMD(pInput);
+		StoreAlignedSIMD(pOutput, fl4Tmp0);
+		fltx4 fl4Tmp1 = LoadAlignedSIMD(pInput + 4);
+		StoreAlignedSIMD(pOutput + 4, fl4Tmp1);
+		fltx4 fl4Tmp2 = LoadAlignedSIMD(pInput + 8);
+		StoreAlignedSIMD(pOutput + 8, fl4Tmp2);
 	}
 	m_timeValid = curtime;
 }
 
-matrix3x4_t *CBoneCache::GetCachedBone( int studioIndex )
+matrix3x4a_t *CBoneCache::GetCachedBone( int studioIndex )
 {
 	int cachedIndex = StudioToCached()[studioIndex];
 	if ( cachedIndex >= 0 )
@@ -167,13 +177,22 @@ matrix3x4_t *CBoneCache::GetCachedBone( int studioIndex )
 	return NULL;
 }
 
-void CBoneCache::ReadCachedBones( matrix3x4_t *pBoneToWorld )
+void CBoneCache::ReadCachedBones( matrix3x4a_t *pBoneToWorld )
 {
-	matrix3x4_t *pBones = BoneArray();
-	const short *pCachedToStudio = CachedToStudio();
-	for ( int i = 0; i < m_cachedBoneCount; i++ )
+	matrix3x4a_t* pBones = BoneArray();
+	const short* pCachedToStudio = CachedToStudio();
+	for (int i = 0; i < m_cachedBoneCount; i++)
 	{
-		MatrixCopy( pBones[i], pBoneToWorld[pCachedToStudio[i]] );
+		//MatrixCopy( pBones[i], pBoneToWorld[pCachedToStudio[i]] );
+
+		const float* pInput = pBones[i].Base();
+		float* pOutput = pBoneToWorld[pCachedToStudio[i]].Base();
+		fltx4 fl4Tmp0 = LoadAlignedSIMD(pInput);
+		StoreAlignedSIMD(pOutput, fl4Tmp0);
+		fltx4 fl4Tmp1 = LoadAlignedSIMD(pInput + 4);
+		StoreAlignedSIMD(pOutput + 4, fl4Tmp1);
+		fltx4 fl4Tmp2 = LoadAlignedSIMD(pInput + 8);
+		StoreAlignedSIMD(pOutput + 8, fl4Tmp2);
 	}
 }
 
@@ -197,9 +216,9 @@ bool CBoneCache::IsValid( float curtime, float dt )
 
 
 // private functions
-matrix3x4_t *CBoneCache::BoneArray()
+matrix3x4a_t *CBoneCache::BoneArray()
 {
-	return (matrix3x4_t *)( (char *)(this+1) + m_matrixOffset );
+	return (matrix3x4a_t*)((byte*)(this) + m_matrixOffset);
 }
 
 short *CBoneCache::StudioToCached()
@@ -4589,7 +4608,7 @@ void DoAxisInterpBone(
 	CBoneAccessor &bonetoworld
 	)
 {
-	matrix3x4_t			bonematrix;
+	matrix3x4a_t			bonematrix;
 	Vector				control;
 
 	mstudioaxisinterpbone_t *pProc = (mstudioaxisinterpbone_t *)pbones[ibone].pProcedure( );
@@ -4688,7 +4707,7 @@ void DoAxisInterpBone(
 
 	QuaternionMatrix( v, p, bonematrix );
 
-	ConcatTransforms (bonetoworld.GetBone( pbones[ibone].parent ), bonematrix, bonetoworld.GetBoneForWrite( ibone ));
+	ConcatTransforms_Aligned(bonetoworld.GetBone( pbones[ibone].parent ), bonematrix, bonetoworld.GetBoneForWrite( ibone ));
 }
 
 
@@ -4703,7 +4722,7 @@ void DoQuatInterpBone(
 	CBoneAccessor &bonetoworld
 	)
 {
-	matrix3x4_t			bonematrix;
+	matrix3x4a_t			bonematrix;
 
 	mstudioquatinterpbone_t *pProc = (mstudioquatinterpbone_t *)pbones[ibone].pProcedure( );
 	if (pProc && pbones[pProc->control].parent != -1)
@@ -4714,10 +4733,10 @@ void DoQuatInterpBone(
 		Quaternion	quat;
 		Vector		pos;
 
-		matrix3x4_t	tmpmatrix;
-		matrix3x4_t	controlmatrix;
+		matrix3x4a_t	tmpmatrix;
+		matrix3x4a_t	controlmatrix;
 		MatrixInvert( bonetoworld.GetBone( pbones[pProc->control].parent), tmpmatrix );
-		ConcatTransforms( tmpmatrix, bonetoworld.GetBone( pProc->control ), controlmatrix );
+		ConcatTransforms_Aligned( tmpmatrix, bonetoworld.GetBone( pProc->control ), controlmatrix );
 
 		MatrixAngles( controlmatrix, src, pos ); // FIXME: make a version without pos
 
@@ -4735,7 +4754,7 @@ void DoQuatInterpBone(
 		if (scale <= 0.001)  // EPSILON?
 		{
 			AngleMatrix( pProc->pTrigger( 0 )->quat, pProc->pTrigger( 0 )->pos, bonematrix );
-			ConcatTransforms ( bonetoworld.GetBone( pbones[ibone].parent ), bonematrix, bonetoworld.GetBoneForWrite( ibone ) );
+			ConcatTransforms_Aligned( bonetoworld.GetBone( pbones[ibone].parent ), bonematrix, bonetoworld.GetBoneForWrite( ibone ) );
 			return;
 		}
 
@@ -4766,7 +4785,7 @@ void DoQuatInterpBone(
 		QuaternionMatrix( quat, pos, bonematrix );
 	}
 
-	ConcatTransforms (bonetoworld.GetBone( pbones[ibone].parent ), bonematrix, bonetoworld.GetBoneForWrite( ibone ));
+	ConcatTransforms_Aligned(bonetoworld.GetBone( pbones[ibone].parent ), bonematrix, bonetoworld.GetBoneForWrite( ibone ));
 }
 
 /*
@@ -4859,9 +4878,9 @@ void DoAimAtBone(
 	Assert( pProc->basepos.DistToSqr( pBones[iBone].pos ) < 0.1 );
 
 	// The aim and up data is relative to this bone, not the parent bone
-	matrix3x4_t bonematrix, boneLocalToWorld;
+	matrix3x4a_t bonematrix, boneLocalToWorld;
 	AngleMatrix( pBones[iBone].quat, pProc->basepos, bonematrix );
-	ConcatTransforms( bonetoworld.GetBone( pProc->parent ), bonematrix, boneLocalToWorld );
+	ConcatTransforms_Aligned( bonetoworld.GetBone( pProc->parent ), bonematrix, boneLocalToWorld );
 
 	Vector aimVector;
 	VectorSubtract( aimAtWorldPosition, aimWorldPosition, aimVector );

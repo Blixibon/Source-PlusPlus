@@ -383,7 +383,7 @@ FORWARD_DECLARE_HANDLE( memhandle_t );
 struct bonecacheparams_t
 {
 	CStudioHdr		*pStudioHdr;
-	matrix3x4_t		*pBoneToWorld;
+	matrix3x4a_t	*pBoneToWorld;
 	float			curtime;
 	int				boneMask;
 };
@@ -408,9 +408,9 @@ public:
 	// was constructor, but placement new is messy wrt memdebug - so cast & init instead
 	void			Init( const bonecacheparams_t &params, unsigned int size, short *pStudioToCached, short *pCachedToStudio, int cachedBoneCount );
 	
-	void			UpdateBones( const matrix3x4_t *pBoneToWorld, int numbones, float curtime );
-	matrix3x4_t		*GetCachedBone( int studioIndex );
-	void			ReadCachedBones( matrix3x4_t *pBoneToWorld );
+	void			UpdateBones( const matrix3x4a_t *pBoneToWorld, int numbones, float curtime );
+	matrix3x4a_t		*GetCachedBone( int studioIndex );
+	void			ReadCachedBones( matrix3x4a_t *pBoneToWorld );
 	void			ReadCachedBonePointers( matrix3x4_t **bones, int numbones );
 
 	bool			IsValid( float curtime, float dt = 0.1f );
@@ -420,7 +420,7 @@ public:
 	int				m_boneMask;
 
 private:
-	matrix3x4_t		*BoneArray();
+	matrix3x4a_t		*BoneArray();
 	short			*StudioToCached();
 	short			*CachedToStudio();
 

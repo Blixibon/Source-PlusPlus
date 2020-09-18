@@ -1794,7 +1794,7 @@ void CBaseAnimating::BuildMatricesWithBoneMerge(
 	const Vector& origin, 
 	const Vector pos[MAXSTUDIOBONES],
 	const Quaternion q[MAXSTUDIOBONES],
-	matrix3x4_t bonetoworld[MAXSTUDIOBONES],
+	matrix3x4a_t bonetoworld[MAXSTUDIOBONES],
 	CBaseAnimating *pParent,
 	CBoneCache *pParentCache
 	)
@@ -1802,7 +1802,7 @@ void CBaseAnimating::BuildMatricesWithBoneMerge(
 	CStudioHdr *fhdr = pParent->GetModelPtr();
 	mstudiobone_t *pbones = pStudioHdr->pBone( 0 );
 
-	matrix3x4_t rotationmatrix; // model to world transformation
+	matrix3x4a_t rotationmatrix; // model to world transformation
 	AngleMatrix( angles, origin, rotationmatrix);
 
 	for ( int i=0; i < pStudioHdr->numbones(); i++ )
@@ -1812,7 +1812,7 @@ void CBaseAnimating::BuildMatricesWithBoneMerge(
 		int parentBoneIndex = Studio_BoneIndexByName( fhdr, pbones[i].pszName() );
 		if ( parentBoneIndex >= 0 )
 		{
-			matrix3x4_t *pMat = pParentCache->GetCachedBone( parentBoneIndex );
+			matrix3x4a_t *pMat = pParentCache->GetCachedBone( parentBoneIndex );
 			if ( pMat )
 			{
 				MatrixCopy( *pMat, bonetoworld[ i ] );
@@ -1823,16 +1823,16 @@ void CBaseAnimating::BuildMatricesWithBoneMerge(
 		if ( !merged )
 		{
 			// If we get down here, then the bone wasn't merged.
-			matrix3x4_t bonematrix;
+			matrix3x4a_t bonematrix;
 			QuaternionMatrix( q[i], pos[i], bonematrix );
 
 			if (pbones[i].parent == -1) 
 			{
-				ConcatTransforms (rotationmatrix, bonematrix, bonetoworld[i]);
+				ConcatTransforms_Aligned(rotationmatrix, bonematrix, bonetoworld[i]);
 			} 
 			else 
 			{
-				ConcatTransforms (bonetoworld[pbones[i].parent], bonematrix, bonetoworld[i]);
+				ConcatTransforms_Aligned(bonetoworld[pbones[i].parent], bonematrix, bonetoworld[i]);
 			}
 		}
 	}
@@ -1863,7 +1863,7 @@ bool CBaseAnimating::CanSkipAnimation( void )
 }
 
 
-void CBaseAnimating::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
+void CBaseAnimating::SetupBones( matrix3x4a_t *pBoneToWorld, int boneMask )
 {
 	AUTO_LOCK( m_BoneSetupMutex );
 	
@@ -2867,7 +2867,7 @@ CBoneCache *CBaseAnimating::GetBoneCache( void )
 		}
 	}
 
-	matrix3x4_t bonetoworld[MAXSTUDIOBONES];
+	matrix3x4a_t bonetoworld[MAXSTUDIOBONES];
 	SetupBones( bonetoworld, boneMask );
 
 	if ( pcache )

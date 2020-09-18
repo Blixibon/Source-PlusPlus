@@ -404,6 +404,10 @@ DEFINE_EMBEDDED(m_AttributeManager),
 
 END_DATADESC();
 
+BEGIN_ENT_SCRIPTDESC(CHL2_Player, CBasePlayer, "A Half-Life 2 player")
+DEFINE_SCRIPTFUNC(StartAdmireGlovesAnimation, "Play the admire hand animation on the viewmodel")
+END_SCRIPTDESC();
+
 CHL2_Player::CHL2_Player() : m_AnimState(this, CHL2PlayerAnimState::s_MoveParams)
 {
 	m_nNumMissPositions	= 0;
@@ -952,7 +956,7 @@ void CHL2_Player::StartAdmireGlovesAnimation( void )
 		vm->SetWeaponModel( "models/weapons/c_arms.mdl", NULL );
 		ShowViewModel( true );
 						
-		int	idealSequence = vm->SelectWeightedSequence( ACT_VM_IDLE );
+		int	idealSequence = vm->LookupSequence("seq_admire");
 		
 		if ( idealSequence >= 0 )
 		{

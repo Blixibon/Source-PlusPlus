@@ -67,7 +67,7 @@ public:
 		m_Materials.m_PortalGhostOverlay[0].Init("models/portals/portalstaticoverlay_1_noz", TEXTURE_GROUP_CLIENT_EFFECTS);
 		m_Materials.m_PortalGhostOverlay[1].Init("models/portals/portalstaticoverlay_2_noz", TEXTURE_GROUP_CLIENT_EFFECTS);
 		m_Materials.m_PortalGhostOverlay[2].Init("models/portals/portalstaticoverlay_noz", TEXTURE_GROUP_CLIENT_EFFECTS);
-		//m_Materials.m_PortalLightTransfer_ShadowTexture.Init( "effects/flashlight001", TEXTURE_GROUP_OTHER ); //light transfers disabled indefinitely
+		m_Materials.m_PortalLightTransfer_ShadowTexture.Init( "effects/flashlight001", TEXTURE_GROUP_OTHER ); //light transfers disabled indefinitely
 
 		m_Materials.m_pDepthDoubleViewMatrixVar = m_Materials.m_PortalDepthDoubler->FindVar( "$alternateviewmatrix", NULL, false );
 		Assert( m_Materials.m_pDepthDoubleViewMatrixVar != NULL );
@@ -78,7 +78,7 @@ static CAutoInitFlatBasicPortalDrawingMaterials s_FlatBasicPortalDrawingMaterial
 const FlatBasicPortalRenderingMaterials_t& CPortalRenderable_FlatBasic::m_Materials = s_FlatBasicPortalDrawingMaterials.m_Materials;
 
 
-LINK_ENTITY_TO_CLASS( prop_portal_flatbasic, CPortalRenderable_FlatBasic );
+LINK_ENTITY_TO_CLASS_CLIENTONLY( prop_portal_flatbasic, CPortalRenderable_FlatBasic );
 
 
 CPortalRenderable_FlatBasic::CPortalRenderable_FlatBasic( void )

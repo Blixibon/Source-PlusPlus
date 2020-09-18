@@ -142,14 +142,15 @@ void C_NPC_Core::ClientThink(void)
 	//CMouthInfo *pMouth = GetMouth();
 	////pMouth->ActivateEnvelope();
 
-	float value = GetMouthOpenPct();
+	/*float value = GetMouthOpenPct();
 
 	if (value > 1.0)
 		value = 1.0;
 
 	value = (1.0 - value);
 
-	float flScale = value;
+	float flScale = value;*/
+	const float flScale = 1.0f;
 
 	
 
@@ -225,7 +226,7 @@ void C_NPC_Core::ClientThink(void)
 	beamInfo.m_flHaloScale = 6.0f;
 	beamInfo.m_flLife = 0.0f;
 	beamInfo.m_flWidth = 8.0f; //random->RandomFloat( 1.0f, 2.0f );
-	beamInfo.m_flEndWidth = (24.0f * flScale) + 8.0f;
+	beamInfo.m_flEndWidth = (45.f * flScale) + 8.0f;
 	//beamInfo.m_flFadeLength = HLSS_MINERS_HAT_LIGHT_LENGTH;
 	beamInfo.m_flAmplitude = 0.0f; //random->RandomFloat( 16, 32 );
 	beamInfo.m_flBrightness = flColor * flScale;

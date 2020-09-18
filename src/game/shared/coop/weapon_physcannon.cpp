@@ -1170,8 +1170,9 @@ private:
 	CGrabController		m_grabController;
 	CBasePlayer			*m_pPlayer;
 };
-
+#ifdef GAME_DLL
 LINK_ENTITY_TO_CLASS( player_pickup, CPlayerPickupController );
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1578,12 +1579,15 @@ public:
 	int IsVisible(void) const { return m_bVisible || gpGlobals->curtime < m_flForceVisibleUntil; }
 	void ForceVisibleUntil(float flTime) { m_flForceVisibleUntil = flTime; }
 
-	void DrawBeam(bool bFirstPerson)
+	void DrawBeam(bool bFirstPerson, C_BaseEntity *pBeamEnt)
 	{
-		if (!IsVisible() || m_pBeam[bFirstPerson ? 0 : 1] == NULL)
+		Beam_t* pBeam = m_pBeam[bFirstPerson ? 0 : 1];
+
+		if (!IsVisible() || pBeam == NULL)
 			return;
 
-		beams->DrawBeam(m_pBeam[bFirstPerson ? 0 : 1]);
+		beams->ForceUpdateBeamPositions(pBeam, pBeamEnt, pBeamEnt);
+		beams->DrawBeam(pBeam);
 	}
 
 private:
@@ -1780,14 +1784,15 @@ protected:
 
 	virtual int		DrawModel( int flags );
 	virtual void	ViewModelDrawn( C_BaseViewModel *pBaseViewModel );
+	virtual int		DrawWeaponEffectsOnModel(C_BaseAnimating* pAnim, int flags, const matrix3x4_t& matWeaponToEffect);
 	virtual bool	IsTransparent( void );
 	virtual void	OnDataChanged( DataUpdateType_t type );
 	virtual void	ClientThink( void );
 	
 	void			ManagePredictedObject( void );
-	void			DrawEffects(bool b3rdPerson);
-	void			GetEffectParameters( EffectType_t effectID, color32 &color, float &scale, IMaterial **pMaterial, Vector &vecAttachment, bool b3rdPerson);
-	void			DrawEffectSprite( EffectType_t effectID, bool b3rdPerson);
+	void			DrawEffects(bool b3rdPerson, C_BaseAnimating* pModel);
+	void			GetEffectParameters( EffectType_t effectID, color32 &color, float &scale, IMaterial **pMaterial, Vector &vecAttachment, bool b3rdPerson, C_BaseAnimating *pModel);
+	void			DrawEffectSprite( EffectType_t effectID, bool b3rdPerson, C_BaseAnimating* pModel);
 	inline bool		IsEffectVisible( EffectType_t effectID );
 	void			UpdateElementPosition( void );
 
@@ -4971,7 +4976,7 @@ extern void FormatViewModelAttachment( Vector &vOrigin, bool bInverse );
 // Purpose: Gets the complete list of values needed to render an effect from an
 //			effect parameter
 //-----------------------------------------------------------------------------
-void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &color, float &scale, IMaterial **pMaterial, Vector &vecAttachment, bool b3rdPerson)
+void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &color, float &scale, IMaterial **pMaterial, Vector &vecAttachment, bool b3rdPerson, C_BaseAnimating* pModel)
 {
 	const float dt = gpGlobals->curtime;
 
@@ -5004,17 +5009,12 @@ void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &col
 	// Format for first-person
 	if ( !b3rdPerson )
 	{
-		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-		
-		if ( pOwner != NULL )
-		{
-			pOwner->GetViewModel()->GetAttachment(m_Parameters[effectID].GetAttachment(), vecAttachment, angles );
-			::FormatViewModelAttachment( vecAttachment, true );
-		}
+		pModel->GetAttachment(m_Parameters[effectID].GetAttachment(), vecAttachment, angles );
+		::FormatViewModelAttachment( vecAttachment, true );
 	}
 	else
 	{
-		GetAttachment(m_Parameters[effectID].GetAttachmentWorld(), vecAttachment, angles );
+		pModel->GetAttachment(m_Parameters[effectID].GetAttachmentWorld(), vecAttachment, angles );
 	}
 }
 
@@ -5029,7 +5029,7 @@ bool CWeaponPhysCannon::IsEffectVisible( EffectType_t effectID )
 //-----------------------------------------------------------------------------
 // Purpose: Draws the effect sprite, given an effect parameter ID
 //-----------------------------------------------------------------------------
-void CWeaponPhysCannon::DrawEffectSprite( EffectType_t effectID, bool b3rdPerson)
+void CWeaponPhysCannon::DrawEffectSprite( EffectType_t effectID, bool b3rdPerson, C_BaseAnimating* pModel)
 {
 	color32 color;
 	float scale;
@@ -5041,7 +5041,7 @@ void CWeaponPhysCannon::DrawEffectSprite( EffectType_t effectID, bool b3rdPerson
 		return;
 
 	// Get all of our parameters
-	GetEffectParameters( effectID, color, scale, &pMaterial, vecAttachment, b3rdPerson );
+	GetEffectParameters( effectID, color, scale, &pMaterial, vecAttachment, b3rdPerson, pModel);
 
 	// Msg( "Scale: %.2f\tAlpha: %.2f\n", scale, alpha );
 
@@ -5058,29 +5058,29 @@ void CWeaponPhysCannon::DrawEffectSprite( EffectType_t effectID, bool b3rdPerson
 //-----------------------------------------------------------------------------
 // Purpose: Render our third-person effects
 //-----------------------------------------------------------------------------
-void CWeaponPhysCannon::DrawEffects(bool b3rdPerson)
+void CWeaponPhysCannon::DrawEffects(bool b3rdPerson, C_BaseAnimating* pModel)
 {
 	// Draw the core effects
 	if (!b3rdPerson)
-		DrawEffectSprite( PHYSCANNON_CORE, b3rdPerson);
+		DrawEffectSprite( PHYSCANNON_CORE, b3rdPerson, pModel);
 
-	DrawEffectSprite( PHYSCANNON_BLAST, b3rdPerson);
+	DrawEffectSprite( PHYSCANNON_BLAST, b3rdPerson, pModel);
 	
 	// Draw the glows
 	for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_PHYS_GLOW_SPRITES); i++ )
 	{
-		DrawEffectSprite( (EffectType_t) i, b3rdPerson);
+		DrawEffectSprite( (EffectType_t) i, b3rdPerson, pModel);
 	}
 
 	// Draw the endcaps
 	for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_PHYS_ENDCAP_SPRITES); i++ )
 	{
-		DrawEffectSprite( (EffectType_t) i, b3rdPerson);
+		DrawEffectSprite( (EffectType_t) i, b3rdPerson, pModel);
 	}
 
 	for (int i = 0; i < NUM_PHYSCANNON_BEAMS; i++)
 	{
-		m_Beams[i].DrawBeam(!b3rdPerson);
+		m_Beams[i].DrawBeam(!b3rdPerson, pModel);
 	}
 }
 
@@ -5089,16 +5089,7 @@ void CWeaponPhysCannon::DrawEffects(bool b3rdPerson)
 //-----------------------------------------------------------------------------
 int CWeaponPhysCannon::DrawModel( int flags )
 {
-	ValidateModelIndex();
-
 	int iRetVal = BaseClass::DrawModel(flags);
-
-	// Only render these on the transparent pass
-	if ( iRetVal && flags & STUDIO_TRANSPARENCY )
-	{
-		DrawEffects(true);
-		return 1;
-	}
 
 	// Only do this on the opaque pass
 	return iRetVal;
@@ -5110,10 +5101,22 @@ int CWeaponPhysCannon::DrawModel( int flags )
 void CWeaponPhysCannon::ViewModelDrawn( C_BaseViewModel *pBaseViewModel )
 {
 	// Render our effects
-	DrawEffects(false);
+	DrawEffects(false, pBaseViewModel);
 
 	// Pass this back up
 	BaseClass::ViewModelDrawn( pBaseViewModel );
+}
+
+int CWeaponPhysCannon::DrawWeaponEffectsOnModel(C_BaseAnimating* pAnim, int flags, const matrix3x4_t& matWeaponToEffect)
+{
+	// Only render these on the transparent pass
+	if (flags & STUDIO_TRANSPARENCY)
+	{
+		DrawEffects(true, pAnim);
+		return 1;
+	}
+
+	return 0;
 }
 
 //-----------------------------------------------------------------------------

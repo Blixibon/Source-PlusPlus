@@ -37,6 +37,8 @@ void CEntElectric::Precache()
 	PrecacheParticleSystem("tfa_lightning_model");
 	PrecacheParticleSystem("vortigaunt_zap");
 	PrecacheParticleSystem("electrical_zap");
+
+	PrecacheScriptSound("RagdollBoogie.Zap");
 }
 
 //-----------------------------------------------------------------------------

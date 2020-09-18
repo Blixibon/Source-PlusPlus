@@ -29,6 +29,15 @@ void CShaderDataExtension::SetDepthTextureFallbackForFlashlightState(int iIndex,
 		InternalSetDepthTextureFallbackForFlashlightState(iIndex, pTex);
 }
 
+void CShaderDataExtension::SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom)
+{
+	CMatRenderContextPtr pRenderContext(materials);
+	if (pRenderContext->GetCallQueue())
+		pRenderContext->GetCallQueue()->QueueCall(this, &CShaderDataExtension::InternalSetOrthoDataForFlashlight, iIndex, bOrtho, flOrthoLeft, flOrthoRight, flOrthoTop, flOrthoBottom);
+	else
+		InternalSetOrthoDataForFlashlight(iIndex, bOrtho, flOrthoLeft, flOrthoRight, flOrthoTop, flOrthoBottom);
+}
+
 const flashlightData_t* CShaderDataExtension::GetState(const FlashlightState_t& flashlightState) const
 {
 	const int index = flashlightState.m_nShadowQuality >> 16;
@@ -68,4 +77,15 @@ void CShaderDataExtension::InternalSetDepthTextureFallbackForFlashlightState(int
 {
 	m_dataTable[iIndex - 1].pDepth = pDepthTex;
 	m_usedSlots.Set(iIndex - 1);
+}
+
+void CShaderDataExtension::InternalSetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom)
+{
+	m_usedSlots.Set(iIndex - 1);
+	flashlightData_t &data = m_dataTable[iIndex - 1];
+	data.m_bOrtho = bOrtho;
+	data.m_fOrthoLeft = flOrthoLeft;
+	data.m_fOrthoRight = flOrthoRight;
+	data.m_fOrthoTop = flOrthoTop;
+	data.m_fOrthoBottom = flOrthoBottom;
 }

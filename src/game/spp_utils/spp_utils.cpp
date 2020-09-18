@@ -2,7 +2,7 @@
 #include "shared.h"
 #include "mapedit_helper.h"
 #include "holiday_event_system.h"
-#include "rich_presence_system.h"
+//#include "rich_presence_system.h"
 #include "scenecache.h"
 #include "shader_data_system.h"
 #include "tier3/tier3.h"
@@ -42,8 +42,8 @@ public:
 		bool bRet = true;
 		if (m_iConnectCount == 0)
 		{
-			bRet = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init() && m_Presence.Connect(factory);
-			m_Presence.InternalInit(this);
+			bRet = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init() /*&& m_Presence.Connect(factory)*/;
+			//m_Presence.InternalInit(this);
 		}
 
 		m_iConnectCount++;
@@ -58,7 +58,7 @@ public:
 
 		m_Holidays.Shutdown();
 		m_SceneCache.Disconnect();
-		m_Presence.Disconnect();
+		//m_Presence.Disconnect();
 		BaseClass::Disconnect();
 	}
 
@@ -94,23 +94,25 @@ public:
 	// Returns NULL if it doesn't implement the requested interface
 	virtual void* QueryInterface(const char* pInterfaceName);
 
-	virtual const char* DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>& vecVariants);
-	virtual IHolidayEvents* GetEventSystem() { return &m_Holidays; }
-	virtual IDiscordPresence* GetRichPresence() { return &m_Presence; }
+	virtual const char* DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>* pVecVariants);
+	//virtual IHolidayEvents* GetEventSystem() { return &m_Holidays; }
+	//virtual IDiscordPresence* GetRichPresence() { return &m_Presence; }
 
 	// Inherited via IGameSharedUtils
-	virtual bool InitClient(CreateInterfaceFn engineFactory, CreateInterfaceFn clientFactory, CGlobalVarsBase* pGlobals) override
+	virtual bool InitClient(CreateInterfaceFn engineFactory, CreateInterfaceFn clientFactory, CGlobalVarsBase* pGlobals, CUserMessages* pUsermessages) override
 	{
 		m_EnginePointers.engineclient = (IVEngineClient*)engineFactory(VENGINE_CLIENT_INTERFACE_VERSION, NULL);
 		m_EnginePointers.gameclient = (IBaseClientDLL*)clientFactory(CLIENT_DLL_INTERFACE_VERSION, NULL);
 		m_EnginePointers.gpClientGlobals = pGlobals;
+		m_EnginePointers.cl_usermessages = pUsermessages;
 		return true;
 	}
-	virtual bool InitServer(CreateInterfaceFn engineFactory, CreateInterfaceFn gameFactory, CGlobalVars* pGlobals) override
+	virtual bool InitServer(CreateInterfaceFn engineFactory, CreateInterfaceFn gameFactory, CGlobalVars* pGlobals, CUserMessages* pUsermessages) override
 	{
 		m_EnginePointers.engineserver = (IVEngineServer*)engineFactory(INTERFACEVERSION_VENGINESERVER, NULL);
 		m_EnginePointers.gameserver = (IServerGameDLL*)gameFactory(INTERFACEVERSION_SERVERGAMEDLL, NULL);
 		m_EnginePointers.gpServerGlobals = pGlobals;
+		m_EnginePointers.sv_usermessages = pUsermessages;
 		return true;
 	}
 
@@ -161,7 +163,7 @@ private:
 	bool m_bInitialized;
 	CMapEditHelper m_Helper;
 	CHolidayEventSystem m_Holidays;
-	CRichPresense m_Presence;
+	//CRichPresense m_Presence;
 	CSceneFileCache m_SceneCache;
 	CShaderDataExtension m_ShaderExtension;
 
@@ -244,13 +246,35 @@ void* CGameSharedUtils::QueryInterface(const char* pInterfaceName)
 	{
 		return static_cast<IShaderExtensionInternal*> (&m_ShaderExtension);
 	}
+	else if (V_strcmp(HOLIDAYEVENTS_INTERFACE_VERSION, pInterfaceName) == 0)
+	{
+		return static_cast<IHolidayEvents*> (&m_Holidays);
+	}
 	else
 	{
 		return Sys_GetFactoryThis()(pInterfaceName, NULL);
 	}
 }
 
-const char* CGameSharedUtils::DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>& vecVariants)
+static int __cdecl StringVecSortFunc(const char* const* sz1, const char* const* sz2)
 {
-	return m_Helper.DoMapEdit(pMapName, pMapEntities, vecVariants);
+	return strcmp(*sz1, *sz2);
+}
+
+const char* CGameSharedUtils::DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<char*>* pVecVariants)
+{
+	CUtlVector<const char*> vecInternalVarients;
+	m_Holidays.GetActiveEventNames(vecInternalVarients);
+
+	if (pVecVariants)
+	{
+		for (int i = 0; i < pVecVariants->Count(); i++)
+		{
+			vecInternalVarients.AddToHead(pVecVariants->Element(i));
+		}
+	}
+
+	vecInternalVarients.Sort(StringVecSortFunc);
+
+	return m_Helper.DoMapEdit(pMapName, pMapEntities, vecInternalVarients);
 }

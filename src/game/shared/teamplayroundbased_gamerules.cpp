@@ -3041,9 +3041,8 @@ void CTeamplayRoundBasedRules::CleanUpMap()
 
 	CUtlStringList vecEvents;
 	GetMapEditVariants(vecEvents);
-	UTIL_GetAllActiveHolidayStrings(vecEvents);
 
-	MapEntity_ParseAllEntities( spp_utils->DoMapEdit(gpGlobals->mapname.ToCStr(), engine->GetMapEntitiesString(), vecEvents), &filter, true );
+	MapEntity_ParseAllEntities( spp_utils->DoMapEdit(gpGlobals->mapname.ToCStr(), engine->GetMapEntitiesString(), &vecEvents), &filter, true );
 
 	if (CAI_NetworkManager::NetworksLoaded())
 	{

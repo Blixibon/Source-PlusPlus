@@ -138,7 +138,7 @@ public:
 	virtual	void GetSkeleton( CStudioHdr *pStudioHdr, Vector pos[], Quaternion q[], int boneMask );
 
 	virtual void GetBoneTransform( int iBone, matrix3x4_t &pBoneToWorld );
-	virtual void SetupBones( matrix3x4_t *pBoneToWorld, int boneMask );
+	virtual void SetupBones( matrix3x4a_t *pBoneToWorld, int boneMask );
 	virtual void CalculateIKLocks( float currentTime );
 	virtual void Teleport( const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity );
 
@@ -337,7 +337,7 @@ public:
 
 	void BuildMatricesWithBoneMerge( const CStudioHdr *pStudioHdr, const QAngle& angles, 
 		const Vector& origin, const Vector pos[MAXSTUDIOBONES],
-		const Quaternion q[MAXSTUDIOBONES], matrix3x4_t bonetoworld[MAXSTUDIOBONES],
+		const Quaternion q[MAXSTUDIOBONES], matrix3x4a_t bonetoworld[MAXSTUDIOBONES],
 		CBaseAnimating *pParent, CBoneCache *pParentCache );
 
 	void	SetFadeDistance( float minFadeDist, float maxFadeDist );

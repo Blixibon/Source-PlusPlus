@@ -17,6 +17,7 @@
 #include "engine/IEngineTrace.h"
 #include "engine/IStaticPropMgr.h"
 #include "shared_classnames.h"
+#include "spp_utils/holiday_events.h"
 
 #ifdef CLIENT_DLL
 #include "cdll_client_int.h"
@@ -34,7 +35,7 @@ class CBasePlayer;
 typedef CGameTrace trace_t;
 
 extern ConVar developer;	// developer mode
-
+extern IHolidayEvents* g_pHolidayEvents;
 
 //-----------------------------------------------------------------------------
 // Language IDs.

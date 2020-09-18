@@ -7,33 +7,59 @@
 	
 	"AprilFools"
 	{
-		"start_month" "4"
-		"end_month"	"4"
-		"start_day"	"1"
-		"end_day"	"1"
+		"single_day"
+		{
+			"month" "4"
+			"day"	"1"
+		}
 	}
 	
 	"Halloween"
 	{
-		"start_month" "10"
-		"end_month"	"11"
-		"start_day"	"28"
-		"end_day"	"3"
+		"week_based"
+		{
+			"month"	"10"
+			"day"	"31"
+		}
 	}
 	
 	"Christmas"
 	{
-		"start_month"	"12"
-		"end_month"		"12"
-		"start_day"		"22"
-		"end_day"		"28"
+		"date_range"
+		{
+			"start_month"	"12"
+			"end_month"		"12"
+			"start_day"		"22"
+			"end_day"		"28"
+		}	
 	}
 	
-	"Winter_Holiday"
+	"fullmoon"
 	{
-		"start_month"	"12"
-		"end_month"		"1"
-		"start_day"		"20"
-		"end_day"		"10"
+		"cyclical"
+		{
+			"month" "5"
+			"day"	"21"
+			"year"	"2016"
+			
+			"cycle_length"	"29.53"
+			"bonus_time"		"1.0"
+		}
+	}
+	
+	"halloween_or_fullmoon"
+	{
+		"or"
+		{
+			"get_holiday"
+			{
+				"holiday"	"Halloween"
+			}
+			
+			"get_holiday"
+			{
+				"holiday"	"fullmoon"
+			}
+		}
 	}
 }

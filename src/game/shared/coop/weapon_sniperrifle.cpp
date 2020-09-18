@@ -279,7 +279,9 @@ public:
 	}
 #else
 	bool				IsViewModelForLocalPlayer();
-	Vector			GetLaserEndPoint();
+	const Vector&		GetLaserEndPoint();
+
+	virtual void		GetRenderBounds(Vector& theMins, Vector& theMaxs);
 
 	// We need to render opaque and translucent pieces
 	virtual RenderGroup_t	GetRenderGroup(void) { return RENDER_GROUP_TWOPASS; }
@@ -295,6 +297,8 @@ public:
 	//	void			DrawLaserDot( void );
 
 	Beam_t* m_pBeam[2];			// Laser beam temp entity
+	int		m_nCalcLaserFrame;
+	Vector	m_vecLaserEndPoint;
 #endif // !CLIENT_DLL
 
 protected:
@@ -328,7 +332,7 @@ BEGIN_DATADESC(CWeaponComSniper)
 #ifndef CLIENT_DLL
 DEFINE_EMBEDDED(m_NPCBehavior),
 #endif
-END_DATADESC()
+END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -341,6 +345,9 @@ CWeaponComSniper::CWeaponComSniper(void) : m_NPCBehavior(this)
 {
 	m_bReloadsSingly = false;
 	m_bFiresUnderwater = false;
+#ifdef CLIENT_DLL
+	m_vecLaserEndPoint.Invalidate();
+#endif
 }
 
 #ifndef CLIENT_DLL
@@ -453,27 +460,46 @@ bool CWeaponComSniper::IsViewModelForLocalPlayer()
 	return false;
 }
 
-Vector CWeaponComSniper::GetLaserEndPoint()
+const Vector& CWeaponComSniper::GetLaserEndPoint()
 {
-	if (GetOwner() && GetOwner()->IsPlayer())
+	if (!m_vecLaserEndPoint.IsValid() || m_nCalcLaserFrame != gpGlobals->framecount)
 	{
-		CBasePlayer* pOwner = ToBasePlayer(GetOwner());
-		Vector vecEye, vecForward;
-		pOwner->EyePositionAndVectors(&vecEye, &vecForward, NULL, NULL);
-		trace_t tr;
-		UTIL_TraceLine(vecEye, vecEye + vecForward * MAX_TRACE_LENGTH, MASK_OPAQUE_AND_NPCS | CONTENTS_HITBOX, pOwner, COLLISION_GROUP_NONE, &tr);
-		return tr.endpos;
+		m_nCalcLaserFrame = gpGlobals->framecount;
+
+		if (GetOwner() && GetOwner()->IsPlayer())
+		{
+			CBasePlayer* pOwner = ToBasePlayer(GetOwner());
+			Vector vecEye, vecForward;
+			pOwner->EyePositionAndVectors(&vecEye, &vecForward, NULL, NULL);
+			trace_t tr;
+			UTIL_TraceLine(vecEye, vecEye + vecForward * MAX_TRACE_LENGTH, MASK_OPAQUE_AND_NPCS | CONTENTS_HITBOX, pOwner, COLLISION_GROUP_NONE, &tr);
+			m_vecLaserEndPoint = tr.endpos;
+		}
+		else
+		{
+			Vector vecStart, vecForward;
+			QAngle angAttachment;
+			GetAttachment(SNIPERRIFLE_LASER_ATTACHMENT_WORLD, vecStart);
+			GetAttachment(SNIPERRIFLE_MUZZLE_ATTACHMENT_WORLD, vecForward, angAttachment);
+			AngleVectors(angAttachment, &vecForward);
+			trace_t tr;
+			UTIL_TraceLine(vecStart, vecStart + vecForward * MAX_TRACE_LENGTH, MASK_OPAQUE_AND_NPCS | CONTENTS_HITBOX, this, COLLISION_GROUP_NONE, &tr);
+			m_vecLaserEndPoint = tr.endpos;
+		}
 	}
-	else
+
+	return m_vecLaserEndPoint;
+}
+
+void CWeaponComSniper::GetRenderBounds(Vector& theMins, Vector& theMaxs)
+{
+	BaseClass::GetRenderBounds(theMins, theMaxs);
+
+	if (IsLaserEnabled() && !(m_EntClientFlags & ENTCLIENTFLAG_GETTINGSHADOWRENDERBOUNDS))
 	{
-		Vector vecStart, vecForward;
-		QAngle angAttachment;
-		GetAttachment(SNIPERRIFLE_LASER_ATTACHMENT_WORLD, vecStart);
-		GetAttachment(SNIPERRIFLE_MUZZLE_ATTACHMENT_WORLD, vecForward, angAttachment);
-		AngleVectors(angAttachment, &vecForward);
-		trace_t tr;
-		UTIL_TraceLine(vecStart, vecStart + vecForward * MAX_TRACE_LENGTH, MASK_OPAQUE_AND_NPCS | CONTENTS_HITBOX, this, COLLISION_GROUP_NONE, &tr);
-		return tr.endpos;
+		Vector vecLaserEnd;
+		VectorITransform(GetLaserEndPoint(), RenderableToWorldTransform(), vecLaserEnd);
+		AddPointToBounds(vecLaserEnd, theMins, theMaxs);
 	}
 }
 

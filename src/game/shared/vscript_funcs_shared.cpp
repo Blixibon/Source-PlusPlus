@@ -503,7 +503,7 @@ void ScriptDispatchSpawn( HSCRIPT hEntity )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-static HSCRIPT CreateDamageInfo( HSCRIPT hInflictor, HSCRIPT hAttacker, const Vector &vecForce, const Vector &vecDamagePos, float flDamage, int iDamageType )
+static HSCRIPT CreateDamageInfo( HSCRIPT hInflictor, HSCRIPT hAttacker, const Vector &vecForce, const Vector &vecDamagePos, float flDamage, int64 iDamageType )
 {
 	// The script is responsible for deleting this via DestroyDamageInfo().
 	CTakeDamageInfo *damageInfo = new CTakeDamageInfo(ToEnt(hInflictor), ToEnt(hAttacker), flDamage, iDamageType);

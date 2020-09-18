@@ -970,7 +970,7 @@ void CClientLeafSystem::AddShadowToRenderable( ClientRenderHandle_t renderHandle
 		IClientRenderable* pRenderable = m_Renderables[renderHandle].m_pRenderable;
 		g_pClientShadowMgr->AddShadowToReceiver( m_Shadows[shadowHandle].m_Shadow,
 			pRenderable, SHADOW_RECEIVER_STUDIO_MODEL );
-
+#if 0
 		// This is here because the normal way isn't working for some reason.
 		if (m_Renderables[renderHandle].m_RenderGroup == RENDER_GROUP_VIEW_MODEL_OPAQUE)
 		{
@@ -984,6 +984,7 @@ void CClientLeafSystem::AddShadowToRenderable( ClientRenderHandle_t renderHandle
 					pHands, SHADOW_RECEIVER_STUDIO_MODEL);
 			}
 		}
+#endif
 	}
 }
 

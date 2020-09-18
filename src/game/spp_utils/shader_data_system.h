@@ -12,6 +12,8 @@ public:
 
 	virtual void SetDepthTextureFallbackForFlashlightState(int iIndex, ITexture*) override;
 
+	virtual void SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom) override;
+
 	// Inherited via IShaderExtensionInternal
 	virtual const flashlightData_t* GetState(const FlashlightState_t& flashlightState) const override;
 private:
@@ -20,6 +22,7 @@ private:
 	void InternalSetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t state);
 	void InternalOnFlashlightStateDestroyed(int iIndex);
 	void InternalSetDepthTextureFallbackForFlashlightState(int iIndex, ITexture* pTex);
+	void InternalSetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom);
 
 	flashlightData_t m_dataTable[128];
 	CBitVec<128> m_usedSlots;

@@ -301,7 +301,7 @@ void CRagdollProp::Spawn( void )
 		m_flFadeScale = m_flDefaultFadeScale;
 	}
 
-	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES];
+	matrix3x4a_t pBoneToWorld[MAXSTUDIOBONES];
 	BaseClass::SetupBones( pBoneToWorld, BONE_USED_BY_ANYTHING ); // FIXME: shouldn't this be a subset of the bones
 	// this is useless info after the initial conditions are set
 	SetAbsAngles( vec3_angle );
@@ -1052,7 +1052,7 @@ void CRagdollProp::TraceAttack( const CTakeDamageInfo &info, const Vector &dir, 
 	BaseClass::TraceAttack( info, dir, ptr, pAccumulator );
 }
 
-void CRagdollProp::SetupBones( matrix3x4_t *pBoneToWorld, int boneMask )
+void CRagdollProp::SetupBones( matrix3x4a_t *pBoneToWorld, int boneMask )
 {
 	// no ragdoll, fall through to base class
 	if ( !m_ragdoll.listCount )
@@ -1204,7 +1204,7 @@ void CRagdollProp::VPhysicsUpdate( IPhysicsObject *pPhysics )
 	m_lastUpdateTickCount = gpGlobals->tickcount;
 	//NetworkStateChanged();
 
-	matrix3x4_t boneToWorld[MAXSTUDIOBONES];
+	matrix3x4a_t boneToWorld[MAXSTUDIOBONES];
 	QAngle angles;
 
 	int i;
@@ -1507,7 +1507,7 @@ CBaseAnimating *CreateServerRagdollSubmodel( CBaseAnimating *pOwner, const char 
 	CRagdollProp *pRagdoll = (CRagdollProp *)CBaseEntity::CreateNoSpawn( "prop_ragdoll", position, angles, pOwner );
 	pRagdoll->SetModelName( AllocPooledString( pModelName ) );
 	pRagdoll->SetModel( STRING(pRagdoll->GetModelName()) );
-	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES], pBoneToWorldNext[MAXSTUDIOBONES];
+	matrix3x4a_t pBoneToWorld[MAXSTUDIOBONES], pBoneToWorldNext[MAXSTUDIOBONES];
 	pRagdoll->ResetSequence( 0 );
 
 	// let bone merging do the work of copying everything over for us
@@ -1535,7 +1535,7 @@ CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, con
 	pRagdoll->SetOwnerEntity( pAnimating );
 
 	pRagdoll->InitRagdollAnimation();
-	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES], pBoneToWorldNext[MAXSTUDIOBONES];
+	matrix3x4a_t pBoneToWorld[MAXSTUDIOBONES], pBoneToWorldNext[MAXSTUDIOBONES];
 
 	float dt = 0.1f;
 
@@ -1810,7 +1810,7 @@ CRagdollProp *CreateServerRagdollAttached( CBaseAnimating *pAnimating, const Vec
 	pRagdoll->CopyAnimationDataFrom( pAnimating );
 
 	pRagdoll->InitRagdollAnimation();
-	matrix3x4_t pBoneToWorld[MAXSTUDIOBONES];
+	matrix3x4a_t pBoneToWorld[MAXSTUDIOBONES];
 	pAnimating->SetupBones( pBoneToWorld, BONE_USED_BY_ANYTHING );
 	pRagdoll->InitRagdollAttached( pAttached, vecForce, forceBone, pBoneToWorld, pBoneToWorld, 0.1, collisionGroup, pParentEntity, boneAttach, boneOrigin, parentBoneAttach, originAttached );
 

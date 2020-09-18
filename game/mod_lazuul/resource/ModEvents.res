@@ -683,6 +683,12 @@
 		"leftportal" "bool"
 	}
 	
+	"player_use"
+	{
+		"userid"		"short" // The player that did the using
+		"entity"		"short" // The entity that they used
+	}
+	
 	"turret_hit_turret"
 	{
 	}

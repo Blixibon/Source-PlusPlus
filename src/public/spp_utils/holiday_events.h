@@ -2,17 +2,19 @@
 #define IHOLIDAY_EVENTS_H
 #pragma once
 
-typedef struct
+#include <time.h>
+
+#define HOLIDAYEVENTS_INTERFACE_VERSION "IHolidayEvents002"
+
+class IHoliday
 {
-	char chName[32];
-	int tm_mon_start;
-	int tm_mday_start;
+public:
+	virtual bool IsActive(const time_t& timeCurrent) = 0;
+	virtual const char* GetHolidayName() const = 0;
 
-	int tm_mon_end;
-	int tm_mday_end;
-
-	bool bWrapsYear;
-} holiday_t;
+	virtual time_t GetStartTime() = 0;
+	virtual time_t GetEndTime() = 0;
+};
 
 class IHolidayEvents
 {
@@ -22,7 +24,7 @@ public:
 	//Lookup an event by name
 	// Returns -1 if no event
 	virtual int LookupEvent(const char* pchEventName) = 0;
-	virtual const holiday_t* GetEvent(int iEvent) = 0;
-	virtual int GetActiveEvents(const holiday_t** ppEvents, int iMaxEvents) = 0;
+	virtual IHoliday* GetEvent(int iEvent) = 0;
+	virtual int GetActiveEvents(IHoliday** ppEvents, int iMaxEvents) = 0;
 };
 #endif // !HOLIDAY_EVENTS_H

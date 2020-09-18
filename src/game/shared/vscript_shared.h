@@ -32,5 +32,6 @@ inline bool VScriptRunScript( const char *pszScriptName, bool bWarnMissing = fal
 bool IsEntityCreationAllowedInScripts( void );
 
 void RegisterSharedScriptFunctions();
+void RegisterSharedScriptConstants();
 
 #endif // VSCRIPT_SHARED_H

@@ -338,7 +338,7 @@ void C_ViewHands::CalcBoneMerge(CStudioHdr * hdr, int boneMask, CBoneBitList & b
 	}
 }
 
-LINK_ENTITY_TO_CLASS(viewhands, C_ViewHands);
+LINK_ENTITY_TO_CLASS_CLIENTONLY(viewhands, C_ViewHands);
 
 static C_ViewHands *s_pViewHands[MAX_VIEWMODELS] = { nullptr };
 

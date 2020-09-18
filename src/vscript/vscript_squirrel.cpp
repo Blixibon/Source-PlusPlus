@@ -26,6 +26,15 @@
 
 #include <cstdarg>
 
+#ifdef _SQ64
+#define PutSQInt(a) PutInt64(a)
+#define GetSQInt()	GetInt64()
+#else
+#define PutSQInt(a) PutInt(a)
+#define GetSQInt()	GetInt()
+#endif // _SQ64
+
+
 struct WriteStateMap
 {
 	CUtlMap<void*, int> cache;
@@ -150,10 +159,20 @@ public:
 	virtual bool RegisterClass(ScriptClassDesc_t* pClassDesc) override;
 
 	//--------------------------------------------------------
+	// External constants
+	//--------------------------------------------------------
+	virtual void RegisterConstant(ScriptConstantBinding_t* pScriptConstant) override;
+
+	//--------------------------------------------------------
+	// External enums
+	//--------------------------------------------------------
+	virtual void RegisterEnum(ScriptEnumDesc_t* pEnumDesc) override;
+
+	//--------------------------------------------------------
 	// External instances. Note class will be auto-registered.
 	//--------------------------------------------------------
 
-	virtual HSCRIPT RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance) override;
+	virtual HSCRIPT RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance, bool bAllowDestruct = false) override;
 	virtual void SetInstanceUniqeId(HSCRIPT hInstance, const char* pszId) override;
 	virtual void RemoveInstance(HSCRIPT hInstance) override;
 
@@ -684,15 +703,19 @@ namespace SQVector
 
 struct ClassInstanceData
 {
-	ClassInstanceData(void* instance, ScriptClassDesc_t* desc, const char* instanceId = nullptr) :
+	ClassInstanceData(void* instance, ScriptClassDesc_t* desc, const char* instanceId = nullptr, bool allowDestruct = false) :
 		instance(instance),
 		desc(desc),
-		instanceId(instanceId)
+		instanceId(instanceId),
+		allowDestruct(allowDestruct)
 	{}
 
 	void* instance;
 	ScriptClassDesc_t* desc;
 	CUtlString instanceId;
+
+	// Indicates this game-created instance is a weak reference and can be destructed (Blixibon)
+	bool allowDestruct;
 };
 
 bool CreateParamCheck(const ScriptFunctionBinding_t& func, char* output)
@@ -715,7 +738,11 @@ bool CreateParamCheck(const ScriptFunctionBinding_t& func, char* output)
 			*output++ = 'i'; // could use 'n' also which is int or float
 			break;
 		case FIELD_INT64:
+#ifdef _SQ64
+			*output++ = 'i'; // could use 'n' also which is int or float
+#else
 			*output++ = 's'; // could use 'n' also which is int or float
+#endif
 			break;
 		case FIELD_BOOLEAN:
 			*output++ = 'b';
@@ -764,9 +791,13 @@ void PushVariant(HSQUIRRELVM vm, const ScriptVariant_t& value)
 		sq_pushinteger(vm, value.m_int);
 		break;
 	case FIELD_INT64:
+#ifdef _SQ64
+		sq_pushinteger(vm, value.m_int64);
+#else
 		char buf[64];
 		V_snprintf(buf, 64, "%lld", value.m_int64);
 		sq_pushstring(vm, value, -1);
+#endif
 		break;
 	case FIELD_BOOLEAN:
 		sq_pushbool(vm, value.m_bool);
@@ -790,6 +821,38 @@ void PushVariant(HSQUIRRELVM vm, const ScriptVariant_t& value)
 	}
 }
 
+void GetVariantScriptString(const ScriptVariant_t& value, char* szValue, int iSize)
+{
+	switch (value.m_type)
+	{
+	case FIELD_VOID:
+		V_strncpy(szValue, "null", iSize);
+		break;
+	case FIELD_FLOAT:
+		V_snprintf(szValue, iSize, "%f", value.m_float);
+		break;
+	case FIELD_CSTRING:
+		V_snprintf(szValue, iSize, "\"%s\"", value.m_pszString);
+		break;
+	case FIELD_VECTOR:
+		V_snprintf(szValue, iSize, "Vector( %f, %f, %f )", value.m_pVector->x, value.m_pVector->y, value.m_pVector->z);
+		break;
+	case FIELD_INTEGER:
+		V_snprintf(szValue, iSize, "%i", value.m_int);
+		break;
+	case FIELD_INT64:
+		V_snprintf(szValue, iSize, "%lld", value.m_int64);
+		break;
+	case FIELD_BOOLEAN:
+		V_snprintf(szValue, iSize, "%d", value.m_bool);
+		break;
+	case FIELD_CHARACTER:
+		//char buf[2] = { value.m_char, 0 };
+		V_snprintf(szValue, iSize, "\"%c\"", value.m_char);
+		break;
+	}
+}
+
 bool getVariant(HSQUIRRELVM vm, SQInteger idx, ScriptVariant_t& variant)
 {
 	switch (sq_gettype(vm, idx))
@@ -807,7 +870,7 @@ bool getVariant(HSQUIRRELVM vm, SQInteger idx, ScriptVariant_t& variant)
 		{
 			return false;
 		}
-		variant = (int)val;
+		variant = val;
 		return true;
 	}
 	case OT_FLOAT:
@@ -933,11 +996,19 @@ SQInteger function_stub(HSQUIRRELVM vm)
 		}
 		case FIELD_INT64:
 		{
+#ifdef _SQ64
+			SQInteger val = 0;
+			if (SQ_FAILED(sq_getinteger(vm, i + 2, &val)))
+				return sq_throwerror(vm, "Expected integer");
+			params[i] = (int64)val;
+			break;
+#else
 			const char* val;
 			if (SQ_FAILED(sq_getstring(vm, i + 2, &val)))
 				return sq_throwerror(vm, "Expected string");
 			params[i] = atoll(val);
 			break;
+#endif
 		}
 		case FIELD_BOOLEAN:
 		{
@@ -1021,7 +1092,8 @@ SQInteger function_stub(HSQUIRRELVM vm)
 SQInteger destructor_stub(SQUserPointer p, SQInteger size)
 {
 	auto classInstanceData = (ClassInstanceData*)p;
-	classInstanceData->desc->m_pfnDestruct(classInstanceData->instance);
+	if (classInstanceData->desc->m_pfnDestruct)
+		classInstanceData->desc->m_pfnDestruct(classInstanceData->instance);
 	classInstanceData->~ClassInstanceData();
 	return 0;
 }
@@ -1062,7 +1134,7 @@ SQInteger constructor_stub(HSQUIRRELVM vm)
 	{
 		SQUserPointer p;
 		sq_getinstanceup(vm, 1, &p, 0);
-		new(p) ClassInstanceData(instance, pClassDesc);
+		new(p) ClassInstanceData(instance, pClassDesc, nullptr, true);
 	}
 
 	sq_setreleasehook(vm, 1, &destructor_stub);
@@ -1162,6 +1234,7 @@ const char * ScriptDataTypeToName(ScriptDataType_t datatype)
 	case FIELD_BOOLEAN:		return "bool";
 	case FIELD_CHARACTER:	return "char";
 	case FIELD_HSCRIPT:		return "handle";
+	case FIELD_INT64:		return "int64";
 	default:				return "<unknown>";
 	}
 }
@@ -1210,6 +1283,86 @@ void RegisterDocumentation(HSQUIRRELVM vm, const ScriptFuncDescriptor_t& pFuncDe
 	sq_pop(vm, 1);
 }
 
+void RegisterClassDocumentation(HSQUIRRELVM vm, const ScriptClassDesc_t* pClassDesc)
+{
+	SquirrelSafeCheck safeCheck(vm);
+
+	if (pClassDesc->m_pszDescription && pClassDesc->m_pszDescription[0] == SCRIPT_HIDE[0])
+		return;
+
+	const char* name = pClassDesc->m_pszScriptName;
+	const char* base = "";
+	if (pClassDesc->m_pBaseDesc)
+	{
+		base = pClassDesc->m_pBaseDesc->m_pszScriptName;
+	}
+
+	// RegisterClassHelp(name, base, description)
+	sq_pushroottable(vm);
+	sq_pushstring(vm, "RegisterClassHelp", -1);
+	sq_get(vm, -2);
+	sq_remove(vm, -2);
+	sq_pushroottable(vm);
+	sq_pushstring(vm, name, -1);
+	sq_pushstring(vm, base, -1);
+	sq_pushstring(vm, pClassDesc->m_pszDescription ? pClassDesc->m_pszDescription : "", -1);
+	sq_call(vm, 4, SQFalse, SQFalse);
+	sq_pop(vm, 1);
+}
+
+void RegisterEnumDocumentation(HSQUIRRELVM vm, const ScriptEnumDesc_t* pClassDesc)
+{
+	SquirrelSafeCheck safeCheck(vm);
+
+	if (pClassDesc->m_pszDescription && pClassDesc->m_pszDescription[0] == SCRIPT_HIDE[0])
+		return;
+
+	const char* name = pClassDesc->m_pszScriptName;
+
+	// RegisterEnumHelp(name, description)
+	sq_pushroottable(vm);
+	sq_pushstring(vm, "RegisterEnumHelp", -1);
+	sq_get(vm, -2);
+	sq_remove(vm, -2);
+	sq_pushroottable(vm);
+	sq_pushstring(vm, name, -1);
+	sq_pushstring(vm, pClassDesc->m_pszDescription ? pClassDesc->m_pszDescription : "", -1);
+	sq_call(vm, 3, SQFalse, SQFalse);
+	sq_pop(vm, 1);
+}
+
+void RegisterConstantDocumentation(HSQUIRRELVM vm, const ScriptConstantBinding_t* pConstDesc, const char* pszAsString, ScriptEnumDesc_t* pEnumDesc = nullptr)
+{
+	SquirrelSafeCheck safeCheck(vm);
+
+	if (pConstDesc->m_pszDescription && pConstDesc->m_pszDescription[0] == SCRIPT_HIDE[0])
+		return;
+
+	char name[256] = "";
+
+	if (pEnumDesc)
+	{
+		V_strcat_safe(name, pEnumDesc->m_pszScriptName);
+		V_strcat_safe(name, ".");
+	}
+
+	V_strcat_safe(name, pConstDesc->m_pszScriptName);
+
+	char signature[256] = "";
+	V_snprintf(signature, sizeof(signature), "%s (%s)", pszAsString, ScriptDataTypeToName(pConstDesc->m_data.m_type));
+
+	// RegisterConstHelp(name, signature, description)
+	sq_pushroottable(vm);
+	sq_pushstring(vm, "RegisterConstHelp", -1);
+	sq_get(vm, -2);
+	sq_remove(vm, -2);
+	sq_pushroottable(vm);
+	sq_pushstring(vm, name, -1);
+	sq_pushstring(vm, signature, -1);
+	sq_pushstring(vm, pConstDesc->m_pszDescription ? pConstDesc->m_pszDescription : "", -1);
+	sq_call(vm, 4, SQFalse, SQFalse);
+	sq_pop(vm, 1);
+}
 
 bool SquirrelVM::Init()
 {
@@ -1279,9 +1432,55 @@ bool SquirrelVM::Init()
 
 	if (Run(
 		R"script(
+		Msg <- print;
+		Warning <- error;
+		// LocalTime from Source 2
+		// function LocalTime()
+		// {
+		// 	local date = ::date();
+		// 	return {
+		// 		Hours = date.hour,
+		// 		Minutes = date.min,
+		// 		Seconds = date.sec
+		// 	}
+		// }
+		function clamp(val,min,max)
+		{
+			if ( max < min )
+				return max;
+			else if( val < min )
+				return min;
+			else if( val > max )
+				return max;
+			else
+				return val;
+		}
+		function max(a,b)
+		{
+			return a > b ? a : b;
+		}
+		function min(a,b)
+		{
+			return a < b ? a : b;
+		}
+		function RemapVal(val, A, B, C, D)
+		{
+			if ( A == B )
+				return val >= B ? D : C;
+			return C + (D - C) * (val - A) / (B - A);
+		}
+		function RemapValClamped(val, A, B, C, D)
+		{
+			if ( A == B )
+				return val >= B ? D : C;
+			local cVal = (val - A) / (B - A);
+			cVal = ::clamp( cVal, 0.0, 1.0 );
+			return C + (D - C) * cVal;
+		}
+
 		function printl( text )
 		{
-			return print(text + "\n");
+			return ::print(text + "\n");
 		}
 
 		class CSimpleCallChainer
@@ -1320,53 +1519,149 @@ bool SquirrelVM::Init()
 		}
 
 		DocumentedFuncs <- {}
+		DocumentedClasses <- {}
+		DocumentedEnums <- {}
+		DocumentedConsts <- {}
+		function ModForAlias(name, signature, description)
+		{
+			// This is an alias function, could use split() if we could guarantee
+			// that ':' would not occur elsewhere in the description and Squirrel had
+			// a convience join() function -- It has split()
+			local colon = description.find(":");
+			if (colon == null)
+				colon = description.len();
+			local alias = description.slice(1, colon);
+			description = description.slice(colon + 1);
+			name = alias;
+			signature = null;
+		}
 
 		function RegisterHelp(name, signature, description)
 		{
 			if (description.len() && description[0] == '#')
 			{
-				// This is an alias function, could use split() if we could guarantee
-				// that ':' would not occur elsewhere in the description and Squirrel had
-				// a convience join() function -- It has split()
-				local colon = description.find(":");
-				if (colon == null)
-					colon = description.len();
-				local alias = description.slice(1, colon);
-				description = description.slice(colon + 1);
-				name = alias;
-				signature = null;
+				ModForAlias(name, signature, description)
 			}
 			DocumentedFuncs[name] <- [signature, description];
+		}
+		function RegisterClassHelp(name, baseclass, description)
+		{
+			DocumentedClasses[name] <- [baseclass, description];
+		}
+		function RegisterEnumHelp(name, description)
+		{
+			DocumentedEnums[name] <- description;
+		}
+		function RegisterConstHelp(name, signature, description)
+		{
+			if (description.len() && description[0] == '#')
+			{
+				ModForAlias(name, signature, description)
+			}
+			DocumentedConsts[name] <- [signature, description];
+		}
+		function PrintClass(name, doc)
+		{
+			printl("=====================================");
+			printl("Class:    " + name);
+			printl("Base:   " + doc[0]);
+			if (doc[1].len())
+				printl("Description: " + doc[1]);
+			printl("=====================================");
+			print("\n");
+		}
+		function PrintFunc(name, doc)
+		{
+			printl("Function:    " + name);
+			if (doc[0] == null)
+			{
+				// Is an aliased function
+				print("Signature:   function " + name + "(");
+				foreach(k,v in this[name].getinfos()["parameters"])
+				{
+					if (k == 0 && v == "this") continue;
+					if (k > 1) print(", ");
+					print(v);
+				}
+				printl(")");
+			}
+			else
+			{
+				printl("Signature:   " + doc[0]);
+			}
+			if (doc[1].len())
+				printl("Description: " + doc[1]);
+			print("\n");
+		}
+		function PrintEnum(name, doc)
+		{
+			printl("=====================================");
+			printl("Enum:    " + name);
+			if (doc.len())
+				printl("Description: " + doc);
+			printl("=====================================");
+			print("\n");
+		}
+		function PrintConst(name, doc)
+		{
+			printl("Constant:    " + name);
+			if (doc[0] == null)
+			{
+				// Is an aliased function
+				print("Signature:   function " + name + "(");
+				foreach(k,v in this[name].getinfos()["parameters"])
+				{
+					if (k == 0 && v == "this") continue;
+					if (k > 1) print(", ");
+					print(v);
+				}
+				printl(")");
+			}
+			else
+			{
+				printl("Value:   " + doc[0]);
+			}
+			if (doc[1].len())
+				printl("Description: " + doc[1]);
+			print("\n");
 		}
 
 		function PrintHelp(pattern = "*")
 		{
 			local foundMatches = false;
+			foreach(name, doc in DocumentedClasses)
+			{
+				if (pattern == "*" || name.tolower().find(pattern.tolower()) != null)
+				{
+					foundMatches = true;
+					PrintClass(name, doc)
+				}
+			}
+
 			foreach(name, doc in DocumentedFuncs)
 			{
 				if (pattern == "*" || name.tolower().find(pattern.tolower()) != null)
 				{
 					foundMatches = true;
-					printl("Function:    " + name);
-					if (doc[0] == null)
-					{
-						// Is an aliased function
-						print("Signature:   function " + name + "(");
-						foreach(k,v in this[name].getinfos()["parameters"])
-						{
-							if (k == 0 && v == "this") continue;
-							if (k > 1) print(", ");
-							print(v);
-						}
-						printl(")");
-					}
-					else
-					{
-						printl("Signature:   " + doc[0]);
-					}
-					if (doc[1].len())
-						printl("Description: " + doc[1]);
-					print("\n");
+					PrintFunc(name, doc)
+				}
+			}
+
+			foreach(name, doc in DocumentedEnums)
+			{
+				if (pattern == "*" || name.tolower().find(pattern.tolower()) != null)
+				{
+					foundMatches = true;
+					PrintEnum(name, doc)
+				}
+			}
+
+			foreach(name, doc in DocumentedConsts)
+			{
+				if (pattern == "*" || name.tolower().find(pattern.tolower()) != null)
+				{
+					foundMatches = true;
+					PrintConst(name, doc)
 				}
 			}
 
@@ -1798,10 +2093,84 @@ bool SquirrelVM::RegisterClass(ScriptClassDesc_t* pClassDesc)
 
 	sq_pop(vm_, 2);
 
+	RegisterClassDocumentation(vm_, pClassDesc);
+
 	return true;
 }
 
-HSCRIPT SquirrelVM::RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance)
+void SquirrelVM::RegisterConstant(ScriptConstantBinding_t* pScriptConstant)
+{
+	SquirrelSafeCheck safeCheck(vm_);
+	Assert(pScriptConstant);
+
+	if (!pScriptConstant)
+		return;
+
+	sq_pushconsttable(vm_);
+	sq_pushstring(vm_, pScriptConstant->m_pszScriptName, -1);
+
+	PushVariant(vm_, pScriptConstant->m_data);
+
+	sq_newslot(vm_, -3, SQFalse);
+
+	sq_pop(vm_, 1);
+
+	char szValue[64];
+	GetVariantScriptString(pScriptConstant->m_data, szValue, sizeof(szValue));
+	RegisterConstantDocumentation(vm_, pScriptConstant, szValue);
+}
+
+void SquirrelVM::RegisterEnum(ScriptEnumDesc_t* pEnumDesc)
+{
+	SquirrelSafeCheck safeCheck(vm_);
+	Assert(pEnumDesc);
+
+	if (!pEnumDesc)
+		return;
+
+	sq_pushconsttable(vm_);
+	sq_pushstring(vm_, pEnumDesc->m_pszScriptName, -1);
+
+	// Check if class name is already taken
+	if (sq_get(vm_, -2) == SQ_OK)
+	{
+		HSQOBJECT obj;
+		sq_resetobject(&obj);
+		sq_getstackobj(vm_, -1, &obj);
+		if (!sq_isnull(obj))
+		{
+			sq_pop(vm_, 2);
+			return;
+		}
+	}
+
+	sq_pop(vm_, 1);
+
+	// HACKHACK: I have no idea how to declare enums with the current API.
+	// For now, we'll just cram everything into a script buffer and compile it. (Blixibon)
+	char szScript[2048];
+	V_snprintf(szScript, sizeof(szScript), "enum %s {\n", pEnumDesc->m_pszScriptName);
+
+	for (int i = 0; i < pEnumDesc->m_ConstantBindings.Count(); ++i)
+	{
+		auto& scriptConstant = pEnumDesc->m_ConstantBindings[i];
+
+		char szValue[64];
+		GetVariantScriptString(scriptConstant.m_data, szValue, sizeof(szValue));
+
+		V_snprintf(szScript, sizeof(szScript), "%s%s = %s\n", szScript, scriptConstant.m_pszScriptName, szValue);
+
+		RegisterConstantDocumentation(vm_, &scriptConstant, szValue, pEnumDesc);
+	}
+
+	V_strcat_safe(szScript, "}");
+
+	Run(szScript);
+
+	RegisterEnumDocumentation(vm_, pEnumDesc);
+}
+
+HSCRIPT SquirrelVM::RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance, bool bAllowDestruct)
 {
 	SquirrelSafeCheck safeCheck(vm_);
 
@@ -1825,10 +2194,10 @@ HSCRIPT SquirrelVM::RegisterInstance(ScriptClassDesc_t* pDesc, void* pInstance)
 	{
 		SQUserPointer p;
 		sq_getinstanceup(vm_, -1, &p, 0);
-		new(p) ClassInstanceData(pInstance, pDesc);
+		new(p) ClassInstanceData(pInstance, pDesc, nullptr, bAllowDestruct);
 	}
 
-	sq_setreleasehook(vm_, -1, &destructor_stub_instance);
+	sq_setreleasehook(vm_, -1, bAllowDestruct ? &destructor_stub : &destructor_stub_instance);
 
 	HSQOBJECT* obj = new HSQOBJECT;
 	sq_resetobject(obj);
@@ -2197,7 +2566,7 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 	case OT_INTEGER:
 	{
 		pBuffer->PutInt(OT_INTEGER);
-		pBuffer->PutInt(sq_objtointeger(&obj));
+		pBuffer->PutSQInt(sq_objtointeger(&obj));
 		break;
 	}
 	case OT_FLOAT:
@@ -2232,10 +2601,10 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 		sq_getdelegate(vm_, idx);
 		WriteObject(pBuffer, writeState, -1);
 		sq_poptop(vm_);
-		int count = sq_getsize(vm_, idx);
+		SQInteger count = sq_getsize(vm_, idx);
 		sq_push(vm_, idx);
 		sq_pushnull(vm_);
-		pBuffer->PutInt(count);
+		pBuffer->PutSQInt(count);
 		while (SQ_SUCCEEDED(sq_next(vm_, -2)))
 		{
 			WriteObject(pBuffer, writeState, -2);
@@ -2254,8 +2623,8 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 		{
 			break;
 		}
-		int count = sq_getsize(vm_, idx);
-		pBuffer->PutInt(count);
+		SQInteger count = sq_getsize(vm_, idx);
+		pBuffer->PutSQInt(count);
 		sq_push(vm_, idx);
 		sq_pushnull(vm_);
 		while (SQ_SUCCEEDED(sq_next(vm_, -2)))
@@ -2483,6 +2852,7 @@ void SquirrelVM::WriteObject(CUtlBuffer* pBuffer, WriteStateMap& writeState, SQI
 				else if (!pClassInstanceData->instanceId.IsEmpty())
 				{
 					pBuffer->PutString(pClassInstanceData->instanceId);
+					pBuffer->PutChar(pClassInstanceData->allowDestruct ? 1 : 0);
 				}
 				else
 				{
@@ -2559,9 +2929,9 @@ void SquirrelVM::WriteState(CUtlBuffer* pBuffer)
 	sq_getstackobj(vm_, -1, &obj);
 	writeState.CheckCache(pBuffer, _table(obj));
 
-	int count = sq_getsize(vm_, 1);
+	SQInteger count = sq_getsize(vm_, 1);
 	sq_pushnull(vm_);
-	pBuffer->PutInt(count);
+	pBuffer->PutSQInt(count);
 	while (SQ_SUCCEEDED(sq_next(vm_, -2)))
 	{
 		WriteObject(pBuffer, writeState, -2);
@@ -2595,7 +2965,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 	}
 	case OT_INTEGER:
 	{
-		sq_pushinteger(vm_, pBuffer->GetInt());
+		sq_pushinteger(vm_, pBuffer->GetSQInt());
 		break;
 	}
 	case OT_FLOAT:
@@ -2629,7 +2999,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		ReadObject(pBuffer, readState);
 
-		int count = pBuffer->GetInt();
+		SQInteger count = pBuffer->GetSQInt();
 		sq_newtableex(vm_, count);
 		sq_getstackobj(vm_, -1, obj);
 		sq_addref(vm_, obj);
@@ -2639,7 +3009,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 		sq_remove(vm_, -2);
 
-		for (int i = 0; i < count; ++i)
+		for (SQInteger i = 0; i < count; ++i)
 		{
 			ReadObject(pBuffer, readState);
 			ReadObject(pBuffer, readState);
@@ -2657,12 +3027,12 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 			break;
 		}
 
-		int count = pBuffer->GetInt();
+		SQInteger count = pBuffer->GetSQInt();
 		sq_newarray(vm_, count);
 		sq_getstackobj(vm_, -1, obj);
 		sq_addref(vm_, obj);
 
-		for (int i = 0; i < count; ++i)
+		for (SQInteger i = 0; i < count; ++i)
 		{
 			sq_pushinteger(vm_, i);
 			ReadObject(pBuffer, readState);
@@ -2733,7 +3103,10 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 		sq_getstackobj(vm_, -1, &env);
 		if (!sq_isnull(env))
 		{
-			_closure(*obj)->_env = _refcounted(env)->GetWeakRef(sq_type(env));
+			if (_closure(*obj) == nullptr)
+				Warning("Closure is null\n");
+			else
+				_closure(*obj)->_env = _refcounted(env)->GetWeakRef(sq_type(env));
 		}
 		sq_poptop(vm_);
 
@@ -2931,6 +3304,7 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 
 			if (*instanceName)
 			{
+				bool allowDestruct = (pBuffer->GetChar() == 1);
 				auto instance = pClassDesc->pHelper->BindOnRead((HSCRIPT)hinstance, nullptr, instanceName);
 				if (instance == nullptr)
 				{
@@ -2944,9 +3318,9 @@ void SquirrelVM::ReadObject(CUtlBuffer* pBuffer, ReadStateMap& readState)
 				{
 					SQUserPointer p;
 					sq_getinstanceup(vm_, -1, &p, 0);
-					new(p) ClassInstanceData(instance, pClassDesc, instanceName);
+					new(p) ClassInstanceData(instance, pClassDesc, instanceName, allowDestruct);
 				}
-				sq_setreleasehook(vm_, -1, &destructor_stub);
+				sq_setreleasehook(vm_, -1, allowDestruct ? &destructor_stub : &destructor_stub_instance);
 			}
 			else
 			{
@@ -3028,10 +3402,10 @@ void SquirrelVM::ReadState(CUtlBuffer* pBuffer)
 	readState.CheckCache(pBuffer, &obj);
 	sq_getstackobj(vm_, -1, obj);
 	sq_addref(vm_, obj);
+	
+	SQInteger count = pBuffer->GetSQInt();
 
-	int count = pBuffer->GetInt();
-
-	for (int i = 0; i < count; ++i)
+	for (SQInteger i = 0; i < count; ++i)
 	{
 		ReadObject(pBuffer, readState);
 		ReadObject(pBuffer, readState);

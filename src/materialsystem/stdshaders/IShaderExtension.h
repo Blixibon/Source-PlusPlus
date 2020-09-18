@@ -48,17 +48,25 @@ public:
 	virtual void OnFlashlightStateDestroyed(int iIndex) = 0;
 
 	virtual void SetDepthTextureFallbackForFlashlightState(int iIndex, ITexture*) = 0;
+	virtual void SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom) = 0;
 
 protected:
 	virtual ~IShaderExtension() {};
 };
 
-#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension004"
+#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension005"
 
 typedef struct
 {
 	UberlightState_t uber;
 	ITexture* pDepth;
+
+	// Ortho Data
+	bool  m_bOrtho;
+	float m_fOrthoLeft;
+	float m_fOrthoRight;
+	float m_fOrthoTop;
+	float m_fOrthoBottom;
 } flashlightData_t;
 
 // Interface for the render thread
@@ -68,6 +76,6 @@ public:
 	virtual const flashlightData_t* GetState(const FlashlightState_t& flashlightState) const = 0;
 };
 
-#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal001"
+#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal002"
 
 #endif // ISHADEREXTENSION_H

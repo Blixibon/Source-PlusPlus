@@ -47,6 +47,7 @@ void CBoneMergeCache::UpdateCache()
 			// Owner's model got swapped out
 			m_MergedBones.Purge();
 			m_BoneMergeBits.Purge();
+			m_MergeOffsetMatrices.Purge();
 			m_pFollow = NULL;
 			m_pFollowHdr = NULL;
 			m_pFollowRenderHdr = NULL;
@@ -63,6 +64,7 @@ void CBoneMergeCache::UpdateCache()
 	{
 		m_MergedBones.Purge();
 		m_BoneMergeBits.Purge();
+		m_MergeOffsetMatrices.Purge();
 	
 		// Update the cache.
 		if ( pTestFollow && pTestHdr && pOwnerHdr )
@@ -175,17 +177,12 @@ void CBoneMergeCache::MergeMatchingBones(int boneMask, CBoneBitList &boneCompute
 		for ( int i=0; i < m_MergedBones.Count(); i++ )
 		{
 			int iOwnerBone = m_MergedBones[i].m_iMyBone;
-			int iParentBone = m_MergedBones[i].m_iParentBone;
-			const boneextradata_t &data = m_MergedBones[i].m_ExtraData;
 		
 			// Only update bones reference by the bone mask.
 			if ( !( m_pOwnerHdr->boneFlags( iOwnerBone ) & boneMask ) )
 				continue;
 
-			if (data.m_iFlags & BONE_FLAG_OFFSET_MATRIX)
-				ConcatTransforms(m_pFollow->GetBone(iParentBone), data.m_matOffset, m_pOwner->GetBoneForWrite(iOwnerBone));
-			else
-				MatrixCopy(m_pFollow->GetBone(iParentBone), m_pOwner->GetBoneForWrite(iOwnerBone));
+			GetFollowBone(i, m_pOwner->GetBoneForWrite(iOwnerBone));
 
 			boneComputed.Set(iOwnerBone);
 		}
@@ -266,16 +263,17 @@ bool CBoneMergeCache::GetAimEntOrigin( Vector *pAbsOrigin, QAngle *pAbsAngles )
 	
 	// Get mFollowBone.
 	m_pFollow->SetupBones( NULL, -1, m_nFollowBoneSetupMask, gpGlobals->curtime );
-	const matrix3x4_t &mFollowBone = m_pFollow->GetBone( m_MergedBones[0].m_iParentBone );
+	matrix3x4a_t mFollowBone;
+	GetFollowBone(0, mFollowBone);
 
 	// Get Inverse( mBoneLocal )
-	matrix3x4_t mBoneLocal, mBoneLocalInv;
+	matrix3x4a_t mBoneLocal, mBoneLocalInv;
 	SetupSingleBoneMatrix( m_pOwnerHdr, m_pOwner->GetSequence(), 0, m_MergedBones[0].m_iMyBone, mBoneLocal );
 	MatrixInvert( mBoneLocal, mBoneLocalInv );
 
 	// Now calculate mEntity = mFollowBone * Inverse( mBoneLocal )
-	matrix3x4_t mEntity;
-	ConcatTransforms( mFollowBone, mBoneLocalInv, mEntity );
+	matrix3x4a_t mEntity;
+	ConcatTransforms_Aligned( mFollowBone, mBoneLocalInv, mEntity );
 	MatrixAngles( mEntity, *pAbsAngles, *pAbsOrigin );
 
 	return true;
@@ -298,6 +296,17 @@ bool CBoneMergeCache::GetRootBone( matrix3x4_t &rootBone )
 int CBoneMergeCache::GetParentBone(CStudioHdr * pHdr, const char * pszName, boneextradata_t& extraData)
 {
 	return Studio_BoneIndexByName(pHdr, pszName);
+}
+
+void CBoneMergeCache::GetFollowBone(int iMergeBone, matrix3x4a_t& matBoneOut)
+{
+	int iParentBone = m_MergedBones[iMergeBone].m_iParentBone;
+	const boneextradata_t& data = m_MergedBones[iMergeBone].m_ExtraData;
+
+	if (data.m_iFlags & BONE_FLAG_OFFSET_MATRIX)
+		ConcatTransforms_Aligned(m_pFollow->GetBone(iParentBone), m_MergeOffsetMatrices[data.m_nMatrixIndex], matBoneOut);
+	else
+		MatrixCopy(m_pFollow->GetBone(iParentBone), matBoneOut);
 }
 
 

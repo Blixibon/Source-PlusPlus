@@ -19,8 +19,6 @@
 #include "particle_parse.h"
 #include "KeyValues.h"
 #include "time.h"
-#include "spp_utils/holiday_events.h"
-#include "spp_utils/spp_utils.h"
 #include "utlmap.h"
 
 #if defined USES_ECON_ITEMS && 0
@@ -1161,16 +1159,16 @@ int find_day_of_week( struct tm& found_day, int day_of_week, int step )
 const char* ppszEconHolidayNames[kHolidayCount] = {
 	"None",
 	"TF2Birthday",
-	"Halloween",
-	"Christmas",
-	"CommunityUpdate",
-	"EOTL",
-	"ValentinesDay",
-	"MeetThePyro",
-	"AprilFools",
-	"FullMoon",
-	"HalloweenOrFullMoon",
-	"HalloweenOrFullMoonOrValentines"
+	"halloween",
+	"christmas",
+	"community_update",
+	"eotl_launch",
+	"valentines",
+	"meet_the_pyro",
+	"april_fools",
+	"fullmoon",
+	"halloween_or_fullmoon",
+	"halloween_or_fullmoon_or_valentines"
 };
 
 CUtlMap<EHoliday, int> g_EconToEvent(DefLessFunc(EHoliday));
@@ -1181,7 +1179,7 @@ void CalculateEventMaps()
 	for (int i = 0; i <= kHoliday_LastStatic; i)
 	{
 		const char* pszName = ppszEconHolidayNames[i];
-		int iEvent = spp_utils->GetEventSystem()->LookupEvent(pszName);
+		int iEvent = g_pHolidayEvents->LookupEvent(pszName);
 		if (iEvent >= 0)
 		{
 			g_EconToEvent.Insert((EHoliday)i, iEvent);
@@ -1216,11 +1214,6 @@ EHoliday UTIL_EventToEHoliday(int iEvent)
 
 bool UTIL_IsHolidayActive(EHoliday eHoliday)
 {
-	if (eHoliday > kHoliday_LastStatic)
-	{
-		return false;
-	}
-
 	int iEvent = UTIL_EHolidayToEvent(eHoliday);
 
 	return UTIL_IsEventActive(iEvent);
@@ -1239,7 +1232,7 @@ EHoliday UTIL_GetHolidayForString(const char* pszHolidayName)
 
 bool UTIL_IsEventActive( /*EHoliday*/ int eHoliday )
 {
-	return spp_utils->GetEventSystem()->IsEventActive(eHoliday);
+	return g_pHolidayEvents->IsEventActive(eHoliday);
 }
 
 //-----------------------------------------------------------------------------
@@ -1247,7 +1240,7 @@ bool UTIL_IsEventActive( /*EHoliday*/ int eHoliday )
 //-----------------------------------------------------------------------------
 int	UTIL_GetEventForString( const char* pszHolidayName )
 {
-	return spp_utils->GetEventSystem()->LookupEvent(pszHolidayName);
+	return g_pHolidayEvents->LookupEvent(pszHolidayName);
 }
 
 //-----------------------------------------------------------------------------
@@ -1255,22 +1248,22 @@ int	UTIL_GetEventForString( const char* pszHolidayName )
 //-----------------------------------------------------------------------------
 const char* UTIL_GetActiveHolidayString()
 {
-	const holiday_t* pActiveEvents[1];
-	int iNumEvents = spp_utils->GetEventSystem()->GetActiveEvents(pActiveEvents, 1);
+	IHoliday* pActiveEvents[1];
+	int iNumEvents = g_pHolidayEvents->GetActiveEvents(pActiveEvents, 1);
 
 	if (iNumEvents < 1)
 		return nullptr;
 
-	return pActiveEvents[0]->chName;
+	return pActiveEvents[0]->GetHolidayName();
 }
 
 void UTIL_GetAllActiveHolidayStrings(CUtlStringList& vecList)
 {
-	const holiday_t* pActiveEvents[32];
-	int iNumEvents = spp_utils->GetEventSystem()->GetActiveEvents(pActiveEvents, 32);
+	IHoliday* pActiveEvents[32];
+	int iNumEvents = g_pHolidayEvents->GetActiveEvents(pActiveEvents, 32);
 	for (int i = 0; i < iNumEvents; i++)
 	{
-		const char* pszEvent = pActiveEvents[i]->chName;
+		const char* pszEvent = pActiveEvents[i]->GetHolidayName();
 		vecList.CopyAndAddToTail(pszEvent);
 	}
 }

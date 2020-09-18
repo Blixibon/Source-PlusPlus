@@ -3,6 +3,7 @@
 #include "eiface.h"
 #include "edict.h"
 #include "cdll_int.h"
+#include "../shared/usermessages.h"
 
 typedef struct
 {
@@ -12,6 +13,9 @@ typedef struct
 	IServerGameDLL* gameserver;
 	CGlobalVarsBase* gpClientGlobals;
 	CGlobalVars* gpServerGlobals;
+
+	CUserMessages* cl_usermessages;
+	CUserMessages* sv_usermessages;
 } enginePointers_t;
 
 class IInternalSharedData
