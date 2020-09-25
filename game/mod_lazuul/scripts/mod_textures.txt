@@ -3265,6 +3265,16 @@
 			"width"		"64"
 			"height"	"32"
 		}
+		
+		"telefrag"
+		{
+			"dfile"	"HUD/d_images_of"
+			"dnegfile" "HUD/dneg_images_of"
+			"x"		"195"
+			"y"		"209"
+			"width"		"63"
+			"height"	"47"
+		}
 
 		// HL2 ents start here
 		"crossbow"
@@ -3285,6 +3295,16 @@
 			"y"	"32"
 			"width"	"96"
 			"height"	"32"
+		}
+		
+		"annabelle"
+		{
+			"dfile"	"HUD/d_images_of"
+			"dnegfile" "HUD/dneg_images_of"
+			"x"		"0"
+			"y"		"98"
+			"width"		"124"
+			"height"	"24"
 		}
 
 		"ar2"
@@ -3940,7 +3960,7 @@
 			"width"		"48"
 			"height"	"16"
 		}
-		"gauss"
+		"gauss_hl1"
 		{
 			"dfile"		"hud/640hud1"
 			"dnegfile"		"hud/640hud1_neg"
@@ -3985,15 +4005,6 @@
 			"width"		"32"
 			"height"	"16"
 		}
-		"tripmine"
-		{
-			"dfile"		"hud/640hud1"
-			"dnegfile"		"hud/640hud1_neg"
-			"x"			"192"
-			"y"			"192"
-			"width"		"32"
-			"height"	"16"
-		}
 		"snark"
 		{
 			"dfile"		"hud/640hud1"
@@ -4002,6 +4013,15 @@
 			"y"			"208"
 			"width"		"32"
 			"height"	"16"
+		}		
+		"tripmine"
+		{
+			"dfile"	"HUD/d_images_of"
+			"dnegfile" "HUD/dneg_images_of"
+			"x"		"190"
+			"y"		"132"
+			"width"		"60"
+			"height"	"32"
 		}
 	}
 }

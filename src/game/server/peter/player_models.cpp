@@ -41,7 +41,7 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 			{
 				for (KeyValues * pkvGame = pkvGames->GetFirstSubKey(); pkvGame != NULL; pkvGame = pkvGame->GetNextKey())
 				{
-					player.reqs.singleplayer.games.AddToTail(g_pGameTypeSystem->LookupGametype(pkvGame->GetString()));
+					player.reqs.singleplayer.games.AddToTail(GameTypeSystem()->LookupGametype(pkvGame->GetString()));
 				}
 			}
 

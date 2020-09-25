@@ -3,4 +3,5 @@
     "game_base" "ep1"
     "game_mod"  "ep1"
     "population_set"    "episodic"
+    "skill_config"      "skill_episodic.cfg"
 }

@@ -29,6 +29,8 @@
 #include "props.h"
 #include "peter/env_entity_electric.h"
 #include "networkstringtable_gamedll.h"
+#include "EntityFreezing.h"
+#include "collisionutils.h"
 #ifdef HL2_DLL
 #include "vehicle_jeep.h"
 #include "npc_vortigaunt_episodic.h"
@@ -223,6 +225,10 @@ BEGIN_DATADESC( CBaseAnimating )
 
 	DEFINE_FIELD( m_fBoneCacheFlags, FIELD_SHORT ),
 
+	DEFINE_FIELD(m_flFrozen, FIELD_FLOAT),
+	DEFINE_FIELD(m_flFrozenThawRate, FIELD_FLOAT),
+	DEFINE_FIELD(m_flFrozenMax, FIELD_FLOAT),
+
 	DEFINE_INPUTFUNC(FIELD_VOID, "Dissolve", InputDissolve),
 	DEFINE_INPUTFUNC(FIELD_VOID, "SilentDissolve", InputSilentDissolve),
 	DEFINE_OUTPUT(m_OnFizzled, "OnFizzled"),
@@ -267,6 +273,8 @@ IMPLEMENT_SERVERCLASS_ST(CBaseAnimating, DT_BaseAnimating)
 	SendPropEHandle( SENDINFO( m_hLightingOriginRelative ) ),
 
 	SendPropDataTable( "serveranimdata", 0, &REFERENCE_SEND_TABLE( DT_ServerAnimationData ), SendProxy_ClientSideAnimation ),
+
+	SendPropFloat(SENDINFO(m_flFrozen)),
 
 	// Fading
 	SendPropFloat( SENDINFO( m_fadeMinDist ), 0, SPROP_NOSCALE ),
@@ -542,6 +550,8 @@ void CBaseAnimating::StudioFrameAdvance()
 		// Msg("%s : %s : %5.3f (skip)\n", GetClassname(), GetSequenceName( GetSequence() ), GetCycle() );
 		return;
 	}
+
+	Thaw(m_flFrozenThawRate* flInterval);
 
 	// Latch prev
 	m_flPrevAnimTime = m_flAnimTime;
@@ -3840,6 +3850,226 @@ void CBaseAnimating::InputBecomeRagdoll( inputdata_t &inputdata )
 	BecomeRagdollOnClient( vec3_origin );
 }
 
+void CBaseAnimating::Thaw(float flThawAmount)
+{
+	if (m_flFrozen <= 0.0f)
+		return;
+
+	bool bWasFrozen = IsFrozen();
+
+	CEntityFreezing* pFreezing = NULL;
+
+	if ((GetFlags() & FL_FREEZING) != 0)
+	{
+		// Get the freezing effect
+		pFreezing = dynamic_cast<CEntityFreezing*>(GetEffectEntity(ENT_EFFECT_FREEZE));
+	}
+
+	float fTotalFrozen = 0.0f;
+
+	if (pFreezing)
+	{
+		studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel(GetModel());
+		if (pStudioHdr)
+		{
+			// Thaw all hitboxes
+			mstudiohitboxset_t* set = pStudioHdr->pHitboxSet(GetHitboxSet());
+			if (set && set->numhitboxes > 0)
+			{
+				for (int i = 0; i < set->numhitboxes; ++i)
+				{
+					pFreezing->m_flFrozenPerHitbox.GetForModify(i) = MAX(0.0f, pFreezing->m_flFrozenPerHitbox[i] - flThawAmount);
+				}
+
+				fTotalFrozen /= set->numhitboxes;
+			}
+		}
+	}
+
+	float flNewFrozen;
+
+	if (fTotalFrozen)
+	{
+		// Total frozen amount from hitboxes
+		flNewFrozen = MAX(0.0f, fTotalFrozen * 2.0f);
+	}
+	else
+	{
+		// Not hitboxes frozen, so do the thawing directly
+		flNewFrozen = MAX(0.0f, m_flFrozen - flThawAmount);
+	}
+
+	m_flAttackFrozen = MIN(m_flAttackFrozen, flNewFrozen);
+	m_flMovementFrozen = MIN(m_flMovementFrozen, flNewFrozen);
+	m_flFrozen = flNewFrozen;
+
+	if (bWasFrozen && !IsFrozen())
+	{
+		// We're not in a frozen state anymore!
+		Unfreeze();
+	}
+
+	if (pFreezing)
+	{
+		if (m_flFrozen > 0.0f)
+		{
+			// Update our freezing effect
+			pFreezing->SetFrozen(m_flFrozen);
+		}
+		else
+		{
+			// Remove the freezing effect
+			UTIL_Remove(pFreezing);
+			SetEffectEntity(NULL, ENT_EFFECT_FREEZE);
+			RemoveFlag(FL_FREEZING);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Freezes this NPC
+//-----------------------------------------------------------------------------
+void CBaseAnimating::Freeze(float flFreezeAmount, CBaseEntity* pFreezer, Ray_t* pFreezeRay)
+{
+	if (flFreezeAmount < 0)
+	{
+		// This is a debugging freeze
+		m_flFrozen = 1.0f;
+		m_flFrozenThawRate = 0.0f;
+		return;
+	}
+
+	// Bail if it's not allowed to freeze
+	if (m_flFrozenMax < 0.0f)
+		return;
+
+	CEntityFreezing* pFreezing = NULL;
+
+	if ((GetFlags() & FL_FREEZING) != 0)
+	{
+		pFreezing = dynamic_cast<CEntityFreezing*>(GetEffectEntity(ENT_EFFECT_FREEZE));
+	}
+	else
+	{
+		pFreezing = CEntityFreezing::Create(this);
+		SetEffectEntity(pFreezing, ENT_EFFECT_FREEZE);
+		AddFlag(FL_FREEZING);
+	}
+
+	if (!pFreezing)
+	{
+		return;
+	}
+
+	float fMaxFrozen = (m_flFrozenMax == 0.0f) ? (1.0f) : m_flFrozenMax;
+
+	if (pFreezeRay)
+	{
+		float fTotalFrozen = 0.0f;
+		m_flMovementFrozen = 0.0f;
+		m_flAttackFrozen = 0.0f;
+
+		float flMidHeight = WorldSpaceCenter().z;
+
+		studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel(GetModel());
+		if (pStudioHdr)
+		{
+			// Freeze hitboxes that intersect this ray
+			mstudiohitboxset_t* set = pStudioHdr->pHitboxSet(GetHitboxSet());
+			if (set && set->numhitboxes > 0)
+			{
+				for (int i = 0; i < set->numhitboxes; ++i)
+				{
+					// Get the hitbox data
+					mstudiobbox_t* pBox = set->pHitbox(i);
+
+					matrix3x4_t matBoneTransform;
+					GetBoneTransform(pBox->bone, matBoneTransform);
+
+					trace_t tr;
+					if (IntersectRayWithOBB(*pFreezeRay, matBoneTransform, pBox->bbmin * GetModelScale(), pBox->bbmax * GetModelScale(), 0.0f, &tr))
+					{
+						// Ice ray intersected this bounding box
+						pFreezing->m_flFrozenPerHitbox.GetForModify(i) = MIN(1.0f, pFreezing->m_flFrozenPerHitbox[i] + flFreezeAmount);
+					}
+
+					fTotalFrozen += pFreezing->m_flFrozenPerHitbox[i];
+
+					switch (pBox->group)
+					{
+					case HITGROUP_LEFTLEG:
+					case HITGROUP_RIGHTLEG:
+						m_flMovementFrozen += pFreezing->m_flFrozenPerHitbox[i];
+						break;
+					case HITGROUP_CHEST:
+					case HITGROUP_HEAD:
+					case HITGROUP_LEFTARM:
+					case HITGROUP_RIGHTARM:
+						m_flAttackFrozen += pFreezing->m_flFrozenPerHitbox[i];
+						break;
+					default:
+						{
+							Vector vecPosition;
+							MatrixGetTranslation(matBoneTransform, vecPosition);
+
+							// If it's above their middle prevent attacking otherwise prevent movement
+							if (vecPosition.z > flMidHeight)
+							{
+								m_flAttackFrozen += pFreezing->m_flFrozenPerHitbox[i];
+							}
+							else
+							{
+								m_flMovementFrozen += pFreezing->m_flFrozenPerHitbox[i];
+							}
+						}
+						break;
+					}
+				}
+
+				fTotalFrozen /= set->numhitboxes;
+				m_flMovementFrozen /= set->numhitboxes;
+				m_flAttackFrozen /= set->numhitboxes;
+			}
+		}
+
+		m_flFrozen = MIN(fMaxFrozen, fTotalFrozen * 3.0f);
+		m_flMovementFrozen = MIN(m_flFrozen.Get(), m_flMovementFrozen * 3.0f);
+		m_flAttackFrozen = MIN(m_flFrozen.Get(), m_flAttackFrozen * 3.0f);
+	}
+	else
+	{
+		studiohdr_t* pStudioHdr = GetModel() ? modelinfo->GetStudiomodel(GetModel()) : NULL;
+		if (pStudioHdr)
+		{
+			// Freeze all hitboxes
+			mstudiohitboxset_t* set = pStudioHdr->pHitboxSet(GetHitboxSet());
+			if (set)
+			{
+				for (int i = 0; i < set->numhitboxes; ++i)
+				{
+					pFreezing->m_flFrozenPerHitbox.GetForModify(i) = MIN(1.0f, pFreezing->m_flFrozenPerHitbox[i] + flFreezeAmount);
+				}
+			}
+		}
+
+		m_flFrozen = MIN(fMaxFrozen, m_flFrozen + flFreezeAmount);
+	}
+
+	pFreezing->SetFrozen(m_flFrozen);
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CBaseAnimating::Unfreeze()
+{
+	if (m_flFrozenThawRate < 0.0f)
+	{
+		// It's never going to thaw, so jump it back to zero
+		m_flFrozen = 0.0f;
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -3972,7 +4202,7 @@ void CBaseAnimating::CleanserDissolve(CBaseEntity* pActivator)
 		pDisolvingAnimating->SetName(GetEntityName());
 		UTIL_TransferPoseParameters(this, pDisolvingAnimating);
 		TransferChildren(this, pDisolvingAnimating);
-		pDisolvingAnimating->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS);
+		pDisolvingAnimating->SetCollisionGroup(COLLISION_GROUP_DISSOLVING);
 		AddSolidFlags(FSOLID_NOT_SOLID);
 		AddEffects(EF_NODRAW);
 

@@ -142,7 +142,7 @@ void CShadowControl::Spawn( void )
 	SetSolid( SOLID_NONE );
 
 	// Disable dynamic shadow angles in coast maps
-	if (g_pGameTypeSystem->GetMapOptionBool("disablelocalshadows", false))
+	if (GameTypeSystem()->GetMapOptionBool("disablelocalshadows", false))
 		m_bEnableLocalLightShadows = false;
 }
 

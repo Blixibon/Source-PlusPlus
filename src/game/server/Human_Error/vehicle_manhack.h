@@ -15,10 +15,11 @@
 #include "hl2_player.h"
 #include "npc_manhack.h"
 #include "physobj.h"
+#include "peter/laz_player.h"
 
 class CPropVehicleManhack;
 
-#define NUMBER_OF_MAX_CONTROLLABLE_MANHACKS 3
+//#define NUMBER_OF_MAX_CONTROLLABLE_MANHACKS 3
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -37,6 +38,7 @@ public:
 
 	virtual bool	IsPassengerEntering( void ) { return false; }	// NOTE: This mimics the scenario HL2 would have seen
 	virtual bool	IsPassengerExiting( void ) { return false; }
+	virtual bool	IsPassengerVisible(int nRole = VEHICLE_ROLE_DRIVER) { return true; }
 
 protected:
 
@@ -49,7 +51,7 @@ class CPropVehicleManhack :  public CBaseProp, public IDrivableVehicle
 public:
 	CPropVehicleManhack *m_pNext;
 
-	static CPropVehicleManhack *GetManhackVehicle();
+	static CPropVehicleManhack *GetManhackVehicleList();
 
 
 	DECLARE_DATADESC();
@@ -67,7 +69,7 @@ public:
 	void			Think(void);
 
 	virtual int		ObjectCaps( void ) { return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; };
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
+	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator = NULL);
 	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
 
 	void			PlayerControlInit( CBasePlayer *pPlayer );
@@ -77,7 +79,8 @@ public:
 
 	//void			Activate( void );
 
-	bool			CreateControllableManhack( const Vector &position, const QAngle &angles, CBaseEntity *pOwner );
+	//bool			CreateControllableManhack( const Vector &position, const QAngle &angles, CBaseEntity *pOwner );
+	void			SetManhack(CNPC_Manhack* pManhack);
 	bool			HasNPCManhack() 
 					{ 
 						if (m_hManhack!=NULL) 
@@ -93,8 +96,8 @@ public:
 	//virtual void		DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased );
 	void				DriveManhack(CBasePlayer *player, int nButtons );
 
-	void				CallManhacksBack(CBasePlayer *Player, float flComeBackTime);
-	void				TellManhacksToGoThere(CBasePlayer *pPlayer, float flGoThereTime);
+	//void				CallManhacksBack(CBasePlayer *Player, float flComeBackTime);
+	//void				TellManhacksToGoThere(CBasePlayer *pPlayer, float flGoThereTime);
 
 	// Inputs to force the player in/out of the vehicle
 	void				ForcePlayerIn( CBaseEntity *pOwner );
@@ -140,7 +143,7 @@ public:
 
 	virtual bool		PassengerShouldReceiveDamage( CTakeDamageInfo &info ) { return true; }
 
-	int					GetNumberOfHacks(bool bReleaseSlot);
+	int					GetNumberOfHacks();
 
 	// If this is a vehicle, returns the vehicle interface
 	virtual IServerVehicle *GetServerVehicle() { return &m_ServerVehicle; }
@@ -167,7 +170,7 @@ protected:
 
 public:
 
-	Vector			GetManhackEyePosition() { return m_vecManhackEye; }
+	Vector			GetManhackEyePosition() { return m_hManhack->GetAbsOrigin(); }
 
 private:
 
@@ -176,20 +179,20 @@ private:
 	CNetworkHandle( CBaseEntity,	m_hTarget );
 	CNetworkVar( int, m_iTargetType );
 	
-	CNetworkQAngle(		m_angManhackEye );
-	CNetworkVector(		m_vecManhackEye );
+	//CNetworkQAngle(		m_angManhackEye );
+	//CNetworkVector(		m_vecManhackEye );
 	CNetworkVector(		m_vecFlyingDirection );
 
-	CHandle<CNPC_Manhack>		m_hManhack;
+	CNetworkHandle(CNPC_Manhack,	m_hManhack);
 
-	CHandle<CNPC_Manhack>		m_hSetOfManhacks[NUMBER_OF_MAX_CONTROLLABLE_MANHACKS];
-	int				m_iNumberOfManhacks;
+	//CHandle<CNPC_Manhack>		m_hSetOfManhacks[NUMBER_OF_MAX_CONTROLLABLE_MANHACKS];
+	//int				m_iNumberOfManhacks;
 
-	int				m_iCurrentManhackIndex;
+	//int				m_iCurrentManhackIndex;
 	float			m_fTimeToChangeManhack;
 
 	bool			FindNextManhack(bool bRemoveIfNone = false);
-	void			DestroyAllManhacks();
+	//void			DestroyAllManhacks();
 
 	int				m_iHintTimesShown;
 	int				m_iHintNoSwapTimesShown;
@@ -209,6 +212,6 @@ private:
 
 };
 
-CPropVehicleManhack *VehicleManhack_Create( const Vector &position, const QAngle &angles, CBaseEntity *pOwner  );
+CPropVehicleManhack *VehicleManhack_Create(CBasePlayer *pOwner, CNPC_Manhack *pManhack );
 
 #endif //VEHICLE_MANHACK_H

@@ -618,6 +618,7 @@ void Cubemap_FixupBrushSidesMaterials( void );
 void Cubemap_AttachDefaultCubemapToSpecularSides( void );
 // Add skipped cubemaps that are referenced by the engine
 void Cubemap_AddUnreferencedCubemaps( void );
+void Cubemap_WriteParallaxInfo();
 
 //=============================================================================
 // overlay.cpp

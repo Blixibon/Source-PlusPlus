@@ -66,7 +66,7 @@ public:
 	// Return the entity that should get assistance credit
 	virtual CBaseEntity *GetAssistant(void)
 	{
-		if (m_hOwningPlayer.IsValid())
+		if (m_hOwningPlayer.Get())
 			return this;
 
 		return nullptr;
@@ -76,7 +76,7 @@ public:
 
 	virtual CBasePlayer *GetBestPlayer()
 	{
-		if (m_hOwningPlayer.IsValid())
+		if (m_hOwningPlayer.Get())
 			return m_hOwningPlayer.Get();
 
 		return BaseClass::GetBestPlayer();
@@ -99,7 +99,7 @@ public:
 	float			GetDefaultNavGoalTolerance();
 
 	void			UpdateOnRemove( void );
-	void			KillSprites( float flDelay );
+	//void			KillSprites( float flDelay );
 
 	void			OnStateChange( NPC_STATE OldState, NPC_STATE NewState );
 
@@ -142,7 +142,7 @@ public:
 
 	void			BladesInit();
 	void			SoundInit( void );
-	void			StartEye( void );
+	//void			StartEye( void );
 	
 	bool			HandleInteraction(int interactionType, void* data, CBaseCombatCharacter* sourceEnt);
 
@@ -187,9 +187,9 @@ public:
 	virtual void	NotifyInteraction( CAI_BaseNPC *pUser )
 	{
 		// Turn the sprites off and on again so their colors will change.
-		KillSprites(0.0f);
+		//KillSprites(0.0f);
 		m_bHackedByAlyx = true; 
-		StartEye();
+		//StartEye();
 
 		UpdateTeam();
 	}
@@ -285,12 +285,12 @@ private:
 
 	float			m_flBladeSpeed;
 
-	CSprite			*m_pEyeGlow;
-	CSprite			*m_pLightGlow;
+	//CSprite			*m_pEyeGlow;
+	//CSprite			*m_pLightGlow;
 	
 	CHandle<SmokeTrail>	m_hSmokeTrail;
 	CHandle<CBaseEntity> m_pPrevOwner;
-	CHandle<CBasePlayer> m_hOwningPlayer;
+	CNetworkHandle(CBasePlayer, m_hOwningPlayer);
 
 	int				m_iPanel1;
 	int				m_iPanel2;
@@ -312,6 +312,21 @@ private:
 	CNetworkVar( int,	m_nEnginePitch2 );
 	CNetworkVar( float,	m_flEnginePitch1Time );
 	CNetworkVar( float,	m_flEnginePitch2Time );
+	CNetworkVar(int, m_nEyeState);
+
+	//NEW CONTROLLABLE STUFF:
+	CNetworkVar(bool, m_bIsControlled);
+	bool m_bShouldFollowPlayer;
+
+public:
+	void		SetControlledByPlayer(bool bControllable) { m_bIsControlled = bControllable; }
+	void		ShouldFollowPlayer(bool bFollow) { m_bShouldFollowPlayer = bFollow; }
+
+	void		MoveUpDown(float direction);
+	void		MoveForwardBack(float direction, QAngle angManhackEye);
+
+	void		ComeBackToPlayer(CBasePlayer* pPlayer, float fCallBackTime);
+	void		GoThere(CBasePlayer* pPlayer, float fGoHereTime);
 };
 
 #endif	//NPC_MANHACK_H

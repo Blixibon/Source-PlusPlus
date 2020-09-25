@@ -7,6 +7,7 @@
 #include "networkstringtabledefs.h"
 #include "hl2_vehicle_radar.h"
 #include "iinput.h"
+#include "c_npc_manhack.h"
 
 extern INetworkStringTable *g_pStringTablePlayerFootSteps;
 
@@ -25,6 +26,8 @@ public:
 	Vector m_vLocatorPositions[LOCATOR_MAX_CONTACTS];
 	int m_iLocatorContactType[LOCATOR_MAX_CONTACTS];
 	float m_flLocatorRange;
+
+	EHANDLE m_hSetOfManhacks[NUMBER_OF_CONTROLLABLE_MANHACKS];
 };
 
 class C_Laz_Player : public C_Portal_Player
@@ -124,6 +127,9 @@ public:
 	const LazSpeedData_t GetLazMoveData();
 
 	//virtual void PostThink(void);
+
+	C_NPC_Manhack* GetCurrentManhack();
+	int				GetManhackCount();
 public:
 	bool m_bHasLongJump;
 
@@ -157,6 +163,8 @@ protected:
 	QAngle m_angAutoMoveAngles;
 
 	int				m_iOldTeam;
+
+	EHANDLE			m_hCurrentManhack;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

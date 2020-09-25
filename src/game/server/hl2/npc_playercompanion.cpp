@@ -3356,9 +3356,10 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 
 		CBaseEntity *pEntity = NULL;
 		trace_t tr;
+		OverrideMoveType_e eType = MOVE_INVALID;
 
 		// For each possible entity, compare our known interesting classnames to its classname, via ID
-		while( ( pEntity = OverrideMoveCache_FindTargetsInRadius( pEntity, GetAbsOrigin(), AVOID_TEST_DIST ) ) != NULL )
+		while( ( pEntity = OverrideMoveCache_FindTargetsInRadius( pEntity, GetAbsOrigin(), AVOID_TEST_DIST, &eType) ) != NULL )
 		{
 			// Handle each type
 			if ( pEntity->m_iClassname == iszEnvFire )
@@ -3374,7 +3375,7 @@ bool CNPC_PlayerCompanion::OverrideMove( float flInterval )
 				}
 			}
 #ifdef HL2_EPISODIC
-			else if ( pEntity->m_iClassname == iszNPCTurretFloor )
+			else if ( eType == MOVE_FLOORTURRET )
 			{
 				UTIL_TraceLine( WorldSpaceCenter(), pEntity->WorldSpaceCenter(), MASK_BLOCKLOS, pEntity, COLLISION_GROUP_NONE, &tr );
 				if (tr.fraction == 1.0 && !tr.startsolid)
@@ -4532,16 +4533,11 @@ AI_END_CUSTOM_NPC();
 // Special movement overrides for player companions
 //
 
-#ifdef HL2_LAZUL
-#define NUM_OVERRIDE_MOVE_CLASSNAMES	5
-#else
-#define NUM_OVERRIDE_MOVE_CLASSNAMES	4
-#endif // HL2_LAZUL
-
-
 class COverrideMoveCache : public IEntityListener
 {
 public:
+	COverrideMoveCache() : m_Cache(DefLessFunc(EHANDLE))
+	{}
 
 	void LevelInitPreEntity( void )
 	{
@@ -4560,12 +4556,15 @@ public:
 		m_Cache.Purge();
 	}
 
-	inline bool MatchesCriteria( CBaseEntity *pEntity )
+	inline bool MatchesCriteria( CBaseEntity *pEntity, int& iType )
 	{
 		for ( int i = 0; i < NUM_OVERRIDE_MOVE_CLASSNAMES; i++ )
 		{
-			if ( pEntity->m_iClassname == m_Classname[i] )
+			if (m_Classname[i].Find(pEntity->m_iClassname) != m_Classname[i].InvalidIndex())
+			{
+				iType = i; 
 				return true;
+			}
 		}
 
 		return false;
@@ -4573,9 +4572,10 @@ public:
 
 	virtual void OnEntitySpawned( CBaseEntity *pEntity )
 	{
-		if ( MatchesCriteria( pEntity ) )
+		int iType;
+		if (MatchesCriteria(pEntity, iType))
 		{
-			m_Cache.AddToTail( pEntity );
+			m_Cache.InsertOrReplace(pEntity, iType);
 		}
 	};
 
@@ -4584,30 +4584,37 @@ public:
 		if ( !m_Cache.Count() )
 			return;
 
-		if ( MatchesCriteria( pEntity ) )
+		int iType;
+		if (MatchesCriteria(pEntity, iType))
 		{
-			m_Cache.FindAndRemove( pEntity );
+			m_Cache.Remove(pEntity);
 		}
 	};
 
-	CBaseEntity *FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius )
+	CBaseEntity *FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius, OverrideMoveType_e* pEntType)
 	{
 		if ( !m_Cache.Count() )
 			return NULL;
 
-		int nIndex = m_Cache.InvalidIndex();
+		unsigned short nIndex = m_Cache.InvalidIndex();
 
 		// If we're starting with an entity, start there and move past it
 		if ( pFirstEntity != NULL )
 		{
 			nIndex = m_Cache.Find( pFirstEntity );
-			nIndex = m_Cache.Next( nIndex );
-			if ( nIndex == m_Cache.InvalidIndex() )
+			nIndex = m_Cache.NextInorder( nIndex );
+			if (nIndex == m_Cache.InvalidIndex())
+			{
+				if (pEntType)
+				{
+					*pEntType = MOVE_INVALID;
+				}
 				return NULL;
+			}
 		}
 		else
 		{
-			nIndex = m_Cache.Head();
+			nIndex = m_Cache.FirstInorder();
 		}
 
 		CBaseEntity *pTarget = NULL;
@@ -4616,13 +4623,23 @@ public:
 		// Look through each cached target, looking for one in our range
 		while ( nIndex != m_Cache.InvalidIndex() )
 		{
-			pTarget = m_Cache[nIndex];
-			if ( pTarget && ( pTarget->GetAbsOrigin() - vecOrigin ).LengthSqr() < flRadiusSqr )
+			pTarget = m_Cache.Key(nIndex);
+			if (pTarget && (pTarget->GetAbsOrigin() - vecOrigin).LengthSqr() < flRadiusSqr)
+			{
+				if (pEntType)
+				{
+					*pEntType = (OverrideMoveType_e)m_Cache.Element(nIndex);
+				}
 				return pTarget;
+			}
 
-			nIndex = m_Cache.Next( nIndex );
+			nIndex = m_Cache.NextInorder( nIndex );
 		}
 
+		if (pEntType)
+		{
+			*pEntType = MOVE_INVALID;
+		}
 		return NULL;
 	}
 
@@ -4634,9 +4651,10 @@ public:
 		CBaseEntity *pEnt = gEntList.FirstEnt();
 		while( pEnt )
 		{
-			if( MatchesCriteria( pEnt ) )
+			int iType;
+			if (MatchesCriteria(pEnt, iType))
 			{
-				m_Cache.AddToTail( pEnt );
+				m_Cache.InsertOrReplace(pEnt, iType);
 			}
 
 			pEnt = gEntList.NextEnt( pEnt );
@@ -4646,26 +4664,32 @@ public:
 private:
 	inline void CacheClassnames( void )
 	{
-		m_Classname[0] = AllocPooledString( "env_fire" );
-		m_Classname[1] = AllocPooledString( "combine_mine" );
-		m_Classname[2] = AllocPooledString( "npc_turret_floor" );
-		m_Classname[3] = AllocPooledString( "entityflame" );
+		for (int i = 0; i < NUM_OVERRIDE_MOVE_CLASSNAMES; i++)
+			m_Classname[i].Purge();
+
+		m_Classname[MOVE_ENVFIRE].AddToHead(AllocPooledString("env_fire"));
+		m_Classname[MOVE_COMBINEMINE].AddToHead(AllocPooledString( "combine_mine" ));
+		m_Classname[MOVE_FLOORTURRET].AddToHead(AllocPooledString( "npc_turret_floor" ));
+#ifdef PORTAL
+		m_Classname[MOVE_FLOORTURRET].AddToHead(AllocPooledString("npc_portal_turret_floor"));
+#endif // PORTAL
+		m_Classname[MOVE_BURNINGENT].AddToHead(AllocPooledString( "entityflame" ));
 #ifdef HL2_LAZUL
-		m_Classname[4] = AllocPooledString("npc_grenade_smoke");
+		m_Classname[MOVE_SMOKEGRENADE].AddToHead(AllocPooledString("npc_grenade_smoke"));
 #endif
 	}
 
-	CUtlLinkedList<EHANDLE>	m_Cache;
-	string_t				m_Classname[NUM_OVERRIDE_MOVE_CLASSNAMES];
+	CUtlMap<EHANDLE, int>	m_Cache;
+	CUtlVector< string_t >	m_Classname[NUM_OVERRIDE_MOVE_CLASSNAMES];
 };
 
 // Singleton for access
 COverrideMoveCache g_OverrideMoveCache;
 COverrideMoveCache *OverrideMoveCache( void ) { return &g_OverrideMoveCache; }
 
-CBaseEntity *OverrideMoveCache_FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius )
+CBaseEntity *OverrideMoveCache_FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius, OverrideMoveType_e* pEntType)
 {
-	return g_OverrideMoveCache.FindTargetsInRadius( pFirstEntity, vecOrigin, flRadius );
+	return g_OverrideMoveCache.FindTargetsInRadius( pFirstEntity, vecOrigin, flRadius, pEntType );
 }
 
 void OverrideMoveCache_ForceRepopulateList( void )

@@ -501,6 +501,7 @@ public:
 	
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
+	DECLARE_ENT_SCRIPTDESC();
 
 	virtual int			Save( ISave &save ); 
 	virtual int			Restore( IRestore &restore );
@@ -1183,6 +1184,41 @@ private:
 
 public:
 	CAI_MoveMonitor	m_CommandMoveMonitor;
+
+	// VScript stuff uses "VScript" instead of just "Script" to avoid
+	// confusion with NPC_STATE_SCRIPT or StartScripting
+	HSCRIPT				VScriptGetEnemy();
+	//void				VScriptSetEnemy(HSCRIPT pEnemy);
+	Vector				VScriptGetEnemyLKP();
+
+	//HSCRIPT				VScriptFindEnemyMemory(HSCRIPT pEnemy);
+
+	int					VScriptGetState();
+
+	const char* VScriptGetHintGroup() { return STRING(GetHintGroup()); }
+	HSCRIPT				VScriptGetHintNode();
+
+	const char* ScriptGetActivity() { return GetActivityName(GetActivity()); }
+	int					ScriptGetActivityID() { return GetActivity(); }
+	void				ScriptSetActivity(const char* szActivity) { SetActivity((Activity)GetActivityID(szActivity)); }
+	void				ScriptSetActivityID(int iActivity) { SetActivity((Activity)iActivity); }
+
+	const char* VScriptGetSchedule();
+	int					VScriptGetScheduleID();
+	//void				VScriptSetSchedule(const char* szSchedule);
+	//void				VScriptSetScheduleID(int iSched) { SetSchedule(iSched); }
+	const char* VScriptGetTask();
+	int					VScriptGetTaskID();
+
+	//bool				VScriptHasCondition(const char* szCondition) { return HasCondition(GetConditionID(szCondition)); }
+	//bool				VScriptHasConditionID(int iCondition) { return HasCondition(iCondition); }
+	//void				VScriptSetCondition(const char* szCondition) { SetCondition(GetConditionID(szCondition)); }
+	//void				VScriptClearCondition(const char* szCondition) { ClearCondition(GetConditionID(szCondition)); }
+
+	//HSCRIPT				VScriptGetExpresser();
+
+	HSCRIPT				VScriptGetCine();
+	int					GetScriptState() { return m_scriptState; }
 
 	//-----------------------------------------------------
 	// Dynamic scripted NPC interactions
@@ -2135,6 +2171,12 @@ public:
 	virtual int			DrawDebugTextOverlays(void);
 	void				ToggleFreeze(void);
 
+	virtual void		Freeze(float flFreezeAmount = -1.0f, CBaseEntity* pFreezer = NULL, Ray_t* pFreezeRay = NULL);
+	virtual bool		ShouldBecomeStatue();
+	virtual bool		IsMovementFrozen(void) { return m_flMovementFrozen > m_flFrozenMoveBlock; }
+	virtual bool		IsAttackFrozen(void) { return m_flAttackFrozen > 0.0f; }
+	virtual void		Unfreeze();
+
 	static void			ClearAllSchedules(void);
 
 	static int			m_nDebugBits;
@@ -2180,6 +2222,8 @@ public:
 	CNetworkVar( int,   m_iSpeedModRadius );
 	CNetworkVar( int,   m_iSpeedModSpeed );
 	CNetworkVar( float, m_flTimePingEffect );			// Display the pinged effect until this time
+
+	float	m_flFrozenMoveBlock;	// entity can't move after it's frozen past this amount
 
 	void				InputActivateSpeedModifier( inputdata_t &inputdata ) { m_bSpeedModActive = true; }
 	void				InputDisableSpeedModifier( inputdata_t &inputdata ) { m_bSpeedModActive = false; }

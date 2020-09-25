@@ -14,7 +14,11 @@ bool GTSLessFunc(const CGTSymbol&a, const CGTSymbol&b)
 }
 
 CGameTypeManager g_GTManager;
-CGameTypeManager *g_pGameTypeSystem = &g_GTManager;
+
+CGameTypeManager* GameTypeSystem()
+{
+	return &g_GTManager;
+}
 
 CUtlFilenameSymbolTable CGameTypeManager::sm_FilenameTable;
 
@@ -167,6 +171,7 @@ bool CGameTypeManager::Init()
 				GameDef.m_BaseGame = FindOrAddGameType(pKVRoot->GetString("game_base", "hl2"));
 				GameDef.m_GameMod = FindOrAddGameType(pKVRoot->GetString("game_mod", "hl2"));
 				GameDef.m_PopSet = pKVRoot->GetString("population_set", "default");
+				GameDef.m_SkillConfig = pKVRoot->GetString("skill_config", nullptr);
 				GameDef.m_bExpectPortals = pKVRoot->GetBool("portals");
 				KeyValues* pkvSoundScripts = pKVRoot->FindKey("sound_overrides");
 				if (pkvSoundScripts)
@@ -266,6 +271,19 @@ int CGameTypeManager::GetSoundOverrideScripts(CUtlStringList& scripts)
 	}
 
 	return iCount;
+}
+
+void CGameTypeManager::AppendSkillCommand(OUT_Z_CAP(maxLenInChars) char* pDest, int maxLenInChars)
+{
+	if (m_CurrentGame.m_SkillConfig.IsValid())
+	{
+		const char *pchLineEnd = V_strnchr(pDest, '\n', maxLenInChars);
+		if (pchLineEnd)
+			*const_cast<char *> (pchLineEnd) = 0;
+		
+		CFmtStr str(";exec %s\n", m_CurrentGame.m_SkillConfig.String());
+		V_strcat(pDest, str.Access(), maxLenInChars);
+	}
 }
 
 int CGameTypeManager::LookupGametype(const char *pchGame)
@@ -368,21 +386,21 @@ void CGameTypeManager::Reload()
 
 CON_COMMAND(gametype_print, "Prints info\n")
 {
-	int iPrefixes = g_pGameTypeSystem->m_PrefixVector.Count();
-	int iGames = g_pGameTypeSystem->m_vecGames.Count();
+	int iPrefixes = GameTypeSystem()->m_PrefixVector.Count();
+	int iGames = GameTypeSystem()->m_vecGames.Count();
 	int i = 0;
 	Msg("Registered Games:\n");
 	for (i = 0; i < iGames; i++)
 	{
-		Msg("	%i: %s\n", i, g_pGameTypeSystem->m_vecGames[i]);
+		Msg("	%i: %s\n", i, GameTypeSystem()->m_vecGames[i]);
 	}
 	Msg("Registered Prefixes:\n");
 	for (i = 0; i < iPrefixes; i++)
 	{
-		if (g_pGameTypeSystem->m_PrefixVector[i]->Type < iGames)
-			Msg("	%s: %s\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix.String(), g_pGameTypeSystem->m_vecGames[g_pGameTypeSystem->m_PrefixVector[i]->Type]);
+		if (GameTypeSystem()->m_PrefixVector[i]->Type < iGames)
+			Msg("	%s: %s\n", GameTypeSystem()->m_PrefixVector[i]->prefix.String(), GameTypeSystem()->m_vecGames[GameTypeSystem()->m_PrefixVector[i]->Type]);
 		else
-			Msg("	%s: %i\n", g_pGameTypeSystem->m_PrefixVector[i]->prefix.String(), (int)g_pGameTypeSystem->m_PrefixVector[i]->Type);
+			Msg("	%s: %i\n", GameTypeSystem()->m_PrefixVector[i]->prefix.String(), (int)GameTypeSystem()->m_PrefixVector[i]->Type);
 	}
 }
 

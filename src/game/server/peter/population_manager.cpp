@@ -114,7 +114,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 
 		// If it's null, ask the gametype system for the area it got from the level's name.
 		if (pchTag == nullptr)
-			pchTag = g_pGameTypeSystem->GetPopulationLocation();
+			pchTag = GameTypeSystem()->GetPopulationLocation();
 
 		if (FStrEq(pchTag, ""))
 		{
@@ -126,7 +126,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 			m_iszPopulationTag = AllocPooledString(pchTag);
 		}
 
-		const char* pszPopSet = g_pGameTypeSystem->GetPopulationSet();
+		const char* pszPopSet = GameTypeSystem()->GetPopulationSet();
 
 		// Iterate through every definition instance we know about.
 		for (int i = 0; i < m_Definitions.Count(); i++)

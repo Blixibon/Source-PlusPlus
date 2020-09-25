@@ -6,6 +6,7 @@
 #include "utlrbtree.h"
 #include "filesystem.h"
 #include "convar_serverbounded.h"
+#include "gameui/modinfo.h"
 #if 0
 static unsigned long int unregisteredUnlocked{ 0 };
 static unsigned long int developmentOnlyUnlocked{ 0 };
@@ -464,11 +465,14 @@ static constexpr const CConCommandReplacement SECReplaceList[] =
 	{ "help", NewHelp },
 	//{ "cvarlist", NewCvarlist },
 };
-
 static constexpr const int NUM_SEC_CONCOMMAND_REPLACEMENTS = sizeof(SECReplaceList) / sizeof(CConCommandReplacement);
 
+//extern void NewStartupMenu_f(const CCommand& args);
 void SEC_Console_Replace() {
 	g_ConCommandReplace.ReplaceConCommands(SECReplaceList, NUM_SEC_CONCOMMAND_REPLACEMENTS);
+
+	//if (ModInfo().HasMultipleSPCampaigns())
+	//	g_ConCommandReplace.ReplaceConCommand("startupmenu", NewStartupMenu_f);
 
 	// Build our alphabetical ConCommand tree. We can assume that there aren't going to be any new ConCommands registered... if there are, we should call sec_updateccbtree.
 	UpdateCCBTree();

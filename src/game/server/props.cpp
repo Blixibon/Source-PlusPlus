@@ -882,6 +882,7 @@ void CBreakableProp::Spawn()
 	if ( ( m_iHealth == 0 ) ||
         ( !m_iNumBreakableChunks &&
 		    !HasInteraction( PROPINTER_PHYSGUN_BREAK_EXPLODE ) &&
+			!HasInteraction(PROPINTER_PHYSGUN_BREAK_EXPLODE_ICE) &&
 		    !HasInteraction( PROPINTER_PHYSGUN_FIRST_BREAK ) &&
 		    !HasInteraction( PROPINTER_FIRE_FLAMMABLE ) &&
 		    !HasInteraction( PROPINTER_FIRE_IGNITE_HALFHEALTH ) &&
@@ -897,6 +898,7 @@ void CBreakableProp::Spawn()
 		if( g_pGameRules->GetAutoAimMode() == AUTOAIM_ON_CONSOLE )
 		{
 			if ( HasInteraction( PROPINTER_PHYSGUN_BREAK_EXPLODE ) ||
+				HasInteraction(PROPINTER_PHYSGUN_BREAK_EXPLODE_ICE) ||
 				HasInteraction( PROPINTER_FIRE_IGNITE_HALFHEALTH ) )
 			{
 				// Exploding barrels, exploding gas cans
@@ -1729,6 +1731,12 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 				0.0f, this );
 			EmitSound("PropaneTank.Burst");
 		}
+		else if (HasInteraction(PROPINTER_PHYSGUN_BREAK_EXPLODE_ICE))
+		{
+			ExplosionCreate(WorldSpaceCenter(), angles, pAttacker, m_explodeDamage, m_explodeRadius,
+				SF_ENVEXPLOSION_NODAMAGE | SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE | SF_ENVEXPLOSION_SURFACEONLY | SF_ENVEXPLOSION_ICE,
+				0.0f, this);
+		}
 		else
 		{
 			float flScale = GetModelScale();
@@ -1824,6 +1832,33 @@ void CBreakableProp::Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info )
 				if ( pEntity->PassesDamageFilter( info ) )
 				{
 					pEntity->MyCombatCharacterPointer()->Ignite( 30 );
+				}
+			}
+		}
+	}
+
+	if (HasInteraction(PROPINTER_PHYSGUN_BREAK_EXPLODE_ICE))
+	{
+		if (bExploded == false)
+		{
+			ExplosionCreate(origin, angles, pAttacker, 1, m_explodeRadius,
+				SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE | SF_ENVEXPLOSION_ICE, 0.0f, this);
+		}
+
+		// Find and freeze all NPC's within the radius
+		CBaseEntity* pEntity = NULL;
+		for (CEntitySphereQuery sphere(origin, m_explodeRadius); (pEntity = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity())
+		{
+			if (pEntity && pEntity->MyCombatCharacterPointer())
+			{
+				// Check damage filters so we don't ignite friendlies
+				if (pEntity->PassesDamageFilter(info))
+				{
+					CAI_BaseNPC* pNPC = dynamic_cast<CAI_BaseNPC*>(pEntity);
+					if (pNPC)
+					{
+						pNPC->Freeze(4.0f, pAttacker);
+					}
 				}
 			}
 		}

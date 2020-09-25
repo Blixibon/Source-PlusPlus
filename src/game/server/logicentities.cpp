@@ -27,10 +27,10 @@ extern CServerGameDLL g_ServerGameDLL;
 
 #define MAX_SCRIPT_GROUP 16
 
-class CLogicScript : public CPointEntity
+class CLogicScript : public CLogicalEntity
 {
 public:
-	DECLARE_CLASS(CLogicScript, CPointEntity);
+	DECLARE_CLASS(CLogicScript, CLogicalEntity);
 	DECLARE_DATADESC();
 
 	void RunVScripts()

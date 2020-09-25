@@ -43,10 +43,11 @@ void HLSS_DrawTargetHud(Vector vecOrigin, C_BasePlayer *pPlayer, C_BaseEntity *p
 
 IMPLEMENT_CLIENTCLASS_DT(C_PropVehicleManhack, DT_PropVehicleManhack, CPropVehicleManhack)
 	RecvPropEHandle( RECVINFO(m_hPlayer) ),
+	RecvPropEHandle( RECVINFO(m_hManhack)),
 	RecvPropEHandle( RECVINFO(m_hTarget) ),
 	RecvPropInt( RECVINFO(m_iTargetType) ),
-	RecvPropQAngles( RECVINFO( m_angManhackEye ) ),
-	RecvPropVector( RECVINFO( m_vecManhackEye ) ),
+	//RecvPropQAngles( RECVINFO( m_angManhackEye ) ),
+	//RecvPropVector( RECVINFO( m_vecManhackEye ) ),
 	RecvPropVector( RECVINFO( m_vecFlyingDirection ) ),
 	RecvPropInt( RECVINFO( m_iManhackHealth ) ),
 	RecvPropInt( RECVINFO( m_iManhackDistance ) ),
@@ -153,38 +154,46 @@ void C_PropVehicleManhack::GetVehicleViewPosition( int nRole, Vector *pAbsOrigin
 	//c_prop_vehicle.cpp
 	//ManhackVehicleViewSmoothing(m_hPlayer, pAbsOrigin, pAbsAngles, m_angManhackEye, m_vecManhackEye, &m_ViewSmoothingData, pFOV );
 
-	matrix3x4_t vehicleEyePosToWorld;
+	C_NPC_Manhack* pManhack = m_hManhack.Get();
 
-	AngleMatrix( m_angManhackEye, vehicleEyePosToWorld );
+	if (pManhack)
+	{
+		Vector  m_vecManhackEye = pManhack->GetAbsOrigin();
+		QAngle m_angManhackEye = pManhack->GetAbsAngles();
 
-	// Dampen the eye positional change as we drive around.
-	*pAbsAngles = m_hPlayer->EyeAngles();
+		matrix3x4_t vehicleEyePosToWorld;
 
-	DampenEyePosition( m_vecManhackEye, m_angManhackEye );
-	
-	// Compute the relative rotation between the unperturbed eye attachment + the eye angles
-	matrix3x4_t cameraToWorld;
-	AngleMatrix( *pAbsAngles, cameraToWorld );
+		AngleMatrix(m_angManhackEye, vehicleEyePosToWorld);
 
-	matrix3x4_t worldToEyePos;
-	MatrixInvert( vehicleEyePosToWorld, worldToEyePos );
+		// Dampen the eye positional change as we drive around.
+		*pAbsAngles = m_hPlayer->EyeAngles();
 
-	matrix3x4_t vehicleCameraToEyePos;
-	ConcatTransforms( worldToEyePos, cameraToWorld, vehicleCameraToEyePos );
+		DampenEyePosition(m_vecManhackEye, m_angManhackEye);
 
-	AngleMatrix( m_angManhackEye, m_vecManhackEye, vehicleEyePosToWorld );
+		// Compute the relative rotation between the unperturbed eye attachment + the eye angles
+		matrix3x4_t cameraToWorld;
+		AngleMatrix(*pAbsAngles, cameraToWorld);
 
-	// Now treat the relative eye angles as being relative to this new, perturbed view position...
-	matrix3x4_t newCameraToWorld;
-	ConcatTransforms( vehicleEyePosToWorld, vehicleCameraToEyePos, newCameraToWorld );
+		matrix3x4_t worldToEyePos;
+		MatrixInvert(vehicleEyePosToWorld, worldToEyePos);
 
-	// output new view abs angles
-	MatrixAngles( newCameraToWorld, *pAbsAngles );
+		matrix3x4_t vehicleCameraToEyePos;
+		ConcatTransforms(worldToEyePos, cameraToWorld, vehicleCameraToEyePos);
 
-	// UNDONE: *pOrigin would already be correct in single player if the HandleView() on the server ran after vphysics
-	MatrixGetColumn( newCameraToWorld, 3, *pAbsOrigin );
+		AngleMatrix(m_angManhackEye, m_vecManhackEye, vehicleEyePosToWorld);
 
-	*pFOV = m_ViewSmoothingData.flFOV;
+		// Now treat the relative eye angles as being relative to this new, perturbed view position...
+		matrix3x4_t newCameraToWorld;
+		ConcatTransforms(vehicleEyePosToWorld, vehicleCameraToEyePos, newCameraToWorld);
+
+		// output new view abs angles
+		MatrixAngles(newCameraToWorld, *pAbsAngles);
+
+		// UNDONE: *pOrigin would already be correct in single player if the HandleView() on the server ran after vphysics
+		MatrixGetColumn(newCameraToWorld, 3, *pAbsOrigin);
+
+		*pFOV = m_ViewSmoothingData.flFOV;
+	}
 }
 
 
@@ -304,10 +313,13 @@ void C_PropVehicleManhack::ComputePDControllerCoefficients( float *pCoefficients
 //-----------------------------------------------------------------------------
 void C_PropVehicleManhack::OnEnteredVehicle( C_BasePlayer *pPlayer )
 {
-	m_vecLastEyeTarget = m_vecManhackEye;
-	Vector vecEyeAngles;
-	AngleVectors(m_angManhackEye,&vecEyeAngles);
-	m_vecLastEyePos = vecEyeAngles;
+	if (m_hManhack.Get())
+	{
+		m_vecLastEyeTarget = m_hManhack->GetAbsOrigin();
+		Vector vecEyeAngles;
+		AngleVectors(m_hManhack->GetAbsAngles(), &vecEyeAngles);
+		m_vecLastEyePos = vecEyeAngles;
+	}
 	m_vecEyeSpeed = vec3_origin;
 }
 
@@ -359,7 +371,8 @@ void C_PropVehicleManhack::GetVehicleClipPlanes( float &flZNear, float &flZFar )
 //-----------------------------------------------------------------------------
 void C_PropVehicleManhack::DrawHudElements( )
 {
-	HLSS_DrawTargetHud(m_vecManhackEye, m_hPlayer, m_hTarget, m_iTargetType);
+	if (m_hManhack.Get())
+		HLSS_DrawTargetHud(m_hManhack->GetAbsOrigin(), m_hPlayer, m_hTarget, m_iTargetType);
 }
 
 /*void C_PropVehicleManhack::GetRenderBounds( Vector &theMins, Vector &theMaxs )

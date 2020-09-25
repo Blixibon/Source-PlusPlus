@@ -8,26 +8,32 @@
 
 
 #include "cbase.h"
-#include "basehlcombatweapon.h"
-#include "player.h"
+#include "weapon_manhack.h"
 #include "gamerules.h"
 #include "ammodef.h"
 #include "in_buttons.h"
-#include "globalstate.h"
 
 #include "engine/IEngineSound.h"
-#include "items.h"
-#include "soundent.h"
-
-#include "vguiscreen.h"
 
 #include "npcevent.h"
 
-#include "hl2_player_shared.h" //For Bob
+#include "laz_player_shared.h"
 
+#ifndef CLIENT_DLL
+#include "items.h"
+#include "soundent.h"
+#include "globalstate.h"
 #include "npc_manhack.h"
-#include "vehicle_manhack.h"
-#include "weapon_manhack.h"
+#include "Human_Error/vehicle_manhack.h"
+#else
+#include "view_shared.h"
+#include "viewrender.h"
+#include "peter/laz_render_targets.h"
+#include "materialsystem/itexture.h"
+#include "Human_Error/c_manhack_screen.h"
+#endif // !CLIENT_DLL
+
+
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -38,44 +44,57 @@
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CWeapon_Manhack )
+BEGIN_DATADESC(CWeapon_Manhack)
 //	DEFINE_FIELD( m_hManhack,				FIELD_EHANDLE),
-	DEFINE_FIELD( m_bIsDrawing,				FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bIsDoingShit,			FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bIsDoingShitToo,		FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bRedraw,				FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bHasAmmo,				FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bIsDoingController,		FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bSpawnSomeMore,			FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bSkip,					FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bHoldingSpawn,			FIELD_BOOLEAN),
-	DEFINE_FIELD( m_iManhackHintTimeShown,  FIELD_INTEGER),
-	DEFINE_FIELD( m_iLastNumberOfManhacks,	FIELD_INTEGER),
-	DEFINE_FIELD( m_bShouldShowPanel,		FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bToggleCallback,		FIELD_BOOLEAN),
-	DEFINE_FIELD( m_bHadControllable,		FIELD_BOOLEAN),
-	DEFINE_FIELD( m_iManhackDistance,		FIELD_INTEGER),
+DEFINE_FIELD(m_bIsDrawing, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsDoingShit, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsDoingShitToo, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bRedraw, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bHasAmmo, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bIsDoingController, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bSpawnSomeMore, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bSkip, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bHoldingSpawn, FIELD_BOOLEAN),
+DEFINE_FIELD(m_iLastNumberOfManhacks, FIELD_INTEGER),
+DEFINE_FIELD(m_iManhackDistance, FIELD_INTEGER),
+#ifndef CLIENT_DLL
+DEFINE_FIELD(m_bToggleCallback, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bHadControllable, FIELD_BOOLEAN),
+DEFINE_FIELD(m_iManhackHintTimeShown, FIELD_INTEGER),
+#endif
+END_DATADESC();
 
-	DEFINE_FIELD( m_hScreen,				FIELD_EHANDLE),
-END_DATADESC()
+BEGIN_PREDICTION_DATA(CWeapon_Manhack)
+#ifdef CLIENT_DLL
 
-acttable_t	CWeapon_Manhack::m_acttable[] = 
-{
-	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SLAM, true },
-};
+#endif // CLIENT_DLL
+END_PREDICTION_DATA();
 
-IMPLEMENT_ACTTABLE(CWeapon_Manhack);
+IMPLEMENT_NETWORKCLASS_ALIASED(Weapon_Manhack, DT_Weapon_Manhack);
 
-
-IMPLEMENT_SERVERCLASS_ST( CWeapon_Manhack, DT_Weapon_Manhack)
+BEGIN_NETWORK_TABLE(CWeapon_Manhack, DT_Weapon_Manhack)
+#ifdef CLIENT_DLL
+RecvPropBool(RECVINFO(m_bIsDrawing)),
+RecvPropBool(RECVINFO(m_bIsDoingShit)),
+RecvPropBool(RECVINFO(m_bIsDoingShitToo)),
+RecvPropBool(RECVINFO(m_bIsDoingController)),
+RecvPropBool(RECVINFO(m_bSpawnSomeMore)),
+RecvPropInt(RECVINFO(m_iManhackDistance), SPROP_CHANGES_OFTEN),
+#else
+	SendPropBool(SENDINFO(m_bIsDrawing)),
+	SendPropBool(SENDINFO(m_bIsDoingShit)),
+	SendPropBool(SENDINFO(m_bIsDoingShitToo)),
+	SendPropBool(SENDINFO(m_bIsDoingController)),
+	SendPropBool(SENDINFO(m_bSpawnSomeMore)),
 	SendPropInt(SENDINFO(m_iManhackDistance), SPROP_CHANGES_OFTEN),
-END_SEND_TABLE()
+#endif
+END_NETWORK_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_manhack, CWeapon_Manhack );
 PRECACHE_WEAPON_REGISTER(weapon_manhack);
 
 
-
+#ifndef CLIENT_DLL
 void CWeapon_Manhack::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
 {
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -95,46 +114,26 @@ void CWeapon_Manhack::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 			break;
 
 		case EVENT_WEAPON_THROW:
-			if (CPropVehicleManhack::GetManhackVehicle()!=NULL)
+			
+			if (HasFreeSlot())
 			{
-				if (m_bHasFreeSlot)	
+				if (CreateControllableNPCManhack(pOwner))
 				{
-					if (CreateControllableNPCManhack( pOwner))
+					DecrementAmmo(pOwner);
+					EnableManhackSubModel(false);
+					m_bRedraw = true;
+
+					CBasePlayer* pPlayer = ToBasePlayer(pOwner);
+					if (pPlayer != NULL && m_iManhackHintTimeShown < 2)
 					{
-						DecrementAmmo( pOwner );
-						EnableManhackSubModel(false);
-						m_bRedraw=true;
+						if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_ON)
+							UTIL_HudHintText(pPlayer, "#HLSS_Hint_ManhackSend");
+						else
+							UTIL_HudHintText(pPlayer, "#HLSS_Hint_ManhackControl");
 
-						CBasePlayer *pPlayer = ToBasePlayer( pOwner );
-						if ( pPlayer != NULL && m_iManhackHintTimeShown < 2)
-						{
-							if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_ON )
-								UTIL_HudHintText( pPlayer, "#HLSS_Hint_ManhackSend" );
-							else
-								UTIL_HudHintText( pPlayer, "#HLSS_Hint_ManhackControl" );
-
-							m_iManhackHintTimeShown++;
-						}
-//						fSpawnedManhack = true;
+						m_iManhackHintTimeShown++;
 					}
-				}
-			}
-			else if (CreateControllableVehicleManhack( pOwner))
-			{
-				DecrementAmmo( pOwner );	
-				EnableManhackSubModel(false);	
-				m_bRedraw=true;
-//				fSpawnedManhack = true;
-
-				//CBasePlayer *pPlayer = ToBasePlayer( pOwner );
-				if ( pOwner != NULL && m_iManhackHintTimeShown <2)
-				{
-					if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_ON )
-						UTIL_HudHintText( pOwner, "#HLSS_Hint_ManhackSend" );
-					else
-						UTIL_HudHintText( pOwner, "#HLSS_Hint_ManhackControl" );
-
-					m_iManhackHintTimeShown++;
+					//						fSpawnedManhack = true;
 				}
 			}
 
@@ -154,33 +153,24 @@ void CWeapon_Manhack::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 
 			break;
 		case EVENT_WEAPON_THROW2:
-			if ( pOwner != NULL && pOwner->GetFlags() & FL_ONGROUND )
+			if (pOwner != NULL && pOwner->GetFlags() & FL_ONGROUND)
 			{
-				if (CPropVehicleManhack::GetManhackVehicle() != NULL) 
+				if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_OFF)
 				{
-					if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_OFF)
-					{
-						m_bShouldShowPanel = false;
-						DriveControllableManhack();
-					}
-					else
-					{
-						if (m_bToggleCallback)
-						{
-							TellManhacksToGoThere();
-							m_bToggleCallback = false;
-						}
-						else
-						{
-							CallManhacksBack();
-							m_bToggleCallback = true;
-						}
-
-					}
+					DriveControllableManhack();
 				}
 				else
 				{
-					//TERO: Lets do an error sound
+					if (m_bToggleCallback)
+					{
+						TellManhacksToGoThere();
+						m_bToggleCallback = false;
+					}
+					else
+					{
+						CallManhacksBack();
+						m_bToggleCallback = true;
+					}
 				}
 			}
 			break;
@@ -211,12 +201,7 @@ void CWeapon_Manhack::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 	}
 	*/
 }
-
-void CWeapon_Manhack::GetControlPanelInfo( int PanelIndex, const char *&pPanelName)
-{
-	pPanelName = NULL; //"manhack_screen";
-}
-
+#endif
 CWeapon_Manhack::CWeapon_Manhack(void)
 {
 //	m_hManhack = NULL;
@@ -228,9 +213,10 @@ CWeapon_Manhack::CWeapon_Manhack(void)
 	m_bIsDoingController=false;
 	m_bSpawnSomeMore=false;
 	m_bSkip=true;
+#ifndef CLIENT_DLL
 	m_iManhackHintTimeShown=0;
-	m_bShouldShowPanel=false;
 	m_bHadControllable = false;
+#endif
 
 	m_iLastNumberOfManhacks=-1;
 }
@@ -293,7 +279,7 @@ void CWeapon_Manhack::ItemPostFrame( void )
 			
 		if( pOwner->m_nButtons & IN_ATTACK )
 		{
-			if ( m_bHasAmmo && (CPropVehicleManhack::GetManhackVehicle() == NULL || m_bHasFreeSlot ) && !m_bIsDoingController)
+			if ( m_bHasAmmo && (m_bHasFreeSlot) && !m_bIsDoingController)
 			{
 				PrimaryAttack();
 			}
@@ -333,53 +319,36 @@ void CWeapon_Manhack::ItemPostFrame( void )
 	WeaponIdle( );
 }
 
-bool CWeapon_Manhack::FindVehicleManhack()
-{
-	/*if (m_hManhack==NULL)
-	{
-		CBaseEntity *pVehicleManhack = gEntList.FindEntityByName( NULL, "manhack_controller" );
-		if (pVehicleManhack!=NULL)
-		{
-			m_hManhack=pVehicleManhack;
-			return true;
-		}
-	}*/
-	if (CPropVehicleManhack::GetManhackVehicle() != NULL)
-		return true;
-
-	return false;
-}
-
 void CWeapon_Manhack::TellManhacksToGoThere() 
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	CPropVehicleManhack *pVehicleManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pVehicleManhack!=NULL && pPlayer != NULL) 
+#ifndef CLIENT_DLL
+	CLaz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (pPlayer != NULL)
 	{
-		pVehicleManhack->TellManhacksToGoThere(pPlayer, 4.0f);
+		pPlayer->TellManhacksToGoThere(4.f);
 	}
+#endif // !CLIENT_DLL
 }
 
 void CWeapon_Manhack::CallManhacksBack()
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	CPropVehicleManhack *pVehicleManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pVehicleManhack!=NULL && pPlayer != NULL) 
+#ifndef CLIENT_DLL
+	CLaz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (pPlayer != NULL)
 	{
-		pVehicleManhack->CallManhacksBack(pPlayer, 4.0f);
+		pPlayer->CallManhacksBack(4.f);
 	}
+#endif // !CLIENT_DLL
 }
 
 void CWeapon_Manhack::Precache( void )
 {
 	BaseClass::Precache();
 
-	UTIL_PrecacheOther( "npc_manhack" );
-	UTIL_PrecacheOther( "vehicle_manhack" );
-
-	//if panel:
-	PrecacheMaterial( SCREEN_OVERLAY_MATERIAL );
-	PrecacheMaterial( "vgui/screens/manhack_back" );
+#ifndef CLIENT_DLL
+	UTIL_PrecacheOther("npc_manhack");
+	UTIL_PrecacheOther("vehicle_manhack");
+#endif // !CLIENT_DLL
 }
 
 
@@ -428,7 +397,7 @@ void CWeapon_Manhack::PrimaryAttack()
 //------------------------------------------------------------------------------
 void CWeapon_Manhack::SecondaryAttack()
 {
-	if ( CPropVehicleManhack::GetManhackVehicle() == NULL )
+	if ( !HasNPCManhack() )
 	{
 		return;
 	}
@@ -451,21 +420,121 @@ void CWeapon_Manhack::SecondaryAttack()
 	SendWeaponAnim( ACT_SLAM_DETONATOR_DETONATE );
 }
 
+#ifndef CLIENT_DLL
+extern ConVar	manhack_small_distances_max_distance;
+extern ConVar	manhack_small_distances_max_height;
+extern ConVar	manhack_max_distance;
+
+int GetManhackDistance(CBaseEntity* pOrigin, CNPC_Manhack *pManhack)
+{
+	if (pManhack != NULL && pOrigin) //!GetDriver()) 
+	{
+		int iDist = -1;
+
+		if (GlobalEntity_GetState("manhacks_use_short_distances") == GLOBAL_ON)
+		{
+			Vector vecDistance = (pManhack->GetAbsOrigin() - pOrigin->GetAbsOrigin());
+			float flHeight = vecDistance.z / manhack_small_distances_max_height.GetFloat();
+			vecDistance.z = 0.0f;
+			vecDistance = vecDistance / manhack_small_distances_max_distance.GetFloat();
+			vecDistance.z = flHeight;
+			iDist = (int)(vecDistance.Length() * 100.0f);
+		}
+		else
+		{
+			iDist = (int)((float)(pManhack->GetAbsOrigin() - pOrigin->GetAbsOrigin()).Length() / manhack_max_distance.GetFloat() * 100.0f);
+		}
+
+		return iDist;
+	}
+	return -1;
+}
+
 void CWeapon_Manhack::UpdateControllerPanel()
 {
-	if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_ON )
+	if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_ON)
 	{
 		m_iManhackDistance = 100;
 		return;
 	}
 
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-
-	if (pManhack)
+	CLaz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (pPlayer)
 	{
-		m_iManhackDistance = pManhack->UpdateManhackDistance(pManhack);
+		m_iManhackDistance = GetManhackDistance(pPlayer, pPlayer->GetCurrentManhack());
 	}
 }
+#else
+bool CWeapon_Manhack::GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView)
+{
+	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (iWhich == 0 && pPlayer)
+	{
+		ITexture *pTexture = lazulrendertargets->GetManhackScreenTexture();
+		data.m_pRenderTarget = pTexture;
+
+		CNewViewSetup View = mainView;
+		View.x = 0;
+		View.y = 0;
+		View.width = pTexture->GetActualWidth();
+		View.height = pTexture->GetActualHeight();
+		View.fov = 50.f;
+		View.m_flAspectRatio = View.width / View.height;
+
+		C_NPC_Manhack* pManhack = pPlayer->GetCurrentManhack();
+		if (pManhack)
+		{
+			View.origin = pManhack->EyePosition();
+			View.angles = pManhack->EyeAngles();
+			data.m_bDraw3D = true;
+			data.m_bDraw3DSkybox = true;
+			data.m_3DViewID = VIEW_MONITOR;
+		}
+		else
+		{
+			data.m_bDraw3D = false;
+		}
+
+		data.m_View = View;
+
+		data.m_bDraw2D = true;
+		data.m_2DPanel = GetManhackScreen()->GetVPanel();
+		return true;
+	}
+
+	return false;
+}
+
+RenderMode_t g_ManhackSavedRenderMode = kRenderNormal;
+void CWeapon_Manhack::WeaponRT_StartRender3D(int iWhich)
+{
+	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (iWhich == 0 && pPlayer && pPlayer->GetCurrentManhack())
+	{
+		C_NPC_Manhack* pManhack = pPlayer->GetCurrentManhack();
+		g_ManhackSavedRenderMode = pManhack->GetRenderMode();
+		pManhack->SetRenderMode(kRenderNone);
+	}
+}
+void CWeapon_Manhack::WeaponRT_FinishRender3D(int iWhich)
+{
+	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (iWhich == 0 && pPlayer && pPlayer->GetCurrentManhack())
+	{
+		C_NPC_Manhack* pManhack = pPlayer->GetCurrentManhack();
+		pManhack->SetRenderMode(g_ManhackSavedRenderMode);
+	}
+}
+void CWeapon_Manhack::WeaponRT_StartRender2D(int iWhich)
+{
+	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (iWhich == 0 && pPlayer)
+	{
+		GetManhackScreen()->SetManhackData(m_iManhackDistance, pPlayer->GetManhackCount());
+	}
+}
+#endif // !CLIENT_DLL
+
 
 void CWeapon_Manhack::WeaponIdle( void )
 {
@@ -490,9 +559,9 @@ void CWeapon_Manhack::WeaponIdle( void )
 	{
 		iAnim=ACT_SLAM_DETONATOR_IDLE;
 		m_bIsDoingController=true;
-
+#ifndef CLIENT_DLL
 		UpdateControllerPanel();
-
+#endif
 		//TERO:
 
 		if (m_bIsDrawing)
@@ -511,7 +580,9 @@ void CWeapon_Manhack::WeaponIdle( void )
 	}
 	else
 	{
+#ifndef CLIENT_DLL
 		UpdateControllerPanel();
+#endif
 
 		iAnim=ACT_VM_IDLE;
 
@@ -566,19 +637,7 @@ bool CWeapon_Manhack::Deploy( void )
 
 	m_bHasFreeSlot = HasFreeSlot();
 
-	bool bNoDrivable = true;
-
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle();
-
-	if (pManhack) //m_hManhack)
-	{
-		// = dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-
-		if (pManhack->HasDrivableManhack(pOwner))
-		{
-			bNoDrivable = false;
-		}
-	}
+	bool bNoDrivable = !HasNPCManhack();
 
 	if ( m_bHasAmmo && m_bHasFreeSlot && (!m_bIsDoingController || bNoDrivable))
 	{
@@ -600,9 +659,7 @@ bool CWeapon_Manhack::Deploy( void )
 
 	m_bIsDrawing=true;
 
-	m_bShouldShowPanel = true;
-
-
+#ifndef CLIENT_DLL
 	//TERO: this next bit is to make sure the player gets the right hint message if the controllable state has changed
 	if (GlobalEntity_GetState("manhacks_not_controllable") == GLOBAL_ON )
 	{
@@ -610,7 +667,7 @@ bool CWeapon_Manhack::Deploy( void )
 		{
 			m_iManhackHintTimeShown=0;
 			CBasePlayer *pPlayer = ToBasePlayer( pOwner );
-			if ( pPlayer != NULL && (CPropVehicleManhack::GetManhackVehicle() != NULL) )
+			if ( pPlayer != NULL && HasNPCManhack())
 			{
 				UTIL_HudHintText( pPlayer, "#HLSS_Hint_ManhackSend" );
 				m_iManhackHintTimeShown++;
@@ -625,7 +682,7 @@ bool CWeapon_Manhack::Deploy( void )
 		{
 			m_iManhackHintTimeShown=0;
 			CBasePlayer *pPlayer = ToBasePlayer( pOwner );
-			if ( pPlayer != NULL && (CPropVehicleManhack::GetManhackVehicle() != NULL) )
+			if ( pPlayer != NULL && HasNPCManhack())
 			{
 				UTIL_HudHintText( pPlayer, "#HLSS_Hint_ManhackControl" );
 				m_iManhackHintTimeShown++;
@@ -633,56 +690,14 @@ bool CWeapon_Manhack::Deploy( void )
 		}
 		m_bHadControllable = true;
 	}
-
-	if (!m_hScreen)
-	{
-		/*CBaseViewModel *vm = pOwner->GetViewModel( m_nViewModelIndex );
-		if (vm)
-		{
-
-			//vm->SpawnControlPanels();
-			int nLLAttachmentIndex = vm->LookupAttachment("controlpanel0_ll");
-			int nURAttachmentIndex = vm->LookupAttachment("controlpanel0_ur");
-
-			matrix3x4_t	panelToWorld;
-			vm->GetAttachment( nLLAttachmentIndex, panelToWorld );
-
-			matrix3x4_t	worldToPanel;
-			MatrixInvert( panelToWorld, worldToPanel );
-
-			// Now get the lower right position + transform into panel space
-			Vector lr, lrlocal;
-			vm->GetAttachment( nURAttachmentIndex, panelToWorld );
-			MatrixGetColumn( panelToWorld, 3, lr );
-			VectorTransform( lr, worldToPanel, lrlocal );
-
-			float flWidth = lrlocal.x;
-			float flHeight = lrlocal.y;
-
-			CVGuiScreen *pScreen = CreateVGuiScreen( "vgui_screen", "manhack_screen", this, this, 0 );
-			pScreen->ChangeTeam( 69 );
-			pScreen->SetActualSize( 128, 64 );
-			pScreen->SetActive( true );
-			pScreen->MakeVisibleOnlyToTeammates( true );
-			pScreen->SetAttachedToViewModel(true);
-			m_hScreen.Set( pScreen );
-		}*/
-
-		CVGuiScreen *pScreen = CreateVGuiScreen( "vgui_screen", "manhack_screen", this, this, 0 );
-		//pScreen->SetActualSize( 128, 64 );
-		pScreen->SetActive( true );
-		pScreen->MakeVisibleOnlyToTeammates( true );
-		pScreen->SetAttachedToViewModel(true);
-		m_hScreen.Set( pScreen );
-
-	}
+#endif
 
 	return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), iActivity, (char*)GetAnimPrefix() );
 }
 
 bool CWeapon_Manhack::HasAnyAmmo( void )
 {
-	FindVehicleManhack();
+	//FindVehicleManhack();
 
 	if ( HasNPCManhack() )
 	{
@@ -699,14 +714,16 @@ bool CWeapon_Manhack::HasAnyAmmo( void )
 
 void CWeapon_Manhack::WeaponSwitch( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (pOwner==NULL) return;
-	pOwner->SwitchToNextBestWeapon( pOwner->GetActiveWeapon() );
+#ifndef CLIENT_DLL
+	CBaseCombatCharacter* pOwner = GetOwner();
+	if (pOwner == NULL) return;
+	pOwner->SwitchToNextBestWeapon(pOwner->GetActiveWeapon());
 
-	if (CPropVehicleManhack::GetManhackVehicle() == NULL && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	if (!HasNPCManhack() && pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{
 		pOwner->ClearActiveWeapon();
 	}
+#endif // !CLIENT_DLL
 }
 
 void CWeapon_Manhack::DecrementAmmo( CBaseCombatCharacter *pOwner )
@@ -721,40 +738,7 @@ bool CWeapon_Manhack::Reload( void )
 	WeaponIdle();
 	return true;
 }
-
-
-
-//TERO: This is called when we don't have either vehicle or NPC manhack
-bool CWeapon_Manhack::CreateControllableVehicleManhack( CBasePlayer *pPlayer )
-{
-	/*Vector vecOrigin;
-	QAngle vecAngles;
-
-	int turretSpawnAttachment = LookupAttachment( "manhackSpawn" );
-	GetAttachment( turretSpawnAttachment, vecOrigin, vecAngles );*/
-
-	Vector	vForward, vRight, vUp, vThrowPos;
-	
-	pPlayer->EyeVectors( &vForward, &vRight, &vUp );
-
-	vThrowPos = pPlayer->EyePosition();
-
-	vThrowPos += vForward * 20.0f;
-
-	/*m_hManhack=VehicleManhack_Create( vThrowPos, pPlayer->EyeAngles(), pPlayer );
-
-	if (m_hManhack == NULL) 
-		return false;*/
-
-	VehicleManhack_Create( vThrowPos, pPlayer->EyeAngles(), pPlayer );
-
-	if (CPropVehicleManhack::GetManhackVehicle() == NULL)
-		return false;
-
-	//WeaponSound( SINGLE );
-	return true;
-}
-
+#ifndef CLIENT_DLL
 //TERO: This is called when we already have the vehicle manhack (the CP model), it creates the actual NPC manhack
 bool CWeapon_Manhack::CreateControllableNPCManhack( CBasePlayer *pPlayer )
 {
@@ -772,68 +756,61 @@ bool CWeapon_Manhack::CreateControllableNPCManhack( CBasePlayer *pPlayer )
 
 	vThrowPos += vForward * 20.0f;
 
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pManhack!=NULL) 
-	{	
-		return pManhack->CreateControllableManhack(vThrowPos, pPlayer->EyeAngles(), pPlayer);
-	}	
+	CLaz_Player* pLaz = ToLazuulPlayer(pPlayer);
+	if (!pLaz)
+		return false;
 
-	//WeaponSound( SINGLE );
-	return false;
+	CNPC_Manhack* pManhack = pLaz->CreateManhack(vThrowPos, pPlayer->EyeAngles());
+	if (!pManhack)
+		return false;
+
+	pManhack->AddSpawnFlags(SF_MANHACK_PACKED_UP);
+	pManhack->Spawn();
+	pManhack->Activate();
+
+	return true;
 }
 
+void CWeapon_Manhack::DriveControllableManhack()
+{
+	CLaz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+
+	if (pPlayer != NULL)
+	{
+		CPropVehicleManhack* pVehicle = VehicleManhack_Create(pPlayer, pPlayer->GetCurrentManhack());
+		pVehicle->ForcePlayerIn(pPlayer);
+	}
+}
+#endif
 bool CWeapon_Manhack::HasNPCManhack()
 {
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pManhack!=NULL) 
-	{	
-		return (pManhack->HasNPCManhack());
-	}	
-	return false;
+	return NumberOfManhacks() > 0;
 }
 
 bool CWeapon_Manhack::HasFreeSlot()
 {
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pManhack!=NULL)
+	CLaz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (pPlayer != NULL)
 	{
-		if (pManhack->GetNumberOfHacks(true)>=NUMBER_OF_MAX_CONTROLLABLE_MANHACKS)
+		if (pPlayer->GetManhackCount() >= NUMBER_OF_CONTROLLABLE_MANHACKS)
 		{
 			return false;
 		}
+
+		return true;
 	}
-	return true;
+
+	return false;
 }
 
 
 int CWeapon_Manhack::NumberOfManhacks()
 {
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pManhack!=NULL)
+	CLaz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (pPlayer !=NULL)
 	{
-		return pManhack->GetNumberOfHacks(false);
+		return pPlayer->GetManhackCount();
 	}	
 	return 0;
-}
-
-void CWeapon_Manhack::DriveControllableManhack()
-{
-	CPropVehicleManhack *pManhack = CPropVehicleManhack::GetManhackVehicle(); //dynamic_cast<CPropVehicleManhack*>((CBaseEntity*)m_hManhack);
-	if (pManhack!=NULL) 
-	{
-		CBaseCombatCharacter *pOwner  = GetOwner();
-		if (pOwner!=NULL)
-		{
-			pManhack->ForcePlayerIn(pOwner);
-		}
-
-	}
-}
-
-float CWeapon_Manhack::CalcViewmodelBob( void )
-{
-
-
-	return 0.0f;
 }
 

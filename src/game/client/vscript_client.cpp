@@ -118,6 +118,7 @@ bool VScriptClientInit()
 				}
 
 				g_pScriptVM->RegisterAllClasses();
+				g_pScriptVM->RegisterAllEnums();
 
 				RegisterSharedScriptFunctions();
 				RegisterSharedScriptConstants();

@@ -5,12 +5,11 @@
 //=============================================================================//
 #include "cbase.h"
 
-#include "C_VGuiScreen.h"
+#include <vgui_controls/EditablePanel.h>
 #include <vgui/IVGUI.h>
 #include <vgui_controls/Controls.h>
 #include <vgui_controls/Label.h>
 #include "clientmode_hlnormal.h"
-#include "tne_RenderTargets.h"
 #include "rendertexture.h"
 #include "view_shared.h"
 
@@ -22,17 +21,15 @@
 // In-game vgui panel which shows the RPG's ammo count
 //
 //-----------------------------------------------------------------------------
-class CManhackScreen : public CVGuiScreenPanel
+class CManhackScreen : public vgui::EditablePanel
 {
-    DECLARE_CLASS( CManhackScreen, CVGuiScreenPanel );
+    DECLARE_CLASS( CManhackScreen, vgui::EditablePanel);
 
 public:
     CManhackScreen( vgui::Panel *parent, const char *panelName );
 	~CManhackScreen();
 
-    virtual bool Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pInitData );
-    virtual void OnTick();
-	void		 SetManhackDistance(int iDistance);
+	void		 SetManhackData(int iDistance, int iCount);
 private:
     vgui::Label *m_pManhackCount;
 	vgui::Label *m_pManhackDistance;

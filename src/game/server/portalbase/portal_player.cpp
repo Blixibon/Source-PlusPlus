@@ -375,6 +375,25 @@ void CPortal_Player::PostThink( void )
 	}
 }
 
+void CPortal_Player::ItemPostFrame()
+{
+	BaseClass::ItemPostFrame();
+
+	if (m_bPlayUseDenySound)
+	{
+		m_bPlayUseDenySound = false;
+		if (GetActiveWeapon() && GetActiveWeapon()->GetWeaponID() == HLSS_WEAPON_ID_PORTALGUN)
+		{
+			GetActiveWeapon()->SendWeaponAnim(ACT_VM_DRYFIRE);
+			EmitSound("PortalPlayer.UseDeny");
+		}
+		else
+		{
+			EmitSound("HL2Player.UseDeny");
+		}
+	}
+}
+
 void CPortal_Player::PlayerDeathThink(void)
 {
 	float flForward;

@@ -863,6 +863,7 @@ void CNPC_HCFFireHeadcrab::Spawn(void)
 {
 	BaseClass::Spawn();
 	m_nSkin = 3;
+	m_flFrozenMax = -1.f;
 }
 
 void CNPC_HCFFireHeadcrab::Precache(void)
@@ -942,6 +943,7 @@ void CNPC_HCFIceHeadcrab::Spawn(void)
 {
 	BaseClass::Spawn();
 	m_nSkin = 1;
+	m_flFrozenMax = -1.f;
 }
 
 void CNPC_HCFIceHeadcrab::Precache(void)
@@ -1003,8 +1005,9 @@ int CNPC_HCFEtherHeadcrab::OnTakeDamage_Alive(const CTakeDamageInfo& info)
 	if (!bPass)
 	{
 		subInfo.SetDamage(0.0f);
-		m_bPassedTraceAttack = false;
 	}
+
+	m_bPassedTraceAttack = false;
 
 	return BaseClass::OnTakeDamage_Alive(subInfo);
 }

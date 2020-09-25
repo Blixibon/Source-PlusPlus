@@ -24,6 +24,7 @@ class CVGuiScreen;
 #if defined( CLIENT_DLL )
 #define CBaseViewModel C_BaseViewModel
 #define CBaseCombatWeapon C_BaseCombatWeapon
+class C_ViewHands;
 #endif
 
 #define VIEWMODEL_INDEX_BITS 1
@@ -121,6 +122,8 @@ public:
 	C_BaseAnimating* GetHandsModel();
 
 	virtual float	GetWetness();
+
+	virtual CStudioHdr* OnNewModel(void);
 
 // Only supported in TF2 right now
 #if defined( INVASION_CLIENT_DLL )
@@ -220,6 +223,8 @@ private:
 
 #if defined( CLIENT_DLL )
 	int						m_nOldAnimationParity;
+
+	C_ViewHands* m_pHands;
 #else
 	CStudioHdr			*m_pHandsStudioHdr;
 #endif

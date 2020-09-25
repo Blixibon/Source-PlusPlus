@@ -255,7 +255,7 @@ BEGIN_VS_SHADER_FLAGS( PP_DepthWrite, "Help for Depth Write", SHADER_NOT_EDITABL
 			Vector4D vParms;
 
 			// set up arbitrary far planes, as the real ones are too far ( 30,000 )
-//			pShaderAPI->SetPSNearAndFarZ( 1 );
+			//pShaderAPI->SetPSNearAndFarZ( 1 );
 			vParms.x = 7.0f;		// arbitrary near
 			vParms.y = 4000.0f;		// arbitrary far 
 			vParms.z = 0.0f;

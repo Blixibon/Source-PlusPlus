@@ -842,7 +842,7 @@ bool CTFMainMenuPanel::Init()
 {
 	BaseClass::Init();
 
-	ModInfo().LoadCurrentGameInfo();
+	//ModInfo().LoadCurrentGameInfo();
 
 	if (steamapicontext->SteamUser())
 	{

@@ -484,9 +484,23 @@ protected:
 	DEFINE_CUSTOM_AI;
 };
 
+enum OverrideMoveType_e
+{
+	MOVE_INVALID = -1,
+
+	MOVE_ENVFIRE = 0,
+	MOVE_COMBINEMINE,
+	MOVE_FLOORTURRET,
+	MOVE_BURNINGENT,
+#ifdef HL2_LAZUL
+	MOVE_SMOKEGRENADE,
+#endif
+	NUM_OVERRIDE_MOVE_CLASSNAMES
+};
+
 // Used for quick override move searches against certain types of entities
 void OverrideMoveCache_ForceRepopulateList( void );
-CBaseEntity *OverrideMoveCache_FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius );
+CBaseEntity *OverrideMoveCache_FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius, OverrideMoveType_e *pEntType = nullptr);
 void OverrideMoveCache_LevelInitPreEntity( void );
 void OverrideMoveCache_LevelShutdownPostEntity( void );
 

@@ -449,7 +449,7 @@ bool CWorld::GetWorldFlagDefault(int iFlag) const
 	{
 	case WORLD_IS_EPISODIC:
 	{
-		switch (g_pGameTypeSystem->GetCurrentBaseGameType())
+		switch (GameTypeSystem()->GetCurrentBaseGameType())
 		{
 		case GAME_HL2:
 		case MOD_CITIZEN:
@@ -463,10 +463,10 @@ bool CWorld::GetWorldFlagDefault(int iFlag) const
 	}
 	break;
 	case WORLD_EXPECTS_PORTALS:
-		return g_pGameTypeSystem->WorldShouldExpectPortals();
+		return GameTypeSystem()->WorldShouldExpectPortals();
 		break;
 	case WORLD_BURING_DLIGHTS:
-		return g_pGameTypeSystem->GetMapOptionBool("burningdlights");
+		return GameTypeSystem()->GetMapOptionBool("burningdlights");
 		break;
 	default:
 		return false;
@@ -534,7 +534,7 @@ bool CWorld::KeyValue( const char *szKeyName, const char *szValue )
 
 
 extern bool		g_fGameOver;
-static CWorld *g_WorldEntity = NULL;
+CWorld *g_WorldEntity = NULL;
 
 CWorld* GetWorldEntity()
 {
@@ -618,7 +618,7 @@ void CWorld::Spawn(void)
 	GlobalEntity_Add("is_pc", STRING(gpGlobals->mapname), (!IsConsole()) ? GLOBAL_ON : GLOBAL_OFF);
 
 	// Half-Life: Source uses chapter based population tags
-	if (g_pGameTypeSystem->GetCurrentModGameType() == GAME_HL1 && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
+	if (GameTypeSystem()->GetCurrentModGameType() == GAME_HL1 && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
 	{
 		struct chapterID_s
 		{
@@ -667,7 +667,7 @@ void CWorld::Spawn(void)
 		}
 	}
 	// Black-Mesa does this too
-	else if (g_pGameTypeSystem->GetCurrentModGameType() == MOD_BMS && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
+	else if (GameTypeSystem()->GetCurrentModGameType() == MOD_BMS && m_nMapVersion <= MV_EXTERNAL_MAP && m_iszPopulationTag == NULL_STRING)
 	{
 		struct chapterID_s
 		{
@@ -712,10 +712,10 @@ void CWorld::Spawn(void)
 		}
 	}
 
-	if (g_pGameTypeSystem->HasMapOption("population"))
-		m_iszPopulationTag = AllocPooledString(g_pGameTypeSystem->GetMapOptionString("population"));
-	if (g_pGameTypeSystem->HasMapOption("cold_override"))
-		m_bColdWorld = g_pGameTypeSystem->GetMapOptionBool("cold_override");
+	if (GameTypeSystem()->HasMapOption("population"))
+		m_iszPopulationTag = AllocPooledString(GameTypeSystem()->GetMapOptionString("population"));
+	if (GameTypeSystem()->HasMapOption("cold_override"))
+		m_bColdWorld = GameTypeSystem()->GetMapOptionBool("cold_override");
 }
 
 //-----------------------------------------------------------------------------
@@ -852,7 +852,7 @@ void CWorld::Precache( void )
 		if (m_iszDetailSpriteMaterial.Get() == FindPooledString("detail/detailsprites"))
 		{
 			char* pchNewDetail = "detail/detailsprites_hl2";
-			if (g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_EP2)
+			if (GameTypeSystem()->GetCurrentBaseGameType() == GAME_EP2)
 				pchNewDetail = "detail/detailsprites_ep2";
 
 			m_iszDetailSpriteMaterial.GetForModify() = AllocPooledString(pchNewDetail);

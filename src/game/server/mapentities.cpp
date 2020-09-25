@@ -25,7 +25,7 @@
 
 const char *RemapEntityClass(const char *pchClass)
 {
-	return g_pGameTypeSystem->RemapEntityClass(pchClass);
+	return GameTypeSystem()->RemapEntityClass(pchClass);
 }
 
 

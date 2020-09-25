@@ -242,8 +242,6 @@ DEFINE_INPUTFUNC(FIELD_VOID, "FirePortal2", InputFirePortal2),
 DEFINE_INPUTFUNC(FIELD_VECTOR, "FirePortalDirection1", FirePortalDirection1),
 DEFINE_INPUTFUNC(FIELD_VECTOR, "FirePortalDirection2", FirePortalDirection2),
 
-DEFINE_SOUNDPATCH(m_pMiniGravHoldSound),
-
 DEFINE_OUTPUT(m_OnFiredPortal1, "OnFiredPortal1"),
 DEFINE_OUTPUT(m_OnFiredPortal2, "OnFiredPortal2"),
 
@@ -311,6 +309,9 @@ void CWeaponPortalgun::Precache()
 	PrecacheScriptSound( "Portal.fizzle_invalid_surface" );
 	PrecacheScriptSound( "Weapon_Portalgun.powerup" );
 	PrecacheScriptSound( "Weapon_PhysCannon.HoldSound" );
+	PrecacheScriptSound("PortalPlayer.ObjectUse");
+	PrecacheScriptSound("PortalPlayer.ObjectUseStop");
+	PrecacheScriptSound("PortalPlayer.UseDeny");
 
 #ifndef CLIENT_DLL
 	PrecacheParticleSystem( "portal_1_projectile_stream" );
@@ -422,23 +423,11 @@ void CWeaponPortalgun::OnPickedUp(CBaseCombatCharacter* pNewOwner)
 
 void CWeaponPortalgun::CreateSounds()
 {
-	if (!m_pMiniGravHoldSound)
-	{
-		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
-
-		CPASAttenuationFilter filter(this);
-
-		m_pMiniGravHoldSound = controller.SoundCreate(filter, entindex(), "Weapon_Portalgun.HoldSound");
-		controller.Play(m_pMiniGravHoldSound, 0, 100);
-	}
 }
 
 void CWeaponPortalgun::StopLoopingSounds()
 {
-	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
-
-	controller.SoundDestroy(m_pMiniGravHoldSound);
-	m_pMiniGravHoldSound = NULL;
+	StopSound("PortalPlayer.ObjectUse");
 
 	BaseClass::StopLoopingSounds();
 }
@@ -520,6 +509,11 @@ void CWeaponPortalgun::OpenProngs(bool bOpenProngs)
 	DoEffect((m_bOpenProngs) ? (EFFECT_HOLDING) : (EFFECT_READY));
 
 	SendWeaponAnim((m_bOpenProngs) ? (ACT_VM_PICKUP) : (ACT_VM_RELEASE));
+
+	if (!m_bOpenProngs)
+		EmitSound("PortalPlayer.ObjectUseStop");
+	else
+		EmitSound("PortalPlayer.ObjectUse");
 }
 
 void CWeaponPortalgun::InputChargePortal1(inputdata_t& inputdata)
@@ -1813,12 +1807,7 @@ void CWeaponPortalgun::DoEffectReady(void)
 		RumbleEffect(RUMBLE_PHYSCANNON_OPEN, 0, RUMBLE_FLAG_STOP);
 	}
 #else
-	if (m_pMiniGravHoldSound)
-	{
-		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
-
-		controller.SoundChangeVolume(m_pMiniGravHoldSound, 0.0, 0.1);
-	}
+	
 #endif // CLIENT_DLL
 }
 
@@ -1900,12 +1889,7 @@ void CWeaponPortalgun::DoEffectHolding(void)
 		m_Beams[i].SetBrightness(128.0f);
 	}
 #else
-	if (m_pMiniGravHoldSound)
-	{
-		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
-
-		controller.SoundChangeVolume(m_pMiniGravHoldSound, 1.0, 0.1);
-	}
+	
 #endif // CLIENT_DLL
 }
 
@@ -1964,12 +1948,7 @@ void CWeaponPortalgun::DoEffectNone(void)
 		m_Beams[i].SetVisible3rdPerson(false);
 	}
 #else
-	if (m_pMiniGravHoldSound)
-	{
-		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
-
-		controller.SoundChangeVolume(m_pMiniGravHoldSound, 0.0, 0.1);
-	}
+	
 #endif // CLIENT_DLL
 }
 
@@ -2287,8 +2266,13 @@ bool CWeaponPortalgun::Deploy( void )
 
 void CWeaponPortalgun::WeaponIdle( void )
 {
+	if (m_bOpenProngs)
+	{
+		if (HasWeaponIdleTimeElapsed())
+			SendWeaponAnim(ACT_VM_PICKUP_IDLE);
+	}
 	//See if we should idle high or low
-	if ( WeaponShouldBeLowered() )
+	else if ( WeaponShouldBeLowered() )
 	{
 		// Move to lowered position if we're not there yet
 		if ( GetActivity() != ACT_VM_IDLE_LOWERED && GetActivity() != ACT_VM_IDLE_TO_LOWERED 

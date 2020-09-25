@@ -59,7 +59,7 @@ COptionsDialog::COptionsDialog(vgui::Panel *parent, OptionsDialogTabStyle iTabSt
 	{
 		SetTitle("#GameUI_Options", true);
 
-		if ( ModInfo().IsSinglePlayerOnly() && !ModInfo().NoDifficulty() )
+		if ( !ModInfo().HasMultipleSPCampaigns() && !ModInfo().NoDifficulty() )
 		{
 			AddPage(new COptionsSubDifficulty(this), "#GameUI_Difficulty");
 		}

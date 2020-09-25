@@ -25,6 +25,13 @@ IMPLEMENT_CLIENTCLASS_DT( C_PointCamera, DT_PointCamera, CPointCamera )
 	RecvPropFloat( RECVINFO( m_flFogMaxDensity ) ), 
 	RecvPropInt( RECVINFO( m_bActive ) ),
 	RecvPropInt( RECVINFO( m_bUseScreenAspectRatio ) ),
+	RecvPropInt(RECVINFO(m_bDOFEnabled)),
+	RecvPropFloat(RECVINFO(m_flNearBlurDepth)),
+	RecvPropFloat(RECVINFO(m_flNearFocusDepth)),
+	RecvPropFloat(RECVINFO(m_flFarFocusDepth)),
+	RecvPropFloat(RECVINFO(m_flFarBlurDepth)),
+	RecvPropFloat(RECVINFO(m_flNearBlurRadius)),
+	RecvPropFloat(RECVINFO(m_flFarBlurRadius)),
 END_RECV_TABLE()
 
 C_EntityClassList<C_PointCamera> g_PointCameraList;
@@ -83,6 +90,22 @@ float C_PointCamera::GetFogStart()
 float C_PointCamera::GetFogEnd()
 {
 	return m_flFogEnd;
+}
+
+bool C_PointCamera::GetDOF(DOFControlSettings_t& dof)
+{
+	if (m_bDOFEnabled)
+	{
+		dof.flFarBlurDepth = m_flFarBlurDepth;
+		dof.flFarBlurRadius = m_flFarBlurRadius;
+		dof.flFarFocusDistance = m_flFarFocusDepth;
+		dof.flNearBlurDepth = m_flNearBlurDepth;
+		dof.flNearBlurRadius = m_flNearBlurRadius;
+		dof.flNearFocusDistance = m_flNearFocusDepth;
+		return true;
+	}
+
+	return false;
 }
 
 float C_PointCamera::GetFogMaxDensity()

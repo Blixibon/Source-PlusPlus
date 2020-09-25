@@ -15,6 +15,7 @@
 
 
 #include "mathlib/vector.h"
+#include "mathlib/vmatrix.h"
 #include "basetypes.h"
 
 
@@ -29,6 +30,8 @@ enum
 	GAMELUMP_DETAIL_PROP_LIGHTING = GAMELUMP_MAKE_CODE('d', 'p', 'l', 't'),
 	GAMELUMP_STATIC_PROPS = GAMELUMP_MAKE_CODE('s', 'p', 'r', 'p'),
 	GAMELUMP_DETAIL_PROP_LIGHTING_HDR = GAMELUMP_MAKE_CODE('d', 'p', 'l', 'h'),
+
+	GAMELUMP_CUBEMAP_PARALLAX = GAMELUMP_MAKE_CODE('c', 'p', 'l', 'x'),
 };
 
 // Versions...
@@ -39,6 +42,8 @@ enum
 	GAMELUMP_STATIC_PROPS_VERSION = 10,
 	GAMELUMP_STATIC_PROP_LIGHTING_VERSION = 0,
 	GAMELUMP_DETAIL_PROP_LIGHTING_HDR_VERSION = 0,
+
+	GAMELUMP_CUBEMAP_PARALLAX_VERSION = 0,
 };
 
 
@@ -272,9 +277,6 @@ struct StaticPropLump_t
 	}
 };
 
-
-
-
 struct StaticPropLeafLump_t
 {
 	DECLARE_BYTESWAP_DATADESC();
@@ -287,6 +289,13 @@ struct StaticPropLeafLump_t
 struct StaticPropLightstylesLump_t
 {
 	ColorRGBExp32	m_Lighting;
+};
+
+struct CubemapParallaxLump_t
+{
+	DECLARE_BYTESWAP_DATADESC();
+	int x; int y; int z;
+	VMatrix parallaxOBB;
 };
 
 #endif // GAMEBSPFILE_H

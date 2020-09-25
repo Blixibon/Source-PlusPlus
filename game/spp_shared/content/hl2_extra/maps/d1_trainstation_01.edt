@@ -1,0 +1,16 @@
+d1_trainstation_01
+{
+	"edit"
+	{
+		"targetname"	"camera_tv_breen"
+		"values"
+		{
+			"dof_enabled" "1"
+			"near_radius" "0"
+			
+			"far_radius"	"10"
+			"far_focus"	"50"
+			"far_blur"	"100"
+		}
+	}
+}

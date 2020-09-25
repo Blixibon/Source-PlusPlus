@@ -99,7 +99,7 @@ void CPortalCredits::OnRestore()
 
 void CPortalCredits::RollOutroCredits()
 {
-	sv_unlockedchapters.SetValue( "15" );
+	sv_unlockedchapters.SetValue( "99" );
 	
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 
@@ -123,7 +123,7 @@ void CPortalCredits::InputRollOutroCredits( inputdata_t &inputdata )
 
 void CPortalCredits::RollPortalOutroCredits()
 {
-	sv_unlockedchapters.SetValue( "15" );
+	sv_unlockedchapters.SetValue( "99" );
 	
 	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 

@@ -314,6 +314,14 @@ public:
 	void InputIgniteHitboxFireScale( inputdata_t &inputdata );
 	void InputBecomeRagdoll( inputdata_t &inputdata );
 
+	// Ice
+	virtual bool	IsFrozen(void) { return m_flFrozen >= 1.0f; }
+	float			GetFrozenAmount(void) const { return m_flFrozen; }
+	float			GetFrozenThawRate(void) { return m_flFrozenThawRate; }
+	void			Thaw(float flThawAmount);
+	virtual void	Freeze(float flFreezeAmount = -1.0f, CBaseEntity* pFreezer = NULL, Ray_t* pFreezeRay = NULL);
+	virtual void	Unfreeze();
+
 	// Dissolve, returns true if the ragdoll has been created
 	bool Dissolve( const char *pMaterialName, float flStartTime, bool bNPCOnly = true, int nDissolveType = 0, Vector vDissolverOrigin = vec3_origin, int iMagnitude = 0 );
 	bool IsDissolving() { return ( (GetFlags() & FL_DISSOLVING) != 0 ); }
@@ -449,6 +457,12 @@ protected:
 	CNetworkVar( float, m_fadeMaxDist );	// Point at which fading is inactive
 	CNetworkVar( float, m_flFadeScale );	// Scale applied to min / max
 
+	CNetworkVar(float, m_flFrozen);		// 0 - 1 amount that the model is frozen
+	float				m_flMovementFrozen;	// How frozen are the movement parts
+	float				m_flAttackFrozen;	// How frozen are the attacking parts
+	float				m_flFrozenThawRate;	// amount it unfreezes per second
+	float				m_flFrozenMax;		// maximum amount this entitiy is allowed to freeze
+
 public:
 	COutputEvent m_OnIgnite;
 	COutputEvent m_OnFizzled;
@@ -514,7 +528,8 @@ inline void CBaseAnimating::ResetSequence(int nSequence)
 
 inline float CBaseAnimating::GetPlaybackRate() const
 {
-	return m_flPlaybackRate;
+	// Slow the animation while partially frozen
+	return m_flPlaybackRate * Clamp(1.0f - m_flFrozen, 0.0f, 1.0f);
 }
 
 inline void CBaseAnimating::SetPlaybackRate( float rate )

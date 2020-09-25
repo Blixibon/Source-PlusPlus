@@ -135,6 +135,7 @@ extern ConVar tf_mm_servermode;
 
 #include "peter/gametypes.h"
 #include "peter/signon_buffer_hack.h"
+#include "peter/chapter_playdata.h"
 #include "spp_utils/spp_utils.h"
 #include "spp_utils/holiday_events.h"
 
@@ -737,7 +738,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	g_pGameSaveRestoreBlockSet->AddBlockHandler( GetAchievementSaveRestoreBlockHandler() );
 	g_pGameSaveRestoreBlockSet->AddBlockHandler(GetVScriptSaveRestoreBlockHandler());
 
-	g_pGameTypeSystem->Init();
+	GameTypeSystem()->Init();
 
 	// The string system must init first + shutdown last
 	IGameSystem::Add( GameStringSystem() );
@@ -842,7 +843,7 @@ void CServerGameDLL::DLLShutdown( void )
 
 	IGameSystem::ShutdownAllSystems();
 
-	g_pGameTypeSystem->Shutdown();
+	GameTypeSystem()->Shutdown();
 
 	spp_utils->Disconnect();
 	if (spp_utils->GetRefCount() <= 0)
@@ -1036,7 +1037,9 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 #endif // USES_ECON_ITEMS
 
 	ResetWindspeed();
-	UpdateChapterRestrictions( pMapName );
+
+	if (!background)
+		UpdateChapterRestrictions(pMapName);
 
 	if ( IsX360() && !background && (gpGlobals->maxClients == 1) && (g_nCurrentChapterIndex >= 0) )
 	{
@@ -1046,7 +1049,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 
 	spp_utils->ServerLevelInit(pMapName, pOldLevel, loadGame, background);
 
-	g_pGameTypeSystem->LevelInitPreEntity();
+	GameTypeSystem()->LevelInitPreEntity();
 
 	//Tony; parse custom manifest if exists!
 	ParseParticleEffectsMap( pMapName, false );
@@ -1474,7 +1477,7 @@ void CServerGameDLL::LevelShutdown( void )
 	// In case we quit out during initial load
 	CBaseEntity::SetAllowPrecache( false );
 
-	g_pGameTypeSystem->LevelShutdown();
+	GameTypeSystem()->LevelShutdown();
 
 	spp_utils->ServerLevelShutdown();
 
@@ -1851,7 +1854,7 @@ static TITLECOMMENT gTitleComments[] =
 
 void CServerGameDLL::GetTitleName( const char *pMapName, char* pTitleBuff, int titleBuffSize )
 {
-	const NewMapData_t& mapData = g_pGameTypeSystem->LookupMapData(pMapName);
+	const NewMapData_t& mapData = GameTypeSystem()->LookupMapData(pMapName);
 
 	if (mapData.m_iChapterIndex == -1)
 	{
@@ -2226,6 +2229,7 @@ ConVar sv_unlockedchapters( "sv_unlockedchapters", "1", FCVAR_ARCHIVE | FCVAR_AR
 //-----------------------------------------------------------------------------
 void UpdateChapterRestrictions( const char *mapname )
 {
+#if 0
 	// look at the chapter for this map
 	char chapterTitle[64];
 	chapterTitle[0] = 0;
@@ -2311,6 +2315,36 @@ void UpdateChapterRestrictions( const char *mapname )
 
 		g_nCurrentChapterIndex = nNewChapter;
 	}
+#else
+	g_nCurrentChapterIndex = 0;
+
+	const NewMapData_t &mapData = GameTypeSystem()->LookupMapData(mapname);
+	if (mapData.m_iChapterIndex != -1)
+	{
+		g_nCurrentChapterIndex = mapData.m_iChapterIndex;
+
+		KeyValues* pKVFile = new KeyValues(CHAPTER_PLAYDATA_TITLE);
+		pKVFile->LoadFromFile(filesystem, CHAPTER_PLAYDATA_PATH, "MOD_WRITE");
+
+		KeyValues* pKVLastPlayed = pKVFile->FindKey(CHAPTER_PLAYDATA_GROUP_RECENT, true);
+		pKVLastPlayed->SetString("campaign", mapData.m_GameDef.String());
+		pKVLastPlayed->SetInt("chapter", mapData.m_iChapterIndex);
+
+		if (mapData.m_iChapterIndex >= 0)
+		{
+			KeyValues* pkvModDataGroup = pKVFile->FindKey(CHAPTER_PLAYDATA_GROUP_MODDATA, true);
+			KeyValues* pkvModData = pkvModDataGroup->FindKey(mapData.m_GameDef.String(), true);
+			int nUnlockedChapter = pkvModData->GetInt("unlocked_chapters", 1);
+			if (nUnlockedChapter < mapData.m_iChapterIndex)
+			{
+				pkvModData->SetInt("unlocked_chapters", mapData.m_iChapterIndex);
+			}
+		}
+
+		pKVFile->SaveToFile(filesystem, CHAPTER_PLAYDATA_PATH, "MOD_WRITE");
+		pKVFile->deleteThis();
+	}
+#endif
 }
 
 //-----------------------------------------------------------------------------

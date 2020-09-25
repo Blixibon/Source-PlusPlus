@@ -341,7 +341,7 @@ bool C_BaseCombatWeapon::ShouldDrawUsingViewModel( void )
 			return false;
 #endif // PORTAL
 
-		if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE || CurrentViewID() == VIEW_GLASS_REFLECTION)
+		if (CurrentViewID() == VIEW_SHADOW_DEPTH_TEXTURE)
 			return false;
 
 		return true;

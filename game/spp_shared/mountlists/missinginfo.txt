@@ -1,5 +1,7 @@
 "Mount"
 {
+	needs_mod	"MissingInfo"
+
 	sourcemods
 	{
 		"head"	"0"

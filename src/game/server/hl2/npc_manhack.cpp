@@ -81,6 +81,7 @@
 ConVar	sk_manhack_health( "sk_manhack_health","0");
 ConVar	sk_manhack_melee_dmg( "sk_manhack_melee_dmg","0");
 ConVar	sk_manhack_v2( "sk_manhack_v2","1");
+ConVar	manhack_blend_collision("hlss_manhack_blend_collision", "16");
 
 extern void		SpawnBlood(Vector vecSpot, const Vector &vAttackDir, int bloodColor, float flDamage);
 extern float	GetFloorZ(const Vector &origin);
@@ -228,6 +229,8 @@ CNPC_Manhack::CNPC_Manhack()
 	m_flEnginePitch1Time = 0;
 	m_bDoSwarmBehavior = true;
 	m_flBumpSuppressTime = 0;
+	m_bIsControlled = false;
+	m_bShouldFollowPlayer = false;
 }
 
 //------------------------------------------------------------------------------
@@ -408,7 +411,7 @@ void CNPC_Manhack::Event_Killed( const CTakeDamageInfo &info )
 		
 		//FIXME: These don't stay with the ragdolls currently -- jdw
 		// Long fadeout on the sprites!!
-		KillSprites( 0.0f );
+		//KillSprites( 0.0f );
 	}
 
 	BaseClass::Event_Killed( info );
@@ -865,7 +868,7 @@ bool CNPC_Manhack::CorpseGib( const CTakeDamageInfo &info )
 
 	RemoveDeferred();
 
-	KillSprites( 0.0f );
+	//KillSprites( 0.0f );
 
 	return true;
 }
@@ -916,7 +919,7 @@ void CNPC_Manhack::HandleAnimEvent( animevent_t *pEvent )
 	switch( pEvent->event )
 	{
 	case MANHACK_AE_START_ENGINE:
-		StartEye();
+		//StartEye();
 		StartEngine( true );
 		m_spawnflags &= ~SF_MANHACK_PACKED_UP;
 
@@ -1136,63 +1139,71 @@ bool CNPC_Manhack::OverrideMove( float flInterval )
 	if( HasSpawnFlags(SF_MANHACK_PACKED_UP|SF_MANHACK_CARRIED) )
 		return true;
 
-	if( IsLoitering() )
+	if (!m_bIsControlled.Get() || !m_hOwningPlayer.Get())
 	{
-		Loiter();
-	}
-	else
-	{
-		MaintainGroundHeight();
-	}
-
-	// So cops, etc. will try to avoid them
-	if ( !HasSpawnFlags( SF_MANHACK_NO_DANGER_SOUNDS ) && !m_bHeld )
-	{
-		CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin(), 75, flInterval, this );
-	}
-
-	// -----------------------------------------------------------------
-	//  If I'm being forced to move somewhere
-	// ------------------------------------------------------------------
-	if (m_fForceMoveTime > gpGlobals->curtime)
-	{
-		MoveToTarget(flInterval, m_vForceMoveTarget);
-	}
-	// -----------------------------------------------------------------
-	// If I have a route, keep it updated and move toward target
-	// ------------------------------------------------------------------
-	else if (GetNavigator()->IsGoalActive())
-	{
-		bool bReducible = GetNavigator()->GetPath()->GetCurWaypoint()->IsReducible();
-		const float strictTolerance = 64.0;
-		//NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + Vector(0, 0, 10 ), 255, 0, 0, true, 0.1);
-  		if ( ProgressFlyPath( flInterval, GetEnemy(), MoveCollisionMask(), bReducible, strictTolerance ) == AINPP_COMPLETE )
-			return true;
-	}
-	// -----------------------------------------------------------------
-	// If I'm supposed to swarm somewhere, try to go there
-	// ------------------------------------------------------------------
-	else if (m_fSwarmMoveTime > gpGlobals->curtime)
-	{
-		MoveToTarget(flInterval, m_vSwarmMoveTarget);
-	}
-	// -----------------------------------------------------------------
-	// If I don't have anything better to do, just decelerate
-	// -------------------------------------------------------------- ----
-	else
-	{
-		float	myDecay	 = 9.5;
-		Decelerate( flInterval, myDecay );
-
-		m_vTargetBanking = vec3_origin;
-
-		// -------------------------------------
-		// If I have an enemy turn to face him
-		// -------------------------------------
-		if (GetEnemy())
+		if (IsLoitering())
 		{
-			TurnHeadToTarget(flInterval, GetEnemy()->EyePosition() );
+			Loiter();
 		}
+		else
+		{
+			MaintainGroundHeight();
+		}
+
+		// So cops, etc. will try to avoid them
+		if (!HasSpawnFlags(SF_MANHACK_NO_DANGER_SOUNDS) && !m_bHeld)
+		{
+			CSoundEnt::InsertSound(SOUND_DANGER, GetAbsOrigin(), 75, flInterval, this);
+		}
+
+		// -----------------------------------------------------------------
+		//  If I'm being forced to move somewhere
+		// ------------------------------------------------------------------
+		if (m_fForceMoveTime > gpGlobals->curtime)
+		{
+			MoveToTarget(flInterval, m_vForceMoveTarget);
+		}
+		// -----------------------------------------------------------------
+		// If I have a route, keep it updated and move toward target
+		// ------------------------------------------------------------------
+		else if (GetNavigator()->IsGoalActive())
+		{
+			bool bReducible = GetNavigator()->GetPath()->GetCurWaypoint()->IsReducible();
+			const float strictTolerance = 64.0;
+			//NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + Vector(0, 0, 10 ), 255, 0, 0, true, 0.1);
+			if (ProgressFlyPath(flInterval, GetEnemy(), MoveCollisionMask(), bReducible, strictTolerance) == AINPP_COMPLETE)
+				return true;
+		}
+		// -----------------------------------------------------------------
+		// If I'm supposed to swarm somewhere, try to go there
+		// ------------------------------------------------------------------
+		else if (m_fSwarmMoveTime > gpGlobals->curtime)
+		{
+			MoveToTarget(flInterval, m_vSwarmMoveTarget);
+		}
+		// -----------------------------------------------------------------
+		// If I don't have anything better to do, just decelerate
+		// -------------------------------------------------------------- ----
+		else
+		{
+			float	myDecay = 9.5;
+			Decelerate(flInterval, myDecay);
+
+			m_vTargetBanking = vec3_origin;
+
+			// -------------------------------------
+			// If I have an enemy turn to face him
+			// -------------------------------------
+			if (GetEnemy())
+			{
+				TurnHeadToTarget(flInterval, GetEnemy()->EyePosition());
+			}
+		}
+	}
+	else //we are controllable 
+	{
+		//MaintainGroundHeight();
+		MoveInDirection(flInterval, m_vForceVelocity, 500, 500, 0.3f);
 	}
 
 	if ( m_iHealth <= 0 )
@@ -1209,6 +1220,119 @@ bool CNPC_Manhack::OverrideMove( float flInterval )
 	return true;
 }
 
+void CNPC_Manhack::MoveUpDown(float direction)
+{
+	trace_t tr;
+	UTIL_TraceLine(GetAbsOrigin(), GetAbsOrigin() + Vector(0, 0, m_vForceVelocity.z * manhack_blend_collision.GetFloat()), MoveCollisionMask(), this, COLLISION_GROUP_NONE, &tr);
+
+	if (tr.fraction != 1.0)
+	{
+		m_vForceVelocity.z = -direction;
+		//m_vCollisionView.z = (tr.fraction - 1) * direction;
+		return;
+	}
+	m_vForceVelocity.z = direction;
+}
+
+
+void CNPC_Manhack::MoveForwardBack(float direction, QAngle angManhackEye)
+{
+	Vector forward;
+	AngleVectors(angManhackEye, &forward);
+	VectorNormalize(forward);
+
+	if (direction >= 0)
+	{
+		trace_t tr;
+		Vector velocity; //GetAbsVelocity();
+		AngleVectors(angManhackEye, &velocity);
+		VectorNormalize(velocity);
+		AI_TraceHull(GetAbsOrigin(),
+			GetAbsOrigin() + velocity * manhack_blend_collision.GetFloat(),
+			GetHullMins(),
+			GetHullMaxs(),
+			MoveCollisionMask(),
+			this,
+			COLLISION_GROUP_NONE,
+			&tr);
+
+		if (tr.fraction != 1.0)
+		{
+			/*if (manhack_debug_collision.GetInt() == 1)
+			{
+				NDebugOverlay::Line(GetAbsOrigin(), GetAbsOrigin() + m_vForceVelocity * manhack_blend_collision.GetFloat(), 255, 0, 255, 0, 5);
+			}
+			if (manhack_debug_collision.GetInt() == 2)
+			{
+				NDebugOverlay::Line(tr.endpos, tr.endpos + tr.plane.normal * 16, 255, 0, 0, 0, 5);
+			}*/
+
+			//Vector reflection = GetAbsOrigin() - tr.endpos;
+			//VectorNormalize(reflection);
+			m_vForceVelocity = tr.plane.normal; //Vector(0,0,0); //reflection;
+			/*m_vCollisionView = GetAbsVelocity();
+			VectorNormalize( m_vCollisionView );
+			m_vCollisionView = ( (1 - tr.fraction) * m_vCollisionView );*/
+
+			/*if (manhack_debug_collision.GetInt() == 1)
+			{
+				//NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + m_vForceVelocity, 255, 0, 0, 0, 5 );
+				NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() + m_vCollisionView, 255, 0, 0, 0, 5 );
+			}*/
+			return;
+		}
+		else
+		{
+			//m_vCollisionView = Vector(0,0,0);
+		}
+	}
+	else
+	{
+		//m_vCollisionView = Vector(0,0,0);
+	}
+
+	m_vForceVelocity = forward * direction;
+}
+
+void CNPC_Manhack::ComeBackToPlayer(CBasePlayer* pPlayer, float fCallBackTime)
+{
+	if (pPlayer && m_fForceMoveTime - gpGlobals->curtime < 2.0f)
+	{
+		m_bIsControlled = false;
+
+		Vector	vForward, vThrowPos;
+
+		pPlayer->EyeVectors(&vForward, NULL, NULL);
+
+		vThrowPos = pPlayer->EyePosition();
+
+		vThrowPos += vForward * 20.0f;
+
+		m_vForceMoveTarget = vThrowPos;
+
+		m_fForceMoveTime = gpGlobals->curtime + fCallBackTime; //This is how long we will try to get there before giving up
+
+		DevMsg("npc_manhack, controllable: Coming back to player\n");
+	}
+}
+
+void CNPC_Manhack::GoThere(CBasePlayer* pPlayer, float fGoThereTime)
+{
+	m_bIsControlled = false;
+
+	Vector	vForward;
+
+	pPlayer->EyeVectors(&vForward, NULL, NULL);
+
+	trace_t tr;
+	UTIL_TraceLine(pPlayer->EyePosition(), pPlayer->EyePosition() + (vForward * 512), MASK_ALL, this, COLLISION_GROUP_NPC, &tr);
+
+	m_vForceMoveTarget = tr.endpos;
+
+	m_fForceMoveTime = gpGlobals->curtime + fGoThereTime; //This is how long we will try to get there before giving up
+
+	DevMsg("npc_manhack, controllable: Going where player eyes are pointing\n");
+}
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -1636,8 +1760,7 @@ void CNPC_Manhack::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 
 			DispatchEffect( "ManhackSparks", data );
 
-			CBroadcastRecipientFilter filter;
-
+			CPVSFilter filter(GetAbsOrigin());
 			te->DynamicLight( filter, 0.0, &GetAbsOrigin(), 255, 180, 100, 0, 50, 0.3, 150 );
 			
 			// add some spin, but only if we're not already going fast..
@@ -1645,7 +1768,7 @@ void CNPC_Manhack::Bump( CBaseEntity *pHitEntity, float flInterval, trace_t &tr 
 			AngularImpulse vecAngVelocity;
 			VPhysicsGetObject()->GetVelocity( &vecVelocity, &vecAngVelocity );
 			float flDot = DotProduct( myUp, vecAngVelocity );
-			if ( fabsf(flDot) < 100 )
+			if ( !m_bIsControlled.Get() && fabsf(flDot) < 100.f )
 			{
 				//AngularImpulse torque = myUp * (1000 - flDot * 10);
 				AngularImpulse torque = myUp * (1000 - flDot * 2);
@@ -2478,7 +2601,7 @@ void CNPC_Manhack::Spawn(void)
 	m_bHackedByAlyx = false;
 	StopLoitering();
 }
-
+#if 0
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2528,17 +2651,17 @@ void CNPC_Manhack::StartEye( void )
 		m_pLightGlow->SetAsTemporary();
 	}
 }
-
+#endif
 //-----------------------------------------------------------------------------
 
 void CNPC_Manhack::Activate()
 {
 	BaseClass::Activate();
 
-	if ( IsAlive() )
+	/*if ( IsAlive() )
 	{
 		StartEye();
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------------
@@ -2824,7 +2947,7 @@ void CNPC_Manhack::StartTask( const Task_t *pTask )
 void CNPC_Manhack::UpdateOnRemove( void )
 {
 	DestroySmokeTrail();
-	KillSprites( 0.0 );
+	//KillSprites( 0.0 );
 	BaseClass::UpdateOnRemove();
 }
 
@@ -2905,7 +3028,7 @@ void CNPC_Manhack::ClampMotorForces( Vector &linear, AngularImpulse &angular )
 	angular.y *= scale;
 	angular.z *= scale;
 }
-
+#if 0
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -2932,7 +3055,7 @@ void CNPC_Manhack::KillSprites( float flDelay )
 	}
 	*/
 }
-
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: Tests whether we're above the target's feet but also below their top
 // Input  : *pTarget - who we're testing against
@@ -3231,6 +3354,7 @@ void CNPC_Manhack::StopBurst( bool bInterruptSchedule /*= false*/ )
 //-----------------------------------------------------------------------------
 void CNPC_Manhack::SetEyeState( int state )
 {
+#if 0
 	// Make sure we're active
 	StartEye();
 
@@ -3303,6 +3427,12 @@ void CNPC_Manhack::SetEyeState( int state )
 			m_pEyeGlow->m_nRenderFX = kRenderFxNone;
 		break;
 	}
+#else
+	if (state != m_nEyeState)
+	{
+		m_nEyeState = state;
+	}
+#endif
 }
 
 

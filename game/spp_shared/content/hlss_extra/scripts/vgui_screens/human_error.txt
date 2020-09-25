@@ -1,20 +1,20 @@
 "VGUI_Screens"
 {
-	"manhack_screen"
-	{
-		// TERO: Screen for the Combine Console
-		// type defined in c_combine_console_screen.cpp
-		"type"				"manhack_screen" // //vgui_screen_panel
+	// "manhack_screen"
+	// {
+		// // TERO: Screen for the Combine Console
+		// // type defined in c_combine_console_screen.cpp
+		// "type"				"manhack_screen" // //vgui_screen_panel
 
-		// These describe the dimensions of the screen *in pixels*
+		// // These describe the dimensions of the screen *in pixels*
 
-		"pixelswide" 	128
-		"pixelshigh"	64
+		// "pixelswide" 	128
+		// "pixelshigh"	64
 
-		// This is the name of the .res file to load up and apply to the vgui panel
-		"resfile"			"scripts/Human_Error_screens/ManhackViewModel.res"
+		// // This is the name of the .res file to load up and apply to the vgui panel
+		// "resfile"			"scripts/Human_Error_screens/ManhackViewModel.res"
 	
-	}
+	// }
 
 	"combine_console_screen"
 	{

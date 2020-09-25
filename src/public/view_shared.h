@@ -143,7 +143,7 @@ public:
 		m_flFarBlurDepth = 1000.0;
 		m_flNearBlurRadius = 10.0;
 		m_flFarBlurRadius = 5.0;
-		m_nDoFQuality = 0;
+		m_nDoFQuality = -1;
 
 		m_bDoDepthOfField = false;
 		m_bHDRTarget = false;

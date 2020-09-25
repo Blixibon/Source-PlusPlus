@@ -115,6 +115,7 @@
 
 #include "env_debughistory.h"
 #include "collisionutils.h"
+#include "physics_prop_statue.h"
 
 extern ConVar sk_healthkit;
 
@@ -800,6 +801,134 @@ void CAI_BaseNPC::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bo
 		}
 	}
 #endif
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+HSCRIPT CAI_BaseNPC::VScriptGetEnemy()
+{
+	return ToHScript(GetEnemy());
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//void CAI_BaseNPC::VScriptSetEnemy(HSCRIPT pEnemy)
+//{
+//	SetEnemy(ToEnt(pEnemy));
+//}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+Vector CAI_BaseNPC::VScriptGetEnemyLKP()
+{
+	return GetEnemyLKP();
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//HSCRIPT CAI_BaseNPC::VScriptFindEnemyMemory(HSCRIPT pEnemy)
+//{
+//	HSCRIPT hScript = NULL;
+//	AI_EnemyInfo_t* info = GetEnemies()->Find(ToEnt(pEnemy));
+//	if (info)
+//	{
+//		hScript = g_pScriptVM->RegisterInstance(info);
+//	}
+//
+//	return hScript;
+//}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CAI_BaseNPC::VScriptGetState()
+{
+	return (int)GetState();
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+HSCRIPT CAI_BaseNPC::VScriptGetHintNode()
+{
+	return ToHScript(GetHintNode());
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+const char* CAI_BaseNPC::VScriptGetSchedule()
+{
+	const char* pName = NULL;
+	pName = GetCurSchedule()->GetName();
+	if (!pName)
+		pName = "Unknown";
+
+	return pName;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CAI_BaseNPC::VScriptGetScheduleID()
+{
+	int iSched = GetCurSchedule()->GetId();
+
+	// Local IDs are needed to correspond with user-friendly enums
+	if (AI_IdIsGlobal(iSched))
+	{
+		iSched = GetClassScheduleIdSpace()->ScheduleGlobalToLocal(iSched);
+	}
+
+	return iSched;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//void CAI_BaseNPC::VScriptSetSchedule(const char* szSchedule)
+//{
+//	SetSchedule(GetScheduleID(szSchedule));
+//}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+const char* CAI_BaseNPC::VScriptGetTask()
+{
+	const Task_t* pTask = GetTask();
+	const char* pName = NULL;
+	if (pTask)
+		pName = TaskName(pTask->iTask);
+	else
+		pName = "None";
+
+	return pName;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+int CAI_BaseNPC::VScriptGetTaskID()
+{
+	const Task_t* pTask = GetTask();
+	int iID = -1;
+	if (pTask)
+		iID = GetTaskID(TaskName(pTask->iTask));
+
+	return iID;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//HSCRIPT CAI_BaseNPC::VScriptGetExpresser()
+//{
+//	HSCRIPT hScript = NULL;
+//	CAI_Expresser* pExpresser = GetExpresser();
+//	if (pExpresser)
+//	{
+//		hScript = g_pScriptVM->RegisterInstance(pExpresser);
+//	}
+//
+//	return hScript;
+//}
+
+HSCRIPT CAI_BaseNPC::VScriptGetCine()
+{
+	return ToHScript(m_hCine.Get());
 }
 
 //-----------------------------------------------------------------------------
@@ -4553,6 +4682,13 @@ void CAI_BaseNPC::GatherAttackConditions( CBaseEntity *pTarget, float flDist )
 	else
 	{
 		SetCondition( COND_WEAPON_HAS_LOS );
+	}
+
+	if (IsAttackFrozen())
+	{
+		// If they are frozen, they can't attack
+		SetCondition(COND_TOO_CLOSE_TO_ATTACK);	// Run, Forest, Run
+		return;
 	}
 
 	bool bWeaponIsReady = (GetActiveWeapon() && !IsWeaponStateChanging());
@@ -11217,6 +11353,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	//								m_poseAim_Yaw (not saved; recomputed on restore)
 	//								m_poseMove_Yaw (not saved; recomputed on restore)
 	DEFINE_FIELD( m_flTimePingEffect,			FIELD_TIME ),
+	DEFINE_FIELD(m_flFrozenMoveBlock, FIELD_FLOAT),
 	DEFINE_FIELD( m_bForceConditionsGather,		FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bConditionsGathered,		FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bSkippedChooseEnemy,		FIELD_BOOLEAN ),
@@ -11434,6 +11571,62 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD(m_bKilledByPlayer, FIELD_BOOLEAN),
 
 END_DATADESC()
+
+BEGIN_ENT_SCRIPTDESC(CAI_BaseNPC, CBaseCombatCharacter, "The base class all NPCs derive from.")
+
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetEnemy, "GetEnemy", "Get the NPC's current enemy.")
+//DEFINE_SCRIPTFUNC_NAMED(VScriptSetEnemy, "SetEnemy", "Set the NPC's current enemy.")
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetEnemyLKP, "GetEnemyLKP", "Get the last known position of the NPC's current enemy.")
+
+//DEFINE_SCRIPTFUNC_NAMED(VScriptFindEnemyMemory, "FindEnemyMemory", "Get information about the NPC's current enemy.")
+
+DEFINE_SCRIPTFUNC(GetLastAttackTime, "Get the last time the NPC has used an attack (e.g. fired a bullet from a gun).")
+DEFINE_SCRIPTFUNC(GetLastDamageTime, "Get the last time the NPC has been damaged.")
+DEFINE_SCRIPTFUNC(GetLastPlayerDamageTime, "Get the last time the NPC has been damaged by a player.")
+DEFINE_SCRIPTFUNC(GetLastEnemyTime, "Get the last time the NPC has seen an enemy.")
+
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetState, "GetNPCState", "Get the NPC's current state.")
+
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetHintGroup, "GetHintGroup", "Get the name of the NPC's hint group.")
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetHintNode, "GetHintNode", "Get the NPC's current AI hint.")
+
+DEFINE_SCRIPTFUNC(CapabilitiesGet, "Get the capabilities the NPC currently possesses.")
+DEFINE_SCRIPTFUNC(CapabilitiesAdd, "Add capabilities to the NPC.")
+DEFINE_SCRIPTFUNC(CapabilitiesRemove, "Remove capabilities from the NPC.")
+DEFINE_SCRIPTFUNC(CapabilitiesClear, "Clear capabilities for the NPC.")
+
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetActivity, "GetActivity", "Get the NPC's current activity.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetActivityID, "GetActivityID", "Get the NPC's current activity ID.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetActivity, "SetActivity", "Set the NPC's current activity.")
+DEFINE_SCRIPTFUNC_NAMED(ScriptSetActivityID, "SetActivityID", "Set the NPC's current activity ID.")
+DEFINE_SCRIPTFUNC(ResetActivity, "Reset the NPC's current activity.")
+
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetSchedule, "GetSchedule", "Get the NPC's current schedule.")
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetScheduleID, "GetScheduleID", "Get the NPC's current schedule ID.")
+//DEFINE_SCRIPTFUNC_NAMED(VScriptSetSchedule, "SetSchedule", "Set the NPC's current schedule.")
+//DEFINE_SCRIPTFUNC_NAMED(VScriptSetScheduleID, "SetScheduleID", "Set the NPC's current schedule ID.")
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetTask, "GetTask", "Get the NPC's current task.")
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetTaskID, "GetTaskID", "Get the NPC's current task ID.")
+//DEFINE_SCRIPTFUNC(ClearSchedule, "Clear the NPC's current schedule for the specified reason.")
+
+//DEFINE_SCRIPTFUNC_NAMED(VScriptHasCondition, "HasCondition", "Get whether the NPC has a condition.")
+//DEFINE_SCRIPTFUNC_NAMED(VScriptHasConditionID, "HasConditionID", "Get whether the NPC has a condition ID.")
+//DEFINE_SCRIPTFUNC_NAMED(VScriptSetCondition, "SetCondition", "Set a condition on the NPC.")
+//DEFINE_SCRIPTFUNC_NAMED(SetCondition, "SetConditionID", "Set a condition on the NPC by ID.")
+//DEFINE_SCRIPTFUNC_NAMED(VScriptClearCondition, "ClearCondition", "Clear a condition on the NPC.")
+//DEFINE_SCRIPTFUNC_NAMED(ClearCondition, "ClearConditionID", "Clear a condition on the NPC by ID.")
+
+DEFINE_SCRIPTFUNC(IsMoving, "Check if the NPC is moving.")
+
+//DEFINE_SCRIPTFUNC_NAMED(VScriptGetExpresser, "GetExpresser", "Get a handle for this NPC's expresser.")
+
+DEFINE_SCRIPTFUNC(IsCommandable, "Check if the NPC is commandable.")
+DEFINE_SCRIPTFUNC(IsInPlayerSquad, "Check if the NPC is in the player's squad.")
+
+DEFINE_SCRIPTFUNC_NAMED(VScriptGetCine, "GetCine", "Get the NPC's currently running scripted sequence if it has one.")
+DEFINE_SCRIPTFUNC(GetScriptState, "Get the NPC's current scripted sequence state.")
+
+END_SCRIPTDESC();
 
 BEGIN_SIMPLE_DATADESC( AIScheduleState_t )
 	DEFINE_FIELD( iCurTask,				FIELD_INTEGER ),
@@ -11984,6 +12177,50 @@ void CAI_BaseNPC::ToggleFreeze(void)
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Freezes this NPC in place for a period of time.
+//-----------------------------------------------------------------------------
+void CAI_BaseNPC::Freeze(float flFreezeAmount, CBaseEntity* pFreezer, Ray_t* pFreezeRay)
+{
+	BaseClass::Freeze(flFreezeAmount, pFreezer, pFreezeRay);
+
+	if (flFreezeAmount < 0.0f)
+	{
+		/*SetCondition(COND_NPC_FREEZE);
+		SetMoveType(MOVETYPE_NONE);
+		SetGravity(0);
+		SetLocalAngularVelocity(vec3_angle);
+		SetAbsVelocity(vec3_origin);*/
+	}
+	else
+	{
+		m_flFrozenThawRate = 0.1f;
+
+		if (ShouldBecomeStatue())
+		{
+			// Dude is frozen, so lets use a stiff server side statue
+			if (IsAlive())
+			{
+				CreateServerStatue(this, COLLISION_GROUP_NONE);
+				Event_Killed(CTakeDamageInfo(pFreezer, pFreezer, 1000.0, DMG_FREEZE | DMG_REMOVENORAGDOLL | DMG_PREVENT_PHYSICS_FORCE));
+				RemoveDeferred();
+			}
+		}
+	}
+}
+
+bool CAI_BaseNPC::ShouldBecomeStatue()
+{
+	return (m_flFrozen >= 1.0f);
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CAI_BaseNPC::Unfreeze()
+{
+	BaseClass::Unfreeze();
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Written by subclasses macro to load schedules

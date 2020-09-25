@@ -10,16 +10,22 @@
 
 
 #include "cbase.h"
-#include "basehlcombatweapon.h"
+#include "coop/weapon_coop_basehlcombatweapon.h"
 
-class CWeapon_Manhack : public CBaseHLCombatWeapon
+#ifdef CLIENT_DLL
+#define CWeapon_Manhack C_Weapon_Manhack
+#endif
+
+class CWeapon_Manhack : public CWeaponCoopBaseHLCombat
 {
 public:
-	DECLARE_CLASS( CWeapon_Manhack, CBaseHLCombatWeapon );
-
-	DECLARE_SERVERCLASS();
+	DECLARE_CLASS( CWeapon_Manhack, CWeaponCoopBaseHLCombat);
+	DECLARE_PREDICTABLE();
+	DECLARE_NETWORKCLASS();
 
 	CWeapon_Manhack();
+
+	virtual int GetWeaponID(void) const { return HLSS_WEAPON_ID_MANHACK; }
 
 	//void			Spawn( void );
 	void			Precache( void );
@@ -41,13 +47,19 @@ public:
 
 	void			WeaponSwitch( void );
 
-	bool			FindVehicleManhack();
-
+	//bool			FindVehicleManhack();
+#ifndef CLIENT_DLL
 	void			Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
-	bool			CreateControllableVehicleManhack( CBasePlayer *pPlayer );
 	bool			CreateControllableNPCManhack( CBasePlayer *pPlayer );
 	void			DriveControllableManhack();
-
+	void			UpdateControllerPanel();
+#else
+	virtual int				GetWeaponRenderTargetCount() { return 1; }
+	virtual bool			GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView);
+	virtual void			WeaponRT_StartRender3D(int iWhich);
+	virtual void			WeaponRT_FinishRender3D(int iWhich);
+	virtual void			WeaponRT_StartRender2D(int iWhich);
+#endif
 	bool			HasNPCManhack();
 	bool			HasFreeSlot();
 	int				NumberOfManhacks();
@@ -55,47 +67,37 @@ public:
 	void			CallManhacksBack();
 	void			TellManhacksToGoThere();
 
-	//screen stuff
-
-	void			GetControlPanelInfo( int nPanelIndex, const char *&pPanelName );
-	bool			ShouldShowControlPanels() { return m_bShouldShowPanel; }
-
-	void			UpdateControllerPanel();
-
-	virtual void			AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles ) { return; }
-	virtual float			CalcViewmodelBob( void );
 
 private:
 
 	//EHANDLE			m_hManhack;
 
 	//Animation booleans
-	bool			m_bIsDrawing;
-	bool			m_bIsDoingShit;
-	bool			m_bIsDoingShitToo;
-	bool			m_bIsDoingController;
-	bool			m_bSpawnSomeMore;
+	CNetworkVar(bool, m_bIsDrawing);
+	CNetworkVar(bool, m_bIsDoingShit);
+	CNetworkVar(bool, m_bIsDoingShitToo);
+	CNetworkVar(bool, m_bIsDoingController);
+	CNetworkVar(bool, m_bSpawnSomeMore);
+
 	bool			m_bSkip;
 	bool			m_bRedraw;
 	bool			m_bHoldingSpawn;
 
-	bool			m_bToggleCallback;
-
-	bool			m_bShouldShowPanel;
-
 	bool			m_bHasAmmo;
 	bool			m_bHasFreeSlot;
 
+#ifndef CLIENT_DLL
+	bool			m_bToggleCallback;
 	int				m_iManhackHintTimeShown;
 	bool			m_bHadControllable;		//If Manhacks used to be controllable, but now they are not, other the other way around
+#endif // !CLIENT_DLL
 
 	int				m_iLastNumberOfManhacks;
 
-	EHANDLE			m_hScreen;
+	//EHANDLE			m_hScreen;
 
 	CNetworkVar( int, m_iManhackDistance );
 
-	DECLARE_ACTTABLE();
 	DECLARE_DATADESC();
 };
 

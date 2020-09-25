@@ -283,6 +283,7 @@ private:
 		typename& operator=( typename const& src );		\
 		bool operator==( typename const& src ) const;	\
 		const char* String( ) const;					\
+		bool IsValid() const;							\
 	private:											\
 		CUtlSymbol m_SymbolId;							\
 	};	
@@ -310,6 +311,10 @@ private:
 	const char* typename::String( ) const							\
 	{																\
 		return g_##typename##SymbolTable.String( m_SymbolId );		\
-	}
+	}																\
+	bool typename::IsValid() const									\
+	{																\
+		return m_SymbolId.IsValid();								\
+	}																\
 
 #endif // UTLSYMBOL_H

@@ -187,7 +187,7 @@ bool Flashlight_UseLegacyVersion( void )
 	// Return the results
 	return g_bUseLegacyFlashlight;
 #else
-	return !hl2_episodic.GetBool() || g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_EP1;
+	return !hl2_episodic.GetBool() || GameTypeSystem()->GetCurrentBaseGameType() == GAME_EP1;
 #endif
 }
 
@@ -3739,11 +3739,14 @@ void CHL2_Player::ItemPostFrame()
 {
 	BaseClass::ItemPostFrame();
 
-	if ( m_bPlayUseDenySound )
+#ifndef PORTAL
+	if (m_bPlayUseDenySound)
 	{
 		m_bPlayUseDenySound = false;
-		EmitSound( "HL2Player.UseDeny" );
+		EmitSound("HL2Player.UseDeny");
 	}
+#endif // !PORTAL
+
 }
 
 

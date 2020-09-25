@@ -3,4 +3,5 @@
     "game_base" "ep2"
     "game_mod"  "human"
     "population_set"    "default"
+    "skill_config"      "Human_Error/skill.cfg"
 }

@@ -471,7 +471,7 @@ BEGIN_DATADESC( CBasePlayer )
 	// DEFINE_UTLVECTOR( m_vecPlayerSimInfo ),
 END_DATADESC()
 
-BEGIN_ENT_SCRIPTDESC(CBasePlayer, CBaseFlex, "The player entity.")
+BEGIN_ENT_SCRIPTDESC(CBasePlayer, CBaseCombatCharacter, "The player entity.")
 DEFINE_SCRIPTFUNC_NAMED(ScriptIsPlayerNoclipping, "IsNoclipping", "Returns true if the player is in noclip mode.")
 DEFINE_SCRIPTFUNC(GetPlayerName, "Get the player's name.")
 DEFINE_SCRIPTFUNC(GetNetworkIDString, "Get the player's network (i.e. Steam) ID. ")
@@ -5711,7 +5711,7 @@ void CBasePlayer::LeaveVehicle( const Vector &vecExitPoint, const QAngle &vecExi
 
 	m_Local.m_iHideHUD &= ~HIDEHUD_INVEHICLE;
 
-	RemoveEffects( EF_NODRAW );
+	RemoveEffects( EF_NODRAW|EF_BONEMERGE );
 
 	SetMoveType( MOVETYPE_WALK );
 	SetCollisionGroup( COLLISION_GROUP_PLAYER );

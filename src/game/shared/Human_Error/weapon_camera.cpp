@@ -12,6 +12,10 @@
 #include "globalstate.h"
 #include "items.h"
 #include "soundent.h"
+#else
+#include "peter/laz_render_targets.h"
+#include "materialsystem/itexture.h"
+#include "view_shared.h"
 #endif
 
 #include "gamerules.h"
@@ -88,6 +92,9 @@ public:
 	virtual bool IsWeaponCamera() { return ((m_flDrawScreenTime == 0) || (m_flDrawScreenTime < gpGlobals->curtime)); }
 
 	virtual bool ShouldDrawCrosshair(void) { return false; }
+
+	virtual int				GetWeaponRenderTargetCount() { return 1; }
+	virtual bool			GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView);
 #endif // !CLIENT_DLL
 
 
@@ -264,6 +271,38 @@ void CWeapon_Camera::PrimaryAttack()
 	SendWeaponAnim( ACT_VM_THROW );
 }
 
+#ifdef CLIENT_DLL
+bool CWeapon_Camera::GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView)
+{
+	if (iWhich == 0 && IsWeaponCamera())
+	{
+		//Get our camera render target.
+		data.m_pRenderTarget = lazulrendertargets->GetCameraScreenTexture();
+
+		if (data.m_pRenderTarget == NULL)
+			return false;
+
+		//Our view information, Origin, View Direction, window size
+		//	location on material, and visual ratios.
+		data.m_View = mainView;
+		data.m_View.width = data.m_pRenderTarget->GetActualWidth();
+		data.m_View.height = data.m_pRenderTarget->GetActualHeight();
+		data.m_View.x = 0;
+		data.m_View.y = 0;
+		data.m_View.fov = 45;
+		data.m_View.m_bOrtho = false;
+		data.m_View.m_flAspectRatio = 1.0f;
+
+		data.m_bDraw3D = true;
+		data.m_bDraw2D = false;
+		data.m_bDraw3DSkybox = true;
+		data.m_3DViewID = VIEW_MAIN;
+		return true;
+	}
+
+	return false;
+}
+#endif // CLIENT_DLL
 
 #ifndef CLIENT_DLL
 // global pointer to Larson for fast lookups

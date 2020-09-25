@@ -308,7 +308,7 @@ public:
 
 #ifndef CLIENT_DLL
 		CUtlStringList gameScripts;
-		int iScriptCount = g_pGameTypeSystem->GetSoundOverrideScripts(gameScripts);
+		int iScriptCount = GameTypeSystem()->GetSoundOverrideScripts(gameScripts);
 		for (int i = 0; i < iScriptCount; i++)
 		{
 			if (filesystem->FileExists(gameScripts[i], "GAME"))

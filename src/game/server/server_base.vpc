@@ -144,6 +144,8 @@ $Project
 		$File	"$SRCDIR\game\shared\activitylist.h"
 		$File	"cvisibilitymonitor.cpp"
 		$File	"cvisibilitymonitor.h"
+		$File	"EntityFreezing.cpp"
+		$File	"EntityFreezing.h"
 		$File	"ai_activity.cpp"
 		$File	"$SRCDIR\game\shared\ai_activity.h"
 
@@ -588,6 +590,8 @@ $Project
 		$File	"physics_npc_solver.h"
 		$File	"physics_prop_ragdoll.cpp"
 		$File	"physics_prop_ragdoll.h"
+		$File	"physics_prop_statue.cpp"
+		$File	"physics_prop_statue.h"
 		$File	"$SRCDIR\game\shared\physics_saverestore.cpp"
 		$File	"$SRCDIR\game\shared\physics_saverestore.h"
 		$File	"$SRCDIR\game\shared\physics_shared.cpp"

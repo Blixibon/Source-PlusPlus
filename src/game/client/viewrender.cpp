@@ -520,11 +520,12 @@ class CSSAODepthView : public CRendering3dView
 public:
 	CSSAODepthView(CViewRender* pMainView) : CRendering3dView(pMainView) {}
 
-	void Setup(const CNewViewSetup& shadowViewIn, ITexture* pDepthTexture);
+	void Setup(const CNewViewSetup& shadowViewIn, ITexture* pDepthTexture, int iParentViewID);
 	void Draw();
 
 private:
-	ITexture* m_pDepthTexture;
+	ITexture*	m_pDepthTexture;
+	int			m_nParentViewID;
 };
 
 //-----------------------------------------------------------------------------
@@ -999,6 +1000,11 @@ bool CurrentViewIsMain()
 	return IsMainView(CurrentViewID());
 }
 
+bool IsDepthView(int id)
+{
+	return (id == VIEW_SHADOW_DEPTH_TEXTURE || id == VIEW_SSAO || id == VIEW_SSAO_MONITOR);
+}
+
 void FinishCurrentView()
 {
 	s_bCanAccessCurrentView = false;
@@ -1410,14 +1416,14 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	
 	// Shadowed flashlights supported on ps_2_b and up...
-	if ( r_flashlightdepthtexture.GetBool() && (viewID == VIEW_MAIN) )
+	if ( r_flashlightdepthtexture.GetBool() )
 	{
 		CMatRenderContextPtr pRenderContext(materials);
-		g_pClientShadowMgr->ComputeShadowDepthTextures( view );
-
+		if (viewID == VIEW_MAIN)
+			g_pClientShadowMgr->ComputeShadowDepthTextures(view);
 
 		// GSTRINGMIGRATION
-		if ( g_pCSMEnvLight != NULL && g_pCSMEnvLight->IsCascadedShadowMappingEnabled())
+		if ( g_pCSMEnvLight != NULL && g_pCSMEnvLight->IsCascadedShadowMappingEnabled() && (viewID == VIEW_MAIN))
 		{
 			UpdateCascadedShadow( view );
 		}
@@ -1427,8 +1433,8 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 		}
 	}
 
-	//if (viewID == VIEW_MAIN || IsDepthOfFieldEnabled(&view))
-		//UpdateSSAODepth(view);
+	if (IsDepthOfFieldEnabled(viewID, &view))
+		UpdateSSAODepth(view, viewID);
 
 	m_BaseDrawFlags = baseDrawFlags;
 
@@ -1497,6 +1503,16 @@ void CViewRender::ViewDrawScene( bool bDrew3dSkybox, SkyboxVisibility_t nSkyboxV
 
 	// Mark the frame as locked down for client fx additions
 	SetFXCreationAllowed( false );
+
+	if (IsDepthOfFieldEnabled(viewID, &view))
+	{
+		CMatRenderContextPtr pRenderContext(materials);
+		{
+			PIXEVENT(pRenderContext, "DoDepthOfField()");
+			DoDepthOfField(view);
+		}
+		pRenderContext.SafeRelease();
+	}
 
 	// Invoke post-render methods
 	IGameSystem::PostRenderAllSystems();
@@ -2236,12 +2252,17 @@ void CViewRender::UpdateCascadedShadow( const CNewViewSetup &view )
 	frustrumcull.SetValue(bFrustrumCulling);
 }
 
-void CViewRender::UpdateSSAODepth(const CNewViewSetup& view)
+void CViewRender::UpdateSSAODepth(const CNewViewSetup& view, view_id_t viewID)
 {
+	CNewViewSetup depthView = view;
 	ITexture* pSSAO = materials->FindTexture("_rt_ResolvedFullFrameDepth", TEXTURE_GROUP_RENDER_TARGET);
+	depthView.x = 0;
+	depthView.y = 0;
+	depthView.width = pSSAO->GetActualWidth();
+	depthView.height = pSSAO->GetActualHeight();
 
 	CRefPtr<CSSAODepthView> pShadowDepthView = new CSSAODepthView(this);
-	pShadowDepthView->Setup(view, pSSAO);
+	pShadowDepthView->Setup(depthView, pSSAO, viewID);
 	AddViewToScene(pShadowDepthView);
 }
 
@@ -2327,15 +2348,16 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 
 		g_pClientShadowMgr->AdvanceFrame();
 
-	#ifdef USE_MONITORS
+	//#ifdef USE_MONITORS
 		if ( cl_drawmonitors.GetBool() &&
 			( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70 ) &&
 			( ( whatToDraw & RENDERVIEW_SUPPRESSMONITORRENDERING ) == 0 ) )
 		{
 			CNewViewSetup viewMiddle = GetView( STEREO_EYE_MONO );
 			DrawMonitors( viewMiddle );
+			DrawWeaponTargets(viewMiddle);
 		}
-	#endif
+	//#endif
 
 		g_bRenderingView = true;
 
@@ -2404,16 +2426,6 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 		// Image-space motion blur
 		if ( !building_cubemaps.GetBool() ) // We probably should use a different view. variable here
 		{
-			if (IsDepthOfFieldEnabled(&view))
-			{
-				pRenderContext.GetFrom(materials);
-				{
-					PIXEVENT(pRenderContext, "DoDepthOfField()");
-					DoDepthOfField(view);
-				}
-				pRenderContext.SafeRelease();
-			}
-
 			if ( ( mat_motion_blur_enabled.GetInt() ) && ( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 90 ) && (view.m_bDoBloomAndToneMapping) )
 			{
 				pRenderContext.GetFrom( materials );
@@ -3541,6 +3553,25 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 		monitorView.zFar = pCameraEnt->GetFogEnd();
 	}
 
+	C_PointCamera::DOFControlSettings_t dofCtrl;
+	if (pCameraEnt->GetDOF(dofCtrl))
+	{
+		monitorView.m_bDoDepthOfField = true;
+
+		monitorView.m_flFarBlurDepth = dofCtrl.flFarBlurDepth;
+		monitorView.m_flFarBlurRadius = dofCtrl.flFarBlurRadius;
+		monitorView.m_flFarFocusDepth = dofCtrl.flFarFocusDistance;
+		monitorView.m_flNearBlurDepth = dofCtrl.flNearBlurDepth;
+		monitorView.m_flNearBlurRadius = dofCtrl.flNearBlurRadius;
+		monitorView.m_flNearFocusDepth = dofCtrl.flNearFocusDistance;
+
+		monitorView.m_nDoFQuality = 0;
+	}
+	else
+	{
+		monitorView.m_bDoDepthOfField = false;
+	}
+
 	monitorView.width = width;
 	monitorView.height = height;
 	monitorView.x = x;
@@ -3625,6 +3656,67 @@ void CViewRender::DrawMonitors( const CNewViewSetup &cameraView )
 #endif
 
 #endif // USE_MONITORS
+}
+
+void CViewRender::DrawWeaponTargets(const CNewViewSetup& mainView)
+{
+	C_BasePlayer* localPlayer = C_BasePlayer::GetLocalPlayer();
+
+	if (!localPlayer || !C_BasePlayer::LocalPlayerInFirstPersonView())
+		return;
+
+	C_BaseCombatWeapon* pWeapon = localPlayer->GetActiveWeapon();
+	if (!pWeapon || pWeapon->GetWeaponRenderTargetCount() <= 0)
+		return;
+
+	for (int i = 0; i < pWeapon->GetWeaponRenderTargetCount(); i++)
+	{
+		weaponrendertarget_t data;
+		if (pWeapon->GetWeaponRenderTarget(i, data, mainView))
+		{
+			if (data.m_bDraw3D)
+			{
+				bool bDrew3dSkybox = false;	// bDrew3dSkybox = true turns the skybox OFF. DO NOT SET IT TO TRUE.
+				SkyboxVisibility_t nSkyboxVisible = SKYBOX_2DSKYBOX_VISIBLE; //SKYBOX_3DSKYBOX_VISIBLE;
+
+				int nClearFlags = VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR;
+
+				//Set the view up and output the scene to our RenderTarget (Scope Material).
+				render->Push3DView(data.m_View, nClearFlags, data.m_pRenderTarget, m_Frustum);
+				pWeapon->WeaponRT_StartRender3D(i);
+
+				if (data.m_bDraw3DSkybox)
+				{
+					CSkyboxView* pSkyView = new CSkyboxView(this);
+					if ((bDrew3dSkybox = pSkyView->Setup(data.m_View, &nClearFlags, &nSkyboxVisible)) != false)
+					{
+						AddViewToScene(pSkyView);
+					}
+					SafeRelease(pSkyView);
+				}
+
+				ViewDrawScene(bDrew3dSkybox, nSkyboxVisible, data.m_View, nClearFlags, data.m_3DViewID);
+
+				pWeapon->WeaponRT_FinishRender3D(i);
+				render->PopView(m_Frustum);
+			}
+
+			if (data.m_bDraw2D)
+			{
+				render->Push2DView(data.m_View, 0, data.m_pRenderTarget, m_Frustum);
+				pWeapon->WeaponRT_StartRender2D(i);
+
+				vgui::ipanel()->SetVisible(data.m_2DPanel, true);
+				vgui::ipanel()->SetPos(data.m_2DPanel, data.m_View.x, data.m_View.y);
+				vgui::ipanel()->SetSize(data.m_2DPanel, data.m_View.width, data.m_View.height);
+				vgui::ipanel()->PaintTraverse(data.m_2DPanel, true);
+				vgui::ipanel()->SetVisible(data.m_2DPanel, false);
+
+				pWeapon->WeaponRT_FinishRender2D(i);
+				render->PopView(m_Frustum);
+			}
+		}
+	}
 }
 
 
@@ -3909,7 +4001,7 @@ void CRendering3dView::BuildRenderableRenderLists( int viewID )
 {
 	MDLCACHE_CRITICAL_SECTION();
 
-	if ( viewID != VIEW_SHADOW_DEPTH_TEXTURE )
+	if ( !IsDepthView(viewID) )
 	{
 		render->BeginUpdateLightmaps();
 	}
@@ -3920,7 +4012,7 @@ void CRendering3dView::BuildRenderableRenderLists( int viewID )
 
 	// For better sorting, find out the leaf *nearest* to the camera
 	// and render translucent objects as if they are in that leaf.
-	if( m_pMainView->ShouldDrawEntities() && ( viewID != VIEW_SHADOW_DEPTH_TEXTURE ) )
+	if( m_pMainView->ShouldDrawEntities() && !IsDepthView(viewID) )
 	{
 		ClientLeafSystem()->ComputeTranslucentRenderLeaf(
 			info.m_LeafCount, info.m_pLeafList, info.m_pLeafFogVolume, m_pMainView->BuildRenderablesListsNumber(), viewID );
@@ -3933,7 +4025,7 @@ void CRendering3dView::BuildRenderableRenderLists( int viewID )
 		StudioStats_FindClosestEntity( m_pRenderablesList );
 	}
 
-	if ( viewID != VIEW_SHADOW_DEPTH_TEXTURE )
+	if (!IsDepthView(viewID))
 	{
 		// update lightmap on brush models if necessary
 		CClientRenderablesList::CEntry *pEntities = m_pRenderablesList->m_RenderGroups[RENDER_GROUP_OPAQUE_BRUSH];
@@ -4387,7 +4479,7 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 	RopeManager()->ResetRenderCache();
 	g_pParticleSystemMgr->ResetRenderCache();
 
-	//bool const bDrawopaquestaticpropslast = r_drawopaquestaticpropslast.GetBool();
+	bool const bDrawopaquestaticpropslast = r_drawopaquestaticpropslast.GetBool();
 
 
 	//
@@ -4470,7 +4562,7 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 			C_BaseEntity *pEntity = itEntity->m_pRenderable ? itEntity->m_pRenderable->GetIClientUnknown()->GetBaseEntity() : NULL;
 			if ( pEntity )
 			{
-				if ( pEntity->IsNPC() )
+				if ( DepthMode != DEPTH_MODE_SSA0 && pEntity->IsNPC() )
 				{
 					C_BaseAnimating *pba = assert_cast<C_BaseAnimating *>( pEntity );
 					arrRenderEntsNpcsFirst[ numNpcs ++ ] = *itEntity;
@@ -4557,16 +4649,16 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 			// this long-broken behavior would change rendering, so I fixed the code but
 			// commented out the new behavior. Uncomment the if statement and else block
 			// when needed.
-			//if ( bDrawopaquestaticpropslast )
+			if ( bDrawopaquestaticpropslast )
 			{
 				DrawOpaqueRenderables_Range( pEnts[bucket][0], pEnts[bucket][1], DepthMode );
 				DrawOpaqueRenderables_DrawStaticProps( pProps[bucket][0], pProps[bucket][1], DepthMode );
 			}
-			/*else
+			else
 			{
 				DrawOpaqueRenderables_DrawStaticProps( pProps[bucket][0], pProps[bucket][1], DepthMode );
 				DrawOpaqueRenderables_Range( pEnts[bucket][0], pEnts[bucket][1], DepthMode );
-			}*/
+			}
 		}
 
 
@@ -6682,10 +6774,11 @@ void CRefractiveGlassView::Draw()
 	pRenderContext->Flush();
 }
 
-void CSSAODepthView::Setup(const CNewViewSetup& shadowViewIn, ITexture* pDepthTexture)
+void CSSAODepthView::Setup(const CNewViewSetup& shadowViewIn, ITexture* pDepthTexture, int iParentViewID)
 {
 	BaseClass::Setup(shadowViewIn);
 	m_pDepthTexture = pDepthTexture;
+	m_nParentViewID = iParentViewID;
 }
 
 void CSSAODepthView::Draw()
@@ -6715,11 +6808,7 @@ void CSSAODepthView::Draw()
 
 	render->Push3DView(*this, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, m_pDepthTexture, GetFrustum());
 
-	/*pRenderContext.GetFrom(materials);
-	pRenderContext->PushRenderTargetAndViewport(m_pDepthTexture, x, y, width, height);
-	pRenderContext.SafeRelease();*/
-
-	SetupCurrentView(origin, angles, VIEW_SSAO);
+	SetupCurrentView(origin, angles, IsMainView((view_id_t)m_nParentViewID) ? VIEW_SSAO : VIEW_SSAO_MONITOR);
 
 	MDLCACHE_CRITICAL_SECTION();
 
@@ -6735,7 +6824,7 @@ void CSSAODepthView::Draw()
 
 	engine->Sound_ExtraUpdate();	// Make sure sound doesn't stutter
 
-	m_DrawFlags = m_pMainView->GetBaseDrawFlags() | DF_RENDER_UNDERWATER | DF_RENDER_ABOVEWATER | DF_SSAO_DEPTH_PASS;	// Don't draw water surface...
+	m_DrawFlags = /*m_pMainView->GetBaseDrawFlags() |*/ DF_RENDER_UNDERWATER | DF_RENDER_ABOVEWATER | DF_SSAO_DEPTH_PASS;	// Don't draw water surface...
 
 	{
 		VPROF_BUDGET("DrawWorld", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);

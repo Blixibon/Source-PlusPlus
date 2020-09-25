@@ -1,10 +1,18 @@
 #pragma once
 #include "../materialsystem/stdshaders/IShaderExtension.h"
 #include "bitvec.h"
+#include "utlmap.h"
+
+class IVEngineClient;
 
 class CShaderDataExtension : public IShaderExtension, public IShaderExtensionInternal
 {
 public:
+	CShaderDataExtension();
+
+	void		LevelLoad(char const* pMapName, IVEngineClient* engine);
+	void		LevelClose();
+
 	// Inherited via IShaderExtension
 	virtual void SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t) override;
 
@@ -16,6 +24,7 @@ public:
 
 	// Inherited via IShaderExtensionInternal
 	virtual const flashlightData_t* GetState(const FlashlightState_t& flashlightState) const override;
+	virtual const cubemapParallaxData_t* GetCubemapParallax(ITexture* pEnvmap) override;
 private:
 	int		GetFlashlightStateIndex(FlashlightState_t& flashlightState);
 
@@ -26,4 +35,7 @@ private:
 
 	flashlightData_t m_dataTable[128];
 	CBitVec<128> m_usedSlots;
+
+	CUtlVector< cubemapParallaxData_t > m_ParallaxData;
+	CUtlMap<ITexture*, int> m_ParallaxTextureCache;
 };

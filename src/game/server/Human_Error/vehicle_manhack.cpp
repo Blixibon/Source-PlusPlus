@@ -50,17 +50,17 @@ BEGIN_DATADESC( CPropVehicleManhack )
 	DEFINE_FIELD( m_hTarget,				FIELD_EHANDLE ),
 	DEFINE_FIELD( m_iTargetType,			FIELD_INTEGER ),
 	DEFINE_FIELD( m_bDriverDucked,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecManhackEye,			FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_angManhackEye,			FIELD_VECTOR ),
+	//DEFINE_FIELD( m_vecManhackEye,			FIELD_POSITION_VECTOR ),
+	//DEFINE_FIELD( m_angManhackEye,			FIELD_VECTOR ),
 	DEFINE_FIELD( m_iManhackHealth,			FIELD_INTEGER ),
 	DEFINE_FIELD( m_iManhackDistance,		FIELD_INTEGER ),
 	DEFINE_FIELD( m_bHadDriver,				FIELD_BOOLEAN ),
 
 	DEFINE_FIELD( m_hManhack,				FIELD_EHANDLE ),
-	DEFINE_ARRAY( m_hSetOfManhacks,			FIELD_EHANDLE, NUMBER_OF_MAX_CONTROLLABLE_MANHACKS),
-	DEFINE_FIELD( m_iNumberOfManhacks,		FIELD_INTEGER ),
+	//DEFINE_ARRAY( m_hSetOfManhacks,			FIELD_EHANDLE, NUMBER_OF_MAX_CONTROLLABLE_MANHACKS),
+	//DEFINE_FIELD( m_iNumberOfManhacks,		FIELD_INTEGER ),
 
-	DEFINE_FIELD( m_iCurrentManhackIndex,	FIELD_INTEGER ),
+	//DEFINE_FIELD( m_iCurrentManhackIndex,	FIELD_INTEGER ),
 	DEFINE_FIELD( m_fTimeToChangeManhack,	FIELD_TIME ),
 
 	DEFINE_FIELD( m_iHintTimesShown,		FIELD_INTEGER ),
@@ -83,10 +83,11 @@ LINK_ENTITY_TO_CLASS( vehicle_manhack, CPropVehicleManhack );
 
 IMPLEMENT_SERVERCLASS_ST(CPropVehicleManhack, DT_PropVehicleManhack)
 	SendPropEHandle(SENDINFO(m_hPlayer)),
+	SendPropEHandle(SENDINFO(m_hManhack)),
 	SendPropEHandle(SENDINFO(m_hTarget)),
 	SendPropInt(SENDINFO(m_iTargetType)),
-	SendPropQAngles(SENDINFO(m_angManhackEye), SPROP_CHANGES_OFTEN),
-	SendPropVector(SENDINFO(m_vecManhackEye), SPROP_CHANGES_OFTEN),
+	//SendPropQAngles(SENDINFO(m_angManhackEye), SPROP_CHANGES_OFTEN),
+	//SendPropVector(SENDINFO(m_vecManhackEye), SPROP_CHANGES_OFTEN),
 	SendPropVector(SENDINFO(m_vecFlyingDirection), SPROP_CHANGES_OFTEN),
 	SendPropInt(SENDINFO(m_iManhackHealth), SPROP_CHANGES_OFTEN),		//SPROP_CHANGES_OFTEN used to be 9
 	SendPropInt(SENDINFO(m_iManhackDistance), SPROP_CHANGES_OFTEN),
@@ -108,7 +109,7 @@ CPropVehicleManhack::~CPropVehicleManhack( void )
 //=========================================================
 // Returns a pointer to Eloise's entity
 //=========================================================
-CPropVehicleManhack *CPropVehicleManhack::GetManhackVehicle( void )
+CPropVehicleManhack *CPropVehicleManhack::GetManhackVehicleList( void )
 {
 	return g_ManhackVehicleList.m_pClassList;
 }
@@ -155,23 +156,23 @@ void CPropVehicleManhack::Spawn( void )
 	m_takedamage = DAMAGE_EVENTS_ONLY;
 
 	m_hManhack = NULL;
-	for (int i=0; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
-	{
-		m_hSetOfManhacks[i] = NULL;
-	}
+	//for (int i=0; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
+	//{
+	//	m_hSetOfManhacks[i] = NULL;
+	//}
 
 	m_hTarget = NULL;
 
 	m_bDriverDucked	= false;
 	m_bHadDriver	= false;
-	m_fTimeToChangeManhack = 0;
+	//m_fTimeToChangeManhack = 0;
 	m_iHintTimesShown = 0;
 	m_iHintNoSwapTimesShown = 0;
-	m_iCurrentManhackIndex = -1;
+	//m_iCurrentManhackIndex = -1;
 
 	m_flLastWarningSound = 0;
 }
-
+#if 0
 bool CPropVehicleManhack::CreateControllableManhack( const Vector &position, const QAngle &angles, CBaseEntity *pOwner )
 {
 	int manhackIndex=-1;
@@ -242,7 +243,7 @@ bool CPropVehicleManhack::CreateControllableManhack( const Vector &position, con
 		
 	return true;
 }
-
+#endif
 void CPropVehicleManhack::SetLocator( CBaseEntity *pEntity )
 {
 	CBasePlayer *pPlayer = m_hPlayer;
@@ -257,179 +258,75 @@ void CPropVehicleManhack::SetLocator( CBaseEntity *pEntity )
 	}
 }
 
-int CPropVehicleManhack::GetNumberOfHacks(bool bReleaseSlot)
+int CPropVehicleManhack::GetNumberOfHacks()
 {
-	int numberOfHacks=0;
-	CNPC_Manhack *newManhack;
+	CLaz_Player* pPlayer = ToLazuulPlayer(m_hPlayer.Get());
 
-	if (bReleaseSlot)
+	if (!pPlayer)
 	{
-		CBasePlayer *pPlayer = ToBasePlayer(GetOwnerEntity());
-		if (pPlayer)
-			SetAbsOrigin(pPlayer->GetAbsOrigin());
+		return 0;
 	}
 
-	for (int i=0; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
-	{
-		if (m_hSetOfManhacks[i]!=NULL)
-		{
-			newManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hSetOfManhacks[i]);
-
-			//TERO: if a manhack is too far away, lets destroy it
-			if ( bReleaseSlot && 
-				 (newManhack->GetAbsOrigin() - GetAbsOrigin()).Length() >= manhack_max_distance.GetFloat() )
-			{
-				if (m_iNumberOfManhacks >= NUMBER_OF_MAX_CONTROLLABLE_MANHACKS)
-				{
-					newManhack->SetHealth(-1);
-					m_hSetOfManhacks[i] = NULL;
-				} else 
-				{
-					CBasePlayer *pPlayer = ToBasePlayer(GetOwnerEntity());
-					if (pPlayer)
-						newManhack->ComeBackToPlayer(pPlayer, 8.0f);
-				}
-			}
-			else
-				numberOfHacks++;
-		}
-	}
-
-	m_iNumberOfManhacks = numberOfHacks;
-
-	return numberOfHacks;
+	return pPlayer->GetManhackCount();
 }
 
 bool CPropVehicleManhack::FindNextManhack(bool bRemoveIfNone)
 {
-	int manhackIndex=-1;
-	CNPC_Manhack *newManhack;
-
-	bool bFound = false;
-
-	for (int i=1; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
+	CLaz_Player* pPlayer = ToLazuulPlayer(m_hPlayer.Get());
+	
+	if (pPlayer && pPlayer->FindNextManhack())
 	{
-		manhackIndex = (m_iCurrentManhackIndex + i) % NUMBER_OF_MAX_CONTROLLABLE_MANHACKS;
-		
-		if (m_hSetOfManhacks[manhackIndex] != NULL)
+		CNPC_Manhack* newManhack = pPlayer->GetCurrentManhack();
+
+		int iDistance = -1;
+
+		if (newManhack != NULL)
 		{
-			newManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hSetOfManhacks[manhackIndex]);
-
-			int iDistance = -1;
-
-			if (newManhack != NULL )
+			if (GlobalEntity_GetState("manhacks_use_short_distances") == GLOBAL_ON)
 			{
-				if (GlobalEntity_GetState("manhacks_use_short_distances") == GLOBAL_ON)
-				{
-					Vector vecDistance = (newManhack->GetAbsOrigin() - GetAbsOrigin());
-					float flHeight	= vecDistance.z / manhack_small_distances_max_height.GetFloat();
-					vecDistance.z	= 0.0f;
-					vecDistance		= vecDistance / manhack_small_distances_max_distance.GetFloat();		
-					vecDistance.z	= flHeight;
-					iDistance	= (int)( vecDistance.Length() * 100.0f );
-				}
-				else
-				{
-					iDistance = (int)( (float) (newManhack->GetAbsOrigin() - GetAbsOrigin()).Length() / manhack_max_distance.GetFloat() * 100.0f);
-				}
+				Vector vecDistance = (newManhack->GetAbsOrigin() - GetAbsOrigin());
+				float flHeight = vecDistance.z / manhack_small_distances_max_height.GetFloat();
+				vecDistance.z = 0.0f;
+				vecDistance = vecDistance / manhack_small_distances_max_distance.GetFloat();
+				vecDistance.z = flHeight;
+				iDistance = (int)(vecDistance.Length() * 100.0f);
 			}
-
-			if (newManhack != NULL && newManhack->m_iHealth > 0 )//(newManhack->GetAbsOrigin() - GetAbsOrigin()).Length() < manhack_max_distance.GetFloat() )
+			else
 			{
-				if (iDistance <= 100)
-				{
-					m_iCurrentManhackIndex = manhackIndex;
-					m_hManhack = m_hSetOfManhacks[manhackIndex];
-					SetLocator( m_hManhack );
-
-					m_iManhackHealth = newManhack->m_iHealth;
-
-					if (GetDriver())
-					{
-						newManhack->SetControllable(true);
-						if (manhack_dont_draw.GetBool())
-						{
-							newManhack->AddEffects( EF_NODRAW );
-							newManhack->ShowRedGlow(false);
-						}
-					}
-					return true;
-				}
+				iDistance = (int)((float)(newManhack->GetAbsOrigin() - GetAbsOrigin()).Length() / manhack_max_distance.GetFloat() * 100.0f);
 			}
-			else 
+		}
+
+		if (newManhack != NULL && newManhack->m_iHealth > 0)//(newManhack->GetAbsOrigin() - GetAbsOrigin()).Length() < manhack_max_distance.GetFloat() )
+		{
+			if (iDistance <= 100)
 			{
-				m_hSetOfManhacks[manhackIndex] = NULL;
+				//m_iCurrentManhackIndex = manhackIndex;
+				m_hManhack = newManhack;
+				SetLocator(m_hManhack);
+
+				m_iManhackHealth = newManhack->m_iHealth;
+
+				newManhack->SetControlledByPlayer(true);
+				return true;
+			}
+			else
+			{
+				newManhack->ComeBackToPlayer(pPlayer, 8.f);
 			}
 		}
 	}
-
-	if (!bFound && bRemoveIfNone)
+	
+	if (bRemoveIfNone)
 	{
 		SetLocator( NULL );
 		ForcePlayerOut();
-		DestroyAllManhacks();
-		UTIL_Remove(this);
+		RemoveDeferred();
 
 		return true;
 	}
 
 	return false;
-}
-
-void CPropVehicleManhack::DestroyAllManhacks(void)
-{
-	CNPC_Manhack *newManhack;
-
-	for (int i=0; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
-	{
-		if (m_hSetOfManhacks[i] != NULL)
-		{
-			newManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hSetOfManhacks[i]);
-
-			if (newManhack)
-			{
-				newManhack->SetHealth(-1);
-				m_hSetOfManhacks[i] = NULL;
-			}
-		}
-	}
-
-}
-
-void CPropVehicleManhack::CallManhacksBack(CBasePlayer *pPlayer, float flComeBackTime)
-{
-	CNPC_Manhack *newManhack;
-
-	for (int i=0; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
-	{
-		if (m_hSetOfManhacks[i] != NULL)
-		{
-			newManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hSetOfManhacks[i]);
-
-			if (newManhack)
-			{
-				newManhack->ComeBackToPlayer(pPlayer, flComeBackTime);
-			}
-		}
-	}
-}
-
-void CPropVehicleManhack::TellManhacksToGoThere(CBasePlayer *pPlayer, float flGoThereTime)
-{
-	CNPC_Manhack *newManhack;
-
-	for (int i=0; i<NUMBER_OF_MAX_CONTROLLABLE_MANHACKS; i++)
-	{
-		if (m_hSetOfManhacks[i] != NULL)
-		{
-			newManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hSetOfManhacks[i]);
-
-			if (newManhack)
-			{
-				newManhack->GoThere(pPlayer, flGoThereTime);
-			}
-		}
-	}
 }
 
 bool CPropVehicleManhack::HasDrivableManhack(CBasePlayer *pPlayer)
@@ -481,7 +378,7 @@ void CPropVehicleManhack::Think(void)
 
 		StudioFrameAdvance();
 
-		if (m_hManhack == NULL || m_iManhackHealth <= 0 || m_iManhackDistance >= 100)
+		if (m_hManhack == NULL || !m_hManhack->IsAlive() || m_iManhackDistance >= 100)
 		{
 			if (m_iManhackDistance >= 100)
 			{
@@ -511,17 +408,13 @@ void CPropVehicleManhack::Think(void)
 			UpdateManhackView();	
 			UpdateManhackDistance(this);
 		}
+	}
+	else if (m_bHadDriver)
+	{
+		DevMsg("We have no driver, lets disappear");
+		m_bHadDriver = false;
 
-		if (!GetDriver() && m_bHadDriver)
-		{
-			DevMsg("We have no driver, lets disappear");
-			m_bHadDriver = false;
-			//SetRenderMode(kRenderTransColor );
-			//SetRenderColorA(0);
-			AddEffects( EF_NODRAW );
-			SetSolid(SOLID_NONE);
-			AddSolidFlags( FSOLID_NOT_SOLID );
-		}
+		RemoveDeferred();
 	}
 }
 
@@ -558,6 +451,11 @@ void CPropVehicleManhack::DrawDebugGeometryOverlays(void)
 	BaseClass::DrawDebugGeometryOverlays();
 }
 
+void CPropVehicleManhack::SetManhack(CNPC_Manhack* pManhack)
+{
+	m_hManhack = pManhack;
+}
+
 int CPropVehicleManhack::UpdateManhackDistance(CBaseEntity *pOrigin) 
 {
 	CNPC_Manhack *pManhack=GetManhack();
@@ -591,9 +489,9 @@ void CPropVehicleManhack::UpdateManhackView()
 	{
 
 
-		m_angManhackEye = pManhack->GetAbsAngles(); //vehicleEyeAngles;
+		//m_angManhackEye = pManhack->GetAbsAngles(); //vehicleEyeAngles;
 		
-		m_vecManhackEye = pManhack->GetManhackView(); //vehicleEyeOrigin;
+		Vector vecManhackEye = pManhack->GetAbsOrigin(); //vehicleEyeOrigin;
 
 		m_iManhackHealth	= pManhack->m_iHealth;
 
@@ -630,7 +528,7 @@ void CPropVehicleManhack::UpdateManhackView()
 		m_hPlayer->GetVectors(&vecForward, NULL, NULL);
 
 		trace_t	tr;
-		UTIL_TraceLine( m_vecManhackEye, m_vecManhackEye + (vecForward * 1024), MASK_SHOT, pManhack, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine(vecManhackEye, vecManhackEye + (vecForward * 1024), MASK_SHOT, pManhack, COLLISION_GROUP_NONE, &tr );
 
 		//NDebugOverlay::Line( m_vecManhackEye, tr.endpos, 255, 255, 0, true, 1.0f );
 
@@ -656,12 +554,12 @@ void CPropVehicleManhack::UpdateManhackView()
 
 void CPropVehicleManhack::FixManhackView()
 {
-		Vector eyeDir;
+		/*Vector eyeDir;
 		AngleVectors(m_angManhackEye, &eyeDir);
 
 		m_vecManhackEye = m_vecManhackEye - (eyeDir * manhack_blend_view.GetFloat());
 
-		eyeDir = manhack_blend_view.GetFloat() * eyeDir;
+		eyeDir = manhack_blend_view.GetFloat() * eyeDir;*/
 
 		/*trace_t tr;
 		TIL_TraceLine( m_vecManhackEye, m_vecManhackEye + eyeDir, MASK_ALL, GetManhack(), COLLISION_GROUP_NPC, &tr );
@@ -775,10 +673,7 @@ void CPropVehicleManhack::DriveManhack(CBasePlayer *player,  int nButtons ) //fl
 			{
 				m_fTimeToChangeManhack = gpGlobals->curtime + 2.0f;
 
-				pManhack->SetControllable(false);
-				
-				pManhack->RemoveEffects( EF_NODRAW );
-				pManhack->ShowRedGlow(true);
+				pManhack->SetControlledByPlayer(false);
 			}
 		}
 	}
@@ -909,7 +804,7 @@ void CPropVehicleManhack::EnterVehicle( CBaseCombatCharacter *pPassenger )
 		m_hPlayer = pPlayer;
 		m_bHadDriver = true;
 
-		if (GetNumberOfHacks(false)>1 && m_iHintTimesShown < 2)
+		if (GetNumberOfHacks()>1 && m_iHintTimesShown < 2)
 		{
 			m_iHintTimesShown++;
 			m_iHintNoSwapTimesShown++;
@@ -943,16 +838,10 @@ void CPropVehicleManhack::EnterVehicle( CBaseCombatCharacter *pPassenger )
 		CNPC_Manhack *pManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hManhack);
 		if (pManhack!=NULL)
 		{
-			pManhack->SetControllable(true);
+			pManhack->SetControlledByPlayer(true);
 
-			if (manhack_dont_draw.GetBool())
-			{
-				pManhack->AddEffects( EF_NODRAW );
-				pManhack->ShowRedGlow(false);
-			}
-
-			m_vecLastEyeTarget = pManhack->GetManhackView();
-			m_vecLastEyePos    = pManhack->GetManhackView();
+			m_vecLastEyeTarget = pManhack->GetAbsOrigin();
+			m_vecLastEyePos    = pManhack->GetAbsOrigin();
 			m_vecTargetSpeed   = pManhack->GetAbsVelocity();
 
 			m_vecFlyingDirection = pManhack->GetAbsVelocity();
@@ -1044,7 +933,7 @@ void CPropVehicleManhack::ExitVehicle( int nRole )
 	if (m_bDriverDucked)
 	{
 		pPlayer->m_nButtons |= IN_DUCK;
-		pPlayer->AddFlag( FL_DUCKING );
+		pPlayer->AddFlag( FL_DUCKING|FL_ANIMDUCKING );
 		pPlayer->m_Local.m_bDucked = true;
 		pPlayer->m_Local.m_bDucking = true;
 		pPlayer->m_Local.m_flDucktime = 0.0f;
@@ -1054,15 +943,10 @@ void CPropVehicleManhack::ExitVehicle( int nRole )
 
 	DevMsg("Yes, this did get updated\n");
 
-	CNPC_Manhack *pManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hManhack);
+	CNPC_Manhack* pManhack = m_hManhack;
 	if (pManhack!=NULL)
 	{
-		pManhack->SetControllable(false);
-
-		//pManhack->SetRenderMode(kRenderNormal);
-		pManhack->RemoveEffects( EF_NODRAW );
-
-		pManhack->ShowRedGlow(true);
+		pManhack->SetControlledByPlayer(false);
 	}
 }
 
@@ -1070,7 +954,7 @@ void CPropVehicleManhack::ResetUseKey( CBasePlayer *pPlayer )
 {
 	pPlayer->m_afButtonPressed &= ~IN_USE;
 
-	pPlayer->SetRenderMode( kRenderTransColor );
+	//pPlayer->SetRenderMode( kRenderTransColor );
 }
 
 
@@ -1095,6 +979,8 @@ void CPropVehicleManhack::ForcePlayerIn(CBaseEntity *pOwner)
 	SetAbsAngles(vehicleStartAngle);
 	SetAbsOrigin(pPlayer->GetAbsOrigin());
 
+	UpdateManhackDistance(this);
+
 	// Make sure we successfully got in the vehicle
 	if ( pPlayer->GetInVehicle( GetServerVehicle(), VEHICLE_ROLE_DRIVER ) == false )
 	{
@@ -1102,6 +988,16 @@ void CPropVehicleManhack::ForcePlayerIn(CBaseEntity *pOwner)
 //		int falseGetInVehicle=0;
 		Assert( 0 ); //muista vaihtaa tuohon nolla sitten kun poistat intin;
 		return;
+	}
+
+	if (GetServerVehicle()->IsPassengerVisible(VEHICLE_ROLE_DRIVER))
+	{
+		pPlayer->AddEffects(EF_BONEMERGE);
+		SetBodygroup(0, 1);
+	}
+	else
+	{
+		SetBodygroup(0, 0);
 	}
 }
 
@@ -1141,35 +1037,29 @@ int CPropVehicleManhack::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	return 0;
 }
 
-void CPropVehicleManhack::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr )
+void CPropVehicleManhack::TraceAttack( const CTakeDamageInfo &inputInfo, const Vector &vecDir, trace_t *ptr, CDmgAccumulator* pAccumulator)
 {
 	if ( m_hPlayer != NULL )
 	{
-		m_hPlayer->TakeDamage( inputInfo );
+		m_hPlayer->DispatchTraceAttack(inputInfo, vecDir, ptr, pAccumulator);
 		ForcePlayerOut();
 	}
-
 }
 
-CPropVehicleManhack *VehicleManhack_Create( const Vector &position, const QAngle &angles, CBaseEntity *pOwner  )
+CPropVehicleManhack *VehicleManhack_Create(CBasePlayer* pOwner, CNPC_Manhack* pManhack)
 {
 	QAngle vehicleStartAngle = QAngle(0, pOwner->GetAbsAngles().y, 0);
 
 	CPropVehicleManhack *pManhackVehicle = (CPropVehicleManhack *)CBaseEntity::Create( "vehicle_manhack", pOwner->GetAbsOrigin(), vehicleStartAngle, pOwner );
 	
-	pManhackVehicle->KeyValue( "targetname", "manhack_controller" );
+	pManhackVehicle->KeyValue( "targetname", CFmtStr("manhack_controller%d", pOwner->GetUserID()) );
 	pManhackVehicle->KeyValue( "model", "models/vehicles/vehicle_manhackcontroller.mdl" );
 	pManhackVehicle->KeyValue( "vehiclescript", "scripts/vehicles/manhack.txt" );
 
 	pManhackVehicle->Spawn();
 
 	pManhackVehicle->Activate();
-
-	if (!pManhackVehicle->CreateControllableManhack(position, angles, pOwner)) 
-	{
-		pManhackVehicle->Remove();
-		return NULL;
-	}
+	pManhackVehicle->SetManhack(pManhack);
 
 	DevMsg("Spawning manhack vehicle\n");
 
@@ -1181,7 +1071,7 @@ CNPC_Manhack *CPropVehicleManhack::GetManhack( void )
 	if (!m_hManhack)
 		return NULL;
 
-	CNPC_Manhack *pManhack = dynamic_cast<CNPC_Manhack*>((CBaseEntity*)m_hManhack);
+	CNPC_Manhack* pManhack = m_hManhack.Get();
 
 	return pManhack;
 }
@@ -1333,37 +1223,37 @@ void CPropServerVehicleManhack::GetVehicleViewPosition( int nRole, Vector *pAbsO
 	} else DevMsg("fail\n");
 }
 
-int HLSS_SelectTargetType(CBaseEntity *pEntity)
-{
-	if (pEntity)
-	{
-		switch ( pEntity->Classify() )
-		{
-		case CLASS_CITIZEN_REBEL:
-			return 1;
-			break;
-		case CLASS_ALIENCONTROLLER:
-		case CLASS_ALIENGRUNT:
-		case CLASS_VORTIGAUNT:
-		case CLASS_MANTARAY_TELEPORTER:
-			return 2;
-			break;
-		case CLASS_HEADCRAB:
-		case CLASS_ZOMBIE:
-		case CLASS_ANTLION:
-				return 3;
-				break;	
-		case CLASS_MILITARY_HACKED:
-		case CLASS_COMBINE_HACKED:
-		case CLASS_AIR_DEFENSE_HACKED:
-		case CLASS_HACKED_ROLLERMINE:
-				return 4;
-				break;	
-		default:
-				return 0;
-				break;	
-		}
-	}
-
-	return 0;
-}
+//int HLSS_SelectTargetType(CBaseEntity *pEntity)
+//{
+//	if (pEntity)
+//	{
+//		switch ( pEntity->Classify() )
+//		{
+//		case CLASS_CITIZEN_REBEL:
+//			return 1;
+//			break;
+//		case CLASS_ALIENCONTROLLER:
+//		case CLASS_ALIENGRUNT:
+//		case CLASS_VORTIGAUNT:
+//		case CLASS_MANTARAY_TELEPORTER:
+//			return 2;
+//			break;
+//		case CLASS_HEADCRAB:
+//		case CLASS_ZOMBIE:
+//		case CLASS_ANTLION:
+//				return 3;
+//				break;	
+//		case CLASS_MILITARY_HACKED:
+//		case CLASS_COMBINE_HACKED:
+//		case CLASS_AIR_DEFENSE_HACKED:
+//		case CLASS_HACKED_ROLLERMINE:
+//				return 4;
+//				break;	
+//		default:
+//				return 0;
+//				break;	
+//		}
+//	}
+//
+//	return 0;
+//}

@@ -4451,9 +4451,9 @@ void CLazuul::LevelInitPostEntity()
 {
 	BaseClass::LevelInitPostEntity();
 
-	m_iMapGameType = g_pGameTypeSystem->GetCurrentBaseGameType();
-	m_iMapModType = g_pGameTypeSystem->GetCurrentModGameType();
-	m_iszGameConfig = AllocPooledString(g_pGameTypeSystem->GetCurrentConfigName());
+	m_iMapGameType = GameTypeSystem()->GetCurrentBaseGameType();
+	m_iMapModType = GameTypeSystem()->GetCurrentModGameType();
+	m_iszGameConfig = AllocPooledString(GameTypeSystem()->GetCurrentConfigName());
 
 	for (int i = 0; i < ARRAYSIZE(g_GamemodeControllerDefs); i++)
 	{
@@ -5654,6 +5654,10 @@ CAmmoDef* GetAmmoDef()
 		// BMS
 		def.AddAmmoType("9mm", DMG_BULLET, TRACER_LINE, "sk_plr_dmg_9mm_bullet", "sk_npc_dmg_9mmAR_bullet", "sk_max_9mm_bullet", BULLET_IMPULSE(500, 1325), 0);
 		def.AddAmmoType("grenade_mp5", DMG_BURN, TRACER_NONE, "sk_plr_dmg_smg1_grenade", "sk_npc_dmg_smg1_grenade", "sk_max_smg1_grenade", 0, 0);
+
+		// Human Error
+		def.AddAmmoType("Manhack", DMG_CLUB, TRACER_NONE, NULL, NULL, 3, 0, 0/*, L"$", L"Manhack"*/);
+		def.AddAmmoType("ManhacksOnline", DMG_CLUB, TRACER_NONE, NULL, NULL, 3, 0, 0/*, L"$", L"Online"*/);
 	}
 
 	return &def;

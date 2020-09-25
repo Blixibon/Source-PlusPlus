@@ -58,6 +58,7 @@ $Project
 		$File	"screenspace_general.cpp"
 
 		//$File	"cable_dx9.cpp"
+		$File	"core_dx9.cpp"
 		
 		$File	"cloak_blended_pass_helper.cpp"
 		$File	"emissive_scroll_blended_pass_helper.cpp"
@@ -74,6 +75,7 @@ $Project
 		$File	"skin_dx9_helper.cpp"
 		$File	"splinerope.cpp"
 		$File	"teeth.cpp"
+		$File	"unlitgeneric_dx9.cpp"
 		$File	"vertexlitgeneric_dx9.cpp"
 		$File	"vertexlitgeneric_dx9_helper.cpp"
 		$File	"water.cpp"

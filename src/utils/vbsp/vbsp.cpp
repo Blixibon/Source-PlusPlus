@@ -1415,6 +1415,7 @@ int RunVBSP( int argc, char **argv )
 			Cubemap_FixupBrushSidesMaterials();
 			Cubemap_AttachDefaultCubemapToSpecularSides();
 			Cubemap_AddUnreferencedCubemaps();
+			Cubemap_WriteParallaxInfo();
 		}
 		SetModelNumbers ();
 		SetLightStyles ();

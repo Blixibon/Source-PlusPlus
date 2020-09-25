@@ -38,6 +38,13 @@ public:
 	void InputSetOn( inputdata_t &inputdata );
 	void InputSetOff( inputdata_t &inputdata );
 
+	void	InputSetNearBlurDepth(inputdata_t& inputdata);
+	void	InputSetNearFocusDepth(inputdata_t& inputdata);
+	void	InputSetFarFocusDepth(inputdata_t& inputdata);
+	void	InputSetFarBlurDepth(inputdata_t& inputdata);
+	void	InputSetNearBlurRadius(inputdata_t& inputdata);
+	void	InputSetFarBlurRadius(inputdata_t& inputdata);
+
 private:
 	float m_TargetFOV;
 	float m_DegreesPerSecond;
@@ -51,6 +58,14 @@ private:
 	CNetworkVar( float, m_flFogMaxDensity );
 	CNetworkVar( bool, m_bActive );
 	CNetworkVar( bool, m_bUseScreenAspectRatio );
+
+	CNetworkVar(bool, m_bDOFEnabled);
+	CNetworkVar(float, m_flNearBlurDepth);
+	CNetworkVar(float, m_flNearFocusDepth);
+	CNetworkVar(float, m_flFarFocusDepth);
+	CNetworkVar(float, m_flFarBlurDepth);
+	CNetworkVar(float, m_flNearBlurRadius);
+	CNetworkVar(float, m_flFarBlurRadius);
 
 	// Allows the mapmaker to control whether a camera is active or not
 	bool	m_bIsOn;

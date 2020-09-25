@@ -254,6 +254,7 @@ protected:
 	CGameInstructorSymbol	m_szOffscreenIcon;
 	CGameInstructorSymbol	m_szCaptionColor;
 	CGameInstructorSymbol	m_szGlowColor;
+	CGameInstructorSymbol	m_szHudHint;
 
 	bool	m_bFixedPosition;
 	bool	m_bNoIconTarget;

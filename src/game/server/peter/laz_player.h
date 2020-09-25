@@ -8,6 +8,7 @@
 #include "laz_player_shared.h"
 #include "player_models.h"
 #include "hl2_vehicle_radar.h"
+#include "npc_manhack.h"
 
 //#define MIN_FLING_SPEED 290
 
@@ -72,6 +73,8 @@ public:
 	CNetworkArray(Vector, m_vLocatorPositions, LOCATOR_MAX_CONTACTS);
 	CNetworkArray(int, m_iLocatorContactType, LOCATOR_MAX_CONTACTS);
 	CNetworkVar(float, m_flLocatorRange);
+
+	CNetworkArray(EHANDLE, m_hSetOfManhacks, NUMBER_OF_CONTROLLABLE_MANHACKS);
 };
 
 class CLaz_Player : public CPortal_Player
@@ -271,6 +274,16 @@ public:
 	int			GetSpecialAttack();
 	float		GetNextSpecialTime() { return m_flNextSpecialAttackTime; }
 
+	void				CallManhacksBack(float flComeBackTime);
+	void				TellManhacksToGoThere(float flGoThereTime);
+
+	CNPC_Manhack*	GetCurrentManhack();
+	CNPC_Manhack*	CreateManhack(const Vector& position, const QAngle& angles);
+	bool			FindNextManhack();
+	int				GetManhackCount();
+
+	virtual void SetupVisibility(CBaseEntity* pViewEntity, unsigned char* pvs, int pvssize);
+
 public:
 	static EHANDLE gm_hLastRandomSpawn;
 
@@ -326,14 +339,6 @@ protected:
 
 	int					GetAutoTeam(void);
 
-	void				SetMinion(CBaseCombatCharacter *pMinion);
-
-	void				ClearMinion()
-	{
-		m_hMinion.Set(NULL);
-		V_memset(m_strMinionClass.GetForModify(), '\0', 32);
-	}
-
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED(m_vecLadderNormal);
 
 	playerModel_t m_MPModel;
@@ -351,8 +356,8 @@ protected:
 	CNetworkVar(int, m_nFlashlightType);
 	CNetworkVar(int, m_nMovementCfg);
 
-	CNetworkHandle(CBaseCombatCharacter, m_hMinion);
-	CNetworkString(m_strMinionClass, 32);
+	//CNetworkHandle(CNPC_Manhack, m_hCurrentManhack);
+	CNetworkVar(int, m_iCurrentManhackIndex);
 
 	Vector		m_vecPlayerColors[NUM_PLAYER_COLORS];
 
@@ -363,6 +368,8 @@ protected:
 
 	CNetworkVar(bool, m_bInAutoMovement);
 	CNetworkQAngle(m_angAutoMoveAngles);
+
+	int				m_iNumberOfManhacks;
 public:
 	CNetworkVar(bool, m_bHasLongJump);
 };

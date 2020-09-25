@@ -2644,6 +2644,12 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 
 	case TASK_WAIT_FOR_MOVEMENT_STEP:
 		{
+			if (IsMovementFrozen())
+			{
+				TaskFail(FAIL_FROZEN);
+				break;
+			}
+
 			if(!GetNavigator()->IsGoalActive())
 			{
 				TaskComplete();
@@ -2661,6 +2667,12 @@ void CAI_BaseNPC::StartTask( const Task_t *pTask )
 
 	case TASK_WAIT_FOR_MOVEMENT:
 		{
+			if (IsMovementFrozen())
+			{
+				TaskFail(FAIL_FROZEN);
+				break;
+			}
+
 			if (GetNavigator()->GetGoalType() == GOALTYPE_NONE)
 			{
 				TaskComplete();
@@ -3895,6 +3907,12 @@ void CAI_BaseNPC::RunTask( const Task_t *pTask )
 	case TASK_WAIT_FOR_MOVEMENT_STEP:
 	case TASK_WAIT_FOR_MOVEMENT:
 		{
+			if (IsMovementFrozen())
+			{
+				TaskFail(FAIL_FROZEN);
+				break;
+			}
+
 			bool fTimeExpired = ( pTask->flTaskData != 0 && pTask->flTaskData < gpGlobals->curtime - GetTimeTaskStarted() );
 
 			if (fTimeExpired || GetNavigator()->GetGoalType() == GOALTYPE_NONE)

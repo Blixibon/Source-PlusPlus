@@ -2195,7 +2195,7 @@ void CBaseEntity::UpdateOnRemove( void )
 	if ( edict() )
 	{
 		AddFlag( FL_KILLME );
-		if ( GetFlags() & FL_GRAPHED )
+		//if ( GetFlags() & FL_GRAPHED )
 		{
 			/*	<<TODO>>
 			// this entity was a LinkEnt in the world node graph, so we must remove it from

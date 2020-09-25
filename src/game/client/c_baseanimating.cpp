@@ -220,6 +220,8 @@ RecvPropEHandle(RECVINFO(m_hLightingOriginRelative)),
 
 RecvPropDataTable("serveranimdata", 0, 0, &REFERENCE_RECV_TABLE(DT_ServerAnimationData)),
 
+RecvPropFloat(RECVINFO(m_flFrozen)),
+
 RecvPropFloat(RECVINFO(m_fadeMinDist)),
 RecvPropFloat(RECVINFO(m_fadeMaxDist)),
 RecvPropFloat(RECVINFO(m_flFadeScale)),

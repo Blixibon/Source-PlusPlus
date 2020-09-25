@@ -162,6 +162,7 @@ propdata_interaction_s sPropdataInteractionSections[PROPINTER_NUM_INTERACTIONS] 
 	{ "physgun_interactions", "onlaunch", "spin_none" },		// PROPINTER_PHYSGUN_LAUNCH_SPIN_NONE,
 	{ "physgun_interactions", "onlaunch", "spin_zaxis" },		// PROPINTER_PHYSGUN_LAUNCH_SPIN_Z,
 	{ "physgun_interactions", "onbreak", "explode_fire" },		// PROPINTER_PHYSGUN_BREAK_EXPLODE,
+	{ "physgun_interactions", "onbreak", "explode_ice" },		// PROPINTER_PHYSGUN_BREAK_EXPLODE_ICE,
 	{ "physgun_interactions", "damage", "none" },				// PROPINTER_PHYSGUN_DAMAGE_NONE,
 	
 	{ "fire_interactions", "flammable", "yes" },				// PROPINTER_FIRE_FLAMMABLE,

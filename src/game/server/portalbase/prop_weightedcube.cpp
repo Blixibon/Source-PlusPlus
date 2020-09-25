@@ -1536,7 +1536,7 @@ void CPropWeightedCube::CleanserDissolve(CBaseEntity* pActivator)
 			// Remove old prop, transfer name and children to the new simple prop
 			pDisolvingAnimating->SetName(GetEntityName());
 			//TransferChildren(this, pDisolvingAnimating);
-			pDisolvingAnimating->SetCollisionGroup(COLLISION_GROUP_INTERACTIVE_DEBRIS);
+			pDisolvingAnimating->SetCollisionGroup(COLLISION_GROUP_DISSOLVING);
 			AddSolidFlags(FSOLID_NOT_SOLID);
 			AddEffects(EF_NODRAW);
 

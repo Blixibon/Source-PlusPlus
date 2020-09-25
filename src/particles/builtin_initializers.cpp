@@ -833,7 +833,7 @@ class C_INIT_PositionPlaceOnGround : public CParticleInitializerOperatorInstance
 
 		uint32 nMask = PARTICLE_ATTRIBUTE_XYZ_MASK | PARTICLE_ATTRIBUTE_PREV_XYZ_MASK | PARTICLE_ATTRIBUTE_LIFE_DURATION_MASK;
 		if (m_bSetNormal)
-			nMask = PARTICLE_ATTRIBUTE_XYZ_MASK | PARTICLE_ATTRIBUTE_PREV_XYZ_MASK | PARTICLE_ATTRIBUTE_LIFE_DURATION_MASK | PARTICLE_ATTRIBUTE_TRACE_HIT_NORMAL_MASK;
+			nMask = PARTICLE_ATTRIBUTE_XYZ_MASK | PARTICLE_ATTRIBUTE_PREV_XYZ_MASK | PARTICLE_ATTRIBUTE_LIFE_DURATION_MASK | PARTICLE_ATTRIBUTE_NORMAL_MASK;
 		return nMask;
 	}
 
@@ -901,7 +901,7 @@ void C_INIT_PositionPlaceOnGround::InitNewParticlesScalar(
 		}
 		if (m_bSetNormal)
 		{
-			float* normal = pParticles->GetFloatAttributePtrForWrite(PARTICLE_ATTRIBUTE_TRACE_HIT_NORMAL, start_p);
+			float* normal = pParticles->GetFloatAttributePtrForWrite(PARTICLE_ATTRIBUTE_NORMAL, start_p);
 			SetVectorAttribute(normal, tr.plane.normal);
 		}
 	}
@@ -5279,5 +5279,6 @@ void AddBuiltInParticleInitializers( void )
 	REGISTER_PARTICLE_OPERATOR( FUNCTION_INITIALIZER, C_INIT_CreateFromPlaneCache );
 	REGISTER_PARTICLE_OPERATOR(FUNCTION_INITIALIZER, C_INIT_ModelCull);
 	REGISTER_PARTICLE_OPERATOR(FUNCTION_INITIALIZER, C_INIT_RtEnvCull);
+	REGISTER_PARTICLE_OPERATOR(FUNCTION_INITIALIZER, C_INIT_PositionPlaceOnGround);
 }
 

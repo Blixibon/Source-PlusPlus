@@ -325,6 +325,7 @@ BEGIN_DMXELEMENT_UNPACK( CParticleSystemDefinition )
 	DMXELEMENT_UNPACK_FIELD( "color", "255 255 255 255", Color, m_ConstantColor )
 	DMXELEMENT_UNPACK_FIELD( "rotation", "0", float, m_flConstantRotation )
 	DMXELEMENT_UNPACK_FIELD( "rotation_speed", "0", float, m_flConstantRotationSpeed )
+	DMXELEMENT_UNPACK_FIELD("normal", "0 0 1", Vector, m_ConstantNormal)
 	DMXELEMENT_UNPACK_FIELD( "sequence_number", "0", int, m_nConstantSequenceNumber )
 	DMXELEMENT_UNPACK_FIELD( "sequence_number 1", "0", int, m_nConstantSequenceNumber1 )
 	DMXELEMENT_UNPACK_FIELD( "group id", "0", int, m_nGroupID )
@@ -1029,6 +1030,9 @@ void CParticleCollection::Init( CParticleSystemDefinition *pDef, float flDelay, 
 	SetAttributeToConstant( PARTICLE_ATTRIBUTE_PARTICLE_ID, 0 );
 	SetAttributeToConstant( PARTICLE_ATTRIBUTE_YAW, 0 );
 	SetAttributeToConstant( PARTICLE_ATTRIBUTE_ALPHA2, 1.0f );
+	SetAttributeToConstant(PARTICLE_ATTRIBUTE_PITCH, 0.0f);
+	SetAttributeToConstant(PARTICLE_ATTRIBUTE_NORMAL,
+		pDef->m_ConstantNormal.x, pDef->m_ConstantNormal.y, pDef->m_ConstantNormal.z);
 
 	// Offset the child in time
 	m_flCurTime = -flDelay;
@@ -2902,6 +2906,14 @@ public:
 	}
 
 	virtual float GetPixelVisibility( int *pQueryHandle, const Vector &vecOrigin, float flScale ) { return 0.0f; }
+
+	virtual int GetActivityCount() { return 0; }
+
+	virtual const char* GetActivityNameFromIndex(int nActivityIndex) { return 0; }
+	virtual int GetActivityNumber(void* pModel, const char* m_pszActivityName) { return -1; }
+
+	virtual void DrawModel(void* pModel, const matrix3x4_t& DrawMatrix, CParticleCollection* pParticles, int nParticleNumber, int nBodyPart, int nSubModel,
+		int nSkin, int nAnimationSequence = 0, float flAnimationRate = 30.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) { }
 };
 
 static CDefaultParticleSystemQuery s_DefaultParticleSystemQuery;

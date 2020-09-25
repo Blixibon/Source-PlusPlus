@@ -30,6 +30,7 @@
 	#include "tactical_mission.h"
 	#include "gamestats.h"
 	#include "hltvdirector.h"
+	#include "peter/gametypes.h"
 
 #endif
 
@@ -337,6 +338,7 @@ void CGameRules::RefreshSkillData ( bool forceUpdate )
 	// HL2 current only uses one skill config file that represents MEDIUM skill level and
 	// synthesizes EASY and HARD. (sjb)
 	Q_snprintf( szExec,sizeof(szExec), "exec skill_manifest.cfg\n" );
+	GameTypeSystem()->AppendSkillCommand_safe(szExec);
 
 	engine->ServerCommand( szExec );
 	engine->ServerExecute();

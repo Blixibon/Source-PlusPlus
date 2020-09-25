@@ -8,6 +8,7 @@
 // Texture Samplers ===============================================================================
 sampler g_tFullFB	: register( s0 );
 sampler g_tSmallFB	: register( s1 );
+sampler g_tDepthFB : register(s2);
 
 // Shaders Constants and Globals ==================================================================
 float4 g_vDists			: register( c0 );
@@ -46,6 +47,14 @@ struct PS_INPUT
 	float2 vUv0 : TEXCOORD0;
 };
 
+float4 SampleScreen(sampler sColor, float2 uv)
+{
+    float4 ret;
+    ret.rgb = tex2D(sColor, uv).rgb;
+    ret.a = tex2D(g_tDepthFB, uv).r;
+    return ret;
+}
+
 float DestAlphaDepthToViewSpaceDepth( float flDepth )
 {
 	return g_flDepthConv * flDepth + g_flNearPlaneDist;
@@ -77,8 +86,8 @@ float4 ComputeTap( float flCenterDepth, float flCenterBlurRadius, float2 vUV, fl
 	float4 cTap;
 	float2 vPoissonUV = vUV.xy + flCenterBlurRadius * vPoisson.xy;
 
-	cTapSmall = tex2D( g_tSmallFB, vPoissonUV.xy );
-	cTap = tex2D( g_tFullFB, vPoissonUV.xy );
+    cTapSmall = SampleScreen(g_tSmallFB, vPoissonUV.xy);
+    cTap = SampleScreen(g_tFullFB, vPoissonUV.xy);
 
 	float flTapBlur = BlurAmountFromDepth( cTap.a );		// Maybe 50/50 mix between low and high here?
 
@@ -93,7 +102,7 @@ float4 ComputeTapHQ( float flCenterDepth, float flCenterBlurRadius, float2 vUV, 
 {
 	float4 cTap;
 
-	cTap = tex2D( g_tFullFB, vUV.xy + flCenterBlurRadius * vPoisson.xy );
+    cTap = SampleScreen(g_tFullFB, vUV.xy + flCenterBlurRadius * vPoisson.xy);
 	float flTapBlur = BlurAmountFromDepth( cTap.a );
 	float weight = ( cTap.a >= flCenterDepth ) ? 1.0 : ( flTapBlur * flTapBlur );
 	return float4( cTap.rgb, 1 ) * weight;
@@ -105,7 +114,7 @@ float4 main( PS_INPUT i ) : COLOR
 	// TODO: BETTER DOWNSAMPLE THAT TAKES DEPTH INTO ACCOUNT?
 
 	float4 cOut = { 0, 0, 0, 0 };
-	float4 cCenterTap = tex2D( g_tFullFB, i.vUv0 );
+    float4 cCenterTap = SampleScreen(g_tFullFB, i.vUv0);
 	float flCenterBlurRadius = BlurRadiusFromDepth( cCenterTap.a );	// circle of confusion radius for current pixel
 	cCenterTap.a -= 0.001;		// z-bias to avoid strange banding artifact on almost orthogonal walls
 

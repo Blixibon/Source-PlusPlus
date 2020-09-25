@@ -35,6 +35,7 @@ enum HLSS_WeaponId {
 
 	// Building
 	HLSS_WEAPON_ID_TURRET, // 0
+	HLSS_WEAPON_ID_MANHACK, // 1
 	
 	// Item 1
 	HLSS_WEAPON_ID_PHYSGUN, // 0

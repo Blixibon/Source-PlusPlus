@@ -86,3 +86,18 @@ $Group "dedicated"
 	"vscript"
 }
 
+$Group "tools"
+{
+	"fgdlib"
+	"mathlib"
+	"raytrace"
+	"vbsp"
+	"vrad_dll"
+	"vrad_launcher"
+	"vtex_dll"
+	"vtex_launcher"
+	"vtf2tga"
+	"vtfdiff"
+	"vvis_dll"
+	"vvis_launcher"
+}

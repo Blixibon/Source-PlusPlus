@@ -1933,6 +1933,17 @@ void C_BasePlayer::ThirdPersonSwitch( bool bThirdperson )
 //-----------------------------------------------------------------------------
 /*static*/ bool C_BasePlayer::ShouldDrawLocalPlayer()
 {
+	switch (CurrentViewID())
+	{
+	case VIEW_MONITOR:
+	case VIEW_SSAO_MONITOR:
+	case VIEW_GLASS_REFLECTION:
+		return true;
+		break;
+	default:
+		break;
+	}
+
 	if ( !UseVR() )
 	{
 		return !LocalPlayerInFirstPersonView() || cl_first_person_uses_world_model.GetBool();

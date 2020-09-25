@@ -14,8 +14,8 @@
 #include "physics_saverestore.h"
 #include "world.h"
 
-#ifdef HL2MP
-#include "hl2mp_gamerules.h"
+#if defined(HL2MP) /*|| defined(HL2_LAZUL)*/
+#include "hl2mp/hl2mp_gamerules.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!

@@ -110,20 +110,22 @@ DEFPARTICLE_ATTRIBUTE( HITBOX_RELATIVE_XYZ, 15 );
 DEFPARTICLE_ATTRIBUTE( ALPHA2, 16 );
 
 // particle trace caching fields
-DEFPARTICLE_ATTRIBUTE( TRACE_P0, 17 );						// start pnt of trace
-DEFPARTICLE_ATTRIBUTE( TRACE_P1, 18 );						// end pnt of trace
-DEFPARTICLE_ATTRIBUTE( TRACE_HIT_T, 19 );					// 0..1 if hit
-DEFPARTICLE_ATTRIBUTE( TRACE_HIT_NORMAL, 20 );				// 0 0 0 if no hit
+DEFPARTICLE_ATTRIBUTE(SCRATCH_VEC, 17);		//scratch field used for storing arbitraty vec data	
+DEFPARTICLE_ATTRIBUTE(SCRATCH_FLOAT, 18);	//scratch field used for storing arbitraty float data		
+DEFPARTICLE_ATTRIBUTE(UNUSED, 19);
+DEFPARTICLE_ATTRIBUTE(PITCH, 20);
+
+DEFPARTICLE_ATTRIBUTE(NORMAL, 21);			// 0 0 0 if none
 
 
 #define MAX_PARTICLE_CONTROL_POINTS 64
 
-#define ATTRIBUTES_WHICH_ARE_VEC3S_MASK ( PARTICLE_ATTRIBUTE_TRACE_P0_MASK | PARTICLE_ATTRIBUTE_TRACE_P1_MASK | \
-										  PARTICLE_ATTRIBUTE_TRACE_HIT_NORMAL | PARTICLE_ATTRIBUTE_XYZ_MASK | \
+#define ATTRIBUTES_WHICH_ARE_VEC3S_MASK ( PARTICLE_ATTRIBUTE_SCRATCH_VEC_MASK | PARTICLE_ATTRIBUTE_NORMAL_MASK | \
+										  /*PARTICLE_ATTRIBUTE_TRACE_HIT_NORMAL |*/ PARTICLE_ATTRIBUTE_XYZ_MASK | \
                                           PARTICLE_ATTRIBUTE_PREV_XYZ_MASK | PARTICLE_ATTRIBUTE_TINT_RGB_MASK | \
                                           PARTICLE_ATTRIBUTE_HITBOX_RELATIVE_XYZ_MASK )
 #define ATTRIBUTES_WHICH_ARE_0_TO_1 (PARTICLE_ATTRIBUTE_ALPHA_MASK | PARTICLE_ATTRIBUTE_ALPHA2_MASK)
-#define ATTRIBUTES_WHICH_ARE_ANGLES (PARTICLE_ATTRIBUTE_ROTATION_MASK | PARTICLE_ATTRIBUTE_YAW_MASK )
+#define ATTRIBUTES_WHICH_ARE_ANGLES (PARTICLE_ATTRIBUTE_ROTATION_MASK | PARTICLE_ATTRIBUTE_YAW_MASK | PARTICLE_ATTRIBUTE_PITCH_MASK )
 #define ATTRIBUTES_WHICH_ARE_INTS (PARTICLE_ATTRIBUTE_PARTICLE_ID_MASK | PARTICLE_ATTRIBUTE_HITBOX_INDEX_MASK )
 
 #if defined( _X360 )
@@ -216,7 +218,7 @@ public:
 // Interface to allow the particle system to call back into the client
 //-----------------------------------------------------------------------------
 
-#define PARTICLE_SYSTEM_QUERY_INTERFACE_VERSION "VParticleSystemQuery001"
+#define PARTICLE_SYSTEM_QUERY_INTERFACE_VERSION "VParticleSystemQuery002"
 
 class IParticleSystemQuery : public IAppSystem
 {
@@ -299,6 +301,21 @@ public:
 		int envnumber,
 		const FourRays& rays, fltx4 TMin, fltx4 TMax,
 		RayTracingResult* rslt_out, int32 skip_id) const = 0;
+
+	virtual int GetActivityCount() = 0;
+
+	virtual const char* GetActivityNameFromIndex(int nActivityIndex) { return 0; }
+
+	virtual int GetActivityNumber(void* pModel, const char* m_pszActivityName) { return -1; }
+
+	virtual void* GetModel(char const* pMdlName) { return NULL; }
+
+	virtual void DrawModel(void* pModel, const matrix3x4_t& DrawMatrix, CParticleCollection* pParticles, int nParticleNumber, int nBodyPart, int nSubModel,
+		int nSkin, int nAnimationSequence = 0, float flAnimationRate = 30.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f) = 0;
+
+	virtual void BeginDrawModels(int nNumModels, Vector const& vecCenter, CParticleCollection* pParticles) {}
+
+	virtual void FinishDrawModels(CParticleCollection* pParticles) {}
 };
 
 
@@ -1334,6 +1351,8 @@ public:
 	
 	CUtlIntrusiveDList<CParticleCollection>  m_Children;	// list for all child particle systems
 
+	Vector m_Center;										// average of particle centers
+
 	void *operator new(size_t nSize);
 	void *operator new( size_t size, int nBlockUse, const char *pFileName, int nLine );
 	void operator delete(void *pData);
@@ -1381,8 +1400,6 @@ private:
 	// How many frames have we drawn?
 	int m_nDrawnFrames;
 	int m_nSimulatedFrames;
-
-	Vector m_Center;										// average of particle centers
 
 	// Used to assign unique ids to each particle
 	int m_nUniqueParticleId;
@@ -2090,6 +2107,7 @@ private:
 
 	// Default attribute values
 	Color m_ConstantColor;
+	Vector m_ConstantNormal;
 	float m_flConstantRadius;
 	float m_flConstantRotation;
 	float m_flConstantRotationSpeed;

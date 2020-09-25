@@ -69,13 +69,20 @@ typedef struct
 	float m_fOrthoBottom;
 } flashlightData_t;
 
+typedef struct
+{
+	Vector vecOrigin;
+	VMatrix matOBB;
+} cubemapParallaxData_t;
+
 // Interface for the render thread
 class IShaderExtensionInternal
 {
 public:
 	virtual const flashlightData_t* GetState(const FlashlightState_t& flashlightState) const = 0;
+	virtual const cubemapParallaxData_t* GetCubemapParallax(ITexture* pEnvmap) = 0;
 };
 
-#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal002"
+#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal003"
 
 #endif // ISHADEREXTENSION_H

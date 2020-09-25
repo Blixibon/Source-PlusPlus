@@ -209,8 +209,6 @@ public:
 	void FirePortalDirection1(inputdata_t& inputdata);
 	void FirePortalDirection2(inputdata_t& inputdata);
 
-	CSoundPatch* m_pMiniGravHoldSound;
-
 	// Outputs for portalgun
 	COutputEvent m_OnFiredPortal1;		// Fires when the gun's first (blue) portal is fired
 	COutputEvent m_OnFiredPortal2;		// Fires when the gun's second (red) portal is fired

@@ -2,10 +2,11 @@ DepthOfField
 {
 $basetexture _rt_FullFrameFB
 $smallFB _rt_SmallFB1
+$depthtexture _rt_ResolvedFullFrameDepth
 "%noToolTexture" 1
 
-$nearPlane "0.0"
-$farPlane "0.0"
+$nearPlane "7.0"
+$farPlane "4000.0"
 $nearBlurDepth "0.0"
 $nearFocusDepth "0.0"
 $farFocusDepth "0.0"

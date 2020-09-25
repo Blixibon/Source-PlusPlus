@@ -458,9 +458,10 @@ bool VScriptServerInit()
 				}
 
 				g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
-				g_pScriptVM->RegisterInstance(g_pGameTypeSystem, "GameTypes");
+				g_pScriptVM->RegisterInstance(GameTypeSystem(), "GameTypes");
 
 				g_pScriptVM->RegisterAllClasses();
+				g_pScriptVM->RegisterAllEnums();
 
 				RegisterSharedScriptFunctions();
 				RegisterSharedScriptConstants();

@@ -1,0 +1,40 @@
+"credits.txt"
+{
+
+"CreditsParams"
+{
+	"fadeintime"	"2.5"
+	"fadeouttime"	"1"
+	"fadeholdtime"	"1.0"
+	"nextfadetime"	"1.0"
+	"pausebetweenwaves" "1.0"
+	"logotime" "1.0"
+	"posx"	"96"
+	"posy"	"360"
+
+	"color" "255 255 255 128"
+
+	// Outro Parameters
+	"scrolltime" "50"
+	"separation"  "10"
+}
+
+"OutroCreditsNames"
+{
+	"DEPOT"	"CreditsOutroHeading"
+	" "			"CreditsOutroText"
+ 	" "			"CreditsOutroText"
+ 	" "			"CreditsOutroText"
+ 	"by LexxoR"   "CreditsOutroText"
+	" "			"CreditsOutroText"
+ 	" "			"CreditsOutroText"
+ 	" "			"CreditsOutroText"
+	" "			"CreditsOutroText"
+ 	" "			"CreditsOutroText"
+ 	" "			"CreditsOutroText"
+ 	"to be continued..."	"CreditsOutroText"
+}
+
+
+
+}

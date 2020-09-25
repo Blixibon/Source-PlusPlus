@@ -151,10 +151,12 @@ public:
 	}
 	virtual bool ClientLevelInit(char const* pMapName) override
 	{
+		m_ShaderExtension.LevelLoad(pMapName, m_EnginePointers.engineclient);
 		return true;
 	}
 	virtual void ClientLevelShutdown() override
 	{
+		m_ShaderExtension.LevelClose();
 	}
 
 private:

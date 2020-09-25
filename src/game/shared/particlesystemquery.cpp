@@ -9,9 +9,11 @@
 #include "baseparticleentity.h"
 #include "entityparticletrail_shared.h"
 #include "collisionutils.h"
+#include "animation.h"
 
 #if defined( CLIENT_DLL )
 #include "c_pixel_visibility.h"
+#include "model_types.h"
 #endif
 
 #if defined( TF_CLIENT_DLL ) || defined(TF_CLASSIC_CLIENT)
@@ -81,6 +83,24 @@ public:
 
 	virtual float GetPixelVisibility( int *pQueryHandle, const Vector &vecOrigin, float flScale );
 	virtual void SetUpLightingEnvironment( const Vector& pos );
+
+	virtual int GetActivityCount();
+	virtual const char* GetActivityNameFromIndex(int nActivityIndex);
+	virtual int GetActivityNumber(void* pModel, const char* m_pszActivityName);
+
+	virtual void BeginDrawModels(int nMaxNumToDraw, Vector const& vecCenterPosition, CParticleCollection* pParticles)
+	{
+	}
+
+	virtual void DrawModel(void* pModel, const matrix3x4_t& DrawMatrix, CParticleCollection* pParticles, int nParticleNumber, int nBodyPart, int nSubModel,
+		int nSkin, int nAnimationSequence = 0, float flAnimationRate = 30.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f);
+
+
+	virtual void FinishDrawModels(CParticleCollection* pParticles)
+	{
+	}
+
+	virtual void* GetModel(char const* pMdlName);
 };
 
 
@@ -642,5 +662,128 @@ float CParticleSystemQuery::GetPixelVisibility( int *pQueryHandle, const Vector 
 	return flVisibility;
 #else
 	return 0.0f;
+#endif
+}
+
+int CParticleSystemQuery::GetActivityCount()
+{
+	return 0;
+}
+const char* CParticleSystemQuery::GetActivityNameFromIndex(int nActivityIndex)
+{
+	return 0;
+}
+
+int CParticleSystemQuery::GetActivityNumber(void* pModel, const char* m_pszActivityName)
+{
+	model_t* pMDL = (model_t*)pModel;
+
+	if (pMDL)
+	{
+		studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel(pMDL);
+
+		if (!pStudioHdr)
+			return -1;
+
+		CStudioHdr studioHdr(pStudioHdr, mdlcache);
+
+		int nActivityNum = LookupActivity(&studioHdr, m_pszActivityName);
+
+		return SelectWeightedSequence(&studioHdr, nActivityNum);
+	}
+
+	return -1;
+}
+
+#include "tier3/mdlutils.h"
+
+
+#ifdef CLIENT_DLL
+static void SetBodygroup(studiohdr_t* pstudiohdr, int& body, int iGroup, int iValue)
+{
+	if (!pstudiohdr)
+	{
+		return;
+	}
+
+	if (iGroup >= pstudiohdr->numbodyparts)
+	{
+		return;
+	}
+
+	mstudiobodyparts_t* pbodypart = pstudiohdr->pBodypart(iGroup);
+
+	if (iValue >= pbodypart->nummodels)
+	{
+		return;
+	}
+
+	int iCurrent = (body / pbodypart->base) % pbodypart->nummodels;
+
+	body = (body - (iCurrent * pbodypart->base) + (iValue * pbodypart->base));
+}
+#endif
+
+// callback to draw models given abstract ptr
+void CParticleSystemQuery::DrawModel(void* pModel, const matrix3x4_t& DrawMatrix, CParticleCollection* pParticles, int nParticleNumber, int nBodyPart, int nSubModel,
+	int nSkin, int nAnimationSequence, float flAnimationRate, float r, float g, float b, float a)
+{
+#ifdef CLIENT_DLL
+	model_t* pMDL = (model_t*)pModel;
+	if (pMDL)
+	{
+		MDLHandle_t hStudioHdr = modelinfo->GetCacheHandle(pMDL);
+		studiohdr_t* pStudioHdr = mdlcache->GetStudioHdr(hStudioHdr);
+
+		CMDL	MDL;
+		MDL.SetMDL(hStudioHdr);
+
+		SetBodygroup(pStudioHdr, MDL.m_nBody, nBodyPart, nSubModel);
+		MDL.m_Color = Color(r * 255, g * 255, b * 255, a * 255);
+
+		MDL.m_nSkin = nSkin;
+		MDL.m_nSequence = nAnimationSequence;
+		MDL.m_flPlaybackRate = flAnimationRate;
+		MDL.m_flTime = pParticles->m_flCurTime;
+
+		if (pStudioHdr)
+		{
+			CMatRenderContextPtr pRenderContext(g_pMaterialSystem);
+			CMatRenderData< matrix3x4_t > rdBoneToWorld(pRenderContext, pStudioHdr->numbones);
+			MDL.SetUpBones(DrawMatrix, pStudioHdr->numbones, rdBoneToWorld.Base());
+			MDL.Draw(DrawMatrix, rdBoneToWorld.Base());
+		}
+		else
+		{
+			MDL.Draw(DrawMatrix);
+		}
+
+		//debugging
+		//	debugoverlay->AddTextOverlay( origin, 0.1, "p", pMDL );
+		//Vector myOrigin = Vector( DrawMatrix.m_flMatVal[0][3], DrawMatrix.m_flMatVal[1][3], DrawMatrix.m_flMatVal[2][3] );
+		//Vector vecFwd, vecRight, vecUp;
+		//MatrixVectors( pRenderable->m_DrawModelMatrix, &vecFwd, &vecRight, &vecUp );
+		//debugoverlay->AddLineOverlay( myOrigin, myOrigin + 36 * vecFwd, 255, 0, 0, true, 0.1 );
+		//debugoverlay->AddLineOverlay( myOrigin, myOrigin + 36 * vecUp, 0, 0, 255, true, 0.1 );
+		//debugoverlay->AddLineOverlay( myOrigin, myOrigin + 36 * vecRight, 0, 255, 0, true, 0.1 );
+	}
+#endif
+}
+
+void* CParticleSystemQuery::GetModel(char const* pMdlName)
+{
+#ifdef CLIENT_DLL
+	// 	int modelIndex = modelinfo->GetModelIndex( pMdlName );
+	// 	const model_t *pModel = modelinfo->GetModel( modOelIndex );
+
+	CUtlString	ModelName = "models/";
+
+	ModelName += pMdlName;
+
+	model_t* pModel = (model_t*)engine->LoadModel(ModelName); //, true );
+	//pMdlName = "models/weapons/shells/shell_pistol.mdl";
+	return (void*)pModel;
+#else
+	return NULL;
 #endif
 }

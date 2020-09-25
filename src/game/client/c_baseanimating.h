@@ -351,6 +351,7 @@ public:
 	virtual int GetSkin()			{ return m_nSkin; }
 
 	bool IsOnFire() { return ( (GetFlags() & FL_ONFIRE) != 0 ); }
+	float							GetFrozenAmount() { return m_flFrozen; }
 
 	inline float					GetPlaybackRate() const;
 	inline void						SetPlaybackRate( float rate );
@@ -585,6 +586,7 @@ protected:
 	C_BaseAnimating					*m_pRagdollEnt;
 
 protected:
+	float							m_flFrozen;
 
 	float							m_fadeMinDist;
 	float							m_fadeMaxDist;
@@ -767,7 +769,7 @@ inline void C_BaseAnimating::ResetSequence(int nSequence)
 
 inline float C_BaseAnimating::GetPlaybackRate() const
 {
-	return m_flPlaybackRate;
+	return m_flPlaybackRate * Clamp(1.0f - m_flFrozen, 0.0f, 1.0f);
 }
 
 inline void C_BaseAnimating::SetPlaybackRate( float rate )

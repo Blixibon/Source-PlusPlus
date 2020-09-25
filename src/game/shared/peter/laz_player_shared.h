@@ -11,6 +11,8 @@
 
 #define HL2MP_PUSHAWAY_THINK_INTERVAL		(1.0f / 20.0f)
 
+#define NUMBER_OF_CONTROLLABLE_MANHACKS 3
+
 enum LAZPlayerState
 {
 	// Happily running around in the game.

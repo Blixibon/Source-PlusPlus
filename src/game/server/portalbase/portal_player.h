@@ -174,6 +174,8 @@ public:
 
 	// Tracks our ragdoll entity.
 	//CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle
+protected:
+		virtual void		ItemPostFrame();
 
 private:
 

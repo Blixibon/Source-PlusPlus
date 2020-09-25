@@ -1,0 +1,18 @@
+"chapters"
+{
+	-2	"hc_background"
+	1	"bms_background01"
+	2	"bms_background02"
+	3	"bms_background03"
+	4	"bms_background04"
+	5	"bms_background05"
+	6	"bms_background06"
+	7	"bms_background07"
+	8	"bms_background08"
+	9	"bms_background09"
+	10	"bms_background10"
+	11	"bms_background11"
+	12	"bms_background12"
+	13	"bms_background13"
+	14	"bms_background14"
+}

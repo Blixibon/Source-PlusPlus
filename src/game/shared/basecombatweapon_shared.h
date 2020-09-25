@@ -20,6 +20,9 @@
 #include "utlmap.h"
 
 #if defined( CLIENT_DLL )
+#include "view_shared.h"
+#include "viewrender.h"
+
 #define CBaseCombatWeapon C_BaseCombatWeapon
 #endif
 
@@ -112,6 +115,27 @@ namespace vgui2
 {
 	typedef unsigned long HFont;
 }
+
+namespace vgui
+{
+	// handle to an internal vgui panel
+	// this is the only handle to a panel that is valid across dll boundaries
+	typedef unsigned int VPANEL;
+}
+
+#ifdef CLIENT_DLL
+typedef struct
+{
+	ITexture*		m_pRenderTarget;
+	CNewViewSetup	m_View;
+	view_id_t		m_3DViewID;
+	vgui::VPANEL	m_2DPanel;
+
+	bool m_bDraw3DSkybox;
+	bool m_bDraw3D;
+	bool m_bDraw2D;
+} weaponrendertarget_t;
+#endif // CLIENT_DLL
 
 // ------------------
 // Weapon classes
@@ -583,6 +607,13 @@ public:
 	virtual int				DrawOverriddenViewmodel( C_BaseViewModel *pViewmodel, int flags ) { return 0; };
 	bool					WantsToOverrideViewmodelAttachments( void ) { return false; }
 #endif
+
+	virtual int				GetWeaponRenderTargetCount() { return 0; }
+	virtual bool			GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView) { return false; }
+	virtual void			WeaponRT_StartRender3D(int iWhich) { return; }
+	virtual void			WeaponRT_FinishRender3D(int iWhich) { return; }
+	virtual void			WeaponRT_StartRender2D(int iWhich) { return; }
+	virtual void			WeaponRT_FinishRender2D(int iWhich) { return; }
 
 #endif // End client-only methods
 

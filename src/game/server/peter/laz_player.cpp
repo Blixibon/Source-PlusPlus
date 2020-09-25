@@ -35,6 +35,7 @@
 #include "triggers.h"
 #include "vehicle_jeep_episodic.h"
 #include "Human_Error/npc_olivia.h"
+#include "hlss_weapon_id.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -168,6 +169,8 @@ DEFINE_FIELD(m_bIsPullingObject, FIELD_BOOLEAN),
 DEFINE_FIELD(m_nMovementCfg, FIELD_INTEGER),
 
 DEFINE_FIELD(m_flNextLocatorUpdateTime, FIELD_TIME),//TE120
+
+DEFINE_FIELD(m_iCurrentManhackIndex, FIELD_INTEGER),
 END_DATADESC();
 
 BEGIN_DATADESC_NO_BASE(CLaz_PlayerLocalData)
@@ -175,6 +178,7 @@ DEFINE_FIELD(m_iNumLocatorContacts, FIELD_INTEGER),
 DEFINE_FIELD(m_flLocatorRange, FIELD_FLOAT),
 DEFINE_ARRAY(m_iLocatorContactType, FIELD_INTEGER, LOCATOR_MAX_CONTACTS),
 DEFINE_ARRAY(m_vLocatorPositions, FIELD_POSITION_VECTOR, LOCATOR_MAX_CONTACTS),
+DEFINE_ARRAY(m_hSetOfManhacks, FIELD_EHANDLE, NUMBER_OF_CONTROLLABLE_MANHACKS),
 END_DATADESC();
 
 BEGIN_SEND_TABLE_NOBASE(CLaz_PlayerLocalData, DT_LazLocal)
@@ -183,7 +187,18 @@ SendPropArray3(SENDINFO_ARRAY3(m_hLocatorEntities), SendPropEHandle(SENDINFO_ARR
 SendPropArray3(SENDINFO_ARRAY3(m_vLocatorPositions), SendPropVector(SENDINFO_ARRAY(m_vLocatorPositions))),
 SendPropArray3(SENDINFO_ARRAY3(m_iLocatorContactType), SendPropInt(SENDINFO_ARRAY(m_iLocatorContactType), LOCATOR_CONTACT_TYPE_BITS)),
 SendPropFloat(SENDINFO(m_flLocatorRange)),
+SendPropArray3(SENDINFO_ARRAY3(m_hSetOfManhacks), SendPropEHandle(SENDINFO_ARRAY(m_hSetOfManhacks))),
 END_SEND_TABLE()
+
+void SendProxy_CurrentManhack(const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID)
+{
+	int manhackIndex = *(int*)pVarData % NUMBER_OF_CONTROLLABLE_MANHACKS;
+
+	const CLaz_Player* pPlayer = (const CLaz_Player*)pStruct;
+	const CBaseHandle* pHandle = &pPlayer->m_LazLocal.m_hSetOfManhacks.Get(manhackIndex);
+
+	SendProxy_EHandleToInt(pProp, pStruct, pHandle, pOut, iElement, objectID);
+}
 
 IMPLEMENT_SERVERCLASS_ST(CLaz_Player, DT_Laz_Player)
 SendPropDataTable(SENDINFO_DT(m_LazLocal), &REFERENCE_SEND_TABLE(DT_LazLocal), SendProxy_SendLocalDataTable),
@@ -195,6 +210,7 @@ SendPropFloat(SENDINFO(m_flEyeHeightOverride)),
 SendPropVector(SENDINFO(m_vecLadderNormal), -1, SPROP_NORMAL),
 SendPropBool(SENDINFO(m_bInAutoMovement)),
 SendPropQAngles(SENDINFO(m_angAutoMoveAngles)),
+SendPropEHandle("m_hCurrentManhack", offsetof(currentSendDTClass, m_iCurrentManhackIndex), sizeof(int), 0, SendProxy_CurrentManhack),
 END_SEND_TABLE();
 
 #define MODEL_CHANGE_INTERVAL 5.0f
@@ -216,7 +232,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 
 	//pHands->NetworkStateChanged();
 
-	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(g_pGameTypeSystem->GetCurrentModGameType(), pPlayer->IsSuitEquipped());
+	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(GameTypeSystem()->GetCurrentModGameType(), pPlayer->IsSuitEquipped());
 
 	pPlayer->SetModel(modelType->models.Head().szModelName);
 	pPlayer->m_nSkin = modelType->models.Head().skin;
@@ -670,7 +686,7 @@ ReturnSpot:
 
 bool CLaz_Player::ShouldRegenerateHealth()
 {
-	return g_pGameTypeSystem->GetCurrentBaseGameType() == GAME_PORTAL;
+	return GameTypeSystem()->GetCurrentBaseGameType() == GAME_PORTAL;
 }
 
 void CLaz_Player::CreateViewModel(int index)
@@ -1008,7 +1024,7 @@ void CLaz_Player::Event_KilledOther(CBaseEntity * pVictim, const CTakeDamageInfo
 void CLaz_Player::Event_Killed(const CTakeDamageInfo & info)
 {
 	// Release the manhack if we're in the middle of deploying him
-	if (m_hMinion && m_hMinion->IsAlive() && m_hMinion->Classify() == CLASS_MANHACK)
+	if (GetCurrentManhack() && GetCurrentManhack()->IsAlive())
 	{
 		ReleaseManhack();
 	}
@@ -1142,16 +1158,6 @@ int CLaz_Player::GetAutoTeam(void)
 	}
 
 	return iTeam;
-}
-
-void CLaz_Player::SetMinion(CBaseCombatCharacter * pMinion)
-{
-	m_hMinion.Set(pMinion);
-	const char *pchClassName = (pMinion->IsNPC()) ? pMinion->MyNPCPointer()->GetDeathNoticeNameOverride() : nullptr;
-	if (!pchClassName)
-		pchClassName = pMinion->GetClassname();
-
-	V_strncpy(m_strMinionClass.GetForModify(), pchClassName, 32);
 }
 
 bool CLaz_Player::HandleCommand_JoinTeam(int team)
@@ -1341,13 +1347,13 @@ void CLaz_Player::OnAnimEventDeployManhack(animevent_t * pEvent)
 	// Let it go
 	ReleaseManhack();
 
-	if (!m_hMinion)
+	if (!GetCurrentManhack())
 		return;
 
 	Vector forward, right;
 	GetVectors(&forward, &right, NULL);
 
-	IPhysicsObject *pPhysObj = m_hMinion->VPhysicsGetObject();
+	IPhysicsObject *pPhysObj = GetCurrentManhack()->VPhysicsGetObject();
 
 	if (pPhysObj)
 	{
@@ -1379,8 +1385,6 @@ void CLaz_Player::OnAnimEventStartDeployManhack(void)
 		SetBodygroup(METROPOLICE_BODYGROUP_MANHACK, false);
 	}*/
 
-	// Create the manhack to throw
-	CNPC_Manhack *pManhack = (CNPC_Manhack *)CreateEntityByName("npc_manhack");
 
 	Vector	vecOrigin;
 	QAngle	vecAngles;
@@ -1388,26 +1392,23 @@ void CLaz_Player::OnAnimEventStartDeployManhack(void)
 	int handAttachment = LookupAttachment("anim_attachment_LH");
 	GetAttachment(handAttachment, vecOrigin, vecAngles);
 
-	pManhack->SetLocalOrigin(vecOrigin);
-	pManhack->SetLocalAngles(vecAngles);
+	// Create the manhack to throw
+	CNPC_Manhack* pManhack = CreateManhack(vecOrigin, vecAngles);
 	pManhack->AddSpawnFlags((SF_MANHACK_PACKED_UP | SF_MANHACK_CARRIED | SF_NPC_WAIT_FOR_SCRIPT));
 
 	pManhack->AddSpawnFlags(SF_NPC_FADE_CORPSE);
 
 	pManhack->Spawn();
-	pManhack->SetDeployingPlayer(this);
 
 	// Make us move with his hand until we're deployed
 	pManhack->SetParent(this, handAttachment);
-
-	SetMinion(pManhack);
 }
 
 void CLaz_Player::ReleaseManhack(void)
 {
-	CNPC_Manhack *pManhack = dynamic_cast<CNPC_Manhack *> (m_hMinion.Get());
+	CNPC_Manhack* pManhack = GetCurrentManhack();
 
-	if (!pManhack)
+	if (!pManhack || !pManhack->HasSpawnFlags(SF_MANHACK_CARRIED))
 		return;
 
 	// Make us physical
@@ -1856,7 +1857,7 @@ void CLaz_Player::Special()
 	{
 	case LAZ_SPECIAL_MANHACK:
 	{
-		if (m_hMinion && m_hMinion->IsAlive())
+		if (GetManhackCount() >= NUMBER_OF_CONTROLLABLE_MANHACKS)
 			return;
 
 		if (IsInAVehicle() || m_bInAutoMovement.Get())
@@ -2479,8 +2480,8 @@ const char* CLaz_Player::GetResponseClassname(CBaseEntity* pCaller)
 
 void CLaz_Player::DeathNotice(CBaseEntity * pVictim)
 {
-	if (pVictim == m_hMinion.Get())
-		ClearMinion();
+	//if (pVictim == m_hMinion.Get())
+	//	ClearMinion();
 }
 
 void CLaz_Player::SetFootsteps(const char *pchPrefix)
@@ -3024,15 +3025,24 @@ bool CLaz_Player::IsValidObserverTarget(CBaseEntity * target)
 		{
 			CAI_BaseNPC *pAI = target->MyNPCPointer();
 			bool bImportant = false;
-			if (pAI == m_hMinion.Get())
-				bImportant = true;
-			else if (pAI->ShowInDeathnotice())
+			if (pAI->ShowInDeathnotice())
 				bImportant = true;
 			else if (pAI->IsInPlayerSquad())
 			{
 				CNPC_PlayerFollower *pFollower = dynamic_cast<CNPC_PlayerFollower *> (pAI);
 				if (pFollower && pFollower->IsInThisPlayerSquad(this))
 					bImportant = true;
+			}
+			else if (FClassnameIs(pAI, "npc_manhack"))
+			{
+				for (int i = 0; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+				{
+					if (m_LazLocal.m_hSetOfManhacks[i] == pAI)
+					{
+						bImportant = true;
+						break;
+					}
+				}
 			}
 
 			// Only spectate important npcs
@@ -3203,9 +3213,9 @@ void CLaz_Player::FindInitialObserverTarget(void)
 		}
 	}
 
-	if (m_hMinion.Get())
+	if (GetCurrentManhack())
 	{
-		m_hObserverTarget = m_hMinion;
+		m_hObserverTarget = GetCurrentManhack();
 		return;
 	}
 
@@ -3364,4 +3374,127 @@ CON_COMMAND_F(laz_player_set_voice, "Set the voicetype of the player", FCVAR_DEV
 		return;
 
 	pLaz->SetVoiceType(args[1], args[2]);
+}
+
+
+
+void CLaz_Player::CallManhacksBack(float flComeBackTime)
+{
+	CNPC_Manhack* newManhack;
+
+	for (int i = 0; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+	{
+		if (m_LazLocal.m_hSetOfManhacks[i] != NULL)
+		{
+			newManhack = dynamic_cast<CNPC_Manhack*>(m_LazLocal.m_hSetOfManhacks[i].Get());
+
+			if (newManhack)
+			{
+				newManhack->ComeBackToPlayer(this, flComeBackTime);
+			}
+		}
+	}
+}
+
+void CLaz_Player::TellManhacksToGoThere(float flGoThereTime)
+{
+	CNPC_Manhack* newManhack;
+
+	for (int i = 0; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+	{
+		if (m_LazLocal.m_hSetOfManhacks[i] != NULL)
+		{
+			newManhack = dynamic_cast<CNPC_Manhack*>(m_LazLocal.m_hSetOfManhacks[i].Get());
+
+			if (newManhack)
+			{
+				newManhack->GoThere(this, flGoThereTime);
+			}
+		}
+	}
+}
+
+CNPC_Manhack* CLaz_Player::GetCurrentManhack()
+{
+	int manhackIndex = m_iCurrentManhackIndex.Get() % NUMBER_OF_CONTROLLABLE_MANHACKS;
+	return static_cast<CNPC_Manhack *> (m_LazLocal.m_hSetOfManhacks[manhackIndex].Get());
+}
+
+bool CLaz_Player::FindNextManhack()
+{
+	for (int i = 1; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+	{
+		int manhackIndex = (m_iCurrentManhackIndex + i) % NUMBER_OF_CONTROLLABLE_MANHACKS;
+
+		if (m_LazLocal.m_hSetOfManhacks.Get(manhackIndex) != NULL)
+		{
+			m_iCurrentManhackIndex = manhackIndex;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+int CLaz_Player::GetManhackCount()
+{
+	int numberOfHacks = 0;
+
+	for (int i = 0; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+	{
+		if (m_LazLocal.m_hSetOfManhacks[i] != NULL)
+		{
+			numberOfHacks++;
+		}
+	}
+
+	return numberOfHacks;
+}
+
+CNPC_Manhack* CLaz_Player::CreateManhack(const Vector& position, const QAngle& angles)
+{
+	int manhackIndex = -1;
+	for (int i = 0; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+	{
+		if (m_LazLocal.m_hSetOfManhacks[i] == NULL)
+		{
+			manhackIndex = i;
+			break;
+		}
+	}
+
+	if (manhackIndex < 0)
+		return nullptr;
+
+	CNPC_Manhack* pManhack = (CNPC_Manhack*)CBaseEntity::Create("npc_manhack", position, angles, this);
+
+	if (pManhack == NULL)
+		return nullptr;
+
+	pManhack->SetDeployingPlayer(this);
+	pManhack->ShouldFollowPlayer(true);
+
+	m_iCurrentManhackIndex = manhackIndex;
+	m_LazLocal.m_hSetOfManhacks.Set(m_iCurrentManhackIndex, pManhack);
+
+	return pManhack;
+}
+
+void CLaz_Player::SetupVisibility(CBaseEntity* pViewEntity, unsigned char* pvs, int pvssize)
+{
+	if (GetCurrentManhack())
+	{
+		bool bManhackVehicle = (GetVehicleEntity() && FClassnameIs(GetVehicleEntity(), "vehicle_manhack"));
+		if (bManhackVehicle || (GetActiveWeapon() && GetActiveWeapon()->GetWeaponID() == HLSS_WEAPON_ID_MANHACK))
+		{
+			engine->AddOriginToPVS(GetCurrentManhack()->GetAbsOrigin());
+		}
+
+		if (bManhackVehicle)
+		{
+			pViewEntity = GetCurrentManhack();
+		}
+	}
+
+	BaseClass::SetupVisibility(pViewEntity, pvs, pvssize);
 }

@@ -51,6 +51,14 @@ CPointCamera::CPointCamera()
 	
 	m_bFogEnable = false;
 
+	m_bDOFEnabled = false;
+	m_flNearBlurDepth = 50.0f;
+	m_flNearFocusDepth = 100.0f;
+	m_flFarFocusDepth = 250.0f;
+	m_flFarBlurDepth = 1000.0f;
+	m_flNearBlurRadius = 0.0f;		// no near blur by default
+	m_flFarBlurRadius = 5.0f;
+
 	g_PointCameraList.Insert( this );
 }
 
@@ -211,6 +219,56 @@ void CPointCamera::InputSetOff( inputdata_t &inputdata )
 	SetActive( false );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPointCamera::InputSetNearBlurDepth(inputdata_t& inputdata)
+{
+	m_flNearBlurDepth = inputdata.value.Float();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPointCamera::InputSetNearFocusDepth(inputdata_t& inputdata)
+{
+	m_flNearFocusDepth = inputdata.value.Float();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPointCamera::InputSetFarFocusDepth(inputdata_t& inputdata)
+{
+	m_flFarFocusDepth = inputdata.value.Float();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPointCamera::InputSetFarBlurDepth(inputdata_t& inputdata)
+{
+	m_flFarBlurDepth = inputdata.value.Float();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPointCamera::InputSetNearBlurRadius(inputdata_t& inputdata)
+{
+	m_flNearBlurRadius = inputdata.value.Float();
+	m_bDOFEnabled = (m_flNearBlurRadius > 0.0f) || (m_flFarBlurRadius > 0.0f);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CPointCamera::InputSetFarBlurRadius(inputdata_t& inputdata)
+{
+	m_flFarBlurRadius = inputdata.value.Float();
+	m_bDOFEnabled = (m_flNearBlurRadius > 0.0f) || (m_flFarBlurRadius > 0.0f);
+}
+
 BEGIN_DATADESC( CPointCamera )
 
 	// Save/restore Keyvalue fields
@@ -222,6 +280,13 @@ BEGIN_DATADESC( CPointCamera )
 	DEFINE_KEYFIELD( m_flFogEnd,	FIELD_FLOAT, "fogEnd" ),
 	DEFINE_KEYFIELD( m_flFogMaxDensity,	FIELD_FLOAT, "fogMaxDensity" ),
 	DEFINE_KEYFIELD( m_bUseScreenAspectRatio, FIELD_BOOLEAN, "UseScreenAspectRatio" ),
+	DEFINE_KEYFIELD(m_bDOFEnabled, FIELD_BOOLEAN, "dof_enabled"),
+	DEFINE_KEYFIELD(m_flNearBlurDepth, FIELD_FLOAT, "near_blur"),
+	DEFINE_KEYFIELD(m_flNearFocusDepth, FIELD_FLOAT, "near_focus"),
+	DEFINE_KEYFIELD(m_flFarFocusDepth, FIELD_FLOAT, "far_focus"),
+	DEFINE_KEYFIELD(m_flFarBlurDepth, FIELD_FLOAT, "far_blur"),
+	DEFINE_KEYFIELD(m_flNearBlurRadius, FIELD_FLOAT, "near_radius"),
+	DEFINE_KEYFIELD(m_flFarBlurRadius, FIELD_FLOAT, "far_radius"),
 	DEFINE_FIELD( m_bActive,		FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bIsOn,			FIELD_BOOLEAN ),
 
@@ -237,6 +302,12 @@ BEGIN_DATADESC( CPointCamera )
 	DEFINE_INPUTFUNC( FIELD_VOID, "SetOnAndTurnOthersOff", InputSetOnAndTurnOthersOff ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "SetOn", InputSetOn ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "SetOff", InputSetOff ),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetNearBlurDepth", InputSetNearBlurDepth),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetNearFocusDepth", InputSetNearFocusDepth),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetFarFocusDepth", InputSetFarFocusDepth),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetFarBlurDepth", InputSetFarBlurDepth),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetNearBlurRadius", InputSetNearBlurRadius),
+	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetFarBlurRadius", InputSetFarBlurRadius),
 
 END_DATADESC()
 
@@ -250,4 +321,12 @@ IMPLEMENT_SERVERCLASS_ST( CPointCamera, DT_PointCamera )
 	SendPropFloat( SENDINFO( m_flFogMaxDensity ), 0, SPROP_NOSCALE ),	
 	SendPropInt( SENDINFO( m_bActive ), 1, SPROP_UNSIGNED ),
 	SendPropInt( SENDINFO( m_bUseScreenAspectRatio ), 1, SPROP_UNSIGNED ),
+
+	SendPropInt(SENDINFO(m_bDOFEnabled), 1, SPROP_UNSIGNED),
+	SendPropFloat(SENDINFO(m_flNearBlurDepth), 0, SPROP_NOSCALE),
+	SendPropFloat(SENDINFO(m_flNearFocusDepth), 0, SPROP_NOSCALE),
+	SendPropFloat(SENDINFO(m_flFarFocusDepth), 0, SPROP_NOSCALE),
+	SendPropFloat(SENDINFO(m_flFarBlurDepth), 0, SPROP_NOSCALE),
+	SendPropFloat(SENDINFO(m_flNearBlurRadius), 0, SPROP_NOSCALE),
+	SendPropFloat(SENDINFO(m_flFarBlurRadius), 0, SPROP_NOSCALE),
 END_SEND_TABLE()

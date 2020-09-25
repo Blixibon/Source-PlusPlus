@@ -114,7 +114,7 @@ void CTriggerPortalCleanser::Touch( CBaseEntity *pOther )
 
 		if ( pPlayer )
 		{
-			CWeaponPortalgun *pPortalgun = dynamic_cast<CWeaponPortalgun*>( pPlayer->Weapon_OwnsThisType( "weapon_portalgun" ) );
+			CWeaponPortalgun *pPortalgun = dynamic_cast<CWeaponPortalgun*>( pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_PORTALGUN) );
 
 			if ( pPortalgun )
 			{
@@ -168,10 +168,13 @@ void CTriggerPortalCleanser::Touch( CBaseEntity *pOther )
 
 				if ( bFizzledPortal )
 				{
-					pPortalgun->SendWeaponAnim( ACT_VM_FIZZLE );
-					pPortalgun->SetLastFiredPortal( 0 );
-					m_OnFizzle.FireOutput( pOther, this );
-					pPlayer->RumbleEffect( RUMBLE_RPG_MISSILE, 0, RUMBLE_FLAG_RESTART );
+					pPortalgun->SetLastFiredPortal(0);
+					m_OnFizzle.FireOutput(pOther, this);
+					if (pPortalgun == pPlayer->GetActiveWeapon())
+					{
+						pPortalgun->SendWeaponAnim(ACT_VM_FIZZLE);
+						pPlayer->RumbleEffect(RUMBLE_RPG_MISSILE, 0, RUMBLE_FLAG_RESTART);
+					}
 				}
 			}
 		}

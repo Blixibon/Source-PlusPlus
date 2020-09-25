@@ -409,5 +409,26 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_DOORS_GROUP, "" );
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_RANGE_ATTACK_GROUP, "" );
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_MELEE_ATTACK_GROUP, "" );
+
+	// 
+	// Misc. AI
+	// 
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_INVALID, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_NONE, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_IDLE, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_ALERT, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_COMBAT, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_SCRIPT, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_PLAYDEAD, "");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_PRONE, "When in clutches of barnacle");
+	ScriptRegisterConstant(g_pScriptVM, NPC_STATE_DEAD, "");
+
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_PLAYING, "SCRIPT_PLAYING", "Playing the action animation.");
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_WAIT, "SCRIPT_WAIT", "Waiting on everyone in the script to be ready. Plays the pre idle animation if there is one.");
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_POST_IDLE, "SCRIPT_POST_IDLE", "Playing the post idle animation after playing the action animation.");
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_CLEANUP, "SCRIPT_CLEANUP", "Cancelling the script / cleaning up.");
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_WALK_TO_MARK, "SCRIPT_WALK_TO_MARK", "Walking to the scripted sequence position.");
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_RUN_TO_MARK, "SCRIPT_RUN_TO_MARK", "Running to the scripted sequence position.");
+	ScriptRegisterConstantNamed(g_pScriptVM, CAI_BaseNPC::SCRIPT_PLAYING, "SCRIPT_PLAYING", "Moving to the scripted sequence position while playing a custom movement animation.");
 #endif
 }

@@ -1,6 +1,11 @@
 @chapter:1
+@optset:disablelocalshadows:1
 he01_intro
 @chapter:2
+@location:c17
+@optclr
+@optset:cold_override:1
+@optset:burningdlights:1
 he01_01
 @chapter:3
 he02_01

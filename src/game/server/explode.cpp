@@ -258,7 +258,10 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 	// draw decal
 	if (! ( m_spawnflags & SF_ENVEXPLOSION_NODECAL))
 	{
-		UTIL_DecalTrace( &tr, "Scorch" );
+		if (!(m_spawnflags & SF_ENVEXPLOSION_ICE))
+			UTIL_DecalTrace(&tr, "Scorch");
+		else
+			UTIL_DecalTrace(&tr, "Ice_Explosion_Decal");
 	}
 
 	// It's stupid that this entity's spawnflags and the flags for the
@@ -304,6 +307,11 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 	if ( m_spawnflags & SF_ENVEXPLOSION_NOFIREBALLSMOKE )
 	{
 		nFlags |= TE_EXPLFLAG_NOFIREBALLSMOKE;
+	}
+
+	if (m_spawnflags & SF_ENVEXPLOSION_ICE)
+	{
+		nFlags |= TE_EXPLFLAG_ICE;
 	}
 
 	//Get the damage override if specified

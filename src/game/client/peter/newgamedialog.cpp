@@ -213,7 +213,7 @@ CHLMSNewGame::CHLMSNewGame(vgui::Panel *parent, const char *name, bool bCommenta
 	m_pMedium = new vgui::RadioButton(this, "Medium", "#GameUI_Medium");
 	m_pHard = new vgui::RadioButton(this, "Hard", "#GameUI_Hard");
 
-	if (ModInfo().NoDifficulty() || ModInfo().IsSinglePlayerOnly())
+	if (ModInfo().NoDifficulty() /*|| ModInfo().IsSinglePlayerOnly()*/)
 	{
 		m_pEasy->SetVisible(false);
 		m_pMedium->SetVisible(false);

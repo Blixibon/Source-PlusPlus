@@ -15,7 +15,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 void DoImageSpaceMotionBlur( const CNewViewSetup &view, int x, int y, int w, int h );
 void DumpTGAofRenderTarget( const int width, const int height, const char *pFilename );
 
-bool IsDepthOfFieldEnabled(const CNewViewSetup *view = nullptr);
+bool IsDepthOfFieldEnabled(int iViewID, const CNewViewSetup *view = nullptr);
 void DoDepthOfField(const CNewViewSetup &view);
 
 #endif // VIEWPOSTPROCESS_H

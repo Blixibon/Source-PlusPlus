@@ -67,12 +67,13 @@ typedef struct NewGameDef_s
 {
 	int m_BaseGame;
 	int m_GameMod;
+	bool m_bExpectPortals;
 	CGTSymbol m_PopSet;
+	CGTSymbol m_SkillConfig;
+
 	CCopyableUtlVector< FileNameHandle_t > m_SoundOverrides;
 
-	bool	m_bExpectPortals;
-
-	NewGameDef_s()
+	NewGameDef_s() : m_SkillConfig()
 	{
 		m_BaseGame = GAME_DEFAULT;
 		m_GameMod = GAME_DEFAULT;
@@ -187,6 +188,11 @@ public:
 	int		GetSoundOverrideScripts(CUtlStringList& scripts);
 	const char* GetPopulationSet() { return m_CurrentGame.m_PopSet.String(); }
 	bool WorldShouldExpectPortals() { return m_CurrentGame.m_bExpectPortals; }
+	void AppendSkillCommand(OUT_Z_CAP(maxLenInChars) char* pDest, int maxLenInChars);
+	template <size_t maxLenInChars> void AppendSkillCommand_safe(OUT_Z_ARRAY char(&pDest)[maxLenInChars])
+	{
+		AppendSkillCommand(pDest, (int)maxLenInChars);
+	}
 
 	const char* GetPopulationLocation() { return m_CurrentMap.m_PopulationPath.String(); }
 	const NewMapData_t& LookupMapData(const char* pszMapname) const;
@@ -258,6 +264,6 @@ private:
 
 };
 
-extern CGameTypeManager *g_pGameTypeSystem;
+extern CGameTypeManager *GameTypeSystem();
 
 #endif

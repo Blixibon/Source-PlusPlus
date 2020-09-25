@@ -16,6 +16,7 @@
 #include "vprof.h"
 #include "view.h"
 #include "vstdlib/ikeyvaluessystem.h"
+#include "usermessages.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -435,6 +436,8 @@ void CIconLesson::Init()
 	m_iFlags = LOCATOR_ICON_FX_NONE;
 	m_szCaptionColor = "255,255,255";// Default to white
 	m_szGlowColor = "255,255,255";
+
+	m_szHudHint = "";
 }
 
 //=========================================================
@@ -642,6 +645,15 @@ void CIconLesson::UpdateInactive()
 		else
 		{
 			m_fCurrentDistance = pLocalPlayer->EyePosition().DistTo(pIconTarget->WorldSpaceCenter());
+		}
+
+		if (m_szHudHint.String()[0] != '\0' && GetRoot()->IsLearned())
+		{
+			DevMsg("Showing hint\n");
+			CUtlBuffer msg_data;
+			msg_data.PutChar(1);
+			msg_data.PutString(m_szHudHint.String());
+			usermessages->DispatchUserMessage(usermessages->LookupUserMessage("KeyHintText"), bf_read(msg_data.Base(), msg_data.TellPut()));
 		}
 
 		m_fUpdateDistanceTime = gpGlobals->curtime + LESSON_DISTANCE_UPDATE_RATE;
@@ -993,8 +1005,9 @@ void CIconLesson::UpdateLocatorTarget(CLocatorTarget *pLocatorTarget, C_BaseEnti
 	LESSON_VARIABLE_MACRO( UPDATE_INTERVAL, m_fUpdateInterval, float )									\
 	LESSON_VARIABLE_MACRO_STRING( START_SOUND, m_szStartSound, CGameInstructorSymbol )					\
 																										\
-	LESSON_VARIABLE_MACRO_BOOL( ENTITY_GLOW, m_bEntityGlow, bool )									\
+	LESSON_VARIABLE_MACRO_BOOL( ENTITY_GLOW, m_bEntityGlow, bool )										\
 	LESSON_VARIABLE_MACRO_STRING( GLOW_COLOR, m_szGlowColor, CGameInstructorSymbol)						\
+	LESSON_VARIABLE_MACRO_STRING( HUD_HINT_AFTER_LEARNED, m_szHudHint, CGameInstructorSymbol )			\
 
 
 // Create keyvalues name symbol

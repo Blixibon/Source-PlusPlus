@@ -186,16 +186,16 @@ public:
 
 		//RemoveEffects(EF_NODRAW);
 
-		m_pViewModel = pModel;
+		//m_pViewModel = pModel;
 			
-		SetModelByIndex(iIndex);
+		/*SetModelByIndex(iIndex);
 		m_nSkin = iSkin;
-		m_nBody = iBody;
+		m_nBody = iBody;*/
 
-		FollowEntity(pModel, true);
-		InvalidateBoneCache();
+		/*FollowEntity(pModel, true);
+		InvalidateBoneCache();*/
 
-		DrawModel(iFlags);
+		InternalDrawModel(iFlags);
 
 		//StopFollowingEntity();
 		//SetModelByIndex(-1);
@@ -235,10 +235,11 @@ bool C_ViewHands::ShouldDraw()
 
 int C_ViewHands::DrawModel(int flags)
 {
-	if (view->GetCurrentlyDrawingEntity() != m_pViewModel)
-		return 0;
+	//if (view->GetCurrentlyDrawingEntity() != m_pViewModel)
+	//	return 0;
 
-	return BaseClass::DrawModel(flags);
+	//return BaseClass::DrawModel(flags);
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -340,33 +341,33 @@ void C_ViewHands::CalcBoneMerge(CStudioHdr * hdr, int boneMask, CBoneBitList & b
 
 LINK_ENTITY_TO_CLASS_CLIENTONLY(viewhands, C_ViewHands);
 
-static C_ViewHands *s_pViewHands[MAX_VIEWMODELS] = { nullptr };
-
-class CViewHandsHandler : public CAutoGameSystem
-{
-public:
-	CViewHandsHandler() : CAutoGameSystem("ViewHandsHandler")
-	{}
-
-	void LevelShutdownPostEntity()
-	{
-		for (int i = 0; i < MAX_VIEWMODELS; i++)
-		{
-			s_pViewHands[i] = nullptr;
-		}
-	}
-
-	void LevelInitPostEntity()
-	{
-		for (int i = 0; i < MAX_VIEWMODELS; i++)
-		{
-			s_pViewHands[i] = (C_ViewHands *)CreateEntityByName("viewhands");
-			s_pViewHands[i]->InitializeAsClientEntity(NULL, RENDER_GROUP_VIEW_MODEL_OPAQUE);
-		}
-	}
-};
-
-CViewHandsHandler g_ViewHandsCreator;
+//static C_ViewHands *s_pViewHands[MAX_VIEWMODELS] = { nullptr };
+//
+//class CViewHandsHandler : public CAutoGameSystem
+//{
+//public:
+//	CViewHandsHandler() : CAutoGameSystem("ViewHandsHandler")
+//	{}
+//
+//	void LevelShutdownPostEntity()
+//	{
+//		for (int i = 0; i < MAX_VIEWMODELS; i++)
+//		{
+//			s_pViewHands[i] = nullptr;
+//		}
+//	}
+//
+//	void LevelInitPostEntity()
+//	{
+//		for (int i = 0; i < MAX_VIEWMODELS; i++)
+//		{
+//			s_pViewHands[i] = (C_ViewHands *)CreateEntityByName("viewhands");
+//			s_pViewHands[i]->InitializeAsClientEntity(NULL, RENDER_GROUP_VIEW_MODEL_OPAQUE);
+//		}
+//	}
+//};
+//
+//CViewHandsHandler g_ViewHandsCreator;
 
 void C_BaseViewModel::FormatViewModelAttachment( int nAttachment, matrix3x4_t &attachmentToWorld )
 {
@@ -665,7 +666,64 @@ int C_BaseViewModel::DrawModel( int flags )
 	return ret;
 }
 
-int CBaseViewModel::GetHandModelData(int& iSkin, int& iBody)
+CStudioHdr* C_BaseViewModel::OnNewModel(void)
+{
+	CStudioHdr* hdr = BaseClass::OnNewModel();
+
+	if (hdr)
+	{
+		if (!m_pHands)
+		{
+			m_pHands = (C_ViewHands*)CreateEntityByName("viewhands");
+			m_pHands->InitializeAsClientEntity(NULL, RENDER_GROUP_VIEW_MODEL_OPAQUE);
+			m_pHands->SetOwnerEntity(this);
+			m_pHands->m_pViewModel = this;
+			m_pHands->FollowEntity(this, true);
+		}
+
+		/*if (LookupBone("ValveBiped.Bip01_R_Hand") < 0)
+		{
+			if (!m_pCSGO)
+			{
+				m_pCSGO = (C_ViewHands*)CreateEntityByName("viewhands");
+				m_pCSGO->InitializeAsClientEntity("models/weapons/tfa_csgo/c_hands_translator.mdl", RENDER_GROUP_OTHER);
+				m_pCSGO->SetOwnerEntity(this);
+				m_pCSGO->m_pViewModel = this;
+				m_pCSGO->FollowEntity(this, true);
+			}
+
+			m_pHands->FollowEntity(m_pCSGO, true);
+		}
+		else*/
+		{
+			m_pHands->FollowEntity(this, true);
+
+			/*if (m_pCSGO)
+			{
+				m_pCSGO->SUB_Remove();
+				m_pCSGO = nullptr;
+			}*/
+		}
+	}
+	else
+	{
+		if (m_pHands)
+		{
+			m_pHands->SUB_Remove();
+			m_pHands = nullptr;
+		}
+
+		/*if (m_pCSGO)
+		{
+			m_pCSGO->SUB_Remove();
+			m_pCSGO = nullptr;
+		}*/
+	}
+
+	return hdr;
+}
+
+int C_BaseViewModel::GetHandModelData(int& iSkin, int& iBody)
 {
 	if (GetWeapon())
 	{
@@ -680,12 +738,12 @@ int CBaseViewModel::GetHandModelData(int& iSkin, int& iBody)
 	return m_iHandsModelIndex.Get();
 }
 
-C_BaseAnimating* CBaseViewModel::GetHandsModel()
+C_BaseAnimating* C_BaseViewModel::GetHandsModel()
 {
-	return s_pViewHands[ViewModelIndex()];
+	return m_pHands;
 }
 
-float CBaseViewModel::GetWetness()
+float C_BaseViewModel::GetWetness()
 {
 	C_BasePlayer* pOwner = ToBasePlayer(GetOwner());
 	if (pOwner)
@@ -708,8 +766,8 @@ int C_BaseViewModel::InternalDrawModel( int flags )
 	pRenderContext->CullMode( MATERIAL_CULLMODE_CCW );
 
 	// Now draw the arms model
-	if (ret && s_pViewHands[ViewModelIndex()] != nullptr)
-		s_pViewHands[ViewModelIndex()]->DrawHands(this, flags);
+	if (ret && m_pHands != nullptr)
+		m_pHands->DrawHands(this, flags);
 
 	return ret;
 }
@@ -816,6 +874,21 @@ void C_BaseViewModel::OnDataChanged( DataUpdateType_t updateType )
 {
 	SetPredictionEligible( true );
 	BaseClass::OnDataChanged(updateType);
+
+	if (m_pHands && GetModelPtr())
+	{
+		int iSkin, iBody;
+		int iIndex = GetHandModelData(iSkin, iBody);
+
+		if (iIndex != -1)
+		{
+			m_pHands->SetModelByIndex(iIndex);
+			m_pHands->m_nBody = iBody;
+			m_pHands->m_nSkin = iSkin;
+
+			m_pHands->FollowEntity(this, true);
+		}
+	}
 }
 
 void C_BaseViewModel::PostDataUpdate( DataUpdateType_t updateType )

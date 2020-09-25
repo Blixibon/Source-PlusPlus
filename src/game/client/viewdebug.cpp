@@ -581,18 +581,20 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CNewViewSetup &view )
 
 	if ( mat_showwatertextures.GetBool() )
 	{
+#ifdef PORTAL
+		float w = mat_wateroverlaysize.GetFloat();
+		float h = mat_wateroverlaysize.GetFloat();
+		g_pPortalRender->OverlayPortalRenderTargets(w, h);
+#else
 		OverlayWaterTextures();
+#endif
 	}
 
 	if ( mat_showcamerarendertarget.GetBool() )
 	{
 		float w = mat_wateroverlaysize.GetFloat();
 		float h = mat_wateroverlaysize.GetFloat();
-#ifdef PORTAL
-		g_pPortalRender->OverlayPortalRenderTargets( w, h );
-#else
 		OverlayCameraRenderTarget( "debug/debugcamerarendertarget", 0, 0, w, h );
-#endif
 	}
 
 	if ( mat_showframebuffertexture.GetBool() )

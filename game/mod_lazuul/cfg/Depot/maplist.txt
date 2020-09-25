@@ -1,0 +1,8 @@
+@optset:disablelocalshadows:1
+@location:wasteland
+@chapter:1
+depot_01
+@chapter:2
+depot_02
+@chapter:-3
+depot_background01

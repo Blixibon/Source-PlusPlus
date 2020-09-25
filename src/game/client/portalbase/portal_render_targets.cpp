@@ -226,7 +226,8 @@ void CPortalRenderTargets::ShutdownClientRenderTargets()
 	BaseClass::ShutdownClientRenderTargets();
 }
 
-
+#ifndef HL2_LAZUL
 static CPortalRenderTargets g_PortalRenderTargets;
-EXPOSE_SINGLE_INTERFACE_GLOBALVAR( CPortalRenderTargets, IClientRenderTargets, CLIENTRENDERTARGETS_INTERFACE_VERSION, g_PortalRenderTargets );
+EXPOSE_SINGLE_INTERFACE_GLOBALVAR(CPortalRenderTargets, IClientRenderTargets, CLIENTRENDERTARGETS_INTERFACE_VERSION, g_PortalRenderTargets);
 CPortalRenderTargets* portalrendertargets = &g_PortalRenderTargets;
+#endif // !HL2_LAZUL

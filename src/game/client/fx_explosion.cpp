@@ -178,6 +178,15 @@ void C_BaseExplosionEffect::Create( const Vector &position, float force, float s
 	m_fFlags	= flags;
 	m_flScale = scale;
 
+	//if explosion is an ice explosion skip all the other stuff and draw a particle system
+	if (m_fFlags & TE_EXPLFLAG_ICE)
+	{
+		//QAngle	vecAngles;
+		//DispatchParticleEffect( "freeze_explosion", m_vecOrigin , vecAngles );
+		PlaySound();
+		return;
+	}
+
 	//Find the force of the explosion
 	GetForceDirection( m_vecOrigin, force, &m_vecDirection, &m_flForce );
 
@@ -732,6 +741,12 @@ void C_BaseExplosionEffect::PlaySound( void )
 		return;
 
 	CLocalPlayerFilter filter;
+	if (m_fFlags & TE_EXPLFLAG_ICE)
+	{
+		C_BaseEntity::EmitSound(filter, SOUND_FROM_WORLD, "explode_3", &m_vecOrigin);
+		return;
+	}
+
 	C_BaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "BaseExplosionEffect.Sound", &m_vecOrigin );
 }
 

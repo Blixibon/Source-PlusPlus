@@ -74,6 +74,7 @@ enum view_id_t
 	VIEW_INTRO_CAMERA = 6,
 	VIEW_SHADOW_DEPTH_TEXTURE = 7,
 	VIEW_SSAO = 8,
+	VIEW_SSAO_MONITOR,
 	VIEW_WATER_INTERSECTION,
 	VIEW_GLASS_REFLECTION,
 
@@ -467,6 +468,7 @@ protected:
 	void			ViewDrawScene_Intro(const CNewViewSetup &view, int nClearFlags, const IntroData_t &introData);
 
 	void			DrawMonitors( const CNewViewSetup &cameraView );
+	void			DrawWeaponTargets(const CNewViewSetup& mainView);
 
 	void			SSAO_DepthPass( const CNewViewSetup &viewSet );
 	void			SSAO_DrawResults();
@@ -509,7 +511,7 @@ protected:
 	void			CleanupMain3DView( const CNewViewSetup &view );
 
 	void			UpdateCascadedShadow( const CNewViewSetup &view );
-	void			UpdateSSAODepth(const CNewViewSetup& view);
+	void			UpdateSSAODepth(const CNewViewSetup& view, view_id_t viewID);
 
 	// This stores the current view
  	CNewViewSetup		m_CurrentView;

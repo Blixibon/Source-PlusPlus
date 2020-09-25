@@ -1,0 +1,5 @@
+"chapters"
+{
+	1	"thecitizen_bg1"
+	2	"thecitizen_bg2"
+}

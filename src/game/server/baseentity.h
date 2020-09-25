@@ -89,6 +89,7 @@ class CSkyCamera;
 class CEntityMapData;
 class INextBot;
 class IHasAttributes;
+class CWorld;
 
 typedef CUtlVector< CBaseEntity* > EntityList_t;
 
@@ -1045,7 +1046,7 @@ public:
 	virtual INextBot		*MyNextBotPointer( void ) { return NULL; }
 	virtual float			GetDelay( void ) { return 0; }
 	virtual bool			IsMoving( void );
-	bool					IsWorld() { return entindex() == 0; }
+	bool					IsWorld() const { extern CWorld* g_WorldEntity; return (void*)this == (void*)g_WorldEntity; } // Ported from the Alien Swarm SDK to fix false IsWorld() positives on server-only entities
 	virtual char const		*DamageDecal( int bitsDamageType, int gameMaterial );
 	virtual void			DecalTrace( trace_t *pTrace, char const *decalName );
 	virtual void			ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName = NULL );

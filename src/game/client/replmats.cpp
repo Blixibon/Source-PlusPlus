@@ -33,6 +33,7 @@ static const char * const pszShaderReplaceDict[][2] = {
 	///*
 #ifndef DEFERRED
 	"VertexLitGeneric",			"PP_VertexLitGeneric",
+	//"UnlitGeneric",				"PP_UnlitGeneric",
 	"LightmappedGeneric",		"PP_LightmappedGeneric",
 	"WorldVertexTransition",	"PP_WorldVertexTransition",
 #if defined(HL1_CLIENT_DLL) || defined(HL2_LAZUL)
@@ -49,7 +50,7 @@ static const char * const pszShaderReplaceDict[][2] = {
 	"ShadowBuild",				"PP_ShadowBuild",
 	"ShadowModel",				"PP_ShadowModel",
 	"Water",					"PP_Water",
-	"TEMP",						"PP_TEMP",
+	"Core",						"PP_Core",
 
 	"Cable",					"PP_SplineRope"
 };

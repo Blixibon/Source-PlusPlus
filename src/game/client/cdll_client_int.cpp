@@ -87,6 +87,7 @@
 #include "ihudlcd.h"
 #include "toolframework_client.h"
 #include "hltvcamera.h"
+#include "gameui/modinfo.h"
 #if defined( REPLAY_ENABLED )
 #include "replay/replaycamera.h"
 #include "replay/replay_ragdoll.h"
@@ -977,6 +978,8 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	InitFbx();
 #endif
+
+	ModInfo().LoadCurrentGameInfo();
 
 	if ((spp_utils_module = filesystem->LoadModule("spp_utils" DLL_EXT_STRING, "sharedbin", false)) == NULL)
 		return false;

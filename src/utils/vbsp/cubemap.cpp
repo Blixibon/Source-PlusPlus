@@ -18,6 +18,7 @@
 #include "materialsystem/imaterialsystem.h"
 #include "materialsystem/imaterial.h"
 #include "materialsystem/imaterialvar.h"
+#include "gamebspfile.h"
 
 
 /*
@@ -1020,4 +1021,48 @@ void Cubemap_AddUnreferencedCubemaps()
 			strcpy( s_DefaultCubemapNames[id], pFileName );
 		}
 	}
+}
+
+BEGIN_BYTESWAP_DATADESC(CubemapParallaxLump_t)
+DEFINE_FIELD(x, FIELD_INTEGER),
+DEFINE_FIELD(y, FIELD_INTEGER),
+DEFINE_FIELD(z, FIELD_INTEGER),
+DEFINE_FIELD(parallaxOBB, FIELD_VMATRIX),
+END_BYTESWAP_DATADESC();
+
+void Cubemap_WriteParallaxInfo()
+{
+	static CUtlVectorFixed<CubemapParallaxLump_t, MAX_MAP_CUBEMAPSAMPLES> s_ParallaxInfo;
+	s_ParallaxInfo.Purge();
+
+	for (int i = 0; i < g_nCubemapSamples; i++)
+	{
+		matrix3x4_t invObbMatrix;
+		if (sscanf(g_pParallaxObbStrs[i], "[%f %f %f %f %f %f %f %f %f %f %f %f 0 0 0 1]", &invObbMatrix[0][0],
+			&invObbMatrix[0][1], &invObbMatrix[0][2], &invObbMatrix[0][3], &invObbMatrix[1][0],
+			&invObbMatrix[1][1], &invObbMatrix[1][2], &invObbMatrix[1][3], &invObbMatrix[2][0],
+			&invObbMatrix[2][1], &invObbMatrix[2][2], &invObbMatrix[2][3]) > 0)
+		{
+			auto& info = s_ParallaxInfo[s_ParallaxInfo.AddToHead()];
+			info.x = g_CubemapSamples[i].origin[0];
+			info.y = g_CubemapSamples[i].origin[1];
+			info.z = g_CubemapSamples[i].origin[2];
+			info.parallaxOBB.Init(invObbMatrix);
+		}
+	}
+
+	GameLumpHandle_t handle = g_GameLumps.GetGameLumpHandle(GAMELUMP_CUBEMAP_PARALLAX);
+	if (handle != g_GameLumps.InvalidGameLump())
+		g_GameLumps.DestroyGameLump(handle);
+
+	if (!s_ParallaxInfo.Count())
+		return;
+
+	size_t size = sizeof(CubemapParallaxLump_t) * s_ParallaxInfo.Count();
+
+	handle = g_GameLumps.CreateGameLump(GAMELUMP_CUBEMAP_PARALLAX, size, 0, GAMELUMP_CUBEMAP_PARALLAX_VERSION);
+
+	// Serialize the data
+	CUtlBuffer buf(g_GameLumps.GetGameLump(handle), size);
+	buf.PutObjects(s_ParallaxInfo.Base(), s_ParallaxInfo.Count());
 }

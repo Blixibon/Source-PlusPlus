@@ -87,6 +87,7 @@ DEFINE_FALLBACK_SHADER( DepthOfField, DepthOfField_dx9 )
 BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
 	BEGIN_SHADER_PARAMS
 		SHADER_PARAM( SMALLFB, SHADER_PARAM_TYPE_TEXTURE, "_rt_SmallFB1", "Downsampled backbuffer" )
+		SHADER_PARAM(DEPTHTEXTURE, SHADER_PARAM_TYPE_TEXTURE, "_rt_ResolvedFullFrameDepth", "")
 		SHADER_PARAM( NEARPLANE, SHADER_PARAM_TYPE_FLOAT, "0", "Near plane depth" )
 		SHADER_PARAM( FARPLANE,  SHADER_PARAM_TYPE_FLOAT, "0", "Far plane depth" )
 		SHADER_PARAM( NEARBLURDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Near blur plane depth" )
@@ -132,6 +133,10 @@ BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
 		{
 			LoadTexture( SMALLFB );
 		}
+		if (params[DEPTHTEXTURE]->IsDefined())
+		{
+			LoadTexture(DEPTHTEXTURE);
+		}
 	}
 
 	SHADER_DRAW
@@ -144,6 +149,8 @@ BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, false );
 			pShaderShadow->EnableTexture( SHADER_SAMPLER1, true );
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, false );
+			pShaderShadow->EnableTexture(SHADER_SAMPLER2, true);
+			pShaderShadow->EnableSRGBRead(SHADER_SAMPLER2, false);
 			pShaderShadow->EnableSRGBWrite( false );
 
 			DECLARE_STATIC_VERTEX_SHADER( depth_of_field_vs20 );
@@ -171,6 +178,7 @@ BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
 			// Bind textures
 			BindTexture( SHADER_SAMPLER0, BASETEXTURE );
 			BindTexture( SHADER_SAMPLER1, SMALLFB );
+			BindTexture(SHADER_SAMPLER2, DEPTHTEXTURE);
 
 			// near blur = blur of stuff in front of focus range
 			// far blur = blur of stuff behind focus range
@@ -200,7 +208,7 @@ BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
 			vConst[9] = params[FARPLANE]->GetFloatValue();
 			
 			// 8192 is the magic number for HDR mode 3 (see FLOAT_RENDERPARM_DEST_ALPHA_DEPTH_SCALE in shaderapidx8.cpp)
-			vConst[10] = 1024 * ( vConst[9] - vConst[8] ) / vConst[9]; 
+			vConst[10] = 4000.0f * ( vConst[9] - vConst[8] ) / vConst[9];
 
 			vConst[12] = vConst[10] / ( vConst[0] - vConst[1] );
 			vConst[13] = ( vConst[8] - vConst[1] ) / ( vConst[0] - vConst[1] );

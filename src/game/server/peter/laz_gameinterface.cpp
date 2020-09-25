@@ -60,7 +60,7 @@ public:
 
 void CServerGameDLL::LevelInit_ParseAllEntities(const char* pMapEntities)
 {
-	if (g_pGameTypeSystem->GetCurrentBaseGameType() == MOD_BMS)
+	if (GameTypeSystem()->GetCurrentBaseGameType() == MOD_BMS)
 	{
 		CBlackMesaWeaponsFilter filter;
 		MapEntity_ParseAllEntities(pMapEntities, &filter);

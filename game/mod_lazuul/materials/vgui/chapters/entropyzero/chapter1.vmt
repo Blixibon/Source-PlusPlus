@@ -1,0 +1,6 @@
+"UnlitGeneric"
+{
+	"$basetexture" "vgui/chapters/entropyzero/chapter1"
+  "$vertexalpha" 1
+	"$ignorez" "1"
+}

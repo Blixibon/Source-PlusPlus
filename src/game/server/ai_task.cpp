@@ -43,6 +43,7 @@ const char * g_ppszTaskFailureText[] =
 	"Route Destination No Longer Valid",             // FAIL_BAD_PATH_GOAL
 	"Stuck on top of something",                     // FAIL_STUCK_ONTOP
 	"Item has been taken",		                     // FAIL_ITEM_TAKEN
+	"Too frozen",									 // FAIL_FROZEN
 };
 
 const char *TaskFailureToString( AI_TaskFailureCode_t code )

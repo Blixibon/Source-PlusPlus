@@ -46,4 +46,11 @@ particles_manifest
 	"file"		"particles/grenade_fx.pcf"
 	"file"		"particles/rocket_fx.pcf"	
 	"file"		"particles/impact_fx.pcf"		
+	
+	// Depot Mod
+	"file"		"particles/wastelandwind.pcf"
+	
+	// Missing Information particles
+	"file"		"particles/missinginformation.pcf"
+	"file"		"particles/mi_extinguisher.pcf"
 }

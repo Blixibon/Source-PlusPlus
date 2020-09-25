@@ -20,6 +20,17 @@ public:
 	DECLARE_CLASS( C_PointCamera, C_BaseEntity );
 	DECLARE_CLIENTCLASS();
 
+	struct DOFControlSettings_t
+	{
+		// Near plane
+		float	flNearBlurDepth;
+		float	flNearBlurRadius;
+		float	flNearFocusDistance;
+		// Far plane
+		float	flFarBlurDepth;
+		float	flFarBlurRadius;
+		float	flFarFocusDistance;
+	};
 public:
 	C_PointCamera();
 	~C_PointCamera();
@@ -37,6 +48,7 @@ public:
 	float			GetFogMaxDensity();
 	float			GetFogEnd();
 	bool			UseScreenAspectRatio() const { return m_bUseScreenAspectRatio; }
+	bool			GetDOF(DOFControlSettings_t& dof);
 
 	virtual void	GetToolRecordingState( KeyValues *msg );
 
@@ -50,6 +62,13 @@ private:
 	float m_flFogMaxDensity;
 	bool m_bActive;
 	bool m_bUseScreenAspectRatio;
+	bool  m_bDOFEnabled;
+	float m_flNearBlurDepth;
+	float m_flNearFocusDepth;
+	float m_flFarFocusDepth;
+	float m_flFarBlurDepth;
+	float m_flNearBlurRadius;
+	float m_flFarBlurRadius;
 
 public:
 	C_PointCamera	*m_pNext;

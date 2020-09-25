@@ -72,6 +72,7 @@ RecvPropArray3(RECVINFO_ARRAY(m_hLocatorEntities), RecvPropEHandle(RECVINFO(m_hL
 RecvPropArray3(RECVINFO_ARRAY(m_vLocatorPositions), RecvPropVector(RECVINFO(m_vLocatorPositions[0]))),
 RecvPropArray3(RECVINFO_ARRAY(m_iLocatorContactType), RecvPropInt(RECVINFO(m_iLocatorContactType[0]))),
 RecvPropFloat(RECVINFO(m_flLocatorRange)),
+RecvPropArray3(RECVINFO_ARRAY(m_hSetOfManhacks), RecvPropEHandle(RECVINFO(m_hSetOfManhacks[0]))),
 END_RECV_TABLE()
 
 BEGIN_RECV_TABLE(C_Laz_Player, DT_Laz_Player)
@@ -89,6 +90,8 @@ RecvPropVector(RECVINFO(m_vecLadderNormal), SPROP_NORMAL),
 
 RecvPropBool(RECVINFO(m_bInAutoMovement)),
 RecvPropQAngles(RECVINFO(m_angAutoMoveAngles)),
+
+RecvPropEHandle(RECVINFO(m_hCurrentManhack)),
 END_RECV_TABLE();
 
 BEGIN_PREDICTION_DATA(C_Laz_Player)
@@ -561,6 +564,33 @@ void C_Laz_Player::TurnOffTauntCam(void)
 	}
 }
 
+C_NPC_Manhack* C_Laz_Player::GetCurrentManhack()
+{
+	return static_cast<C_NPC_Manhack*> (m_hCurrentManhack.Get());
+}
+
+int C_Laz_Player::GetManhackCount()
+{
+	if (IsLocalPlayer())
+	{
+		int numberOfHacks = 0;
+
+		for (int i = 0; i < NUMBER_OF_CONTROLLABLE_MANHACKS; i++)
+		{
+			if (m_LazLocal.m_hSetOfManhacks[i] != NULL)
+			{
+				numberOfHacks++;
+			}
+		}
+
+		return numberOfHacks;
+	}
+	else
+	{
+		return (GetCurrentManhack() != nullptr) ? 1 : 0;
+	}
+}
+
 void C_Laz_Player::HandleTaunting(void)
 {
 	C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
@@ -1010,7 +1040,7 @@ int C_Laz_Player::DrawModel(int flags)
 	if (IsRenderingMyFlashlight())
 		return 0;
 
-	if (IsLocalPlayer() && ShouldDoPortalRenderCulling())
+	if (IsLocalPlayer() /*&& ShouldDoPortalRenderCulling()*/)
 	{
 		if (!C_BasePlayer::ShouldDrawLocalPlayer())
 		{

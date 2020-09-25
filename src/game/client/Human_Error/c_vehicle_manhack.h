@@ -16,6 +16,7 @@
 #include "ammodef.h"
 #include <vgui_controls/Controls.h>
 #include "colorcorrectionmgr.h"
+#include "c_npc_manhack.h"
 
 
 //-----------------------------------------------------------------------------
@@ -92,15 +93,16 @@ private:
 	CHandle<C_BasePlayer>	m_hPlayer;
 	CHandle<C_BasePlayer>	m_hPrevPlayer;
 	CHandle<C_BaseEntity>	m_hTarget;
+	CHandle<C_NPC_Manhack>	m_hManhack;
 
 	int						m_iTargetType;
 
 	bool					m_bEnterAnimOn;
 	bool					m_bExitAnimOn;
 	Vector					m_vecEyeExitEndpoint;
-	Vector					m_vecManhackEye;
+	//Vector					m_vecManhackEye;
 	Vector					m_vecFlyingDirection;
-	QAngle					m_angManhackEye;
+	//QAngle					m_angManhackEye;
 
 	ViewSmoothingData_t		m_ViewSmoothingData;
 

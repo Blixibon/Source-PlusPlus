@@ -1,0 +1,9 @@
+"chapters"
+{
+	1	"borealis_background"
+//OTHER BACKGROUNDS DISABLED BECAUSE THEY WERE STUPID
+//	2	"depot_background"
+//	3	"under_background"
+//	4	"terminal_background"
+//	5	"background" //BEFORE BETA BACKGROUND, uncomment to use.
+}

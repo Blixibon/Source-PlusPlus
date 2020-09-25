@@ -1,6 +1,85 @@
 #include "shader_data_system.h"
 #include "callqueue.h"
 #include "materialsystem/imaterialsystem.h"
+#include "cdll_int.h"
+#include "utlbuffer.h"
+#include "gamebspfile.h"
+#include "materialsystem/itexture.h"
+
+CShaderDataExtension::CShaderDataExtension() : m_ParallaxTextureCache(DefLessFunc(ITexture *))
+{
+}
+
+void CShaderDataExtension::LevelLoad(char const* pMapName, IVEngineClient* engine)
+{
+	int iVersion = engine->GameLumpVersion(GAMELUMP_CUBEMAP_PARALLAX);
+	if (iVersion == GAMELUMP_CUBEMAP_PARALLAX_VERSION)
+	{
+		size_t nSize = engine->GameLumpSize(GAMELUMP_CUBEMAP_PARALLAX);
+		if (nSize > 0)
+		{
+			int iCount = nSize / sizeof(CubemapParallaxLump_t);
+			CubemapParallaxLump_t* pData = new CubemapParallaxLump_t[iCount];
+			if (engine->LoadGameLump(GAMELUMP_CUBEMAP_PARALLAX, pData, nSize))
+			{
+				for (int i = 0; i < iCount; i++)
+				{
+					auto& data = m_ParallaxData[m_ParallaxData.AddToHead()];
+					data.matOBB = pData[i].parallaxOBB;
+					data.vecOrigin.Init(pData[i].x, pData[i].y, pData[i].z);
+				}
+			}
+
+			delete[] pData;
+		}
+	}
+}
+
+void CShaderDataExtension::LevelClose()
+{
+	m_ParallaxData.Purge();
+	m_ParallaxTextureCache.Purge();
+}
+
+const cubemapParallaxData_t* CShaderDataExtension::GetCubemapParallax(ITexture* pEnvmap)
+{
+	if (!m_ParallaxData.Count())
+		return nullptr;
+
+	int iIndex = -1;
+	if (!IsErrorTexture(pEnvmap))
+	{
+		unsigned short sMap = m_ParallaxTextureCache.Find(pEnvmap);
+		if (m_ParallaxTextureCache.IsValidIndex(sMap))
+		{
+			iIndex = m_ParallaxTextureCache.Element(sMap);
+		}
+		else
+		{
+			int x, y, z;
+			const char* pszTextureName = V_UnqualifiedFileName(pEnvmap->GetName());
+			if (sscanf(pszTextureName, "c%d_%d_%d", &x, &y, &z) == 3)
+			{
+				Vector vecTest(x, y, z);
+				for (int i = 0; i < m_ParallaxData.Count(); i++)
+				{
+					if (VectorsAreEqual(vecTest, m_ParallaxData[i].vecOrigin, FLT_EPSILON))
+					{
+						iIndex = i;
+						break;
+					}
+				}
+			}
+
+			m_ParallaxTextureCache.Insert(pEnvmap, iIndex);
+		}
+	}
+
+	if (iIndex < 0)
+		return nullptr;
+
+	return &m_ParallaxData[iIndex];
+}
 
 void CShaderDataExtension::SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t state)
 {
