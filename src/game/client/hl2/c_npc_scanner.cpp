@@ -69,7 +69,7 @@ void C_NPC_CScanner::AddEntity()
 		if (m_pSpotLight == nullptr)
 		{
 			// Turned on the headlight; create it.
-			m_pSpotLight = new CSpotlightEffect();
+			m_pSpotLight = new CSpotlightEffect(true, 0.8f);
 
 			if (m_pSpotLight == nullptr)
 				return;

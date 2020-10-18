@@ -397,6 +397,9 @@ namespace ResponseRules
 		virtual bool FindBestResponse( const CriteriaSet& set, CRR_Response& response, IResponseFilter *pFilter = NULL ) = 0;
 		virtual void GetAllResponses( CUtlVector<CRR_Response> *pResponses ) = 0;
 		virtual void PrecacheResponses( bool bEnable ) = 0;
+
+		virtual bool InitScript() = 0;
+		virtual void TermScript() = 0;
 	};
 
 

@@ -56,9 +56,10 @@ public:
 #else
 	virtual int				GetWeaponRenderTargetCount() { return 1; }
 	virtual bool			GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView);
-	virtual void			WeaponRT_StartRender3D(int iWhich);
-	virtual void			WeaponRT_FinishRender3D(int iWhich);
-	virtual void			WeaponRT_StartRender2D(int iWhich);
+	virtual void			WeaponRT_StartRender3D(int iWhich, const weaponrendertarget_t& data);
+	virtual void			WeaponRT_FinishRender3D(int iWhich, const weaponrendertarget_t& data);
+	virtual void			WeaponRT_StartRender2D(int iWhich, const weaponrendertarget_t& data);
+	virtual void			WeaponRT_FinishRender2D(int iWhich, const weaponrendertarget_t& data);
 #endif
 	bool			HasNPCManhack();
 	bool			HasFreeSlot();

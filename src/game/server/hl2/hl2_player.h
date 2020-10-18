@@ -265,7 +265,7 @@ public:
 
 	LadderMove_t		*GetLadderMove() { return &m_HL2Local.m_LadderMove; }
 	virtual void		ExitLadder();
-	virtual surfacedata_t *GetLadderSurface( const Vector &origin );
+	virtual surfacedataall_t GetLadderSurface( const Vector &origin );
 
 	virtual void EquipSuit( bool bPlayEffects = true );
 	virtual void RemoveSuit( void );

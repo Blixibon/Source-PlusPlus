@@ -1,0 +1,19 @@
+"LightShafts"
+{
+	"$intensity" "1"
+	"$cookieTexture" "dummy"
+	"$shadowDepthTexture" "dummy"
+	"$noisetexture"		"effects/noise_rg"
+
+	"$time" "0.0"
+	"Proxies"
+	{
+		"CurrentTime"
+		{
+			"resultVar" "$time"
+		}
+
+		"LightShafts"
+		{}
+	}
+}

@@ -471,8 +471,10 @@ bool CWeapon_Manhack::GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& da
 	if (iWhich == 0 && pPlayer)
 	{
 		ITexture *pTexture = lazulrendertargets->GetManhackScreenTexture();
-		data.m_pRenderTarget = pTexture;
+		if (!pTexture)
+			return false;
 
+		data.m_pRenderTarget = pTexture;
 		CNewViewSetup View = mainView;
 		View.x = 0;
 		View.y = 0;
@@ -506,7 +508,7 @@ bool CWeapon_Manhack::GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& da
 }
 
 RenderMode_t g_ManhackSavedRenderMode = kRenderNormal;
-void CWeapon_Manhack::WeaponRT_StartRender3D(int iWhich)
+void CWeapon_Manhack::WeaponRT_StartRender3D(int iWhich, const weaponrendertarget_t& data)
 {
 	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
 	if (iWhich == 0 && pPlayer && pPlayer->GetCurrentManhack())
@@ -514,23 +516,36 @@ void CWeapon_Manhack::WeaponRT_StartRender3D(int iWhich)
 		C_NPC_Manhack* pManhack = pPlayer->GetCurrentManhack();
 		g_ManhackSavedRenderMode = pManhack->GetRenderMode();
 		pManhack->SetRenderMode(kRenderNone);
+		pManhack->SupressGlows(true);
 	}
 }
-void CWeapon_Manhack::WeaponRT_FinishRender3D(int iWhich)
+void CWeapon_Manhack::WeaponRT_FinishRender3D(int iWhich, const weaponrendertarget_t& data)
 {
 	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
 	if (iWhich == 0 && pPlayer && pPlayer->GetCurrentManhack())
 	{
 		C_NPC_Manhack* pManhack = pPlayer->GetCurrentManhack();
 		pManhack->SetRenderMode(g_ManhackSavedRenderMode);
+		pManhack->SupressGlows(false);
 	}
 }
-void CWeapon_Manhack::WeaponRT_StartRender2D(int iWhich)
+void CWeapon_Manhack::WeaponRT_StartRender2D(int iWhich, const weaponrendertarget_t& data)
 {
 	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
 	if (iWhich == 0 && pPlayer)
 	{
-		GetManhackScreen()->SetManhackData(m_iManhackDistance, pPlayer->GetManhackCount());
+		GetManhackScreen()->SetManhackData(m_iManhackDistance, pPlayer->GetManhackCount(), pPlayer->GetCurrentManhack());
+		GetManhackScreen()->SetManhackView(data.m_View);
+		GetManhackScreen()->SetVisible(true);
+		GetManhackScreen()->MakeReadyForUse();
+	}
+}
+void CWeapon_Manhack::WeaponRT_FinishRender2D(int iWhich, const weaponrendertarget_t& data)
+{
+	C_Laz_Player* pPlayer = ToLazuulPlayer(GetOwner());
+	if (iWhich == 0 && pPlayer)
+	{
+		GetManhackScreen()->SetVisible(false);
 	}
 }
 #endif // !CLIENT_DLL
@@ -615,11 +630,6 @@ void CWeapon_Manhack::WeaponIdle( void )
 
 void CWeapon_Manhack::EnableManhackSubModel(bool bEnable)
 {
-	//SetBodygroup( 0, bEnable );
-	if (bEnable)
-		DevMsg("weapon_manhack: enabling manhack submodel\n");
-	else
-		DevMsg("weapon_manhack: disabling manhack: submodel\n");
 }
 
 bool CWeapon_Manhack::Deploy( void )

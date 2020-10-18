@@ -672,7 +672,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	if (!spp_utils->Connect(appSystemFactory))
 		return false;
 
-	if (!spp_utils->InitServer(appSystemFactory, Sys_GetFactoryThis(), pGlobals, usermessages))
+	if (!spp_utils->InitServer(appSystemFactory, physicsFactory, Sys_GetFactoryThis(), pGlobals, usermessages))
 		return false;
 
 	if (!CommandLine()->CheckParm("-noscripting"))
@@ -759,7 +759,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 	IGameSystem::Add( SoundEmitterSystem() );
 
 #ifdef HL2_DLL
-	IGameSystem::Add(g_pPlayerModels);
+	IGameSystem::Add(PlayerModelSystem());
 #endif
 
 	// load Mod specific game events ( MUST be before InitAllSystems() so it can pickup the mod specific events)

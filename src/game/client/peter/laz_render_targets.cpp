@@ -30,6 +30,17 @@ ITexture* CLazRenderTargets::CreateCameraScreenTexture(IMaterialSystem* pMateria
 
 }
 
+ITexture* CLazRenderTargets::CreatePreciseFullFrameDepthTexture(IMaterialSystem* pMaterialSystem)
+{
+	return pMaterialSystem->CreateNamedRenderTargetTextureEx2(
+		"_rt_PreciseFullFrameDepth",
+		0, 0, RT_SIZE_FULL_FRAME_BUFFER,
+		IMAGE_FORMAT_R32F,
+		MATERIAL_RT_DEPTH_SHARED,
+		TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT,
+		0);
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Called by the engine in material system init and shutdown.
 //			Clients should override this in their inherited version, but the base
@@ -41,6 +52,7 @@ void CLazRenderTargets::InitClientRenderTargets(IMaterialSystem* pMaterialSystem
 {
 	m_ManhackScreenTexture.Init(CreateManhackScreenTexture(pMaterialSystem));
 	m_CameraScreenTexture.Init(CreateCameraScreenTexture(pMaterialSystem));
+	m_PreciseDepthTexture.Init(CreatePreciseFullFrameDepthTexture(pMaterialSystem));
 
 	// Water effects & camera from the base class (standard HL2 targets) 
 	BaseClass::InitClientRenderTargets(pMaterialSystem, pHardwareConfig);	//TERO: not sure if we need this
@@ -55,6 +67,7 @@ void CLazRenderTargets::ShutdownClientRenderTargets()
 {
 	m_ManhackScreenTexture.Shutdown();
 	m_CameraScreenTexture.Shutdown();
+	m_PreciseDepthTexture.Shutdown();
 
 	// Clean up standard HL2 RTs (camera and water) 
 	BaseClass::ShutdownClientRenderTargets();
@@ -68,6 +81,11 @@ ITexture* CLazRenderTargets::GetManhackScreenTexture()
 ITexture* CLazRenderTargets::GetCameraScreenTexture()
 {
 	return m_CameraScreenTexture;
+}
+
+ITexture* CLazRenderTargets::GetPreciseFullFrameDepthTexture()
+{
+	return m_PreciseDepthTexture;
 }
 
 static CLazRenderTargets g_LazRenderTargets;

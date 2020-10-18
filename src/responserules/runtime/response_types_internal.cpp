@@ -12,8 +12,7 @@
 
 using namespace ResponseRules;
 
-
-
+IMPLEMENT_PRIVATE_SYMBOLTYPE(CRR_VScriptSymbol);
 
 ResponseRulePartition::ResponseRulePartition()
 {

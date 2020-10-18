@@ -65,15 +65,15 @@ int	g_interactionHoundeyeGroupRalley					= 0;
 //=========================================================
 enum 
 {
-	TASK_HOUND_CLOSE_EYE = LAST_SHARED_TASK,
-	TASK_HOUND_OPEN_EYE,
-	TASK_HOUND_THREAT_DISPLAY,
-	TASK_HOUND_FALL_ASLEEP,
-	TASK_HOUND_WAKE_UP,
-	TASK_HOUND_HOP_BACK,
+	TASK_HOUND_BMS_CLOSE_EYE = LAST_SHARED_TASK,
+	TASK_HOUND_BMS_OPEN_EYE,
+	TASK_HOUND_BMS_THREAT_DISPLAY,
+	TASK_HOUND_BMS_FALL_ASLEEP,
+	TASK_HOUND_BMS_WAKE_UP,
+	TASK_HOUND_BMS_HOP_BACK,
 
-	TASK_HOUND_GET_PATH_TO_CIRCLE,
-	TASK_HOUND_REVERSE_STRAFE_DIR,
+	TASK_HOUND_BMS_GET_PATH_TO_CIRCLE,
+	TASK_HOUND_BMS_REVERSE_STRAFE_DIR,
 };
 
 //-----------------------------------------------------------------------------
@@ -81,9 +81,9 @@ enum
 //-----------------------------------------------------------------------------
 enum Houndeye_Conds
 {
-	COND_HOUND_GROUP_ATTACK = LAST_SHARED_CONDITION,
-	COND_HOUND_GROUP_RETREAT,
-	COND_HOUND_GROUP_RALLEY,
+	COND_HOUND_BMS_GROUP_ATTACK = LAST_SHARED_CONDITION,
+	COND_HOUND_BMS_GROUP_RETREAT,
+	COND_HOUND_BMS_GROUP_RALLEY,
 };
 
 //=========================================================
@@ -91,17 +91,17 @@ enum Houndeye_Conds
 //=========================================================
 enum
 {
-	SCHED_HOUND_AGITATED = LAST_SHARED_SCHEDULE,
-	SCHED_HOUND_HOP_RETREAT,
-	SCHED_HOUND_RANGE_ATTACK1,
+	SCHED_HOUND_BMS_AGITATED = LAST_SHARED_SCHEDULE,
+	SCHED_HOUND_BMS_HOP_RETREAT,
+	SCHED_HOUND_BMS_RANGE_ATTACK1,
 
-	SCHED_HOUND_ATTACK_STRAFE,
-	SCHED_HOUND_ATTACK_STRAFE_REVERSE,
-	SCHED_HOUND_GROUP_ATTACK,
-	SCHED_HOUND_GROUP_RETREAT,
-	SCHED_HOUND_CHASE_ENEMY,
-	SCHED_HOUND_COVER_WAIT,
-	SCHED_HOUND_GROUP_RALLEY,
+	SCHED_HOUND_BMS_ATTACK_STRAFE,
+	SCHED_HOUND_BMS_ATTACK_STRAFE_REVERSE,
+	SCHED_HOUND_BMS_GROUP_ATTACK,
+	SCHED_HOUND_BMS_GROUP_RETREAT,
+	SCHED_HOUND_BMS_CHASE_ENEMY,
+	SCHED_HOUND_BMS_COVER_WAIT,
+	SCHED_HOUND_BMS_GROUP_RALLEY,
 };
 
 //=========================================================
@@ -133,29 +133,29 @@ void CNPC_BMSHoundeye::InitCustomSchedules(void)
 {
 	INIT_CUSTOM_AI(CNPC_BMSHoundeye);
 
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_CLOSE_EYE);
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_OPEN_EYE);
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_THREAT_DISPLAY);
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_FALL_ASLEEP);
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_WAKE_UP);
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_HOP_BACK);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_CLOSE_EYE);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_OPEN_EYE);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_THREAT_DISPLAY);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_FALL_ASLEEP);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_WAKE_UP);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_HOP_BACK);
 
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_GET_PATH_TO_CIRCLE);
-	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_REVERSE_STRAFE_DIR);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_GET_PATH_TO_CIRCLE);
+	ADD_CUSTOM_TASK(CNPC_BMSHoundeye,	TASK_HOUND_BMS_REVERSE_STRAFE_DIR);
 	
-	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye,	COND_HOUND_GROUP_ATTACK);
-	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye,	COND_HOUND_GROUP_RETREAT);
-	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye, COND_HOUND_GROUP_RALLEY);
+	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye,	COND_HOUND_BMS_GROUP_ATTACK);
+	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye,	COND_HOUND_BMS_GROUP_RETREAT);
+	ADD_CUSTOM_CONDITION(CNPC_BMSHoundeye, COND_HOUND_BMS_GROUP_RALLEY);
 
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_HOP_RETREAT);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_RANGE_ATTACK1);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE_REVERSE);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_ATTACK);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RETREAT);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_CHASE_ENEMY);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_COVER_WAIT);
-	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RALLEY);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_HOP_RETREAT);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_RANGE_ATTACK1);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_ATTACK_STRAFE);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_ATTACK_STRAFE_REVERSE);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_GROUP_ATTACK);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_GROUP_RETREAT);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_CHASE_ENEMY);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_COVER_WAIT);
+	ADD_CUSTOM_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_GROUP_RALLEY);
 
 	ADD_CUSTOM_ANIMEVENT(CNPC_BMSHoundeye, AE_HOUND_PRE_RANGE_ATTACK1);
 	ADD_CUSTOM_ANIMEVENT(CNPC_BMSHoundeye, AE_HOUND_RANGE_ATTACK1);
@@ -166,15 +166,15 @@ void CNPC_BMSHoundeye::InitCustomSchedules(void)
 	g_interactionHoundeyeGroupRetreat				= CBaseCombatCharacter::GetInteractionID();
 	g_interactionHoundeyeGroupRalley				= CBaseCombatCharacter::GetInteractionID();
 
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_HOP_RETREAT);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_RANGE_ATTACK1);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_ATTACK_STRAFE_REVERSE);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_ATTACK);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RETREAT);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_CHASE_ENEMY);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_COVER_WAIT);
-	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_GROUP_RALLEY);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_HOP_RETREAT);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_RANGE_ATTACK1);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_ATTACK_STRAFE);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_ATTACK_STRAFE_REVERSE);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_GROUP_ATTACK);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_GROUP_RETREAT);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_CHASE_ENEMY);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_COVER_WAIT);
+	AI_LOAD_SCHEDULE(CNPC_BMSHoundeye,	SCHED_HOUND_BMS_GROUP_RALLEY);
 }
 
 LINK_ENTITY_TO_CLASS( npc_houndeye_bms, CNPC_BMSHoundeye );
@@ -969,7 +969,7 @@ void CNPC_BMSHoundeye::StartTask( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
-	case TASK_HOUND_GET_PATH_TO_CIRCLE:
+	case TASK_HOUND_BMS_GET_PATH_TO_CIRCLE:
 	{
 		if (GetEnemy() == NULL)
 		{
@@ -991,7 +991,7 @@ void CNPC_BMSHoundeye::StartTask( const Task_t *pTask )
 		}
 		break;
 	}
-	case TASK_HOUND_REVERSE_STRAFE_DIR:
+	case TASK_HOUND_BMS_REVERSE_STRAFE_DIR:
 	{
 		// Try the other direction
 		m_bLoopClockwise = (m_bLoopClockwise) ? false : true;
@@ -1028,36 +1028,36 @@ void CNPC_BMSHoundeye::StartTask( const Task_t *pTask )
 		break;
 	}
 
-	case TASK_HOUND_FALL_ASLEEP:
+	case TASK_HOUND_BMS_FALL_ASLEEP:
 		{
 			m_fAsleep = true; // signal that hound is lying down (must stand again before doing anything else!)
 			TaskComplete( true );
 			break;
 		}
-	case TASK_HOUND_WAKE_UP:
+	case TASK_HOUND_BMS_WAKE_UP:
 		{
 			m_fAsleep = false; // signal that hound is standing again
 			TaskComplete( true );
 			break;
 		}
-	case TASK_HOUND_OPEN_EYE:
+	case TASK_HOUND_BMS_OPEN_EYE:
 		{
 			m_fDontBlink = false; // turn blinking back on and that code will automatically open the eye
 			TaskComplete( true );
 			break;
 		}
-	case TASK_HOUND_CLOSE_EYE:
+	case TASK_HOUND_BMS_CLOSE_EYE:
 		{
 /*<<TEMP>>			this->skin = 0;*/
 			m_fDontBlink = true; // tell blink code to leave the eye alone.
 			break;
 		}
-	case TASK_HOUND_THREAT_DISPLAY:
+	case TASK_HOUND_BMS_THREAT_DISPLAY:
 		{
 			SetIdealActivity( ACT_IDLE_ANGRY );
 			break;
 		}
-	case TASK_HOUND_HOP_BACK:
+	case TASK_HOUND_BMS_HOP_BACK:
 		{
 			SetIdealActivity( ACT_HOP );
 			break;
@@ -1082,7 +1082,7 @@ void CNPC_BMSHoundeye::RunTask( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
-	case TASK_HOUND_THREAT_DISPLAY:
+	case TASK_HOUND_BMS_THREAT_DISPLAY:
 		{
 			GetMotor()->SetIdealYawToTargetAndUpdate( GetEnemyLKP(), AI_KEEP_YAW_SPEED );
 
@@ -1093,7 +1093,7 @@ void CNPC_BMSHoundeye::RunTask( const Task_t *pTask )
 			
 			break;
 		}
-	case TASK_HOUND_CLOSE_EYE:
+	case TASK_HOUND_BMS_CLOSE_EYE:
 		{
 			//<<TEMP>>
 			if ( m_nSkin < HOUNDEYE_EYE_FRAMES - 1 )
@@ -1103,7 +1103,7 @@ void CNPC_BMSHoundeye::RunTask( const Task_t *pTask )
 			
 			break;
 		}
-	case TASK_HOUND_HOP_BACK:
+	case TASK_HOUND_BMS_HOP_BACK:
 		{
 			if ( IsActivityFinished() )
 			{
@@ -1180,7 +1180,7 @@ int CNPC_BMSHoundeye::TranslateSchedule( int scheduleType )
 		}
 	case SCHED_RANGE_ATTACK1:
 		{
-			return SCHED_HOUND_RANGE_ATTACK1;
+			return SCHED_HOUND_BMS_RANGE_ATTACK1;
 		}
 	case SCHED_CHASE_ENEMY_FAILED:
 		{
@@ -1208,7 +1208,7 @@ bool CNPC_BMSHoundeye::IsAnyoneInSquadAttacking( void )
 	AISquadIter_t iter;
 	for (CAI_BaseNPC *pSquadMember = m_pSquad->GetFirstMember( &iter ); pSquadMember; pSquadMember = m_pSquad->GetNextMember( &iter ) )
 	{
-		if (pSquadMember->IsCurSchedule(SCHED_HOUND_RANGE_ATTACK1))
+		if (pSquadMember->IsCurSchedule(SCHED_HOUND_BMS_RANGE_ATTACK1))
 		{
 			return true;
 		}
@@ -1244,7 +1244,7 @@ int CNPC_BMSHoundeye::SelectSchedule( void )
 			}
 
 			// If a group attack was requested attack even if attack conditions not met
-			if ( HasCondition( COND_HOUND_GROUP_ATTACK ))
+			if ( HasCondition( COND_HOUND_BMS_GROUP_ATTACK ))
 			{
 				// Check that I'm not standing in another hound eye 
 				// before attacking
@@ -1254,21 +1254,21 @@ int CNPC_BMSHoundeye::SelectSchedule( void )
 								MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr );
 				if (!tr.startsolid)
 				{
-					return SCHED_HOUND_GROUP_ATTACK;
+					return SCHED_HOUND_BMS_GROUP_ATTACK;
 				}
 
 				// Otherwise attack as soon as I can
 				else
 				{
 					m_flNextAttack = gpGlobals->curtime;
-					return SCHED_HOUND_ATTACK_STRAFE;
+					return SCHED_HOUND_BMS_ATTACK_STRAFE;
 				}
 			}
 
 			// If a group retread was requested 
-			if ( HasCondition( COND_HOUND_GROUP_RETREAT ))
+			if ( HasCondition( COND_HOUND_BMS_GROUP_RETREAT ))
 			{
-				return SCHED_HOUND_GROUP_RETREAT;
+				return SCHED_HOUND_BMS_GROUP_RETREAT;
 			}
 
 			if ( HasCondition( COND_LIGHT_DAMAGE ) | 
@@ -1286,7 +1286,7 @@ int CNPC_BMSHoundeye::SelectSchedule( void )
 					if ( tr.fraction == 1.0 )
 					{
 						// it's clear behind, so the hound will jump
-						return SCHED_HOUND_HOP_RETREAT;
+						return SCHED_HOUND_BMS_HOP_RETREAT;
 					}
 				}
 
@@ -1294,9 +1294,9 @@ int CNPC_BMSHoundeye::SelectSchedule( void )
 			}
 
 			// If a group rally was requested 
-			if ( HasCondition( COND_HOUND_GROUP_RALLEY ))
+			if ( HasCondition( COND_HOUND_BMS_GROUP_RALLEY ))
 			{
-				return SCHED_HOUND_GROUP_RALLEY;
+				return SCHED_HOUND_BMS_GROUP_RALLEY;
 			}
 
 			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
@@ -1310,7 +1310,7 @@ int CNPC_BMSHoundeye::SelectSchedule( void )
 						m_flSoundWaitTime = gpGlobals->curtime + 1.0;
 
 						m_pSquad->BroadcastInteraction( g_interactionHoundeyeGroupAttack, NULL, this );
-						return SCHED_HOUND_GROUP_ATTACK;
+						return SCHED_HOUND_BMS_GROUP_ATTACK;
 					}
 				}
 				//<<TEMP>>comment
@@ -1328,10 +1328,10 @@ int CNPC_BMSHoundeye::SelectSchedule( void )
 						m_flSoundWaitTime = gpGlobals->curtime + 1.0;
 
 						m_pSquad->BroadcastInteraction( g_interactionHoundeyeGroupRalley, NULL, this );
-						return SCHED_HOUND_ATTACK_STRAFE;
+						return SCHED_HOUND_BMS_ATTACK_STRAFE;
 					}
 				}
-				return SCHED_HOUND_ATTACK_STRAFE;
+				return SCHED_HOUND_BMS_ATTACK_STRAFE;
 			}
 			break;
 		}
@@ -1352,17 +1352,17 @@ bool CNPC_BMSHoundeye::HandleInteraction(int interactionType, void *data, CBaseC
 {
 	if (interactionType == g_interactionHoundeyeGroupAttack)
 	{
-		SetCondition(COND_HOUND_GROUP_ATTACK);
+		SetCondition(COND_HOUND_BMS_GROUP_ATTACK);
 		return true;
 	}
 	else if (interactionType == g_interactionHoundeyeGroupRetreat)
 	{
-		SetCondition(COND_HOUND_GROUP_RETREAT);
+		SetCondition(COND_HOUND_BMS_GROUP_RETREAT);
 		return true;
 	}
 	else if (interactionType == g_interactionHoundeyeGroupRalley)
 	{
-		SetCondition(COND_HOUND_GROUP_RALLEY);
+		SetCondition(COND_HOUND_BMS_GROUP_RALLEY);
 		SetTarget(sourceEnt);
 		m_bLoopClockwise = false;
 		return true;
@@ -1379,17 +1379,17 @@ bool CNPC_BMSHoundeye::HandleInteraction(int interactionType, void *data, CBaseC
 //-----------------------------------------------------------------------------
 
 //=========================================================
-// SCHED_HOUND_ATTACK_STRAFE
+// SCHED_HOUND_BMS_ATTACK_STRAFE
 //
 //  Run a cirle around my enemy
 //=========================================================
 AI_DEFINE_SCHEDULE 
 (
-	SCHED_HOUND_ATTACK_STRAFE  ,
+	SCHED_HOUND_BMS_ATTACK_STRAFE  ,
 
 	"	Tasks "
-	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_ATTACK_STRAFE_REVERSE"
-	"		TASK_HOUND_GET_PATH_TO_CIRCLE	0"
+	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_BMS_ATTACK_STRAFE_REVERSE"
+	"		TASK_HOUND_BMS_GET_PATH_TO_CIRCLE	0"
 	"		TASK_RUN_PATH					0"
 	"		TASK_WAIT_FOR_MOVEMENT			0"
 	""
@@ -1399,23 +1399,23 @@ AI_DEFINE_SCHEDULE
 	"		COND_ENEMY_DEAD"
 	"		COND_HEAVY_DAMAGE"
 	"		COND_CAN_RANGE_ATTACK1"
-	"		COND_HOUND_GROUP_ATTACK"
-	"		COND_HOUND_GROUP_RETREAT"
+	"		COND_HOUND_BMS_GROUP_ATTACK"
+	"		COND_HOUND_BMS_GROUP_RETREAT"
 );
 
 //=========================================================
-// SCHED_HOUND_ATTACK_STRAFE_REVERSE
+// SCHED_HOUND_BMS_ATTACK_STRAFE_REVERSE
 //
 //  Run a cirle around my enemy
 //=========================================================
 AI_DEFINE_SCHEDULE 
 (
-	SCHED_HOUND_ATTACK_STRAFE_REVERSE  ,
+	SCHED_HOUND_BMS_ATTACK_STRAFE_REVERSE  ,
 
 	"	Tasks "
-	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_CHASE_ENEMY"
-	"		TASK_HOUND_REVERSE_STRAFE_DIR	0"
-	"		TASK_HOUND_GET_PATH_TO_CIRCLE	0"
+	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_BMS_CHASE_ENEMY"
+	"		TASK_HOUND_BMS_REVERSE_STRAFE_DIR	0"
+	"		TASK_HOUND_BMS_GET_PATH_TO_CIRCLE	0"
 	"		TASK_RUN_PATH					0"
 	"		TASK_WAIT_FOR_MOVEMENT			0"
 	""
@@ -1425,16 +1425,16 @@ AI_DEFINE_SCHEDULE
 	"		COND_ENEMY_DEAD"
 	"		COND_HEAVY_DAMAGE"
 	"		COND_CAN_RANGE_ATTACK1"
-	"		COND_HOUND_GROUP_ATTACK"
-	"		COND_HOUND_GROUP_RETREAT"
+	"		COND_HOUND_BMS_GROUP_ATTACK"
+	"		COND_HOUND_BMS_GROUP_RETREAT"
 );
 
 //========================================================
-// SCHED_HOUND_CHASE_ENEMY
+// SCHED_HOUND_BMS_CHASE_ENEMY
 //=========================================================
 AI_DEFINE_SCHEDULE
 (
-	SCHED_HOUND_CHASE_ENEMY,
+	SCHED_HOUND_BMS_CHASE_ENEMY,
 
 	"	Tasks"
 	"		TASK_SET_TOLERANCE_DISTANCE		30	 "
@@ -1447,18 +1447,18 @@ AI_DEFINE_SCHEDULE
 	"		COND_NEW_ENEMY"
 	"		COND_ENEMY_DEAD"
 	"		COND_CAN_RANGE_ATTACK1"
-	"		COND_HOUND_GROUP_ATTACK"
-	"		COND_HOUND_GROUP_RETREAT"
+	"		COND_HOUND_BMS_GROUP_ATTACK"
+	"		COND_HOUND_BMS_GROUP_RETREAT"
 );
 
 //=========================================================
-// SCHED_HOUND_GROUP_ATTACK
+// SCHED_HOUND_BMS_GROUP_ATTACK
 //
 //  Face enemy, pause, then attack
 //=========================================================
 AI_DEFINE_SCHEDULE 
 (
-	SCHED_HOUND_GROUP_ATTACK  ,
+	SCHED_HOUND_BMS_GROUP_ATTACK  ,
 
 	"	Tasks "
 	"		TASK_STOP_MOVING			0"
@@ -1466,7 +1466,7 @@ AI_DEFINE_SCHEDULE
 	"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE_ANGRY"
 	"		TASK_SPEAK_SENTENCE			0"
 	"		TASK_WAIT					1"
-	"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_HOUND_RANGE_ATTACK1"
+	"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_HOUND_BMS_RANGE_ATTACK1"
 	""
 	"	Interrupts "
 	"		COND_NEW_ENEMY"
@@ -1475,16 +1475,16 @@ AI_DEFINE_SCHEDULE
 );	
 	
 //=========================================================
-// > SCHED_HOUND_GROUP_RETREAT
+// > SCHED_HOUND_BMS_GROUP_RETREAT
 //
 //		Take cover from enemy! 
 //=========================================================
 AI_DEFINE_SCHEDULE
 (
-	SCHED_HOUND_GROUP_RETREAT,
+	SCHED_HOUND_BMS_GROUP_RETREAT,
 
 	"	Tasks"
-	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_ATTACK_STRAFE"
+	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_BMS_ATTACK_STRAFE"
 	"		TASK_STOP_MOVING				0"
 	"		TASK_WAIT						0.2"
 	"		TASK_SET_TOLERANCE_DISTANCE		24"
@@ -1494,24 +1494,24 @@ AI_DEFINE_SCHEDULE
 	"		TASK_REMEMBER					MEMORY:INCOVER"
 	"		TASK_FACE_ENEMY					0"
 	"		TASK_SET_ACTIVITY				ACTIVITY:ACT_IDLE"	// Translated to cover
-	"		TASK_SET_SCHEDULE				SCHEDULE:SCHED_HOUND_COVER_WAIT"
+	"		TASK_SET_SCHEDULE				SCHEDULE:SCHED_HOUND_BMS_COVER_WAIT"
 	""
 	"	Interrupts"
 	"		COND_NEW_ENEMY"
 );
 
 //=========================================================
-// > SCHED_HOUND_GROUP_RALLEY
+// > SCHED_HOUND_BMS_GROUP_RALLEY
 //
 //		Run to rally hound! 
 //=========================================================
 AI_DEFINE_SCHEDULE
 (
-	SCHED_HOUND_GROUP_RALLEY,
+	SCHED_HOUND_BMS_GROUP_RALLEY,
 
 	"	Tasks"
 	"		TASK_SET_TOLERANCE_DISTANCE		30"
-	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_ATTACK_STRAFE"
+	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_HOUND_BMS_ATTACK_STRAFE"
 	"		TASK_GET_PATH_TO_TARGET			0"
 	"		TASK_RUN_PATH					0"
 	"		TASK_WAIT_FOR_MOVEMENT			0"
@@ -1520,18 +1520,18 @@ AI_DEFINE_SCHEDULE
 	"		COND_NEW_ENEMY"
 	"		COND_ENEMY_DEAD"
 	"		COND_HEAVY_DAMAGE"
-	"		COND_HOUND_GROUP_ATTACK"
-	"		COND_HOUND_GROUP_RETREAT"
+	"		COND_HOUND_BMS_GROUP_ATTACK"
+	"		COND_HOUND_BMS_GROUP_RETREAT"
 );
 
 //=========================================================
-// > SCHED_HOUND_COVER_WAIT
+// > SCHED_HOUND_BMS_COVER_WAIT
 //
 //		Wait in cover till enemy see's me or I take damage
 //=========================================================
 AI_DEFINE_SCHEDULE
 (
-	SCHED_HOUND_COVER_WAIT,
+	SCHED_HOUND_BMS_COVER_WAIT,
 
 	"	Tasks"
 	"		TASK_WAIT						2"
@@ -1542,11 +1542,11 @@ AI_DEFINE_SCHEDULE
 );				
 
 //=========================================================
-// > SCHED_HOUND_RANGE_ATTACK1
+// > SCHED_HOUND_BMS_RANGE_ATTACK1
 //=========================================================
 AI_DEFINE_SCHEDULE
 (
-	SCHED_HOUND_RANGE_ATTACK1,
+	SCHED_HOUND_BMS_RANGE_ATTACK1,
 
 	"	Tasks"
 	"		 TASK_STOP_MOVING			0"
@@ -1560,15 +1560,15 @@ AI_DEFINE_SCHEDULE
 );
 
 //=========================================================
-// > SCHED_HOUND_HOP_RETREAT
+// > SCHED_HOUND_BMS_HOP_RETREAT
 //=========================================================
 AI_DEFINE_SCHEDULE
 (
-	SCHED_HOUND_HOP_RETREAT,
+	SCHED_HOUND_BMS_HOP_RETREAT,
 
 	"	Tasks"
 	"		 TASK_STOP_MOVING				0"
-	"		 TASK_HOUND_HOP_BACK			0"
+	"		 TASK_HOUND_BMS_HOP_BACK			0"
 	"		 TASK_SET_SCHEDULE				SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
 	""
 	"	Interrupts"

@@ -18,7 +18,7 @@
 //-----------------------------------------------------------------------------
 
 enum PLAYER_ANIM;
-class IPhysicsSurfaceProps;
+class ISPPSurfacePropsExtension;
 class Vector;
 struct model_t;
 struct cmodel_t;
@@ -80,7 +80,7 @@ public:
 	// Apply falling damage to m_pHostPlayer based on m_pHostPlayer->m_flFallVelocity.
 	virtual void	PlayerSetAnimation( PLAYER_ANIM playerAnim ) = 0;
 
-	virtual IPhysicsSurfaceProps *GetSurfaceProps( void ) = 0;
+	virtual ISPPSurfacePropsExtension *GetSurfaceProps( void ) = 0;
 
 	virtual bool IsWorldEntity( const CBaseHandle &handle ) = 0;
 

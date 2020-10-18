@@ -4,7 +4,7 @@
 #include "saverestore_utlvector.h"
 #include "props.h"
 
-#define SHIELD_LIST_UPDATE_INTERVAL 0.5f
+#define SHIELD_LIST_UPDATE_INTERVAL 0.1f
 
 CEntityClassList<CCombineShieldWall> g_ShieldWallList;
 template <> CCombineShieldWall* CEntityClassList<CCombineShieldWall>::m_pClassList = NULL;
@@ -296,7 +296,8 @@ bool CCombineShieldWall::ShouldCollide(int collisionGroup, int contentsMask) con
 {
 	if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
 		collisionGroup == COLLISION_GROUP_NPC ||
-		collisionGroup == COLLISION_GROUP_PLAYER)
+		collisionGroup == COLLISION_GROUP_PLAYER ||
+		(collisionGroup > HL2COLLISION_GROUP_FIRST_NPC && collisionGroup < HL2COLLISION_GROUP_LAST_NPC))
 	{
 		switch (GetTeamNumber())
 		{
@@ -489,7 +490,7 @@ void CCombineShieldWall::ClearSpace()
 	touchlink_t* root = (touchlink_t*)GetDataObject(TOUCHLINK);
 	if (root)
 	{
-		for (touchlink_t* link = root->nextLink; link != root; link = link->nextLink)
+		for (touchlink_t* link = root->nextLink; link != root && link != nullptr; link = link->nextLink)
 		{
 			CBaseEntity* pTouch = link->entityTouched;
 			if (pTouch && !InSameTeam(pTouch) && (pTouch->IsPlayer() || pTouch->IsNPC()))

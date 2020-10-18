@@ -191,7 +191,7 @@ void C_NPC_ZombieHEV::ClientThink()
 		if (!m_pFlashlight)
 		{
 			// Turned on the headlight; create it.
-			m_pFlashlight = new CSpotlightEffect();
+			m_pFlashlight = new CSpotlightEffect(false);
 
 			if (m_pFlashlight)
 				m_pFlashlight->TurnOn();

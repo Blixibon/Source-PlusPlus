@@ -110,6 +110,8 @@ AimType_e CHL2PlayerAnimState::GetAimType()
 		return AIM_MP;
 	if (actCurrent >= ACT_BMMP_FIRST && actCurrent <= ACT_BMMP_LAST)
 		return AIM_BMMP;
+	if (actCurrent >= ACT_HL2MP_IDLE && actCurrent <= ACT_HL2MP_RUN_FAST)
+		return AIM_HL2_UNARMED;
 
 	return AIM_HL2;
 }
@@ -171,10 +173,13 @@ bool CHL2PlayerAnimState::SetupPoseParameters(CStudioHdr* pStudioHdr)
 	m_PoseParameterData.m_iVerticalVelocity = GetBasePlayer()->LookupPoseParameter("vertical_velocity");
 	m_PoseParameterData.m_iVehicleSteer = GetBasePlayer()->LookupPoseParameter("vehicle_steer");
 
-#ifdef CLIENT_DLL
-	m_headYawPoseParam = GetBasePlayer()->LookupPoseParameter( "head_yaw" );
-	GetBasePlayer()->GetPoseParameterRange( m_headYawPoseParam, m_headYawMin, m_headYawMax );
+	m_spineYawPoseParam = GetBasePlayer()->LookupPoseParameter("spine_yaw");
+	GetBasePlayer()->GetPoseParameterRange(m_spineYawPoseParam, m_spineYawMin, m_spineYawMax);
 
+	m_headYawPoseParam = GetBasePlayer()->LookupPoseParameter("head_yaw");
+	GetBasePlayer()->GetPoseParameterRange(m_headYawPoseParam, m_headYawMin, m_headYawMax);
+
+#ifdef CLIENT_DLL
 	m_headPitchPoseParam = GetBasePlayer()->LookupPoseParameter( "head_pitch" );
 	GetBasePlayer()->GetPoseParameterRange( m_headPitchPoseParam, m_headPitchMin, m_headPitchMax );
 
@@ -262,10 +267,28 @@ void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
 	// teleporting and forcing yaw. This is due to an unfortunate interaction between the command lookback window,
 	// and the fact that m_flEyeYaw is never propogated from the server to the client.
 	// TODO: Fix this after Halloween 2014.
-	else if (bMoving || m_bForceAimYaw)
+	else if (m_bForceAimYaw)
 	{
 		// The feet match the eye direction when moving - the move yaw takes care of the rest.
 		m_flGoalFeetYaw = m_flEyeYaw;
+	}
+	else if (bMoving)
+	{
+		const float flYawLimitOuter = (GetAimType() == AIM_HL2_UNARMED) ? 90.f : 50.f;
+		float flLegYaw = RAD2DEG(atan2(vecVelocity.y, vecVelocity.x));
+
+		// If he's running backwards, flip his feet backwards.
+		Vector vEyeYaw(cos(DEG2RAD(m_flEyeYaw)), sin(DEG2RAD(m_flEyeYaw)), 0);
+		Vector vFeetYaw(cos(DEG2RAD(flLegYaw)), sin(DEG2RAD(flLegYaw)), 0);
+		if (vEyeYaw.Dot(vFeetYaw) < -0.01)
+		{
+			flLegYaw += 180;
+		}
+
+		float flYawDelta = AngleNormalize(flLegYaw - m_flEyeYaw);
+		float flScale = RemapValClamped(fabsf(flYawDelta), flYawLimitOuter - 15.f, flYawLimitOuter, 1.f, 0.f);
+		m_flGoalFeetYaw = AngleNormalize(m_flEyeYaw + (flYawDelta * flScale));
+		
 	}
 	// Else if we are not moving.
 	else
@@ -332,11 +355,21 @@ void CHL2PlayerAnimState::ComputePoseParam_AimYaw(CStudioHdr* pStudioHdr)
 	default:
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw, -flAimYaw);
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_headYawPoseParam, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_spineYawPoseParam, 0.0f);
 		break;
 	case AIM_HL2:
 	case AIM_BMMP:
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, flAimYaw);
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_headYawPoseParam, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_spineYawPoseParam, 0.0f);
+		break;
+	case AIM_HL2_UNARMED:
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyYaw, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimYaw, 0.0f);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_headYawPoseParam, flAimYaw);
+		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_spineYawPoseParam, RemapVal(flAimYaw, 90, -90, m_spineYawMin, m_spineYawMax));
 		break;
 	}
 	m_DebugAnimData.m_flAimYaw = flAimYaw;
@@ -399,7 +432,7 @@ void CHL2PlayerAnimState::ComputePoseParam_MoveYaw(CStudioHdr* pStudioHdr)
 	EstimateYaw();
 
 	// Get the view yaw.
-	float flAngle = AngleNormalize(m_flEyeYaw);
+	float flAngle = AngleNormalize(m_flCurrentFeetYaw);
 
 	// Calc side to side turning - the view vs. movement yaw.
 	float flYaw = flAngle - m_PoseParameterData.m_flEstimateYaw;

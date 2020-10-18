@@ -11,6 +11,7 @@
 #include "igamemovement.h"
 #include "engine/IEngineTrace.h"
 #include "engine/ivmodelinfo.h"
+#include "spp_utils/ISurfacePropsExt.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -40,7 +41,7 @@ public:
 	virtual void	StartSound( const Vector& origin, int channel, char const* sample, float volume, soundlevel_t soundlevel, int fFlags, int pitch );
 	virtual void	StartSound( const Vector& origin, const char *soundname ); 
 	virtual void	PlaybackEventFull( int flags, int clientindex, unsigned short eventindex, float delay, Vector& origin, Vector& angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2 );
-	virtual IPhysicsSurfaceProps *GetSurfaceProps( void );
+	virtual ISPPSurfacePropsExtension *GetSurfaceProps( void );
 
 	virtual bool IsWorldEntity( const CBaseHandle &handle );
 
@@ -226,10 +227,10 @@ void CMoveHelperClient::PlaybackEventFull( int flags, int clientindex, unsigned 
 // Surface properties interface
 //-----------------------------------------------------------------------------
 
-IPhysicsSurfaceProps *CMoveHelperClient::GetSurfaceProps( void )
+ISPPSurfacePropsExtension *CMoveHelperClient::GetSurfaceProps( void )
 {
-	extern IPhysicsSurfaceProps *physprops;
-	return physprops;
+	extern ISPPSurfacePropsExtension *physprops2;
+	return physprops2;
 }
 
 //-----------------------------------------------------------------------------

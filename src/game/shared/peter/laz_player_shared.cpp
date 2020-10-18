@@ -310,7 +310,7 @@ void CLaz_Player::PrecacheFootStepSounds(void)
 //			fvol - 
 //			force - force sound to play
 //-----------------------------------------------------------------------------
-void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force)
+void CLaz_Player::PlayStepSound(const Vector& vecOrigin, surfacedataall_t surface, bool bWalk, float fvol, bool force)
 {
 	if (m_iPlayerSoundType == FOOTSTEP_SOUND_HL1)
 	{
@@ -323,11 +323,11 @@ void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface
 			return;
 #endif
 
-		if (!psurface)
+		if (!surface.pOld)
 			return;
 
 		int nSide = m_Local.m_nStepside;
-		const HL1Foot_t& effect = s_pHL1FootSounds[psurface->game.material - 'A'];
+		const HL1Foot_t& effect = s_pHL1FootSounds[surface.pOld->game.material - 'A'];
 		const char * pSoundName = nSide ? effect.m_pNameLeft : effect.m_pNameRight;
 		if (!pSoundName)
 			return;
@@ -384,7 +384,7 @@ void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface
 	}
 	else
 	{
-		BaseClass::PlayStepSound(vecOrigin, psurface, fvol, force);
+		BaseClass::PlayStepSound(vecOrigin, surface, bWalk, fvol, force);
 
 		if (IsInvalidString(m_iPlayerSoundType))
 			return;
@@ -398,7 +398,7 @@ void CLaz_Player::PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface
 			return;
 #endif
 
-		if (GetFlags() & FL_DUCKING)
+		if (GetFlags() & FL_DUCKING || bWalk)
 			return;
 
 		//m_Local.m_nStepside = !m_Local.m_nStepside;

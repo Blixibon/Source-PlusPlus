@@ -114,6 +114,8 @@ ConVar r_flashlightdepthres( "r_flashlightdepthres", "2048" );
 ConVar r_flashlightdepthres( "r_flashlightdepthres", "4096" );
 #endif
 
+ConVar r_flashlightvolumetrics("r_flashlightvolumetrics", "1", FCVAR_ARCHIVE);
+
 static void ThreadedShadowMGRCallback(IConVar *var, const char *pOldValue, float flOldValue);
 ConVar r_threaded_client_shadow_manager( "r_threaded_client_shadow_manager", "0", FCVAR_ARCHIVE, "", ThreadedShadowMGRCallback);
 
@@ -703,6 +705,540 @@ static ConVar r_shadows( "r_shadows", "1" ); // hook into engine's cvars..
 static ConVar r_shadowmaxrendered("r_shadowmaxrendered", "32");
 static ConVar r_shadows_gamecontrol( "r_shadows_gamecontrol", "-1", FCVAR_CHEAT );	 // hook into engine's cvars..
 
+class CVolumetricLightRenderable : public CDefaultClientRenderable
+{
+public:
+	static CMaterialReference sm_LightShaftsMaterial;
+
+	CVolumetricLightRenderable(int iLight);
+	~CVolumetricLightRenderable();
+
+	virtual const Vector& GetRenderOrigin(void) { CacheDataFromManager(); return m_vecRenderPos; }
+	virtual const QAngle& GetRenderAngles(void) { CacheDataFromManager(); return m_angRender; }
+	virtual const matrix3x4_t& RenderableToWorldTransform() { CacheDataFromManager(); return m_matLocalToWorld; }
+	virtual bool					ShouldDraw(void) { CacheDataFromManager(); return m_bValid; }
+	virtual bool					IsTransparent(void) { return true; }
+
+	// Returns the bounds relative to the origin (render bounds)
+	virtual void	GetRenderBounds(Vector& mins, Vector& maxs)
+	{
+		CacheDataFromManager();
+		mins = m_vecLocalMins;
+		maxs = m_vecLocalMaxs;
+	}
+
+	virtual void	GetRenderBoundsWorldspace(Vector& absMins, Vector& absMaxs)
+	{
+		CacheDataFromManager();
+		absMins = m_vecWorldMins;
+		absMaxs = m_vecWorldMaxs;
+	}
+
+	virtual int		DrawModel(int flags);
+
+	ITexture* GetFlashlightData(ClientFlashlightState_t& State, VMatrix WorldToLight);
+
+protected:
+	void	CacheDataFromManager();
+
+	int m_iFlashlight;
+	ClientFlashlightState_t m_FlashlightState;
+	VMatrix m_WorldToFlashlight;
+	ITexture* m_pDepthTexture;
+	ShadowHandle_t m_hShadow;
+	Frustum_t		m_Frustum;
+
+	bool m_bValid;
+	int m_nCacheFrame;
+	Vector m_vecRenderPos;
+	QAngle m_angRender;
+	matrix3x4_t m_matLocalToWorld;
+	Vector m_vecLocalMins;
+	Vector m_vecLocalMaxs;
+	Vector m_vecWorldMins;
+	Vector m_vecWorldMaxs;
+};
+
+CMaterialReference CVolumetricLightRenderable::sm_LightShaftsMaterial;
+
+CVolumetricLightRenderable::CVolumetricLightRenderable(int iLight) : CDefaultClientRenderable()
+{
+	m_iFlashlight = iLight;
+	m_nCacheFrame = -1;
+
+	CacheDataFromManager();
+	ClientLeafSystem()->AddRenderable(this, RENDER_GROUP_TRANSLUCENT_ENTITY);
+	//ClientLeafSystem()->EnableAlternateSorting(m_hRenderHandle, true);
+}
+
+CVolumetricLightRenderable::~CVolumetricLightRenderable()
+{
+	ClientLeafSystem()->RemoveRenderable(m_hRenderHandle);
+}
+
+void CVolumetricLightRenderable::CacheDataFromManager()
+{
+	if (m_nCacheFrame == gpGlobals->framecount)
+		return;
+
+	m_nCacheFrame = gpGlobals->framecount;
+
+	m_bValid = g_pClientShadowMgr->VolumetricsAvailable() && g_pClientShadowMgr->GetFlashlightByIndex(m_iFlashlight, &m_FlashlightState, &m_WorldToFlashlight, &m_pDepthTexture, &m_hShadow);
+	if (!m_bValid)
+	{
+		m_vecLocalMins = m_vecLocalMaxs = m_vecRenderPos = vec3_origin;
+		m_angRender = vec3_angle;
+		SetIdentityMatrix(m_matLocalToWorld);
+		return;
+	}
+
+	QuaternionMatrix(m_FlashlightState.m_quatOrientation, m_FlashlightState.m_vecLightOrigin, m_matLocalToWorld);
+	MatrixAngles(m_matLocalToWorld, m_angRender, m_vecRenderPos);
+
+	CalculateAABBFromProjectionMatrix(m_WorldToFlashlight, &m_vecWorldMins, &m_vecWorldMaxs);
+	
+	VMatrix matProjection;
+	MatrixMultiply(m_WorldToFlashlight, m_matLocalToWorld, matProjection);
+	CalculateAABBFromProjectionMatrixInverse(matProjection, &m_vecLocalMins, &m_vecLocalMaxs);
+
+	m_Frustum = shadowmgr->GetFlashlightFrustum(m_hShadow);
+}
+
+class CLightShaftsProxy : public IMaterialProxy
+{
+public:
+	CLightShaftsProxy();
+	~CLightShaftsProxy();
+
+	virtual bool Init(IMaterial* pMaterial, KeyValues* pKeyValues);
+	virtual void OnBind(void* pProxyData);
+	virtual void Release(void) { delete this; }
+	virtual IMaterial* GetMaterial()
+	{
+		return m_pEnableShadowsVar->GetOwningMaterial();
+	}
+
+public:
+	//IMaterialVar* m_pCookieTextureVar;
+	//IMaterialVar* m_pNoiseTextureVar;
+	IMaterialVar* m_pCookieFrameNumVar;
+	//IMaterialVar* m_pShadowDepthTextureVar;
+	IMaterialVar* m_pWorldToTextureVar;
+	IMaterialVar* m_pFlashlightColorVar;
+	IMaterialVar* m_pAttenFactorsVar;
+	IMaterialVar* m_pOriginFarZVar;
+	IMaterialVar* m_pQuatOrientation;
+	IMaterialVar* m_pShadowFilterSizeVar;
+	IMaterialVar* m_pShadowAttenVar;
+	IMaterialVar* m_pShadowJitterSeedVar;
+	IMaterialVar* m_pUberlightVar;
+	IMaterialVar* m_pEnableShadowsVar;
+	IMaterialVar* m_pUberNearFarVar;
+	IMaterialVar* m_pUberHeightWidthVar;
+	IMaterialVar* m_pUberShearRoundnessVar;
+	IMaterialVar* m_pNoiseStrengthVar;
+	IMaterialVar* m_pFlashlighTimeVar;
+	IMaterialVar* m_pNumPlanesVar;
+	IMaterialVar* m_pVolumetricIntensityVar;
+};
+
+EXPOSE_MATERIAL_PROXY(CLightShaftsProxy, LightShafts);
+
+CLightShaftsProxy::CLightShaftsProxy()
+{
+	//m_pCookieTextureVar = nullptr;
+	//m_pNoiseTextureVar = nullptr;
+	m_pCookieFrameNumVar = nullptr;
+	//m_pShadowDepthTextureVar = nullptr;
+	m_pWorldToTextureVar = nullptr;
+	m_pFlashlightColorVar = nullptr;
+	m_pAttenFactorsVar = nullptr;
+	m_pOriginFarZVar = nullptr;
+	m_pQuatOrientation = nullptr;
+	m_pShadowFilterSizeVar = nullptr;
+	m_pShadowAttenVar = nullptr;
+	m_pShadowJitterSeedVar = nullptr;
+	m_pUberlightVar = nullptr;
+	m_pEnableShadowsVar = nullptr;
+	m_pUberNearFarVar = nullptr;
+	m_pUberHeightWidthVar = nullptr;
+	m_pUberShearRoundnessVar = nullptr;
+	m_pNoiseStrengthVar = nullptr;
+	m_pFlashlighTimeVar = nullptr;
+	m_pNumPlanesVar = nullptr;
+	m_pVolumetricIntensityVar = nullptr;
+}
+
+CLightShaftsProxy::~CLightShaftsProxy()
+{
+}
+
+bool CLightShaftsProxy::Init(IMaterial* pMaterial, KeyValues* pKeyValues)
+{
+	bool foundVar;
+	//m_pCookieTextureVar = pMaterial->FindVar("$COOKIETEXTURE", &foundVar);
+//	if (!foundVar)
+	//	return false;
+	//m_pNoiseTextureVar = pMaterial->FindVar("$NOISETEXTURE", &foundVar);
+	//if (!foundVar)
+	//	return false;
+	m_pCookieFrameNumVar = pMaterial->FindVar("$COOKIEFRAMENUM", &foundVar);
+	if (!foundVar)
+		return false;
+	//m_pShadowDepthTextureVar = pMaterial->FindVar("$SHADOWDEPTHTEXTURE", &foundVar);
+	//if (!foundVar)
+	//	return false;
+	m_pWorldToTextureVar = pMaterial->FindVar("$WORLDTOTEXTURE", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pFlashlightColorVar = pMaterial->FindVar("$FLASHLIGHTCOLOR", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pAttenFactorsVar = pMaterial->FindVar("$ATTENFACTORS", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pOriginFarZVar = pMaterial->FindVar("$ORIGINFARZ", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pQuatOrientation = pMaterial->FindVar("$QUATORIENTATION", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pShadowFilterSizeVar = pMaterial->FindVar("$SHADOWFILTERSIZE", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pShadowAttenVar = pMaterial->FindVar("$SHADOWATTEN", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pShadowJitterSeedVar = pMaterial->FindVar("$SHADOWJITTERSEED", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pUberlightVar = pMaterial->FindVar("$UBERLIGHT", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pEnableShadowsVar = pMaterial->FindVar("$ENABLESHADOWS", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pUberNearFarVar = pMaterial->FindVar("$UBERNEARFAR", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pUberHeightWidthVar = pMaterial->FindVar("$UBERHEIGHTWIDTH", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pUberShearRoundnessVar = pMaterial->FindVar("$UBERSHEARROUNDNESS", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pNoiseStrengthVar = pMaterial->FindVar("$NOISESTRENGTH", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pFlashlighTimeVar = pMaterial->FindVar("$FLASHLIGHTTIME", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pNumPlanesVar = pMaterial->FindVar("$NUMPLANES", &foundVar);
+	if (!foundVar)
+		return false;
+	m_pVolumetricIntensityVar = pMaterial->FindVar("$VOLUMETRICINTENSITY", &foundVar);
+	if (!foundVar)
+		return false;
+
+	return true;
+}
+
+void CLightShaftsProxy::OnBind(void* pProxyData)
+{
+	return;
+
+	IClientRenderable* pRenderable = (IClientRenderable*)pProxyData;
+	CVolumetricLightRenderable* pVolum = dynamic_cast<CVolumetricLightRenderable*> (pRenderable);
+	if (pVolum)
+	{
+		ClientFlashlightState_t FlashlightState;
+		VMatrix mWorldToShadow;
+		/*ITexture* pDepthTexture =*/ pVolum->GetFlashlightData(FlashlightState, mWorldToShadow);
+
+		//m_pShadowDepthTextureVar->SetTextureValue(pDepthTexture);
+
+		//m_pCookieTextureVar->SetTextureValue(FlashlightState.m_pSpotlightTexture);
+
+		//m_pNoiseTextureVar->SetTextureValue(materials->FindTexture("effects/noise_rg", TEXTURE_GROUP_OTHER, true));
+
+		m_pCookieFrameNumVar->SetIntValue(FlashlightState.m_nSpotlightTextureFrame);
+
+		m_pWorldToTextureVar->SetMatrixValue(mWorldToShadow);
+
+		m_pFlashlightColorVar->SetVecValue(&(FlashlightState.m_Color[0]), 4);
+
+		m_pAttenFactorsVar->SetVecValue(FlashlightState.m_fConstantAtten, FlashlightState.m_fLinearAtten, FlashlightState.m_fQuadraticAtten, FlashlightState.m_FarZ);
+
+		m_pOriginFarZVar->SetVecValue(FlashlightState.m_vecLightOrigin[0], FlashlightState.m_vecLightOrigin[1], FlashlightState.m_vecLightOrigin[2], FlashlightState.m_FarZ);
+
+		m_pQuatOrientation->SetVecValue(FlashlightState.m_quatOrientation.Base(), 4);
+
+		m_pShadowFilterSizeVar->SetFloatValue(FlashlightState.m_flShadowFilterSize);
+
+		m_pShadowAttenVar->SetFloatValue(FlashlightState.m_flShadowAtten);
+
+		m_pShadowJitterSeedVar->SetFloatValue(FlashlightState.m_flShadowJitterSeed);
+
+		m_pUberlightVar->SetIntValue(FlashlightState.m_UberlightState.m_bEnabled ? 1 : 0);
+
+		m_pEnableShadowsVar->SetIntValue(FlashlightState.m_bEnableShadows ? 1 : 0);
+
+		m_pUberNearFarVar->SetVecValue(FlashlightState.m_UberlightState.m_fNearEdge, FlashlightState.m_UberlightState.m_fFarEdge,
+			FlashlightState.m_UberlightState.m_fCutOn, FlashlightState.m_UberlightState.m_fCutOff);
+
+		m_pUberHeightWidthVar->SetVecValue(FlashlightState.m_UberlightState.m_fWidth, FlashlightState.m_UberlightState.m_fWedge,
+			FlashlightState.m_UberlightState.m_fHeight, FlashlightState.m_UberlightState.m_fHedge);
+
+		m_pUberShearRoundnessVar->SetVecValue(FlashlightState.m_UberlightState.m_fShearx, FlashlightState.m_UberlightState.m_fSheary, FlashlightState.m_UberlightState.m_fRoundness);
+
+		m_pNoiseStrengthVar->SetFloatValue(FlashlightState.m_flNoiseStrength);
+
+		m_pFlashlighTimeVar->SetFloatValue(FlashlightState.m_flFlashlightTime);
+
+		m_pNumPlanesVar->SetIntValue(FlashlightState.m_nNumPlanes);
+
+		m_pVolumetricIntensityVar->SetFloatValue(FlashlightState.m_flVolumetricIntensity);
+	}
+}
+
+int CVolumetricLightRenderable::DrawModel(int flags)
+{
+	const CNewViewSetup* pView = view->GetViewSetup();
+	if (pView && !pView->m_bDrawVolumetrics)
+		return 0;
+
+	int iViewID = CurrentViewID();
+	if (iViewID == VIEW_REFLECTION || iViewID == VIEW_REFRACTION || iViewID == VIEW_WATER_INTERSECTION)
+		return 0;
+
+	if (flags & STUDIO_RENDER)
+	{
+		CacheDataFromManager();
+
+		if (m_bValid)
+		{
+			//bool foundVar;
+			IMaterial* pMaterial = sm_LightShaftsMaterial; //materials->FindMaterial("engine/lightshaft", TEXTURE_GROUP_OTHER, true);
+			if (!pMaterial)
+				return 0;
+
+			static unsigned int s_MaterialVarsCache[20] = { 0 };
+
+			IMaterialVar* pCookieTextureVar = pMaterial->FindVarFast("$COOKIETEXTURE", &s_MaterialVarsCache[0]);
+			//IMaterialVar* pNoiseTextureVar = pMaterial->FindVar("$NOISETEXTURE", &foundVar, false);
+			IMaterialVar* pCookieFrameNumVar = pMaterial->FindVarFast("$COOKIEFRAMENUM", &s_MaterialVarsCache[1]);
+			IMaterialVar* pShadowDepthTextureVar = pMaterial->FindVarFast("$SHADOWDEPTHTEXTURE", &s_MaterialVarsCache[2]);
+			IMaterialVar* pWorldToTextureVar = pMaterial->FindVarFast("$WORLDTOTEXTURE", &s_MaterialVarsCache[3]);
+			IMaterialVar* pFlashlightColorVar = pMaterial->FindVarFast("$FLASHLIGHTCOLOR", &s_MaterialVarsCache[4]);
+			IMaterialVar* pAttenFactorsVar = pMaterial->FindVarFast("$ATTENFACTORS", &s_MaterialVarsCache[5]);
+			IMaterialVar* pOriginFarZVar = pMaterial->FindVarFast("$ORIGINFARZ", &s_MaterialVarsCache[6]);
+			IMaterialVar* pQuatOrientation = pMaterial->FindVarFast("$QUATORIENTATION", &s_MaterialVarsCache[7]);
+			IMaterialVar* pShadowFilterSizeVar = pMaterial->FindVarFast("$SHADOWFILTERSIZE", &s_MaterialVarsCache[8]);
+			IMaterialVar* pShadowAttenVar = pMaterial->FindVarFast("$SHADOWATTEN", &s_MaterialVarsCache[9]);
+			IMaterialVar* pShadowJitterSeedVar = pMaterial->FindVarFast("$SHADOWJITTERSEED", &s_MaterialVarsCache[10]);
+			IMaterialVar* pUberlightVar = pMaterial->FindVarFast("$UBERLIGHT", &s_MaterialVarsCache[11]);
+			IMaterialVar* pEnableShadowsVar = pMaterial->FindVarFast("$ENABLESHADOWS", &s_MaterialVarsCache[12]);
+			IMaterialVar* pUberNearFarVar = pMaterial->FindVarFast("$UBERNEARFAR", &s_MaterialVarsCache[13]);
+			IMaterialVar* pUberHeightWidthVar = pMaterial->FindVarFast("$UBERHEIGHTWIDTH", &s_MaterialVarsCache[14]);
+			IMaterialVar* pUberShearRoundnessVar = pMaterial->FindVarFast("$UBERSHEARROUNDNESS", &s_MaterialVarsCache[15]);
+			IMaterialVar* pNoiseStrengthVar = pMaterial->FindVarFast("$NOISESTRENGTH", &s_MaterialVarsCache[16]);
+			IMaterialVar* pFlashlighTimeVar = pMaterial->FindVarFast("$FLASHLIGHTTIME", &s_MaterialVarsCache[17]);
+			IMaterialVar* pNumPlanesVar = pMaterial->FindVarFast("$NUMPLANES", &s_MaterialVarsCache[18]);
+			IMaterialVar* pVolumetricIntensityVar = pMaterial->FindVarFast("$VOLUMETRICINTENSITY", &s_MaterialVarsCache[19]);
+
+			if (m_pDepthTexture && pShadowDepthTextureVar)
+			{
+				pShadowDepthTextureVar->SetTextureValue(m_pDepthTexture);
+			}
+
+			if (m_FlashlightState.m_pSpotlightTexture && pCookieTextureVar)
+			{
+				pCookieTextureVar->SetTextureValue(m_FlashlightState.m_pSpotlightTexture);
+			}
+
+			/*if (pNoiseTextureVar)
+			{
+				pNoiseTextureVar->SetTextureValue(materials->FindTexture("effects/noise_rg", TEXTURE_GROUP_OTHER, true));
+			}*/
+
+			if (pCookieFrameNumVar)
+			{
+				pCookieFrameNumVar->SetIntValue(m_FlashlightState.m_nSpotlightTextureFrame);
+			}
+
+			if (pWorldToTextureVar)
+			{
+				pWorldToTextureVar->SetMatrixValue(m_WorldToFlashlight);
+			}
+
+			if (pFlashlightColorVar)
+			{
+				pFlashlightColorVar->SetVecValue(&(m_FlashlightState.m_Color[0]), 4);
+			}
+
+			if (pAttenFactorsVar)
+			{
+				pAttenFactorsVar->SetVecValue(m_FlashlightState.m_fConstantAtten, m_FlashlightState.m_fLinearAtten, m_FlashlightState.m_fQuadraticAtten, m_FlashlightState.m_FarZ);
+			}
+
+			if (pOriginFarZVar)
+			{
+				pOriginFarZVar->SetVecValue(m_FlashlightState.m_vecLightOrigin[0], m_FlashlightState.m_vecLightOrigin[1], m_FlashlightState.m_vecLightOrigin[2], m_FlashlightState.m_FarZ);
+			}
+
+			if (pQuatOrientation)
+			{
+				pQuatOrientation->SetVecValue(m_FlashlightState.m_quatOrientation.Base(), 4);
+			}
+
+			if (pShadowFilterSizeVar)
+			{
+				pShadowFilterSizeVar->SetFloatValue(m_FlashlightState.m_flShadowFilterSize);
+			}
+
+			if (pShadowAttenVar)
+			{
+				pShadowAttenVar->SetFloatValue(m_FlashlightState.m_flShadowAtten);
+			}
+
+			if (pShadowJitterSeedVar)
+			{
+				pShadowJitterSeedVar->SetFloatValue(m_FlashlightState.m_flShadowJitterSeed);
+			}
+
+			if (pUberlightVar)
+			{
+				pUberlightVar->SetIntValue(m_FlashlightState.m_UberlightState.m_bEnabled ? 1 : 0);
+			}
+
+			if (pEnableShadowsVar)
+			{
+				pEnableShadowsVar->SetIntValue(m_FlashlightState.m_bEnableShadows ? 1 : 0);
+			}
+
+			if (pUberNearFarVar)
+			{
+				pUberNearFarVar->SetVecValue(m_FlashlightState.m_UberlightState.m_fNearEdge, m_FlashlightState.m_UberlightState.m_fFarEdge,
+					m_FlashlightState.m_UberlightState.m_fCutOn, m_FlashlightState.m_UberlightState.m_fCutOff);
+			}
+
+			if (pUberHeightWidthVar)
+			{
+				pUberHeightWidthVar->SetVecValue(m_FlashlightState.m_UberlightState.m_fWidth, m_FlashlightState.m_UberlightState.m_fWedge,
+					m_FlashlightState.m_UberlightState.m_fHeight, m_FlashlightState.m_UberlightState.m_fHedge);
+			}
+
+			if (pUberShearRoundnessVar)
+			{
+				pUberShearRoundnessVar->SetVecValue(m_FlashlightState.m_UberlightState.m_fShearx, m_FlashlightState.m_UberlightState.m_fSheary, m_FlashlightState.m_UberlightState.m_fRoundness);
+			}
+
+			if (pNoiseStrengthVar)
+			{
+				pNoiseStrengthVar->SetFloatValue(m_FlashlightState.m_flNoiseStrength);
+			}
+
+			if (pFlashlighTimeVar)
+			{
+				pFlashlighTimeVar->SetFloatValue(m_FlashlightState.m_flFlashlightTime);
+			}
+
+			if (pNumPlanesVar)
+			{
+				pNumPlanesVar->SetIntValue(m_FlashlightState.m_nNumPlanes);
+			}
+
+			if (pVolumetricIntensityVar)
+			{
+				pVolumetricIntensityVar->SetFloatValue(m_FlashlightState.m_flVolumetricIntensity);
+			}
+
+			CMatRenderContextPtr pRenderContext(materials);
+			pRenderContext->Flush(false);
+			pRenderContext->Bind(pMaterial, GetClientRenderable());
+
+			for (int i = 0; i < 6; i++)
+			{
+				pRenderContext->PushCustomClipPlane(m_Frustum.GetPlane(i)->normal.Base());
+			}
+
+			// Flashlight space to world space, then view space
+			VMatrix matWorldToView, matViewToWorld, matFlashlightToView, matViewToFlashlight;
+			pRenderContext->GetMatrix(MATERIAL_VIEW, &matWorldToView);
+			MatrixInverseGeneral(matWorldToView, matViewToWorld);
+			MatrixMultiply(m_WorldToFlashlight, matViewToWorld, matViewToFlashlight);
+			MatrixInverseGeneral(matViewToFlashlight, matFlashlightToView);
+
+			// View space AABB
+			Vector vView, vWorld, vViewMins, vViewMaxs;
+			CalculateAABBFromProjectionMatrixInverse(matFlashlightToView, &vViewMins, &vViewMaxs);
+
+			// Distance between planes
+			float zIncrement = (vViewMaxs.z - vViewMins.z) / (float)m_FlashlightState.m_nNumPlanes;
+
+			// Base offset for this set of planes (progressive refinement sets this in SFM)
+			vViewMins.z += zIncrement * m_FlashlightState.m_flPlaneOffset;
+
+			IMesh* pMesh = pRenderContext->GetDynamicMesh(true);
+
+			pRenderContext->MatrixMode(MATERIAL_MODEL);
+			pRenderContext->PushMatrix();
+			pRenderContext->LoadIdentity();
+
+			CMeshBuilder meshBuilder;
+			meshBuilder.Begin(pMesh, MATERIAL_QUADS, m_FlashlightState.m_nNumPlanes);
+
+			for (int i = 0; i < m_FlashlightState.m_nNumPlanes; i++)
+			{
+				vView = Vector(vViewMins.x, vViewMins.y, vViewMins.z + (float)i * zIncrement);// View space
+				Vector3DMultiplyPosition(matViewToWorld, vView, vWorld);						// Transform to world space
+				meshBuilder.Position3fv(vWorld.Base());
+				meshBuilder.AdvanceVertexF<VTX_HAVEPOS, 0>();
+
+				vView = Vector(vViewMins.x, vViewMaxs.y, vViewMins.z + (float)i * zIncrement);// View space
+				Vector3DMultiplyPosition(matViewToWorld, vView, vWorld);						// Transform to world space
+				meshBuilder.Position3fv(vWorld.Base());
+				meshBuilder.AdvanceVertexF<VTX_HAVEPOS, 0>();
+
+				vView = Vector(vViewMaxs.x, vViewMaxs.y, vViewMins.z + (float)i * zIncrement);// View space
+				Vector3DMultiplyPosition(matViewToWorld, vView, vWorld);						// Transform to world space
+				meshBuilder.Position3fv(vWorld.Base());
+				meshBuilder.AdvanceVertexF<VTX_HAVEPOS, 0>();
+
+				vView = Vector(vViewMaxs.x, vViewMins.y, vViewMins.z + (float)i * zIncrement);// View space
+				Vector3DMultiplyPosition(matViewToWorld, vView, vWorld);						// Transform to world space
+				meshBuilder.Position3fv(vWorld.Base());
+				meshBuilder.AdvanceVertexF<VTX_HAVEPOS, 0>();
+			}
+
+			meshBuilder.End(false);
+			pMesh->Draw();
+
+			pRenderContext->PopMatrix();
+
+			// Pop the custom clip planes
+			for (int i = 0; i < 6; i++)
+			{
+				pRenderContext->PopCustomClipPlane();
+			}
+
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+ITexture* CVolumetricLightRenderable::GetFlashlightData(ClientFlashlightState_t& State, VMatrix WorldToLight)
+{
+	CacheDataFromManager();
+
+	State = m_FlashlightState;
+	MatrixCopy(m_WorldToFlashlight, WorldToLight);
+
+	return m_pDepthTexture;
+}
+
 //-----------------------------------------------------------------------------
 // The class responsible for dealing with shadows on the client side
 // Oh, and let's take a moment and notice how happy Robin and John must be 
@@ -713,7 +1249,7 @@ class CClientShadowMgr : public IClientShadowMgr
 public:
 	CClientShadowMgr();
 
-	virtual char const *Name() { return "CCLientShadowMgr"; }
+	virtual char const *Name() { return "CClientShadowMgr"; }
 
 	// Inherited from IClientShadowMgr
 	virtual bool Init();
@@ -819,6 +1355,9 @@ public:
 	void SuppressShadowFromWorldLights(bool bSuppress);
 	virtual bool IsShadowingFromWorldLights() const { return m_bShadowFromWorldLights && !m_bSuppressShadowFromWorldLights; }
 
+	virtual bool GetFlashlightByIndex(int iIndex, ClientFlashlightState_t* pState, VMatrix* pWorldToLight, ITexture** ppDepthTexture, ShadowHandle_t* pEngineHandle);
+
+	virtual bool VolumetricsAvailable();
 private:
 	enum
 	{
@@ -855,11 +1394,14 @@ private:
 		IMesh* pMesh_VolumPrepass;
 		ClientShadowHandle_t handle;
 
+		CVolumetricLightRenderable* pVolumetricRenderable;
+
 		InternalStateFlashlight() : clientState()
 		{
 			pMesh_Volumetrics = nullptr;
 			pMesh_VolumPrepass = nullptr;
 			handle = CLIENTSHADOW_INVALID_HANDLE;
+			pVolumetricRenderable = nullptr;
 		}
 
 		InternalStateFlashlight(const InternalStateFlashlight& other)
@@ -868,6 +1410,7 @@ private:
 			handle = other.handle;
 			pMesh_Volumetrics = nullptr;
 			pMesh_VolumPrepass = nullptr;
+			pVolumetricRenderable = other.pVolumetricRenderable;
 		}
 
 		~InternalStateFlashlight()
@@ -1492,6 +2035,8 @@ bool CClientShadowMgr::Init()
 		InitDepthTextureShadows();
 	}
 
+	CVolumetricLightRenderable::sm_LightShaftsMaterial.Init("engine/lightshaft", TEXTURE_GROUP_OTHER, true);
+
 	ConVarRef( "r_flashlightscissor" ).SetValue( 0 );
 	
 	materials->AddRestoreFunc( ShadowRestoreFunc );
@@ -1506,6 +2051,8 @@ void CClientShadowMgr::Shutdown()
 	ShutdownRenderToTextureShadows( true );
 
 	ShutdownDepthTextureShadows();
+
+	CVolumetricLightRenderable::sm_LightShaftsMaterial.Shutdown();
 
 	materials->RemoveRestoreFunc( ShadowRestoreFunc );
 }
@@ -2197,14 +2744,15 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 	g_pShaderExtension->SetUberlightParamsForFlashlightState(iStateIndex, flashlightState.m_UberlightState);
 	g_pShaderExtension->SetOrthoDataForFlashlight(iStateIndex, flashlightState.m_bOrtho, flashlightState.m_fOrthoLeft, flashlightState.m_fOrthoRight, flashlightState.m_fOrthoTop, flashlightState.m_fOrthoBottom);
 
-	InternalFlashlightState_t newState;
+	CClientShadowMgr::InternalFlashlightState_t newState;
 	newState.clientState = flashlightState;
 	newState.clientState.m_nShadowQuality = procState.m_nShadowQuality;
 	newState.handle = shadowHandle;
 	unsigned short IDX = m_ClientFlashlightStates.Find(iStateIndex);
+	bool bStateChange = false;
 	if (m_ClientFlashlightStates.IsValidIndex(IDX))
 	{
-		InternalFlashlightState_t &persistantState = m_ClientFlashlightStates.Element(IDX);
+		CClientShadowMgr::InternalFlashlightState_t &persistantState = m_ClientFlashlightStates.Element(IDX);
 		if (StatesHaveDifferentSize(persistantState.clientState, newState.clientState))
 		{
 			CMatRenderContextPtr pRenderContext(materials);
@@ -2217,13 +2765,42 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 
 			persistantState.pMesh_Volumetrics = nullptr;
 			persistantState.pMesh_VolumPrepass = nullptr;
+
+			bStateChange = true;
+		}
+		else
+		{
+			if (!QuaternionsAreEqual(persistantState.clientState.m_quatOrientation, newState.clientState.m_quatOrientation, FLT_EPSILON) || !VectorsAreEqual(persistantState.clientState.m_vecLightOrigin, newState.clientState.m_vecLightOrigin, FLT_EPSILON))
+				bStateChange = true;
 		}
 
 		persistantState.clientState = newState.clientState;
 	}
 	else
 	{
-		m_ClientFlashlightStates.Insert(iStateIndex, newState);
+		IDX = m_ClientFlashlightStates.Insert(iStateIndex, newState);
+	}
+
+	{
+		auto& persistantState = m_ClientFlashlightStates.Element(IDX);
+		bool bHasVolumetric = (persistantState.pVolumetricRenderable != nullptr);
+		bool bWantsVolumetrics = (VolumetricsAvailable() && persistantState.clientState.m_bEnableShadows && persistantState.clientState.m_bVolumetric);
+		if (bHasVolumetric != bWantsVolumetrics)
+		{
+			if (bWantsVolumetrics)
+			{
+				persistantState.pVolumetricRenderable = new CVolumetricLightRenderable(iStateIndex);
+			}
+			else
+			{
+				delete persistantState.pVolumetricRenderable;
+				persistantState.pVolumetricRenderable = nullptr;
+			}
+		}
+		else if (bStateChange && persistantState.pVolumetricRenderable != nullptr)
+		{
+			ClientLeafSystem()->RenderableChanged(persistantState.pVolumetricRenderable->RenderHandle());
+		}
 	}
 }
 
@@ -2243,7 +2820,15 @@ void CClientShadowMgr::DestroyFlashlight( ClientShadowHandle_t shadowHandle )
 	{
 		FlashlightState_t state = shadowmgr->GetFlashlightState(m_Shadows[shadowHandle].m_ShadowHandle);
 		int idx = GetIndexOfFlashlightState(state);
-		m_ClientFlashlightStates.Remove(idx);
+		unsigned short hState = m_ClientFlashlightStates.Find(idx);
+		if (m_ClientFlashlightStates.IsValidIndex(hState))
+		{
+			CVolumetricLightRenderable* pRend = m_ClientFlashlightStates.Element(hState).pVolumetricRenderable;
+			if (pRend)
+				delete pRend;
+
+			m_ClientFlashlightStates.RemoveAt(hState);
+		}
 		m_usedSlots.Clear(idx - 1);
 		g_pShaderExtension->OnFlashlightStateDestroyed(idx);
 	}
@@ -5477,6 +6062,53 @@ void CClientShadowMgr::SuppressShadowFromWorldLights(bool bSuppress)
 	{
 		UpdateAllShadows();
 	}
+}
+
+bool CClientShadowMgr::GetFlashlightByIndex(int iIndex, ClientFlashlightState_t* pState, VMatrix* pWorldToLight, ITexture** ppDepthTexture, ShadowHandle_t* pEngineHandle)
+{
+	unsigned short usHandle = m_ClientFlashlightStates.Find(iIndex);
+
+	if (!m_ClientFlashlightStates.IsValidIndex(usHandle))
+		return false;
+
+	if (pState || pWorldToLight || ppDepthTexture || pEngineHandle)
+	{
+		const auto& flashlight = m_ClientFlashlightStates.Element(usHandle);
+		const auto& shadow = m_Shadows[flashlight.handle];
+
+		if (pState)
+		{
+			*pState = flashlight.clientState;
+		}
+
+		if (pWorldToLight)
+		{
+			MatrixCopy(shadow.m_WorldToShadow, *pWorldToLight);
+		}
+
+		if (ppDepthTexture)
+		{
+			*ppDepthTexture = shadow.m_ShadowDepthTexture.Get();
+		}
+
+		if (pEngineHandle)
+		{
+			*pEngineHandle = shadow.m_ShadowHandle;
+		}
+	}
+
+	return true;
+}
+
+bool CClientShadowMgr::VolumetricsAvailable()
+{
+	if (!g_pMaterialSystemHardwareConfig->SupportsPixelShaders_2_b())
+		return false;
+
+	if (!r_flashlightdepthtexture.GetBool())
+		return false;
+
+	return r_flashlightvolumetrics.GetBool();
 }
 
 //-----------------------------------------------------------------------------

@@ -912,7 +912,7 @@ protected:
 		// Ropes and particles
 		//
 		if ( bRopes )
-			RopeManager()->DrawRenderCache( bShadowDepth );
+			RopeManager()->DrawRenderCache( bShadowDepth ? DEPTH_MODE_OVERRIDE : DEPTH_MODE_NORMAL );
 		if ( bParticles )
 			g_pParticleSystemMgr->DrawRenderCache( bShadowDepth );
 	};

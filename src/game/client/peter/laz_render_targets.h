@@ -17,12 +17,16 @@ public:
 	ITexture* GetManhackScreenTexture();
 	ITexture* GetCameraScreenTexture();
 
+	ITexture* GetPreciseFullFrameDepthTexture();
+
 protected:
 	ITexture* CreateManhackScreenTexture(IMaterialSystem* pMaterialSystem);
 	ITexture* CreateCameraScreenTexture(IMaterialSystem* pMaterialSystem);
+	ITexture* CreatePreciseFullFrameDepthTexture(IMaterialSystem* pMaterialSystem);
 
 	CTextureReference		m_ManhackScreenTexture;
 	CTextureReference		m_CameraScreenTexture;
+	CTextureReference		m_PreciseDepthTexture;
 };
 
 extern CLazRenderTargets* lazulrendertargets;

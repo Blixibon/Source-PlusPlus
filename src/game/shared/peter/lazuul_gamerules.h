@@ -101,6 +101,8 @@ public:
 	virtual bool	IsHolidayActive(EHoliday holiday);
 
 	virtual bool	IsConnectedUserInfoChangeAllowed(CBasePlayer *pPlayer) { return true; }
+
+	virtual void	RegisterScriptFunctions(void);
 #ifndef CLIENT_DLL
 	void			AddRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler, int iTeam);
 	void			RemoveRespawnWaveHandler(ITeamRespawnWaveHandler* pHandler);

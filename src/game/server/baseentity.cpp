@@ -4183,6 +4183,9 @@ bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator,
 
 							g_pScriptVM->SetValue("activator", (pActivator) ? ScriptVariant_t(pActivator->GetScriptInstance()) : SCRIPT_VARIANT_NULL);
 							g_pScriptVM->SetValue("caller", (pCaller) ? ScriptVariant_t(pCaller->GetScriptInstance()) : SCRIPT_VARIANT_NULL);
+							ScriptVariant_t scriptValue;
+							Value.SetScriptVariant(scriptValue);
+							g_pScriptVM->SetValue("value", scriptValue);
 
 							if (CallScriptFunction(szScriptFunctionName, &functionReturn))
 							{
@@ -4199,6 +4202,7 @@ bool CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator,
 						{
 							g_pScriptVM->ClearValue("activator");
 							g_pScriptVM->ClearValue("caller");
+							g_pScriptVM->ClearValue("value");
 						}
 					}
 					else if ( dmap->dataDesc[i].flags & FTYPEDESC_KEY )

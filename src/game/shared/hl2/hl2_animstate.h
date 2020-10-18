@@ -46,16 +46,22 @@ private:
 	float	m_fGroundTime;
 	bool	m_bLongJump;
 
-#ifdef CLIENT_DLL
+	int m_spineYawPoseParam;
+	float m_spineYawMin;
+	float m_spineYawMax;
+
 	int	m_headYawPoseParam;
-	int	m_headPitchPoseParam;
 	float m_headYawMin;
 	float m_headYawMax;
+
+	float m_flCurrentHeadYaw;
+
+#ifdef CLIENT_DLL
+	int	m_headPitchPoseParam;
 	float m_headPitchMin;
 	float m_headPitchMax;
 
 	float m_flLastBodyYaw;
-	float m_flCurrentHeadYaw;
 	float m_flCurrentHeadPitch;
 
 	int m_chestAttachment;

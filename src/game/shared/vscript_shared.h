@@ -34,4 +34,17 @@ bool IsEntityCreationAllowedInScripts( void );
 void RegisterSharedScriptFunctions();
 void RegisterSharedScriptConstants();
 
+//-----------------------------------------------------------------------------
+// Purpose: A base class for VScript-utilizing clientside classes which can persist
+//			across levels, requiring their scripts to be shut down manually.
+//-----------------------------------------------------------------------------
+abstract_class IGameScriptPersistable
+{
+public:
+	virtual bool InitScript() = 0;
+	virtual void TermScript() = 0;
+};
+
+extern CUtlVector<IGameScriptPersistable*> g_ScriptPersistableList;
+
 #endif // VSCRIPT_SHARED_H

@@ -93,7 +93,7 @@ public:
 
 	virtual	bool		ShouldCollide(int collisionGroup, int contentsMask) const;
 
-	virtual void PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
+	virtual void PlayStepSound(const Vector& vecOrigin, surfacedataall_t surface, bool bWalk, float fvol, bool force);
 	void	PrecacheFootStepSounds(void);
 	const char *GetPlayerModelSoundPrefix(void);
 

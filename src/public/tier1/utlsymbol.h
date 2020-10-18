@@ -317,4 +317,54 @@ private:
 		return m_SymbolId.IsValid();								\
 	}																\
 
+#define DECLARE_PRIVATE_FILENAME_SYMBOLTYPE( typename )	\
+	class typename										\
+	{													\
+	public:												\
+		typename();										\
+		typename( const char* pStr );					\
+		typename& operator=( typename const& src );		\
+		bool operator==( typename const& src ) const;	\
+		const char* String( ) const;					\
+		bool String(char *buf, int buflen) const;		\
+		bool IsValid() const;							\
+	private:											\
+		FileNameHandle_t m_FileHandle;					\
+	};	
+
+// Put this in the .cpp file that uses the above typename
+#define IMPLEMENT_PRIVATE_FILENAME_SYMBOLTYPE( typename )						\
+	static CUtlFilenameSymbolTable g_##typename##SymbolTable;					\
+	typename::typename()														\
+	{																			\
+		m_FileHandle = FILENAMEHANDLE_INVALID;									\
+	}																			\
+	typename::typename( const char* pStr )										\
+	{																			\
+		m_FileHandle = g_##typename##SymbolTable.FindOrAddFileName( pStr );		\
+	}																			\
+	typename& typename::operator=( typename const& src )						\
+	{																			\
+		m_FileHandle = src.m_FileHandle;										\
+		return *this;															\
+	}																			\
+	bool typename::operator==( typename const& src ) const						\
+	{																			\
+		return ( m_FileHandle == src.m_FileHandle );							\
+	}																			\
+	const char* typename::String( ) const										\
+	{																			\
+		static char szString[MAX_PATH];											\
+		g_##typename##SymbolTable.String( m_FileHandle, szString, MAX_PATH );	\
+		return szString;														\
+	}																			\
+	bool typename::String(char *buf, int buflen) const							\
+	{																			\
+		return g_##typename##SymbolTable.String( m_FileHandle, buf, buflen );	\
+	}																			\
+	bool typename::IsValid() const												\
+	{																			\
+		return m_FileHandle != FILENAMEHANDLE_INVALID;							\
+	}																			\
+
 #endif // UTLSYMBOL_H

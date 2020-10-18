@@ -623,7 +623,6 @@ CBasePlayer::CBasePlayer( )
 	ResetObserverMode();
 
 	m_surfaceProps = 0;
-	m_pSurfaceData = NULL;
 	m_surfaceFriction = 1.0f;
 	m_chTextureType = 0;
 	m_chPreviousTextureType = 0;

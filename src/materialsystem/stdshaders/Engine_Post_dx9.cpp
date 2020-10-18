@@ -25,6 +25,11 @@ ConVar mat_local_contrast_vignette_start_override( "mat_local_contrast_vignette_
 ConVar mat_local_contrast_vignette_end_override( "mat_local_contrast_vignette_end_override", "-1.0" );
 ConVar mat_local_contrast_edge_scale_override( "mat_local_contrast_edge_scale_override", "-1000.0" );
 
+static ConVar r_bloomtintr("r_bloomtintr", "0.3");
+static ConVar r_bloomtintg("r_bloomtintg", "0.59");
+static ConVar r_bloomtintb("r_bloomtintb", "0.11");
+static ConVar r_bloomtintexponent("r_bloomtintexponent", "2.2");
+
 DEFINE_FALLBACK_SHADER( PP_Engine_Post, PP_Engine_Post_dx9 )
 BEGIN_VS_SHADER_FLAGS( PP_Engine_Post_dx9, "Engine post-processing effects (software anti-aliasing, bloom, color-correction", SHADER_NOT_EDITABLE )
 	BEGIN_SHADER_PARAMS
@@ -85,6 +90,11 @@ BEGIN_VS_SHADER_FLAGS( PP_Engine_Post_dx9, "Engine post-processing effects (soft
 		SHADER_PARAM( WEIGHT3,					SHADER_PARAM_TYPE_FLOAT,	"1",				"weight3" )
 		SHADER_PARAM( NUM_LOOKUPS,				SHADER_PARAM_TYPE_FLOAT,	"0",				"num_lookups" )
 		SHADER_PARAM( TOOLTIME,					SHADER_PARAM_TYPE_FLOAT,	"0",				"tooltime" )
+
+		SHADER_PARAM(BLOOMTYPE, SHADER_PARAM_TYPE_INTEGER, "0", "")
+		SHADER_PARAM(BLOOMEXP, SHADER_PARAM_TYPE_FLOAT, "2.5", "")
+		SHADER_PARAM(BLOOMSATURATION, SHADER_PARAM_TYPE_FLOAT, "1.0", "")
+		SHADER_PARAM(BLOOMTINTENABLE, SHADER_PARAM_TYPE_INTEGER, "1", "")
 	END_SHADER_PARAMS
 
 	SHADER_INIT_PARAMS()
@@ -238,6 +248,15 @@ BEGIN_VS_SHADER_FLAGS( PP_Engine_Post_dx9, "Engine post-processing effects (soft
 			params[ DESATURATION ]->SetFloatValue( 0.0f );
 		}
 
+		SET_PARAM_FLOAT_IF_NOT_DEFINED(BLOOMEXP, 2.5f);
+		SET_PARAM_FLOAT_IF_NOT_DEFINED(BLOOMSATURATION, 1.0f);
+		SET_PARAM_INT_IF_NOT_DEFINED(BLOOMTINTENABLE, 1);
+
+		if (!params[BLOOMTYPE]->IsDefined())
+		{
+			params[BLOOMTYPE]->SetIntValue(0);
+		}
+
 		SET_FLAGS2( MATERIAL_VAR2_NEEDS_FULL_FRAME_BUFFER_TEXTURE );
 	}
 
@@ -373,11 +392,13 @@ BEGIN_VS_SHADER_FLAGS( PP_Engine_Post_dx9, "Engine post-processing effects (soft
 			}
 
 			// PC, ps20b has a desaturation control that overrides color correction
-			bool bDesaturateEnable = bToolMode && ( params[DESATURATEENABLE]->GetIntValue() != 0 ) && g_pHardwareConfig->SupportsPixelShaders_2_b() && IsPC();
+			bool bDesaturateEnable = ( params[DESATURATEENABLE]->GetIntValue() != 0 ) && g_pHardwareConfig->SupportsPixelShaders_2_b();
 			
 			float vPsConst16[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 			vPsConst16[0] = params[ DESATURATION ]->GetFloatValue();
 			vPsConst16[1] = ( params[FADE]->GetIntValue() == 2 ) ? 1.0f : 0.0f; // Enable lerping to ( color * fadecolor ) for FADE_COLOR=2
+			vPsConst16[2] = params[BLOOMEXP]->GetFloatValue();
+			vPsConst16[3] = params[BLOOMSATURATION]->GetFloatValue();
 			pShaderAPI->SetPixelShaderConstant( 16, vPsConst16, 1 );
 
 			if ( params[FADE]->GetIntValue() == 0 )
@@ -621,6 +642,19 @@ BEGIN_VS_SHADER_FLAGS( PP_Engine_Post_dx9, "Engine post-processing effects (soft
 				pShaderAPI->SetPixelShaderConstant( 14, vViewportMad, 1 );
 			}
 
+			float flPixelShaderParams[4] = { r_bloomtintr.GetFloat(),
+											 r_bloomtintg.GetFloat(),
+											 r_bloomtintb.GetFloat(),
+											 r_bloomtintexponent.GetFloat() };
+			if (params[BLOOMTINTENABLE]->GetIntValue() == 0)
+			{
+				flPixelShaderParams[0] = 1.0f;
+				flPixelShaderParams[1] = 1.0f;
+				flPixelShaderParams[2] = 1.0f;
+				flPixelShaderParams[3] = 1.0f;
+			}
+			pShaderAPI->SetPixelShaderConstant(17, flPixelShaderParams, 1);
+
 			if ( !colCorrectEnabled )
 			{
 				colCorrectNumLookups = 0;
@@ -647,6 +681,8 @@ BEGIN_VS_SHADER_FLAGS( PP_Engine_Post_dx9, "Engine post-processing effects (soft
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( TV_GAMMA,						params[TV_GAMMA]->GetIntValue() && bToolMode ? 1 : 0 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( DESATURATEENABLE,				bDesaturateEnable );
 #endif
+
+				SET_DYNAMIC_PIXEL_SHADER_COMBO(BLOOMTYPE, params[BLOOMTYPE]->GetIntValue());
 				SET_DYNAMIC_PIXEL_SHADER( pp_engine_post_ps20b );
 			}
 			else

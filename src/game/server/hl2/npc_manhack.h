@@ -31,6 +31,8 @@ enum
 	MANHACK_EYE_STATE_STUNNED,
 };
 
+#define MANHACK_EYE_STATE_BITS 2
+
 //-----------------------------------------------------------------------------
 // Attachment points.
 //-----------------------------------------------------------------------------
@@ -317,6 +319,7 @@ private:
 	//NEW CONTROLLABLE STUFF:
 	CNetworkVar(bool, m_bIsControlled);
 	bool m_bShouldFollowPlayer;
+	CNetworkHandle(CBaseEntity, m_hHUDTarget);
 
 public:
 	void		SetControlledByPlayer(bool bControllable) { m_bIsControlled = bControllable; }

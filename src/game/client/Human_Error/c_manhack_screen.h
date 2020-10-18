@@ -16,6 +16,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+class C_NPC_Manhack;
+
 //-----------------------------------------------------------------------------
 //
 // In-game vgui panel which shows the RPG's ammo count
@@ -29,12 +31,17 @@ public:
     CManhackScreen( vgui::Panel *parent, const char *panelName );
 	~CManhackScreen();
 
-	void		 SetManhackData(int iDistance, int iCount);
+	void		 SetManhackData(int iDistance, int iCount, C_NPC_Manhack* pManhack);
+	void		 SetManhackView(const CNewViewSetup& view) { m_ManhackView = view; }
+	virtual void PaintBackground();
 private:
     vgui::Label *m_pManhackCount;
 	vgui::Label *m_pManhackDistance;
 	vgui::Label *m_pManhackOnline;
 	int			m_iManhackDistance;
+
+	C_NPC_Manhack*	m_pManhack;
+	CNewViewSetup	m_ManhackView;
 };
 
 extern CManhackScreen	*GetManhackScreen();

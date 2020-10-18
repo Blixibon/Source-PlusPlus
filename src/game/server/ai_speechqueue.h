@@ -25,6 +25,15 @@ enum DeferredResponseTarget_t // possible targets for a deferred response
 	kDRT_MAX, // high water mark
 };
 
+enum DeferredResponseFilter_t
+{
+	kDRF_NONE,
+	kDRF_TEAM,
+	kDRF_SQUAD,
+
+	kDRF_MAX,
+};
+
 // Allows you to postpone AI speech concepts to a later time, or to direct them to 
 // a specific character, or all of them.
 class CResponseQueue
@@ -37,26 +46,30 @@ public:
 	// more efficient in the future.
 	typedef AI_CriteriaSet DeferredContexts_t; 
 
-	struct CFollowupTargetSpec_t ///< to whom a followup is directed. Can be a specific entity or something more exotic.
+	struct CFollowupTargetSpec_t // to whom a followup is directed. Can be a specific entity or something more exotic.
 	{
-		DeferredResponseTarget_t m_iTargetType; ///< ANY, ALL, or SPECIFIC. If specific, pass through a handle to:
-		EHANDLE	m_hHandle; ///< a specific target for the message, or a specific character to OMIT. 
-		inline bool IsValid( void ) const;
+		DeferredResponseTarget_t m_iTargetType; // ANY, ALL, or SPECIFIC. If specific, pass through a handle to:
+		DeferredResponseFilter_t m_iTargetFilter; //
+		EHANDLE	m_hHandle; // a specific target for the message, or a specific character to OMIT. 
+		inline bool IsValid(void) const;
 
 		// constructors/destructors
-		explicit CFollowupTargetSpec_t(const DeferredResponseTarget_t &targetType, const EHANDLE &handle)
-			: m_iTargetType(targetType), m_hHandle(handle) 
+		explicit CFollowupTargetSpec_t(const DeferredResponseTarget_t& targetType, const EHANDLE& handle, const DeferredResponseFilter_t& targetFilter)
+			: m_iTargetType(targetType), m_hHandle(handle), m_iTargetFilter(targetFilter)
 		{};
-		explicit CFollowupTargetSpec_t(const EHANDLE &handle)
-			: m_iTargetType(kDRT_SPECIFIC), m_hHandle(handle) 
+		explicit CFollowupTargetSpec_t(const DeferredResponseTarget_t& targetType, const EHANDLE& handle)
+			: m_iTargetType(targetType), m_hHandle(handle), m_iTargetFilter(kDRF_NONE)
+		{};
+		explicit CFollowupTargetSpec_t(const EHANDLE& handle)
+			: m_iTargetType(kDRT_SPECIFIC), m_hHandle(handle), m_iTargetFilter(kDRF_NONE)
 		{};
 		CFollowupTargetSpec_t(DeferredResponseTarget_t target) // eg, ANY, ALL, etc. 
-			: m_iTargetType(target)  
-		{	
-			AssertMsg(m_iTargetType != kDRT_SPECIFIC, "Response rule followup tried to specify an entity target, but didn't provide the target.\n" ); 
+			: m_iTargetType(target), m_iTargetFilter(kDRF_NONE)
+		{
+			AssertMsg(m_iTargetType != kDRT_SPECIFIC, "Response rule followup tried to specify an entity target, but didn't provide the target.\n");
 		}
 		CFollowupTargetSpec_t(void) // default: invalid
-			: m_iTargetType(kDRT_MAX)
+			: m_iTargetType(kDRT_MAX), m_iTargetFilter(kDRF_MAX)
 		{};
 	};
 
@@ -189,11 +202,13 @@ protected:
 // specifies a specific entity, that handle must be valid.
 bool CResponseQueue::CFollowupTargetSpec_t::IsValid( void ) const
 {
-	if (m_iTargetType >= kDRT_MAX) 
+	if (m_iTargetType >= kDRT_MAX || m_iTargetFilter >= kDRF_MAX)
 		return false;
-	if (m_iTargetType < 0) 
+	if (m_iTargetType < 0 || m_iTargetFilter < 0)
 		return false;
 	if (m_iTargetType == kDRT_SPECIFIC && !m_hHandle.IsValid())
+		return false;
+	if (m_iTargetType < kDRT_SPECIFIC && m_iTargetFilter != kDRF_NONE && !m_hHandle.IsValid())
 		return false;
 
 	return true;

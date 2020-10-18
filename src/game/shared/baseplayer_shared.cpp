@@ -502,22 +502,22 @@ void CBasePlayer::EyePositionAndVectors( Vector *pPosition, Vector *pForward,
 }
 
 #ifdef CLIENT_DLL
-surfacedata_t * CBasePlayer::GetFootstepSurface( const Vector &origin, const char *surfaceName )
+surfacedataall_t CBasePlayer::GetFootstepSurface( const Vector &origin, const char *surfaceName )
 {
-	return physprops->GetSurfaceData( physprops->GetSurfaceIndex( surfaceName ) );
+	return physprops2->GetSurfaceDataBoth( physprops->GetSurfaceIndex( surfaceName ) );
 }
 #endif
 
-surfacedata_t *CBasePlayer::GetLadderSurface( const Vector &origin )
+surfacedataall_t CBasePlayer::GetLadderSurface( const Vector &origin )
 {
 #ifdef CLIENT_DLL
 	return GetFootstepSurface( origin, "ladder" );
 #else
-	return physprops->GetSurfaceData( physprops->GetSurfaceIndex( "ladder" ) );
+	return physprops2->GetSurfaceDataBoth( physprops->GetSurfaceIndex( "ladder" ) );
 #endif
 }
 
-void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity )
+void CBasePlayer::UpdateStepSound(surfacedataall_t surface, const Vector &vecOrigin, const Vector &vecVelocity )
 {
 	bool bWalking;
 	float fvol;
@@ -589,7 +589,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 	// find out what we're stepping in or on...
 	if ( fLadder )
 	{
-		psurface = GetLadderSurface(vecOrigin);
+		surface = GetLadderSurface(vecOrigin);
 		fvol = 0.5;
 
 		SetStepSoundTime( STEPSOUNDTIME_ON_LADDER, bWalking );
@@ -612,25 +612,25 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 		{
 			iSkipStep = 0;
 		}
-		psurface = physprops->GetSurfaceData( physprops->GetSurfaceIndex( "wade" ) );
+		surface = physprops2->GetSurfaceDataBoth( physprops->GetSurfaceIndex( "wade" ) );
 		fvol = 0.65;
 		SetStepSoundTime( STEPSOUNDTIME_WATER_KNEE, bWalking );
 	}
 	else if ( GetWaterLevel() == WL_Feet )
 	{
-		psurface = physprops->GetSurfaceData( physprops->GetSurfaceIndex( "water" ) );
+		surface = physprops2->GetSurfaceDataBoth( physprops->GetSurfaceIndex( "water" ) );
 		fvol = bWalking ? 0.2 : 0.5;
 
 		SetStepSoundTime( STEPSOUNDTIME_WATER_FOOT, bWalking );
 	}
 	else
 	{
-		if ( !psurface )
+		if ( !surface.pOld )
 			return;
 
 		SetStepSoundTime( STEPSOUNDTIME_NORMAL, bWalking );
 
-		switch ( psurface->game.material )
+		switch ( surface.pOld->game.material )
 		{
 		default:
 		case CHAR_TEX_CONCRETE:
@@ -670,7 +670,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 		fvol *= 0.65;
 	}
 
-	PlayStepSound( feet, psurface, fvol, false );
+	PlayStepSound( feet, surface, bWalking, fvol, false );
 }
 
 //-----------------------------------------------------------------------------
@@ -679,7 +679,7 @@ void CBasePlayer::UpdateStepSound( surfacedata_t *psurface, const Vector &vecOri
 //			fvol -
 //			force - force sound to play
 //-----------------------------------------------------------------------------
-void CBasePlayer::PlayStepSound( const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force )
+void CBasePlayer::PlayStepSound(const Vector& vecOrigin, surfacedataall_t surface, bool bWalk, float fvol, bool force)
 {
 	if ( gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat() )
 		return;
@@ -690,13 +690,20 @@ void CBasePlayer::PlayStepSound( const Vector &vecOrigin, surfacedata_t *psurfac
 		return;
 #endif
 
-	if ( !psurface )
+	if ( !surface.pOld || !surface.pNew )
 		return;
 
 	int nSide = m_Local.m_nStepside;
-	unsigned short stepSoundName = nSide ? psurface->sounds.stepleft : psurface->sounds.stepright;
+	unsigned short stepWalkSoundName = nSide ? surface.pNew->sounds.walkStepLeft : surface.pNew->sounds.walkStepRight;
+	unsigned short stepRunSoundName = nSide ? surface.pNew->sounds.runStepLeft : surface.pNew->sounds.runStepRight;
+	unsigned short stepSoundName = bWalk ? stepWalkSoundName : stepRunSoundName;
 	if ( !stepSoundName )
 		return;
+
+	if (bWalk && stepWalkSoundName != stepRunSoundName)
+	{
+		fvol = Clamp(fvol * 2.f, 0.f, 1.f);
+	}
 
 	m_Local.m_nStepside = !nSide;
 
@@ -710,8 +717,8 @@ void CBasePlayer::PlayStepSound( const Vector &vecOrigin, surfacedata_t *psurfac
 	}
 	else
 	{
-		IPhysicsSurfaceProps *physprops = MoveHelper()->GetSurfaceProps();
-		const char *pSoundName = physprops->GetString( stepSoundName );
+		ISPPSurfacePropsExtension *physprops = MoveHelper()->GetSurfaceProps();
+		const char *pSoundName = physprops->GetString2( stepSoundName );
 
 		// Give child classes an opportunity to override.
 		pSoundName = GetOverrideStepSound( pSoundName );

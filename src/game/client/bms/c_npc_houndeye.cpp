@@ -17,7 +17,7 @@ public:
 IMPLEMENT_CLIENTCLASS_DT(C_NPC_Houndeye, DT_BMHound, CNPC_BMSHoundeye)
 RecvPropTime(RECVINFO(m_flEndEnergyWaveTime)),
 RecvPropFloat(RECVINFO(m_flWaveChargeTime)),
-END_RECV_TABLE()
+END_RECV_TABLE();
 
 float C_NPC_Houndeye::GetChargePct()
 {

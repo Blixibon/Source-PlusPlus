@@ -17,6 +17,16 @@
 
 namespace ResponseRules
 {
+	DECLARE_PRIVATE_SYMBOLTYPE(CRR_VScriptSymbol);
+
+	class CScriptScopeBase
+	{
+	public:
+		static IScriptVM* GetVM()
+		{
+			return IEngineEmulator::Get()->GetScriptVM();
+		}
+	};
 
 	inline unsigned FASTCALL HashStringConventional( const char *pszKey )
 	{
@@ -328,6 +338,7 @@ namespace ResponseRules
 		// Indices into underlying criteria and response dictionaries
 		CUtlVectorConservative< unsigned short >	m_Criteria;
 		CUtlVectorConservative< unsigned short>		m_Responses;
+		CUtlVectorConservative<CRR_VScriptSymbol>	m_ScriptFuncs;
 
 		const char			*m_szContext;
 		uint8				m_nForceWeight;

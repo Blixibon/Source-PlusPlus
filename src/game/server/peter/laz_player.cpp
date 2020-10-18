@@ -232,13 +232,13 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 
 	//pHands->NetworkStateChanged();
 
-	playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(GameTypeSystem()->GetCurrentModGameType(), pPlayer->IsSuitEquipped());
+	PlayerModels::playerModel_t* modelType = PlayerModelSystem()->SelectPlayerModel(GameTypeSystem()->GetCurrentModGameType(), pPlayer->IsSuitEquipped());
 
-	pPlayer->SetModel(modelType->models.Head().szModelName);
+	pPlayer->SetModel(modelType->models.Head().hPlayerModelName.String());
 	pPlayer->m_nSkin = modelType->models.Head().skin;
 	for (int i = 0; i < modelType->models.Head().bodygroups.Count(); i++)
 	{
-		int iGroup = pPlayer->FindBodygroupByName(modelType->models.Head().bodygroups[i].szName);
+		int iGroup = pPlayer->FindBodygroupByName(modelType->models.Head().bodygroups[i].strName.String());
 		pPlayer->SetBodygroup(iGroup, modelType->models.Head().bodygroups[i].body);
 	}
 
@@ -247,11 +247,11 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		CBaseViewModel* pHands = pPlayer->GetViewModel(i);
 		if (pHands)
 		{
-			pHands->SetHandsModel(modelType->szArmModel, modelType->armSkin);
+			pHands->SetHandsModel(modelType->models.Head().hArmModelName.String(), modelType->models.Head().armSkin);
 
-			for (int i = 0; i < modelType->armbodys.Count(); i++)
+			for (int i = 0; i < modelType->models.Head().armbodys.Count(); i++)
 			{
-				pHands->SetHandsBodygroupByName(modelType->armbodys[i].szName, modelType->armbodys[i].body);
+				pHands->SetHandsBodygroupByName(modelType->models.Head().armbodys[i].strName.String(), modelType->models.Head().armbodys[i].body);
 			}
 		}
 	}
@@ -407,12 +407,12 @@ void CLaz_Player::Spawn(void)
 
 	if (HasMPModel())
 	{
-		rndModel_t *variant = &m_MPModel.models.Random();
-		SetModel(variant->szModelName);
+		PlayerModels::rndModel_t *variant = &m_MPModel.models.Random();
+		SetModel(variant->hPlayerModelName.String());
 		m_nSkin = RandomInt(variant->skin, variant->skinMax);
 		for (int i = 0; i < variant->bodygroups.Count(); i++)
 		{
-			int iGroup = FindBodygroupByName(variant->bodygroups[i].szName);
+			int iGroup = FindBodygroupByName(variant->bodygroups[i].strName.String());
 			SetBodygroup(iGroup, RandomInt(variant->bodygroups[i].body, variant->bodygroups[i].bodyMax));
 		}
 
@@ -421,11 +421,11 @@ void CLaz_Player::Spawn(void)
 			CBaseViewModel* pHands = GetViewModel(i);
 			if (pHands)
 			{
-				pHands->SetHandsModel(m_MPModel.szArmModel, m_MPModel.armSkin);
+				pHands->SetHandsModel(variant->hArmModelName.String(), variant->armSkin);
 
-				for (int i = 0; i < m_MPModel.armbodys.Count(); i++)
+				for (int i = 0; i < variant->armbodys.Count(); i++)
 				{
-					pHands->SetHandsBodygroupByName(m_MPModel.armbodys[i].szName, m_MPModel.armbodys[i].body);
+					pHands->SetHandsBodygroupByName(variant->armbodys[i].strName.String(), variant->armbodys[i].body);
 				}
 			}
 		}
@@ -497,7 +497,7 @@ void CLaz_Player::UpdateOnRemove()
 
 	if (HasMPModel())
 	{
-		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.szSectionID);
+		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.strModelID);
 		m_MPModel = { 0 };
 	}
 }
@@ -1216,7 +1216,7 @@ void CLaz_Player::SetPlayerModel(void)
 
 	if (HasMPModel())
 	{
-		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.szSectionID);
+		PlayerModelSystem()->PlayerReleaseModel(m_MPModel.strModelID);
 		m_MPModel = { 0 };
 	}
 
@@ -1230,16 +1230,16 @@ void CLaz_Player::SetPlayerModel(void)
 	if (preferredModels.Count() && (GetPlayerPermissions() & LAZ_PERM_FORCE_MODEL))
 	{
 		const char* pszModel = preferredModels.Head();
-		playerModel_t model = PlayerModelSystem()->FindPlayerModel(pszModel);
-		if (model.szSectionID[0])
+		PlayerModels::playerModel_t model = PlayerModelSystem()->FindPlayerModel(pszModel);
+		if (model.strModelID.String()[0])
 		{
 			m_MPModel = model;
-			PlayerModelSystem()->PlayerGrabModel(m_MPModel.szSectionID);
+			PlayerModelSystem()->PlayerGrabModel(m_MPModel.strModelID);
 			return;
 		}
 	}
 
-	CUtlVector<playerModel_t> models = PlayerModelSystem()->GetAvailableModelsForTeam(TeamID());
+	CUtlVector<PlayerModels::playerModel_t> models = PlayerModelSystem()->GetAvailableModelsForTeam(TeamID());
 
 	if (!models.Count())
 		return;
@@ -1253,7 +1253,7 @@ void CLaz_Player::SetPlayerModel(void)
 		{
 			for (int k = 0; k < preferredModels.Count(); k++)
 			{
-				if (FStrEq(preferredModels[k], models[v].szSectionID))
+				if (FStrEq(preferredModels[k], models[v].strModelID.String()))
 				{
 					prefToActual.InsertOrReplace(k, v);
 				}
@@ -1283,7 +1283,7 @@ void CLaz_Player::SetPlayerModel(void)
 		m_MPModel = models.Random();
 	}
 
-	PlayerModelSystem()->PlayerGrabModel(m_MPModel.szSectionID);
+	PlayerModelSystem()->PlayerGrabModel(m_MPModel.strModelID);
 }
 
 bool CLaz_Player::ClientCommand(const CCommand &args)
@@ -3473,6 +3473,13 @@ CNPC_Manhack* CLaz_Player::CreateManhack(const Vector& position, const QAngle& a
 
 	pManhack->SetDeployingPlayer(this);
 	pManhack->ShouldFollowPlayer(true);
+	string_t iszSquadName = NULL_STRING;
+	if (gpGlobals->maxClients > 1)
+		iszSquadName = AllocPooledString(CFmtStr("controllable_manhack_squad%d", GetUserID()));
+	else
+		iszSquadName = AllocPooledString("controllable_manhack_squad");
+
+	pManhack->SetSquadName(iszSquadName);
 
 	m_iCurrentManhackIndex = manhackIndex;
 	m_LazLocal.m_hSetOfManhacks.Set(m_iCurrentManhackIndex, pManhack);

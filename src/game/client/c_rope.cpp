@@ -126,6 +126,7 @@ static int			g_nRopePointsSimulated;
 
 #ifdef MAPBASE
 static IMaterial *g_pSplineCableShadowdepth = NULL;
+static IMaterial* g_pSplineCableSSAOdepth = NULL;
 #endif
 
 // Used for cycling so that they're sequencially ordered on each strand
@@ -375,7 +376,7 @@ public:
 
 	void ResetRenderCache( void );
 	void AddToRenderCache( C_RopeKeyframe *pRope );
-	void DrawRenderCache( bool bShadowDepth );
+	void DrawRenderCache(ERenderDepthMode eDepthMode);
 #ifndef MAPBASE
 	void OnRenderStart( void )
 	{
@@ -444,7 +445,7 @@ private:
 	};
 
 #ifdef MAPBASE
-	void DrawRenderCache_NonQueued( bool bShadowDepth, RopeRenderData_t *pRenderCache, int nRenderCacheCount, const Vector &vCurrentViewForward, const Vector &vCurrentViewOrigin, C_RopeKeyframe::BuildRopeQueuedData_t *pBuildRopeQueuedData, CThreadFastMutex *pRopeDataMutex );
+	void DrawRenderCache_NonQueued(ERenderDepthMode eDepthMode, RopeRenderData_t *pRenderCache, int nRenderCacheCount, const Vector &vCurrentViewForward, const Vector &vCurrentViewOrigin, C_RopeKeyframe::BuildRopeQueuedData_t *pBuildRopeQueuedData, CThreadFastMutex *pRopeDataMutex );
 #else
 	CUtlLinkedList<RopeQueuedRenderCache_t> m_RopeQueuedRenderCaches;
 #endif
@@ -457,7 +458,7 @@ private:
 	CUtlVector<RopeRenderData_t>	m_aRenderCache;
 
 	//in queued material system mode we need to store off data for later use.
-	IMaterial* m_pDepthWriteMaterial;
+	//IMaterial* m_pDepthWriteMaterial;
 	CUtlLinkedList<RopeQueuedRenderCache_t> m_RopeQueuedRenderCaches;
 	CThreadFastMutex		m_RopeQueuedRenderCaches_Mutex; //mutex just for changing m_RopeQueuedRenderCaches
 #endif
@@ -488,7 +489,7 @@ CRopeManager::CRopeManager()
 	m_aSegmentCache.Purge();
 	m_nSegmentCacheCount = 0;
 #endif
-	m_pDepthWriteMaterial = NULL;
+	//m_pDepthWriteMaterial = NULL;
 	m_bDrawHolidayLights = false;
 	m_bHolidayInitialized = false;
 	m_nHolidayLightsStyle = 0;
@@ -587,7 +588,7 @@ void CRopeManager::AddToRenderCache( C_RopeKeyframe *pRope )
 	meshBuilder.AdvanceVertexF<VTX_HAVEPOS | VTX_HAVECOLOR, 5>(); 
 
 
-void CRopeManager::DrawRenderCache_NonQueued( bool bShadowDepth, RopeRenderData_t *pRenderCache, int nRenderCacheCount, const Vector &vCurrentViewForward, const Vector &vCurrentViewOrigin, C_RopeKeyframe::BuildRopeQueuedData_t *pBuildRopeQueuedData, CThreadFastMutex *pRopeDataMutex )
+void CRopeManager::DrawRenderCache_NonQueued(ERenderDepthMode eDepthMode, RopeRenderData_t *pRenderCache, int nRenderCacheCount, const Vector &vCurrentViewForward, const Vector &vCurrentViewOrigin, C_RopeKeyframe::BuildRopeQueuedData_t *pBuildRopeQueuedData, CThreadFastMutex *pRopeDataMutex )
 {
 	VPROF_BUDGET( "CRopeManager::DrawRenderCache", VPROF_BUDGETGROUP_ROPES );
 	
@@ -595,14 +596,14 @@ void CRopeManager::DrawRenderCache_NonQueued( bool bShadowDepth, RopeRenderData_
 	if( pRopeDataMutex == NULL )
 		pRopeDataMutex = &dummyMutex;
 
-	if ( bShadowDepth && !m_pDepthWriteMaterial && g_pMaterialSystem )
+	/*if ( eDepthMode == DEPTH_MODE_OVERRIDE && !m_pDepthWriteMaterial && g_pMaterialSystem )
 	{
 		KeyValues *pVMTKeyValues = new KeyValues( "DepthWrite" );
 		pVMTKeyValues->SetInt( "$no_fullbright", 1 );
 		pVMTKeyValues->SetInt( "$alphatest", 0 );
 		pVMTKeyValues->SetInt( "$nocull", 1 );
 		m_pDepthWriteMaterial = g_pMaterialSystem->FindProceduralMaterial( "__DepthWrite01", TEXTURE_GROUP_OTHER, pVMTKeyValues );
-	}
+	}*/
 	CMatRenderContextPtr pRenderContext( materials );
 
 	// UNDONE: needs to use the queued data
@@ -629,7 +630,21 @@ void CRopeManager::DrawRenderCache_NonQueued( bool bShadowDepth, RopeRenderData_
 			if ( nTotalVerts == 0 )
 				continue;		
 
-			IMaterial *pMaterial = bShadowDepth ? g_pSplineCableShadowdepth : pRenderCache[iRenderCache].m_pSolidMaterial;
+			IMaterial* pMaterial = nullptr;
+
+			switch (eDepthMode)
+			{
+			case DEPTH_MODE_NORMAL:
+			default:
+				pMaterial = pRenderCache[iRenderCache].m_pSolidMaterial;
+				break;
+			case DEPTH_MODE_SSA0:
+				pMaterial = g_pSplineCableSSAOdepth;
+				break;
+			case DEPTH_MODE_OVERRIDE:
+				pMaterial = g_pSplineCableShadowdepth;
+				break;
+			}
 
 			// Need to make sure that all rope materials use the splinerope shader since there are a lot of assumptions about how the shader interfaces with this code.
 			AssertOnce( V_stricmp( pMaterial->GetShaderName(), "PP_SplineRope" ) == 0 ); // splinerope
@@ -884,7 +899,7 @@ ConVar r_queued_ropes( "r_queued_ropes", "1" );
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CRopeManager::DrawRenderCache( bool bShadowDepth )
+void CRopeManager::DrawRenderCache(ERenderDepthMode eDepthMode)
 {
 	int iRenderCacheCount = m_aRenderCache.Count();
 
@@ -1013,7 +1028,7 @@ void CRopeManager::DrawRenderCache( bool bShadowDepth )
 		m_RopeQueuedRenderCaches_Mutex.Unlock();
 
 		Assert( ((void *)pVectorWrite == (void *)(((uint8 *)pMemory) + iMemoryNeeded)) && ((void *)pWriteRopeQueuedData == (void *)pVectorDataStart));		
-		pCallQueue->QueueCall( this, &CRopeManager::DrawRenderCache_NonQueued, bShadowDepth, pRenderCachesStart, iRenderCacheCount, vForward, vOrigin, pBuildRopeQueuedDataStart, pRopeDataMutex );
+		pCallQueue->QueueCall( this, &CRopeManager::DrawRenderCache_NonQueued, eDepthMode, pRenderCachesStart, iRenderCacheCount, vForward, vOrigin, pBuildRopeQueuedDataStart, pRopeDataMutex );
 
 		//if ( IsHolidayLightMode() )
 		//{
@@ -1034,7 +1049,7 @@ void CRopeManager::DrawRenderCache( bool bShadowDepth )
 	else
 	{
 #ifdef MAPBASE
-		DrawRenderCache_NonQueued( bShadowDepth, m_aRenderCache.Base(), iRenderCacheCount, vForward, vOrigin, NULL, NULL );
+		DrawRenderCache_NonQueued( eDepthMode, m_aRenderCache.Base(), iRenderCacheCount, vForward, vOrigin, NULL, NULL );
 #else
 		DrawRenderCache_NonQueued( bShadowDepth, m_aRenderCache.Base(), iRenderCacheCount, vForward, vOrigin, NULL );
 #endif
@@ -1807,6 +1822,12 @@ void C_RopeKeyframe::FinishInit( const char *pMaterialName )
 	{
 		g_pSplineCableShadowdepth = g_pMaterialSystem->FindMaterial( "cable/rope_shadowdepth", TEXTURE_GROUP_OTHER );
 		g_pSplineCableShadowdepth->IncrementReferenceCount();
+	}
+
+	if (!g_pSplineCableSSAOdepth)
+	{
+		g_pSplineCableSSAOdepth = g_pMaterialSystem->FindMaterial("cable/rope_ssaodepth", TEXTURE_GROUP_OTHER);
+		g_pSplineCableSSAOdepth->IncrementReferenceCount();
 	}
 #endif
 

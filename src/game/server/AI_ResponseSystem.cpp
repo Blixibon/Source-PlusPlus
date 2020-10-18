@@ -187,6 +187,15 @@ class CResponseRulesToEngineInterface : public ResponseRules::IEngineEmulator
 		return UTIL_FreeFile( buffer );
 	}
 
+	virtual IScriptVM* GetScriptVM()
+	{
+		return g_pScriptVM;
+	}
+
+	virtual bool VScriptRunScript(const char* pszScriptName, HSCRIPT hScope, bool bWarnMissing = false)
+	{
+		return ::VScriptRunScript(pszScriptName, hScope, bWarnMissing);
+	}
 };
 
 CUniformRandomStream CResponseRulesToEngineInterface::rr_stream;
@@ -457,7 +466,7 @@ private:
 //-----------------------------------------------------------------------------
 // Purpose: The default response system for expressive AIs
 //-----------------------------------------------------------------------------
-class CDefaultResponseSystem : public CGameResponseSystem, public CAutoGameSystem
+class CDefaultResponseSystem : public CGameResponseSystem, public CAutoGameSystem, public IGameScriptPersistable
 {
 	typedef CAutoGameSystem BaseClass;
 
@@ -474,6 +483,45 @@ public:
 	// CAutoServerSystem
 	virtual bool Init();
 	virtual void Shutdown();
+
+	virtual bool InitScript()
+	{
+		int c = m_InstancedSystems.Count();
+		for (int i = c - 1; i >= 0; i--)
+		{
+			CInstancedResponseSystem* sys = m_InstancedSystems[i];
+
+			sys->InitScript();
+		}
+
+		for (int i = 0; i < (int)m_AlternateSystems.Count(); i++)
+		{
+			CInstancedResponseSystem* sys = m_AlternateSystems[i];
+
+			sys->InitScript();
+		}
+
+		return CResponseSystem::InitScript();
+	}
+	virtual void TermScript()
+	{
+		CResponseSystem::TermScript();
+
+		int c = m_InstancedSystems.Count();
+		for (int i = c - 1; i >= 0; i--)
+		{
+			CInstancedResponseSystem* sys = m_InstancedSystems[i];
+			
+			sys->TermScript();
+		}
+
+		for (int i = 0; i < (int)m_AlternateSystems.Count(); i++)
+		{
+			CInstancedResponseSystem* sys = m_AlternateSystems[i];
+
+			sys->TermScript();
+		}
+	}
 
 	virtual void LevelInitPostEntity()
 	{
@@ -518,6 +566,7 @@ public:
 		}
 
 		sys->Precache();
+		sys->InitScript();
 
 		COM_TimestampedLog( "PrecacheCustomResponseSystem %s - Finish", scriptfile );
 
@@ -558,6 +607,7 @@ public:
 		}
 
 		sys->Precache();
+		sys->InitScript();
 
 		COM_TimestampedLog("PrecacheCustomResponseSystem %s - Finish", scriptfile);
 
@@ -583,8 +633,10 @@ public:
 
 	void ReloadAllResponseSystems()
 	{
+		TermScript();
 		Clear();
 		Init();
+		InitScript();
 
 		int c = m_InstancedSystems.Count();
 		for ( int i = c - 1 ; i >= 0; i-- )
@@ -592,8 +644,10 @@ public:
 			CInstancedResponseSystem *sys = m_InstancedSystems[ i ];
 			if ( !IsCustomManagable() )
 			{
+				sys->TermScript();
 				sys->Clear();
 				sys->Init();
+				sys->InitScript();
 			}
 			else
 			{
@@ -606,8 +660,10 @@ public:
 		{
 			CInstancedResponseSystem* sys = m_AlternateSystems[i];
 
+			sys->TermScript();
 			sys->Clear();
 			sys->Init();
+			sys->InitScript();
 		}
 
 		// precache sounds in case we added new ones
@@ -998,6 +1054,8 @@ ISaveRestoreBlockHandler *GetDefaultResponseSystemSaveRestoreBlockHandler()
 //-----------------------------------------------------------------------------
 bool CDefaultResponseSystem::Init()
 {
+	g_ScriptPersistableList.AddToTail(this);
+
 	/*
 	Warning( "sizeof( Response ) == %d\n", sizeof( Response ) );
 	Warning( "sizeof( ResponseGroup ) == %d\n", sizeof( ResponseGroup ) );
@@ -1016,6 +1074,8 @@ bool CDefaultResponseSystem::Init()
 //-----------------------------------------------------------------------------
 void CDefaultResponseSystem::Shutdown()
 {
+	g_ScriptPersistableList.FindAndRemove(this);
+
 	// Wipe instanced versions
 	ClearInstanced();
 

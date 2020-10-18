@@ -5,6 +5,7 @@
 //#include "rich_presence_system.h"
 #include "scenecache.h"
 #include "shader_data_system.h"
+#include "surfaceprops_extension.h"
 #include "tier3/tier3.h"
 
 //IVEngineClient* engineclient = nullptr;
@@ -44,6 +45,7 @@ public:
 		{
 			bRet = BaseClass::Connect(factory) && m_SceneCache.Connect(factory) && m_Holidays.Init() /*&& m_Presence.Connect(factory)*/;
 			//m_Presence.InternalInit(this);
+			m_SurfacePropsExt.Init(this);
 		}
 
 		m_iConnectCount++;
@@ -99,20 +101,26 @@ public:
 	//virtual IDiscordPresence* GetRichPresence() { return &m_Presence; }
 
 	// Inherited via IGameSharedUtils
-	virtual bool InitClient(CreateInterfaceFn engineFactory, CreateInterfaceFn clientFactory, CGlobalVarsBase* pGlobals, CUserMessages* pUsermessages) override
+	virtual bool InitClient(CreateInterfaceFn engineFactory, CreateInterfaceFn physicsFactory, CreateInterfaceFn clientFactory, CGlobalVarsBase* pGlobals, CUserMessages* pUsermessages) override
 	{
 		m_EnginePointers.engineclient = (IVEngineClient*)engineFactory(VENGINE_CLIENT_INTERFACE_VERSION, NULL);
 		m_EnginePointers.gameclient = (IBaseClientDLL*)clientFactory(CLIENT_DLL_INTERFACE_VERSION, NULL);
 		m_EnginePointers.gpClientGlobals = pGlobals;
 		m_EnginePointers.cl_usermessages = pUsermessages;
+		if (!m_EnginePointers.physicsprops)
+			m_EnginePointers.physicsprops = (IPhysicsSurfaceProps*)physicsFactory(VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, NULL);
+
 		return true;
 	}
-	virtual bool InitServer(CreateInterfaceFn engineFactory, CreateInterfaceFn gameFactory, CGlobalVars* pGlobals, CUserMessages* pUsermessages) override
+	virtual bool InitServer(CreateInterfaceFn engineFactory, CreateInterfaceFn physicsFactory, CreateInterfaceFn gameFactory, CGlobalVars* pGlobals, CUserMessages* pUsermessages) override
 	{
 		m_EnginePointers.engineserver = (IVEngineServer*)engineFactory(INTERFACEVERSION_VENGINESERVER, NULL);
 		m_EnginePointers.gameserver = (IServerGameDLL*)gameFactory(INTERFACEVERSION_SERVERGAMEDLL, NULL);
 		m_EnginePointers.gpServerGlobals = pGlobals;
 		m_EnginePointers.sv_usermessages = pUsermessages;
+		if (!m_EnginePointers.physicsprops)
+			m_EnginePointers.physicsprops = (IPhysicsSurfaceProps*)physicsFactory(VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, NULL);
+
 		return true;
 	}
 
@@ -168,6 +176,7 @@ private:
 	//CRichPresense m_Presence;
 	CSceneFileCache m_SceneCache;
 	CShaderDataExtension m_ShaderExtension;
+	CExtendedSurfaceProps m_SurfacePropsExt;
 
 	typedef struct {
 		bool m_bRunning;
@@ -251,6 +260,14 @@ void* CGameSharedUtils::QueryInterface(const char* pInterfaceName)
 	else if (V_strcmp(HOLIDAYEVENTS_INTERFACE_VERSION, pInterfaceName) == 0)
 	{
 		return static_cast<IHolidayEvents*> (&m_Holidays);
+	}
+	else if (V_strcmp(SPP_SURFACEPROPS_INTERFACE_VERSION, pInterfaceName) == 0)
+	{
+		return static_cast<ISPPSurfacePropsExtension*> (&m_SurfacePropsExt);
+	}
+	else if (V_strcmp(VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, pInterfaceName) == 0)
+	{
+		return static_cast<IPhysicsSurfaceProps*> (&m_SurfacePropsExt);
 	}
 	else
 	{

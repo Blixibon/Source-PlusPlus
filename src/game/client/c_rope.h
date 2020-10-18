@@ -256,7 +256,7 @@ public:
 	virtual						~IRopeManager() {}
 	virtual void				ResetRenderCache( void ) = 0;
 	virtual void				AddToRenderCache( C_RopeKeyframe *pRope ) = 0;
-	virtual void				DrawRenderCache( bool bShadowDepth ) = 0;
+	virtual void				DrawRenderCache(ERenderDepthMode eDepthMode ) = 0;
 	virtual void				SetHolidayLightMode( bool bHoliday ) = 0;
 	virtual bool				IsHolidayLightMode( void ) = 0;
 	virtual int					GetHolidayLightStyle( void ) = 0;

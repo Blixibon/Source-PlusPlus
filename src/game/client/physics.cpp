@@ -23,6 +23,8 @@
 #include "fx_water.h"
 #include "positionwatcher.h"
 #include "vphysics/constraints.h"
+#include "spp_utils/spp_utils.h"
+#include "spp_utils/ISurfacePropsExt.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -144,7 +146,12 @@ bool PhysIsInCallback()
 bool PhysicsDLLInit( CreateInterfaceFn physicsFactory )
 {
 	if ((physics = (IPhysics *)physicsFactory( VPHYSICS_INTERFACE_VERSION, NULL )) == NULL ||
+#if 0
 		(physprops = (IPhysicsSurfaceProps *)physicsFactory( VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, NULL )) == NULL ||
+#else
+		(physprops = (IPhysicsSurfaceProps*)spp_utils->QueryInterface(VPHYSICS_SURFACEPROPS_INTERFACE_VERSION)) == NULL ||
+		(physprops2 = (ISPPSurfacePropsExtension*)spp_utils->QueryInterface(SPP_SURFACEPROPS_INTERFACE_VERSION)) == NULL ||
+#endif
 		(physcollision = (IPhysicsCollision *)physicsFactory( VPHYSICS_COLLISION_INTERFACE_VERSION, NULL )) == NULL )
 	{
 		return false;

@@ -920,9 +920,9 @@ void CBasePlayer::UpdateWetness()
 //-----------------------------------------------------------------------------
 void CGameMovement::CategorizeGroundSurface( trace_t &pm )
 {
-	IPhysicsSurfaceProps *physprops = MoveHelper()->GetSurfaceProps();
+	ISPPSurfacePropsExtension *physprops = MoveHelper()->GetSurfaceProps();
 	player->m_surfaceProps = pm.surface.surfaceProps;
-	player->m_pSurfaceData = physprops->GetSurfaceData( player->m_surfaceProps );
+	player->m_pSurfaceData = physprops->GetSurfaceDataBoth( player->m_surfaceProps );
 	physprops->GetPhysicsProperties( player->m_surfaceProps, NULL, NULL, &player->m_surfaceFriction, NULL );
 
 	// HACKHACK: Scale this to fudge the relationship between vphysics friction values and player friction values.
@@ -932,7 +932,7 @@ void CGameMovement::CategorizeGroundSurface( trace_t &pm )
 	if ( player->m_surfaceFriction > 1.0f )
 		player->m_surfaceFriction = 1.0f;
 
-	player->m_chTextureType = player->m_pSurfaceData->game.material;
+	player->m_chTextureType = player->m_pSurfaceData.pOld->game.material;
 }
 
 bool CGameMovement::IsDead( void ) const
@@ -1002,9 +1002,9 @@ void CGameMovement::CheckParameters( void )
 
 		// Slow down by the speed factor
 		float flSpeedFactor = 1.0f;
-		if (player->m_pSurfaceData)
+		if (player->m_pSurfaceData.pOld)
 		{
-			flSpeedFactor = player->m_pSurfaceData->game.maxSpeedFactor;
+			flSpeedFactor = player->m_pSurfaceData.pOld->game.maxSpeedFactor;
 		}
 
 		// If we have a constraint, slow down because of that too.
@@ -2392,14 +2392,14 @@ bool CGameMovement::CheckJumpButton( void )
 	// In the air now.
     SetGroundEntity( NULL );
 
-	player->PlayStepSound( mv->GetAbsOrigin(), player->m_pSurfaceData, 1.0, true );
+	player->PlayStepSound( mv->GetAbsOrigin(), player->m_pSurfaceData, false, 1.0, true );
 
 	MoveHelper()->PlayerSetAnimation( PLAYER_JUMP );
 
 	float flGroundFactor = 1.0f;
-	if (player->m_pSurfaceData)
+	if (player->m_pSurfaceData.pOld)
 	{
-		flGroundFactor = player->m_pSurfaceData->game.jumpFactor;
+		flGroundFactor = player->m_pSurfaceData.pOld->game.jumpFactor;
 	}
 
 	float flMul;
@@ -3904,7 +3904,7 @@ void CGameMovement::PlayerRoughLandingEffects( float fvol, bool bLateral)
 		player->m_flStepSoundTime = 400;
 
 		// Play step sound for current texture.
-		player->PlayStepSound( mv->GetAbsOrigin(), player->m_pSurfaceData, fvol, true );
+		player->PlayStepSound( mv->GetAbsOrigin(), player->m_pSurfaceData, false, fvol, true );
 
 		//
 		// Knock the screen around a little bit, temporary effect.

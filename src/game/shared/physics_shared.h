@@ -16,6 +16,7 @@ class IPhysicsSurfaceProps;
 class IPhysicsCollision;
 class IPhysicsObject;
 class IPhysicsObjectPairHash;
+class ISPPSurfacePropsExtension;
 class CSoundPatch;
 
 
@@ -27,6 +28,7 @@ extern IPhysicsEnvironment	*physenv;
 extern IPhysicsEnvironment	*physenv_main;
 #endif
 extern IPhysicsSurfaceProps *physprops;
+extern ISPPSurfacePropsExtension* physprops2;
 extern IPhysicsObjectPairHash *g_EntityCollisionHash;
 
 extern const objectparams_t g_PhysDefaultObjectParams;

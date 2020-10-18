@@ -246,16 +246,16 @@ bool CPropVehicleManhack::CreateControllableManhack( const Vector &position, con
 #endif
 void CPropVehicleManhack::SetLocator( CBaseEntity *pEntity )
 {
-	CBasePlayer *pPlayer = m_hPlayer;
-	if (pPlayer)
-	{
-		CHL2_Player *pHL2Player = dynamic_cast<CHL2_Player*>( pPlayer );
-		if (pHL2Player)
-		{
-			DevMsg("Setting locator\n");
-			pHL2Player->SetLocatorTargetEntity( pEntity );
-		}
-	}
+	//CBasePlayer *pPlayer = m_hPlayer;
+	//if (pPlayer)
+	//{
+	//	CHL2_Player *pHL2Player = dynamic_cast<CHL2_Player*>( pPlayer );
+	//	if (pHL2Player)
+	//	{
+	//		DevMsg("Setting locator\n");
+	//		pHL2Player->SetLocatorTargetEntity( pEntity );
+//		}
+	//}
 }
 
 int CPropVehicleManhack::GetNumberOfHacks()
@@ -992,7 +992,7 @@ void CPropVehicleManhack::ForcePlayerIn(CBaseEntity *pOwner)
 
 	if (GetServerVehicle()->IsPassengerVisible(VEHICLE_ROLE_DRIVER))
 	{
-		pPlayer->AddEffects(EF_BONEMERGE);
+		//pPlayer->AddEffects(EF_BONEMERGE);
 		SetBodygroup(0, 1);
 	}
 	else

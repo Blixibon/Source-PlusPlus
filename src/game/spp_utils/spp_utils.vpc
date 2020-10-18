@@ -61,6 +61,10 @@ $Project "SPP Utils"
 		$File	"$SRCDIR\public\interpolatortypes.cpp"
 		$File	"shader_data_system.cpp"
 		$File	"shader_data_system.h"
+		$File	"surfaceprops_extension.cpp"
+		$File	"surfaceprops_extension.h"
+
+		$File	"$SRCDIR\public\filesystem_helpers.cpp"
 	}
 
 	$Folder	"Header Files"
@@ -69,6 +73,7 @@ $Project "SPP Utils"
 		$File	"$SRCDIR\public\spp_utils\spp_utils.h"
 		$File	"$SRCDIR\public\spp_utils\holiday_events.h"
 		$File	"$SRCDIR\public\scenefilecache\ISceneFileCache.h"
+		$File	"$SRCDIR\public\spp_utils\ISurfacePropsExt.h"
 	}
 
 	$Folder	"Link Libraries"

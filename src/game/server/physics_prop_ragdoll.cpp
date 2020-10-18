@@ -379,15 +379,7 @@ void CRagdollProp::Spawn( void )
 
 	if (pChar)
 	{
-		for (int i = 0; i < pChar->vBodyGroups.Count(); i++)
-		{
-			auto& body = pChar->vBodyGroups[i];
-			int iGroup = FindBodygroupByName(body.strName.String());
-			if (iGroup >= 0)
-				SetBodygroup(iGroup, body.vValues.Random());
-		}
-
-		m_nSkin = pChar->vSkins.Random();
+		pChar->ApplyToModel(GetModelPtr(), m_nSkin.GetForModify(), m_nBody.GetForModify());
 
 		for (int i = 0; i < pChar->vMergedModels.Count(); i++)
 		{

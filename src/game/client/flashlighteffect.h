@@ -77,6 +77,7 @@ class CSpotlightEffect : public CFlashlightEffectBase
 {
 public:
 
+	CSpotlightEffect(bool bVolumetric, float flVolumeIntensity = 1.f);
 	CSpotlightEffect();
 	~CSpotlightEffect();
 
@@ -99,6 +100,8 @@ protected:
 	dlight_t*	m_pSpotlightEnd;
 
 	Vector m_vecOrigin;
+	bool	m_bVolumetric;
+	float	m_flVolumeIntensity;
 };
 
 void ProjectMuzzleFlashLight(ClientEntityHandle_t hEntity, int attachmentIndex, ColorRGBExp32 clrColor);

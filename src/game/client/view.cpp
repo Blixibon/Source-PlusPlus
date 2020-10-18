@@ -659,6 +659,7 @@ void CViewRender::SetUpViews()
 	view.m_bOrtho			= false;
     view.m_bViewToProjectionOverride = false;
 	view.m_eStereoEye		= STEREO_EYE_MONO;
+	view.m_bDrawVolumetrics = true;
 
 	// Enable spatial partition access to edicts
 	partition->SuppressLists( PARTITION_ALL_CLIENT_EDICTS, false );

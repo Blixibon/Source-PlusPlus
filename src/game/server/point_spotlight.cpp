@@ -14,6 +14,7 @@
 // Spawnflags
 #define SF_SPOTLIGHT_START_LIGHT_ON			0x1
 #define SF_SPOTLIGHT_NO_DYNAMIC_LIGHT		0x2
+#define SF_SPOTLIGHT_HQ_VOLUMETRICS			0x4
 
 
 //-----------------------------------------------------------------------------
@@ -24,6 +25,7 @@ class CPointSpotlight : public CPointEntity
 	DECLARE_CLASS( CPointSpotlight, CPointEntity );
 public:
 	DECLARE_DATADESC();
+	DECLARE_SERVERCLASS();
 
 	CPointSpotlight();
 
@@ -33,6 +35,7 @@ public:
 
 	virtual void OnEntityEvent( EntityEvent_t event, void *pEventData );
 
+	void	SetTransmit(CCheckTransmitInfo* pInfo, bool bAlways);
 private:
 	int 	UpdateTransmitState();
 	void	SpotlightThink(void);
@@ -56,60 +59,85 @@ private:
 	void ComputeRenderInfo();
 
 private:
-	bool	m_bSpotlightOn;
+	CNetworkVar(bool, m_bSpotlightOn);
 	bool	m_bEfficientSpotlight;
 	bool	m_bIgnoreSolid;
 	Vector	m_vSpotlightTargetPos;
 	Vector	m_vSpotlightCurrentPos;
 	Vector	m_vSpotlightDir;
-	int		m_nHaloSprite;
+	CNetworkVar(int, m_nHaloSprite);
+	CNetworkVar(int, m_nBeamSprite);
 	CHandle<CBeam>			m_hSpotlight;
-	CHandle<CSpotlightEnd>	m_hSpotlightTarget;
+	CNetworkHandle(CSpotlightEnd, m_hSpotlightTarget);
+	CNetworkVar(bool, m_bVolumetricMode);
+	CNetworkVar(bool, m_bLightWorld);
 	
-	float	m_flSpotlightMaxLength;
-	float	m_flSpotlightCurLength;
-	float	m_flSpotlightGoalWidth;
-	float	m_flHDRColorScale;
-	int		m_nMinDXLevel;
+	CNetworkVar(float, m_flSpotlightMaxLength);
+	CNetworkVar(float, m_flSpotlightCurLength);
+	CNetworkVar(float, m_flSpotlightGoalWidth);
+	CNetworkVar(float, m_flHDRColorScale);
+	CNetworkVar(int, m_nMinDXLevel);
+	CNetworkVar(int, m_nNumPlanes);
 
 public:
 	COutputEvent m_OnOn, m_OnOff;     ///< output fires when turned on, off
 };
 
-BEGIN_DATADESC( CPointSpotlight )
-	DEFINE_FIELD( m_flSpotlightCurLength, FIELD_FLOAT ),
+BEGIN_DATADESC(CPointSpotlight)
+DEFINE_FIELD(m_flSpotlightCurLength, FIELD_FLOAT),
 
-	DEFINE_FIELD( m_bSpotlightOn,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bEfficientSpotlight,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vSpotlightTargetPos,	FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vSpotlightCurrentPos,	FIELD_POSITION_VECTOR ),
+DEFINE_FIELD(m_bSpotlightOn, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bEfficientSpotlight, FIELD_BOOLEAN),
+DEFINE_FIELD(m_vSpotlightTargetPos, FIELD_POSITION_VECTOR),
+DEFINE_FIELD(m_vSpotlightCurrentPos, FIELD_POSITION_VECTOR),
 
-	// Robin: Don't Save, recreated after restore/transition
-	//DEFINE_FIELD( m_hSpotlight,			FIELD_EHANDLE ),
-	//DEFINE_FIELD( m_hSpotlightTarget,		FIELD_EHANDLE ),
+// Robin: Don't Save, recreated after restore/transition
+//DEFINE_FIELD( m_hSpotlight,			FIELD_EHANDLE ),
+//DEFINE_FIELD( m_hSpotlightTarget,		FIELD_EHANDLE ),
 
-	DEFINE_FIELD( m_vSpotlightDir,			FIELD_VECTOR ),
-	DEFINE_FIELD( m_nHaloSprite,			FIELD_INTEGER ),
+DEFINE_FIELD(m_vSpotlightDir, FIELD_VECTOR),
+DEFINE_FIELD(m_nHaloSprite, FIELD_MODELINDEX),
+DEFINE_FIELD(m_nBeamSprite, FIELD_MODELINDEX),
 
-	DEFINE_KEYFIELD( m_bIgnoreSolid, FIELD_BOOLEAN, "IgnoreSolid" ),
-	DEFINE_KEYFIELD( m_flSpotlightMaxLength,FIELD_FLOAT, "SpotlightLength"),
-	DEFINE_KEYFIELD( m_flSpotlightGoalWidth,FIELD_FLOAT, "SpotlightWidth"),
-	DEFINE_KEYFIELD( m_flHDRColorScale, FIELD_FLOAT, "HDRColorScale" ),
-	DEFINE_KEYFIELD( m_nMinDXLevel, FIELD_INTEGER, "mindxlevel" ),
+DEFINE_FIELD(m_bVolumetricMode, FIELD_BOOLEAN),
+DEFINE_FIELD(m_bLightWorld, FIELD_BOOLEAN),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID,		"LightOn",		InputLightOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID,		"LightOff",		InputLightOff ),
-	DEFINE_INPUTFUNC( FIELD_COLOR32,	"SetColor",		InputSetColor ),
-	DEFINE_INPUTFUNC( FIELD_VOID,		"ForceUpdate",	InputForceUpdate ),
+DEFINE_KEYFIELD(m_bIgnoreSolid, FIELD_BOOLEAN, "IgnoreSolid"),
+DEFINE_KEYFIELD(m_flSpotlightMaxLength, FIELD_FLOAT, "SpotlightLength"),
+DEFINE_KEYFIELD(m_flSpotlightGoalWidth, FIELD_FLOAT, "SpotlightWidth"),
+DEFINE_KEYFIELD(m_flHDRColorScale, FIELD_FLOAT, "HDRColorScale"),
+DEFINE_KEYFIELD(m_nMinDXLevel, FIELD_INTEGER, "mindxlevel"),
+DEFINE_KEYFIELD(m_nNumPlanes, FIELD_INTEGER, "volume_numplanes"),
 
-	DEFINE_OUTPUT( m_OnOn, "OnLightOn" ),
-	DEFINE_OUTPUT( m_OnOff, "OnLightOff" ),
+// Inputs
+DEFINE_INPUTFUNC(FIELD_VOID, "LightOn", InputLightOn),
+DEFINE_INPUTFUNC(FIELD_VOID, "LightOff", InputLightOff),
+DEFINE_INPUTFUNC(FIELD_COLOR32, "SetColor", InputSetColor),
+DEFINE_INPUTFUNC(FIELD_VOID, "ForceUpdate", InputForceUpdate),
 
-	DEFINE_THINKFUNC( SpotlightThink ),
+DEFINE_OUTPUT(m_OnOn, "OnLightOn"),
+DEFINE_OUTPUT(m_OnOff, "OnLightOff"),
 
-END_DATADESC()
+DEFINE_THINKFUNC(SpotlightThink),
 
+END_DATADESC();
+
+IMPLEMENT_SERVERCLASS_ST(CPointSpotlight, DT_PointSpotlight)
+SendPropFloat(SENDINFO(m_flSpotlightCurLength)),
+SendPropBool(SENDINFO(m_bSpotlightOn)),
+
+SendPropFloat(SENDINFO(m_flSpotlightGoalWidth)),
+SendPropFloat(SENDINFO(m_flSpotlightMaxLength)),
+SendPropEHandle(SENDINFO(m_hSpotlightTarget)),
+
+SendPropFloat(SENDINFO(m_flHDRColorScale)),
+SendPropInt(SENDINFO(m_nMinDXLevel)),
+SendPropInt(SENDINFO(m_nNumPlanes)),
+SendPropModelIndex(SENDINFO(m_nHaloSprite)),
+SendPropModelIndex(SENDINFO(m_nBeamSprite)),
+SendPropBool(SENDINFO(m_bVolumetricMode)),
+SendPropBool(SENDINFO(m_bLightWorld)),
+END_SEND_TABLE();
 
 LINK_ENTITY_TO_CLASS(point_spotlight, CPointSpotlight);
 
@@ -126,6 +154,7 @@ CPointSpotlight::CPointSpotlight()
 	m_flHDRColorScale = 1.0f;
 	m_nMinDXLevel = 0;
 	m_bIgnoreSolid = false;
+	m_nNumPlanes = 64;
 }
 
 
@@ -138,7 +167,7 @@ void CPointSpotlight::Precache(void)
 
 	// Sprites.
 	m_nHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
-	PrecacheModel( "sprites/glow_test02.vmt" );
+	m_nBeamSprite = PrecacheModel( "sprites/glow_test02.vmt" );
 }
 
 
@@ -152,7 +181,9 @@ void CPointSpotlight::Spawn(void)
 	UTIL_SetSize( this,vec3_origin,vec3_origin );
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	SetMoveType( MOVETYPE_NONE );
-	m_bEfficientSpotlight = true;
+	m_bVolumetricMode = HasSpawnFlags(SF_SPOTLIGHT_HQ_VOLUMETRICS);
+	m_bLightWorld = m_bVolumetricMode && !HasSpawnFlags(SF_SPOTLIGHT_NO_DYNAMIC_LIGHT);
+	m_bEfficientSpotlight = !m_bVolumetricMode;
 
 	// Check for user error
 	if (m_flSpotlightMaxLength <= 0)
@@ -201,23 +232,27 @@ void CPointSpotlight::ComputeRenderInfo()
 	if ( m_flSpotlightCurLength > 2*m_flSpotlightMaxLength )
 	{
 		m_hSpotlightTarget->SetRenderColorA( 0 );
-		m_hSpotlight->SetFadeLength( m_flSpotlightMaxLength );
+		if (m_hSpotlight)
+			m_hSpotlight->SetFadeLength( m_flSpotlightMaxLength );
 	}
 	else if ( m_flSpotlightCurLength > m_flSpotlightMaxLength )		
 	{
 		m_hSpotlightTarget->SetRenderColorA( (1-((m_flSpotlightCurLength-m_flSpotlightMaxLength)/m_flSpotlightMaxLength)) );
-		m_hSpotlight->SetFadeLength( m_flSpotlightMaxLength );
+		if (m_hSpotlight)
+			m_hSpotlight->SetFadeLength( m_flSpotlightMaxLength );
 	}
 	else
 	{
 		m_hSpotlightTarget->SetRenderColorA( 1.0 );
-		m_hSpotlight->SetFadeLength( m_flSpotlightCurLength );
+		if (m_hSpotlight)
+			m_hSpotlight->SetFadeLength( m_flSpotlightCurLength );
 	}
 
 	// Adjust end width to keep beam width constant
 	float flNewWidth = m_flSpotlightGoalWidth * (m_flSpotlightCurLength / m_flSpotlightMaxLength);
 	flNewWidth = clamp(flNewWidth, 0.f, MAX_BEAM_WIDTH );
-	m_hSpotlight->SetEndWidth(flNewWidth);
+	if (m_hSpotlight)
+		m_hSpotlight->SetEndWidth(flNewWidth);
 
 	// Adjust width of light on the end.  
 	if ( FBitSet (m_spawnflags, SF_SPOTLIGHT_NO_DYNAMIC_LIGHT) )
@@ -228,6 +263,20 @@ void CPointSpotlight::ComputeRenderInfo()
 	{
 		// <<TODO>> - magic number 1.8 depends on sprite size
 		m_hSpotlightTarget->m_flLightScale = 1.8*flNewWidth;
+	}
+
+	if (m_bVolumetricMode)
+	{
+		Vector startPos = GetAbsOrigin(), endPos = SpotlightCurrentPos();
+
+		Vector vecBeamMin, vecBeamMax;
+		VectorMin(startPos, endPos, vecBeamMin);
+		VectorMax(startPos, endPos, vecBeamMax);
+
+		Vector vecBoundsMin = vecBeamMin - GetAbsOrigin();
+		Vector vecBoundsMax = vecBeamMax - GetAbsOrigin();
+		//SetCollisionBounds(vecBeamMin - GetAbsOrigin(), vecBeamMax - GetAbsOrigin());
+		CollisionProp()->SetSurroundingBoundsType(USE_SPECIFIED_BOUNDS, &vecBoundsMin, &vecBoundsMax);
 	}
 }
 
@@ -314,6 +363,20 @@ int CPointSpotlight::UpdateTransmitState()
 	return SetTransmitState( FL_EDICT_PVSCHECK );
 }
 
+void CPointSpotlight::SetTransmit(CCheckTransmitInfo* pInfo, bool bAlways)
+{
+	// Are we already marked for transmission?
+	if (pInfo->m_pTransmitEdict->Get(entindex()))
+		return;
+
+	BaseClass::SetTransmit(pInfo, bAlways);
+
+	if (m_hSpotlightTarget.Get())
+	{
+		m_hSpotlightTarget->SetTransmit(pInfo, bAlways);
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Plays the engine sound.
 //-----------------------------------------------------------------------------
@@ -366,6 +429,9 @@ void CPointSpotlight::SpotlightCreate(void)
 	{
 		m_hSpotlightTarget->m_flLightScale = 0.0;
 	}
+
+	if (m_bVolumetricMode)
+		return;
 
 	//m_hSpotlight = CBeam::BeamCreate( "sprites/spotlight.vmt", m_flSpotlightGoalWidth );
 	m_hSpotlight = CBeam::BeamCreate( "sprites/glow_test02.vmt", m_flSpotlightGoalWidth );
@@ -421,7 +487,7 @@ Vector CPointSpotlight::SpotlightCurrentPos(void)
 //------------------------------------------------------------------------------
 void CPointSpotlight::SpotlightDestroy(void)
 {
-	if ( m_hSpotlight )
+	if ( m_hSpotlightTarget )
 	{
 		m_OnOff.FireOutput( this, this );
 
@@ -440,7 +506,7 @@ void CPointSpotlight::SpotlightUpdate(void)
 	// ---------------------------------------------------
 	//  If I don't have a spotlight attempt to create one
 	// ---------------------------------------------------
-	if ( !m_hSpotlight )
+	if ( !m_hSpotlightTarget )
 	{
 		if ( m_bSpotlightOn )
 		{
@@ -548,6 +614,8 @@ void CPointSpotlight::InputSetColor( inputdata_t &inputdata )
 		color32 clr = inputdata.value.Color32();
 		m_hSpotlight->SetColor( clr.r, clr.g, clr.b );
 	}
+
+	InputColor(inputdata);
 }
 
 //-----------------------------------------------------------------------------

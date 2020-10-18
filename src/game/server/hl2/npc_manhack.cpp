@@ -203,7 +203,12 @@ LINK_ENTITY_TO_CLASS( npc_manhack, CNPC_Manhack );
 IMPLEMENT_SERVERCLASS_ST(CNPC_Manhack, DT_NPC_Manhack)
 SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch1), 8),
 SendPropFloat(SENDINFO(m_flEnginePitch1Time), 0, SPROP_NOSCALE),
-SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch2), 8)
+SendPropIntWithMinusOneFlag(SENDINFO(m_nEnginePitch2), 8),
+
+SendPropInt(SENDINFO(m_nEyeState), MANHACK_EYE_STATE_BITS, SPROP_UNSIGNED),
+SendPropBool(SENDINFO(m_bIsControlled)),
+SendPropEHandle(SENDINFO(m_hOwningPlayer)),
+SendPropEHandle(SENDINFO(m_hHUDTarget)),
 END_SEND_TABLE();
 
 
@@ -323,6 +328,8 @@ void CNPC_Manhack::PrescheduleThink( void )
 	}
 
 	m_nLastWaterLevel = GetWaterLevel();
+
+	m_hHUDTarget = GetEnemy();
 }
 
 
@@ -908,6 +915,12 @@ void CNPC_Manhack::OnStateChange( NPC_STATE OldState, NPC_STATE NewState )
 		m_spawnflags &= ~SF_NPC_GAG;
 		SoundInit();
 	}
+
+	// Idle manhacks return to cyan eye color
+	if (NewState != NPC_STATE_COMBAT)
+	{
+		SetEyeState(MANHACK_EYE_STATE_IDLE);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1204,6 +1217,18 @@ bool CNPC_Manhack::OverrideMove( float flInterval )
 	{
 		//MaintainGroundHeight();
 		MoveInDirection(flInterval, m_vForceVelocity, 500, 500, 0.3f);
+
+		// -------------------------------------
+		// If I have an enemy turn to face him
+		// -------------------------------------
+		if (GetEnemy())
+		{
+			TurnHeadToTarget(flInterval, GetEnemy()->EyePosition());
+		}
+		else if (m_vForceVelocity.IsLengthGreaterThan(8.f))
+		{
+			TurnHeadToTarget(flInterval, GetAbsOrigin() + m_vForceVelocity);
+		}
 	}
 
 	if ( m_iHealth <= 0 )
@@ -1283,7 +1308,7 @@ void CNPC_Manhack::MoveForwardBack(float direction, QAngle angManhackEye)
 		}
 		else
 		{
-			//m_vCollisionView = Vector(0,0,0);
+			
 		}
 	}
 	else
@@ -1500,7 +1525,33 @@ void CNPC_Manhack::MoveToTarget(float flInterval, const Vector &vMoveTarget)
 //-----------------------------------------------------------------------------
 int CNPC_Manhack::MoveCollisionMask(void)
 {
-	return MASK_NPCSOLID;
+	unsigned int uMask = 0;
+#ifdef HL2_LAZUL
+	switch (GetTeamNumber())
+	{
+	case TF_TEAM_RED:
+		uMask = MASK_REDTEAMSOLID;
+		break;
+
+	case TF_TEAM_BLUE:
+		uMask = MASK_BLUETEAMSOLID;
+		break;
+
+	case TF_TEAM_GREEN:
+		uMask |= MASK_GREENTEAMSOLID;
+		break;
+
+	case TF_TEAM_YELLOW:
+		uMask |= MASK_YELLOWTEAMSOLID;
+		break;
+
+	case TEAM_UNASSIGNED:
+		uMask = MASK_ALLTEAMS;
+		break;
+	}
+#endif
+
+	return MASK_NPCSOLID | uMask;
 }
 
 
@@ -2595,11 +2646,13 @@ void CNPC_Manhack::Spawn(void)
 	GetEnemies()->SetFreeKnowledgeDuration( 30.0 );
 	
 	// don't be an NPC, we want to collide with debris stuff
-	SetCollisionGroup( COLLISION_GROUP_NONE );
+	SetCollisionGroup(HL2COLLISION_GROUP_MANHACK);
 
 	m_bHeld = false;
 	m_bHackedByAlyx = false;
 	StopLoitering();
+
+	SetEyeState(MANHACK_EYE_STATE_IDLE);
 }
 #if 0
 //-----------------------------------------------------------------------------
@@ -2841,6 +2894,17 @@ void CNPC_Manhack::StartTask( const Task_t *pTask )
 			int count = 0;
 			m_vSavePosition = Vector( 0, 0, 0 );
 
+			if (m_bShouldFollowPlayer)
+			{
+				CBasePlayer* pPlayer = m_hOwningPlayer;
+				if (pPlayer)
+				{
+					//DevMsg("Following player\n");
+					m_vSavePosition += pPlayer->EyePosition() * 10;
+					count += 10;
+				}
+			}
+
 			// give attacking members more influence
 			AISquadIter_t iter;
 			for (CAI_BaseNPC *pSquadMember = m_pSquad->GetFirstMember( &iter ); pSquadMember; pSquadMember = m_pSquad->GetNextMember( &iter ) )
@@ -2858,11 +2922,11 @@ void CNPC_Manhack::StartTask( const Task_t *pTask )
 			}
 
 			// Player commander has heavy influence
-			if (m_pSquad->GetPlayerCommander())
+			/*if (m_pSquad->GetPlayerCommander())
 			{
 				m_vSavePosition += (m_pSquad->GetPlayerCommander()->EyePosition() + Vector(0, 0, 32)) * 10;
 				count += 10;
-			}
+			}*/
 
 			// pull towards enemy
 			if (GetEnemy() != NULL)
@@ -3428,6 +3492,9 @@ void CNPC_Manhack::SetEyeState( int state )
 		break;
 	}
 #else
+	if (state == MANHACK_EYE_STATE_STUNNED)
+		EmitSound("NPC_Manhack.Stunned");
+
 	if (state != m_nEyeState)
 	{
 		m_nEyeState = state;

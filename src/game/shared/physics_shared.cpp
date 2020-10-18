@@ -19,6 +19,7 @@
 #include "decals.h"
 #include "IEffects.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
+#include "spp_utils/ISurfacePropsExt.h"
 
 #include "physics_saverestore.h"
 
@@ -34,6 +35,7 @@ IPhysicsEnvironment	*physenv = NULL;
 IPhysicsEnvironment	*physenv_main = NULL;
 #endif
 IPhysicsSurfaceProps *physprops = NULL;
+ISPPSurfacePropsExtension* physprops2 = NULL;
 // UNDONE: This hash holds both entity & IPhysicsObject pointer pairs
 // UNDONE: Split into separate hashes?
 IPhysicsObjectPairHash *g_EntityCollisionHash = NULL;
@@ -1026,6 +1028,17 @@ static HSOUNDSCRIPTHANDLE PrecachePhysicsSoundByStringIndex( int idx )
 	return SOUNDEMITTER_INVALID_HANDLE;
 }
 
+static HSOUNDSCRIPTHANDLE PrecachePhysics2SoundByStringIndex(int idx)
+{
+	// Only precache if a value was set in the script file...
+	if (idx != 0)
+	{
+		return CBaseEntity::PrecacheScriptSound(physprops2->GetString2(idx));
+	}
+
+	return SOUNDEMITTER_INVALID_HANDLE;
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Iterates all surfacedata sounds and precaches them
 // Output : static void
@@ -1036,7 +1049,8 @@ void PrecachePhysicsSounds()
 	for ( int i = 0; i < physprops->SurfacePropCount(); i++ )
 	{
 		surfacedata_t *pprop = physprops->GetSurfaceData( i );
-		Assert( pprop );
+		surfacedata2_t* pprop2 = physprops2->GetSurfaceData2(i);
+		Assert( pprop && pprop2);
 
 		pprop->soundhandles.stepleft = PrecachePhysicsSoundByStringIndex( pprop->sounds.stepleft );
 		pprop->soundhandles.stepright = PrecachePhysicsSoundByStringIndex( pprop->sounds.stepright );
@@ -1048,6 +1062,13 @@ void PrecachePhysicsSounds()
 		pprop->soundhandles.rolling = PrecachePhysicsSoundByStringIndex( pprop->sounds.rolling );
 		pprop->soundhandles.breakSound = PrecachePhysicsSoundByStringIndex( pprop->sounds.breakSound );
 		pprop->soundhandles.strainSound = PrecachePhysicsSoundByStringIndex( pprop->sounds.strainSound );
+
+		pprop2->soundhandles.runStepLeft = PrecachePhysics2SoundByStringIndex(pprop2->sounds.runStepLeft);
+		pprop2->soundhandles.runStepRight = PrecachePhysics2SoundByStringIndex(pprop2->sounds.runStepRight);
+		pprop2->soundhandles.walkStepLeft = PrecachePhysics2SoundByStringIndex(pprop2->sounds.walkStepLeft);
+		pprop2->soundhandles.walkStepRight = PrecachePhysics2SoundByStringIndex(pprop2->sounds.walkStepRight);
+		pprop2->soundhandles.stepJump = PrecachePhysics2SoundByStringIndex(pprop2->sounds.stepJump);
+		pprop2->soundhandles.stepLand = PrecachePhysics2SoundByStringIndex(pprop2->sounds.stepLand);
 	}
 }
 

@@ -109,6 +109,7 @@ enum AimType_e
 	AIM_MP = 0,
 	AIM_HL2,
 	AIM_BMMP,
+	AIM_HL2_UNARMED,
 };
 
 struct MultiPlayerPoseData_t

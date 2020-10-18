@@ -5,6 +5,11 @@
 #include "filesystem.h"
 #include "props.h"
 
+using namespace PlayerModels;
+
+IMPLEMENT_PRIVATE_SYMBOLTYPE(CPlayerModelSymbol);
+IMPLEMENT_PRIVATE_FILENAME_SYMBOLTYPE(CPlayerModelFilename);
+
 bool CPlayerModels::Init()
 {
 	FileFindHandle_t findHandle = FILESYSTEM_INVALID_FIND_HANDLE;
@@ -34,7 +39,7 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 		{
 			m_Models.AddToTail();
 			playerModel_t &player = m_Models.Tail();
-			Q_strncpy(player.szSectionID, pkvModel->GetName(), 32);
+			player.strModelID = pkvModel->GetName();
 			player.reqs.singleplayer.bSuit = pkvModel->GetBool("needs_suit", false);
 			KeyValues *pkvGames = pkvModel->FindKey("games");
 			if (pkvGames)
@@ -45,8 +50,30 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 				}
 			}
 
-			Q_strncpy(player.reqs.multiplayer.szTeam, pkvModel->GetString("team"), 32);
+			player.reqs.multiplayer.strTeam = pkvModel->GetString("team");
 			player.reqs.multiplayer.iMaxNum = pkvModel->GetInt("maxplayers", 0);
+
+			//-----------------------------------------
+			const char *pszArmModelName = "";
+			int iArmSkin = 0;
+			CUtlVector<bodygroup_t> vArmBodies;
+			KeyValues* pkvHands = pkvModel->FindKey("hands");
+			if (pkvHands)
+			{
+				pszArmModelName = pkvHands->GetString("model");
+				iArmSkin = pkvHands->GetInt("skin");
+				KeyValues* pkvBodyGroups = pkvHands->FindKey("bodygroups");
+				if (pkvBodyGroups)
+				{
+					for (KeyValues* pkvGroup = pkvBodyGroups->GetFirstSubKey(); pkvGroup != NULL; pkvGroup = pkvGroup->GetNextKey())
+					{
+						vArmBodies.AddToTail();
+						bodygroup_s& body = vArmBodies.Tail();
+						body.strName = pkvGroup->GetName();
+						body.body = pkvGroup->GetInt();
+					}
+				}
+			}
 
 			KeyValues *pkvDef = pkvModel->FindKey("models");
 			if (pkvDef)
@@ -54,8 +81,9 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 				for (KeyValues* pkvModelDef = pkvDef->GetFirstTrueSubKey(); pkvModelDef != NULL; pkvModelDef = pkvModelDef->GetNextTrueSubKey())
 				{
 					rndModel_t& hModel = player.models.Element(player.models.AddToTail());
-					Q_strncpy(hModel.szModelName, pkvModelDef->GetString("name"), MAX_PATH);
-					//hModel.skin = pkvModelDef->GetInt("skin");
+					hModel.hPlayerModelName = pkvModelDef->GetString("name");
+					hModel.hArmModelName = pkvModelDef->GetString("arm-model", pszArmModelName);
+					hModel.armSkin = pkvModelDef->GetInt("arm-skin", iArmSkin);
 					if (V_strrchr(pkvModelDef->GetString("skin"), ' ') != 0)
 					{
 						int iBodies[2];
@@ -75,7 +103,7 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 						{
 							hModel.bodygroups.AddToTail();
 							bodygroup_s& body = hModel.bodygroups.Tail();
-							Q_strncpy(body.szName, pkvGroup->GetName(), 32);
+							body.strName = pkvGroup->GetName();
 							if (V_strrchr(pkvGroup->GetString(), ' ') != 0)
 							{
 								int iBodies[2];
@@ -89,23 +117,31 @@ bool CPlayerModels::LoadModelsFromFile(const char* szFilename)
 							}
 						}
 					}
-				}
-			}
 
-			KeyValues *pkvHands = pkvModel->FindKey("hands");
-			if (pkvHands)
-			{
-				Q_strncpy(player.szArmModel, pkvHands->GetString("model"), MAX_PATH);
-				player.armSkin = pkvHands->GetInt("skin");
-				KeyValues *pkvBodyGroups = pkvHands->FindKey("bodygroups");
-				if (pkvBodyGroups)
-				{
-					for (KeyValues * pkvGroup = pkvBodyGroups->GetFirstSubKey(); pkvGroup != NULL; pkvGroup = pkvGroup->GetNextKey())
+					KeyValues* pkvArmBodyGroups = pkvModelDef->FindKey("arm-bodygroups");
+					if (pkvArmBodyGroups)
 					{
-						player.armbodys.AddToTail();
-						bodygroup_s &body = player.armbodys.Tail();
-						Q_strncpy(body.szName, pkvGroup->GetName(), 32);
-						body.body = pkvGroup->GetInt();
+						for (KeyValues* pkvGroup = pkvArmBodyGroups->GetFirstValue(); pkvGroup != NULL; pkvGroup = pkvGroup->GetNextValue())
+						{
+							hModel.armbodys.AddToTail();
+							bodygroup_s& body = hModel.armbodys.Tail();
+							body.strName = pkvGroup->GetName();
+							if (V_strrchr(pkvGroup->GetString(), ' ') != 0)
+							{
+								int iBodies[2];
+								UTIL_StringToIntArray(iBodies, 2, pkvGroup->GetString());
+								body.body = iBodies[0];
+								body.bodyMax = iBodies[1];
+							}
+							else
+							{
+								body.body = body.bodyMax = pkvGroup->GetInt();
+							}
+						}
+					}
+					else
+					{
+						hModel.armbodys.AddVectorToTail(vArmBodies);
 					}
 				}
 			}
@@ -147,10 +183,10 @@ void CPlayerModels::LevelInitPreEntity()
 	{
 		FOR_EACH_VEC(m_Models[i].models, j)
 		{
-			CBaseEntity::PrecacheModel(m_Models[i].models[j].szModelName);
-			PropBreakablePrecacheAll(AllocPooledString(m_Models[i].models[j].szModelName));
+			CBaseEntity::PrecacheModel(m_Models[i].models[j].hPlayerModelName.String());
+			CBaseEntity::PrecacheModel(m_Models[i].models[j].hArmModelName.String());
+			PropBreakablePrecacheAll(AllocPooledString(m_Models[i].models[j].hPlayerModelName.String()));
 		}
-		CBaseEntity::PrecacheModel(m_Models[i].szArmModel);
 		m_Models[i].iRefCount = 0;
 	}
 }
@@ -168,7 +204,7 @@ playerModel_t *CPlayerModels::SelectPlayerModel(int iGame, bool bSuit)
 	{
 		if (bForceModel)
 		{
-			if (0 == Q_strcmp(m_Models[i].szSectionID, force_pmodel.GetString()))
+			if (0 == Q_strcmp(m_Models[i].strModelID.String(), force_pmodel.GetString()))
 			{
 				iBestIndex = i;
 				break;
@@ -231,10 +267,11 @@ playerModel_t *CPlayerModels::SelectPlayerModel(int iGame, bool bSuit)
 CUtlVector<playerModel_t> CPlayerModels::GetAvailableModelsForTeam(const char * pszTeam)
 {
 	CUtlVector<playerModel_t> candidates;
+	CPlayerModelSymbol symTeam = pszTeam;
 
 	for (int i = 0; i < (m_Models).Count(); i++)
 	{
-		if (FStrEq(m_Models[i].reqs.multiplayer.szTeam, pszTeam))
+		if (m_Models[i].reqs.multiplayer.strTeam == symTeam)
 		{
 			if (m_Models[i].reqs.multiplayer.iMaxNum == 0 || m_Models[i].iRefCount < m_Models[i].reqs.multiplayer.iMaxNum)
 			{
@@ -248,20 +285,21 @@ CUtlVector<playerModel_t> CPlayerModels::GetAvailableModelsForTeam(const char * 
 
 playerModel_t CPlayerModels::FindPlayerModel(const char* pszName)
 {
-	for (auto model : m_Models)
+	CPlayerModelSymbol symName = pszName;
+	for (const auto &model : m_Models)
 	{
-		if (FStrEq(model.szSectionID, pszName))
+		if (model.strModelID == symName)
 			return model;
 	}
 
 	return playerModel_t();
 }
 
-bool CPlayerModels::PlayerGrabModel(const char * pszName)
+bool CPlayerModels::PlayerGrabModel(CPlayerModelSymbol strName)
 {
 	for (int i = 0; i < (m_Models).Count(); i++)
 	{
-		if (FStrEq(m_Models[i].szSectionID, pszName))
+		if (m_Models[i].strModelID == strName)
 		{
 			m_Models[i].iRefCount++;
 			if (m_Models[i].reqs.multiplayer.iMaxNum > 0)
@@ -273,11 +311,11 @@ bool CPlayerModels::PlayerGrabModel(const char * pszName)
 	return true;
 }
 
-bool CPlayerModels::PlayerReleaseModel(const char * pszName)
+bool CPlayerModels::PlayerReleaseModel(CPlayerModelSymbol strName)
 {
 	for (int i = 0; i < (m_Models).Count(); i++)
 	{
-		if (FStrEq(m_Models[i].szSectionID, pszName))
+		if (m_Models[i].strModelID == strName)
 		{
 			m_Models[i].iRefCount--;
 			Assert(m_Models[i].iRefCount >= 0);
@@ -289,7 +327,7 @@ bool CPlayerModels::PlayerReleaseModel(const char * pszName)
 }
 
 CPlayerModels g_PlayerModels;
-CPlayerModels* g_pPlayerModels = &g_PlayerModels;
+CPlayerModels* PlayerModels::g_pPlayerModels = &g_PlayerModels;
 
 CPlayerModels* PlayerModelSystem()
 {

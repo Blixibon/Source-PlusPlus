@@ -1662,6 +1662,7 @@ void CMultiPlayerAnimState::ComputePoseParam_AimPitch( CStudioHdr *pStudioHdr )
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimPitch, 0.0f);
 		break;
 	case AIM_HL2:
+	case AIM_HL2_UNARMED:
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iAimPitch, flAimPitch);
 		GetBasePlayer()->SetPoseParameter(pStudioHdr, m_PoseParameterData.m_iBodyPitch, 0.0f);
 		break;

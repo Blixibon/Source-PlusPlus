@@ -148,7 +148,8 @@ bool C_CombineShieldWall::ShouldCollide(int collisionGroup, int contentsMask) co
 {
 	if (collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT ||
 		collisionGroup == COLLISION_GROUP_NPC ||
-		collisionGroup == COLLISION_GROUP_PLAYER)
+		collisionGroup == COLLISION_GROUP_PLAYER||
+		(collisionGroup > HL2COLLISION_GROUP_FIRST_NPC && collisionGroup < HL2COLLISION_GROUP_LAST_NPC))
 	{
 		switch (GetTeamNumber())
 		{

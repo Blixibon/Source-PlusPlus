@@ -432,7 +432,7 @@ bool VScriptServerInit()
 
 			if( g_pScriptVM )
 			{
-				Log( "VSCRIPT: Started VScript virtual machine using script language '%s'\n", g_pScriptVM->GetLanguageName() );
+				Log( "VSCRIPT SERVER: Started VScript virtual machine using script language '%s'\n", g_pScriptVM->GetLanguageName() );
 				ScriptRegisterFunctionNamed( g_pScriptVM, UTIL_ShowMessageAll, "ShowMessage", "Print a hud message on all clients" );
 
 				ScriptRegisterFunction( g_pScriptVM, SendToConsole, "Send a string to the console as a command" );
@@ -474,6 +474,14 @@ bool VScriptServerInit()
 
 				VScriptRunScript( "mapspawn", false );
 
+				for (int i = g_ScriptPersistableList.Count() - 1; i >= 0; i--)
+				{
+					if (g_ScriptPersistableList[i])
+					{
+						g_ScriptPersistableList[i]->InitScript();
+					}
+				}
+
 				VMPROF_SHOW( pszScriptLanguage, "virtual machine startup" );
 
 				return true;
@@ -496,6 +504,15 @@ void VScriptServerTerm()
 {
 	if( g_pScriptVM != NULL )
 	{
+		// Things like proxies can persist across levels, so we have to shut down their scripts manually
+		for (int i = g_ScriptPersistableList.Count() - 1; i >= 0; i--)
+		{
+			if (g_ScriptPersistableList[i])
+			{
+				g_ScriptPersistableList[i]->TermScript();
+			}
+		}
+
 		if( g_pScriptVM )
 		{
 			scriptmanager->DestroyVM( g_pScriptVM );

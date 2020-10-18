@@ -12,8 +12,10 @@
 #endif
 
 #include "filesystem.h"
+#include "vscript/ivscript.h"
 class IUniformRandomStream;
 class ICommandLine;
+class IScriptVM;
 
 namespace ResponseRules
 {
@@ -46,6 +48,8 @@ namespace ResponseRules
 		/// Emulates the server's UTIL_FreeFile
 		virtual void  FreeFile( byte *buffer ) = 0;
 
+		virtual IScriptVM* GetScriptVM() = 0;
+		virtual bool VScriptRunScript(const char* pszScriptName, HSCRIPT hScope, bool bWarnMissing = false) = 0;
 
 		/// Somewhere in the host executable you should define this symbol and 
 		/// point it at a singleton instance.

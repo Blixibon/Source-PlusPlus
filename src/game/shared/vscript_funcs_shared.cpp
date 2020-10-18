@@ -685,3 +685,5 @@ void RegisterSharedScriptFunctions()
 	ScriptRegisterFunction( g_pScriptVM, Matcher_NamesMatch, "Compares a string to a query using Mapbase's matcher system using wildcards only." );
 	ScriptRegisterFunction( g_pScriptVM, AppearsToBeANumber, "Checks if the given string appears to be a number." );
 }
+
+CUtlVector<IGameScriptPersistable*> g_ScriptPersistableList;

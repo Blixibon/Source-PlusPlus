@@ -108,6 +108,13 @@ $Project
 
 		$File	"SkyMask.cpp"
 		$File	"Engine_Post_dx9.cpp"
+
+		$File	"lightshafts.cpp"
+		$File	"lightshafts_helper.cpp"
+		$File	"lightshafts_helper.h"
+
+		$File	"downsample.cpp"
+		$File	"downsample_nohdr.cpp"
 	}
 
 	$Folder	"Header Files"

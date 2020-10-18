@@ -152,8 +152,6 @@ protected:
 
 	void			DisplayReplayReminder();
 
-	void DoObjectMotionBlur(const CNewViewSetup *pSetup);
-
 	ClientCCHandle_t m_ExploCCHandle;
 
 	float			m_flExploBlindTime[NUM_EXPLOSION_TYPES];

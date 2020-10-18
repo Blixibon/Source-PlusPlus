@@ -7,6 +7,9 @@
 #include "pp_splinerope_ps20b.inc"
 #include "pp_splinerope_vs20.inc"
 
+#include "pp_depthwrite_ps20b.inc"
+#include "pp_depthwrite_ps20.inc"
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -18,7 +21,7 @@ DEFINE_FALLBACK_SHADER( PP_Cable, PP_SplineRope );
 BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 	BEGIN_SHADER_PARAMS
 		SHADER_PARAM( SHADERSRGBREAD360, SHADER_PARAM_TYPE_BOOL, "0", "Simulate srgb read in shader code")
-		SHADER_PARAM( SHADOWDEPTH, SHADER_PARAM_TYPE_INTEGER, "0", "writing to a shadow depth buffer" )
+		SHADER_PARAM( DEPTHMODE, SHADER_PARAM_TYPE_INTEGER, "0", "1 is shadowdepth, 2 for ssao depth" )
 		SHADER_PARAM( BUMPMAP, SHADER_PARAM_TYPE_TEXTURE, "cable/cablenormalmap", "normal map" )
 	END_SHADER_PARAMS
 
@@ -26,7 +29,7 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 	{
 		// srgb read 360
 		InitIntParam( SHADERSRGBREAD360, params, 0 );
-		InitIntParam( SHADOWDEPTH, params, 0 );
+		InitIntParam(DEPTHMODE, params, 0 );
 		if ( !params[BUMPMAP]->IsDefined() )
 		{
 			params[BUMPMAP]->SetStringValue( "cable/cablenormalmap" );
@@ -49,7 +52,8 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 	SHADER_DRAW
 	{
 		bool bShaderSrgbRead = ( IsX360() && params[SHADERSRGBREAD360]->GetIntValue() );
-		bool bShadowDepth = ( params[SHADOWDEPTH]->GetIntValue() != 0 );
+		bool bShadowDepth = ( params[DEPTHMODE]->GetIntValue() == 1 );
+		bool bSSAODepth = (params[DEPTHMODE]->GetIntValue() == 2);
 		SHADOW_STATE
 		{
 			// draw back-facing because of yaw spin
@@ -63,6 +67,11 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 
 				// polyoffset for shadow maps.
 				pShaderShadow->EnablePolyOffset( SHADER_POLYOFFSET_SHADOW_BIAS );
+			}
+			else if (bSSAODepth)
+			{
+				pShaderShadow->EnableColorWrites(true);
+				pShaderShadow->EnableAlphaWrites(false);
 			}
 			else
 			{
@@ -93,35 +102,54 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 			pShaderShadow->VertexShaderVertexFormat( flags, numTexCoords, s_TexCoordSize, 0 );
 
 			DECLARE_STATIC_VERTEX_SHADER( pp_splinerope_vs20 );
+			SET_STATIC_VERTEX_SHADER_COMBO(SSAODEPTH, bSSAODepth);
 			SET_STATIC_VERTEX_SHADER( pp_splinerope_vs20 );
 
-			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			if (!bSSAODepth)
 			{
-				DECLARE_STATIC_PIXEL_SHADER( pp_splinerope_ps20b );
-				SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
-				SET_STATIC_PIXEL_SHADER_COMBO( SHADOWDEPTH, bShadowDepth );
-				SET_STATIC_PIXEL_SHADER( pp_splinerope_ps20b );
+				if (g_pHardwareConfig->SupportsPixelShaders_2_b())
+				{
+					DECLARE_STATIC_PIXEL_SHADER(pp_splinerope_ps20b);
+					SET_STATIC_PIXEL_SHADER_COMBO(SHADER_SRGB_READ, bShaderSrgbRead);
+					SET_STATIC_PIXEL_SHADER_COMBO(SHADOWDEPTH, bShadowDepth);
+					SET_STATIC_PIXEL_SHADER(pp_splinerope_ps20b);
+				}
+				else
+				{
+					DECLARE_STATIC_PIXEL_SHADER(pp_splinerope_ps20);
+					SET_STATIC_PIXEL_SHADER_COMBO(SHADER_SRGB_READ, bShaderSrgbRead);
+					SET_STATIC_PIXEL_SHADER_COMBO(SHADOWDEPTH, bShadowDepth);
+					SET_STATIC_PIXEL_SHADER(pp_splinerope_ps20);
+				}
 			}
 			else
 			{
-				DECLARE_STATIC_PIXEL_SHADER( pp_splinerope_ps20 );
-				SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSrgbRead );
-				SET_STATIC_PIXEL_SHADER_COMBO( SHADOWDEPTH, bShadowDepth );
-				SET_STATIC_PIXEL_SHADER( pp_splinerope_ps20 );
+				if (g_pHardwareConfig->SupportsPixelShaders_2_b())
+				{
+					DECLARE_STATIC_PIXEL_SHADER(pp_depthwrite_ps20b);
+					SET_STATIC_PIXEL_SHADER_COMBO(COLOR_DEPTH, true);
+					SET_STATIC_PIXEL_SHADER(pp_depthwrite_ps20b);
+				}
+				else
+				{
+					DECLARE_STATIC_PIXEL_SHADER(pp_depthwrite_ps20);
+					SET_STATIC_PIXEL_SHADER_COMBO(COLOR_DEPTH, true);
+					SET_STATIC_PIXEL_SHADER(pp_depthwrite_ps20);
+				}
 			}
 		}
 		DYNAMIC_STATE
 		{
 			// We need these only when screen-orienting, which we are always in this shader.
-			LoadModelViewMatrixIntoVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_0 );
-			LoadProjectionMatrixIntoVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_3 );
+			LoadModelViewMatrixIntoVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_0);
+			LoadProjectionMatrixIntoVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_3);
 
 			// Get viewport and render target dimensions and set shader constant to do a 2D mad
 			ShaderViewport_t viewport;
-			pShaderAPI->GetViewports( &viewport, 1 );
+			pShaderAPI->GetViewports(&viewport, 1);
 
-			float c7[4]={ 0.0f, 0.0f, 0.0f, 0.0f };
-			
+			float c7[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
 			if (bShadowDepth)
 			{
 				float flMinPixelDiameter = rope_min_pixel_diameter_shadowdepth.GetFloat() / (float)viewport.m_nWidth;
@@ -129,43 +157,71 @@ BEGIN_VS_SHADER( PP_SplineRope, "Help for SplineRope" )
 			}
 			else
 			{
-				float flMinPixelDiameter = rope_min_pixel_diameter.GetFloat() / ( float )viewport.m_nWidth;
-				c7[0]= c7[1] = c7[2] = c7[3] = flMinPixelDiameter;
+				float flMinPixelDiameter = rope_min_pixel_diameter.GetFloat() / (float)viewport.m_nWidth;
+				c7[0] = c7[1] = c7[2] = c7[3] = flMinPixelDiameter;
 			}
-			pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, c7, 1 );
+			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, c7, 1);
+
+			DECLARE_DYNAMIC_VERTEX_SHADER(pp_splinerope_vs20);
+			SET_DYNAMIC_VERTEX_SHADER(pp_splinerope_vs20);
 
 			// bind base texture
-			BindTexture( SHADER_SAMPLER0, BASETEXTURE, FRAME );
+			BindTexture(SHADER_SAMPLER0, BASETEXTURE, FRAME);
 
-			// normal map
-			BindTexture( SHADER_SAMPLER1, BUMPMAP );
-
-			if ( !bShadowDepth )
+			if (!bSSAODepth)
 			{
-				pShaderAPI->SetPixelShaderFogParams( 0 );
+				// normal map
+				BindTexture(SHADER_SAMPLER1, BUMPMAP);
 
-				float vEyePos[4];
-				pShaderAPI->GetWorldSpaceCameraPosition( vEyePos );
-				vEyePos[3] = 0.0f;
-				pShaderAPI->SetPixelShaderConstant( 1, vEyePos, 1 );
-			}
+				if (!bShadowDepth)
+				{
+					pShaderAPI->SetPixelShaderFogParams(0);
 
-			DECLARE_DYNAMIC_VERTEX_SHADER( pp_splinerope_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( pp_splinerope_vs20 );
+					float vEyePos[4];
+					pShaderAPI->GetWorldSpaceCameraPosition(vEyePos);
+					vEyePos[3] = 0.0f;
+					pShaderAPI->SetPixelShaderConstant(1, vEyePos, 1);
+				}
 
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( pp_splinerope_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
-				SET_DYNAMIC_PIXEL_SHADER( pp_splinerope_ps20b );
+				if (g_pHardwareConfig->SupportsPixelShaders_2_b())
+				{
+					DECLARE_DYNAMIC_PIXEL_SHADER(pp_splinerope_ps20b);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha());
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z);
+					SET_DYNAMIC_PIXEL_SHADER(pp_splinerope_ps20b);
+				}
+				else
+				{
+					DECLARE_DYNAMIC_PIXEL_SHADER(pp_splinerope_ps20);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha());
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(PIXELFOGTYPE, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z);
+					SET_DYNAMIC_PIXEL_SHADER(pp_splinerope_ps20);
+				}
 			}
 			else
 			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( pp_splinerope_ps20 );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( WRITE_DEPTH_TO_DESTALPHA, pShaderAPI->ShouldWriteDepthToDestAlpha() );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetSceneFogMode() == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
-				SET_DYNAMIC_PIXEL_SHADER( pp_splinerope_ps20 );
+				if (g_pHardwareConfig->SupportsPixelShaders_2_b())
+				{
+					DECLARE_DYNAMIC_PIXEL_SHADER(pp_depthwrite_ps20b);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(ALPHACLIP, false);
+					SET_DYNAMIC_PIXEL_SHADER(pp_depthwrite_ps20b);
+				}
+				else
+				{
+					DECLARE_DYNAMIC_PIXEL_SHADER(pp_depthwrite_ps20);
+					SET_DYNAMIC_PIXEL_SHADER_COMBO(ALPHACLIP, false);
+					SET_DYNAMIC_PIXEL_SHADER(pp_depthwrite_ps20);
+				}
+
+				Vector4D vParms;
+
+				// set up arbitrary far planes, as the real ones are too far ( 30,000 )
+				//pShaderAPI->SetPSNearAndFarZ( 1 );
+				vParms.x = 7.0f;		// arbitrary near
+				vParms.y = 4000.0f;		// arbitrary far 
+				vParms.z = 0.0f;
+				vParms.w = 0.0f;
+				pShaderAPI->SetPixelShaderConstant(1, vParms.Base(), 2);
 			}
 		}
 		Draw( );

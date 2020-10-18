@@ -21,6 +21,7 @@
 #include "colorcorrection.h"
 #include "env_tonemap_controller.h"
 #include "environment_volume.h"
+#include "spp_utils/ISurfacePropsExt.h"
 
 //#ifdef INSOURCE_BOTS
 //#include "interfaces\ibot.h"
@@ -541,7 +542,7 @@ virtual CAI_Senses *GetSenses() {
 	virtual void			Precache( void );
 	bool					IsOnLadder( void );
 	virtual void			ExitLadder() {}
-	virtual surfacedata_t	*GetLadderSurface( const Vector &origin );
+	virtual surfacedataall_t	GetLadderSurface( const Vector &origin );
 
 	virtual void			SetFlashlightEnabled( bool bState ) { };
 	virtual int				FlashlightIsOn( void ) { return false; }
@@ -550,8 +551,8 @@ virtual CAI_Senses *GetSenses() {
 	virtual bool			IsIlluminatedByFlashlight( CBaseEntity *pEntity, float *flReturnDot ) {return false; }
 
 	void					UpdatePlayerSound ( void );
-	virtual void			UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity );
-	virtual void			PlayStepSound( const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+	virtual void			UpdateStepSound(surfacedataall_t surface, const Vector &vecOrigin, const Vector &vecVelocity );
+	virtual void			PlayStepSound(const Vector& vecOrigin, surfacedataall_t surface, bool bWalk, float fvol, bool force);
 	virtual const char	   *GetOverrideStepSound( const char *pszBaseStepSoundName ) { return pszBaseStepSoundName; }
 	virtual void			GetStepSoundVelocities( float *velwalk, float *velrun );
 	virtual void			SetStepSoundTime( stepsoundtimes_t iStepSoundTime, bool bWalking );
@@ -881,7 +882,7 @@ public:
 	void	InputSetHUDVisibility( inputdata_t &inputdata );
 	void	InputHandleMapEvent( inputdata_t &inputdata );
 
-	surfacedata_t *GetSurfaceData( void ) { return m_pSurfaceData; }
+	surfacedataall_t GetSurfaceData( void ) { return m_pSurfaceData; }
 	void SetLadderNormal( const Vector& vecLadderNormal ) { m_vecLadderNormal = vecLadderNormal; }
 	Vector	GetLadderNormal() const { return m_vecLadderNormal; }
 
@@ -1299,7 +1300,7 @@ protected:
 
 	// Texture names and surface data, used by CGameMovement
 	int				m_surfaceProps;
-	surfacedata_t*	m_pSurfaceData;
+	surfacedataall_t	m_pSurfaceData;
 	float			m_surfaceFriction;
 	char			m_chTextureType;
 	char			m_chPreviousTextureType;	// Separate from m_chTextureType. This is cleared if the player's not on the ground.

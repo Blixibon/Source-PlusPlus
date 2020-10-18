@@ -3,9 +3,10 @@
 #include "eiface.h"
 #include "edict.h"
 #include "cdll_int.h"
+#include "vphysics_interface.h"
 #include "../shared/usermessages.h"
 
-typedef struct
+typedef struct enginePointers_s
 {
 	IVEngineClient* engineclient;
 	IVEngineServer* engineserver;
@@ -16,6 +17,13 @@ typedef struct
 
 	CUserMessages* cl_usermessages;
 	CUserMessages* sv_usermessages;
+
+	IPhysicsSurfaceProps* physicsprops;
+
+	enginePointers_s()
+	{
+		memset(this, 0, sizeof(enginePointers_s));
+	}
 } enginePointers_t;
 
 class IInternalSharedData

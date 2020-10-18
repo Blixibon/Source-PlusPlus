@@ -15,6 +15,7 @@
 ConVar hlss_miners_hat_elight("hlss_miners_hat_elight", "1");
 //ConVar hlss_miners_hat_light_color("hlss_miners_hat_light_color", "128");
 ConVar hlss_miners_hat_spotlight("hlss_miners_hat_spotlight", "1");
+ConVar hlss_miners_hat_volumetric("hlss_miners_hat_spotlight_volumetrics", "0");
 
 #define HLSS_MINERS_HAT_LIGHT_LENGTH 8.0f
 
@@ -154,7 +155,7 @@ void C_MinersHat::ClientThink(void)
 	}
 
 	bool bSpotLight = m_bLight && hlss_miners_hat_spotlight.GetBool() && CEstrangedSystemCaps::HasCaps(CAPS_SHADOW_DEPTHPASS);
-
+	bool bAttemptVolumetrics = bSpotLight && hlss_miners_hat_volumetric.GetBool();
 
 
 	if (m_bLight && hlss_miners_hat_elight.GetBool())
@@ -187,7 +188,7 @@ void C_MinersHat::ClientThink(void)
 		if (!m_pSpotLight)
 		{
 			// Turned on the headlight; create it.
-			m_pSpotLight = new CSpotlightEffect();
+			m_pSpotLight = new CSpotlightEffect(bAttemptVolumetrics);
 
 			if (m_pSpotLight)
 				m_pSpotLight->TurnOn();
@@ -210,36 +211,44 @@ void C_MinersHat::ClientThink(void)
 
 	float flColor = 128.0f;
 
-	if (!m_pBeam)
+	if (!bAttemptVolumetrics || !g_pClientShadowMgr->VolumetricsAvailable())
 	{
-		m_pBeam = CBeam::BeamCreate("sprites/glow_test02.vmt", 0.2);
-		m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
-		m_pBeam->SetBrightness(flColor * flScale);
-		m_pBeam->SetNoise(0);
-		m_pBeam->SetWidth(8.0f);	// On low end TVs these lasers are very hard to see at a distance
-		m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
-		m_pBeam->SetScrollRate(0);
-		m_pBeam->SetFadeLength(0);
-		m_pBeam->SetHaloTexture(PrecacheModel("sprites/light_glow03.vmt"));
-		m_pBeam->SetHaloScale(6.0f);
-		m_pBeam->SetCollisionGroup(COLLISION_GROUP_NONE);
-		m_pBeam->SetBeamFlag(FBEAM_SHADEOUT | FBEAM_NOTILE);
-		m_pBeam->PointsInit(effect_origin, effect_origin + (forward * 64));
-		m_pBeam->SetType( BEAM_ENTPOINT );
-		m_pBeam->SetStartEntity(this);
-		m_pBeam->SetEndPos(effect_origin + (forward * 64));
-		m_pBeam->SetStartAttachment( m_iAttachment );
-		m_pBeam->SetEndAttachment( 0 );
-		m_pBeam->RelinkBeam();
-	}
-	else
-	{
-		m_pBeam->RemoveEffects(EF_NODRAW);
-		m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
-		m_pBeam->SetBrightness(flColor * flScale);
-		m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
+		if (!m_pBeam)
+		{
+			m_pBeam = CBeam::BeamCreate("sprites/glow_test02.vmt", 0.2);
+			m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
+			m_pBeam->SetBrightness(flColor * flScale);
+			m_pBeam->SetNoise(0);
+			m_pBeam->SetWidth(8.0f);	// On low end TVs these lasers are very hard to see at a distance
+			m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
+			m_pBeam->SetScrollRate(0);
+			m_pBeam->SetFadeLength(0);
+			m_pBeam->SetHaloTexture(PrecacheModel("sprites/light_glow03.vmt"));
+			m_pBeam->SetHaloScale(6.0f);
+			m_pBeam->SetCollisionGroup(COLLISION_GROUP_NONE);
+			m_pBeam->SetBeamFlag(FBEAM_SHADEOUT | FBEAM_NOTILE);
+			m_pBeam->PointsInit(effect_origin, effect_origin + (forward * 64));
+			m_pBeam->SetType(BEAM_ENTPOINT);
+			m_pBeam->SetStartEntity(this);
+			m_pBeam->SetEndPos(effect_origin + (forward * 64));
+			m_pBeam->SetStartAttachment(m_iAttachment);
+			m_pBeam->SetEndAttachment(0);
+			m_pBeam->RelinkBeam();
+		}
+		else
+		{
+			m_pBeam->RemoveEffects(EF_NODRAW);
+			m_pBeam->SetColor(flColor * flScale, flColor * flScale, flColor * flScale);
+			m_pBeam->SetBrightness(flColor * flScale);
+			m_pBeam->SetEndWidth((24.0f * flScale) + 8.0f);
 
-		m_pBeam->SetEndPos(effect_origin + (forward * 64));
-		m_pBeam->RelinkBeam();
+			m_pBeam->SetEndPos(effect_origin + (forward * 64));
+			m_pBeam->RelinkBeam();
+		}
+	}
+	else if (m_pBeam)
+	{
+		m_pBeam->Remove();
+		m_pBeam = NULL;
 	}
 }

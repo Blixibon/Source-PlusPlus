@@ -3711,7 +3711,7 @@ void CHL2_Player::ExitLadder()
 }
 
 
-surfacedata_t *CHL2_Player::GetLadderSurface( const Vector &origin )
+surfacedataall_t CHL2_Player::GetLadderSurface( const Vector &origin )
 {
 	extern const char *FuncLadder_GetSurfaceprops(CBaseEntity *pLadderEntity);
 
@@ -3720,7 +3720,7 @@ surfacedata_t *CHL2_Player::GetLadderSurface( const Vector &origin )
 	{
 		const char *pSurfaceprops = FuncLadder_GetSurfaceprops(pLadder);
 		// get ladder material from func_ladder
-		return physprops->GetSurfaceData( physprops->GetSurfaceIndex( pSurfaceprops ) );
+		return physprops2->GetSurfaceDataBoth( physprops->GetSurfaceIndex( pSurfaceprops ) );
 
 	}
 	return BaseClass::GetLadderSurface(origin);

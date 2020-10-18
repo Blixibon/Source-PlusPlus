@@ -15,6 +15,7 @@
 #include "utldict.h"
 #include "utllinkedlist.h"
 #include "stringpool.h"
+#include "vscript/ivscript.h"
 
 class CDefaultResponseSystem;
 
@@ -48,6 +49,9 @@ namespace ResponseRules
 		// IResponseSystem
 		virtual bool FindBestResponse( const CriteriaSet& set, CRR_Response& response, IResponseFilter *pFilter = NULL );
 		virtual void GetAllResponses( CUtlVector<CRR_Response> *pResponses );
+
+		virtual bool InitScript();
+		virtual void TermScript();
 #pragma endregion Implement interface from IResponseSystem
 
 		virtual void Release() = 0;
@@ -164,6 +168,7 @@ namespace ResponseRules
 		void		ParseCriterion( void );
 		void		ParseRule( void );
 		void		ParseEnumeration( void );
+		void		ParseVScript(void);
 
 	private:
 		void		ParseRule_MatchOnce( Rule &newRule );
@@ -175,6 +180,7 @@ namespace ResponseRules
 		void		ParseRule_Response( Rule &newRule );
 		//void		ParseRule_ForceWeight( Rule &newRule );
 		void		ParseRule_Criteria( Rule &newRule );
+		void		ParseRule_ScriptFunc(Rule& newRule);
 		char const	*m_pParseRuleName;
 		bool		m_bParseRuleValid;
 
@@ -276,12 +282,16 @@ public:
 
 		CUtlVector< ScriptEntry >		m_ScriptStack;
 		CStringPool						m_IncludedFiles;
+		CUtlSymbolTable					m_IncludedVScripts;
 
 		DispatchMap_t					m_FileDispatch;
 		ParseRuleDispatchMap_t			m_RuleDispatch;
 		ParseResponseDispatchMap_t		m_ResponseDispatch;
 		ParseResponseGroupDispatchMap_t m_ResponseGroupDispatch;
 		CUtlRBTree< unsigned int >		m_RootCommandHashes;
+
+		CScriptScopeT< CScriptScopeBase > m_ScriptScope;
+		HSCRIPT			m_hScriptInstance;
 
         // for debugging purposes only: concepts to be emitted from rr_debugresponses 2
         typedef CUtlLinkedList< CRR_Concept, unsigned short, false, unsigned int > ExcludeList_t;

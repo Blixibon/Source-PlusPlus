@@ -1271,7 +1271,14 @@ void CNPC_AttackHelicopter::SpotlightThink()
 			}
 		}
 		break;
-
+	case ATTACK_MODE_DEFAULT:
+		{
+			Vector vecForward;
+			Vector vecOrigin;
+			GetAttachment(m_nSpotlightAttachment, vecOrigin, &vecForward);
+			m_Spotlight.SetSpotlightTargetDirection(vecForward);
+		}
+		break;
 	default:
 		SpotlightShutdown();
 		return;
@@ -4794,6 +4801,10 @@ void CNPC_AttackHelicopter::Hunt( void )
 	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
 		UpdateBullrushState();
+	}
+	else if (m_nAttackMode == ATTACK_MODE_DEFAULT)
+	{
+		SpotlightStartup();
 	}
 
 	UpdateEnemyLeading();

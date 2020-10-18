@@ -1,0 +1,7 @@
+"unlitgeneric"
+{
+	"$basetexture" "_rt_PreciseFullFrameDepth"
+	"$color"		"[1 0 0]"
+	"$color2"		"[1 0 0]"
+	"%noToolTexture" 1
+}

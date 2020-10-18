@@ -30,6 +30,8 @@ struct ClientFlashlightState_t : public FlashlightState_t
 	{
 		m_bVolumetric = false;
 		m_flNoiseStrength = 0.8f;
+		m_nNumPlanes = 64;
+		m_flPlaneOffset = 0.0f;
 		m_flFlashlightTime = 0.0f;
 		m_flVolumetricIntensity = 1.0f;
 
@@ -61,6 +63,8 @@ struct ClientFlashlightState_t : public FlashlightState_t
 	bool m_bVolumetric;
 	float m_flNoiseStrength;
 	float m_flFlashlightTime;
+	int m_nNumPlanes;
+	float m_flPlaneOffset;
 	float m_flVolumetricIntensity;
 
 	IMPLEMENT_OPERATOR_EQUAL(ClientFlashlightState_t);
@@ -158,6 +162,11 @@ public:
 
 	virtual void SetShadowFromWorldLightsEnabled(bool bEnabled) = 0;
 	virtual bool IsShadowingFromWorldLights() const = 0;
+
+	// Flashlight access
+	virtual bool GetFlashlightByIndex(int iIndex, ClientFlashlightState_t* pState, VMatrix* pWorldToLight, ITexture** ppDepthTexture, ShadowHandle_t *pEngineHandle) = 0;
+
+	virtual bool VolumetricsAvailable() = 0;
 };
 
 

@@ -10,30 +10,39 @@
 class CPopulationControl;
 extern CPopulationControl *g_pPopulationManager;
 
-class CPopulationDefinition : public CAutoGameSystem
+class CBasePopulationDefinition : public CAutoGameSystem
 {
 protected:
 	friend class CPopulationControl;
-	char chName[32];
-	CUtlVector<const char *> types;
-	//CUtlSymbolTable types;
 	CUtlVector<int> weighted_random;
+	int iRange;
 	int iIndex;
+
+	virtual void DoWeighting(const CUtlVector<char*>& typeList) = 0;
 public:
-	CPopulationDefinition(const char *pchName, const char **ppszArray, int iSize) : CAutoGameSystem()
+	virtual bool Init();
+	virtual int GetRandom();
+};
+
+class CPopulationDefinition : public CBasePopulationDefinition
+{
+protected:
+	char chName[32];
+	CUtlVector<const char*> types;
+
+	virtual void DoWeighting(const CUtlVector<char*>& typeList);
+public:
+	CPopulationDefinition(const char* pchName, const char** ppszArray, int iSize) : CBasePopulationDefinition()
 	{
 		//AddToAutoList(this);
 		iIndex = -1;
 		Q_strncpy(chName, pchName, sizeof(chName));
 		types.CopyArray(ppszArray, iSize);
+		iRange = iSize;
 		//weighted_random.SetSize(0);
 	}
 
-	virtual bool Init();
-
-	virtual char const *Name() { return chName; }
-
-	virtual int GetRandom();
+	virtual char const* Name() { return chName; }
 };
 
 class CPopulationControl : public CAutoGameSystem, public IEntityListener
@@ -59,7 +68,7 @@ public:
 		return true;
 	}
 
-	void AddDefinition(CPopulationDefinition *pDef)
+	void AddDefinition(CBasePopulationDefinition*pDef)
 	{
 		int iDX = m_Definitions.AddToTail(pDef);
 		pDef->iIndex = iDX;
@@ -76,7 +85,7 @@ public:
 
 protected:
 	string_t m_iszPopulationTag;
-	CUtlVector<CPopulationDefinition *> m_Definitions;
+	CUtlVector<CBasePopulationDefinition*> m_Definitions;
 };
 
 #endif // !POPMAN_H

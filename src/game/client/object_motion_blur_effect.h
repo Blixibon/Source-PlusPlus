@@ -55,7 +55,7 @@ private:
 		C_BaseAnimating *m_pEntity;
 		float m_flVelocityScale;
 
-		Vector m_vecLastScreen;
+		//Vector m_vecLastScreen;
 
 		// Linked list of free slots
 		int m_nNextFreeSlot;

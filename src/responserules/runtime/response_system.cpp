@@ -13,6 +13,7 @@
 #include "fmtstr.h"
 #include "generichash.h"
 #include "responserules/matchers.h"
+#include "vscript/ivscript.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -181,11 +182,13 @@ CResponseSystem::CResponseSystem() :
 	m_FileDispatch( 0, 0, DefLessFunc( unsigned int ) ),
 	m_RuleDispatch( 0, 0, DefLessFunc( unsigned int ) ),
 	m_ResponseDispatch( 0, 0, DefLessFunc( unsigned int ) ),
-	m_ResponseGroupDispatch( 0, 0, DefLessFunc( unsigned int ) )
+	m_ResponseGroupDispatch( 0, 0, DefLessFunc( unsigned int ) ),
+	m_ScriptScope()
 {
 	token[0] = 0;
 	m_bUnget = false;
 	m_bCustomManagable = false;
+	m_hScriptInstance = INVALID_HSCRIPT;
 
 	BuildDispatchTables();
 }
@@ -196,6 +199,10 @@ CResponseSystem::CResponseSystem() :
 CResponseSystem::~CResponseSystem()
 {
 }
+
+BEGIN_SCRIPTDESC_ROOT(CResponseSystem, "")
+
+END_SCRIPTDESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -667,75 +674,95 @@ float CResponseSystem::ScoreCriteriaAgainstRuleCriteria( const CriteriaSet& set,
 	return score;
 }
 
-float CResponseSystem::ScoreCriteriaAgainstRule( const CriteriaSet& set, ResponseRulePartition::tRuleDict &dict, int irule, bool verbose /*=false*/ )
+float CResponseSystem::ScoreCriteriaAgainstRule(const CriteriaSet& set, ResponseRulePartition::tRuleDict& dict, int irule, bool verbose /*=false*/)
 {
-	Rule * RESTRICT rule = dict[ irule ];
+	Rule* RESTRICT rule = dict[irule];
 	float score = 0.0f;
 
 	bool bBeingWatched = false;
 
 	// See if we're trying to debug this rule
-	const char *pszText = rr_debugrule.GetString();
-	if ( pszText && pszText[0] && !Q_stricmp( pszText, dict.GetElementName( irule ) ) )
+	const char* pszText = rr_debugrule.GetString();
+	if (pszText && pszText[0] && !Q_stricmp(pszText, dict.GetElementName(irule)))
 	{
 		bBeingWatched = true;
 	}
 
-	if ( !rule->IsEnabled() )
+	if (!rule->IsEnabled())
 	{
-		if ( bBeingWatched )
+		if (bBeingWatched)
 		{
-			DevMsg("Rule is disabled.\n" );
+			DevMsg("Rule is disabled.\n");
 		}
 		return 0.0f;
 	}
 
-	if ( bBeingWatched )
+	if (bBeingWatched)
 	{
 		verbose = true;
 	}
 
-	if ( verbose )
+	if (verbose)
 	{
-		DevMsg( "Scoring rule '%s' (%i)\n{\n", dict.GetElementName( irule ), irule+1 );
+		DevMsg("Scoring rule '%s' (%i)\n{\n", dict.GetElementName(irule), irule + 1);
 	}
 
 	// Iterate set criteria
 	int count = rule->m_Criteria.Count();
 	int i;
-	for ( i = 0; i < count; i++ )
+	for (i = 0; i < count; i++)
 	{
-		int icriterion = rule->m_Criteria[ i ];
+		int icriterion = rule->m_Criteria[i];
 
 		bool exclude = false;
-		score += ScoreCriteriaAgainstRuleCriteria( set, icriterion, exclude, verbose );
+		score += ScoreCriteriaAgainstRuleCriteria(set, icriterion, exclude, verbose);
 
-		if ( verbose )
+		if (verbose)
 		{
-			DevMsg( ", score %4.2f\n", score );
+			DevMsg(", score %4.2f\n", score);
 		}
 
-		if ( exclude ) 
+		if (exclude)
 		{
 			score = 0.0f;
 			break;
 		}
 	}
 
-	if ( verbose )
+	if (m_ScriptScope.IsInitialized())
 	{
-		DevMsg( "}\n" );
+		for (int i = 0; i < rule->m_ScriptFuncs.Count(); i++)
+		{
+			ScriptVariant_t flScriptReturn;
+			if (m_ScriptScope.Call(rule->m_ScriptFuncs[i].String(), &flScriptReturn) != SCRIPT_ERROR)
+			{
+				float flRet = flScriptReturn.Get<float>();
+
+				if (flRet < 0.f)
+				{
+					score = 0.0f;
+					break;
+				}
+
+				score += flRet;
+			}
+		}
 	}
 
-	if ( rule->m_nForceWeight > 0 )
+	if (verbose)
+	{
+		DevMsg("}\n");
+	}
+
+	if (rule->m_nForceWeight > 0)
 	{	// this means override the cumulative weight of criteria and just force the rule's total score,
 		// assuming it matched at all.
-		return fsel( score - FLT_MIN, rule->m_nForceWeight, 0 );
+		return fsel(score - FLT_MIN, rule->m_nForceWeight, 0);
 	}
 	else
 	{
-	return score;
-}
+		return score;
+	}
 }
 
 void CResponseSystem::DebugPrint( int depth, const char *fmt, ... )
@@ -1163,56 +1190,74 @@ bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule 
 // Warning: If you change this, be sure to also change 
 //          ResponseSystemImplementationCLI::FindAllRulesMatchingCriteria().
 //-----------------------------------------------------------------------------
-ResponseRulePartition::tIndex CResponseSystem::FindBestMatchingRule( const CriteriaSet& set, bool verbose, float &scoreOfBestMatchingRule )
+ResponseRulePartition::tIndex CResponseSystem::FindBestMatchingRule(const CriteriaSet& set, bool verbose, float& scoreOfBestMatchingRule)
 {
-	CUtlVector< ResponseRulePartition::tIndex >	bestrules(16,4);
+	CUtlVector< ResponseRulePartition::tIndex >	bestrules(16, 4);
 	float bestscore = 0.001f;
 	scoreOfBestMatchingRule = 0;
 
-	CUtlVectorFixed< ResponseRulePartition::tRuleDict *, 2 > buckets( 0, 2 );
-	m_RulePartitions.GetDictsForCriteria( &buckets, set );
-	for ( int b = 0 ; b < buckets.Count() ; ++b )
+	ScriptVariant_t table;
+	if (m_ScriptScope.IsInitialized())
 	{
-		ResponseRulePartition::tRuleDict *prules = buckets[b];
-		int c = prules->Count();
-	int i;
-	for ( i = 0; i < c; i++ )
-	{
-			float score = ScoreCriteriaAgainstRule( set, *prules, i, verbose );
-		// Check equals so that we keep track of all matching rules
-		if ( score >= bestscore )
+		IEngineEmulator::Get()->GetScriptVM()->CreateTable(table);
+		for (int i = 0; i < set.GetCount(); i++)
 		{
-			// Reset bucket
-			if( score != bestscore )
-			{
-				bestscore = score;
-				bestrules.RemoveAll();
-			}
+			IEngineEmulator::Get()->GetScriptVM()->SetValue(table, set.GetName(i), set.GetValue(i));
+		}
 
-			// Add to bucket
-				bestrules.AddToTail( m_RulePartitions.IndexFromDictElem( prules, i ) );
+		m_ScriptScope.SetValue("criteriaset", table);
+	}
+
+	CUtlVectorFixed< ResponseRulePartition::tRuleDict*, 2 > buckets(0, 2);
+	m_RulePartitions.GetDictsForCriteria(&buckets, set);
+	for (int b = 0; b < buckets.Count(); ++b)
+	{
+		ResponseRulePartition::tRuleDict* prules = buckets[b];
+		int c = prules->Count();
+		int i;
+		for (i = 0; i < c; i++)
+		{
+			float score = ScoreCriteriaAgainstRule(set, *prules, i, verbose);
+			// Check equals so that we keep track of all matching rules
+			if (score >= bestscore)
+			{
+				// Reset bucket
+				if (score != bestscore)
+				{
+					bestscore = score;
+					bestrules.RemoveAll();
+				}
+
+				// Add to bucket
+				bestrules.AddToTail(m_RulePartitions.IndexFromDictElem(prules, i));
 			}
 		}
 	}
 
+	if (m_ScriptScope.IsInitialized())
+	{
+		m_ScriptScope.ClearValue("criteriaset");
+		IEngineEmulator::Get()->GetScriptVM()->ReleaseValue(table);
+	}
+
 	int bestCount = bestrules.Count();
-	if ( bestCount <= 0 )
+	if (bestCount <= 0)
 		return m_RulePartitions.InvalidIdx();
 
-	scoreOfBestMatchingRule = bestscore ;
-	if ( bestCount == 1 )
+	scoreOfBestMatchingRule = bestscore;
+	if (bestCount == 1)
 	{
-		return bestrules[ 0 ] ;
+		return bestrules[0];
 	}
 	else
 	{
 		// Randomly pick one of the tied matching rules
-		int idx = IEngineEmulator::Get()->GetRandomStream()->RandomInt( 0, bestCount - 1 );
-		if ( verbose )
+		int idx = IEngineEmulator::Get()->GetRandomStream()->RandomInt(0, bestCount - 1);
+		if (verbose)
 		{
-			DevMsg( "Found %i matching rules, selecting slot %i\n", bestCount, idx );
+			DevMsg("Found %i matching rules, selecting slot %i\n", bestCount, idx);
 		}
-		return bestrules[ idx ] ;
+		return bestrules[idx];
 	}
 }
 
@@ -1369,6 +1414,76 @@ void CResponseSystem::ParseInclude()
 	}
 
 	LoadFromBuffer( includefile, (const char *)buf.PeekGet() );
+}
+
+void ResponseRules::CResponseSystem::ParseVScript(void)
+{
+	char includefile[256];
+	ParseToken();
+	Q_snprintf(includefile, sizeof(includefile), "scripts/vscripts/%s", token);
+
+	// check if the file is already included
+	if (m_IncludedVScripts.Find(includefile) != UTL_INVAL_SYMBOL)
+	{
+		return;
+	}
+
+	MEM_ALLOC_CREDIT();
+
+	// Try and load it
+	if (!IEngineEmulator::Get()->GetFilesystem()->FileExists(includefile, "GAME"))
+	{
+		DevMsg("Unable to load included VScript %s\n", includefile);
+		return;
+	}
+
+	m_IncludedVScripts.AddString(includefile);
+}
+
+bool ResponseRules::CResponseSystem::InitScript()
+{
+	if (!m_ScriptScope.IsInitialized())
+	{
+		if (IEngineEmulator::Get()->GetScriptVM() == NULL)
+		{
+			ExecuteOnce(DevMsg(" Cannot execute script because there is no available VM\n"));
+			return false;
+		}
+
+		char* iszScriptId = (char*)stackalloc(1024);
+		V_snprintf(iszScriptId, 1024, "CResponseSystem:%s", GetScriptFile());
+
+		m_hScriptInstance = IEngineEmulator::Get()->GetScriptVM()->RegisterInstance(GetScriptDescForClass(CResponseSystem), this);
+		IEngineEmulator::Get()->GetScriptVM()->SetInstanceUniqeId(m_hScriptInstance, iszScriptId);
+
+		bool bResult = m_ScriptScope.Init(iszScriptId);
+
+		if (!bResult)
+		{
+			DevMsg("CResponseSystem couldn't create ScriptScope!\n");
+			return false;
+		}
+
+		IEngineEmulator::Get()->GetScriptVM()->SetValue(m_ScriptScope, "self", m_hScriptInstance);
+
+		for (int i = 0; i < m_IncludedVScripts.GetNumStrings(); i++)
+		{
+			IEngineEmulator::Get()->VScriptRunScript(m_IncludedVScripts.String(i), m_ScriptScope);
+		}
+	}
+	
+	return true;
+}
+
+void ResponseRules::CResponseSystem::TermScript()
+{
+	if (m_hScriptInstance)
+	{
+		IEngineEmulator::Get()->GetScriptVM()->RemoveInstance(m_hScriptInstance);
+		m_hScriptInstance = NULL;
+	}
+
+	m_ScriptScope.Term();
 }
 
 void CResponseSystem::LoadFromBuffer( const char *scriptfile, const char *buffer )
@@ -2070,23 +2185,38 @@ void CResponseSystem::ParseRule_ForceWeight( Rule &newRule )
 		}
 */
 
-void CResponseSystem::ParseRule_Criteria( Rule &newRule )
-		{
-			// Read them until we run out.
-			while ( TokenWaiting() )
-			{
-				ParseToken();
+void CResponseSystem::ParseRule_Criteria(Rule& newRule)
+{
+	// Read them until we run out.
+	while (TokenWaiting())
+	{
+		ParseToken();
 
-				int idx = m_Criteria.Find( token );
-				if ( idx != m_Criteria.InvalidIndex() )
-				{
-					MEM_ALLOC_CREDIT();
-					newRule.m_Criteria.AddToTail( idx );
-				}
-				else
-				{
+		int idx = m_Criteria.Find(token);
+		if (idx != m_Criteria.InvalidIndex())
+		{
+			MEM_ALLOC_CREDIT();
+			newRule.m_Criteria.AddToTail(idx);
+		}
+		else
+		{
 			m_bParseRuleValid = false;
-			ResponseWarning( "No such criterion '%s' for rule '%s'\n", token, m_pParseRuleName );
+			ResponseWarning("No such criterion '%s' for rule '%s'\n", token, m_pParseRuleName);
+		}
+	}
+}
+
+void ResponseRules::CResponseSystem::ParseRule_ScriptFunc(Rule& newRule)
+{
+	// Read them until we run out.
+	while (TokenWaiting())
+	{
+		ParseToken();
+
+		CRR_VScriptSymbol sym = token;
+		if (newRule.m_ScriptFuncs.Find(sym) == newRule.m_ScriptFuncs.InvalidIndex())
+		{
+			newRule.m_ScriptFuncs.AddToTail(sym);
 		}
 	}
 }
@@ -2407,6 +2537,7 @@ void CResponseSystem::BuildDispatchTables()
 	m_RootCommandHashes.Insert( RR_HASH( "criterion" ) );
 	m_RootCommandHashes.Insert( RR_HASH( "criteria" ) );
 	m_RootCommandHashes.Insert( RR_HASH( "rule" ) );
+	m_RootCommandHashes.Insert(RR_HASH("#vscript"));
 
 	m_FileDispatch.Insert( RR_HASH( "#include" ), &CResponseSystem::ParseInclude );
 	m_FileDispatch.Insert( RR_HASH( "response" ), &CResponseSystem::ParseResponse );
@@ -2414,6 +2545,7 @@ void CResponseSystem::BuildDispatchTables()
 	m_FileDispatch.Insert( RR_HASH( "criteria" ), &CResponseSystem::ParseCriterion );
 	m_FileDispatch.Insert( RR_HASH( "rule" ), &CResponseSystem::ParseRule );
 	m_FileDispatch.Insert( RR_HASH( "enumeration" ), &CResponseSystem::ParseEnumeration );
+	m_FileDispatch.Insert(RR_HASH("#vscript"), &CResponseSystem::ParseVScript);
 
 	m_RuleDispatch.Insert( RR_HASH( "matchonce" ), &CResponseSystem::ParseRule_MatchOnce );
 	m_RuleDispatch.Insert( RR_HASH( "applycontexttoworld" ), &CResponseSystem::ParseRule_ApplyContextToWorld );
@@ -2425,6 +2557,7 @@ void CResponseSystem::BuildDispatchTables()
 //	m_RuleDispatch.Insert( RR_HASH( "forceweight" ), &CResponseSystem::ParseRule_ForceWeight );
 	m_RuleDispatch.Insert( RR_HASH( "criteria" ), &CResponseSystem::ParseRule_Criteria );
 	m_RuleDispatch.Insert( RR_HASH( "criterion" ), &CResponseSystem::ParseRule_Criteria );
+	m_RuleDispatch.Insert(RR_HASH("scriptfunc"), &CResponseSystem::ParseRule_ScriptFunc);
 
 
 	m_ResponseDispatch.Insert( RR_HASH( "weight" ), &CResponseSystem::ParseResponse_Weight );

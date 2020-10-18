@@ -1,0 +1,7 @@
+"PP_Downsample_nohdr"
+{
+	"$bloomtype" "2" // Different downsample algorithm for Counter-Strike: Source
+	"$basetexture" "_rt_FullFrameFB"
+	"$ignorez" 1
+	"%noToolTexture" 1
+}

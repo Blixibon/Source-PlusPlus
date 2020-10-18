@@ -550,7 +550,7 @@ void CClientLeafSystem::PreRender()
 			RemoveFromTree( handle );
 		}
 
-		bool bThreaded = false;//( nDirty > 5 && cl_threaded_client_leaf_system.GetBool() && g_pThreadPool->NumThreads() );
+		bool bThreaded = ( nDirty > 5 && cl_threaded_client_leaf_system.GetBool() && g_pThreadPool->NumThreads() );
 
 		if ( !bThreaded )
 		{

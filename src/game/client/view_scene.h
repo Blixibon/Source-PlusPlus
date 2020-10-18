@@ -25,6 +25,7 @@ extern ConVar building_cubemaps;
 
 // Transform into view space (translate and rotate the camera into the origin).
 void ViewTransform( const Vector &worldSpace, Vector &viewSpace );
+int FrustumTransform(const VMatrix& worldToSurface, const Vector& point, Vector& screen);
 
 // Transform a world point into normalized screen space (X and Y from -1 to 1).
 // Returns 0 if the point is behind the viewer.

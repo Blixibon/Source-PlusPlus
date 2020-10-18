@@ -21,7 +21,7 @@
 #define FILENAME_FORMAT SCRIPT_DIR "%s/%s/%s.txt"
 
 
-int CPopulationDefinition::GetRandom()
+int CBasePopulationDefinition::GetRandom()
 {
 	if (weighted_random.Count() > 0)
 	{
@@ -29,15 +29,31 @@ int CPopulationDefinition::GetRandom()
 	}
 	else
 	{
-		return RandomInt(0, types.Count()-1);
+		return RandomInt(0, iRange-1);
 	}
 }
 
-bool CPopulationDefinition::Init()
+bool CBasePopulationDefinition::Init()
 {
 	g_pPopulationManager->AddDefinition(this);
 
 	return true;
+}
+
+void CPopulationDefinition::DoWeighting(const CUtlVector<char*>& typeList)
+{
+	for (int j = 0; j < typeList.Count(); j++)
+	{
+		char* pchType = typeList[j];
+		for (int k = 0; k < types.Count(); k++)
+		{
+			if (FStrEq(pchType, types[k]))
+			{
+				weighted_random.AddToTail(k);
+				break;
+			}
+		}
+	}
 }
 
 #pragma region UTILS
@@ -131,11 +147,11 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 		// Iterate through every definition instance we know about.
 		for (int i = 0; i < m_Definitions.Count(); i++)
 		{
-			CPopulationDefinition *pDef = m_Definitions[i];
+			CBasePopulationDefinition *pDef = m_Definitions[i];
 			pDef->weighted_random.Purge(); // Purge any previous weighting.
 
 			CFmtStrN<MAX_PATH> filename;
-			filename.AppendFormat(FILENAME_FORMAT, pszPopSet, STRING(m_iszPopulationTag), pDef->chName); // Build the filename for the weighting script.
+			filename.AppendFormat(FILENAME_FORMAT, pszPopSet, STRING(m_iszPopulationTag), pDef->Name()); // Build the filename for the weighting script.
 
 			// Check if it exists.
 			if (!filesystem->FileExists(filename.Access(), "GAME"))
@@ -153,7 +169,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 					V_StripTrailingSlash(chPopTagNoSlash);
 
 					filename.Clear();
-					filename.AppendFormat(FILENAME_FORMAT, pszPopSet, chPopTagNoSlash, pDef->chName);
+					filename.AppendFormat(FILENAME_FORMAT, pszPopSet, chPopTagNoSlash, pDef->Name());
 
 					// Check again.
 					if (filesystem->FileExists(filename.Access(), "GAME"))
@@ -165,7 +181,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 				{
 					// Try the default tag
 					filename.Clear();
-					filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, STRING(m_iszPopulationTag), pDef->chName);
+					filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, STRING(m_iszPopulationTag), pDef->Name());
 
 					// Check again.
 					if (!filesystem->FileExists(filename.Access(), "GAME"))
@@ -183,7 +199,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 							V_StripTrailingSlash(chPopTagNoSlash);
 
 							filename.Clear();
-							filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, chPopTagNoSlash, pDef->chName);
+							filename.AppendFormat(FILENAME_FORMAT, DEFAULT_TAG, chPopTagNoSlash, pDef->Name());
 
 							// Check again.
 							if (filesystem->FileExists(filename.Access(), "GAME"))
@@ -209,18 +225,7 @@ void CPopulationControl::OnEntitySpawned(CBaseEntity *pEntity)
 			if (typeList.Count() <= 0)
 				continue;
 
-			for (int j = 0; j < typeList.Count(); j++)
-			{
-				char *pchType = typeList[j];
-				for (int k = 0; k < pDef->types.Count(); k++)
-				{
-					if (FStrEq(pchType, pDef->types[k]))
-					{
-						pDef->weighted_random.AddToTail(k);
-						break;
-					}
-				}
-			}
+			pDef->DoWeighting(typeList);
 		}
 	}
 }

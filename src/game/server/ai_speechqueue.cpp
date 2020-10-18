@@ -10,6 +10,7 @@
 #include "basemultiplayerplayer.h"
 #include "ai_baseactor.h"
 #include "ai_speech.h"
+#include "ai_squad.h"
 //#include "flex_expresser.h"
 // memdbgon must be the last include file in a .cpp file!!!
 #include <tier0/memdbgon.h>
@@ -199,6 +200,16 @@ void CResponseQueue::CDeferredResponse::Quash()
 	m_fDispatchTime = 0;
 }
 
+inline void AppendTargetingCriteria(AI_CriteriaSet* outputCriteria, CBaseEntity* pIssuer, CBaseEntity* pTarget)
+{
+	outputCriteria->AppendCriteria("los_to_issuer", pTarget->FVisible(pIssuer) ? "1" : "0");
+	if (pTarget->IsCombatCharacter())
+	{
+		CBaseCombatCharacter* pBCC = pTarget->MyCombatCharacterPointer();
+		outputCriteria->AppendCriteria("issuer_fog_ratio", pBCC->GetFogObscuredRatio(pIssuer));
+	}
+}
+
 bool CResponseQueue::DispatchOneResponse(CDeferredResponse &response)
 {
 	// find the target.
@@ -245,10 +256,24 @@ bool CResponseQueue::DispatchOneResponse(CDeferredResponse &response)
 	case kDRT_ALL:
 		{
 			bool bSaidAnything = false;
+			CAI_Squad* pSquad = nullptr;
 			Vector issuerLocation;
 			if ( pIssuer ) 
 			{ 
-					issuerLocation = pIssuer->GetAbsOrigin(); 
+				issuerLocation = pIssuer->GetAbsOrigin();
+				if (pIssuer->IsNPC())
+				{
+					pSquad = pIssuer->MyNPCPointer()->GetSquad();
+				}
+				else if (pIssuer->IsPlayer())
+				{
+					pSquad = ToBasePlayer(pIssuer)->GetPlayerSquad();
+				}
+			}
+
+			if (response.m_Target.m_iTargetFilter == kDRF_SQUAD && !pSquad)
+			{
+				return false;
 			}
 
 			// find all characters
@@ -263,9 +288,29 @@ bool CResponseQueue::DispatchOneResponse(CDeferredResponse &response)
 					if ( distIssuerToTargetSq > followupMaxDistSq )
 						continue; // too far
 
-					int iRelation = g_pGameRules->PlayerRelationship(pIssuer, pTarget);
-					if (iRelation != GR_TEAMMATE && iRelation != GR_ALLY)
-						continue;
+					switch (response.m_Target.m_iTargetFilter)
+					{
+					case kDRF_TEAM:
+						if (!pIssuer->InSameTeam(pTarget))
+							continue;
+						break;
+					case kDRF_SQUAD:
+					{
+						if (pTarget->IsPlayer() && pTarget == pSquad->GetPlayerCommander())
+						{
+						}
+						else if (pTarget->IsNPC() && pSquad->SquadIsMember(pTarget))
+						{
+						}
+						else
+						{
+							continue;
+						}
+						break;
+					}
+					default:
+						break;
+					}
 				}
 
 				pEx = InferExpresserFromBaseEntity(pTarget);
@@ -276,7 +321,8 @@ bool CResponseQueue::DispatchOneResponse(CDeferredResponse &response)
 				characterCriteria.Merge(&deferredCriteria);
 				if ( pIssuer ) 
 				{
-					characterCriteria.AppendCriteria( "dist_from_issuer",  UTIL_VarArgs( "%f", sqrt(distIssuerToTargetSq) ) );
+					characterCriteria.AppendCriteria( "dist_from_issuer",  CFmtStr( "%f", sqrt(distIssuerToTargetSq) ) );
+					AppendTargetingCriteria(&characterCriteria, pIssuer, pTarget);
 				}
 				AI_Response prospectiveResponse;
 				if ( pEx->FindResponse( prospectiveResponse, response.m_concept, &characterCriteria ) )
@@ -320,12 +366,26 @@ bool CResponseQueue::DispatchOneResponse_ThenANY( CDeferredResponse &response, A
 {
 	CBaseEntity * RESTRICT pTarget = NULL;
 	CAI_Expresser * RESTRICT pEx = NULL;
+	CAI_Squad* pSquad = nullptr;
 	float bestScore = 0;
 	float slop = rr_thenany_score_slop.GetFloat();
 	Vector issuerLocation;
 	if ( pIssuer )
 	{
 		issuerLocation = pIssuer->GetAbsOrigin();
+		if (pIssuer->IsNPC())
+		{
+			pSquad = pIssuer->MyNPCPointer()->GetSquad();
+		}
+		else if (pIssuer->IsPlayer())
+		{
+			pSquad = ToBasePlayer(pIssuer)->GetPlayerSquad();
+		}
+	}
+
+	if (response.m_Target.m_iTargetFilter == kDRF_SQUAD && !pSquad)
+	{
+		return false;
 	}
 
 	// this is an array of prospective respondents.
@@ -359,9 +419,29 @@ bool CResponseQueue::DispatchOneResponse_ThenANY( CDeferredResponse &response, A
 			if ( distIssuerToTargetSq > followupMaxDistSq )
 				continue; // too far
 
-			int iRelation = g_pGameRules->PlayerRelationship(pIssuer, pTarget);
-			if (iRelation != GR_TEAMMATE && iRelation != GR_ALLY)
-				continue; // not friendly
+			switch (response.m_Target.m_iTargetFilter)
+			{
+			case kDRF_TEAM:
+				if (!pIssuer->InSameTeam(pTarget))
+					continue;
+				break;
+			case kDRF_SQUAD:
+			{
+				if (pTarget->IsPlayer() && pTarget == pSquad->GetPlayerCommander())
+				{
+				}
+				else if (pTarget->IsNPC() && pSquad->SquadIsMember(pTarget))
+				{
+				}
+				else
+				{
+					continue;
+				}
+				break;
+			}
+			default:
+				break;
+			}
 		}
 
 		pEx = InferExpresserFromBaseEntity(pTarget);
@@ -374,6 +454,7 @@ bool CResponseQueue::DispatchOneResponse_ThenANY( CDeferredResponse &response, A
 		if ( pIssuer )
 		{
 			characterCriteria.AppendCriteria( "dist_from_issuer",  CFmtStr( "%f", sqrtf(distIssuerToTargetSq) ) );
+			AppendTargetingCriteria(&characterCriteria, pIssuer, pTarget);
 		}
 		AI_Response prospectiveResponse;
 

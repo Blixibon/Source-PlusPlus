@@ -798,6 +798,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 		iWeaponRole = TF_WPN_TYPE_PRIMARY2;
 		break;
 	case HLSS_WEAPON_ID_TURRET:
+	case HLSS_WEAPON_ID_MANHACK:
 		iWeaponRole = TF_WPN_TYPE_BUILDING;
 		break;
 	case HLSS_WEAPON_ID_PHYSGUN:
@@ -875,6 +876,7 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_SNARK:
 	case HLSS_WEAPON_ID_HIVEHAND:
 	case HLSS_WEAPON_ID_TRIPMINE:
+	case HLSS_WEAPON_ID_MANHACK:
 		iWeaponVariant = 1;
 		break;
 	case HLSS_WEAPON_ID_AR2:
@@ -1891,10 +1893,20 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 			break;
 		}
 		break;
-	/*case TF_WPN_TYPE_BUILDING:
-		pTable = s_acttableBuilding;
-		iActivityCount = ARRAYSIZE(s_acttableBuilding);
-		break;*/
+	case TF_WPN_TYPE_BUILDING:
+		switch (iWeaponVariant)
+		{
+		default:
+		/*case 0:
+			pTable = s_acttableGrenade;
+			iActivityCount = ARRAYSIZE(s_acttableGrenade);
+			break;*/
+		case 1:
+			pTable = s_acttableSlam;
+			iActivityCount = ARRAYSIZE(s_acttableSlam);
+			break;
+		}
+		break;
 	case TF_WPN_TYPE_PDA:
 		pTable = s_acttableSlam;
 		iActivityCount = ARRAYSIZE(s_acttableSlam);

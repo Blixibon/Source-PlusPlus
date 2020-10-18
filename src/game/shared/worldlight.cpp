@@ -255,7 +255,7 @@ void CWorldLights::LevelInitPreEntity()
 			dleafambientlighting_t *pLighting = reinterpret_cast<dleafambientlighting_t*>(ambientLightingLump.LumpBase());
 
 			Assert(nIndices == nLeaves);
-			if (nIndices != nCubes)
+			if (nIndices != nLeaves)
 				Warning("CWorldLights: Ambient lighting error.\n");
 
 			for (int i = 0; i < nLeaves; i++)
@@ -278,6 +278,9 @@ void CWorldLights::LevelInitPreEntity()
 				{
 					int iSample = pAmbient->firstAmbientSample + j;
 					Assert(iSample < nCubes);
+					if (iSample >= nCubes)
+						Warning("CWorldLights: Ambient lighting error.\n");
+
 					dleafambientlighting_t &ambientLight = pLighting[iSample];
 					lightCube_t &lightCube = lightCubes.Element(j);
 					lightCube.cube = ambientLight.cube;

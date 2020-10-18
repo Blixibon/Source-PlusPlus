@@ -470,6 +470,36 @@ CLazuul::~CLazuul()
 #endif // !CLIENT_DLL
 }
 
+void CLazuul::RegisterScriptFunctions(void)
+{
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_PLASMANODE, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_SPIT, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_HOMING_MISSILE, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_COMBINE_BALL, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_FIRST_NPC, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_HOUNDEYE, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_CROW, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_HEADCRAB, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_STRIDER, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_GUNSHIP, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_ANTLION, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_MANHACK, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_LAST_NPC, "");
+	ScriptRegisterConstant(g_pScriptVM, HL2COLLISION_GROUP_COMBINE_BALL_NPC, "");
+
+	ScriptRegisterConstant(g_pScriptVM, COLLISION_GROUP_PLAYER_HELD, "Held objects that shouldn't collide with players");
+	ScriptRegisterConstant(g_pScriptVM, COLLISION_GROUP_WEIGHTED_CUBE, "Cubes need a collision group that acts roughly like COLLISION_GROUP_NONE but doesn't collide with debris or interactive");
+
+	ScriptRegisterConstant(g_pScriptVM, TEAM_ANY, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_INVALID, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_UNASSIGNED, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_SPECTATOR, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_COMBINE, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_REBELS, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_MILITARY, "");
+	ScriptRegisterConstant(g_pScriptVM, TEAM_ZOMBIES, "");
+}
+
 int CLazuul::GetProtaganistTeam()
 {
 	switch (GetGameMode())
@@ -1463,7 +1493,7 @@ void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 	CLaz_Player* pLaz = assert_cast<CLaz_Player*> (pPlayer);
 	if (pLaz->HasMPModel())
 	{
-		const playerModel_t* pModel = pLaz->GetMPModel();
+		const PlayerModels::playerModel_t* pModel = pLaz->GetMPModel();
 		KeyValues* pkvAbillites = pModel->kvAbilities;
 		if (pkvAbillites != nullptr)
 		{

@@ -447,7 +447,6 @@ C_BasePlayer::C_BasePlayer() : m_iv_vecViewOffset( "C_BasePlayer::m_iv_vecViewOf
 	m_flPredictionErrorTime = 0;
 
 	m_surfaceProps = 0;
-	m_pSurfaceData = NULL;
 	m_surfaceFriction = 1.0f;
 	m_chTextureType = 0;
 
@@ -704,7 +703,7 @@ void C_BasePlayer::SetViewAngles( const QAngle& ang )
 }
 
 
-surfacedata_t* C_BasePlayer::GetGroundSurface()
+surfacedataall_t C_BasePlayer::GetGroundSurface()
 {
 	//
 	// Find the name of the material that lies beneath the player.
@@ -725,9 +724,9 @@ surfacedata_t* C_BasePlayer::GetGroundSurface()
 	UTIL_TraceRay( ray, MASK_PLAYERSOLID_BRUSHONLY, this, COLLISION_GROUP_PLAYER_MOVEMENT, &trace );
 
 	if ( trace.fraction == 1.0f )
-		return NULL;	// no ground
+		return surfacedataall_t();	// no ground
 	
-	return physprops->GetSurfaceData( trace.surface.surfaceProps );
+	return physprops2->GetSurfaceDataBoth( trace.surface.surfaceProps );
 }
 
 void C_BasePlayer::FireGameEvent( IGameEvent *event )

@@ -170,14 +170,14 @@ bool CLazGameMovement::CheckJumpButton(void)
 	// In the air now.
 	SetGroundEntity(NULL);
 
-	player->PlayStepSound(mv->GetAbsOrigin(), player->m_pSurfaceData, 1.0, true);
+	player->PlayStepSound(mv->GetAbsOrigin(), player->m_pSurfaceData, false, 1.0, true);
 
 	MoveHelper()->PlayerSetAnimation(PLAYER_JUMP);
 
 	float flGroundFactor = 1.0f;
-	if (player->m_pSurfaceData)
+	if (player->m_pSurfaceData.pOld)
 	{
-		flGroundFactor = player->m_pSurfaceData->game.jumpFactor;
+		flGroundFactor = player->m_pSurfaceData.pOld->game.jumpFactor;
 	}
 
 	float flMul;

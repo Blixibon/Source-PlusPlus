@@ -66,12 +66,12 @@ LINK_ENTITY_TO_CLASS( monster_houndeye, CNPC_Houndeye );
 //=========================================================
 enum
 {
-	TASK_HOUND_CLOSE_EYE = LAST_SHARED_TASK,
-	TASK_HOUND_OPEN_EYE,
-	TASK_HOUND_THREAT_DISPLAY,
-	TASK_HOUND_FALL_ASLEEP,
-	TASK_HOUND_WAKE_UP,
-	TASK_HOUND_HOP_BACK,
+	TASK_HOUND_HL1_CLOSE_EYE = LAST_SHARED_TASK,
+	TASK_HOUND_HL1_OPEN_EYE,
+	TASK_HOUND_HL1_THREAT_DISPLAY,
+	TASK_HOUND_HL1_FALL_ASLEEP,
+	TASK_HOUND_HL1_WAKE_UP,
+	TASK_HOUND_HL1_HOP_BACK,
 };
 
 //=========================================================
@@ -79,23 +79,23 @@ enum
 //=========================================================
 enum
 {
-	SCHED_HOUND_AGITATED = LAST_SHARED_SCHEDULE,
-	SCHED_HOUND_HOP_RETREAT,
-	SCHED_HOUND_YELL1,
-	SCHED_HOUND_YELL2,
-	SCHED_HOUND_RANGEATTACK,
-	SCHED_HOUND_SLEEP,
-	SCHED_HOUND_WAKE_LAZY,
-	SCHED_HOUND_WAKE_URGENT,
-	SCHED_HOUND_SPECIALATTACK,
-	SCHED_HOUND_COMBAT_FAIL_PVS,
-	SCHED_HOUND_COMBAT_FAIL_NOPVS,
-//	SCHED_HOUND_FAIL,
+	SCHED_HOUND_HL1_AGITATED = LAST_SHARED_SCHEDULE,
+	SCHED_HOUND_HL1_HOP_RETREAT,
+	SCHED_HOUND_HL1_YELL1,
+	SCHED_HOUND_HL1_YELL2,
+	SCHED_HOUND_HL1_RANGEATTACK,
+	SCHED_HOUND_HL1_SLEEP,
+	SCHED_HOUND_HL1_WAKE_LAZY,
+	SCHED_HOUND_HL1_WAKE_URGENT,
+	SCHED_HOUND_HL1_SPECIALATTACK,
+	SCHED_HOUND_HL1_COMBAT_FAIL_PVS,
+	SCHED_HOUND_HL1_COMBAT_FAIL_NOPVS,
+//	SCHED_HOUND_HL1_FAIL,
 };
 
 enum HoundEyeSquadSlots
 {	
-	SQUAD_SLOTS_HOUND_ATTACK = LAST_SHARED_SQUADSLOT,
+	SQUAD_SLOTS_HOUND_HL1_ATTACK = LAST_SHARED_SQUADSLOT,
 };
 
 
@@ -624,36 +624,36 @@ void CNPC_Houndeye::StartTask ( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
-	case TASK_HOUND_FALL_ASLEEP:
+	case TASK_HOUND_HL1_FALL_ASLEEP:
 		{
 			m_fAsleep = TRUE; // signal that hound is lying down (must stand again before doing anything else!)
 			TaskComplete();
 			break;
 		}
-	case TASK_HOUND_WAKE_UP:
+	case TASK_HOUND_HL1_WAKE_UP:
 		{
 			m_fAsleep = FALSE; // signal that hound is standing again
 			TaskComplete();
 			break;
 		}
-	case TASK_HOUND_OPEN_EYE:
+	case TASK_HOUND_HL1_OPEN_EYE:
 		{
 			m_fDontBlink = FALSE; // turn blinking back on and that code will automatically open the eye
 			TaskComplete();
 			break;
 		}
-	case TASK_HOUND_CLOSE_EYE:
+	case TASK_HOUND_HL1_CLOSE_EYE:
 		{
 			m_nSkin = 0;
 			m_fDontBlink = TRUE; // tell blink code to leave the eye alone.
 			break;
 		}
-	case TASK_HOUND_THREAT_DISPLAY:
+	case TASK_HOUND_HL1_THREAT_DISPLAY:
 		{
 			SetIdealActivity( ACT_IDLE_ANGRY );
 			break;
 		}
-	case TASK_HOUND_HOP_BACK:
+	case TASK_HOUND_HL1_HOP_BACK:
 		{
 			SetIdealActivity( ACT_LEAP );
 			break;
@@ -683,7 +683,7 @@ void CNPC_Houndeye::RunTask ( const Task_t *pTask )
 {
 	switch ( pTask->iTask )
 	{
-	case TASK_HOUND_THREAT_DISPLAY:
+	case TASK_HOUND_HL1_THREAT_DISPLAY:
 		{
 			if ( GetEnemy() )
 			{
@@ -699,13 +699,13 @@ void CNPC_Houndeye::RunTask ( const Task_t *pTask )
 			
 			break;
 		}
-	case TASK_HOUND_CLOSE_EYE:
+	case TASK_HOUND_HL1_CLOSE_EYE:
 		{
 			if ( m_nSkin < HOUNDEYE_EYE_FRAMES - 1 )
 				 m_nSkin++;
 			break;
 		}
-	case TASK_HOUND_HOP_BACK:
+	case TASK_HOUND_HL1_HOP_BACK:
 		{
 			if ( IsSequenceFinished() )
 			{
@@ -818,22 +818,22 @@ int CNPC_Houndeye::TranslateSchedule( int scheduleType )
 				if ( FLSoundVolume ( pWakeSound ) >= HOUNDEYE_SOUND_STARTLE_VOLUME )
 				{
 					// awakened by a loud sound
-					return SCHED_HOUND_WAKE_URGENT;
+					return SCHED_HOUND_HL1_WAKE_URGENT;
 				}
 			}
 			// sound was not loud enough to scare the bejesus out of houndeye
-			return SCHED_HOUND_WAKE_LAZY;
+			return SCHED_HOUND_HL1_WAKE_LAZY;
 		}
 		else if ( HasCondition( COND_NEW_ENEMY ) )
 		{
 			// get up fast, to fight.
-			return SCHED_HOUND_WAKE_URGENT;
+			return SCHED_HOUND_HL1_WAKE_URGENT;
 		}
 
 		else
 		{
 			// hound is waking up on its own
-			return SCHED_HOUND_WAKE_LAZY;
+			return SCHED_HOUND_HL1_WAKE_LAZY;
 		}
 	}
 	switch	( scheduleType )
@@ -843,7 +843,7 @@ int CNPC_Houndeye::TranslateSchedule( int scheduleType )
 			// we may want to sleep instead of stand!
 			if ( m_pSquad && !m_pSquad->IsLeader( this ) && !m_fAsleep && random->RandomInt( 0,29 ) < 1 )
 			{
-				return SCHED_HOUND_SLEEP;
+				return SCHED_HOUND_HL1_SLEEP;
 			}
 			else
 			{
@@ -852,9 +852,9 @@ int CNPC_Houndeye::TranslateSchedule( int scheduleType )
 		}
 
 	case SCHED_RANGE_ATTACK1:
-		return SCHED_HOUND_RANGEATTACK;
+		return SCHED_HOUND_HL1_RANGEATTACK;
 	case SCHED_SPECIAL_ATTACK1:
-		return SCHED_HOUND_SPECIALATTACK;
+		return SCHED_HOUND_HL1_SPECIALATTACK;
 
 	case SCHED_FAIL:
 		{
@@ -863,12 +863,12 @@ int CNPC_Houndeye::TranslateSchedule( int scheduleType )
 				if ( !FNullEnt( UTIL_FindClientInPVS( edict() ) ) )
 				{
 					// client in PVS
-					return SCHED_HOUND_COMBAT_FAIL_PVS;
+					return SCHED_HOUND_HL1_COMBAT_FAIL_PVS;
 				}
 				else
 				{
 					// client has taken off! 
-					return SCHED_HOUND_COMBAT_FAIL_NOPVS;
+					return SCHED_HOUND_HL1_COMBAT_FAIL_NOPVS;
 				}
 			}
 			else
@@ -908,7 +908,7 @@ int CNPC_Houndeye::SelectSchedule( void )
 					if ( trace.fraction == 1.0 )
 					{
 						// it's clear behind, so the hound will jump
-						return SCHED_HOUND_HOP_RETREAT;
+						return SCHED_HOUND_HL1_HOP_RETREAT;
 					}
 				}
 
@@ -917,12 +917,12 @@ int CNPC_Houndeye::SelectSchedule( void )
 
 			if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 			{
-				if ( OccupyStrategySlot ( SQUAD_SLOTS_HOUND_ATTACK ) )
+				if ( OccupyStrategySlot ( SQUAD_SLOTS_HOUND_HL1_ATTACK ) )
 				{
 					return SCHED_RANGE_ATTACK1;
 				}
 
-				return SCHED_HOUND_AGITATED;
+				return SCHED_HOUND_HL1_AGITATED;
 			}
 			break;
 		}
@@ -952,23 +952,23 @@ float CNPC_Houndeye::FLSoundVolume( CSound *pSound )
 
 AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 
-	DECLARE_TASK ( TASK_HOUND_CLOSE_EYE )
-	DECLARE_TASK ( TASK_HOUND_OPEN_EYE )
-	DECLARE_TASK ( TASK_HOUND_THREAT_DISPLAY )
-	DECLARE_TASK ( TASK_HOUND_FALL_ASLEEP )
-	DECLARE_TASK ( TASK_HOUND_WAKE_UP )
-	DECLARE_TASK ( TASK_HOUND_HOP_BACK )
+	DECLARE_TASK ( TASK_HOUND_HL1_CLOSE_EYE )
+	DECLARE_TASK ( TASK_HOUND_HL1_OPEN_EYE )
+	DECLARE_TASK ( TASK_HOUND_HL1_THREAT_DISPLAY )
+	DECLARE_TASK ( TASK_HOUND_HL1_FALL_ASLEEP )
+	DECLARE_TASK ( TASK_HOUND_HL1_WAKE_UP )
+	DECLARE_TASK ( TASK_HOUND_HL1_HOP_BACK )
 
 	//=========================================================
-	// > SCHED_HOUND_AGITATED
+	// > SCHED_HOUND_HL1_AGITATED
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_AGITATED,
+		SCHED_HOUND_HL1_AGITATED,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
-		"		TASK_HOUND_THREAT_DISPLAY	0"
+		"		TASK_HOUND_HL1_THREAT_DISPLAY	0"
 		"	"
 		"	Interrupts"
 		"		COND_NEW_ENEMY"
@@ -976,42 +976,42 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_HOP_RETREAT
+	// > SCHED_HOUND_HL1_HOP_RETREAT
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_HOP_RETREAT,
+		SCHED_HOUND_HL1_HOP_RETREAT,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
-		"		TASK_HOUND_HOP_BACK			0"
+		"		TASK_HOUND_HL1_HOP_BACK			0"
 		"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
 		"	"
 		"	Interrupts"
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_YELL1
+	// > SCHED_HOUND_HL1_YELL1
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_YELL1,
+		SCHED_HOUND_HL1_YELL1,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
 		"		TASK_FACE_IDEAL				0"
 		"		TASK_RANGE_ATTACK1			0"
-		"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_HOUND_AGITATED"
+		"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_HOUND_HL1_AGITATED"
 		"	"
 		"	Interrupts"
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_YELL2
+	// > SCHED_HOUND_HL1_YELL2
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_YELL2,
+		SCHED_HOUND_HL1_YELL2,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
@@ -1022,14 +1022,14 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_RANGEATTACK
+	// > SCHED_HOUND_HL1_RANGEATTACK
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_RANGEATTACK,
+		SCHED_HOUND_HL1_RANGEATTACK,
 
 		"	Tasks"
-		"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_HOUND_YELL1"
+		"		TASK_SET_SCHEDULE			SCHEDULE:SCHED_HOUND_HL1_YELL1"
 		"	"
 		"	Interrupts"
 		"		COND_LIGHT_DAMAGE"
@@ -1037,11 +1037,11 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_SLEEP
+	// > SCHED_HOUND_HL1_SLEEP
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_SLEEP,
+		SCHED_HOUND_HL1_SLEEP,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
@@ -1049,9 +1049,9 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 		"		TASK_WAIT_RANDOM			5"
 		"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_CROUCH"
 		"		TASK_SET_ACTIVITY			ACTIVITY:ACT_CROUCHIDLE"
-		"		TASK_HOUND_FALL_ASLEEP		0"
+		"		TASK_HOUND_HL1_FALL_ASLEEP		0"
 		"		TASK_WAIT_RANDOM			25"
-			"	TASK_HOUND_CLOSE_EYE		0"
+			"	TASK_HOUND_HL1_CLOSE_EYE		0"
 		"	"
 		"	Interrupts"
 		"		COND_LIGHT_DAMAGE"
@@ -1064,44 +1064,44 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_WAKE_LAZY
+	// > SCHED_HOUND_HL1_WAKE_LAZY
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_WAKE_LAZY,
+		SCHED_HOUND_HL1_WAKE_LAZY,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
-		"		TASK_HOUND_OPEN_EYE			0"
+		"		TASK_HOUND_HL1_OPEN_EYE			0"
 		"		TASK_WAIT_RANDOM			2.5"
 		"		TASK_PLAY_SEQUENCE			ACT_STAND"
-		"		TASK_HOUND_WAKE_UP			0"
+		"		TASK_HOUND_HL1_WAKE_UP			0"
 		"	"
 		"	Interrupts"
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_WAKE_URGENT
+	// > SCHED_HOUND_HL1_WAKE_URGENT
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_WAKE_URGENT,
+		SCHED_HOUND_HL1_WAKE_URGENT,
 
 		"	Tasks"
-		"		TASK_HOUND_OPEN_EYE			0"
+		"		TASK_HOUND_HL1_OPEN_EYE			0"
 		"		TASK_PLAY_SEQUENCE			ACT_HOP"
 		"		TASK_FACE_IDEAL				0"
-		"		TASK_HOUND_WAKE_UP			0"
+		"		TASK_HOUND_HL1_WAKE_UP			0"
 		"	"
 		"	Interrupts"
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_SPECIALATTACK
+	// > SCHED_HOUND_HL1_SPECIALATTACK
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_SPECIALATTACK,
+		SCHED_HOUND_HL1_SPECIALATTACK,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
@@ -1118,15 +1118,15 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_COMBAT_FAIL_PVS
+	// > SCHED_HOUND_HL1_COMBAT_FAIL_PVS
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_COMBAT_FAIL_PVS,
+		SCHED_HOUND_HL1_COMBAT_FAIL_PVS,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
-		"		TASK_HOUND_THREAT_DISPLAY	0"
+		"		TASK_HOUND_HL1_THREAT_DISPLAY	0"
 		"		TASK_WAIT_FACE_ENEMY		1"
 		"	"
 		"	Interrupts"
@@ -1137,15 +1137,15 @@ AI_BEGIN_CUSTOM_NPC( monster_houndeye, CNPC_Houndeye )
 	)
 
 	//=========================================================
-	// > SCHED_HOUND_COMBAT_FAIL_NOPVS
+	// > SCHED_HOUND_HL1_COMBAT_FAIL_NOPVS
 	//=========================================================
 	DEFINE_SCHEDULE
 	(
-		SCHED_HOUND_COMBAT_FAIL_NOPVS,
+		SCHED_HOUND_HL1_COMBAT_FAIL_NOPVS,
 
 		"	Tasks"
 		"		TASK_STOP_MOVING			0"
-		"		TASK_HOUND_THREAT_DISPLAY	0"
+		"		TASK_HOUND_HL1_THREAT_DISPLAY	0"
 		"		TASK_WAIT_FACE_ENEMY		1"
 		"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
 		"		TASK_WAIT_PVS				0"

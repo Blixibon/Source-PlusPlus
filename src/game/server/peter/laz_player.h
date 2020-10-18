@@ -181,7 +181,7 @@ public:
 
 	void		SetFootsteps(const char *);
 
-	virtual void PlayStepSound(const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force);
+	virtual void PlayStepSound(const Vector& vecOrigin, surfacedataall_t surface, bool bWalk, float fvol, bool force);
 	void	PrecacheFootStepSounds(void);
 	const char *GetPlayerModelSoundPrefix(void);
 
@@ -253,10 +253,10 @@ public:
 
 	bool		HasMPModel()
 	{
-		return m_MPModel.szSectionID[0] != '\0';
+		return m_MPModel.strModelID.String()[0] != '\0';
 	}
 
-	const playerModel_t* GetMPModel()
+	const PlayerModels::playerModel_t* GetMPModel()
 	{
 		if (!HasMPModel())
 			return nullptr;
@@ -341,7 +341,7 @@ protected:
 
 	IMPLEMENT_NETWORK_VAR_FOR_DERIVED(m_vecLadderNormal);
 
-	playerModel_t m_MPModel;
+	PlayerModels::playerModel_t m_MPModel;
 	int				m_nSpecialAttack;
 	float				m_flNextSpecialAttackTime;
 	bool				m_bPlayedFreezeCamSound;

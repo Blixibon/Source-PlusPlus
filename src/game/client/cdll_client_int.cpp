@@ -993,7 +993,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	if (!spp_utils->Connect(appSystemFactory))
 		return false;
 
-	if (!spp_utils->InitClient(appSystemFactory, Sys_GetFactoryThis(), pGlobals, usermessages))
+	if (!spp_utils->InitClient(appSystemFactory, physicsFactory, Sys_GetFactoryThis(), pGlobals, usermessages))
 		return false;
 
 	if (!CommandLine()->CheckParm("-noscripting"))

@@ -1,11 +1,3 @@
 "VGUI_Screens"
 {
-	"movie_display_screen"
-	{
-		"type"		"movie_display_screen"
-		"pixelswide"	256
-		"pixelshigh"	128
-		"acceptsinput"  0
-		"resfile"	"scripts/screens/movie_display_screen.res"
-	}
 }

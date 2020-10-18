@@ -18,4 +18,6 @@ void DumpTGAofRenderTarget( const int width, const int height, const char *pFile
 bool IsDepthOfFieldEnabled(int iViewID, const CNewViewSetup *view = nullptr);
 void DoDepthOfField(const CNewViewSetup &view);
 
+void DoObjectMotionBlur(const CNewViewSetup* pSetup);
+
 #endif // VIEWPOSTPROCESS_H

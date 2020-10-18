@@ -45,6 +45,8 @@
 #include "positionwatcher.h"
 #include "tier1/callqueue.h"
 #include "vphysics/constraints.h"
+#include "spp_utils/spp_utils.h"
+#include "spp_utils/ISurfacePropsExt.h"
 
 #ifdef PORTAL
 #include "portal_physics_collisionevent.h"
@@ -174,7 +176,12 @@ bool CPhysicsHook::Init( void )
 
 	if ((physics = (IPhysics *)factories.physicsFactory( VPHYSICS_INTERFACE_VERSION, NULL )) == NULL ||
 		(physcollision = (IPhysicsCollision *)factories.physicsFactory( VPHYSICS_COLLISION_INTERFACE_VERSION, NULL )) == NULL ||
-		(physprops = (IPhysicsSurfaceProps *)factories.physicsFactory( VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, NULL )) == NULL
+#if 0
+		(physprops = (IPhysicsSurfaceProps*)physicsFactory(VPHYSICS_SURFACEPROPS_INTERFACE_VERSION, NULL)) == NULL
+#else
+		(physprops2 = (ISPPSurfacePropsExtension*)spp_utils->QueryInterface(SPP_SURFACEPROPS_INTERFACE_VERSION)) == NULL ||
+		(physprops = (IPhysicsSurfaceProps*)spp_utils->QueryInterface(VPHYSICS_SURFACEPROPS_INTERFACE_VERSION)) == NULL
+#endif
 		)
 		return false;
 

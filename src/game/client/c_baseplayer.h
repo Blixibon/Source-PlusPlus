@@ -26,6 +26,7 @@
 #include "igameevents.h"
 #include "GameEventListener.h"
 #include "c_colorcorrection.h"
+#include "spp_utils/ISurfacePropsExt.h"
 
 #if defined USES_ECON_ITEMS
 #include "econ_entity.h"
@@ -348,9 +349,9 @@ public:
 	virtual void DoMuzzleFlash();
 	virtual void PlayPlayerJingle();
 
-	virtual void UpdateStepSound( surfacedata_t *psurface, const Vector &vecOrigin, const Vector &vecVelocity  );
-	virtual void PlayStepSound( const Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
-	virtual surfacedata_t * GetFootstepSurface( const Vector &origin, const char *surfaceName );
+	virtual void UpdateStepSound( surfacedataall_t surface, const Vector &vecOrigin, const Vector &vecVelocity  );
+	virtual void PlayStepSound( const Vector &vecOrigin, surfacedataall_t surface, bool bWalk, float fvol, bool force );
+	virtual surfacedataall_t GetFootstepSurface( const Vector &origin, const char *surfaceName );
 	virtual void GetStepSoundVelocities( float *velwalk, float *velrun );
 	virtual void SetStepSoundTime( stepsoundtimes_t iStepSoundTime, bool bWalking );
 	virtual const char *GetOverrideStepSound( const char *pszBaseStepSoundName ) { return pszBaseStepSoundName; }
@@ -366,9 +367,9 @@ public:
 	void GetPredictionErrorSmoothingVector( Vector &vOffset );
 
 	virtual void ExitLadder() {}
-	surfacedata_t *GetLadderSurface( const Vector &origin );
+	surfacedataall_t GetLadderSurface( const Vector &origin );
 
-	surfacedata_t *GetSurfaceData( void ) { return m_pSurfaceData; }
+	surfacedataall_t GetSurfaceData( void ) { return m_pSurfaceData; }
 
 	void SetLadderNormal( const Vector& vecLadderNormal ) { m_vecLadderNormal = vecLadderNormal; }
 	Vector	GetLadderNormal() const { return m_vecLadderNormal; }
@@ -476,7 +477,7 @@ protected:
 	virtual void SetViewAngles( const QAngle& ang );
 
 	// used by client side player footsteps
-	surfacedata_t* GetGroundSurface();
+	surfacedataall_t GetGroundSurface();
 
 	virtual void	FireGameEvent( IGameEvent *event );
 
@@ -611,7 +612,7 @@ protected:
 
 	// Texture names and surface data, used by CGameMovement
 	int				m_surfaceProps;
-	surfacedata_t*	m_pSurfaceData;
+	surfacedataall_t	m_pSurfaceData;
 	float			m_surfaceFriction;
 	char			m_chTextureType;
 

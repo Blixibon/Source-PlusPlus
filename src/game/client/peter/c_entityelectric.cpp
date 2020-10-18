@@ -163,10 +163,10 @@ void C_EntityElectric::Simulate(void)
 	{
 		m_flLastFlashTime = gpGlobals->curtime;
 
-		studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel(pAnimating->GetModel());
-		if (pStudioHdr)
+		CStudioHdr *pHdr = pAnimating->GetModelPtr();
+		if (pHdr)
 		{
-			mstudiohitboxset_t* set = pStudioHdr->pHitboxSet(pAnimating->GetHitboxSet());
+			mstudiohitboxset_t* set = pHdr->pHitboxSet(pAnimating->GetHitboxSet());
 			if (set)
 			{
 				matrix3x4_t* hitboxbones[MAXSTUDIOBONES];

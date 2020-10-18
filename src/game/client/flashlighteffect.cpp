@@ -577,6 +577,7 @@ CSpotlightEffect::CSpotlightEffect()
 	m_pSpotlightEnd = nullptr;
 
 	m_vecOrigin = vec3_origin;
+	m_bVolumetric = false;
 
 	g_SpotlightLod.AddSpotlight(this);
 
@@ -588,6 +589,12 @@ CSpotlightEffect::CSpotlightEffect()
 	{
 		InitSpotlightTexture("effects/flashlight001");
 	}
+}
+
+CSpotlightEffect::CSpotlightEffect(bool bVolumetric, float flVolumeIntensity) : CSpotlightEffect()
+{
+	m_bVolumetric = bVolumetric;
+	m_flVolumeIntensity = flVolumeIntensity;
 }
 
 CSpotlightEffect::~CSpotlightEffect()
@@ -815,6 +822,9 @@ void CSpotlightEffect::UpdateLightNew(const Vector &vecPos, const Vector &vecDir
 	state.m_bEnableShadows = true;
 	state.m_pSpotlightTexture = m_FlashlightTexture;
 	state.m_nSpotlightTextureFrame = 0;
+
+	state.m_bVolumetric = m_bVolumetric;
+	state.m_flFlashlightTime = gpGlobals->curtime;
 
 	bool bFlicker = false;
 

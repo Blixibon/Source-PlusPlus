@@ -105,6 +105,8 @@ public:
 	void			Spawn();
 	virtual void	SelectModel() {};
 
+	virtual CAI_Expresser* CreateExpresser() { return new CAI_ExpresserWithFollowup(this); }
+
 	virtual int		Restore( IRestore &restore );
 	virtual void	DoCustomSpeechAI( void );
 

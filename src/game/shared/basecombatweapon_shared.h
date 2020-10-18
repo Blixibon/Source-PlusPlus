@@ -22,6 +22,7 @@
 #if defined( CLIENT_DLL )
 #include "view_shared.h"
 #include "viewrender.h"
+#include "vgui_controls/PHandle.h"
 
 #define CBaseCombatWeapon C_BaseCombatWeapon
 #endif
@@ -116,20 +117,13 @@ namespace vgui2
 	typedef unsigned long HFont;
 }
 
-namespace vgui
-{
-	// handle to an internal vgui panel
-	// this is the only handle to a panel that is valid across dll boundaries
-	typedef unsigned int VPANEL;
-}
-
 #ifdef CLIENT_DLL
 typedef struct
 {
-	ITexture*		m_pRenderTarget;
-	CNewViewSetup	m_View;
-	view_id_t		m_3DViewID;
-	vgui::VPANEL	m_2DPanel;
+	ITexture*			m_pRenderTarget;
+	CNewViewSetup		m_View;
+	view_id_t			m_3DViewID;
+	vgui::VPanelHandle	m_2DPanel;
 
 	bool m_bDraw3DSkybox;
 	bool m_bDraw3D;
@@ -610,10 +604,10 @@ public:
 
 	virtual int				GetWeaponRenderTargetCount() { return 0; }
 	virtual bool			GetWeaponRenderTarget(int iWhich, weaponrendertarget_t& data, const CNewViewSetup& mainView) { return false; }
-	virtual void			WeaponRT_StartRender3D(int iWhich) { return; }
-	virtual void			WeaponRT_FinishRender3D(int iWhich) { return; }
-	virtual void			WeaponRT_StartRender2D(int iWhich) { return; }
-	virtual void			WeaponRT_FinishRender2D(int iWhich) { return; }
+	virtual void			WeaponRT_StartRender3D(int iWhich, const weaponrendertarget_t& data) { return; }
+	virtual void			WeaponRT_FinishRender3D(int iWhich, const weaponrendertarget_t& data) { return; }
+	virtual void			WeaponRT_StartRender2D(int iWhich, const weaponrendertarget_t& data) { return; }
+	virtual void			WeaponRT_FinishRender2D(int iWhich, const weaponrendertarget_t& data) { return; }
 
 #endif // End client-only methods
 

@@ -19,10 +19,12 @@
 #include "bitmap/tgawriter.h"
 #include "filesystem.h"
 #include "tier0/vprof.h"
+#include "ienginevgui.h"
 
 #include "proxyentity.h"
 #include "renderparm.h"
 #include "postprocess_shared.h"
+#include "object_motion_blur_effect.h"
 
 //-----------------------------------------------------------------------------
 // Globals
@@ -103,6 +105,8 @@ ConVar mat_vignette_enable("mat_vignette_enable", "0", FCVAR_ARCHIVE);
 ConVar mat_local_contrast_enable("mat_local_contrast_enable", "0", FCVAR_ARCHIVE);
 
 extern ConVar localplayer_visionflags;
+
+extern ConVar mat_object_motion_blur_enable;
 
 enum PostProcessingCondition {
 	PPP_ALWAYS,
@@ -1254,10 +1258,14 @@ private:
 	IMaterialVar* m_pMaterialParam_VomitColor2;
 	IMaterialVar* m_pMaterialParam_FadeColor;
 	IMaterialVar* m_pMaterialParam_FadeType;
+	IMaterialVar* m_pMaterialParam_BloomType;
+
+	IMaterialVar* m_pMaterialParam_DesaturateEnable;
+	IMaterialVar* m_pMaterialParam_DesaturateScale;
 
 public:
 	static IMaterial * SetupEnginePostMaterial( const Vector4D & fullViewportBloomUVs, const Vector4D & fullViewportFBUVs, const Vector2D & destTexSize,
-												bool bPerformSoftwareAA, bool bPerformBloom, bool bPerformColCorrect, float flAAStrength, float flBloomAmount);
+												bool bPerformSoftwareAA, bool bPerformBloom, bool bPerformColCorrect, float flAAStrength, float flBloomAmount, bool bLateBloom);
 	static void SetupEnginePostMaterialAA( bool bPerformSoftwareAA, float flAAStrength );
 	static void SetupEnginePostMaterialTextureTransform( const Vector4D & fullViewportBloomUVs, const Vector4D & fullViewportFBUVs, Vector2D destTexSize );
 
@@ -1267,6 +1275,7 @@ private:
 	static float s_vBloomUVTransform[4];
 	static int   s_PostBloomEnable;
 	static float s_PostBloomAmount;
+	static bool  s_PostBloomLate;
 };
 
 float CEnginePostMaterialProxy::s_vBloomAAValues[4]					= { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -1274,6 +1283,7 @@ float CEnginePostMaterialProxy::s_vBloomAAValues2[4]				= { 0.0f, 0.0f, 0.0f, 0.
 float CEnginePostMaterialProxy::s_vBloomUVTransform[4]				= { 0.0f, 0.0f, 0.0f, 0.0f };
 int   CEnginePostMaterialProxy::s_PostBloomEnable					= 1;
 float CEnginePostMaterialProxy::s_PostBloomAmount = 1.0f;
+bool  CEnginePostMaterialProxy::s_PostBloomLate = false;
 
 CEnginePostMaterialProxy::CEnginePostMaterialProxy()
 {
@@ -1297,6 +1307,9 @@ CEnginePostMaterialProxy::CEnginePostMaterialProxy()
 	m_pMaterialParam_DepthBlurStrength = NULL;
 	m_pMaterialParam_ScreenBlurStrength = NULL;
 	m_pMaterialParam_FilmGrainStrength = NULL;
+	m_pMaterialParam_BloomType = NULL;
+	m_pMaterialParam_DesaturateEnable = NULL;
+	m_pMaterialParam_DesaturateScale = NULL;
 }
 
 CEnginePostMaterialProxy::~CEnginePostMaterialProxy()
@@ -1333,12 +1346,22 @@ bool CEnginePostMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues
 	m_pMaterialParam_VomitColor2 = pMaterial->FindVar("$vomitColor2", &bFoundVar, false);
 	m_pMaterialParam_FadeColor = pMaterial->FindVar("$fadeColor", &bFoundVar, false);
 	m_pMaterialParam_FadeType = pMaterial->FindVar("$fade", &bFoundVar, false);
+	m_pMaterialParam_BloomType = pMaterial->FindVar("$bloomtype", &bFoundVar, false);
+	m_pMaterialParam_DesaturateEnable = pMaterial->FindVar("$DESATURATEENABLE", &bFoundVar, false);
+	m_pMaterialParam_DesaturateScale = pMaterial->FindVar("$DESATURATION", &bFoundVar, false);
 
 	return true;
 }
 
 void CEnginePostMaterialProxy::OnBind( C_BaseEntity *pEnt )
 {
+	bool bInGameMenuOpen = (engine->IsInGame() && !engine->IsLevelMainMenuBackground() && enginevgui->IsGameUIVisible());
+	static float s_flMenuEffectsPct = 0.f;
+	if (bInGameMenuOpen)
+		s_flMenuEffectsPct = Approach(1.f, s_flMenuEffectsPct, 2.f * gpGlobals->absoluteframetime);
+	else
+		s_flMenuEffectsPct = 0.f;
+
 	if ( m_pMaterialParam_AAValues )
 		m_pMaterialParam_AAValues->SetVecValue( s_vBloomAAValues, 4 );
 
@@ -1382,12 +1405,13 @@ void CEnginePostMaterialProxy::OnBind( C_BaseEntity *pEnt )
 		m_pMaterialParam_DepthBlurStrength->SetFloatValue(s_LocalPostProcessParameters.m_flParameters[PPPN_DEPTH_BLUR_STRENGTH]);
 
 	if (m_pMaterialParam_ScreenBlurStrength)
-		m_pMaterialParam_ScreenBlurStrength->SetFloatValue(s_LocalPostProcessParameters.m_flParameters[PPPN_SCREEN_BLUR_STRENGTH]);
+	{
+		float flBlur = Lerp(s_flMenuEffectsPct, s_LocalPostProcessParameters.m_flParameters[PPPN_SCREEN_BLUR_STRENGTH], 1.f);
+		m_pMaterialParam_ScreenBlurStrength->SetFloatValue(flBlur);
+	}
 
 	if (m_pMaterialParam_FilmGrainStrength)
 		m_pMaterialParam_FilmGrainStrength->SetFloatValue(s_LocalPostProcessParameters.m_flParameters[PPPN_FILM_GRAIN_STRENGTH]);
-
-
 
 	if (m_pMaterialParam_FadeType)
 	{
@@ -1399,6 +1423,25 @@ void CEnginePostMaterialProxy::OnBind( C_BaseEntity *pEnt )
 	if (m_pMaterialParam_FadeColor)
 	{
 		m_pMaterialParam_FadeColor->SetVecValue(s_viewFadeColor.Base(), 4);
+	}
+
+	if (m_pMaterialParam_BloomType)
+	{
+		if (s_PostBloomLate)
+		{
+			m_pMaterialParam_BloomType->SetIntValue(1);
+		}
+		else
+		{
+			m_pMaterialParam_BloomType->SetIntValue(0);
+		}
+	}
+
+	if (m_pMaterialParam_DesaturateEnable && m_pMaterialParam_DesaturateScale)
+	{
+		const float flDesaturation = s_flMenuEffectsPct;
+		m_pMaterialParam_DesaturateEnable->SetIntValue((flDesaturation > 0.f) ? 1 : 0);
+		m_pMaterialParam_DesaturateScale->SetFloatValue(flDesaturation);
 	}
 }
 
@@ -1472,13 +1515,14 @@ void CEnginePostMaterialProxy::SetupEnginePostMaterialTextureTransform( const Ve
 }
 
 IMaterial* CEnginePostMaterialProxy::SetupEnginePostMaterial(const Vector4D& fullViewportBloomUVs, const Vector4D& fullViewportFBUVs, const Vector2D& destTexSize,
-	bool bPerformSoftwareAA, bool bPerformBloom, bool bPerformColCorrect, float flAAStrength, float flBloomAmount)
+	bool bPerformSoftwareAA, bool bPerformBloom, bool bPerformColCorrect, float flAAStrength, float flBloomAmount, bool bLateBloom)
 {
 	// Shouldn't get here if none of the effects are enabled
 	Assert(bPerformSoftwareAA || bPerformBloom || bPerformColCorrect);
 
 	s_PostBloomEnable = bPerformBloom ? 1 : 0;
 	s_PostBloomAmount = flBloomAmount;
+	s_PostBloomLate = bLateBloom;
 
 	SetupEnginePostMaterialAA(bPerformSoftwareAA, flAAStrength);
 
@@ -2553,6 +2597,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 		case HDR_TYPE_INTEGER:
 		{
 			s_bScreenEffectTextureIsUpdated = false;
+			bool bLateBloom = g_pMaterialSystemHardwareConfig->SupportsPixelShaders_2_b();
 
 			if ( hdrType != HDR_TYPE_NONE )
 			{
@@ -2649,7 +2694,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 
 				if ( bPerformBloom || bPerformLocalContrastEnhancement)
 				{
-					Generate8BitBloomTexture( pRenderContext, 1.f, x, y, w, h );
+					Generate8BitBloomTexture( pRenderContext, x, y, w, h, !bLateBloom, false);
 				}
 
 				// Now add bloom (dest_rt0) to the framebuffer and perform software anti-aliasing and
@@ -2699,7 +2744,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 					{
 						// Perform post-processing in one combined pass
 
-						IMaterial *post_mat = CEnginePostMaterialProxy::SetupEnginePostMaterial( fullViewportPostSrcCorners, fullViewportPostDestCorners, destTexSize, bPerformSoftwareAA, bPerformBloom, bPerformColCorrect, flAAStrength, flBloomScale );
+						IMaterial *post_mat = CEnginePostMaterialProxy::SetupEnginePostMaterial( fullViewportPostSrcCorners, fullViewportPostDestCorners, destTexSize, bPerformSoftwareAA, bPerformBloom, bPerformColCorrect, flAAStrength, flBloomScale, bLateBloom );
 
 						if (bSplitScreenHDR)
 						{
@@ -3800,4 +3845,146 @@ void DoDepthOfField(const CNewViewSetup &view)
 		nViewportX, nViewportY, nViewportWidth, nViewportHeight,
 		0, 0, nSrcWidth - 1, nSrcHeight - 1,
 		nSrcWidth, nSrcHeight, GetClientWorldEntity()->GetClientRenderable());
+}
+
+void DoObjectMotionBlur(const CNewViewSetup* pSetup)
+{
+	if (!mat_object_motion_blur_enable.GetBool())
+		return;
+
+	if (g_ObjectMotionBlurManager.GetDrawableObjectCount() <= 0)
+		return;
+
+	CMatRenderContextPtr pRenderContext(materials);
+
+	ITexture* pFullFrameFB1 = materials->FindTexture("_rt_FullFrameFB1", TEXTURE_GROUP_RENDER_TARGET);
+
+	//
+	// Render Velocities into a full-frame FB1
+	//
+	IMaterial* pGlowColorMaterial = materials->FindMaterial("dev/glow_color", TEXTURE_GROUP_OTHER, true);
+
+	pRenderContext->PushRenderTargetAndViewport();
+	pRenderContext->SetRenderTarget(pFullFrameFB1);
+	pRenderContext->Viewport(0, 0, pSetup->width, pSetup->height);
+
+	// Red and Green are x- and y- screen-space velocities biased and packed into the [0,1] range.
+	// A value of 127 gets mapped to 0, a value of 0 gets mapped to -1, and a value of 255 gets mapped to 1.
+	//
+	// Blue is set to 1 within the object's bounds and 0 outside, and is used as a mask to ensure that
+	// motion blur samples only pull from the core object itself and not surrounding pixels (even though
+	// the area being blurred is larger than the core object).
+	//
+	// Alpha is not used
+	pRenderContext->ClearColor4ub(127, 127, 0, 0);
+	// Clear only color, not depth & stencil
+	pRenderContext->ClearBuffers(true, false, false);
+	//pRenderContext->FogMode(MATERIAL_FOG_NONE);
+
+	// Save off state
+	Vector vOrigColor;
+	render->GetColorModulation(vOrigColor.Base());
+	float flSavedBlend = render->GetBlend();
+
+	// Use a solid-color unlit material to render velocity into the buffer
+	g_pStudioRender->ForcedMaterialOverride(pGlowColorMaterial);
+
+	pRenderContext->SetLightingOrigin(vec3_origin);
+	pRenderContext->SetAmbientLight(1.0f, 1.0f, 1.0f);
+
+	/*static */Vector white[6] =
+	{
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+		Vector(1.0f, 1.0f, 1.0f),
+	};
+
+	g_pStudioRender->SetAmbientLightColors(white);
+	g_pStudioRender->SetLocalLights(0, NULL);
+
+	modelrender->SuppressEngineLighting(true);
+	render->SetBlend(1.0f);
+	g_ObjectMotionBlurManager.DrawObjects();
+	modelrender->SuppressEngineLighting(false);
+
+	g_pStudioRender->ForcedMaterialOverride(NULL);
+
+	render->SetColorModulation(vOrigColor.Base());
+
+	// Optionally write the rendered image to a debug texture
+	if (g_bDumpRenderTargets)
+	{
+		DumpTGAofRenderTarget(pSetup->width, pSetup->height, "ObjectBlurVelocity");
+	}
+
+	pRenderContext->PopRenderTargetAndViewport();
+
+	// Render objects to stencil
+	{
+
+
+		// Set alpha to 0 so we don't touch any color pixels
+		render->SetBlend(0.0f);
+		pRenderContext->OverrideDepthEnable(true, false);
+		pRenderContext->ClearBuffers(false, false, true);
+
+		ShaderStencilState_t stencilState;
+		stencilState.m_bEnable = true;
+		stencilState.m_nReferenceValue = 1;
+		stencilState.m_CompareFunc = STENCILCOMPARISONFUNCTION_ALWAYS;
+		stencilState.m_PassOp = STENCILOPERATION_REPLACE;
+		stencilState.m_FailOp = STENCILOPERATION_KEEP;
+		stencilState.m_ZFailOp = STENCILOPERATION_KEEP;
+
+		stencilState.SetStencilState(pRenderContext);
+
+		g_ObjectMotionBlurManager.DrawObjects();
+
+		pRenderContext->OverrideDepthEnable(false, false);
+	}
+
+	render->SetBlend(flSavedBlend);
+
+	//
+	// Render full-screen pass
+	//
+	IMaterial* pMotionBlurMaterial;
+	IMaterialVar* pFBTextureVariable;
+	IMaterialVar* pVelocityTextureVariable;
+	bool bFound1 = false, bFound2 = false;
+
+	// Make sure our render target of choice has the results of the engine post-process pass
+	ITexture* pFullFrameFB = materials->FindTexture("_rt_FullFrameFB", TEXTURE_GROUP_RENDER_TARGET);
+	pRenderContext->CopyRenderTargetToTexture(pFullFrameFB);
+
+	pMotionBlurMaterial = materials->FindMaterial("effects/object_motion_blur", TEXTURE_GROUP_OTHER, true);
+	pFBTextureVariable = pMotionBlurMaterial->FindVar("$fb_texture", &bFound1, true);
+	pVelocityTextureVariable = pMotionBlurMaterial->FindVar("$velocity_texture", &bFound2, true);
+	if (bFound1 && bFound2)
+	{
+		ShaderStencilState_t stencilState;
+		stencilState.m_bEnable = true;
+		stencilState.m_nWriteMask = 0; // We're not changing stencil
+		stencilState.m_nReferenceValue = 1;
+		stencilState.m_nTestMask = 1;
+		stencilState.m_CompareFunc = STENCILCOMPARISONFUNCTION_EQUAL;
+		stencilState.m_PassOp = STENCILOPERATION_KEEP;
+		stencilState.m_FailOp = STENCILOPERATION_KEEP;
+		stencilState.m_ZFailOp = STENCILOPERATION_KEEP;
+		stencilState.SetStencilState(pRenderContext);
+
+		pFBTextureVariable->SetTextureValue(pFullFrameFB);
+
+		pVelocityTextureVariable->SetTextureValue(pFullFrameFB1);
+
+		int nWidth, nHeight;
+		pRenderContext->GetRenderTargetDimensions(nWidth, nHeight);
+
+		pRenderContext->DrawScreenSpaceRectangle(pMotionBlurMaterial, 0, 0, nWidth, nHeight, 0.0f, 0.0f, nWidth - 1, nHeight - 1, nWidth, nHeight);
+	}
+
+	pRenderContext->SetStencilEnable(false);
 }

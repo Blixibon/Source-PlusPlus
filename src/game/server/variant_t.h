@@ -16,7 +16,7 @@
 #include "mathlib/vmatrix.h"
 
 class CBaseEntity;
-
+struct ScriptVariant_t;
 
 //
 // A variant class for passing data in entity input/output connections.
@@ -64,6 +64,9 @@ public:
 	void Set( fieldtype_t ftype, void *data );
 	void SetOther( void *data );
 	bool Convert( fieldtype_t newType );
+
+	void SetScriptVariant(ScriptVariant_t& var);
+	void GetFromScriptVariant(const ScriptVariant_t& var);
 
 	static typedescription_t m_SaveBool[];
 	static typedescription_t m_SaveInt[];

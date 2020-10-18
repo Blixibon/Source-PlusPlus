@@ -25,12 +25,19 @@
 // DYNAMIC: "VOMIT_ENABLE"					"0..1"
 // SKIP: ( $LOCAL_CONTRAST_ENABLE == 0 ) && ( $BLURRED_VIGNETTE_ENABLE == 1 )
 
+// DYNAMIC: "BLOOMTYPE"				"0..3" [ps20b] [ps30]
+
 // DYNAMIC: "TV_GAMMA"						"0..1"	[ps20b] [PC]
-// DYNAMIC: "DESATURATEENABLE"				"0..1"	[ps20b] [PC]
+// DYNAMIC: "DESATURATEENABLE"				"0..1"	[ps20b] [ps30]
 // SKIP: ( $TOOL_MODE == 0 ) && $TV_GAMMA
-// SKIP: ( $TOOL_MODE == 0 ) && $DESATURATEENABLE
+// SKIP: $DESATURATEENABLE && ($COL_CORRECT_NUM_LOOKUPS != 0)
+
+#if (defined(SHADER_MODEL_PS_1_1) || defined(SHADER_MODEL_PS_1_4) || defined(SHADER_MODEL_PS_2_0)) //Minimum requirement of ps2b
+#define BLOOMTYPE 0
+#endif
 
 #include "common_ps_fxc.h"
+#include "common_bloom_fxc.h"
 
 sampler	BaseTextureSampler				: register( s0 );
 sampler	FBTextureSampler				: register( s1 );
@@ -83,9 +90,13 @@ float4	g_vInvViewportTransform			: register( c14 );
 
 float4  g_vViewFadeColor				: register( c15 );
 
-float2  g_c16							: register( c16 );
+float4  g_c16							: register( c16 );
 #define g_flDesaturation g_c16.x
 #define g_flFadeMode2    g_c16.y
+#define g_flBloomExp		g_c16.z
+#define g_flBloomSaturation g_c16.w
+
+float4 g_BloomParams : register(c17);
 
 float Luminance( float3 cColor )
 {
@@ -96,7 +107,11 @@ float Luminance( float3 cColor )
 
 float4 GetBloomColor( float2 bloomUV )
 {
-	return tex2D( BaseTextureSampler, bloomUV );
+    float4 avgColor = tex2D(BaseTextureSampler, bloomUV);
+#if ( BLOOMTYPE != 0 )
+    avgColor.a = dot(avgColor.rgb, float3(0.299, 0.587, 0.114));
+#endif
+    return avgColor;
 }
 
 float4 PerformColorCorrection( float4 outColor )
@@ -169,7 +184,7 @@ float4 main( PS_INPUT i ) : COLOR
 	}
 	#endif
 
-	float4 cBloomBlurredLum = GetBloomColor( i.baseTexCoord );	// bloom color and blurred luminance in alpha
+	float4 cBloomBlurredLum;	// bloom color and blurred luminance in alpha
 	float4 vVomitRefractParams;
 	#if ( VOMIT_ENABLE == 1 )
 	{
@@ -194,6 +209,8 @@ float4 main( PS_INPUT i ) : COLOR
 		}
 		#endif
 	}
+	#else
+    cBloomBlurredLum = GetBloomColor(i.baseTexCoord);
 	#endif
 
 	float4 rawColor = tex2D( FBTextureSampler, fbTexCoord.xy ).rgba;
@@ -331,12 +348,12 @@ float4 main( PS_INPUT i ) : COLOR
 		float blurFactor = g_flBloomLerpFactor + abs( depthValue - g_flDepthBlurFocalDistance ) * g_flDepthBlurScale;
 		blurFactor = clamp( blurFactor, 0, 1 );
 		outColor.rgb = lerp( outColor.rgb, cBloomBlurredLum.rgb, blurFactor );
-		outColor.rgb += g_flBloomAmount * cBloomBlurredLum.rgb;
+		outColor.rgb += g_flBloomAmount * BloomShape(cBloomBlurredLum, g_BloomParams, g_flBloomExp, g_flBloomSaturation).rgb;
 	}
 	#else
 	{
-		outColor.rgb += g_flBloomAmount * cBloomBlurredLum.rgb;
-	}
+        outColor.rgb += g_flBloomAmount * BloomShape(cBloomBlurredLum, g_BloomParams, g_flBloomExp, g_flBloomSaturation).rgb;
+    }
 	#endif
 
 	// Used to be FADE_TYPE 0..2 combo

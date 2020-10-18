@@ -188,7 +188,7 @@ void C_NPC_Core::ClientThink(void)
 		if (!m_pSpotLight)
 		{
 			// Turned on the headlight; create it.
-			m_pSpotLight = new CSpotlightEffect();
+			m_pSpotLight = new CSpotlightEffect(false);
 
 			if (m_pSpotLight)
 				m_pSpotLight->TurnOn();

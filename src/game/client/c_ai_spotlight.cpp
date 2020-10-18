@@ -21,7 +21,7 @@ void C_AI_Spotlight::ClientUpdate(C_BaseAnimating *pOwner)
 		if (!m_pSpotLight)
 		{
 			// Turned on the headlight; create it.
-			m_pSpotLight = new CSpotlightEffect();
+			m_pSpotLight = new CSpotlightEffect(true, 2.f);
 
 			if (!m_pSpotLight)
 				return;

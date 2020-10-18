@@ -82,6 +82,11 @@
 
 #include "colorcorrectionmgr.h"
 
+#ifdef HL2_LAZUL
+#include "peter/laz_render_targets.h"
+#endif // HL2_LAZUL
+
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -2255,7 +2260,11 @@ void CViewRender::UpdateCascadedShadow( const CNewViewSetup &view )
 void CViewRender::UpdateSSAODepth(const CNewViewSetup& view, view_id_t viewID)
 {
 	CNewViewSetup depthView = view;
+#ifndef HL2_LAZUL
 	ITexture* pSSAO = materials->FindTexture("_rt_ResolvedFullFrameDepth", TEXTURE_GROUP_RENDER_TARGET);
+#else
+	ITexture* pSSAO = lazulrendertargets->GetPreciseFullFrameDepthTexture();
+#endif // !HL2_LAZUL
 	depthView.x = 0;
 	depthView.y = 0;
 	depthView.width = pSSAO->GetActualWidth();
@@ -2453,7 +2462,11 @@ void CViewRender::RenderView( const CNewViewSetup &view, int nClearFlags, int wh
 			}
 
 			if (whatToDraw & RENDERVIEW_DRAWHUD)
+			{
+				DoObjectMotionBlur(&view);
+
 				g_GlowObjectManager.RenderGlowEffects(&view, 0);
+			}
 
 			if (g_pMaterialSystemHardwareConfig->GetHDRType() != HDR_TYPE_NONE)
 			{
@@ -3674,6 +3687,7 @@ void CViewRender::DrawWeaponTargets(const CNewViewSetup& mainView)
 		weaponrendertarget_t data;
 		if (pWeapon->GetWeaponRenderTarget(i, data, mainView))
 		{
+			const CNewViewSetup& View = data.m_View;
 			if (data.m_bDraw3D)
 			{
 				bool bDrew3dSkybox = false;	// bDrew3dSkybox = true turns the skybox OFF. DO NOT SET IT TO TRUE.
@@ -3682,37 +3696,47 @@ void CViewRender::DrawWeaponTargets(const CNewViewSetup& mainView)
 				int nClearFlags = VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR;
 
 				//Set the view up and output the scene to our RenderTarget (Scope Material).
-				render->Push3DView(data.m_View, nClearFlags, data.m_pRenderTarget, m_Frustum);
-				pWeapon->WeaponRT_StartRender3D(i);
+				render->Push3DView(View, nClearFlags, data.m_pRenderTarget, m_Frustum);
+				pWeapon->WeaponRT_StartRender3D(i, data);
 
 				if (data.m_bDraw3DSkybox)
 				{
 					CSkyboxView* pSkyView = new CSkyboxView(this);
-					if ((bDrew3dSkybox = pSkyView->Setup(data.m_View, &nClearFlags, &nSkyboxVisible)) != false)
+					if ((bDrew3dSkybox = pSkyView->Setup(View, &nClearFlags, &nSkyboxVisible)) != false)
 					{
 						AddViewToScene(pSkyView);
 					}
 					SafeRelease(pSkyView);
 				}
 
-				ViewDrawScene(bDrew3dSkybox, nSkyboxVisible, data.m_View, nClearFlags, data.m_3DViewID);
+				ViewDrawScene(bDrew3dSkybox, nSkyboxVisible, View, nClearFlags, data.m_3DViewID);
 
-				pWeapon->WeaponRT_FinishRender3D(i);
+				pWeapon->WeaponRT_FinishRender3D(i, data);
 				render->PopView(m_Frustum);
 			}
 
 			if (data.m_bDraw2D)
 			{
-				render->Push2DView(data.m_View, 0, data.m_pRenderTarget, m_Frustum);
-				pWeapon->WeaponRT_StartRender2D(i);
+				render->Push2DView(View, 0, data.m_pRenderTarget, m_Frustum);
+				CMatRenderContextPtr pRenderContext(materials);
+				if (!data.m_bDraw3D)
+				{
+					pRenderContext->ClearColor3ub(0, 0, 0);
+					pRenderContext->ClearBuffers(true, false);
+				}
 
-				vgui::ipanel()->SetVisible(data.m_2DPanel, true);
-				vgui::ipanel()->SetPos(data.m_2DPanel, data.m_View.x, data.m_View.y);
-				vgui::ipanel()->SetSize(data.m_2DPanel, data.m_View.width, data.m_View.height);
-				vgui::ipanel()->PaintTraverse(data.m_2DPanel, true);
-				vgui::ipanel()->SetVisible(data.m_2DPanel, false);
+				pWeapon->WeaponRT_StartRender2D(i, data);
+				vgui::VPANEL panel = data.m_2DPanel.Get();
+				vgui::ipanel()->SetPos(panel, View.x, View.y);
+				vgui::ipanel()->SetSize(panel, View.width, View.height);
 
-				pWeapon->WeaponRT_FinishRender2D(i);
+				vgui::surface()->PushMakeCurrent(panel, false);
+				vgui::ipanel()->PaintTraverse(panel, true);
+				vgui::surface()->PopMakeCurrent(panel);
+
+				vgui::surface()->SwapBuffers(panel);
+
+				pWeapon->WeaponRT_FinishRender2D(i, data);
 				render->PopView(m_Frustum);
 			}
 		}
@@ -4672,7 +4696,7 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 	//
 	// Ropes and particles
 	//
-	RopeManager()->DrawRenderCache( DepthMode != DEPTH_MODE_NORMAL );
+	RopeManager()->DrawRenderCache( DepthMode );
 	g_pParticleSystemMgr->DrawRenderCache( DepthMode != DEPTH_MODE_NORMAL );
 	//CGrassClusterManager::GetInstance()->RenderClusters(DepthMode != DEPTH_MODE_NORMAL);
 }
@@ -6814,7 +6838,7 @@ void CSSAODepthView::Draw()
 
 	{
 		VPROF_BUDGET("BuildWorldRenderLists", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
-		BuildWorldRenderLists(true, -1, true, false); // @MULTICORE (toml 8/9/2006): Portal problem, not sending custom vis down
+		BuildWorldRenderLists(true, -1, false, false); // @MULTICORE (toml 8/9/2006): Portal problem, not sending custom vis down
 	}
 
 	{

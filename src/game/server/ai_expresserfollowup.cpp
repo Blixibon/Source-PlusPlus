@@ -15,6 +15,7 @@
 #include "basemultiplayerplayer.h"
 #include "ai_baseactor.h"
 #include "sceneentity.h"
+#include "ai_squad.h"
 //#include "flex_expresser.h"
 /*
 #include "engine/ienginesound.h"
@@ -140,15 +141,15 @@ static CBaseEntity *AscertainSpeechSubjectFromContext( AI_Response *response, AI
 	const char *subject = criteria.GetValue( criteria.FindCriterionIndex( pContextName ) );
 	if (subject)
 	{
-
 		return gEntList.FindEntityByName( NULL, subject );
-
 	}
 	else
 	{
 		return NULL;
 	}
 }
+
+#define RESOLVE_COMMAND_DELIMETER "-"
 
 // TODO: Currently uses awful stricmp. Use symbols! Once I know which ones we want, that is. 
 static CResponseQueue::CFollowupTargetSpec_t ResolveFollowupTargetToEntity( AIConcept_t &concept, AI_CriteriaSet &criteria, const char * RESTRICT szTarget, AI_Response * RESTRICT response = NULL )
@@ -175,6 +176,40 @@ static CResponseQueue::CFollowupTargetSpec_t ResolveFollowupTargetToEntity( AICo
 	else if ( Q_stricmp(szTarget, "all") == 0 )
 	{
 		return CResponseQueue::CFollowupTargetSpec_t( kDRT_ALL );
+	}
+	else if (Q_strnicmp(szTarget, "squad" RESOLVE_COMMAND_DELIMETER, 6) == 0)
+	{
+		const char* szTarget2 = szTarget + 6;
+
+		if (Q_stricmp(szTarget2, "any") == 0)
+		{
+			return CResponseQueue::CFollowupTargetSpec_t(kDRT_ANY, concept.GetSpeaker(), kDRF_SQUAD);
+		}
+		else if (Q_stricmp(szTarget2, "all") == 0)
+		{
+			return CResponseQueue::CFollowupTargetSpec_t(kDRT_ALL, concept.GetSpeaker(), kDRF_SQUAD);
+		}
+		else if (concept.GetSpeaker().Get() && concept.GetSpeaker()->IsNPC() && concept.GetSpeaker()->MyNPCPointer()->GetSquad())
+		{
+			CAI_Squad* pSquad = concept.GetSpeaker()->MyNPCPointer()->GetSquad();
+			if (Q_stricmp(szTarget2, "leader") == 0)
+			{
+				return CResponseQueue::CFollowupTargetSpec_t(kDRT_SPECIFIC, pSquad->GetLeader());
+			}
+		}
+	}
+	else if (Q_strnicmp(szTarget, "team" RESOLVE_COMMAND_DELIMETER, 5) == 0)
+	{
+		const char* szTarget2 = szTarget + 5;
+
+		if (Q_stricmp(szTarget2, "any") == 0)
+		{
+			return CResponseQueue::CFollowupTargetSpec_t(kDRT_ANY, concept.GetSpeaker(), kDRF_TEAM);
+		}
+		else if (Q_stricmp(szTarget2, "all") == 0)
+		{
+			return CResponseQueue::CFollowupTargetSpec_t(kDRT_ALL, concept.GetSpeaker(), kDRF_TEAM);
+		}
 	}
 
 	// last resort, try a named lookup

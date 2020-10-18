@@ -516,6 +516,7 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 	if ( szName[0] == '!' )
 	{
 		const char *pName = szName + 1;
+		int nTemp = 0;
 
 		//
 		// It is a procedural name, look for the ones we understand.
@@ -575,6 +576,18 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 		else if ( FStrEq( pName, "self" ) )
 		{
 			return pSearchingEntity;
+		}
+		else if (sscanf_s(pName, "edictnpc%d", &nTemp) == 1)
+		{
+			CBaseEntity* pEnt = CBaseEntity::Instance(nTemp);
+			if (pEnt && pEnt->IsNPC())
+			{
+				return pEnt;
+			}
+		}
+		else if (sscanf_s(pName, "guidplayer%d", &nTemp) == 1)
+		{
+			return UTIL_PlayerByUserId(nTemp);
 		}
 		else 
 		{

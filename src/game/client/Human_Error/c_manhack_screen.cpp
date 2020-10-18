@@ -16,9 +16,12 @@
 #include "c_manhack_screen.h"
 #include "ammodef.h"
 #include "ienginevgui.h"
+#include "c_npc_manhack.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
+
+void HLSS_DrawTargetHud(Vector vecOrigin, C_BaseEntity* pPlayer, C_BaseEntity* pTarget, int iEnemyType, vgui::HFont hFont, int viewX, int viewY, int viewWidth, int viewHeight, const VMatrix& matWorldToScreen);
 
 static CManhackScreen *s_ManhackScreen = NULL;
 
@@ -29,6 +32,7 @@ CManhackScreen *GetManhackScreen()
 		s_ManhackScreen = new CManhackScreen(NULL, "Manhack_Screen");
 		s_ManhackScreen->SetParent(enginevgui->GetPanel(PANEL_ROOT));
 		s_ManhackScreen->SetProportional(false);
+		s_ManhackScreen->SetVisible(false);
 	}
 
 	return s_ManhackScreen;
@@ -42,8 +46,7 @@ CManhackScreen::CManhackScreen( vgui::Panel *parent, const char *panelName )
     : BaseClass( parent, panelName, g_hVGuiCombineScheme )
 {
 	LoadControlSettings("scripts/Human_Error_screens/ManhackViewModel.res");
-
-	SetBgColor(Color(0, 0, 0, 255));
+	SetPaintBackgroundEnabled(true);
 
 	m_pManhackCount = dynamic_cast<vgui::Label*>(FindChildByName("ManhackCountReadout"));
 	m_pManhackDistance = dynamic_cast<vgui::Label*>(FindChildByName("ManhackDistanceReadout"));
@@ -91,12 +94,12 @@ bool CManhackScreen::Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pInitDat
     return true;
 }
 #endif
-void CManhackScreen::SetManhackData(int iDistance, int iCount)
+void CManhackScreen::SetManhackData(int iDistance, int iCount, C_NPC_Manhack* pManhack)
 {
 	m_iManhackDistance = 100 - iDistance;
 	m_iManhackDistance = clamp( m_iManhackDistance, 0, 100);
 
-	SetPaintBackgroundEnabled((iCount > 0) ? false : true);
+	m_pManhack = pManhack;
 
 	if (m_pManhackOnline)
 	{
@@ -145,6 +148,18 @@ void CManhackScreen::SetManhackData(int iDistance, int iCount)
 
 		m_pManhackDistance->SetText(buf);
 		m_pManhackDistance->SetFgColor(Color(255, 255, 255, 255));
+	}
+}
+
+void CManhackScreen::PaintBackground()
+{
+	if (m_pManhack && m_pManhackDistance)
+	{
+		VMatrix mWorldToView, mViewToProj, mWorldToProj, mWorldToPixels;
+		render->GetMatricesForView(m_ManhackView, &mWorldToView, &mViewToProj, &mWorldToProj, &mWorldToPixels);
+		vgui::HFont hFont = m_pManhackDistance->GetFont();
+
+		HLSS_DrawTargetHud(m_ManhackView.origin, m_pManhack, m_pManhack->GetManhackTarget(), 0, hFont, m_ManhackView.x, m_ManhackView.y, m_ManhackView.width, m_ManhackView.height, mWorldToPixels);
 	}
 }
 

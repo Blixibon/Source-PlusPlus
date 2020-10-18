@@ -98,7 +98,6 @@ ConVar cl_show_num_particle_systems( "cl_show_num_particle_systems", "0", FCVAR_
 
 extern ConVar v_viewmodel_fov;
 extern ConVar voice_modenable;
-extern ConVar mat_object_motion_blur_enable;
 
 extern bool IsInCommentaryMode( void );
 extern const char* GetWearLocalizationString( float flWear );
@@ -839,11 +838,6 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 //-----------------------------------------------------------------------------
 bool ClientModeShared::DoPostScreenSpaceEffects( const CNewViewSetup *pSetup )
 {
-	if (mat_object_motion_blur_enable.GetBool())
-	{
-		DoObjectMotionBlur(pSetup);
-	}
-
 #if defined( REPLAY_ENABLED )
 	if ( engine->IsPlayingDemo() )
 	{
@@ -852,145 +846,6 @@ bool ClientModeShared::DoPostScreenSpaceEffects( const CNewViewSetup *pSetup )
 	}
 #endif
 	return true;
-}
-
-void ClientModeShared::DoObjectMotionBlur(const CNewViewSetup *pSetup)
-{
-	if (g_ObjectMotionBlurManager.GetDrawableObjectCount() <= 0)
-		return;
-
-	CMatRenderContextPtr pRenderContext(materials);
-
-	ITexture *pFullFrameFB1 = materials->FindTexture("_rt_FullFrameFB1", TEXTURE_GROUP_RENDER_TARGET);
-
-	//
-	// Render Velocities into a full-frame FB1
-	//
-	IMaterial *pGlowColorMaterial = materials->FindMaterial("dev/glow_color", TEXTURE_GROUP_OTHER, true);
-
-	pRenderContext->PushRenderTargetAndViewport();
-	pRenderContext->SetRenderTarget(pFullFrameFB1);
-	pRenderContext->Viewport(0, 0, pSetup->width, pSetup->height);
-
-	// Red and Green are x- and y- screen-space velocities biased and packed into the [0,1] range.
-	// A value of 127 gets mapped to 0, a value of 0 gets mapped to -1, and a value of 255 gets mapped to 1.
-	//
-	// Blue is set to 1 within the object's bounds and 0 outside, and is used as a mask to ensure that
-	// motion blur samples only pull from the core object itself and not surrounding pixels (even though
-	// the area being blurred is larger than the core object).
-	//
-	// Alpha is not used
-	pRenderContext->ClearColor4ub(127, 127, 0, 0);
-	// Clear only color, not depth & stencil
-	pRenderContext->ClearBuffers(true, false, false);
-	//pRenderContext->FogMode(MATERIAL_FOG_NONE);
-
-	// Save off state
-	Vector vOrigColor;
-	render->GetColorModulation(vOrigColor.Base());
-	float flSavedBlend = render->GetBlend();
-
-	// Use a solid-color unlit material to render velocity into the buffer
-	g_pStudioRender->ForcedMaterialOverride(pGlowColorMaterial);
-
-	pRenderContext->SetLightingOrigin(vec3_origin);
-	pRenderContext->SetAmbientLight(1.0f, 1.0f, 1.0f);
-
-	/*static */Vector white[6] =
-	{
-		Vector(1.0f, 1.0f, 1.0f),
-		Vector(1.0f, 1.0f, 1.0f),
-		Vector(1.0f, 1.0f, 1.0f),
-		Vector(1.0f, 1.0f, 1.0f),
-		Vector(1.0f, 1.0f, 1.0f),
-		Vector(1.0f, 1.0f, 1.0f),
-	};
-
-	g_pStudioRender->SetAmbientLightColors(white);
-	g_pStudioRender->SetLocalLights(0, NULL);
-
-	modelrender->SuppressEngineLighting(true);
-	render->SetBlend(1.0f);
-	g_ObjectMotionBlurManager.DrawObjects();
-	modelrender->SuppressEngineLighting(false);
-
-	g_pStudioRender->ForcedMaterialOverride(NULL);
-
-	render->SetColorModulation(vOrigColor.Base());
-
-	// Optionally write the rendered image to a debug texture
-	if (g_bDumpRenderTargets)
-	{
-		DumpTGAofRenderTarget(pSetup->width, pSetup->height, "ObjectBlurVelocity");
-	}
-
-	pRenderContext->PopRenderTargetAndViewport();
-
-	// Render objects to stencil
-	{
-		
-
-		// Set alpha to 0 so we don't touch any color pixels
-		render->SetBlend(0.0f);
-		pRenderContext->OverrideDepthEnable(true, false);
-		pRenderContext->ClearBuffers(false, false, true);
-
-		ShaderStencilState_t stencilState;
-		stencilState.m_bEnable = true;
-		stencilState.m_nReferenceValue = 1;
-		stencilState.m_CompareFunc = STENCILCOMPARISONFUNCTION_ALWAYS;
-		stencilState.m_PassOp = STENCILOPERATION_REPLACE;
-		stencilState.m_FailOp = STENCILOPERATION_KEEP;
-		stencilState.m_ZFailOp = STENCILOPERATION_KEEP;
-
-		stencilState.SetStencilState(pRenderContext);
-
-		g_ObjectMotionBlurManager.DrawObjects();
-
-		pRenderContext->OverrideDepthEnable(false, false);
-	}
-
-	render->SetBlend(flSavedBlend);
-
-	//
-	// Render full-screen pass
-	//
-	IMaterial *pMotionBlurMaterial;
-	IMaterialVar *pFBTextureVariable;
-	IMaterialVar *pVelocityTextureVariable;
-	bool bFound1 = false, bFound2 = false;
-
-	// Make sure our render target of choice has the results of the engine post-process pass
-	ITexture *pFullFrameFB = materials->FindTexture("_rt_FullFrameFB", TEXTURE_GROUP_RENDER_TARGET);
-	pRenderContext->CopyRenderTargetToTexture(pFullFrameFB);
-
-	pMotionBlurMaterial = materials->FindMaterial("effects/object_motion_blur", TEXTURE_GROUP_OTHER, true);
-	pFBTextureVariable = pMotionBlurMaterial->FindVar("$fb_texture", &bFound1, true);
-	pVelocityTextureVariable = pMotionBlurMaterial->FindVar("$velocity_texture", &bFound2, true);
-	if (bFound1 && bFound2)
-	{
-		ShaderStencilState_t stencilState;
-		stencilState.m_bEnable = true;
-		stencilState.m_nWriteMask = 0; // We're not changing stencil
-		stencilState.m_nReferenceValue = 1;
-		stencilState.m_nTestMask = 1;
-		stencilState.m_CompareFunc = STENCILCOMPARISONFUNCTION_EQUAL;
-		stencilState.m_PassOp = STENCILOPERATION_KEEP;
-		stencilState.m_FailOp = STENCILOPERATION_KEEP;
-		stencilState.m_ZFailOp = STENCILOPERATION_KEEP;
-		stencilState.SetStencilState(pRenderContext);
-
-		pFBTextureVariable->SetTextureValue(pFullFrameFB);
-
-		pVelocityTextureVariable->SetTextureValue(pFullFrameFB1);
-
-		int nWidth, nHeight;
-		pRenderContext->GetRenderTargetDimensions(nWidth, nHeight);
-
-		pRenderContext->DrawScreenSpaceRectangle(pMotionBlurMaterial, 0, 0, nWidth, nHeight, 0.0f, 0.0f, nWidth - 1, nHeight - 1, nWidth, nHeight);
-	}
-
-	pRenderContext->SetStencilEnable(false);
 }
 
 //-----------------------------------------------------------------------------

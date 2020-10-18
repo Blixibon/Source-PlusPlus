@@ -10,7 +10,7 @@
 
 int ScreenTransform(const Vector& point, Vector& screen);
 
-ConVar mat_object_motion_blur_enable( "mat_object_motion_blur_enable", "0" );
+ConVar mat_object_motion_blur_enable( "mat_object_motion_blur_enable", "0", FCVAR_ARCHIVE );
 ConVar mat_object_motion_blur_model_scale( "mat_object_motion_blur_model_scale", "1.2" );
 
 CObjectMotionBlurManager g_ObjectMotionBlurManager;
@@ -67,22 +67,22 @@ int CObjectMotionBlurManager::GetDrawableObjectCount()
 	return nCount;
 }
 
-float ScreenRescale(float flIn)
-{
-	return 0.5f * (1.0f + flIn);
-}
-
 void CObjectMotionBlurManager::ObjectMotionBlurDefinition_t::DrawModel()
 {
 #if 1
-	Vector vecSceen, vecDelta;
-	ScreenTransform(m_pEntity->GetRenderOrigin(), vecSceen);
-	VectorSubtract(vecSceen, m_vecLastScreen, vecDelta);
-	m_vecLastScreen = vecSceen;
-	vecDelta *= gpGlobals->frametime;
+	matrix3x4_t matWorldToView;
+	Vector vecSceenVel;
+	CMatRenderContextPtr pRenderContext(materials);
+	pRenderContext->GetMatrix(MATERIAL_VIEW, &matWorldToView);
+	pRenderContext.SafeRelease();
 
-	float flR = ( ScreenRescale(m_flVelocityScale * vecDelta.x) );
-	float flG = ( ScreenRescale(m_flVelocityScale * vecDelta.y) );
+	Vector vVelocity;
+	m_pEntity->EstimateAbsVelocity(vVelocity);
+	VectorRotate(vVelocity, matWorldToView, vecSceenVel);
+	vecSceenVel *= m_flVelocityScale;
+	
+	float flR = (Clamp(vVelocity.x, -128.f, 128.f) + 128.0f) / 256.0f;
+	float flG = (Clamp(vVelocity.y, -128.f, 128.f) + 128.0f) / 256.0f;
 #else
 	Vector vVelocity;
 	m_pEntity->EstimateAbsVelocity(vVelocity);

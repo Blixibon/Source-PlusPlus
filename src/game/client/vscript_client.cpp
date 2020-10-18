@@ -106,7 +106,7 @@ bool VScriptClientInit()
 
 			if( g_pScriptVM )
 			{
-				Log( "VSCRIPT: Started VScript virtual machine using script language '%s'\n", g_pScriptVM->GetLanguageName() );
+				Log( "VSCRIPT CLIENT: Started VScript virtual machine using script language '%s'\n", g_pScriptVM->GetLanguageName() );
 				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
@@ -132,6 +132,14 @@ bool VScriptClientInit()
 
 				VScriptRunScript( "mapspawn", false );
 
+				for (int i = g_ScriptPersistableList.Count() - 1; i >= 0; i--)
+				{
+					if (g_ScriptPersistableList[i])
+					{
+						g_ScriptPersistableList[i]->InitScript();
+					}
+				}
+
 				VMPROF_SHOW( pszScriptLanguage, "virtual machine startup" );
 
 				return true;
@@ -154,6 +162,15 @@ void VScriptClientTerm()
 {
 	if( g_pScriptVM != NULL )
 	{
+		// Things like proxies can persist across levels, so we have to shut down their scripts manually
+		for (int i = g_ScriptPersistableList.Count() - 1; i >= 0; i--)
+		{
+			if (g_ScriptPersistableList[i])
+			{
+				g_ScriptPersistableList[i]->TermScript();
+			}
+		}
+
 		if( g_pScriptVM )
 		{
 			scriptmanager->DestroyVM( g_pScriptVM );
