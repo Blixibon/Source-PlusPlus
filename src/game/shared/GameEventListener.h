@@ -13,6 +13,7 @@
 
 #include "igameevents.h"
 extern IGameEventManager2 *gameeventmanager;
+extern IGameEventManager* gameeventmanagerOLD;
 
 // A safer method than inheriting straight from IGameEventListener2.
 // Avoids requiring the user to remove themselves as listeners in 

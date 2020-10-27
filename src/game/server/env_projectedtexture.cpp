@@ -12,7 +12,7 @@
 #include "tier0/memdbgon.h"
 
 #define ENV_PROJECTEDTEXTURE_STARTON				( 1 << 0 )
-#define ENV_PROJECTEDTEXTURE_ALWAYSUPDATE			(1<<1)
+#define ENV_PROJECTEDTEXTURE_ALWAYSUPDATE			( 1 << 1 )
 #define ENV_PROJECTEDTEXTURE_VOLUMETRICS_START_ON	( 1 << 2 )
 #define ENV_PROJECTEDTEXTURE_UBERLIGHT				( 1 << 3 )
 
@@ -247,6 +247,7 @@ CEnvProjectedTexture::CEnvProjectedTexture( void )
 	m_nShadowQuality = 0;
 	m_flVolumetricsQualityBias = 3.0f;
 	m_flVolumetricsMultiplier = 2.f;
+	m_iVolumetricsQuality = 64;
 	m_fNearEdge = 0.f;
 	m_fFarEdge = 0.f;
 	m_fCutOn = 0.f;

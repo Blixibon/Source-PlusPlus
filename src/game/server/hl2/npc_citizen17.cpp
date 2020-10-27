@@ -33,7 +33,8 @@
 #include "ai_looktarget.h"
 #include "sceneentity.h"
 #include "tier0/icommandline.h"
-#include "peter\population_manager.h"
+#include "peter/population_manager.h"
+#include "peter/gametypes.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -217,24 +218,26 @@ class CMattsPipe : public CWeaponCrowbar
 
 static const char *g_ppszRandomHeads[] = 
 {
-	"male_01.mdl",
-	"male_02.mdl",
-	"female_01.mdl",
-	"male_03.mdl",
-	"female_02.mdl",
-	"male_04.mdl",
-	"female_03.mdl",
-	"male_05.mdl",
-	"female_04.mdl",
-	"male_06.mdl",
-	"female_06.mdl",
-	"male_07.mdl",
-	"female_07.mdl",
-	"male_08.mdl",
-	"male_09.mdl",
-	//"male_10.mdl",
-	//"male_11.mdl",
+	"male_01",
+	"male_02",
+	"female_01",
+	"male_03",
+	"female_02",
+	"male_04",
+	"female_03",
+	"male_05",
+	"female_04",
+	"male_06",
+	"female_06",
+	"male_07",
+	"female_07",
+	"male_08",
+	"male_09",
+	//"male_10",
+	//"male_11",
 };
+
+static const int g_iHeadsAltModelBitMask = 0b0001010100010100;
 
 static const char *g_ppszModelLocs[] =
 {
@@ -342,16 +345,7 @@ void CNPC_Citizen::SetupModelFromManifest()
 
 	for (int i = 0; i < m_pCharacterDefinition->vMergedModels.Count(); i++)
 	{
-		CPhysicsProp* pProp = static_cast<CPhysicsProp*>(CreateEntityByName("prop_physics_override"));
-		if (pProp != NULL)
-		{
-			// Set the model
-			pProp->SetModelName(AllocPooledString(m_pCharacterDefinition->vMergedModels[i].String()));
-			DispatchSpawn(pProp);
-			pProp->VPhysicsDestroyObject();
-			pProp->FollowEntity(this, true);
-			m_AttachedEntities.AddToTail(pProp);
-		}
+		AddDecorationModel(AllocPooledString(m_pCharacterDefinition->vMergedModels[i].String()));
 	}
 }
 
@@ -445,7 +439,11 @@ void CNPC_Citizen::PrecacheAllOfType( CitizenType_t type )
 	{
 		if (!IsExcludedHead(type, false, i))
 		{
-			PrecacheModel(CFmtStr("models/minic23/citizens/%s", g_ppszRandomHeads[i]));
+			PrecacheModel(CFmtStr("models/minic23/citizens/%s.mdl", g_ppszRandomHeads[i]));
+			PrecacheModel(CFmtStr("models/bloocobalt/citizens/%s_glasses.mdl", g_ppszRandomHeads[i]));
+
+			if ((g_iHeadsAltModelBitMask & (1 << i)) != 0)
+				PrecacheModel(CFmtStr("models/minic23/citizens/%s_b.mdl", g_ppszRandomHeads[i]));
 		}
 	}
 }
@@ -482,16 +480,19 @@ void CNPC_Citizen::Spawn()
 		m_nSkin = RandomInt(0, GetModelPtr()->numskinfamilies() - 1);
 
 		int beanies = FindBodygroupByName("beanies");
-		//int glasses = FindBodygroupByName("glasses");
 		int hands = FindBodygroupByName("hands");
 		int legs = FindBodygroupByName("legs");
 		int torso = FindBodygroupByName("torso");
 
-		/*if (glasses >= 0 && soundemitterbase->GetActorGender(STRING(GetModelName())) == GENDER_MALE)
-		SetBodygroup(glasses, RandomInt(0, 1));*/
-
 		if (beanies >= 0)
-			SetBodygroup(beanies, RandomInt(0, GetBodygroupCount(beanies) - 1));
+		{
+			if (!m_bWantsBeanie)
+				SetBodygroup(beanies, 0);
+			else
+			{
+				SetBodygroup(beanies, RandomInt(Max(0, GetBodygroupCount(beanies) - 1), GetBodygroupCount(beanies)) - 1);
+			}
+		}
 
 		if (legs >= 0)
 		{
@@ -500,6 +501,12 @@ void CNPC_Citizen::Spawn()
 
 		if (hands >= 0 && (m_Type > CT_DOWNTRODDEN && m_Type < CT_HOSTAGE))
 			SetBodygroup(hands, RandomInt(0, GetBodygroupCount(hands) - 1));
+
+		if (m_iHead < ARRAYSIZE(g_ppszRandomHeads) && m_iHead >= 0 && RandomFloat() >= 0.75f)
+		{
+			string_t strGlasses = AllocPooledString(CFmtStr("models/bloocobalt/citizens/%s_glasses.mdl", g_ppszRandomHeads[m_iHead]));
+			AddDecorationModel(strGlasses);
+		}
 
 		if (torso >= 0)
 		{
@@ -788,7 +795,7 @@ void CNPC_Citizen::SelectModel()
 				{
 					for (int i = 0; i < ARRAYSIZE(g_ppszRandomHeads); i++)
 					{
-						if (Q_stricmp(g_ppszRandomHeads[i], pszModelName) == 0)
+						if (V_stristr(pszModelName, g_ppszRandomHeads[i]) == pszModelName)
 						{
 							m_iHead = i;
 							break;
@@ -803,9 +810,12 @@ void CNPC_Citizen::SelectModel()
 		// Unique citizen models are left alone
 		if (m_Type != CT_UNIQUE)
 		{
-			SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s", pszModelName)));
+			m_bWantsBeanie = (m_Type != CT_DOWNTRODDEN) && (RandomFloat() <= 0.5f);
 
-			//SetModelName( AllocPooledString( CFmtStr( "models/Humans/%s/%s", (const char *)(CFmtStr(g_ppszModelLocs[ m_Type ], ( IsMedic() ) ? "m" : "" )), pszModelName ) ) );
+			if (m_bWantsBeanie && (g_iHeadsAltModelBitMask & (1 << m_iHead)) != 0)
+				SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s_b.mdl", pszModelName)));
+			else
+				SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s.mdl", pszModelName)));
 		}
 	}
 	else
@@ -948,16 +958,28 @@ bool CNPC_Citizen::ShowInDeathnotice()
 
 const char * CNPC_Citizen::GetDeathNoticeNameOverride()
 {
-	if (NameMatches("matt"))
-		return "Matt";
-	else if (NameMatches("griggs"))
-		return "Griggs";
-	else if (NameMatches("sheckley"))
-		return "Sheckley";
-	else if (NameMatches("larry") || NameMatches("larry2") || NameMatches("rebel_larry") || NameMatches("rebels_larry"))
-		return "Larry";
-	else if (NameMatches("sarah") || NameMatches("rebel_sarah"))
-		return "Sarah";
+	switch (GameTypeSystem()->GetCurrentModGameType())
+	{
+	case GAME_HL2:
+		if (NameMatches("matt"))
+			return "Matt";
+		break;
+	case GAME_EP2:
+		if (NameMatches("griggs"))
+			return "Griggs";
+		else if (NameMatches("sheckley"))
+			return "Sheckley";
+		break;
+	case MOD_CITIZEN:
+	case MOD_CITIZEN2:
+		if (NameMatches("larry") || NameMatches("larry2") || NameMatches("rebel_larry") || NameMatches("rebels_larry"))
+			return "Larry";
+		else if (NameMatches("sarah") || NameMatches("rebel_sarah"))
+			return "Sarah";
+		break;
+	default:
+		break;
+	}
 
 	return nullptr;
 }

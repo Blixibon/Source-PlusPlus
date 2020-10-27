@@ -12,6 +12,11 @@
 #include "cbase.h"
 #include "responserules/matchers.h"
 #include "takedamageinfo.h"
+#include "tier0/icommandline.h"
+#include "GameEventListener.h"
+#include "utlbuffer.h"
+#include "KeyValues.h"
+#include "filesystem.h"
 
 #ifndef CLIENT_DLL
 #include "globalstate.h"
@@ -636,6 +641,677 @@ static HSCRIPT ScriptTraceHullComplex( const Vector &vecStart, const Vector &vec
 
 bool ScriptMatcherMatch( const char *pszQuery, const char *szValue ) { return Matcher_Match( pszQuery, szValue ); }
 
+//=============================================================================
+//=============================================================================
+
+class CScriptGameEventListener : public IGameEventListener, public CAutoGameSystem
+{
+public:
+	CScriptGameEventListener() : m_bActive(false) {}
+	~CScriptGameEventListener()
+	{
+		StopListeningForEvent();
+	}
+
+	intptr_t ListenToGameEvent(const char* szEvent, HSCRIPT hFunc, const char* szContext);
+	void StopListeningForEvent();
+
+public:
+	static bool StopListeningToGameEvent(intptr_t listener);
+	static void StopListeningToAllGameEvents(const char* szContext);
+
+public:
+	virtual void FireGameEvent(KeyValues* event);
+	void LevelShutdownPreEntity();
+
+private:
+	bool m_bActive;
+	const char* m_pszContext;
+	HSCRIPT m_hCallback;
+
+	static const char* FindContext(const char* szContext, CScriptGameEventListener* pIgnore = NULL);
+	//inline const char *GetContext( CScriptGameEventListener *p );
+	//inline const char *GetContext();
+
+public:
+	static void DumpEventListeners();
+	static void WriteEventData(KeyValues* event, HSCRIPT hTable);
+
+private:
+	static CUtlVectorAutoPurge< CScriptGameEventListener* > s_GameEventListeners;
+
+};
+
+CUtlVectorAutoPurge< CScriptGameEventListener* > CScriptGameEventListener::s_GameEventListeners;
+
+#if 0
+#ifdef CLIENT_DLL
+CON_COMMAND_F(cl_dump_script_game_event_listeners, "Dump all game event listeners created from script.", FCVAR_CHEAT)
+{
+	CScriptGameEventListener::DumpEventListeners();
+}
+#else // GAME_DLL
+CON_COMMAND_F(dump_script_game_event_listeners, "Dump all game event listeners created from script.", FCVAR_CHEAT)
+{
+	CScriptGameEventListener::DumpEventListeners();
+}
+#endif // CLIENT_DLL
+#endif
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CScriptGameEventListener::DumpEventListeners()
+{
+	Msg("--- Script game event listener dump start\n");
+	FOR_EACH_VEC(s_GameEventListeners, i)
+	{
+		Msg(" %d   (0x%p) %d : %s\n", i, s_GameEventListeners[i],
+			s_GameEventListeners[i],
+			s_GameEventListeners[i]->m_pszContext ? s_GameEventListeners[i]->m_pszContext : "");
+	}
+	Msg("--- Script game event listener dump end\n");
+}
+
+void CScriptGameEventListener::FireGameEvent(KeyValues* event)
+{
+	ScriptVariant_t hTable;
+	g_pScriptVM->CreateTable(hTable);
+
+	WriteEventData(event, hTable);
+	g_pScriptVM->SetValue(hTable, "game_event_listener", reinterpret_cast<intptr_t>(this)); // POINTER_TO_INT
+	// g_pScriptVM->SetValue( hTable, "game_event_name", event->GetName() );
+	g_pScriptVM->ExecuteFunction(m_hCallback, &hTable, 1, NULL, NULL, true);
+	g_pScriptVM->ReleaseScript(hTable);
+}
+
+void CScriptGameEventListener::LevelShutdownPreEntity()
+{
+	s_GameEventListeners.FindAndFastRemove(this);
+	delete this;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+void CScriptGameEventListener::WriteEventData(KeyValues* event, HSCRIPT hTable)
+{
+	for (KeyValues* sub = event->GetFirstSubKey(); sub; sub = sub->GetNextKey())
+	{
+		const char* szKey = sub->GetName();
+		switch (sub->GetDataType())
+		{
+		case KeyValues::TYPE_STRING: g_pScriptVM->SetValue(hTable, szKey, event->GetString(szKey)); break;
+		case KeyValues::TYPE_INT:    g_pScriptVM->SetValue(hTable, szKey, event->GetInt(szKey)); break;
+		case KeyValues::TYPE_FLOAT:  g_pScriptVM->SetValue(hTable, szKey, event->GetFloat(szKey)); break;
+		case KeyValues::TYPE_UINT64: g_pScriptVM->SetValue(hTable, szKey, event->GetUint64(szKey)); break;
+			// default: DevWarning( 2, "CScriptGameEventListener::WriteEventData: unknown data type '%d' on key '%s' in event '%s'\n", sub->GetDataType(), szKey, szEvent );
+		}
+	}
+}
+//-----------------------------------------------------------------------------
+// Find if context is in use by others; used to alloc/dealloc only when required.
+// Returns allocated pointer to string
+// Expects non-NULL context input
+//-----------------------------------------------------------------------------
+const char* CScriptGameEventListener::FindContext(const char* szContext, CScriptGameEventListener* pIgnore)
+{
+	for (int i = s_GameEventListeners.Count(); i--; )
+	{
+		CScriptGameEventListener* pCur = s_GameEventListeners[i];
+		if (pCur != pIgnore)
+		{
+			if (pCur->m_pszContext && !V_stricmp(szContext, pCur->m_pszContext))
+			{
+				return pCur->m_pszContext;
+			}
+		}
+	}
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+intptr_t CScriptGameEventListener::ListenToGameEvent(const char* szEvent, HSCRIPT hFunc, const char* szContext)
+{
+	m_bActive = true;
+
+	char* psz;
+
+	if (szContext && *szContext)
+	{
+		psz = const_cast<char*>(FindContext(szContext));
+		if (!psz)
+		{
+			int len = V_strlen(szContext) + 1;
+			if (len > 1)
+			{
+				int size = min(len, 256); // arbitrary clamp
+				psz = new char[size];
+				V_strncpy(psz, szContext, size);
+			}
+		}
+	}
+	else
+	{
+		psz = NULL;
+	}
+
+	m_pszContext = psz;
+	m_hCallback = hFunc;
+
+	if (gameeventmanagerOLD)
+#ifdef CLIENT_DLL
+		gameeventmanagerOLD->AddListener(this, szEvent, false);
+#else
+		gameeventmanagerOLD->AddListener(this, szEvent, true);
+#endif
+	s_GameEventListeners.AddToTail(this);
+
+	return reinterpret_cast<intptr_t>(this); // POINTER_TO_INT
+}
+
+//-----------------------------------------------------------------------------
+// Free stuff. Called from the destructor, does not remove itself from the listener list.
+//-----------------------------------------------------------------------------
+void CScriptGameEventListener::StopListeningForEvent()
+{
+	if (!m_bActive)
+		return;
+
+	if (g_pScriptVM)
+	{
+		g_pScriptVM->ReleaseScript(m_hCallback);
+	}
+	else if (m_hCallback)
+	{
+		AssertMsg(0, "LEAK (0x%p)\n", (void*)m_hCallback);
+	}
+
+	if (m_pszContext)
+	{
+		if (!FindContext(m_pszContext, this))
+		{
+			delete[] m_pszContext;
+		}
+
+		m_pszContext = NULL;
+	}
+
+	m_hCallback = NULL;
+
+	if (gameeventmanagerOLD)
+		gameeventmanagerOLD->RemoveListener(this);
+
+	m_bActive = false;
+}
+
+//-----------------------------------------------------------------------------
+// Stop the specified event listener.
+//-----------------------------------------------------------------------------
+bool CScriptGameEventListener::StopListeningToGameEvent(intptr_t listener)
+{
+	CScriptGameEventListener* p = reinterpret_cast<CScriptGameEventListener*>(listener); // INT_TO_POINTER	
+
+	bool bRemoved = s_GameEventListeners.FindAndFastRemove(p);
+	if (bRemoved)
+	{
+		delete p;
+	}
+
+	return bRemoved;
+}
+
+//-----------------------------------------------------------------------------
+// Stops listening to all events within a context.
+//-----------------------------------------------------------------------------
+void CScriptGameEventListener::StopListeningToAllGameEvents(const char* szContext)
+{
+	if (szContext)
+	{
+		if (*szContext)
+		{
+			// Iterate from the end so they can be safely removed as they are deleted
+			for (int i = s_GameEventListeners.Count(); i--; )
+			{
+				CScriptGameEventListener* pCur = s_GameEventListeners[i];
+				if (pCur->m_pszContext && !V_stricmp(szContext, pCur->m_pszContext))
+				{
+					s_GameEventListeners.Remove(i); // keep list order
+					delete pCur;
+				}
+			}
+		}
+		else // empty (NULL) context
+		{
+			for (int i = s_GameEventListeners.Count(); i--; )
+			{
+				CScriptGameEventListener* pCur = s_GameEventListeners[i];
+				if (!pCur->m_pszContext)
+				{
+					s_GameEventListeners.Remove(i);
+					delete pCur;
+				}
+			}
+		}
+	}
+#if 0
+	if (!szContext)
+	{
+		for (int i = s_GameEventListeners.Count(); i--; )
+			delete s_GameEventListeners[i];
+		s_GameEventListeners.Purge();
+	}
+#endif
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+static int ListenToGameEvent(const char* szEvent, HSCRIPT hFunc, const char* szContext)
+{
+	CScriptGameEventListener* p = new CScriptGameEventListener();
+	return p->ListenToGameEvent(szEvent, hFunc, szContext);
+}
+
+static void FireGameEvent(const char* szEvent, HSCRIPT hTable)
+{
+	IGameEvent* event = gameeventmanager->CreateEvent(szEvent);
+	if (event)
+	{
+		ScriptVariant_t key, val;
+		int nIterator = -1;
+		while ((nIterator = g_pScriptVM->GetKeyValue(hTable, nIterator, &key, &val)) != -1)
+		{
+			switch (val.m_type)
+			{
+			case FIELD_FLOAT:   event->SetFloat(key.m_pszString, val.m_float); break;
+			case FIELD_INTEGER: event->SetInt(key.m_pszString, val.m_int); break;
+			case FIELD_BOOLEAN: event->SetBool(key.m_pszString, val.m_bool); break;
+			case FIELD_CSTRING: event->SetString(key.m_pszString, val.m_pszString); break;
+			}
+
+			g_pScriptVM->ReleaseValue(key);
+			g_pScriptVM->ReleaseValue(val);
+		}
+
+#ifdef CLIENT_DLL
+		gameeventmanager->FireEventClientSide(event);
+#else
+		gameeventmanager->FireEvent(event);
+#endif
+	}
+}
+
+#ifndef CLIENT_DLL
+//-----------------------------------------------------------------------------
+// Copy of FireGameEvent, server only with no broadcast to clients.
+//-----------------------------------------------------------------------------
+static void FireGameEventLocal(const char* szEvent, HSCRIPT hTable)
+{
+	IGameEvent* event = gameeventmanager->CreateEvent(szEvent);
+	if (event)
+	{
+		ScriptVariant_t key, val;
+		int nIterator = -1;
+		while ((nIterator = g_pScriptVM->GetKeyValue(hTable, nIterator, &key, &val)) != -1)
+		{
+			switch (val.m_type)
+			{
+			case FIELD_FLOAT:   event->SetFloat(key.m_pszString, val.m_float); break;
+			case FIELD_INTEGER: event->SetInt(key.m_pszString, val.m_int); break;
+			case FIELD_BOOLEAN: event->SetBool(key.m_pszString, val.m_bool); break;
+			case FIELD_CSTRING: event->SetString(key.m_pszString, val.m_pszString); break;
+			}
+
+			g_pScriptVM->ReleaseValue(key);
+			g_pScriptVM->ReleaseValue(val);
+		}
+
+		gameeventmanager->FireEvent(event, true);
+	}
+}
+#endif // !CLIENT_DLL
+
+class CGlobalSys
+{
+public:
+	const char* ScriptGetCommandLine()
+	{
+		return CommandLine()->GetCmdLine();
+	}
+
+	bool CommandLineCheck(const char* name)
+	{
+		return !!CommandLine()->FindParm(name);
+	}
+
+	const char* CommandLineCheckStr(const char* name)
+	{
+		return CommandLine()->ParmValue(name);
+	}
+
+	float CommandLineCheckFloat(const char* name)
+	{
+		return CommandLine()->ParmValue(name, 0);
+	}
+
+	int CommandLineCheckInt(const char* name)
+	{
+		return CommandLine()->ParmValue(name, 0);
+	}
+} g_ScriptGlobalSys;
+
+BEGIN_SCRIPTDESC_ROOT_NAMED(CGlobalSys, "CGlobalSys", SCRIPT_SINGLETON "GlobalSys")
+DEFINE_SCRIPTFUNC_NAMED(ScriptGetCommandLine, "GetCommandLine", "returns the command line")
+DEFINE_SCRIPTFUNC(CommandLineCheck, "returns true if the command line param was used, otherwise false.")
+DEFINE_SCRIPTFUNC(CommandLineCheckStr, "returns the command line param as a string.")
+DEFINE_SCRIPTFUNC(CommandLineCheckFloat, "returns the command line param as a float.")
+DEFINE_SCRIPTFUNC(CommandLineCheckInt, "returns the command line param as an int.")
+END_SCRIPTDESC();
+
+class CScriptSaveRestoreUtil : public CAutoGameSystem
+{
+public:
+	static void SaveTable(const char* szId, HSCRIPT hTable);
+	static void RestoreTable(const char* szId, HSCRIPT hTable);
+	static void ClearSavedTable(const char* szId);
+
+	// IGameSystem interface
+public:
+	void OnSave()
+	{
+		if (g_pScriptVM)
+		{
+			HSCRIPT hFunc = g_pScriptVM->LookupFunction("OnSave");
+			if (hFunc)
+			{
+				g_pScriptVM->Call(hFunc);
+			}
+		}
+	}
+
+	void OnRestore()
+	{
+		if (g_pScriptVM)
+		{
+			HSCRIPT hFunc = g_pScriptVM->LookupFunction("OnRestore");
+			if (hFunc)
+			{
+				g_pScriptVM->Call(hFunc);
+			}
+		}
+	}
+
+	void Shutdown()
+	{
+		FOR_EACH_VEC(m_aKeyValues, i)
+			m_aKeyValues[i]->deleteThis();
+		m_aKeyValues.Purge();
+		m_aContext.PurgeAndDeleteElements();
+	}
+
+private:
+	static int GetIndexForContext(const char* szId);
+
+	// indices must match, always remove keeping order
+	static CUtlStringList m_aContext;
+	static CUtlVector<KeyValues*> m_aKeyValues;
+
+} g_ScriptSaveRestoreUtil;
+
+CUtlStringList CScriptSaveRestoreUtil::m_aContext;
+CUtlVector<KeyValues*> CScriptSaveRestoreUtil::m_aKeyValues;
+
+int CScriptSaveRestoreUtil::GetIndexForContext(const char* szId)
+{
+	int idx = -1;
+	FOR_EACH_VEC(m_aContext, i)
+	{
+		if (!V_stricmp(szId, m_aContext[i]))
+		{
+			idx = i;
+			break;
+		}
+	}
+	return idx;
+}
+
+//-----------------------------------------------------------------------------
+// Store a table with primitive values that will persist across level transitions and save loads.
+//-----------------------------------------------------------------------------
+void CScriptSaveRestoreUtil::SaveTable(const char* szId, HSCRIPT hTable)
+{
+	int idx = GetIndexForContext(szId);
+
+	KeyValues* pKV;
+
+	if (idx == -1)
+	{
+		pKV = new KeyValues("ScriptSavedTable");
+		m_aKeyValues.AddToTail(pKV);
+
+		if (V_strlen(szId) > 255) // arbitrary clamp
+		{
+			char c[256];
+			V_strncpy(c, szId, sizeof(c));
+			m_aContext.CopyAndAddToTail(c);
+		}
+		else
+		{
+			m_aContext.CopyAndAddToTail(szId);
+		}
+	}
+	else
+	{
+		pKV = m_aKeyValues[idx];
+		pKV->Clear();
+	}
+
+	ScriptVariant_t key, val;
+	int nIterator = -1;
+	while ((nIterator = g_pScriptVM->GetKeyValue(hTable, nIterator, &key, &val)) != -1)
+	{
+		switch (val.m_type)
+		{
+		case FIELD_FLOAT:   pKV->SetFloat(key.m_pszString, val.m_float); break;
+		case FIELD_INTEGER: pKV->SetInt(key.m_pszString, val.m_int); break;
+		case FIELD_BOOLEAN: pKV->SetBool(key.m_pszString, val.m_bool); break;
+		case FIELD_CSTRING: pKV->SetString(key.m_pszString, val.m_pszString); break;
+		}
+
+		g_pScriptVM->ReleaseValue(key);
+		g_pScriptVM->ReleaseValue(val);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Retrieves a table from storage. Write into input table.
+//-----------------------------------------------------------------------------
+void CScriptSaveRestoreUtil::RestoreTable(const char* szId, HSCRIPT hTable)
+{
+	int idx = GetIndexForContext(szId);
+
+	KeyValues* pKV;
+
+	if (idx == -1)
+	{
+		// DevWarning( 2, "RestoreTable could not find saved table with context '%s'\n", szId );
+		return;
+	}
+	else
+	{
+		pKV = m_aKeyValues[idx];
+	}
+
+	for (KeyValues *key = pKV->GetFirstSubKey(); key != nullptr; key = key->GetNextKey())
+	{
+		switch (key->GetDataType())
+		{
+		case KeyValues::TYPE_STRING: g_pScriptVM->SetValue(hTable, key->GetName(), key->GetString()); break;
+		case KeyValues::TYPE_INT:    g_pScriptVM->SetValue(hTable, key->GetName(), key->GetInt()); break;
+		case KeyValues::TYPE_FLOAT:  g_pScriptVM->SetValue(hTable, key->GetName(), key->GetFloat()); break;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Remove a saved table.
+//-----------------------------------------------------------------------------
+void CScriptSaveRestoreUtil::ClearSavedTable(const char* szId)
+{
+	int idx = GetIndexForContext(szId);
+
+	if (idx == -1)
+	{
+		// DevWarning( 2, "ClearSavedTable could not find saved table with context '%s'\n", szId );
+		return;
+	}
+
+	m_aKeyValues[idx]->deleteThis();
+	m_aKeyValues.Remove(idx);
+
+	delete[] m_aContext[idx];
+	m_aContext.Remove(idx);
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+#define SCRIPT_MAX_FILE_READ_SIZE  (16 * 1024)			// 16KB
+#define SCRIPT_MAX_FILE_WRITE_SIZE SCRIPT_MAX_FILE_READ_SIZE //(64 * 1024 * 1024)	// 64MB
+#define SCRIPT_RW_PATH_ID "MOD_WRITE"
+#define SCRIPT_RW_FULL_PATH_FMT "ems/%s"
+
+class CScriptReadWriteFile : public CAutoGameSystem
+{
+public:
+	static bool ScriptFileWrite(const char* szFile, const char* szInput);
+	static const char* ScriptFileRead(const char* szFile);
+	//static const char *CRC32_Checksum( const char *szFilename );
+
+	void LevelShutdownPostEntity()
+	{
+		if (m_pszReturnReadFile)
+		{
+			delete[] m_pszReturnReadFile;
+			m_pszReturnReadFile = NULL;
+		}
+
+		//if ( m_pszReturnCRC32 )
+		//{
+		//	delete[] m_pszReturnCRC32;
+		//	m_pszReturnCRC32 = NULL;
+		//}
+	}
+
+private:
+	static const char* m_pszReturnReadFile;
+	//static const char *m_pszReturnCRC32;
+
+} g_ScriptReadWrite;
+
+const char* CScriptReadWriteFile::m_pszReturnReadFile = NULL;
+//const char *CScriptReadWriteFile::m_pszReturnCRC32 = NULL;
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+bool CScriptReadWriteFile::ScriptFileWrite(const char* szFile, const char* szInput)
+{
+	size_t len = strlen(szInput);
+	if (len > SCRIPT_MAX_FILE_WRITE_SIZE)
+	{
+		DevWarning(2, "Input is too large for a ScriptFileWrite ( %s / %d KB )\n", V_pretifymem(len, 2, true), (SCRIPT_MAX_FILE_WRITE_SIZE >> 10));
+		return false;
+	}
+
+	char pszFullName[MAX_PATH];
+	V_snprintf(pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile);
+
+	if (!V_RemoveDotSlashes(pszFullName, CORRECT_PATH_SEPARATOR, true))
+	{
+		DevWarning(2, "Invalid file location : %s\n", szFile);
+		return false;
+	}
+
+	CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+	buf.PutString(szInput);
+
+	int nSize = V_strlen(pszFullName) + 1;
+	char* pszDir = (char*)stackalloc(nSize);
+	V_memcpy(pszDir, pszFullName, nSize);
+	V_StripFilename(pszDir);
+
+	g_pFullFileSystem->CreateDirHierarchy(pszDir, SCRIPT_RW_PATH_ID);
+	bool res = g_pFullFileSystem->WriteFile(pszFullName, SCRIPT_RW_PATH_ID, buf);
+	buf.Purge();
+	return res;
+}
+
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+const char* CScriptReadWriteFile::ScriptFileRead(const char* szFile)
+{
+	char pszFullName[MAX_PATH];
+	V_snprintf(pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile);
+
+	if (!V_RemoveDotSlashes(pszFullName, CORRECT_PATH_SEPARATOR, true))
+	{
+		DevWarning(2, "Invalid file location : %s\n", szFile);
+		return NULL;
+	}
+
+	unsigned int size = g_pFullFileSystem->Size(pszFullName, SCRIPT_RW_PATH_ID);
+	if (size >= SCRIPT_MAX_FILE_READ_SIZE)
+	{
+		DevWarning(2, "File '%s' (from '%s') is too large for a ScriptFileRead ( %s / %u KB )\n", pszFullName, szFile, V_pretifymem(size, 2, true), (SCRIPT_MAX_FILE_READ_SIZE >> 10));
+		return NULL;
+	}
+
+	CUtlBuffer buf(0, 0, CUtlBuffer::TEXT_BUFFER);
+	if (!g_pFullFileSystem->ReadFile(pszFullName, SCRIPT_RW_PATH_ID, buf, SCRIPT_MAX_FILE_READ_SIZE))
+	{
+		return NULL;
+	}
+
+	// first time calling, allocate
+	if (!m_pszReturnReadFile)
+		m_pszReturnReadFile = new char[SCRIPT_MAX_FILE_READ_SIZE];
+
+	V_strncpy(const_cast<char*>(m_pszReturnReadFile), (const char*)buf.Base(), buf.Size());
+	buf.Purge();
+	return m_pszReturnReadFile;
+}
+
+//-----------------------------------------------------------------------------
+// Get the checksum of any file. Can be used to check the existence or validity of a file.
+// Returns unsigned int as hex string.
+//-----------------------------------------------------------------------------
+/*
+const char *CScriptReadWriteFile::CRC32_Checksum( const char *szFilename )
+{
+	CUtlBuffer buf( 0, 0, CUtlBuffer::READ_ONLY );
+	if ( !g_pFullFileSystem->ReadFile( szFilename, NULL, buf ) )
+		return NULL;
+	// first time calling, allocate
+	if ( !m_pszReturnCRC32 )
+		m_pszReturnCRC32 = new char[9]; // 'FFFFFFFF\0'
+	V_snprintf( const_cast<char*>(m_pszReturnCRC32), 9, "%X", CRC32_ProcessSingleBuffer( buf.Base(), buf.Size()-1 ) );
+	buf.Purge();
+	return m_pszReturnCRC32;
+}
+*/
+#undef SCRIPT_MAX_FILE_READ_SIZE
+#undef SCRIPT_MAX_FILE_WRITE_SIZE
+#undef SCRIPT_RW_PATH_ID
+#undef SCRIPT_RW_FULL_PATH_FMT
+
+//=============================================================================
+//=============================================================================
+
 void RegisterSharedScriptFunctions()
 {
 	// 
@@ -658,8 +1334,23 @@ void RegisterSharedScriptFunctions()
 	ScriptRegisterFunction( g_pScriptVM, SpawnEntityFromTable, "Native function for entity spawning." );
 #endif
 
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptSaveRestoreUtil::SaveTable, "SaveTable", "Store a table with primitive values that will persist across level transitions and save loads.");
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptSaveRestoreUtil::RestoreTable, "RestoreTable", "Retrieves a table from storage. Write into input table.");
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptSaveRestoreUtil::ClearSavedTable, "ClearSavedTable", "Removes the table with the given context.");
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptReadWriteFile::ScriptFileWrite, "StringToFile", "Stores the string into the file");
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptReadWriteFile::ScriptFileRead, "FileToString", "Returns the string from the file, null if no file or file is too big.");
+
+	ScriptRegisterFunction(g_pScriptVM, ListenToGameEvent, "Register as a listener for a game event from script.");
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptGameEventListener::StopListeningToGameEvent, "StopListeningToGameEvent", "Stop the specified event listener.");
+	ScriptRegisterFunctionNamed(g_pScriptVM, CScriptGameEventListener::StopListeningToAllGameEvents, "StopListeningToAllGameEvents", "Stop listening to all game events within a specific context.");
+	ScriptRegisterFunction(g_pScriptVM, FireGameEvent, "Fire a game event.");
+#ifndef CLIENT_DLL
+	ScriptRegisterFunction(g_pScriptVM, FireGameEventLocal, "Fire a game event without broadcasting to the client.");
+#endif
+
 	g_pScriptVM->RegisterInstance( &g_ScriptConvarLookup, "Convars" );
 	g_pScriptVM->RegisterInstance( &g_ScriptNetPropManager, "NetProps" );
+	g_pScriptVM->RegisterInstance(&g_ScriptGlobalSys, "GlobalSys");
 
 	// Functions unique to Mapbase
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptColorPrint, "printc", "Version of print() which takes a color before the message." );

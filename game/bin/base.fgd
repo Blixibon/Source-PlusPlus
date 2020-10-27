@@ -7192,7 +7192,7 @@
 	]
 	
 	volumetricsmultiplier(float) : "Volumetrics Multiplier" : 2 : "Multiplier for strength of Volumetrics"
-	volumetricsquality(float) : "Volumetrics Quality" : 20 : "Quality of volumetrics"
+	volumetricsquality(float) : "Volumetrics Quality" : 64 : "Quality of volumetrics"
 	volumetricsqualitybias(float) : "Volumetrics Quality Bias" : 1 : "Volumetrics Quality Bias"
 	
 	uberlight_near(float) : "Uberlight Near Edge" : 2 : ""

@@ -38,4 +38,4 @@ hls14bmrl
 @chapter:18
 hls14cmrl
 @chapter:-2
-hls_hc
+hlsu_hc

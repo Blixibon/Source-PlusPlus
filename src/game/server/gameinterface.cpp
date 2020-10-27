@@ -188,6 +188,7 @@ ISpatialPartition *partition = NULL;
 IVModelInfo *modelinfo = NULL;
 IEngineTrace *enginetrace = NULL;
 IGameEventManager2 *gameeventmanager = NULL;
+IGameEventManager* gameeventmanagerOLD = NULL;
 IDataCache *datacache = NULL;
 IVDebugOverlay * debugoverlay = NULL;
 ISoundEmitterSystemBase *soundemitterbase = NULL;
@@ -632,6 +633,7 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 		return false;
 	if ( (gameeventmanager = (IGameEventManager2 *)appSystemFactory(INTERFACEVERSION_GAMEEVENTSMANAGER2,NULL)) == NULL )
 		return false;
+	gameeventmanagerOLD = (IGameEventManager*)appSystemFactory(INTERFACEVERSION_GAMEEVENTSMANAGER, NULL);
 	if ( (datacache = (IDataCache*)appSystemFactory(DATACACHE_INTERFACE_VERSION, NULL )) == NULL )
 		return false;
 	if ( (soundemitterbase = (ISoundEmitterSystemBase *)appSystemFactory(SOUNDEMITTERSYSTEM_INTERFACE_VERSION, NULL)) == NULL )

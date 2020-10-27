@@ -234,7 +234,7 @@ void CNPC_HL1Controller::Spawn()
 {
 	Precache( );
 
-	SetModel( "models/controller.mdl" );
+	SetModel( "models/half-life/controller.mdl" );
 	UTIL_SetSize( this, Vector( -32, -32, 0 ), Vector( 32, 32, 64 ));
 
 	SetSolid( SOLID_BBOX );
@@ -270,7 +270,7 @@ void CNPC_HL1Controller::Spawn()
 //=========================================================
 void CNPC_HL1Controller::Precache()
 {
-	PrecacheModel("models/controller.mdl");
+	PrecacheModel("models/half-life/controller.mdl");
 
 	PrecacheModel( "sprites/xspark4.vmt");
 

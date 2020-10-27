@@ -1154,7 +1154,7 @@ int CVolumetricLightRenderable::DrawModel(int flags)
 			}
 
 			CMatRenderContextPtr pRenderContext(materials);
-			pRenderContext->Flush(false);
+			//pRenderContext->Flush(false);
 			pRenderContext->Bind(pMaterial, GetClientRenderable());
 
 			for (int i = 0; i < 6; i++)

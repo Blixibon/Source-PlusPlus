@@ -10,8 +10,8 @@
 		"head"	"0"
 		"hl1"
 		{
-			"vpk"	"hl1_pak"
 			custom custom
+			"vpk"	"hl1_pak"
 		}
 	}
 }

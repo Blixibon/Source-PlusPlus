@@ -311,6 +311,7 @@ private:
 	CitizenExpressionTypes_t	m_ExpressionType;
 
 	int				m_iHead;
+	bool			m_bWantsBeanie;
 
 	//static CSimpleSimTimer gm_PlayerSquadEvaluateTimer;
 

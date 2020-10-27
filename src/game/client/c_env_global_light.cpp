@@ -13,8 +13,8 @@
 #include "tier0/memdbgon.h"
 
 
-static ConVar mat_slopescaledepthbias_shadowmap("mat_slopescaledepthbias_shadowmap", "4", FCVAR_CHEAT);
-static ConVar mat_depthbias_shadowmap("mat_depthbias_shadowmap", "0.00001", FCVAR_CHEAT);
+ConVar cl_globallight_slopescaledepthbias_shadowmap("cl_globallight_slopescaledepthbias", "16", FCVAR_CHEAT);
+ConVar cl_globallight_depthbias_shadowmap("cl_globallight_depthbias", "0.0005", FCVAR_CHEAT);
 
 ConVar cl_globallight_freeze( "cl_globallight_freeze", "0" );   // Don't follow the player, have this set to a fix point.
 ConVar cl_globallight_xoffset( "cl_globallight_xoffset", "0" ); // Set me to 0 so it's on the player.
@@ -210,8 +210,8 @@ void C_GlobalLight::ClientThink()
 			state.m_bDrawShadowFrustum = true;
 		}
 
-		state.m_flShadowSlopeScaleDepthBias = mat_slopescaledepthbias_shadowmap.GetFloat();
-		state.m_flShadowDepthBias = mat_depthbias_shadowmap.GetFloat();
+		state.m_flShadowSlopeScaleDepthBias = cl_globallight_slopescaledepthbias_shadowmap.GetFloat();
+		state.m_flShadowDepthBias = cl_globallight_depthbias_shadowmap.GetFloat();
 		state.m_bEnableShadows = m_bEnableShadows;
 		state.m_pSpotlightTexture = m_SpotlightTexture;
 		state.m_nSpotlightTextureFrame = 0;

@@ -207,16 +207,7 @@ void CNPC_BaseColleague::SetupModelFromManifest()
 
 	for (int i = 0; i < m_pCharacterDefinition->vMergedModels.Count(); i++)
 	{
-		CPhysicsProp* pProp = static_cast<CPhysicsProp*>(CreateEntityByName("prop_physics_override"));
-		if (pProp != NULL)
-		{
-			// Set the model
-			pProp->SetModelName(AllocPooledString(m_pCharacterDefinition->vMergedModels[i].String()));
-			DispatchSpawn(pProp);
-			pProp->VPhysicsDestroyObject();
-			pProp->FollowEntity(this, true);
-			m_AttachedEntities.AddToTail(pProp);
-		}
+		AddDecorationModel(AllocPooledString(m_pCharacterDefinition->vMergedModels[i].String()));
 	}
 
 	m_FlexData.Purge();

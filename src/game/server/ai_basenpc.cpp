@@ -931,6 +931,11 @@ HSCRIPT CAI_BaseNPC::VScriptGetCine()
 	return ToHScript(m_hCine.Get());
 }
 
+HSCRIPT CAI_BaseNPC::VScriptAddDecorationModel(const char* pszModelName)
+{
+	return ToHScript(AddDecorationModel(AllocPooledString(pszModelName)));
+}
+
 //-----------------------------------------------------------------------------
 
 ConVar	ai_block_damage( "ai_block_damage","0" );
@@ -11626,6 +11631,8 @@ DEFINE_SCRIPTFUNC(IsInPlayerSquad, "Check if the NPC is in the player's squad.")
 DEFINE_SCRIPTFUNC_NAMED(VScriptGetCine, "GetCine", "Get the NPC's currently running scripted sequence if it has one.")
 DEFINE_SCRIPTFUNC(GetScriptState, "Get the NPC's current scripted sequence state.")
 
+DEFINE_SCRIPTFUNC_NAMED(VScriptAddDecorationModel, "AddDecorationModel", "")
+
 END_SCRIPTDESC();
 
 BEGIN_SIMPLE_DATADESC( AIScheduleState_t )
@@ -12400,6 +12407,22 @@ void CAI_BaseNPC::ChangeTeam(int iTeamNum)
 	{
 		ChooseEnemy();
 	}
+}
+
+CBaseProp* CAI_BaseNPC::AddDecorationModel(string_t iszModelName)
+{
+	CPhysicsProp* pProp = static_cast<CPhysicsProp*>(CreateEntityByName("prop_physics_override"));
+	if (pProp != NULL)
+	{
+		// Set the model
+		pProp->SetModelName(iszModelName);
+		DispatchSpawn(pProp);
+		pProp->VPhysicsDestroyObject();
+		pProp->FollowEntity(this, true);
+		m_AttachedEntities.AddToTail(pProp);
+	}
+
+	return pProp;
 }
 
 void CAI_BaseNPC::UpdateTeam()

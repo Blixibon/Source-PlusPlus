@@ -1,0 +1,46 @@
+"bm_c0a0b"
+{
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "3174 -3632 134"
+			"angles" "0 0 0"
+		}
+	}
+	
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "3174 -3524 134"
+			"angles" "0 0 0"
+		}
+	}
+	
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "2910 -3524 134"
+			"angles" "0 180 -180"
+		}
+	}
+	
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "2910 -3632 134"
+			"angles" "0 180 -180"
+		}
+	}
+}

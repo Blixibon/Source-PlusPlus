@@ -255,7 +255,7 @@ void CPointSpotlight::ComputeRenderInfo()
 		m_hSpotlight->SetEndWidth(flNewWidth);
 
 	// Adjust width of light on the end.  
-	if ( FBitSet (m_spawnflags, SF_SPOTLIGHT_NO_DYNAMIC_LIGHT) )
+	if (FBitSet(m_spawnflags, SF_SPOTLIGHT_NO_DYNAMIC_LIGHT))
 	{
 		m_hSpotlightTarget->m_flLightScale = 0.0;
 	}

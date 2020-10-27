@@ -355,7 +355,7 @@ void C_PointSpotlight::ClientThink(void)
 			ClientFlashlightState_t state;
 			state.m_vecLightOrigin = vPos;
 			BasisToQuaternion(vForward, vRight, vUp, state.m_quatOrientation);
-			state.m_fVerticalFOVDegrees = state.m_fHorizontalFOVDegrees = (1.f - Clamp(flDot, 0.f, 1.f)) * 180.f * cl_spotlight_light_fov_scale.GetFloat();
+			state.m_fVerticalFOVDegrees = state.m_fHorizontalFOVDegrees = Clamp((1.f - Clamp(flDot, 0.f, 1.f)) * 180.f * cl_spotlight_light_fov_scale.GetFloat(), 0.f, 179.f);
 
 			Vector srcColor;
 			const color32& color = GetRenderColor();

@@ -188,7 +188,7 @@ CResponseSystem::CResponseSystem() :
 	token[0] = 0;
 	m_bUnget = false;
 	m_bCustomManagable = false;
-	m_hScriptInstance = INVALID_HSCRIPT;
+	m_hScriptInstance = NULL;
 
 	BuildDispatchTables();
 }
@@ -1453,8 +1453,8 @@ bool ResponseRules::CResponseSystem::InitScript()
 		char* iszScriptId = (char*)stackalloc(1024);
 		V_snprintf(iszScriptId, 1024, "CResponseSystem:%s", GetScriptFile());
 
-		m_hScriptInstance = IEngineEmulator::Get()->GetScriptVM()->RegisterInstance(GetScriptDescForClass(CResponseSystem), this);
-		IEngineEmulator::Get()->GetScriptVM()->SetInstanceUniqeId(m_hScriptInstance, iszScriptId);
+		//m_hScriptInstance = IEngineEmulator::Get()->GetScriptVM()->RegisterInstance(GetScriptDescForClass(CResponseSystem), this);
+		//IEngineEmulator::Get()->GetScriptVM()->SetInstanceUniqeId(m_hScriptInstance, iszScriptId);
 
 		bool bResult = m_ScriptScope.Init(iszScriptId);
 
@@ -1464,7 +1464,7 @@ bool ResponseRules::CResponseSystem::InitScript()
 			return false;
 		}
 
-		IEngineEmulator::Get()->GetScriptVM()->SetValue(m_ScriptScope, "self", m_hScriptInstance);
+		//IEngineEmulator::Get()->GetScriptVM()->SetValue(m_ScriptScope, "self", m_hScriptInstance);
 
 		for (int i = 0; i < m_IncludedVScripts.GetNumStrings(); i++)
 		{

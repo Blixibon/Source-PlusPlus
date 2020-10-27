@@ -318,7 +318,7 @@ response "CitizenQuestionAlyx"
 
 rule CitizenQuestionAlyx
 {
-	criteria		IsCitizen ConceptTalkQuestion PlayerAlive IsSpeechTargetAlyx NotInPanic AlyxCitizenHelloOkay
+	criteria		IsCitizen ConceptTalkQuestion PlayerAlive IsSpeechTargetAlyx NotInPanic AlyxCitizenHelloOkay IsEpisodic
 	response 		CitizenQuestionAlyx
 }
 
@@ -352,7 +352,7 @@ response "CitizenAnswerAlyx"
 
 rule CitizenAnswerAlyx
 {
-	criteria		IsCitizen ConceptTalkAnswer PlayerAlive IsSpeechTargetAlyx NotInPanic
+	criteria		IsCitizen ConceptTalkAnswer PlayerAlive IsSpeechTargetAlyx NotInPanic IsEpisodic
 	response		CitizenAnswerAlyx
 }
 
@@ -504,7 +504,7 @@ response "CitizenQuestionHelloAlyx"
 
 rule CitizenQuestionHelloAlyx
 {
-	criteria		IsCitizen ConceptTalkQuestionHello PlayerAlive IsSpeechTargetAlyx NotInPanic
+	criteria		IsCitizen ConceptTalkQuestionHello PlayerAlive IsSpeechTargetAlyx NotInPanic IsEpisodic
 	response 		CitizenQuestionHelloAlyx
 }
 

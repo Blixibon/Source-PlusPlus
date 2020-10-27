@@ -1,0 +1,16 @@
+"MapEditTemplates"
+{
+    "BMS_Intro_Train_Spotlight"
+    {
+        "classname" "env_projectedtexture"
+		"lightfov"	"75"
+		"parentname" "train_model"
+		"LightColor" "254 255 204 255"
+		"enableshadows"	"1"
+		"nearz"		"1"
+        "farz"      "700"
+		"spawnflags"	"1"
+		"targetname"	"train_projlights"
+		"colortransitiontime" "1"
+    }
+}

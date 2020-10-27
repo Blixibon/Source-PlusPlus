@@ -5,6 +5,7 @@
 #include "KeyValues.h"
 #include "utlvector.h"
 #include "bspfile.h"
+#include "shared.h"
 
 #include "memdbgon.h"
 
@@ -513,6 +514,15 @@ void PruneActiveVariants(const char* pMapName, CUtlVector<const char*>& vecVaria
 	}
 }
 
+#define ENTITY_TEMPLATE_SCRIPT "scripts/mapedit_templates.vdf"
+KeyValues* LoadEntityTemplates()
+{
+	KeyValues* pkvTemplates = new KeyValues("MapEditTemplates");
+	pkvTemplates->LoadFromFile(g_pFullFileSystem, ENTITY_TEMPLATE_SCRIPT);
+
+	return pkvTemplates;
+}
+
 const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEntities, CUtlVector<const char*>& vecVariants)
 {
 	char szMapName[MAX_PATH];
@@ -567,7 +577,7 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 
 		CUtlString cachePath = BuildCompiledFilename(pMapName, vecVariants, "ent");
 		CUtlString crcPath = BuildCompiledFilename(pMapName, vecVariants, "crc");
-		if (g_pFullFileSystem->FileExists(cachePath, "GAME") && g_pFullFileSystem->FileExists(crcPath, "GAME"))
+		if (g_pFullFileSystem->FileExists(cachePath, "GAME") && g_pFullFileSystem->FileExists(crcPath, "GAME") && (g_pFullFileSystem->GetFileTime(cachePath, "GAME") > g_pFullFileSystem->GetFileTime(ENTITY_TEMPLATE_SCRIPT)))
 		{
 			FileHandle_t h = g_pFullFileSystem->Open(crcPath, "rb", "GAME");
 			CRC32_t testCRC;
@@ -579,8 +589,9 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 
 				return m_bufEntities.String();
 			}
-			
 		}
+
+		KeyValues* pkvTemplates = LoadEntityTemplates();
 
 		CUtlBuffer bufIntermediate(0, 0, CUtlBuffer::TEXT_BUFFER);
 		bufIntermediate.PutString(pMapEntities);
@@ -641,6 +652,36 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 						creationBuf.PutChar('}');
 						creationBuf.PutChar('\n');
 					}
+					else if (StrEq(pchName, "createwithtemplate"))
+					{
+						KeyValues* pkvTemplateData = pkvTemplates->FindKey(pkvSub->GetString("template"));
+
+						if (pkvTemplateData)
+						{
+							KeyValuesAD kvMerged(pkvSub->FindKey("values", true)->MakeCopy());
+							kvMerged->RecursiveMergeKeyValues(pkvTemplateData);
+
+							creationBuf.PutChar('{');
+							creationBuf.PutChar('\n');
+							for (KeyValues* pkvValue = kvMerged->GetFirstValue(); pkvValue != NULL; pkvValue = pkvValue->GetNextValue())
+							{
+								creationBuf.PutChar('"');
+								creationBuf.PutString(pkvValue->GetName());
+								creationBuf.PutChar('"');
+								creationBuf.PutChar(' ');
+								creationBuf.PutChar('"');
+								creationBuf.PutString(pkvValue->GetString());
+								creationBuf.PutChar('"');
+								creationBuf.PutChar('\n');
+							}
+							creationBuf.PutChar('}');
+							creationBuf.PutChar('\n');
+						}
+						else
+						{
+							Warning("MAPEDIT[createwithtemplate] - Unknown entity template %s!\n", pkvSub->GetString("template"));
+						}
+					}
 					else if (StrEq(pchName, "clearandreplace"))
 					{
 						if (i == 0)
@@ -679,6 +720,7 @@ const char* CMapEditHelper::DoMapEdit(const char* pMapName, const char* pMapEnti
 		}
 
 		m_bufEntities.CopyBuffer(bufIntermediate);
+		pkvTemplates->deleteThis();
 
 		g_pFullFileSystem->CreateDirHierarchy("edt_cache", "DEFAULT_WRITE_PATH");
 		FileHandle_t h = g_pFullFileSystem->Open(crcPath, "wb", "DEFAULT_WRITE_PATH");

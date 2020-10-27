@@ -63,6 +63,7 @@ class CSceneEntity;
 class CBaseGrenade;
 class CBaseDoor;
 class CBasePropDoor;
+class CBaseProp;
 struct AI_Waypoint_t;
 class CBaseFilter;
 
@@ -598,6 +599,8 @@ public:
 	virtual CAttributeContainer* GetAttributeContainer() { return NULL; }
 	virtual CBaseEntity* GetAttributeOwner() { return NULL; }
 	virtual void ReapplyProvision(void) { /*Do nothing*/ };
+
+	CBaseProp* AddDecorationModel(string_t iszModelName);
 
 public:
 	//-----------------------------------------------------
@@ -1219,6 +1222,8 @@ public:
 
 	HSCRIPT				VScriptGetCine();
 	int					GetScriptState() { return m_scriptState; }
+
+	HSCRIPT				VScriptAddDecorationModel(const char* pszModelName);
 
 	//-----------------------------------------------------
 	// Dynamic scripted NPC interactions

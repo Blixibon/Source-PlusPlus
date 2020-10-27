@@ -358,7 +358,7 @@ void CTFMainMenu::OnTick()
 		{
 			m_iStartMenuMusic--;
 		}
-		else if (!bInGameLayout)
+		else if (!bInGameLayout && !engine->IsLevelMainMenuBackground())
 		{
 			if ((m_psMusicStatus == MUSIC_FIND || m_psMusicStatus == MUSIC_STOP_FIND) && !enginesound->IsSoundStillPlaying(m_nSongGuid))
 			{
@@ -417,8 +417,8 @@ void CTFMainMenu::GameLayout()
 
 void CTFMainMenu::PaintBackground()
 {
-	SetPaintBackgroundType(0);
-	BaseClass::PaintBackground();
+	//SetPaintBackgroundType(0);
+	//BaseClass::PaintBackground();
 }
 
 bool CTFMainMenu::InGame()

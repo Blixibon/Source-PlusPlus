@@ -22,8 +22,8 @@
 
 float C_EnvProjectedTexture::m_flVisibleBBoxMinHeight = -FLT_MAX;
 
-static ConVar mat_slopescaledepthbias_shadowmap( "mat_slopescaledepthbias_shadowmap", "4", FCVAR_CHEAT );
-static ConVar mat_depthbias_shadowmap( "mat_depthbias_shadowmap", "0.00001", FCVAR_CHEAT );
+ConVar mat_slopescaledepthbias_shadowmap( "mat_slopescaledepthbias_shadowmap", "4", FCVAR_CHEAT );
+ConVar mat_depthbias_shadowmap( "mat_depthbias_shadowmap", "0.00001", FCVAR_CHEAT );
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvProjectedTexture, DT_EnvProjectedTexture, CEnvProjectedTexture )
 	RecvPropEHandle( RECVINFO( m_hTargetEntity ) ),
@@ -235,6 +235,8 @@ void C_EnvProjectedTexture::UpdateLight( bool bForceUpdate )
 
 		m_FlashlightState.m_bVolumetric = m_bEnableVolumetrics;
 		m_FlashlightState.m_flVolumetricIntensity = m_flVolumetricsMultiplier;
+		m_FlashlightState.m_nNumPlanes = m_iVolumetricsQuality;
+		m_FlashlightState.m_flFlashlightTime = gpGlobals->curtime;
 
 		if (m_LightHandle == CLIENTSHADOW_INVALID_HANDLE)
 		{

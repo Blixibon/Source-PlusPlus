@@ -11,6 +11,7 @@
 //#include "sqstdio.h"
 #include "sqstdmath.h"
 #include "sqstdstring.h"
+#include "sqstdtime.h"
 
 // HACK: Include internal parts of squirrel for serialization
 #include "squirrel/squirrel/sqobject.h"
@@ -22,6 +23,7 @@
 #include "squirrel/squirrel/sqclosure.h"
 #undef assert
 
+#include "Color.h"
 #include "tier1/utlbuffer.h"
 
 #include <cstdarg>
@@ -197,6 +199,8 @@ public:
 	virtual void ReleaseValue(ScriptVariant_t& value) override;
 
 	virtual bool ClearValue(HSCRIPT hScope, const char* pszKey) override;
+
+	virtual bool ArrayAppend(HSCRIPT hArray, const ScriptVariant_t& val) override;
 
 	//----------------------------------------------------------------------------
 
@@ -1204,13 +1208,16 @@ struct SquirrelSafeCheck
 	SQInteger outputCount_;
 };
 
-
+#define CON_COLOR_VSCRIPT 80,186,255,255
 void printfunc(HSQUIRRELVM SQ_UNUSED_ARG(v), const SQChar* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	MsgV(format, args);
+	char buffer[2048];
+	V_vsprintf_safe(buffer, format, args);
 	va_end(args);
+
+	ConColorMsg(Color(CON_COLOR_VSCRIPT), "%s", buffer);
 }
 
 void errorfunc(HSQUIRRELVM SQ_UNUSED_ARG(v), const SQChar* format, ...)
@@ -1382,6 +1389,7 @@ bool SquirrelVM::Init()
 
 		sqstd_register_mathlib(vm_);
 		sqstd_register_stringlib(vm_);
+		sqstd_register_timelib(vm_);
 		vectorClass_ = SQVector::register_class(vm_);
 
 		// We exclude these libraries as they create a security risk on the client even
@@ -1435,15 +1443,15 @@ bool SquirrelVM::Init()
 		Msg <- print;
 		Warning <- error;
 		// LocalTime from Source 2
-		// function LocalTime()
-		// {
-		// 	local date = ::date();
-		// 	return {
-		// 		Hours = date.hour,
-		// 		Minutes = date.min,
-		// 		Seconds = date.sec
-		// 	}
-		// }
+		function LocalTime()
+		{
+			local date = ::date();
+			return {
+				Hours = date.hour,
+				Minutes = date.min,
+				Seconds = date.sec
+			}
+		}
 		function clamp(val,min,max)
 		{
 			if ( max < min )
@@ -1474,8 +1482,28 @@ bool SquirrelVM::Init()
 			if ( A == B )
 				return val >= B ? D : C;
 			local cVal = (val - A) / (B - A);
-			cVal = ::clamp( cVal, 0.0, 1.0 );
+			cVal = (cVal < 0.0) ? 0.0 : (1.0 < cVal) ? 1.0 : cVal;
 			return C + (D - C) * cVal;
+		}
+		function Approach( target, value, speed )
+		{
+			local delta = target - value
+			if( delta > speed )
+				value += speed
+			else if( delta < (-speed) )
+				value -= speed
+			else
+				value = target
+			return value
+		}
+		function AngleDistance( next, cur )
+		{
+			local delta = next - cur
+			if ( delta < (-180.0) )
+				delta += 360.0
+			else if ( delta > 180.0 )
+				delta -= 360.0
+			return delta
 		}
 
 		function printl( text )
@@ -2533,6 +2561,20 @@ bool SquirrelVM::ClearValue(HSCRIPT hScope, const char* pszKey)
 
 	sq_pop(vm_, 1);
 	return true;
+}
+
+bool SquirrelVM::ArrayAppend(HSCRIPT hArray, const ScriptVariant_t& val)
+{
+	SquirrelSafeCheck safeCheck(vm_);
+
+	HSQOBJECT* arr = (HSQOBJECT*)hArray;
+
+	sq_pushobject(vm_, *arr);
+	PushVariant(vm_, val);
+	bool ret = sq_arrayappend(vm_, -2) == SQ_OK;
+	sq_pop(vm_, 1);
+
+	return ret;
 }
 
 enum ClassType

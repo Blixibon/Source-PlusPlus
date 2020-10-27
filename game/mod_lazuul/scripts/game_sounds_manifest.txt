@@ -64,8 +64,37 @@ game_sounds_manifest
 	"precache_file"		"scripts/level_sounds_t0a3.txt"
 	"precache_file"		"scripts/level_sounds_t0a3.txt"
 	"precache_file"		"scripts/level_sounds_hazardcourse.txt"
-
-// BM:S npcs
+	
+	// BMS
+	"precache_file"		"scripts/game_sounds_announcement.txt"
+	"precache_file"		"scripts/game_sounds_bm_ambience.txt"
+	"precache_file"		"scripts/game_sounds_bm_objects.txt"
+	"precache_file"		"scripts/game_sounds_bm_scripted.txt"
+	
+	"precache_file"		"scripts/game_sounds_scenes.txt"
+	"precache_file"		"scripts/game_sounds_scenes_IB.txt"
+	"precache_file"		"scripts/game_sounds_scenes_AM.txt"
+	"precache_file"		"scripts/game_sounds_scenes_UC.txt"
+	"precache_file"		"scripts/game_sounds_scenes_OC.txt"
+	"precache_file"		"scripts/game_sounds_scenes_WGH.txt"
+	"precache_file"		"scripts/game_sounds_scenes_BP.txt"
+	"precache_file"		"scripts/game_sounds_scenes_PU.txt"
+	"precache_file"		"scripts/game_sounds_scenes_OAR.txt"
+	"precache_file"		"scripts/game_sounds_scenes_APP.txt"
+	"precache_file"		"scripts/game_sounds_scenes_QE.txt"
+	"precache_file"		"scripts/game_sounds_scenes_ST.txt"
+	"precache_file"		"scripts/game_sounds_scenes_FAF.txt"
+	"precache_file"		"scripts/game_sounds_scenes_LC.txt"
+	
+	"precache_file"		"scripts/game_sounds_scenes_gonarch.txt"
+	"precache_file"		"scripts/game_sounds_scenes_interloper.txt"
+	"precache_file"		"scripts/game_sounds_scenes_ENDGAME.txt"
+	"precache_file"		"scripts/game_sounds_vox_extra.txt"
+	
+	"precache_file"		"scripts/game_sounds_oartram.txt"
+	"precache_file"		"scripts/game_sounds_xen.txt"
+	
+	// BM:S npcs
 	"precache_file"		"scripts/npc_sounds_abrams.txt"
 	"precache_file"		"scripts/npc_sounds_alien_controller.txt"
 	"precache_file"		"scripts/npc_sounds_alien_controller_extra.txt"
@@ -103,28 +132,12 @@ game_sounds_manifest
 
 //  NPC Sounds for Black Mesa - Xen Chapters
 
+	"precache_file"		"scripts/npc_sounds_beneathacle.txt"
 	"precache_file"		"scripts/game_sounds_xen2.txt"
 	"precache_file"		"scripts/game_sounds_xen_music.txt"
+	"precache_file"		"scripts/game_sounds_interloper.txt"
 	"precache_file"		"scripts/npc_sounds_xen_boid.txt"
 	"precache_file"		"scripts/npc_sounds_zombiehev.txt"
-	
-	"precache_file"		"scripts/game_sounds_scenes.txt"
-	"precache_file"		"scripts/game_sounds_scenes_IB.txt"
-	"precache_file"		"scripts/game_sounds_scenes_AM.txt"
-	"precache_file"		"scripts/game_sounds_scenes_UC.txt"
-	"precache_file"		"scripts/game_sounds_scenes_OC.txt"
-	"precache_file"		"scripts/game_sounds_scenes_WGH.txt"
-	"precache_file"		"scripts/game_sounds_scenes_BP.txt"
-	"precache_file"		"scripts/game_sounds_scenes_PU.txt"
-	"precache_file"		"scripts/game_sounds_scenes_OAR.txt"
-	"precache_file"		"scripts/game_sounds_scenes_APP.txt"
-	"precache_file"		"scripts/game_sounds_scenes_QE.txt"
-	"precache_file"		"scripts/game_sounds_scenes_ST.txt"
-	"precache_file"		"scripts/game_sounds_scenes_FAF.txt"
-	"precache_file"		"scripts/game_sounds_scenes_LC.txt"
-
-	"precache_file"		"scripts/game_sounds_scenes_ENDGAME.txt"
-	"precache_file"		"scripts/game_sounds_vox_extra.txt"
 
 	// HL2 World, Ambient Generic, Items, Physics, Vehicles
 	"precache_file"		"scripts/game_sounds_world.txt"

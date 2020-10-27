@@ -172,7 +172,7 @@ void CEnvVolume::Activate()
 {
 	BaseClass::Activate();
 
-	if (m_fogName == NULL_STRING || FStrEq(STRING(m_fogName), ""))
+	if (FClassnameIs(this, "trigger_fog") && (m_fogName == NULL_STRING || FStrEq(STRING(m_fogName), "")))
 	{
 		m_hFogController = static_cast<CFogController*>(CreateNoSpawn("env_fog_controller", GetAbsOrigin(), vec3_angle));
 		m_hFogController->m_fog.colorPrimary = m_fog.colorPrimary;

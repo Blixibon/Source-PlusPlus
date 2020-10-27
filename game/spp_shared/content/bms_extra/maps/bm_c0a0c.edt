@@ -1,0 +1,101 @@
+"bm_c0a0c"
+{
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "-4764 -886 -155"
+			"angles" "0 0 0"
+		}
+	}
+	
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "-4764 -778 -155"
+			"angles" "0 0 0"
+		}
+	}
+	
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "-5028 -778 -155"
+			"angles" "0 180 -180"
+		}
+	}
+	
+	"createwithtemplate"
+	{
+		"template"	"BMS_Intro_Train_Spotlight"
+		
+		"values"
+		{
+			"origin" "-5028 -886 -155"
+			"angles" "0 180 -180"
+		}
+	}
+	
+	"delete"
+	{
+		"hammerid" "138075"
+	}
+	
+	"create"
+	{
+		"model" "*85"
+		"wait" "-1"
+		"unlocked_sentence" "0"
+		"targetname" "door_forklift_enter"
+		"speed" "15"
+		"spawnpos" "0"
+		"spawnflags" "1024"
+		"rendermode" "0"
+		"renderfx" "0"
+		"rendercolor" "255 255 255"
+		"renderamt" "255"
+		"origin" "4694 -1152 -416"
+		"noise2" "bms_objects/doors/door_wgh_big_stop.wav"
+		"noise1" "bms_objects/doors/door_wgh_big_start.wav"
+		"movedir" "-90 0 0"
+		"loopmovesound" "0"
+		"locked_sentence" "0"
+		"lip" "2"
+		"ignoredebris" "0"
+		"health" "0"
+		"forceclosed" "0"
+		"dmg" "0"
+		"disableshadows" "1"
+		"disablereceiveshadows" "1"
+		"classname" "func_door"
+		"hammerid" "138075"
+		"OnFullyOpen" "bridge_Walker_S,BeginSequence,,0,-1"
+		"OnFullyOpen" "door_forklift_exit,Open,,0,-1"
+		"OnFullyClosed" "projected,TurnOff,,0,-1"
+		"OnOpen" "projected,TurnOn,,0,-1"
+	}
+	
+	"edit"
+	{
+		"targetname" "projected"
+		"values"
+		{
+			"spawnflags"	"6"
+			"volumetricsmultiplier"	"6"
+			"volumetricsquality"	"100"
+			"farz" "1200"
+			"lightfov"	"90"
+			"lightcolor" "254 223 165 255"
+			"colortransitiontime"	"1"
+			"texturename"	"white"
+		}
+	}
+}

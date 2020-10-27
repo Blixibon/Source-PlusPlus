@@ -121,7 +121,7 @@ class CUtlBuffer;
 //
 //-----------------------------------------------------------------------------
 
-#define VSCRIPT_INTERFACE_VERSION		"VScriptManager009"
+#define VSCRIPT_INTERFACE_VERSION		"VScriptManager010"
 
 //-----------------------------------------------------------------------------
 //
@@ -857,6 +857,8 @@ public:
 
 	virtual bool ClearValue( HSCRIPT hScope, const char *pszKey ) = 0;
 	bool ClearValue( const char *pszKey)																							{ return ClearValue( NULL, pszKey ); }
+
+	virtual bool ArrayAppend(HSCRIPT hArray, const ScriptVariant_t& val) = 0;
 
 	//----------------------------------------------------------------------------
 
