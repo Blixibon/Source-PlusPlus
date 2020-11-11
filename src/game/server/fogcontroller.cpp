@@ -17,6 +17,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#define FOG_FILE "scripts/fog_parameters.txt"
+
 CFogSystem s_FogSystem( "FogSystem" );
 
 //-----------------------------------------------------------------------------
@@ -114,6 +116,15 @@ CFogController::~CFogController()
 void CFogController::Spawn( void )
 {
 	BaseClass::Spawn();
+
+	if (m_iszFogSet != NULL_STRING)
+	{
+		fogparams_t *pFog = FogSystem()->GetScriptFog(STRING(m_iszFogSet));
+		if (pFog)
+		{
+			m_fog.CopyFrom(*pFog);
+		}
+	}
 
 	m_fog.colorPrimaryLerpTo = m_fog.colorPrimary;
 	m_fog.colorSecondaryLerpTo = m_fog.colorSecondary;
@@ -353,6 +364,61 @@ void CFogController::SetLerpValues( void )
 	m_fog.lerptime = gpGlobals->curtime;
 }
 
+bool CFogSystem::Init()
+{
+	KeyValues* pKV = new KeyValues("FogFile");
+	if (pKV->LoadFromFile(filesystem, FOG_FILE, "GAME"))
+	{
+		for (KeyValues* pkvFog = pKV->GetFirstTrueSubKey(); pkvFog != nullptr; pkvFog = pkvFog->GetNextTrueSubKey())
+		{
+			fogparams_t params;
+
+			int r, g, b, a;
+			Color Savecolor = pkvFog->GetColor("primarycolor");
+
+			Savecolor.GetColor(r, g, b, a);
+			params.colorPrimary.GetForModify().r = (float)r;
+			params.colorPrimary.GetForModify().g = (float)g;
+			params.colorPrimary.GetForModify().b = (float)b;
+			params.colorPrimaryLerpTo.GetForModify() = params.colorPrimary.Get();
+
+			Savecolor = pkvFog->GetColor("secondarycolor");
+
+			Savecolor.GetColor(r, g, b, a);
+			params.colorSecondary.GetForModify().r = (float)r;
+			params.colorSecondary.GetForModify().g = (float)g;
+			params.colorSecondary.GetForModify().b = (float)b;
+			params.colorSecondaryLerpTo.GetForModify() = params.colorSecondary.Get();
+
+			params.start.GetForModify() = pkvFog->GetFloat("start");
+			params.startLerpTo.GetForModify() = params.start.Get();
+
+			params.end.GetForModify() = pkvFog->GetFloat("end");
+			params.endLerpTo.GetForModify() = params.end.Get();
+
+			params.maxdensity.GetForModify() = pkvFog->GetFloat("density");
+			params.maxdensityLerpTo = params.maxdensity.Get();
+
+			params.farz.GetForModify() = pkvFog->GetFloat("farz");
+
+			params.duration.GetForModify() = pkvFog->GetFloat("lerpspeed");
+
+			m_ScriptedFog.Insert(pkvFog->GetName(), params);
+		}
+	}
+	pKV->deleteThis();
+
+	return true;
+}
+
+fogparams_t* CFogSystem::GetScriptFog(const char* pszFogname)
+{
+	int nIndex = m_ScriptedFog.Find(pszFogname);
+	if (!m_ScriptedFog.IsValidIndex(nIndex))
+		return nullptr;
+
+	return &m_ScriptedFog.Element(nIndex);
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Clear out the fog controller.

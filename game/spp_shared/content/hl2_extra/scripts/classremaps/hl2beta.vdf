@@ -3,5 +3,9 @@
     "npc_stalker"       "npc_stalker_beta"
 
     "weapon_oicw"       "weapon_smg1"
+    "weapon_smg2"       "weapon_mp5k"
+    "weapon_hmg1"       "weapon_mg1"
+    "weapon_ar1"        "weapon_ar2"
+
     "weapon_iceaxe"     "weapon_crowbar"
 }

@@ -198,7 +198,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_alone.wav"
 }
@@ -206,7 +206,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_comes.wav"
 }
@@ -214,7 +214,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_deceive.wav"
 }
@@ -222,7 +222,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_die.wav"
 }
@@ -230,7 +230,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_done.wav"
 }
@@ -238,7 +238,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_freeman.wav"
 }
@@ -246,7 +246,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_now_die.wav"
 }
@@ -254,7 +254,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_thelast.wav"
 }
@@ -262,7 +262,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_thetruth.wav"
 }
@@ -270,7 +270,7 @@
 {
 	"channel"	"CHAN_STATIC"
 	"volume"	"VOL_NORM"
-	"soundlevel"	"SNDLVL_NORM"
+	"soundlevel"	"SNDLVL_NONE"
 	"pitch"		"PITCH_NORM"
 	"wave"		"nihilanth/nil_win.wav"
 }

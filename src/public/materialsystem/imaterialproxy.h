@@ -30,6 +30,9 @@ protected:
 };
 
 #define PRXY_STRING(p) #p
-#define EXPOSE_MATERIAL_PROXY(DLLClassName, proxy) EXPOSE_INTERFACE( DLLClassName, IMaterialProxy, PRXY_STRING(proxy) IMATERIAL_PROXY_INTERFACE_VERSION );
+//#define EXPOSE_MATERIAL_PROXY(DLLClassName, proxy) EXPOSE_INTERFACE( DLLClassName, IMaterialProxy, PRXY_STRING(proxy) IMATERIAL_PROXY_INTERFACE_VERSION );
+#define EXPOSE_MATERIAL_PROXY(DLLClassName, proxy) \
+	static void* __Create##DLLClassName##proxy##_interface() {return static_cast<IMaterialProxy *>( new DLLClassName );} \
+	static InterfaceReg __g_Create##DLLClassName##proxy##_reg(__Create##DLLClassName##proxy##_interface, PRXY_STRING(proxy) IMATERIAL_PROXY_INTERFACE_VERSION );
 
 #endif // IMATERIALPROXY_H

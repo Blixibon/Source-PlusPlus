@@ -5,6 +5,7 @@
 #include "igamesystem.h"
 #include "UtlStringMap.h"
 #include "utldict.h"
+#include "particle_parse.h"
 
 typedef struct scriptShell_s
 {
@@ -22,6 +23,10 @@ typedef struct scriptShell_s
 		flGravityScale;
 		V_memset(cModelName, 0, MAX_PATH);
 		iModelIndex = -1;
+
+		V_memset(cParticleName, 0, 32);
+		V_memset(cParticleAttachName, 0, 32);
+		nParticleAttachType = -1;
 	}
 	// Generic variables.
 	int iCount;
@@ -35,6 +40,11 @@ typedef struct scriptShell_s
 	int iSkin;
 	float flGravityScale;
 	char cModelName[MAX_PATH];
+
+	// Particles
+	char cParticleName[MAX_WEAPON_STRING];
+	char cParticleAttachName[MAX_WEAPON_STRING];
+	int nParticleAttachType;
 
 	int iModelIndex;
 } scriptShell_t;

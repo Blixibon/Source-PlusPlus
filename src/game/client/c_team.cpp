@@ -49,7 +49,7 @@ void RecvProxyArrayLength_TeamNPCs(void *pStruct, int NPCID, int currentArrayLen
 
 	if (pPlayer->m_aNPCs.Count() != currentArrayLength)
 	{
-		pPlayer->m_aNPCs.SetSize(currentArrayLength);
+		pPlayer->m_aNPCs.SetCountNonDestructively(currentArrayLength);
 	}
 }
 

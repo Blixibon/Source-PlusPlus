@@ -21,6 +21,8 @@
 #include "materialsystem/imaterialsystem.h"
 #include "../materialsystem/stdshaders/IShaderExtension.h"
 
+class CNewViewSetup;
+
 //-----------------------------------------------------------------------------
 // Client-side flashlight state
 //-----------------------------------------------------------------------------
@@ -35,13 +37,16 @@ struct ClientFlashlightState_t : public FlashlightState_t
 		m_flFlashlightTime = 0.0f;
 		m_flVolumetricIntensity = 1.0f;
 
-		m_bOrtho = false;
-		m_fOrthoLeft = -1.0f;
-		m_fOrthoRight = 1.0f;
-		m_fOrthoTop = -1.0f;
-		m_fOrthoBottom = 1.0f;
+		m_ExtData.m_bOrtho = false;
+		m_ExtData.m_fOrthoLeft = -1.0f;
+		m_ExtData.m_fOrthoRight = 1.0f;
+		m_ExtData.m_fOrthoTop = -1.0f;
+		m_ExtData.m_fOrthoBottom = 1.0f;
 
 		m_bShadowHighRes = false;
+		m_bGlobalLight = false;
+
+		m_ExtData.m_fBrightnessScale = 1.0f;
 	}
 
 	void CopyFromOld(const FlashlightState_t& other)
@@ -49,23 +54,17 @@ struct ClientFlashlightState_t : public FlashlightState_t
 		*static_cast<FlashlightState_t*>(this) = other;
 	}
 
-	bool  m_bOrtho;
-	float m_fOrthoLeft;
-	float m_fOrthoRight;
-	float m_fOrthoTop;
-	float m_fOrthoBottom;
-
-	bool  m_bShadowHighRes;
-
-	// Uberlight parameters
-	UberlightState_t m_UberlightState;
-
 	bool m_bVolumetric;
 	float m_flNoiseStrength;
 	float m_flFlashlightTime;
 	int m_nNumPlanes;
 	float m_flPlaneOffset;
 	float m_flVolumetricIntensity;
+
+	bool m_bShadowHighRes;
+	bool m_bGlobalLight;
+
+	flashlightDataExt_t m_ExtData;
 
 	IMPLEMENT_OPERATOR_EQUAL(ClientFlashlightState_t);
 };
@@ -113,7 +112,7 @@ public:
 		IClientRenderable* pRenderable, ShadowReceiver_t type ) = 0;
 
 	// Re-renders all shadow textures for shadow casters that lie in the leaf list
-	virtual void ComputeShadowTextures( const CViewSetup &view, int leafCount, LeafIndex_t* pLeafList ) = 0;
+	virtual void ComputeShadowTextures( const CNewViewSetup&view, int leafCount, LeafIndex_t* pLeafList ) = 0;
 
 	// Frees shadow depth textures for use in subsequent view/frame
 	virtual void UnlockAllShadowDepthTextures() = 0;
@@ -144,7 +143,7 @@ public:
 
 	virtual void SetShadowsDisabled( bool bDisabled ) = 0;
 
-	virtual void ComputeShadowDepthTextures( const CViewSetup &pView ) = 0;
+	virtual void ComputeShadowDepthTextures( const CNewViewSetup &pView ) = 0;
 
 	virtual void GetFrustumExtents( ClientShadowHandle_t handle, Vector &vecMin, Vector &vecMax ) = 0;
 

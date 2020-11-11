@@ -334,6 +334,9 @@ public:
 	//This pass fills in the areas that passed the alpha test with depth in dest alpha 
 	//by writing only equal depth pixels and only if we should be writing depth to dest alpha
 	void DrawEqualDepthToDestAlpha( void );
+
+	bool SetupUberlightFromState(FlashlightState_t const& state);
+	bool SetupUberlightFromState(FlashlightState_t const& state, UberlightState_t const& uberlightState);
 	
 private:
 	// Helper methods for VertexLitGenericPass
@@ -375,6 +378,15 @@ FORCEINLINE void SetFlashLightColorFromState( FlashlightState_t const &state, IS
 		flFlashlightScale *= 2.5f; // Magic number that works well on the NVIDIA 8800
 	}
 
+	if (g_pShaderExtension)
+	{
+		const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+		if (pData)
+		{
+			flFlashlightScale *= pData->m_fBrightnessScale;
+		}
+	}
+
 	// Generate pixel shader constant
 	float const *pFlashlightColor = state.m_Color;
 	float vPsConst[4] = { flFlashlightScale * pFlashlightColor[0], flFlashlightScale * pFlashlightColor[1], flFlashlightScale * pFlashlightColor[2], pFlashlightColor[3] };
@@ -401,9 +413,9 @@ FORCEINLINE float ShadowFilterFromState( FlashlightState_t const &state )
 	return state.m_flShadowFilterSize / 1024.f;
 }
 
-typedef void( *UberlightUploadFunc )( int, const float*, int );
-bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const &state );
-bool SetupUberlightFromState(UberlightUploadFunc func, FlashlightState_t const& state, UberlightState_t const& uberlightState);
+//typedef void( *UberlightUploadFunc )( int, const float*, int );
+//bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const &state );
+//bool SetupUberlightFromState(UberlightUploadFunc func, FlashlightState_t const& state, UberlightState_t const& uberlightState);
 ITexture* GetDepthTextureFromState(FlashlightState_t const& state);
 bool GetFlashlightOrtho(FlashlightState_t const& state);
 bool GetFlashlightOrtho(FlashlightState_t const& state, float& fOrthoLeft, float& fOrthoRight, float& fOrthoTop, float& fOrthoBottom);

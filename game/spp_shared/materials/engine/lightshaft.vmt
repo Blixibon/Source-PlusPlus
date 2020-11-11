@@ -1,8 +1,8 @@
 "LightShafts"
 {
 	"$intensity" "1"
-	"$cookieTexture" "dummy"
-	"$shadowDepthTexture" "dummy"
+	"$cookieTexture" "engine/dummy"
+	"$shadowDepthTexture" "engine/dummy"
 	"$noisetexture"		"effects/noise_rg"
 
 	"$time" "0.0"

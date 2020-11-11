@@ -555,6 +555,7 @@
 	"scraperough"	"Rock.ImpactHard"
 	"scrapesmooth"	"Rock.ImpactSoft"
 
+	"gamematerial"	"3"
 }
 
 // tubs, urinals, sinks
@@ -591,7 +592,6 @@
 
 "concrete_block"
 {
-	
 	"base"		"concrete"
 	"impacthard"	"Concrete_Block.ImpactHard"
 }
@@ -713,6 +713,8 @@
 	"elasticity"	"0.1"
 
 	"audioroughnessfactor" "0.1"
+	
+	"gamematerial"	"Y"
 }
 
 
@@ -728,11 +730,17 @@
 	
 	"impacthard"	"Carpet.Impact"
 	"bulletimpact"	"Carpet.BulletImpact"
-	"scraperough"	"Carpet.Scrape"
-
+	"scraperough"	"Carpet.Scrape" 
+	"stepleft"		"Carpet.StepLeft"
+	"stepright"		"Carpet.StepRight"
+	"jump"			"Carpet.Jump"
+	"land"			"Carpet.Land"
+	
 	"audioreflectivity" "0.03"
 	"audiohardnessfactor" "0.25"
 	"audioroughnessfactor" "0.1"
+	
+	"gamematerial"	"7"
 }
 
 // drywall, office wall material, sheetrock
@@ -753,6 +761,8 @@
 
 //	"strain"		"Cardboard.Strain"
 	"break"			"Cardboard.Break"
+	
+	"gamematerial"	"2"
 
 }
 
@@ -891,7 +901,8 @@
 
 	"audioroughnessfactor" "0.1"
 	"audiohardnessfactor" "0.2"
-
+	
+	"gamematerial"	"4"
 }
 
 // hollow rubber tire
@@ -1087,6 +1098,8 @@
 "paper"
 {
 	"base"		"cardboard"
+	
+	"gamematerial"	"8"
 }
 
 
@@ -1170,4 +1183,10 @@
 	"gamematerial"	"O"
 }
 
+"steam_pipe"
+{
+	"base"		"metal"
+	
+	"gamematerial"	"11"
+}
  

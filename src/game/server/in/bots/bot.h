@@ -160,6 +160,8 @@ public:
         return GetComponent<IBotDecision *>( BOT_COMPONENT_DECISION );
     }
 
+    virtual void OnActorEmoted(CBaseCombatCharacter* emoter, int emote);			// when "emoter" does an "emote" (ie: manual voice command, etc)
+
 public:
     virtual void ApplyDebugCommands();
     virtual void Possess( CBasePlayer *pPlayer );

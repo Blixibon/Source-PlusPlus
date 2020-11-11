@@ -40,6 +40,9 @@
 #ifdef NEXT_BOT
 	#include "NextBotManager.h"
 #endif
+#ifdef INSOURCE_BOTS
+	#include "in/bots/interfaces/ibot.h"
+#endif // INSOURCE_BOTS
 
 #endif
 
@@ -1746,6 +1749,22 @@ ConVarRef suitcharger( "sk_suitcharger" );
 				for( int i=0; i<botVector.Count(); ++i )
 				{
 					botVector[i]->OnActorEmoted( pPlayer, pItem->m_iConcept );
+				}
+#endif
+
+#ifdef INSOURCE_BOTS
+				for (int it = 0; it <= gpGlobals->maxClients; ++it) {
+					CBasePlayer* pBotPlayer = UTIL_PlayerByIndex(it);
+
+					if (!pBotPlayer || !pBotPlayer->IsAlive())
+						continue;
+
+					if (!pBotPlayer->IsBot())
+						continue;
+
+					IBot* pBot = pBotPlayer->GetBotController();
+					if (pBot)
+						pBot->OnActorEmoted(pPlayer, pItem->m_iConcept);
 				}
 #endif
 			}

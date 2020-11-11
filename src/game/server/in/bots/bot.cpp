@@ -13,6 +13,7 @@
 #include "in_utils.h"
 #else
 #include "in\in_utils.h"
+#include "basemultiplayerplayer.h"
 #endif
 
 #include "bots\bot_defs.h"
@@ -367,6 +368,27 @@ void CBot::UpdateComponents(bool upkeep)
 			pComponent->SetUpdateCost((Plat_FloatTime() - startTime) * 1000.0f);
 		}
 	}
+}
+
+void CBot::OnActorEmoted(CBaseCombatCharacter* emoter, int emote)
+{
+#ifdef HL2_LAZUL
+	const float RangeSqr = (256 * 256);
+	CBaseMultiplayerPlayer* pThem = ToBaseMultiplayerPlayer(emoter);
+	CBaseMultiplayerPlayer* pUs = ToBaseMultiplayerPlayer(GetHost());
+	if (pThem && pUs && emote == MP_CONCEPT_PLAYER_FOLLOW && pThem->InSameTeam(pUs))
+	{
+		IBotFollow* pFollow = GetFollow();
+		if (pFollow)
+		{
+			if (!pFollow->IsFollowingHuman() && pThem->WorldSpaceCenter().DistToSqr(pUs->WorldSpaceCenter()) <= RangeSqr)
+			{
+				pFollow->Start(pThem);
+				pUs->SpeakConceptIfAllowed(MP_CONCEPT_PLAYER_LEAD);
+			}
+		}
+	}
+#endif
 }
 
 //================================================================================

@@ -1,0 +1,7 @@
+d1_trainstation_05
+{
+	"clearandreplace"
+	{
+		"lumpfile"	"maps/d1_trainstation_05_l_0.lmp"
+	}
+}

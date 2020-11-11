@@ -509,7 +509,7 @@ void CHLMSNewGame::OnCommand(const char *command)
 
 			char mapcommand[512];
 			mapcommand[0] = 0;
-			Q_snprintf(mapcommand, sizeof(mapcommand), "disconnect\ndeathmatch 0\ncoop 0\nmaxplayers 1\nprogress_enable\nexec \"%s/%s\"\n", pkvFolder->GetName(), pkvChapter->GetName());
+			Q_snprintf(mapcommand, sizeof(mapcommand), "disconnect\ndeathmatch 0\ncoop 0\nlaz_sandbox 0\nmaxplayers 1\nprogress_enable\nexec \"%s/%s\"\n", pkvFolder->GetName(), pkvChapter->GetName());
 
 			// Set commentary
 			ConVarRef commentary("commentary");
@@ -545,7 +545,7 @@ void CHLMSNewGame::OnCommand(const char *command)
 		{
 			char mapcommand[512];
 			mapcommand[0] = 0;
-			Q_snprintf(mapcommand, sizeof(mapcommand), "disconnect\ndeathmatch 0\ncoop 0\nmaxplayers 1\nprogress_enable\nmap \"%s\"\n", m_cTrainingLevel);
+			Q_snprintf(mapcommand, sizeof(mapcommand), "disconnect\ndeathmatch 0\ncoop 0\nlaz_sandbox 0\nmaxplayers 1\nprogress_enable\nmap \"%s\"\n", m_cTrainingLevel);
 
 			// Set commentary
 			ConVarRef commentary("commentary");

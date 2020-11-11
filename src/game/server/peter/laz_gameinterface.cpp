@@ -25,7 +25,7 @@ void CServerGameClients::GetPlayerLimits(int& minplayers, int& maxplayers, int& 
 		minplayers = defaultMaxPlayers = 1;
 	}
 
-	maxplayers = 16;
+	maxplayers = MAX_PLAYERS-1;
 }
 
 class CBlackMesaWeaponsFilter : public IMapEntityFilter

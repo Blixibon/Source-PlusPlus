@@ -412,3 +412,126 @@
 	}
 }
 
+"NPC_Tor.Step"
+{
+	"channel"	"CHAN_BODY"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_IDLE"
+	"pitch"		"95, 105"
+
+	"rndwave"
+	{
+		"wave"		"npc/tor/tor_foot1.wav"
+		"wave"		"npc/tor/tor_foot2.wav"
+		"wave"		"npc/tor/tor_foot3.wav"
+		"wave"		"npc/tor/tor_foot4.wav"
+	}
+}
+
+"NPC_Tor.TransformStart"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"100"
+
+	"wave"		"npc/tor/tor_dispell.wav"
+}
+
+"NPC_Tor.Melee"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_TALKING"
+	"pitch"		"95, 105"
+
+	"rndwave"
+	{
+		"wave"		"npc/tor/tor-attack1.wav"
+		"wave"		"npc/tor/tor-attack2.wav"
+	}
+}
+
+"NPC_Tor.Summon"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"95, 105"
+
+	"wave"		"npc/tor/tor-summon.wav"
+}
+
+"NPC_Tor.Summoned"
+{
+	"channel"	"CHAN_AUTO"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"95, 105"
+
+	"wave"		"npc/tor/tor-summoned.wav"
+}
+
+"NPC_Tor.Discharge"
+{
+	"channel"	"CHAN_WEAPON"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_NORM"
+	"pitch"		"95, 105"
+
+	"wave"		"npc/tor/tor-staff-discharge.wav"
+}
+
+"NPC_Tor.Alert"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_TALKING"
+	"pitch"		"95, 105"
+
+	"wave"		"npc/tor/tor-alerted.wav"
+}
+
+"NPC_Tor.Idle"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_TALKING"
+	"pitch"		"95, 105"
+
+	"rndwave"
+	{
+		"wave"	"npc/tor/tor-idle1.wav"
+		"wave"	"npc/tor/tor-idle2.wav"
+		"wave"	"npc/tor/tor-idle3.wav"
+	}
+}
+
+"NPC_Tor.Pain"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_TALKING"
+	"pitch"		"95, 105"
+
+	"rndwave"
+	{
+		"wave"	"npc/tor/tor-pain1.wav"
+		"wave"	"npc/tor/tor-pain2.wav"
+		"wave"	"npc/tor/tor-pain3.wav"
+	}
+}
+
+"NPC_Tor.Death"
+{
+	"channel"	"CHAN_VOICE"
+	"volume"	"VOL_NORM"
+	"soundlevel"	"SNDLVL_TALKING"
+	"pitch"		"95, 105"
+
+	"rndwave"
+	{
+		"wave"	"npc/tor/tor-die1.wav"
+		"wave"	"npc/tor/tor-die2.wav"
+	}
+}

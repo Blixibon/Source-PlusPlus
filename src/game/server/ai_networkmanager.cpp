@@ -1239,6 +1239,9 @@ void CAI_NetworkManager::DelayedInit( void )
 
 	}
 
+	AddFileToDownloadTable(CFmtStr("maps/graphs/%s.txt", STRING(gpGlobals->mapname)));
+	AddFileToDownloadTable(CFmtStr("maps/graphs/%s%s.ain", STRING(gpGlobals->mapname), GetPlatformExt()));
+
 	// --------------------------------------------
 	// Initialize any dynamic links
 	// --------------------------------------------

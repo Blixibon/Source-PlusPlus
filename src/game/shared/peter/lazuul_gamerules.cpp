@@ -193,6 +193,11 @@ ConVar sk_npc_dmg_12mm_bullet("sk_npc_dmg_12mm_bullet", "0", FCVAR_REPLICATED);
 
 ConVar	sk_max_slam("sk_max_slam", "15", FCVAR_REPLICATED);
 
+ConVar laz_sandbox("laz_sandbox", "0", FCVAR_REPLICATED|FCVAR_NOTIFY);
+
+ConVar sbox_godmode("sbox_godmode", "0", FCVAR_REPLICATED | FCVAR_NOTIFY);
+ConVar sbox_infiniteammo("sbox_infiniteammo", "0", FCVAR_REPLICATED | FCVAR_NOTIFY);
+
 #ifdef PORTAL
 #define PORTAL_WEIGHT_BOX_MODEL_NAME "models/props/metal_box.mdl"
 
@@ -505,6 +510,7 @@ int CLazuul::GetProtaganistTeam()
 	switch (GetGameMode())
 	{
 	case LAZ_GM_SINGLEPLAYER:
+	case LAZ_GM_CAMPAIGN:
 		if (m_iMapModType == MOD_HLSS || m_iMapModType == MOD_EZ1)
 			return TEAM_COMBINE;
 		break;
@@ -523,6 +529,7 @@ int CLazuul::GetAntagonistTeam()
 	switch (GetGameMode())
 	{
 	case LAZ_GM_SINGLEPLAYER:
+	case LAZ_GM_CAMPAIGN:
 		if (m_iMapModType == MOD_HLSS || m_iMapModType == MOD_EZ1)
 			return TEAM_REBELS;
 		else if (m_iMapGameType == MOD_BMS)
@@ -565,6 +572,7 @@ int CLazuul::GetNumTeams()
 	switch (GetGameMode())
 	{
 	case LAZ_GM_DEATHMATCH:
+	case LAZ_GM_SANDBOX:
 		return 4;
 		break;
 	case LAZ_GM_SINGLEPLAYER:
@@ -962,6 +970,11 @@ float CLazuul::FlPlayerFallDamage(CBasePlayer* pPlayer)
 	return flDamage * flScale;
 }
 
+bool CLazuul::FlPlayerFallDeathDoesScreenFade(CBasePlayer* pPlayer)
+{
+	return !IsMultiplayer() && !IsSandBox();
+}
+
 //-----------------------------------------------------------------------------
 // Returns whether or not Alyx cares about light levels in order to see.
 //-----------------------------------------------------------------------------
@@ -1039,12 +1052,30 @@ void CLazuul::Status(void(*print)(const char *fmt, ...))
 void CLazuul::GetTaggedConVarList(KeyValues * pCvarTagList)
 {
 	BaseClass::GetTaggedConVarList(pCvarTagList);
+
+	if (IsSandBox())
+	{
+		KeyValues* pSandbox = new KeyValues("laz_sandbox");
+		pSandbox->SetString("convar", "laz_sandbox");
+		pSandbox->SetString("tag", "sandbox");
+		pCvarTagList->AddSubKey(pSandbox);
+
+		KeyValues* pGodMode = new KeyValues("sbox_godmode");
+		pGodMode->SetString("convar", "sbox_godmode");
+		pGodMode->SetString("tag", "godmode");
+		pCvarTagList->AddSubKey(pGodMode);
+
+		KeyValues* pInfiniteAmmo = new KeyValues("sbox_infiniteammo");
+		pInfiniteAmmo->SetString("convar", "sbox_infiniteammo");
+		pInfiniteAmmo->SetString("tag", "infinite_ammo");
+		pCvarTagList->AddSubKey(pInfiniteAmmo);
+	}
 }
 
 bool CLazuul::Player_CanDoTeamChange(int iOldTeam, int iNewTeam)
 {
 	int iGameMode = GetGameMode();
-	if (iGameMode == LAZ_GM_DEATHMATCH)
+	if (iGameMode == LAZ_GM_DEATHMATCH || iGameMode == LAZ_GM_SANDBOX)
 	{
 		return true;
 	}
@@ -1284,7 +1315,12 @@ void CLazuul::RespawnTeam(int iTeam)
 //-----------------------------------------------------------------------------
 bool CLazuul::AllowDamage(CBaseEntity* pVictim, const CTakeDamageInfo& info)
 {
-#ifndef CLIENT_DLL
+	if (IsSandBox() && sbox_godmode.GetBool())
+	{
+		if (pVictim->IsPlayer() && !ToBasePlayer(pVictim)->IsFakeClient())
+			return false;
+	}
+
 	if ((info.GetDamageType() & DMG_CRUSH) && info.GetInflictor() && pVictim->MyNPCPointer())
 	{
 		for (int i = 1; i <= gpGlobals->maxClients; i++)
@@ -1297,7 +1333,7 @@ bool CLazuul::AllowDamage(CBaseEntity* pVictim, const CTakeDamageInfo& info)
 				{
 					// A physics object has struck a player ally. Don't allow damage if it
 					// came from the player's physcannon. 
-					CBaseCombatWeapon* pCannon = pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_PHYSGUN);
+					CBaseCombatWeapon* pCannon = pPlayer->Weapon_OwnsThisID(HLSS_WEAPON_ID_PHYSCANNON);
 
 					if (pCannon)
 					{
@@ -1314,7 +1350,7 @@ bool CLazuul::AllowDamage(CBaseEntity* pVictim, const CTakeDamageInfo& info)
 			}
 		}
 	}
-#endif
+
 	return true;
 }
 
@@ -1417,123 +1453,134 @@ void CLazuul::NPC_DroppedGrenade(void)
 //=========================================================
 void CLazuul::PlayerSpawn(CBasePlayer* pPlayer)
 {
-	if (!IsMultiplayer())
-		return;
-
 	if (!pPlayer || pPlayer->IsObserver())
 		return;
 
-	bool		addDefault;
-	CBaseEntity* pWeaponEntity = NULL;
-
-	pPlayer->EquipSuit(false);
-
-	addDefault = true;
-
-	while ((pWeaponEntity = gEntList.FindEntityByClassname(pWeaponEntity, "info_player_equip")) != NULL)
+	if (!IsSandBox())
 	{
-		CLazPlayerEquip* pEquip = assert_cast<CLazPlayerEquip*> (pWeaponEntity);
-		
-		if (!pEquip->IsDisabled() && pEquip->CanEquipTeam(pPlayer->GetTeamNumber()))
-		{
-			pEquip->EquipPlayer(pPlayer);
-			addDefault = false;
-		}
-	}
+		if (!IsMultiplayer())
+			return;
 
-	if (addDefault)
-	{
-		switch (pPlayer->GetTeamNumber())
-		{
-		case TEAM_ZOMBIES:
-		{
-			pPlayer->GiveAmmo(2, "Snark");
-			pPlayer->GiveNamedItem("weapon_snark");
-		}
-		break;
-		case TEAM_MILITARY:
-		{
-			pPlayer->GiveAmmo(255, "9mm");
-			pPlayer->GiveAmmo(6, "Buckshot");
-			pPlayer->GiveAmmo(1, "grenade");
-			pPlayer->GiveNamedItem("weapon_crowbar_bms");
-			pPlayer->GiveNamedItem("weapon_glock_bms");
-			pPlayer->GiveNamedItem("weapon_mp5_bms");
-			pPlayer->GiveNamedItem("weapon_frag_bms");
-		}
-		break;
-		case TEAM_COMBINE:
-		{
-			pPlayer->GiveAmmo(255, "Pistol");
-			pPlayer->GiveAmmo(45, "SMG1");
-			pPlayer->GiveAmmo(6, "Buckshot");
-			pPlayer->GiveAmmo(1, "grenade");
-			pPlayer->GiveNamedItem("weapon_stunstick");
-			pPlayer->GiveNamedItem("weapon_pistol");
-			pPlayer->GiveNamedItem("weapon_smg1");
-			pPlayer->GiveNamedItem("weapon_frag");
-		}
-		break;
-		case TEAM_REBELS:
-		default:
-		{
-			pPlayer->GiveAmmo(255, "Pistol");
-			pPlayer->GiveAmmo(45, "SMG1");
-			pPlayer->GiveAmmo(6, "357");
-			pPlayer->GiveAmmo(1, "grenade");
-			pPlayer->GiveNamedItem("weapon_crowbar");
-			pPlayer->GiveNamedItem("weapon_pistol");
-			pPlayer->GiveNamedItem("weapon_smg1");
-			pPlayer->GiveNamedItem("weapon_frag");
-		}
-		break;
-		}
-	}
+		bool		addDefault;
+		CBaseEntity* pWeaponEntity = NULL;
 
-	CLaz_Player* pLaz = assert_cast<CLaz_Player*> (pPlayer);
-	if (pLaz->HasMPModel())
-	{
-		const PlayerModels::playerModel_t* pModel = pLaz->GetMPModel();
-		KeyValues* pkvAbillites = pModel->kvAbilities;
-		if (pkvAbillites != nullptr)
+		pPlayer->EquipSuit(false);
+
+		addDefault = true;
+
+		while ((pWeaponEntity = gEntList.FindEntityByClassname(pWeaponEntity, "info_player_equip")) != NULL)
 		{
-			KeyValues* pItems = pkvAbillites->FindKey("spawnitems");
-			if (pItems)
+			CLazPlayerEquip* pEquip = assert_cast<CLazPlayerEquip*> (pWeaponEntity);
+
+			if (!pEquip->IsDisabled() && pEquip->CanEquipTeam(pPlayer->GetTeamNumber()))
 			{
-				for (KeyValues* kvValue = pItems->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+				pEquip->EquipPlayer(pPlayer);
+				addDefault = false;
+			}
+		}
+
+		if (addDefault)
+		{
+			switch (pPlayer->GetTeamNumber())
+			{
+			case TEAM_ZOMBIES:
+			{
+				pPlayer->GiveAmmo(2, "Snark");
+				pPlayer->GiveNamedItem("weapon_snark");
+			}
+			break;
+			case TEAM_MILITARY:
+			{
+				pPlayer->GiveAmmo(255, "9mm");
+				pPlayer->GiveAmmo(6, "Buckshot");
+				pPlayer->GiveAmmo(1, "grenade");
+				pPlayer->GiveNamedItem("weapon_knife");
+				pPlayer->GiveNamedItem("weapon_glock_bms");
+				pPlayer->GiveNamedItem("weapon_mp5_bms");
+				pPlayer->GiveNamedItem("weapon_frag_bms");
+			}
+			break;
+			case TEAM_COMBINE:
+			{
+				pPlayer->GiveAmmo(255, "Pistol");
+				pPlayer->GiveAmmo(45, "SMG1");
+				pPlayer->GiveAmmo(6, "Buckshot");
+				pPlayer->GiveAmmo(1, "grenade");
+				pPlayer->GiveNamedItem("weapon_stunstick");
+				pPlayer->GiveNamedItem("weapon_pistol");
+				pPlayer->GiveNamedItem("weapon_smg1");
+				pPlayer->GiveNamedItem("weapon_frag");
+			}
+			break;
+			case TEAM_REBELS:
+			default:
+			{
+				pPlayer->GiveAmmo(255, "Pistol");
+				pPlayer->GiveAmmo(45, "SMG1");
+				pPlayer->GiveAmmo(6, "357");
+				pPlayer->GiveAmmo(1, "grenade");
+				pPlayer->GiveNamedItem("weapon_crowbar");
+				pPlayer->GiveNamedItem("weapon_pistol");
+				pPlayer->GiveNamedItem("weapon_smg1");
+				pPlayer->GiveNamedItem("weapon_frag");
+			}
+			break;
+			}
+		}
+
+		CLaz_Player* pLaz = assert_cast<CLaz_Player*> (pPlayer);
+		if (pLaz->HasMPModel())
+		{
+			const PlayerModels::playerModel_t* pModel = pLaz->GetMPModel();
+			KeyValues* pkvAbillites = pModel->kvAbilities;
+			if (pkvAbillites != nullptr)
+			{
+				KeyValues* pItems = pkvAbillites->FindKey("spawnitems");
+				if (pItems)
 				{
-					const char* pchValue = kvValue->GetName();
+					for (KeyValues* kvValue = pItems->GetFirstValue(); kvValue != NULL; kvValue = kvValue->GetNextValue())
+					{
+						const char* pchValue = kvValue->GetName();
 
-					if (Q_stristr(pchValue, "weapon_") == pchValue)
-					{
-						pLaz->GiveNamedItem(pchValue);
-					}
-					else if (FStrEq(pchValue, "econ_item"))
-					{
-						pLaz->GiveItemById(kvValue->GetInt());
-					}
-					else if (!V_strncmp(pchValue, "ammo_", 5))
-					{
-						const char* pszAmmo = pchValue + 5;
+						if (Q_stristr(pchValue, "weapon_") == pchValue)
+						{
+							pLaz->GiveNamedItem(pchValue);
+						}
+						else if (FStrEq(pchValue, "econ_item"))
+						{
+							pLaz->GiveItemById(kvValue->GetInt());
+						}
+						else if (!V_strncmp(pchValue, "ammo_", 5))
+						{
+							const char* pszAmmo = pchValue + 5;
 
-						pPlayer->GiveAmmo(kvValue->GetInt(), pszAmmo, true);
+							pPlayer->GiveAmmo(kvValue->GetInt(), pszAmmo, true);
+						}
 					}
 				}
 			}
 		}
-	}
 
-	const char* szDefaultWeaponName = engine->GetClientConVarValue(engine->IndexOfEdict(pPlayer->edict()), "cl_defaultweapon");
+		const char* szDefaultWeaponName = engine->GetClientConVarValue(engine->IndexOfEdict(pPlayer->edict()), "cl_defaultweapon");
 
-	CBaseCombatWeapon* pDefaultWeapon = pPlayer->Weapon_OwnsThisType(szDefaultWeaponName);
+		CBaseCombatWeapon* pDefaultWeapon = pPlayer->Weapon_OwnsThisType(szDefaultWeaponName);
 
-	if (pDefaultWeapon)
-	{
-		pPlayer->Weapon_Switch(pDefaultWeapon);
+		if (pDefaultWeapon)
+		{
+			pPlayer->Weapon_Switch(pDefaultWeapon);
+		}
+		else
+		{
+			pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_smg1"));
+		}
 	}
 	else
 	{
-		pPlayer->Weapon_Switch(pPlayer->Weapon_OwnsThisType("weapon_smg1"));
+		pPlayer->EquipSuit(false);
+
+		pPlayer->GiveNamedItem("weapon_physcannon");
+		pPlayer->GiveNamedItem("weapon_crowbar");
+		pPlayer->GiveNamedItem("weapon_physgun_sbox");
 	}
 }
 
@@ -4279,16 +4326,19 @@ const char* CLazuul::GetGameDescription(void)
 	{
 	case LAZ_GM_SINGLEPLAYER:
 	default:
-		return "HL2 Lazuul";
+		return "Lazuul";
 		break;
 	case LAZ_GM_DEATHMATCH:
-		return "HL2 Lazuul: Team Deathmatch";
+		return "Lazuul: Team Deathmatch";
 		break;
 	case LAZ_GM_CAMPAIGN:
-		return "HL2 Lazuul: Co-op";
+		return "Lazuul: Co-op";
 		break;
 	case LAZ_GM_BASE_DEFENSE:
-		return "HL2 Lazuul: Base Defense";
+		return "Lazuul: Base Defense";
+		break;
+	case LAZ_GM_SANDBOX:
+		return "Lazuul: Sandbox";
 		break;
 	}
 }
@@ -4464,6 +4514,26 @@ void CLazuul::LevelInitPreEntity()
 	}
 
 	BaseClass::LevelInitPreEntity();
+
+	if (laz_sandbox.GetBool())
+	{
+		SetGameMode(LAZ_GM_SANDBOX);
+	}
+	else if (IsMultiplayer())
+	{
+		if (GameTypeSystem()->LookupMapData(STRING(gpGlobals->mapname)).IsValidMap(true))
+		{
+			SetGameMode(LAZ_GM_CAMPAIGN);
+		}
+		else
+		{
+			SetGameMode(LAZ_GM_DEATHMATCH);
+		}
+	}
+	else
+	{
+		SetGameMode(LAZ_GM_SINGLEPLAYER);
+	}
 }
 
 struct GameModeController_t
@@ -4485,16 +4555,19 @@ void CLazuul::LevelInitPostEntity()
 	m_iMapModType = GameTypeSystem()->GetCurrentModGameType();
 	m_iszGameConfig = AllocPooledString(GameTypeSystem()->GetCurrentConfigName());
 
-	for (int i = 0; i < ARRAYSIZE(g_GamemodeControllerDefs); i++)
+	if (GetGameMode() == LAZ_GM_DEATHMATCH)
 	{
-		CBaseEntity* pEntity = gEntList.FindEntityByClassname(NULL, g_GamemodeControllerDefs[i].pszEntity);
-		if (pEntity)
+		for (int i = 0; i < ARRAYSIZE(g_GamemodeControllerDefs); i++)
 		{
-			IGameModeControllerEntity* pController = dynamic_cast<IGameModeControllerEntity*> (pEntity);
-			if (pController && pController->ShouldActivateMode(g_GamemodeControllerDefs[i].iGameMode))
+			CBaseEntity* pEntity = gEntList.FindEntityByClassname(NULL, g_GamemodeControllerDefs[i].pszEntity);
+			if (pEntity)
 			{
-				SetGameMode(g_GamemodeControllerDefs[i].iGameMode);
-				break;
+				IGameModeControllerEntity* pController = dynamic_cast<IGameModeControllerEntity*> (pEntity);
+				if (pController && pController->ShouldActivateMode(g_GamemodeControllerDefs[i].iGameMode))
+				{
+					SetGameMode(g_GamemodeControllerDefs[i].iGameMode);
+					break;
+				}
 			}
 		}
 	}
@@ -5581,10 +5654,26 @@ bool CLazuul::ShouldRemoveRadio(void)
 // convert a velocity in ft/sec and a mass in grains to an impulse in kg in/s
 #define BULLET_IMPULSE(grains, ftpersec)	((ftpersec)*12*BULLET_MASS_GRAINS_TO_KG(grains)*BULLET_IMPULSE_EXAGGERATION)
 
+class CLazAmmoDef : public CAmmoDef
+{
+public:
+	virtual int					MaxCarry(int nAmmoIndex)
+	{
+		if (g_pGameRules && LazuulRules()->IsSandBox())
+		{
+			if (sbox_infiniteammo.GetBool())
+				return INFINITE_AMMO;
+
+			return 9999;
+		}
+
+		return CAmmoDef::MaxCarry(nAmmoIndex);
+	}
+};
 
 CAmmoDef* GetAmmoDef()
 {
-	static CAmmoDef def;
+	static CLazAmmoDef def;
 	static bool bInitted = false;
 
 	if (!bInitted)

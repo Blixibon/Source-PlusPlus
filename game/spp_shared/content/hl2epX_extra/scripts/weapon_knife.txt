@@ -1,0 +1,62 @@
+// Crowbar
+
+WeaponData
+{
+	// Weapon data is loaded by both the Game and Client DLLs.
+	"printname"				"#Cstrike_WPNHUD_Knife"
+	"viewmodel"				"models/weapons/v_csgo_cssource.mdl"
+	"playermodel"			"models/weapons/w_csgo_cssource.mdl"
+	"anim_prefix"			"knife"
+	"bucket"				"5"
+	"bucket_position"		"2"
+
+	"clip_size"				"-1"
+	"primary_ammo"			"None"
+	"secondary_ammo"		"None"
+
+	"weight"				"1"
+	"item_flags"			"0"
+	"meleeweapon"			"1"
+	
+	"ViewModelFOV"			"65"
+	"viewmodel_bobmode"		"2"
+	
+	"activities"
+	{
+		fidget		"ACT_VM_IDLE_LOWERED"
+	}
+
+	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
+	SoundData
+	{
+		"melee_miss"		"csgo_knife.Slash"
+		"melee_hit"			"csgo_knife.Hit"
+		"melee_hit_world"	"csgo_knife.HitWall"
+		"special1"			"csgo_knife.Stab"
+	}
+
+	// Weapon Sprite data is loaded by the Client DLL.
+	TextureData
+	{
+		"weapon"
+		{
+			"font"		"CSWeaponIcons"
+			"character"	"j"
+		}
+		"weapon_s"
+		{	
+			"font"		"CSWeaponIconsSelected"
+			"character"	"j"
+		}
+		"crosshair"
+		{
+			"font"		"Crosshairs"
+			"character"	"Q"
+		}
+		"autoaim"
+		{
+			"font"		"Crosshairs"
+			"character"	"Q"
+		}
+	}
+}

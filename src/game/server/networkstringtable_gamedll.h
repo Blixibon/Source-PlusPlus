@@ -32,10 +32,14 @@ class CStringTableSaveRestoreOps;
 #define MAX_PARTICLESYSTEMS_STRINGS			( 1 << MAX_PARTICLESYSTEMS_STRING_BITS )
 #define PARTICLESYSTEMS_INVALID_STRING	( MAX_PARTICLESYSTEMS_STRINGS - 1 )
 
+#define DOWNLOADABLE_FILE_TABLENAME	"downloadables"
+#define MAX_DOWNLOADABLE_FILES 8192
+
 extern INetworkStringTableContainer *networkstringtable;
 extern INetworkStringTable *g_pStringTableVguiScreen;
 extern INetworkStringTable *g_pStringTableEffectDispatch;
 extern INetworkStringTable *g_pStringTableClientSideChoreoScenes;
+extern INetworkStringTable* g_pDownloadableFileTable;
 
 #define MAX_INFOPANEL_STRINGS			128
 

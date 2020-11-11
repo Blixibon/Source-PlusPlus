@@ -115,6 +115,11 @@ $Project
 
 		$File	"downsample.cpp"
 		$File	"downsample_nohdr.cpp"
+
+		$File	"c17_showz.cpp"
+		
+		$File	"PP_Fog.cpp"
+		$File	"black.cpp"
 	}
 
 	$Folder	"Header Files"

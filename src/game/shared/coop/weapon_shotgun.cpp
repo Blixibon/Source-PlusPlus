@@ -223,6 +223,7 @@ void CWeaponShotgun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 	CAI_BaseNPC *npc = pOperator->MyNPCPointer();
 	ASSERT( npc != NULL );
 	WeaponSound( SINGLE_NPC );
+	EmitLowAmmoSound(1);
 	pOperator->DoMuzzleFlash();
 	m_iClip1 = m_iClip1 - 1;
 
@@ -517,6 +518,7 @@ void CWeaponShotgun::PrimaryAttack( void )
 
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	WeaponSound(SINGLE);
+	EmitLowAmmoSound(1);
 
 	pPlayer->DoMuzzleFlash();
 
@@ -592,6 +594,7 @@ void CWeaponShotgun::SecondaryAttack( void )
 	pPlayer->m_nButtons &= ~IN_ATTACK2;
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	WeaponSound(WPN_DOUBLE);
+	EmitLowAmmoSound(2);
 
 	pPlayer->DoMuzzleFlash();
 

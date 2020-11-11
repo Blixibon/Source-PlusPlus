@@ -2063,14 +2063,14 @@ void CRestore::ReadGameField( const SaveRestoreRecordHeader_t &header, void *pDe
 					continue;
 				}
 
-				pModelIndex[i] = modelinfo->GetModelIndex( STRING( pModelName[i] ) );
-
 #if !defined( CLIENT_DLL )	
-				if ( m_precache )
+				if (m_precache)
 				{
-					CBaseEntity::PrecacheModel( STRING( pModelName[i] ) );
+					CBaseEntity::PrecacheModel(STRING(pModelName[i]));
 				}
 #endif
+
+				pModelIndex[i] = modelinfo->GetModelIndex( STRING( pModelName[i] ) );
 			}
 			break;
 		}
@@ -2089,14 +2089,14 @@ void CRestore::ReadGameField( const SaveRestoreRecordHeader_t &header, void *pDe
 					continue;
 				}
 
-				pMaterialIndex[i] = GetMaterialIndex( STRING( pMaterialName[i] ) );
-
 #if !defined( CLIENT_DLL )	
-				if ( m_precache )
+				if (m_precache)
 				{
-					PrecacheMaterial( STRING( pMaterialName[i] ) );
+					PrecacheMaterial(STRING(pMaterialName[i]));
 				}
 #endif
+
+				pMaterialIndex[i] = GetMaterialIndex( STRING( pMaterialName[i] ) );
 			}
 			break;
 		}

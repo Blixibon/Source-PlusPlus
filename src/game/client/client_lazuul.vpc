@@ -73,6 +73,7 @@ $Project "Client (Lazuul)"
 			$File "$SRCDIR\game\shared\peter\weapon_emp.cpp"
 			$File "peter\laz_render_targets.cpp"
 			$File "peter\laz_render_targets.h"
+			$File "peter\c_asw_fx_proxy.cpp"
 
 			$Folder "HUD"
 			{

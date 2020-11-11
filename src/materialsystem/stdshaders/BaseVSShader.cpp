@@ -2265,14 +2265,20 @@ void CBaseVSShader::DrawEqualDepthToDestAlpha( void )
 #endif
 }
 
-#define	PSREG_UBERLIGHT_SMOOTH_EDGE_0			33
-#define	PSREG_UBERLIGHT_SMOOTH_EDGE_1			34
-#define	PSREG_UBERLIGHT_SMOOTH_EDGE_OOW			35
-#define	PSREG_UBERLIGHT_SHEAR_ROUND				36
-#define	PSREG_UBERLIGHT_AABB					37
-#define PSREG_UBERLIGHT_WORLD_TO_LIGHT			38
+bool CBaseVSShader::SetupUberlightFromState(FlashlightState_t const& state)
+{
+	if (!g_pShaderExtension)
+		return false;
 
-bool SetupUberlightFromState(UberlightUploadFunc func, FlashlightState_t const& state, UberlightState_t const& uberlightState)
+	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+	if (!pData)
+		return false;
+	const UberlightState_t& uberlightState = pData->uber;
+
+	return SetupUberlightFromState(state, uberlightState);
+}
+
+bool CBaseVSShader::SetupUberlightFromState(FlashlightState_t const& state, UberlightState_t const& uberlightState)
 {
 	if (!uberlightState.m_bEnabled)
 		return false;
@@ -2284,11 +2290,11 @@ bool SetupUberlightFromState(UberlightUploadFunc func, FlashlightState_t const& 
 	const Vector4D vShearRound(uberlightState.m_fShearx, uberlightState.m_fSheary, 2.0f / uberlightState.m_fRoundness, -uberlightState.m_fRoundness / 2.0f);
 	const Vector4D vaAbB(uberlightState.m_fWidth, uberlightState.m_fWidth + uberlightState.m_fWedge, uberlightState.m_fHeight, uberlightState.m_fHeight + uberlightState.m_fHedge);
 
-	func(PSREG_UBERLIGHT_SMOOTH_EDGE_0, vSmoothEdge0.Base(), 1);
-	func(PSREG_UBERLIGHT_SMOOTH_EDGE_1, vSmoothEdge1.Base(), 1);
-	func(PSREG_UBERLIGHT_SMOOTH_EDGE_OOW, vSmoothOneOverW.Base(), 1);
-	func(PSREG_UBERLIGHT_SHEAR_ROUND, vShearRound.Base(), 1);
-	func(PSREG_UBERLIGHT_AABB, vaAbB.Base(), 1);
+	s_pShaderAPI->SetPixelShaderConstant(PSREG_UBERLIGHT_SMOOTH_EDGE_0, vSmoothEdge0.Base(), 1);
+	s_pShaderAPI->SetPixelShaderConstant(PSREG_UBERLIGHT_SMOOTH_EDGE_1, vSmoothEdge1.Base(), 1);
+	s_pShaderAPI->SetPixelShaderConstant(PSREG_UBERLIGHT_SMOOTH_EDGE_OOW, vSmoothOneOverW.Base(), 1);
+	s_pShaderAPI->SetPixelShaderConstant(PSREG_UBERLIGHT_SHEAR_ROUND, vShearRound.Base(), 1);
+	s_pShaderAPI->SetPixelShaderConstant(PSREG_UBERLIGHT_AABB, vaAbB.Base(), 1);
 
 	QAngle angles;
 	QuaternionAngles(state.m_quatOrientation, angles);
@@ -2298,22 +2304,52 @@ bool SetupUberlightFromState(UberlightUploadFunc func, FlashlightState_t const& 
 	AngleMatrix(angles, state.m_vecLightOrigin, viewMatrix);
 	MatrixInvert(viewMatrix, viewMatrix);
 	const VMatrix m(viewMatrix);
-	func(PSREG_UBERLIGHT_WORLD_TO_LIGHT, m.Base(), 4);
+	s_pShaderAPI->SetPixelShaderConstant(PSREG_UBERLIGHT_WORLD_TO_LIGHT, m.Base(), 4);
 	return true;
 }
 
-bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const &state )
-{
-	if (!g_pShaderExtension)
-		return false;
-
-	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
-	if (!pData)
-		return false;
-	const UberlightState_t& uberlightState = pData->uber;
-
-	return SetupUberlightFromState(func, state, uberlightState);
-}
+//bool SetupUberlightFromState(UberlightUploadFunc func, FlashlightState_t const& state, UberlightState_t const& uberlightState)
+//{
+//	if (!uberlightState.m_bEnabled)
+//		return false;
+//
+//	// Set uberlight shader parameters as function of user controls from UberlightState_t
+//	const Vector4D vSmoothEdge0(0.0f, uberlightState.m_fCutOn - uberlightState.m_fNearEdge, uberlightState.m_fCutOff, 0.0f);
+//	const Vector4D vSmoothEdge1(0.0f, uberlightState.m_fCutOn, uberlightState.m_fCutOff + uberlightState.m_fFarEdge, 0.0f);
+//	const Vector4D vSmoothOneOverW(0.0f, 1.0f / uberlightState.m_fNearEdge, 1.0f / uberlightState.m_fFarEdge, 0.0f);
+//	const Vector4D vShearRound(uberlightState.m_fShearx, uberlightState.m_fSheary, 2.0f / uberlightState.m_fRoundness, -uberlightState.m_fRoundness / 2.0f);
+//	const Vector4D vaAbB(uberlightState.m_fWidth, uberlightState.m_fWidth + uberlightState.m_fWedge, uberlightState.m_fHeight, uberlightState.m_fHeight + uberlightState.m_fHedge);
+//
+//	func(PSREG_UBERLIGHT_SMOOTH_EDGE_0, vSmoothEdge0.Base(), 1);
+//	func(PSREG_UBERLIGHT_SMOOTH_EDGE_1, vSmoothEdge1.Base(), 1);
+//	func(PSREG_UBERLIGHT_SMOOTH_EDGE_OOW, vSmoothOneOverW.Base(), 1);
+//	func(PSREG_UBERLIGHT_SHEAR_ROUND, vShearRound.Base(), 1);
+//	func(PSREG_UBERLIGHT_AABB, vaAbB.Base(), 1);
+//
+//	QAngle angles;
+//	QuaternionAngles(state.m_quatOrientation, angles);
+//
+//	// World to Light's View matrix
+//	matrix3x4_t viewMatrix;
+//	AngleMatrix(angles, state.m_vecLightOrigin, viewMatrix);
+//	MatrixInvert(viewMatrix, viewMatrix);
+//	const VMatrix m(viewMatrix);
+//	func(PSREG_UBERLIGHT_WORLD_TO_LIGHT, m.Base(), 4);
+//	return true;
+//}
+//
+//bool SetupUberlightFromState( UberlightUploadFunc func, FlashlightState_t const &state )
+//{
+//	if (!g_pShaderExtension)
+//		return false;
+//
+//	const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+//	if (!pData)
+//		return false;
+//	const UberlightState_t& uberlightState = pData->uber;
+//
+//	return SetupUberlightFromState(func, state, uberlightState);
+//}
 
 ITexture* GetDepthTextureFromState(FlashlightState_t const& state)
 {

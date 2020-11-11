@@ -87,6 +87,7 @@ protected:
 private:
 	
 	COutputEvent m_OnPlayerTouch;
+	COutputEvent m_OnPlayerDenied;
 	COutputEvent m_OnCacheInteraction;
 	
 	Vector		m_vOriginalSpawnOrigin;

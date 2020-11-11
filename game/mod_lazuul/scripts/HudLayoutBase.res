@@ -632,8 +632,8 @@
 		"fieldName" "HudCrosshair"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudVehicle
@@ -641,8 +641,8 @@
 		"fieldName" "HudVehicle"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	ScorePanel
@@ -650,8 +650,8 @@
 		"fieldName" "ScorePanel"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudTrain
@@ -659,8 +659,8 @@
 		"fieldName" "HudTrain"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudMOTD
@@ -668,8 +668,8 @@
 		"fieldName" "HudMOTD"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudMessage
@@ -688,8 +688,8 @@
 		"fieldName" "HudMenu"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 		// SYNERGY
 		"OpenCloseTime"	"1"
 		"Blur"			"0"
@@ -773,8 +773,8 @@
 		"fieldName" "HudGeiger"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HUDQuickInfo
@@ -782,8 +782,8 @@
 		"fieldName" "HUDQuickInfo"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudWeapon
@@ -791,8 +791,8 @@
 		"fieldName" "HudWeapon"
 		"visible" "1"
 		"enabled" "1"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 	HudAnimationInfo
 	{
@@ -1133,13 +1133,22 @@
 		"fieldName" "HudDamageIndicatorHL1"
 		"visible" "0"
 		"enabled" "0"
-		"wide"	 "640"
-		"tall"	 "480"
+		"wide"	"p1"
+		"tall"	"p1"
 	}
 
 	HudDamageTilesHL1
 	{
 		"fieldName" "HudDamageIndicatorHL1"
+		"visible" "0"
+		"enabled" "0"
+		"wide"	 "640"
+		"tall"	 "480"
+	}
+
+	HudTrainHL1
+	{
+		"fieldName" "HudTrainHL1"
 		"visible" "0"
 		"enabled" "0"
 		"wide"	 "640"

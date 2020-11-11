@@ -148,6 +148,7 @@ public:
 		m_bDoDepthOfField = false;
 		m_bHDRTarget = false;
 		m_bDrawVolumetrics = false;
+		m_bRenderFlashlightDepthTranslucents = false;
 	}
 
 	CNewViewSetup(const CViewSetup &src) : CNewViewSetup()
@@ -167,7 +168,8 @@ public:
 	bool		m_bDoDepthOfField : 1;
 	bool		m_bHDRTarget : 1;
 
-	bool		m_bDrawVolumetrics;
+	bool		m_bDrawVolumetrics : 1;
+	bool		m_bRenderFlashlightDepthTranslucents : 1;
 };
 
 #endif // VIEW_SHARED_H

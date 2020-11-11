@@ -1405,18 +1405,18 @@ Scheme
 	// specifies all the custom (non-system) font files that need to be loaded to service the above described fonts
 	CustomFontFiles 
 	{
-		"1"		"resource/HALFLIFE2.ttf"
-		"2"		"resource/HL2crosshairs.ttf"
-		"3"		"resource/HL2EP2.ttf"		
-		"4"		"resource/hl2mp.ttf"
-		"5"		"resource/cs.ttf"
-		"6"		"resource/csd.ttf"
-		"7"		"resource/cslogo.ttf"
-		"8"		"resource/cstrike.ttf"
-		"9"		"resource/RealBeta's Weapon Icons.ttf"
-		"10"	"resource/obsidianweaps.ttf"
-		"11"	"resource/K12HL2.ttf"
-		"12"	"resource/HUMANERROR.ttf"
+		"Base1"		"resource/HALFLIFE2.ttf"
+		"Base2"		"resource/HL2crosshairs.ttf"
+		"Base3"		"resource/HL2EP2.ttf"		
+		"Base4"		"resource/hl2mp.ttf"
+		"Base5"		"resource/cs.ttf"
+		"Base6"		"resource/csd.ttf"
+		"Base7"		"resource/cslogo.ttf"
+		"Base8"		"resource/cstrike.ttf"
+		"Base9"		"resource/RealBeta's Weapon Icons.ttf"
+		"Base10"	"resource/obsidianweaps.ttf"
+		"Base11"	"resource/K12HL2.ttf"
+		"Base12"	"resource/HUMANERROR.ttf"
 	}
 
 }

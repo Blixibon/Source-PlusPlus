@@ -19,6 +19,8 @@
 #include "multiplayer/basenetworkedragdoll_cl.h"
 #include "C_PortalGhostRenderable.h"
 #include "fmtstr.h"
+#include "clientmode.h"
+#include "iviewrender_beams.h"			// flashlight beam
 
 static Vector TF_TAUNTCAM_HULL_MIN(-9.0f, -9.0f, -9.0f);
 static Vector TF_TAUNTCAM_HULL_MAX(9.0f, 9.0f, 9.0f);
@@ -406,6 +408,105 @@ void C_Laz_Player::ClientThink()
 	}
 }
 
+void C_Laz_Player::AddEntity()
+{
+	// Add in water effects
+	if (IsLocalPlayer())
+	{
+		CreateWaterEffects();
+	}
+
+	// If set to invisible, skip. Do this before resetting the entity pointer so it has 
+	// valid data to decide whether it's visible.
+	if (!IsVisible() || !g_pClientMode->ShouldDrawLocalPlayer(this))
+	{
+		return;
+	}
+
+	// Server says don't interpolate this frame, so set previous info to new info.
+	if (IsNoInterpolationFrame() || Teleported())
+	{
+		ResetLatched();
+	}
+
+	if (this != C_BasePlayer::GetLocalPlayer())
+	{
+		if (IsEffectActive(EF_DIMLIGHT) && !InFirstPersonView())
+		{
+			int iAttachment = LookupAttachment("anim_attachment_RH");
+
+			if (iAttachment < 0)
+				return;
+
+			Vector vecOrigin;
+			QAngle eyeAngles = m_angEyeAngles;
+
+			GetAttachment(iAttachment, vecOrigin, eyeAngles);
+
+			Vector vForward;
+			AngleVectors(eyeAngles, &vForward);
+
+			trace_t tr;
+			UTIL_TraceLine(vecOrigin, vecOrigin + (vForward * 200), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+
+			if (!m_pFlashlightBeam)
+			{
+				BeamInfo_t beamInfo;
+				beamInfo.m_nType = TE_BEAMPOINTS;
+				beamInfo.m_vecStart = tr.startpos;
+				beamInfo.m_vecEnd = tr.endpos;
+				beamInfo.m_pszModelName = "sprites/glow01.vmt";
+				beamInfo.m_pszHaloName = "sprites/glow01.vmt";
+				beamInfo.m_flHaloScale = 3.0;
+				beamInfo.m_flWidth = 8.0f;
+				beamInfo.m_flEndWidth = 35.0f;
+				beamInfo.m_flFadeLength = 300.0f;
+				beamInfo.m_flAmplitude = 0;
+				beamInfo.m_flBrightness = 60.0;
+				beamInfo.m_flSpeed = 0.0f;
+				beamInfo.m_nStartFrame = 0.0;
+				beamInfo.m_flFrameRate = 0.0;
+				beamInfo.m_flRed = 255.0;
+				beamInfo.m_flGreen = 255.0;
+				beamInfo.m_flBlue = 255.0;
+				beamInfo.m_nSegments = 8;
+				beamInfo.m_bRenderable = true;
+				beamInfo.m_flLife = 0.5;
+				beamInfo.m_nFlags = FBEAM_FOREVER | FBEAM_ONLYNOISEONCE | FBEAM_NOTILE | FBEAM_HALOBEAM;
+
+				m_pFlashlightBeam = beams->CreateBeamPoints(beamInfo);
+			}
+
+			if (m_pFlashlightBeam)
+			{
+				BeamInfo_t beamInfo;
+				beamInfo.m_vecStart = tr.startpos;
+				beamInfo.m_vecEnd = tr.endpos;
+				beamInfo.m_flRed = 255.0;
+				beamInfo.m_flGreen = 255.0;
+				beamInfo.m_flBlue = 255.0;
+
+				beams->UpdateBeamInfo(m_pFlashlightBeam, beamInfo);
+			}
+		}
+		else if (m_pFlashlightBeam)
+		{
+			ReleaseFlashlight();
+		}
+	}
+}
+
+void C_Laz_Player::ReleaseFlashlight(void)
+{
+	if (m_pFlashlightBeam)
+	{
+		m_pFlashlightBeam->flags = 0;
+		m_pFlashlightBeam->die = gpGlobals->curtime - 1;
+
+		m_pFlashlightBeam = NULL;
+	}
+}
+
 float C_Laz_Player::GetFOV( void )
 {
 	//Find our FOV with offset zoom value
@@ -518,7 +619,7 @@ void C_Laz_Player::TurnOnTauntCam(void)
 	g_ThirdPersonManager.SetDesiredCameraOffset(Vector(tf_tauntcam_dist.GetFloat(), 0.0f, 0.0f));
 	g_ThirdPersonManager.SetOverridingThirdPerson(true);
 	::input->CAM_ToThirdPerson();
-	ThirdPersonSwitch(true);
+	//ThirdPersonSwitch(true);
 
 	::input->CAM_SetCameraThirdData(&m_TauntCameraData, vecCameraOffset);
 
@@ -543,12 +644,12 @@ void C_Laz_Player::TurnOffTauntCam(void)
 
 	if (g_ThirdPersonManager.WantToUseGameThirdPerson())
 	{
-		ThirdPersonSwitch(true);
+		//ThirdPersonSwitch(true);
 		return;
 	}
 
 	::input->CAM_ToFirstPerson();
-	ThirdPersonSwitch(false);
+	//ThirdPersonSwitch(false);
 
 	// Reset the old view angles.
 	/*engine->SetViewAngles( m_angTauntEngViewAngles );
@@ -947,7 +1048,7 @@ ShadowType_t C_Laz_Player::ShadowCastType(void)
 		!ShouldDrawThisPlayer() &&
 		cl_legs_enable.GetInt() == 0)
 	{
-		return SHADOWS_SIMPLE;
+		return SHADOWS_NONE;
 	}
 
 	if (cl_blobbyshadows.GetBool())

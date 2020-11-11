@@ -307,6 +307,8 @@ public:
 	virtual IBotFollow *GetFollow() const = 0;
 	virtual IBotDecision *GetDecision() const = 0;
 
+	virtual void OnActorEmoted(CBaseCombatCharacter* emoter, int emote) = 0;			// when "emoter" does an "emote" (ie: manual voice command, etc)
+
 protected:
 	BotState m_iState;
 	CBotProfile *m_pProfile;

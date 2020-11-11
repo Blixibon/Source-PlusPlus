@@ -52,7 +52,7 @@ public:
 		CUtlVector<const char*> strings( 0, m_Strings.Count() );
 		for (UtlHashHandle_t i = m_Strings.FirstHandle(); i != m_Strings.InvalidHandle(); i = m_Strings.NextHandle(i))
 		{
-			strings.AddToTail( strings[i] );
+			strings.AddToTail(m_Strings[i]);
 		}
 		struct _Local {
 			static int __cdecl F(const char * const *a, const char * const *b) { return strcmp(*a, *b); }

@@ -125,7 +125,7 @@ bool CWeaponCoopBaseHLCombat::CanLower()
 bool CWeaponCoopBaseHLCombat::Ready( void )
 {
 	//Don't bother if we don't have the animation
-	if ( SelectWeightedSequence( ACT_VM_LOWERED_TO_IDLE ) == ACTIVITY_NOT_AVAILABLE )
+	if (!CanLower())
 		return false;
 
 	m_bLowered = false;	
@@ -139,7 +139,7 @@ bool CWeaponCoopBaseHLCombat::Ready( void )
 bool CWeaponCoopBaseHLCombat::Lower( void )
 {
 	//Don't bother if we don't have the animation
-	if ( SelectWeightedSequence( ACT_VM_IDLE_LOWERED ) == ACTIVITY_NOT_AVAILABLE )
+	if (!CanLower())
 		return false;
 
 	m_bLowered = true;
@@ -246,7 +246,7 @@ void CWeaponCoopBaseHLCombat::WeaponIdle( void )
 			SendWeaponAnim( ACT_VM_IDLE );
 			m_flTimeLastAction = gpGlobals->curtime;
 		}
-		else if (HasFidget() && gpGlobals->curtime - m_flTimeLastAction > 15.f && random->RandomFloat(0, 1) <= 0.9)
+		else if (HasFidget() && !m_bInReload && gpGlobals->curtime - m_flTimeLastAction > 15.f && random->RandomFloat(0, 1) <= 0.9)
 		{
 			SendWeaponAnim(GetWpnData().iScriptedVMActivities[VM_ACTIVITY_FIDGET]);
 			m_flTimeLastAction = gpGlobals->curtime;
@@ -305,18 +305,41 @@ void CWeaponCoopBaseHLCombat::AddViewmodelBob(CBaseViewModel* viewmodel, Vector&
 	if (GetSprintActivity() != ACT_INVALID && viewmodel->GetSequenceActivity(viewmodel->GetSequence()) == GetSprintActivity())
 		return;
 
+	Vector vBobOrigin = origin;
+	QAngle vBobAngle = angles;
+
 	switch (GetCoopWpnData().m_iViewmodelBobMode)
 	{
 	case BOBMODE_HL2:
 	default:
-		AddHL2ViewmodelBob(viewmodel, origin, angles);
+		AddHL2ViewmodelBob(viewmodel, vBobOrigin, vBobAngle);
 		break;
 	case BOBMODE_HL1:
-		AddHL1ViewmodelBob(viewmodel, origin, angles);
+		AddHL1ViewmodelBob(viewmodel, vBobOrigin, vBobAngle);
 		break;
 	case BOBMODE_PORTAL:
-		AddPortalViewmodelBob(viewmodel, origin, angles);
+		AddPortalViewmodelBob(viewmodel, vBobOrigin, vBobAngle);
 		break;
+	}
+
+	if (HasIronsights())
+	{
+		//get delta time for interpolation
+		float delta = (gpGlobals->curtime - m_flIronsightedTime) * 2.5f; //modify this value to adjust how fast the interpolation is
+		float exp = (IsIronsighted()) ?
+			(delta > 1.0f) ? 1.0f : delta : //normal blending
+			(delta > 1.0f) ? 0.0f : 1.0f - delta; //reverse interpolation
+
+		if (exp <= 0.001f) //fully not ironsighted; save performance
+			exp = 0;
+
+		InterpolateVector(exp, vBobOrigin, origin, origin);
+		InterpolateAngles(vBobAngle, angles, angles, exp);
+	}
+	else
+	{
+		origin = vBobOrigin;
+		angles = vBobAngle;
 	}
 }
 
@@ -389,22 +412,59 @@ acttable_t CWeaponCoopBaseHLCombat::s_acttableLowered[] =
 	{ACT_HL2MP_RUN_FAST,				ACT_HL2MP_RUN_PASSIVE,					false},
 };
 
+acttable_t CWeaponCoopBaseHLCombat::s_acttableAimDownSights[] =
+{
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_RPG,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_RPG,					false },
+	{ ACT_HL2MP_WALK,					ACT_HL2MP_WALK_RPG,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,		false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_IDLE_CROUCH_CROSSBOW,		false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
+	{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_RPG,					false},
+	{ACT_HL2MP_SIT,						ACT_HL2MP_SIT_RPG,					false},
+};
+
 Activity CWeaponCoopBaseHLCombat::ActivityOverride(Activity baseAct, bool *pRequired)
 {
-	if (/*CanLower() &&*/ WeaponShouldBeLowered() || m_bLowered)
+	switch (WeaponClassify())
 	{
-		for (int i = 0; i < ARRAYSIZE(s_acttableLowered); i++)
+	case WEPCLASS_RIFLE:
+	case WEPCLASS_SHOTGUN:
+	{
+		if (IsIronsighted())
 		{
-			const acttable_t& act = s_acttableLowered[i];
-			if (baseAct == act.baseAct)
+			for (int i = 0; i < ARRAYSIZE(s_acttableAimDownSights); i++)
 			{
-				if (pRequired)
+				const acttable_t& act = s_acttableAimDownSights[i];
+				if (baseAct == act.baseAct)
 				{
-					*pRequired = act.required;
+					if (pRequired)
+					{
+						*pRequired = act.required;
+					}
+					return (Activity)act.weaponAct;
 				}
-				return (Activity)act.weaponAct;
 			}
 		}
+		else if (/*CanLower() &&*/ WeaponShouldBeLowered())
+		{
+			for (int i = 0; i < ARRAYSIZE(s_acttableLowered); i++)
+			{
+				const acttable_t& act = s_acttableLowered[i];
+				if (baseAct == act.baseAct)
+				{
+					if (pRequired)
+					{
+						*pRequired = act.required;
+					}
+					return (Activity)act.weaponAct;
+				}
+			}
+		}
+	}
+	break;
+	default:
+		break;
 	}
 
 	return BaseClass::ActivityOverride(baseAct, pRequired);
@@ -426,4 +486,9 @@ bool CWeaponCoopBaseHLCombat::HasFidget()
 	int iActivity = GetWpnData().iScriptedVMActivities[VM_ACTIVITY_FIDGET];
 
 	return (iActivity != ACT_INVALID && SelectWeightedSequence((Activity)iActivity) != ACT_INVALID);
+}
+
+void CWeaponCoopBaseHLCombat::NotifyWeaponAction()
+{
+	m_flTimeLastAction = gpGlobals->curtime;
 }

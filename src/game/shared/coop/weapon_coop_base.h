@@ -17,6 +17,9 @@
 void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip );
 #endif
 
+// Converts rounds per minute to Hertz
+#define RPM_TO_HZ(rpm) (1.f / (rpm / 60.f))
+
 enum ViewmodelBobMode_e
 {
 	BOBMODE_HL2 = 0,
@@ -60,6 +63,8 @@ public:
     DECLARE_DATADESC();
 
     CWeaponCoopBase();
+
+	virtual void Precache(void);
 
     // Predicción
     virtual bool IsPredicted() const { return true; }
@@ -112,10 +117,14 @@ public:
 	virtual void OnActiveStateChanged(int iOldState);
 	virtual void Equip(CBaseCombatCharacter *pOwner);
 
+	virtual void EmitLowAmmoSound(int iShots);
+	virtual bool GetLowAmmoSoundParameters(CSoundParameters& params, bool bLast);
+
 	virtual void RumbleEffect(unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags);
 
 	virtual acttable_t *ActivityList(int &iActivityCount);
-	// HL2
+
+	// HL2/GMOD
 	static acttable_t s_acttableSMG1[];
 	static acttable_t s_acttablePistol[];
 	static acttable_t s_acttableMelee[];
@@ -128,8 +137,9 @@ public:
 	static acttable_t s_acttableMelee2[];
 	static acttable_t s_acttablePython[];
 	static acttable_t s_acttableAR2[];
+	static acttable_t s_acttableKnife[];
 
-	//BMS
+	// BMS
 	static acttable_t s_acttableMP5[];
 	static acttable_t s_acttableGlock[];
 	static acttable_t s_acttableTau[];

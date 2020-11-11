@@ -45,7 +45,9 @@ int GetAttachTypeFromString( const char *pszString )
 		"start_at_customorigin",// PATTACH_CUSTOMORIGIN,
 		"start_at_attachment",	// PATTACH_POINT,
 		"follow_attachment",	// PATTACH_POINT_FOLLOW,
+		"start_at_worldorigin",	// PATTACH_WORLDORIGIN
 		"follow_rootbone",		// PATTACH_ROOTBONE_FOLLOW
+		"follow_bone",			// PATTACH_BONE_FOLLOW
 	};
 
 	for ( int i = 0; i < MAX_PATTACH_TYPES; i++ )

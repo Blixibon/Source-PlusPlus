@@ -781,6 +781,7 @@ void CNPC_Citizen::SelectModel()
 
 		Assert(pszModelName || GetModelName() != NULL_STRING);
 
+		char czBuf[96];
 		if (!pszModelName)
 		{
 			if (GetModelName() == NULL_STRING)
@@ -790,7 +791,9 @@ void CNPC_Citizen::SelectModel()
 				pszModelName = STRING(GetModelName());
 			else
 			{
-				pszModelName++;
+				V_StripExtension(pszModelName + 1, czBuf, sizeof(czBuf));
+				pszModelName = czBuf;
+
 				if (m_iHead == -1)
 				{
 					for (int i = 0; i < ARRAYSIZE(g_ppszRandomHeads); i++)
@@ -810,7 +813,7 @@ void CNPC_Citizen::SelectModel()
 		// Unique citizen models are left alone
 		if (m_Type != CT_UNIQUE)
 		{
-			m_bWantsBeanie = (m_Type != CT_DOWNTRODDEN) && (RandomFloat() <= 0.5f);
+			m_bWantsBeanie = (m_Type == CT_REFUGEE || m_Type == CT_REBEL) && (RandomFloat() <= 0.5f);
 
 			if (m_bWantsBeanie && (g_iHeadsAltModelBitMask & (1 << m_iHead)) != 0)
 				SetModelName(AllocPooledString(CFmtStr("models/minic23/citizens/%s_b.mdl", pszModelName)));

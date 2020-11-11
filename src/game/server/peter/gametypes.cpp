@@ -568,6 +568,7 @@ void CGameTypeManager::SelectGameType()
 
 	char szMapadd[128];
 	Q_snprintf(szMapadd, sizeof(szMapadd), "maps/%s.spp", STRING(gpGlobals->mapname));
+	AddFileToDownloadTable(szMapadd);
 	KeyValues* pMapAdd = new KeyValues("MapData");
 	if (pMapAdd->LoadFromFile(filesystem, szMapadd, "GAME"))
 	{
@@ -596,12 +597,27 @@ void CGameTypeManager::LevelInitPreEntity()
 			m_ClassRemap.Insert(pkvClass->GetName(), str);
 		}
 	}
+
+	if (GetCurrentBaseGameType() != GetCurrentModGameType())
+	{
+		CFmtStrN<MAX_PATH> path2("scripts/classremaps/%s.vdf", m_vecGames.Element(GetCurrentModGameType()));
+		KeyValuesAD pKV2("classremaps");
+		if (pKV2->LoadFromFile(filesystem, path2.Access()))
+		{
+			for (KeyValues* pkvClass = pKV2->GetFirstValue(); pkvClass != nullptr; pkvClass = pkvClass->GetNextValue())
+			{
+				CUtlSymbol& str = m_CRSymTable.AddString(pkvClass->GetString());
+				m_ClassRemap.Insert(pkvClass->GetName(), str);
+			}
+		}
+	}
 }
 
 void CGameTypeManager::LevelShutdown()
 {
 	m_ClassRemap.Purge();
 	m_CRSymTable.RemoveAll();
+	m_CurrentMap.NukeOptions();
 }
 
 const char * CGameTypeManager::RemapEntityClass(const char * pchClass)

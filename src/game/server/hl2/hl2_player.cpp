@@ -191,6 +191,14 @@ bool Flashlight_UseLegacyVersion( void )
 #endif
 }
 
+bool AuxPower_IsInfinite()
+{
+	if (g_pGameRules && g_pGameRules->IsSandBox())
+		return true;
+
+	return sv_infinite_aux_power.GetBool();
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Used to relay outputs/inputs from the player to the world and viceversa
 //-----------------------------------------------------------------------------
@@ -1952,7 +1960,7 @@ void CHL2_Player::SuitPower_Initialize( void )
 bool CHL2_Player::SuitPower_Drain( float flPower )
 {
 	// Suitpower cheat on?
-	if ( sv_infinite_aux_power.GetBool() )
+	if ( AuxPower_IsInfinite() )
 		return true;
 
 	m_HL2Local.m_flSuitPower -= flPower;
@@ -2425,6 +2433,11 @@ int	CHL2_Player::OnTakeDamage( const CTakeDamageInfo &info )
 	{
 		// Only do a skill level adjustment if the player isn't his own attacker AND inflictor.
 		// This prevents damage from SetHealth() inputs from being adjusted for skill level.
+		bAdjustForSkillLevel = false;
+	}
+
+	if (g_pGameRules->IsMultiplayer() && info.GetAttacker() && info.GetAttacker()->IsPlayer())
+	{
 		bAdjustForSkillLevel = false;
 	}
 
@@ -3395,7 +3408,7 @@ void CHL2_Player::UpdateClientData( void )
 #ifdef HL2_EPISODIC
 	if ( Flashlight_UseLegacyVersion() == false )
 	{
-		if ( FlashlightIsOn() && sv_infinite_aux_power.GetBool() == false )
+		if ( FlashlightIsOn() && AuxPower_IsInfinite() == false )
 		{
 			m_HL2Local.m_flFlashBattery -= FLASH_DRAIN_TIME * gpGlobals->frametime;
 			if ( m_HL2Local.m_flFlashBattery < 0.0f )

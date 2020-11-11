@@ -187,21 +187,21 @@ void C_GlobalLight::ClientThink()
 		state.m_Color[3] = 0.0f; // fixme: need to make ambient work m_flAmbient;
 		state.m_NearZ = 4.0f;
 		state.m_FarZ = m_flSunDistance * 2.0f;
-		//state.m_bGlobalLight = true;
+		state.m_bGlobalLight = true;
 
 		float flOrthoSize = 1000.0f;
 
 		if ( flOrthoSize > 0 )
 		{
-			state.m_bOrtho = true;
-			state.m_fOrthoLeft = -flOrthoSize;
-			state.m_fOrthoTop = -flOrthoSize;
-			state.m_fOrthoRight = flOrthoSize;
-			state.m_fOrthoBottom = flOrthoSize;
+			state.m_ExtData.m_bOrtho = true;
+			state.m_ExtData.m_fOrthoLeft = -flOrthoSize;
+			state.m_ExtData.m_fOrthoTop = -flOrthoSize;
+			state.m_ExtData.m_fOrthoRight = flOrthoSize;
+			state.m_ExtData.m_fOrthoBottom = flOrthoSize;
 		}
 		else
 		{
-			state.m_bOrtho = false;
+			state.m_ExtData.m_bOrtho = false;
 		}
 
 		if (cl_globallight_debug.GetBool())

@@ -6290,6 +6290,16 @@
 	]
 ]
 
+@SolidClass base(Targetname, Parentname) = func_precipitation_blocker : 
+	"A brush entity that prevents rain and snow inside its volume."
+[
+]
+
+@SolidClass base(Targetname, Parentname) = func_detail_blocker : 
+	"A brush entity that prevents detail sprites from being placed inside its volume."
+[
+]
+
 @SolidClass base(func_wall) = func_wall_toggle : 
 	"A brush entity that can be toggled on/off. When off, the brush will be non-solid and invisible. Does not cast lightmap shadows." 
 [

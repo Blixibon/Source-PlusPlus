@@ -2,14 +2,14 @@
 
 WeaponData
 {
-	"printname"			"#HL2_MP5K"
-	"viewmodel"			"models/weapons/v_mp5k.mdl"
-	"playermodel"			"models/weapons/w_mp5k.mdl"
+	"printname"				"#HL2_MP5K"
+	"viewmodel"				"models/weapons/tfa_ins2/c_mp5k.mdl"
+	"playermodel"			"models/weapons/tfa_ins2/w_mp5k.mdl"
 	"anim_prefix"			"smg2"
-	"bucket"			"2"
+	"bucket"				"2"
 	"bucket_position"		"4"
 
-	"clip_size"			"30"
+	"clip_size"				"30"
 	"clip2_size"			"-1"
 
 	"default_clip"			"30"
@@ -18,34 +18,61 @@ WeaponData
 	"primary_ammo"			"SMG1"
 	"secondary_ammo"		"None"
 
-	"weight"			"4"
+	"weight"				"4"
 	"item_flags"			"0"
 
-	"size"				"10"
-	"autoswitchfrom"	"0"
+	"size"					"10"
+	"autoswitchfrom"		"0"
+	
+	"ViewModelFOV" 			"70"
+	"viewmodel_bobmode"		"2"
+	
+	"worldmodel_bonemerge"
+	{
+		"R Hand"
+		{
+			"parent"	"ValveBiped.Bip01_R_Hand"
+			"offsetang"	"10 -5 180"
+			//"offsetpos"	"5.5 1.5 -1"
+		}
+	}
+	
+	"activities"
+	{
+		firstdraw	"ACT_VM_DRAW_DEPLOYED"
+		sprint		"ACT_VM_SPRINT"
+	}
+
+	"IronSight"
+	{
+		"right"			"-2.994"
+		"forward"		"-2"
+		"up"			"0.83"
+
+		"fov"			"-35"
+	}
 
 	SoundData
 	{
-		"reload"		"Weapon_MP5K.Reload"
-		"reload_npc"		"Weapon_MP5K.NPC_Reload"
+		"reload_npc"		"Weapon_SMG1.NPC_Reload"
 
-		"empty"			"Weapon_MP5K.Empty"
+		//"empty"			"Weapon_MP5K.Empty"
 
-		"single_shot"		"Weapon_MP5K.Single"
-		"single_shot_npc"	"Weapon_MP5K.NPC_Single"
+		"single_shot"		"TFA_INS2.MP5K.Single"
+		"single_shot_npc"	"TFA_INS2.MP5K.Single_NPC"
 	}
 
 	TextureData
 	{
 		"weapon"
 		{
-				"font"		"SynFontWeaponIcons"
-				"character"	"v"
+				"font"		"NewWeaponIcons"
+				"character"	"p"
 		}
 		"weapon_s"
 		{	
-				"font"		"SynFontSelectedWeaponIcons"
-				"character"	"v"
+				"font"		"NewWeaponIconsSelected"
+				"character"	"p"
 		}
 		"ammo"
 		{
@@ -64,11 +91,8 @@ WeaponData
 		}
 		"autoaim"
 		{
-				"file"		"sprites/crosshairs"
-				"x"			"0"
-				"y"			"48"
-				"width"		"24"
-				"height"	"24"
+				"font"		"Crosshairs"
+				"character"	"Q"
 		}
 	}
 }

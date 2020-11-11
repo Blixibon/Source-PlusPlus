@@ -17,6 +17,7 @@
 #include "shaderapi/ishaderapi.h"
 #include "../IShaderSystem.h"
 #include "../shaderlib/shaderDLL_Global.h"
+#include "cpp_shader_constant_register_map.h"
 
 #ifdef _WIN32
 #pragma once
@@ -470,6 +471,15 @@ public:
 			flFlashlightScale *= 2.5f; // Magic number that works well on the NVIDIA 8800
 		}
 
+		if (g_pShaderExtension)
+		{
+			const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+			if (pData)
+			{
+				flFlashlightScale *= pData->m_fBrightnessScale;
+			}
+		}
+
 		// Generate pixel shader constant
 		float const* pFlashlightColor = state.m_Color;
 		float vPsConst[4] = { flFlashlightScale * pFlashlightColor[0], flFlashlightScale * pFlashlightColor[1], flFlashlightScale * pFlashlightColor[2], pFlashlightColor[3] };
@@ -481,8 +491,8 @@ public:
 		SetPixelShaderConstant(nPSRegister, (float*)vPsConst);
 	}
 
-	FORCEINLINE void SetPixelShaderUberLightState( int iEdge0Const, float* edge0Data, int iEdge1Const, float* edge1Data, int iEdgeOOWConst, float* edgeOOWData,
-												   int iShearRoundConst, float* roundConst, int iAABBConst, float* aabbData, int iWorldToLightConst, float* worldToLightMatrix )
+	FORCEINLINE void SetPixelShaderUberLightState( int iEdge0Const, const float* edge0Data, int iEdge1Const, const float* edge1Data, int iEdgeOOWConst, const float* edgeOOWData,
+												   int iShearRoundConst, const float* roundConst, int iAABBConst, const float* aabbData, int iWorldToLightConst, const float* worldToLightMatrix )
 	{
 		SetPixelShaderConstant( iEdge0Const, edge0Data );
 		SetPixelShaderConstant( iEdge1Const, edge1Data );
@@ -490,6 +500,42 @@ public:
 		SetPixelShaderConstant( iShearRoundConst, roundConst );
 		SetPixelShaderConstant( iAABBConst, aabbData );
 		SetPixelShaderConstant( iWorldToLightConst, worldToLightMatrix, 4 );
+	}
+
+	FORCEINLINE bool SetupUberlightFromState(FlashlightState_t const& state)
+	{
+		if (!g_pShaderExtension)
+			return false;
+
+		const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+		if (!pData)
+			return false;
+		const UberlightState_t& uberlightState = pData->uber;
+
+		if (!uberlightState.m_bEnabled)
+			return false;
+
+		// Set uberlight shader parameters as function of user controls from UberlightState_t
+		const Vector4D vSmoothEdge0(0.0f, uberlightState.m_fCutOn - uberlightState.m_fNearEdge, uberlightState.m_fCutOff, 0.0f);
+		const Vector4D vSmoothEdge1(0.0f, uberlightState.m_fCutOn, uberlightState.m_fCutOff + uberlightState.m_fFarEdge, 0.0f);
+		const Vector4D vSmoothOneOverW(0.0f, 1.0f / uberlightState.m_fNearEdge, 1.0f / uberlightState.m_fFarEdge, 0.0f);
+		const Vector4D vShearRound(uberlightState.m_fShearx, uberlightState.m_fSheary, 2.0f / uberlightState.m_fRoundness, -uberlightState.m_fRoundness / 2.0f);
+		const Vector4D vaAbB(uberlightState.m_fWidth, uberlightState.m_fWidth + uberlightState.m_fWedge, uberlightState.m_fHeight, uberlightState.m_fHeight + uberlightState.m_fHedge);
+
+		QAngle angles;
+		QuaternionAngles(state.m_quatOrientation, angles);
+
+		// World to Light's View matrix
+		matrix3x4_t viewMatrix;
+		AngleMatrix(angles, state.m_vecLightOrigin, viewMatrix);
+		MatrixInvert(viewMatrix, viewMatrix);
+		const VMatrix m(viewMatrix);
+
+		SetPixelShaderUberLightState(PSREG_UBERLIGHT_SMOOTH_EDGE_0, vSmoothEdge0.Base(),
+			PSREG_UBERLIGHT_SMOOTH_EDGE_1, vSmoothEdge1.Base(), PSREG_UBERLIGHT_SMOOTH_EDGE_OOW, vSmoothOneOverW.Base(),
+			PSREG_UBERLIGHT_SHEAR_ROUND, vShearRound.Base(), PSREG_UBERLIGHT_AABB, vaAbB.Base(),
+			PSREG_UBERLIGHT_WORLD_TO_LIGHT, m.Base());
+		return true;
 	}
 
 	FORCEINLINE void SetVertexShaderNearAndFarZ( int iRegNum )

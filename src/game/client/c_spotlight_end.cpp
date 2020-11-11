@@ -322,7 +322,7 @@ int C_PointSpotlight::DrawModel(int flags)
 	return 1;
 }
 
-ConVar cl_spotlight_light_fov_scale("cl_spotlight_light_fov_scale", "20", FCVAR_CHEAT);
+ConVar cl_spotlight_light_fov_scale("cl_spotlight_light_fov_scale", "1", FCVAR_CHEAT);
 void C_PointSpotlight::ClientThink(void)
 {
 	if (m_bVolumetricMode && m_bSpotlightOn && m_hSpotlightTarget.Get())
@@ -350,12 +350,13 @@ void C_PointSpotlight::ClientThink(void)
 			VectorNormalize(vecToTargetOuterRight);
 			Vector vecToTargetOuterLeft = (m_hSpotlightTarget->GetAbsOrigin() - (vRight * m_flSpotlightGoalWidth)) - GetAbsOrigin();
 			VectorNormalize(vecToTargetOuterLeft);
-			float flDot = DotProduct(vecToTargetOuterLeft, vecToTargetOuterRight);
+			float flDot = Clamp(DotProduct(vecToTargetOuterLeft, vecToTargetOuterRight), 0.f, 1.f);
+			float flFOV = RAD2DEG(acos(flDot));
 
 			ClientFlashlightState_t state;
 			state.m_vecLightOrigin = vPos;
 			BasisToQuaternion(vForward, vRight, vUp, state.m_quatOrientation);
-			state.m_fVerticalFOVDegrees = state.m_fHorizontalFOVDegrees = Clamp((1.f - Clamp(flDot, 0.f, 1.f)) * 180.f * cl_spotlight_light_fov_scale.GetFloat(), 0.f, 179.f);
+			state.m_fVerticalFOVDegrees = state.m_fHorizontalFOVDegrees = Clamp(flFOV * cl_spotlight_light_fov_scale.GetFloat(), 0.f, 179.f);
 
 			Vector srcColor;
 			const color32& color = GetRenderColor();
@@ -381,7 +382,7 @@ void C_PointSpotlight::ClientThink(void)
 			state.m_nSpotlightTextureFrame = 0;
 
 			state.m_bVolumetric = true;
-			state.m_flVolumetricIntensity = 2.f;
+			state.m_flVolumetricIntensity = 3.f;
 			state.m_nNumPlanes = m_nNumPlanes;
 			state.m_flFlashlightTime = gpGlobals->curtime;
 

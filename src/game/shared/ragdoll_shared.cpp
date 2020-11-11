@@ -1290,11 +1290,11 @@ void C_BaseAnimating::IgniteRagdoll( C_BaseAnimating *pSource )
 	if ( pChild )
 	{
 		C_EntityFlame *pFireChild = dynamic_cast<C_EntityFlame *>( pChild );
-		C_ClientRagdoll *pRagdoll = dynamic_cast< C_ClientRagdoll * > ( this );
+		//C_ClientRagdoll *pRagdoll = dynamic_cast< C_ClientRagdoll * > ( this );
 
 		if ( pFireChild )
 		{
-			pRagdoll->SetEffectEntity ( FireEffect( pRagdoll, pFireChild, NULL, NULL, NULL ), ENT_EFFECT_FIRE );
+			SetEffectEntity ( FireEffect( this, pFireChild, NULL, NULL, NULL ), ENT_EFFECT_FIRE );
 		}
 	}
 }

@@ -22,6 +22,7 @@ enum PhysGunPickup_t
 	PICKED_UP_BY_CANNON,
 	PUNTED_BY_CANNON,
 	PICKED_UP_BY_PLAYER, // Picked up by +USE, not physgun.
+	PICKED_UP_BY_MANIPULATOR,
 };
 
 // Reasons behind a drop
@@ -31,6 +32,7 @@ enum PhysGunDrop_t
 	THROWN_BY_PLAYER,
 	DROPPED_BY_CANNON,
 	LAUNCHED_BY_CANNON,
+	DROPPED_BY_MANIPULATOR,
 };
 
 enum PhysGunForce_t

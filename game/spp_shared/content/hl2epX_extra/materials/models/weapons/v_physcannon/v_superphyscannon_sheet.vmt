@@ -1,0 +1,8 @@
+"Patch"
+{
+	include "materials/models/weapons/v_physcannon/v_physcannon_sheet.vmt"
+	insert
+	{
+		"$baseTexture" "Models/Weapons/V_physcannon/v_superphyscannon_sheet"
+	}
+}

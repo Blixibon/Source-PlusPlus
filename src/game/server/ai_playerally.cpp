@@ -1290,7 +1290,7 @@ bool CAI_PlayerAlly::CreateVPhysics()
 //-----------------------------------------------------------------------------
 void CAI_PlayerAlly::PainSound( const CTakeDamageInfo &info )
 {
-	SpeakIfAllowed( TLK_WOUND, CFmtStr("damagebits:%i,damagecustom:%i", info.GetDamageType(), info.GetDamageCustom()) );
+	SpeakIfAllowed( TLK_WOUND, CFmtStr("damagebits:%ll,damagecustom:%i", info.GetDamageType(), info.GetDamageCustom()) );
 }
 
 //-----------------------------------------------------------------------------

@@ -3877,6 +3877,16 @@
 			"height"	"32"
 		}
 		
+		"mp5k"
+		{
+			"dfile"	"HUD/d_images_hl2"
+			"dnegfile"	"HUD/dneg_images_hl2"
+			"x"	"284"
+			"y"	"224"
+			"width"	"96"
+			"height"	"32"
+		}
+		
 		// HL1
 		"357_hl1"
 		{

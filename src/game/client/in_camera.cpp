@@ -42,6 +42,12 @@ static ConVar c_mindistance( "c_mindistance",   "30", FCVAR_ARCHIVE| FCVAR_CHEAT
 static ConVar c_orthowidth( "c_orthowidth",   "100", FCVAR_ARCHIVE| FCVAR_CHEAT );
 static ConVar c_orthoheight( "c_orthoheight",   "100", FCVAR_ARCHIVE | FCVAR_CHEAT );
 
+static ConVar c_thirdpersonshoulder("c_thirdpersonshoulder", "false", FCVAR_ARCHIVE); // flag to indicate when we are using thirdperson-shoulder
+static ConVar c_thirdpersonshoulderoffset("c_thirdpersonshoulderoffset", "20.0", FCVAR_ARCHIVE); // camera right offset for thirdperson-shoulder
+static ConVar c_thirdpersonshoulderdist("c_thirdpersonshoulderdist", "40.0", FCVAR_ARCHIVE); // camera distance from the player when in thirdperson-shoulder
+static ConVar c_thirdpersonshoulderheight("c_thirdpersonshoulderheight", "5.0", FCVAR_ARCHIVE); // camera height above the player
+static ConVar c_thirdpersonshoulderaimdist("c_thirdpersonshoulderaimdist", "120.0", FCVAR_ARCHIVE); // the distance in front of the player to focus the camera
+
 static kbutton_t cam_pitchup, cam_pitchdown, cam_yawleft, cam_yawright;
 static kbutton_t cam_in, cam_out; // -- "cam_move" is unused
 
@@ -67,11 +73,11 @@ void CAM_ToThirdPerson(void)
 	input->CAM_ToThirdPerson();
 
 	// Let the local player know
-	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+	/*C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
 	if ( localPlayer )
 	{
 		localPlayer->ThirdPersonSwitch( true );
-	}
+	}*/
 }
 
 /*
@@ -111,9 +117,36 @@ void CAM_ToFirstPerson(void)
 	input->CAM_ToFirstPerson();
 
 	// Let the local player know
-	if ( localPlayer )
+	/*if ( localPlayer )
 	{
 		localPlayer->ThirdPersonSwitch( false );
+	}*/
+
+	c_thirdpersonshoulder.SetValue(false);
+}
+
+// ==============================
+// CAM_ToThirdPersonShoulder
+// ==============================
+void CAM_ToThirdPersonShoulder(void)
+{
+	input->CAM_ToThirdPersonShoulder();
+}
+
+void CInput::CAM_ToThirdPersonShoulder()
+{
+	if (c_thirdpersonshoulder.GetBool())
+	{
+		cam_command.SetValue(CAM_COMMAND_TOFIRSTPERSON);
+		c_thirdpersonshoulder.SetValue(false);
+		cam_idealdist.SetValue(cam_idealdist.GetDefault());
+	}
+	else
+	{
+		cam_command.SetValue(CAM_COMMAND_TOTHIRDPERSON);
+		c_thirdpersonshoulder.SetValue(true);
+		cam_idealdist.SetValue(c_thirdpersonshoulderdist.GetFloat());
+		g_ThirdPersonManager.SetDesiredCameraOffset(Vector(c_thirdpersonshoulderdist.GetFloat(), c_thirdpersonshoulderoffset.GetFloat(), c_thirdpersonshoulderheight.GetFloat()));
 	}
 }
 
@@ -267,6 +300,18 @@ void CInput::CAM_Think( void )
 
 	if( !m_fCameraInThirdPerson )
 		return;
+
+	//if (!sv_cheats)
+	//{
+	//	sv_cheats = cvar->FindVar("sv_cheats");
+	//}
+
+	//// If cheats have been disabled, pull us back out of third-person view.
+	//if (sv_cheats && !sv_cheats->GetBool() && !c_thirdpersonshoulder.GetBool())
+	//{
+	//	CAM_ToFirstPerson();
+	//	return;
+	//}
 
 	// In Maya-mode
 	if ( Is_CAM_ThirdPerson_MayaMode() )
@@ -684,6 +729,13 @@ void CInput::CAM_ToThirdPerson(void)
 		m_fCameraInThirdPerson = true; 
 	
 		g_ThirdPersonManager.SetCameraOffsetAngles( Vector( viewangles[ YAW ], viewangles[ PITCH ], CAM_MIN_DIST ) );
+
+		// Let the local player know
+		C_BasePlayer* localPlayer = C_BasePlayer::GetLocalPlayer();
+		if (localPlayer)
+		{
+			localPlayer->ThirdPersonSwitch(true);
+		}
 	}
 
 	cam_command.SetValue( 0 );
@@ -915,6 +967,7 @@ static ConCommand firstperson( "firstperson", ::CAM_ToFirstPerson, "Switch to fi
 static ConCommand thirdperson( "thirdperson", ::CAM_ToThirdPerson, "Switch to thirdperson camera.", FCVAR_CHEAT );
 static ConCommand firstperson( "firstperson", ::CAM_ToFirstPerson, "Switch to firstperson camera." );
 #endif
+static ConCommand thirdpersonshoulder("thirdpersonshoulder", ::CAM_ToThirdPersonShoulder, "Switch to thirdperson-shoulder camera.", FCVAR_SERVER_CAN_EXECUTE);
 static ConCommand camortho( "camortho", ::CAM_ToOrthographic, "Switch to orthographic camera.", FCVAR_CHEAT );
 static ConCommand startcammousemove( "+cammousemove",::CAM_StartMouseMove);
 static ConCommand endcammousemove( "-cammousemove",::CAM_EndMouseMove);

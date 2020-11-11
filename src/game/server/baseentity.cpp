@@ -6573,7 +6573,7 @@ void CBaseEntity::VelocityPunch( const Vector &vecForce )
 //-----------------------------------------------------------------------------
 void CBaseEntity::RemoveAllDecals( void )
 {
-	EntityMessageBegin( this );
+	EntityMessageBegin( entindex(), ThisClass::GetServerClass() );
 		WRITE_BYTE( BASEENTITY_MSG_REMOVE_DECALS );
 	MessageEnd();
 }

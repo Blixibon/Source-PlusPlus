@@ -47,6 +47,7 @@
 
 #ifdef HL2_LAZUL
 #include "peter/laz_player.h"
+#include "lazuul_gamerules.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -1201,7 +1202,7 @@ void CC_Player_NoClip( void )
 	if (!pPlayer)
 		return;
 
-	if ((pPlayer->GetPlayerPermissions() & LAZ_PERM_NOCLIP) == 0)
+	if (!LazuulRules()->IsSandBox() && (pPlayer->GetPlayerPermissions() & LAZ_PERM_NOCLIP) == 0)
 	{
 		if (!sv_cheats->GetBool())
 			return;

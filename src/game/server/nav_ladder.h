@@ -17,6 +17,23 @@ class CNavArea;
 
 //--------------------------------------------------------------------------------------------------------------
 /**
+ * Placeholder ladder class that holds the mins and maxs for a ladder, since its brushes
+ * are merged into the world during the compile.
+ */
+class CInfoLadder : public CServerOnlyEntity
+{
+public:
+	DECLARE_CLASS(CInfoLadder, CServerOnlyEntity);
+	DECLARE_DATADESC();
+
+	bool KeyValue(const char* szKeyName, const char* szValue);
+
+	Vector mins;
+	Vector maxs;
+};
+
+//--------------------------------------------------------------------------------------------------------------
+/**
  * The NavLadder represents ladders in the Navigation Mesh, and their connections to adjacent NavAreas
  * @todo Deal with ladders that allow jumping off to areas in the middle
  */

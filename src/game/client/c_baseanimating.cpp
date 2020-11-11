@@ -59,6 +59,7 @@
 #include "networkstringtable_clientdll.h"
 #include "saverestore_stringtable.h"
 #include "c_effects.h"
+#include "decals.h"
 
 #if defined( TF_CLIENT_DLL ) || defined ( TF_CLASSIC_CLIENT )
 #include "c_tf_player.h"
@@ -4021,8 +4022,15 @@ void HL1MaterialFootstepSound(C_BaseEntity *pEnt, bool bLeftFoot, float flVolume
 
 	if (psurf)
 	{
+		const auto &iMaterial = psurf->game.material;
+
 		EmitSound_t params;
-		const HL1Foot_t &effect = s_pHL1FootSounds[psurf->game.material - 'A'];
+		HL1Foot_t effect;
+		if ((iMaterial >= FIRST_CHAR_TEX) && (iMaterial <= LAST_CHAR_TEX))
+			effect = s_pHL1FootSounds[iMaterial - 'A'];
+		else
+			effect = { "HL1.Default.StepLeft", "HL1.Default.StepRight" };
+
 		if (bLeftFoot)
 		{
 			params.m_pSoundName = effect.m_pNameLeft;

@@ -335,9 +335,9 @@ public:
 	virtual C_BaseAnimating			*BecomeRagdollOnClient();
 	virtual C_BaseAnimating			*CreateRagdollCopy();
 	bool							InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, const matrix3x4_t *pDeltaBones1, const matrix3x4_t *pCurrentBonePosition, float boneDt, bool bFixedConstraints=false );
-	void							IgniteRagdoll( C_BaseAnimating *pSource );
-	void							TransferDissolveFrom( C_BaseAnimating *pSource );
-	void							TransferElectricsFrom(C_BaseAnimating* pSource);
+	virtual void					IgniteRagdoll( C_BaseAnimating *pSource );
+	virtual void					TransferDissolveFrom( C_BaseAnimating *pSource);
+	virtual void					TransferElectricsFrom(C_BaseAnimating* pSource);
 	virtual void					SaveRagdollInfo( int numbones, const matrix3x4_t &cameraTransform, CBoneAccessor &pBoneToWorld );
 	virtual bool					RetrieveRagdollInfo( Vector *pos, Quaternion *q );
 	virtual void					Clear( void );

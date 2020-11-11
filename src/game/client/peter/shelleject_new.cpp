@@ -12,33 +12,39 @@ bool CShellEjectScriptSystem::Init()
 	fileName = g_pFullFileSystem->FindFirstEx(fileName, "GAME", &findHandle);
 	while (fileName)
 	{
-		char name[32];
-		V_StripExtension(fileName, name, 32);
-		Q_snprintf(szFullFileName, sizeof(szFullFileName), "scripts/animevents/%s", fileName);
-		KeyValues *pKVFile = new KeyValues(name);
-		if (pKVFile->LoadFromFile(filesystem, szFullFileName))
+		if (!FStrEq(fileName, "readme.txt"))
 		{
-			shellMap_t *script = m_Scripts[name] = new shellMap_t;
-			for (KeyValues * pkvEvent = pKVFile->GetFirstTrueSubKey(); pkvEvent != NULL; pkvEvent = pkvEvent->GetNextTrueSubKey())
+			char name[32];
+			V_StripExtension(fileName, name, 32);
+			Q_snprintf(szFullFileName, sizeof(szFullFileName), "scripts/animevents/%s", fileName);
+			KeyValues* pKVFile = new KeyValues(name);
+			if (pKVFile->LoadFromFile(filesystem, szFullFileName))
 			{
-				scriptShell_t shell;
-				shell.iCount = pkvEvent->GetInt("casing_count", 1);
-				shell.forward_speed_min = pkvEvent->GetFloat("forward_speed_min", 100.0f);
-				shell.forward_speed_max = pkvEvent->GetFloat("forward_speed_max", 150.0f);
-				shell.right_speed_max = pkvEvent->GetFloat("right_speed_max", -10.0f);
-				shell.right_speed_min = pkvEvent->GetFloat("right_speed_min", 10.0f);
-				shell.up_speed_max = pkvEvent->GetFloat("up_speed_max", 0.0f);
-				shell.up_speed_min = pkvEvent->GetFloat("up_speed_min", 10.0f);
-				shell.lifetime = pkvEvent->GetFloat("lifetime", 10.0f);
-				shell.iSkin = pkvEvent->GetInt("skin");
-				shell.flGravityScale = pkvEvent->GetFloat("gravity_scale", 1.0f);
-				V_strncpy(shell.cModelName, pkvEvent->GetString("eject_model", "models/weapons/shell.mdl"), MAX_PATH);
+				shellMap_t* script = m_Scripts[name] = new shellMap_t;
+				for (KeyValues* pkvEvent = pKVFile->GetFirstTrueSubKey(); pkvEvent != NULL; pkvEvent = pkvEvent->GetNextTrueSubKey())
+				{
+					scriptShell_t shell;
+					shell.iCount = pkvEvent->GetInt("casing_count", 1);
+					shell.forward_speed_min = pkvEvent->GetFloat("forward_speed_min", 100.0f);
+					shell.forward_speed_max = pkvEvent->GetFloat("forward_speed_max", 150.0f);
+					shell.right_speed_max = pkvEvent->GetFloat("right_speed_max", -10.0f);
+					shell.right_speed_min = pkvEvent->GetFloat("right_speed_min", 10.0f);
+					shell.up_speed_max = pkvEvent->GetFloat("up_speed_max", 0.0f);
+					shell.up_speed_min = pkvEvent->GetFloat("up_speed_min", 10.0f);
+					shell.lifetime = pkvEvent->GetFloat("lifetime", 10.0f);
+					shell.iSkin = pkvEvent->GetInt("skin");
+					shell.flGravityScale = pkvEvent->GetFloat("gravity_scale", 1.0f);
+					V_strncpy(shell.cModelName, pkvEvent->GetString("eject_model", "models/weapons/shell.mdl"), MAX_PATH);
 
-				script->Insert(pkvEvent->GetName(), shell);
+					V_strncpy(shell.cParticleName, pkvEvent->GetString("shell_particle_system"), ARRAYSIZE(shell.cParticleName));
+					V_strncpy(shell.cParticleAttachName, pkvEvent->GetString("shell_particle_attachment"), ARRAYSIZE(shell.cParticleAttachName));
+					shell.nParticleAttachType = GetAttachTypeFromString(pkvEvent->GetString("shell_particle_attach_type"));
+
+					script->Insert(pkvEvent->GetName(), shell);
+				}
 			}
+			pKVFile->deleteThis();
 		}
-
-		pKVFile->deleteThis();
 		fileName = g_pFullFileSystem->FindNext(findHandle);
 	}
 
@@ -124,7 +130,7 @@ void CShellEjectScriptSystem::EjectShell(C_BaseAnimating * pEnt, const char * op
 	// Get the desired effect
 	p = nexttoken(token, p, ' ');
 
-	UtlSymId_t IDShell = shellMap->Find(token);
+	int IDShell = shellMap->Find(token);
 	if (!shellMap->IsValidIndex(IDShell))
 	{
 		Warning("EjectShellNew: No shell effect \'%s\' in file \'%s\'!\n", token, szWeaponClass);
@@ -141,51 +147,51 @@ void CShellEjectScriptSystem::EjectShell(C_BaseAnimating * pEnt, const char * op
 	pEnt->GetAttachment(token, vecPos, angAttachment);
 	AngleVectors(angAttachment, &vecForward, &vecRight, &vecUp);
 
-	C_PhysPropClientside *pShellProp = C_PhysPropClientside::CreateNew();
-
-	if (!pShellProp)
-		return;
-
-	/*const model_t *model = modelinfo->GetModel(pShellEffect->iModelIndex);
-
-	if (!model)
+	for (int i = 0; i < pShellEffect->iCount; i++)
 	{
-		DevMsg("CTempEnts::PhysicsProp: model index %i not found\n", pShellEffect->iModelIndex);
-		return;
-	}*/
+		C_PhysPropClientside* pShellProp = C_PhysPropClientside::CreateNew();
 
-	pShellProp->SetModelName(pShellEffect->cModelName);
-	pShellProp->m_nSkin = pShellEffect->iSkin;
-	pShellProp->SetAbsOrigin(vecPos);
-	pShellProp->SetAbsAngles(pEnt->GetAbsAngles());
-	pShellProp->SetPhysicsMode(PHYSICS_MULTIPLAYER_CLIENTSIDE);
-	pShellProp->SetEffects(EF_NOSHADOW);
-	pShellProp->SetGravity(pShellEffect->flGravityScale);
+		if (!pShellProp)
+			continue;
 
-	if (!pShellProp->Initialize())
-	{
-		pShellProp->Release();
-		return;
+		pShellProp->SetModelName(pShellEffect->cModelName);
+		pShellProp->m_nSkin = pShellEffect->iSkin;
+		pShellProp->SetAbsOrigin(vecPos);
+		pShellProp->SetAbsAngles(pEnt->GetAbsAngles());
+		pShellProp->SetPhysicsMode(PHYSICS_MULTIPLAYER_CLIENTSIDE);
+		pShellProp->SetEffects(EF_NOSHADOW);
+		pShellProp->SetGravity(pShellEffect->flGravityScale);
+
+		if (!pShellProp->Initialize())
+		{
+			pShellProp->Release();
+			continue;
+		}
+
+		IPhysicsObject* pPhysicsObject = pShellProp->VPhysicsGetObject();
+
+		if (pPhysicsObject)
+		{
+			Vector vel = RandomVector(-2.f, 2.f);
+			vel += vecForward * RandomFloat(pShellEffect->forward_speed_min, pShellEffect->forward_speed_max);
+			vel += vecUp * RandomFloat(pShellEffect->up_speed_min, pShellEffect->up_speed_max);
+			vel += vecRight * RandomFloat(pShellEffect->right_speed_min, pShellEffect->right_speed_max);
+			pPhysicsObject->AddVelocity(&vel, NULL);
+		}
+		else
+		{
+			// failed to create a physics object
+			pShellProp->Release();
+			continue;
+		}
+
+		if (pShellEffect->nParticleAttachType >= 0 && pShellEffect->nParticleAttachType < MAX_PATTACH_TYPES)
+		{
+			DispatchParticleEffect(pShellEffect->cParticleName, (ParticleAttachment_t)pShellEffect->nParticleAttachType, pShellProp, pShellEffect->cParticleAttachName);
+		}
+
+		pShellProp->StartFadeOut(pShellEffect->lifetime);
 	}
-
-	IPhysicsObject *pPhysicsObject = pShellProp->VPhysicsGetObject();
-
-	if (pPhysicsObject)
-	{
-		Vector vel = RandomVector(-2.f, 2.f);
-		vel += vecForward * RandomFloat(pShellEffect->forward_speed_min, pShellEffect->forward_speed_max);
-		vel += vecUp * RandomFloat(pShellEffect->up_speed_min, pShellEffect->up_speed_max);
-		vel += vecRight * RandomFloat(pShellEffect->right_speed_min, pShellEffect->right_speed_max);
-		pPhysicsObject->AddVelocity(&vel, NULL);
-	}
-	else
-	{
-		// failed to create a physics object
-		pShellProp->Release();
-		return;
-	}
-
-	pShellProp->StartFadeOut(pShellEffect->lifetime);
 }
 
 CShellEjectScriptSystem g_ShellSystem;

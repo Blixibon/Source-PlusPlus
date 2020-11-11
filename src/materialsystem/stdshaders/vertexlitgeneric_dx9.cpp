@@ -14,7 +14,9 @@
 #include "pp_vertexlit_wetness_pass.h"
 #include "weapon_sheen_pass_helper.h"
 
-BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
+DEFINE_FALLBACK_SHADER(PP_VertexLitGeneric, PP_VertexLitGeneric_DX9_HDR)
+
+BEGIN_VS_SHADER( PP_VertexLitGeneric_DX9, "Help for VertexLitGeneric" )
 	BEGIN_SHADER_PARAMS
 		SHADER_PARAM( ALBEDO, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "albedo (Base texture with no baked lighting)" )
 		SHADER_PARAM( COMPRESS, SHADER_PARAM_TYPE_TEXTURE, "shadertest/BaseTexture", "compression wrinklemap" )
@@ -626,6 +628,23 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 				Draw(false);
 			}
 		}
+
+		// Flesh Interior Pass
+		if (params[FLESHINTERIORENABLED]->GetIntValue())
+		{
+			// If ( snapshotting ) or ( we need to draw this frame )
+			if ((pShaderShadow != NULL) || (bDrawStandardPass))
+			{
+				FleshInteriorBlendedPassVars_t info;
+				SetupVarsFleshInteriorBlendedPass(info);
+				DrawFleshInteriorBlendedPass(this, params, pShaderAPI, pShaderShadow, info, vertexCompression);
+			}
+			else // We're not snapshotting and we don't need to draw this frame
+			{
+				// Skip this pass!
+				Draw(false);
+			}
+		}
 		
 		// Weapon sheen pass 
 		// only if doing standard as well (don't do it if cloaked)
@@ -641,6 +660,23 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 			{
 				// Skip this pass!
 				Draw( false );
+			}
+		}
+
+		// Emissive Scroll Pass
+		if (params[EMISSIVEBLENDENABLED]->GetIntValue())
+		{
+			// If ( snapshotting ) or ( we need to draw this frame )
+			if ((pShaderShadow != NULL) || (bDrawStandardPass && params[EMISSIVEBLENDSTRENGTH]->GetFloatValue() > 0.0f))
+			{
+				EmissiveScrollBlendedPassVars_t info;
+				SetupVarsEmissiveScrollBlendedPass(info);
+				DrawEmissiveScrollBlendedPass(this, params, pShaderAPI, pShaderShadow, info, vertexCompression);
+			}
+			else // We're not snapshotting and we don't need to draw this frame
+			{
+				// Skip this pass!
+				Draw(false);
 			}
 		}
 
@@ -660,39 +696,21 @@ BEGIN_VS_SHADER( PP_VertexLitGeneric, "Help for VertexLitGeneric" )
 				Draw( false );
 			}
 		}
-
-		// Emissive Scroll Pass
-		if ( params[EMISSIVEBLENDENABLED]->GetIntValue() )
-		{
-			// If ( snapshotting ) or ( we need to draw this frame )
-			if ( ( pShaderShadow != NULL ) || ( params[EMISSIVEBLENDSTRENGTH]->GetFloatValue() > 0.0f ) )
-			{
-				EmissiveScrollBlendedPassVars_t info;
-				SetupVarsEmissiveScrollBlendedPass( info );
-				DrawEmissiveScrollBlendedPass( this, params, pShaderAPI, pShaderShadow, info, vertexCompression );
-			}
-			else // We're not snapshotting and we don't need to draw this frame
-			{
-				// Skip this pass!
-				Draw( false );
-			}
-		}
-
-		// Flesh Interior Pass
-		if ( params[FLESHINTERIORENABLED]->GetIntValue() )
-		{
-			// If ( snapshotting ) or ( we need to draw this frame )
-			if ( ( pShaderShadow != NULL ) || ( true ) )
-			{
-				FleshInteriorBlendedPassVars_t info;
-				SetupVarsFleshInteriorBlendedPass( info );
-				DrawFleshInteriorBlendedPass( this, params, pShaderAPI, pShaderShadow, info, vertexCompression );
-			}
-			else // We're not snapshotting and we don't need to draw this frame
-			{
-				// Skip this pass!
-				Draw( false );
-			}
-		}
 	}
 END_SHADER
+
+//-----------------------------------------------------------------------------
+// This allows us to use a block labelled 'Water_DX9_HDR' in the water materials
+//-----------------------------------------------------------------------------
+BEGIN_INHERITED_SHADER(PP_VertexLitGeneric_DX9_HDR, PP_VertexLitGeneric_DX9,
+	"Help for PP_VertexLitGeneric_DX9_HDR")
+
+	SHADER_FALLBACK
+{
+	if (g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE)
+	{
+		return "PP_VertexLitGeneric_DX9";
+	}
+	return 0;
+}
+END_INHERITED_SHADER

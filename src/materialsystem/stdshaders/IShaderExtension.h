@@ -40,26 +40,9 @@ struct UberlightState_t
 	IMPLEMENT_OPERATOR_EQUAL( UberlightState_t );
 };
 
-// Interface for the main thread
-class IShaderExtension
-{
-public:
-	virtual void SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t) = 0;
-	virtual void OnFlashlightStateDestroyed(int iIndex) = 0;
-
-	virtual void SetDepthTextureFallbackForFlashlightState(int iIndex, ITexture*) = 0;
-	virtual void SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom) = 0;
-
-protected:
-	virtual ~IShaderExtension() {};
-};
-
-#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension005"
-
 typedef struct
 {
 	UberlightState_t uber;
-	ITexture* pDepth;
 
 	// Ortho Data
 	bool  m_bOrtho;
@@ -67,6 +50,31 @@ typedef struct
 	float m_fOrthoRight;
 	float m_fOrthoTop;
 	float m_fOrthoBottom;
+
+	float m_fBrightnessScale;
+} flashlightDataExt_t;
+
+// Interface for the main thread
+class IShaderExtension
+{
+public:
+	//virtual void SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t) = 0;
+	virtual void OnFlashlightStateDestroyed(int iIndex) = 0;
+
+	virtual void SetDepthTextureFallbackForFlashlightState(int iIndex, ITexture*) = 0;
+	//virtual void SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom) = 0;
+
+	virtual void SetFlashlightStateExtension(int iIndex, const flashlightDataExt_t &) = 0;
+
+protected:
+	virtual ~IShaderExtension() {};
+};
+
+#define SHADEREXTENSION_INTERFACE_VERSION "IShaderExtension006"
+
+typedef struct flashlightData_s : public flashlightDataExt_t
+{
+	ITexture* pDepth;
 } flashlightData_t;
 
 typedef struct
@@ -83,6 +91,6 @@ public:
 	virtual const cubemapParallaxData_t* GetCubemapParallax(ITexture* pEnvmap) = 0;
 };
 
-#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal003"
+#define SHADEREXTENSIONINTERNAL_INTERFACE_VERSION "IShaderExtensionInternal004"
 
 #endif // ISHADEREXTENSION_H

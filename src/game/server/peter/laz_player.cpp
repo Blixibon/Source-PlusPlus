@@ -126,7 +126,7 @@ const char* g_pszFlashLightSounds[FLASHLIGHT_TYPE_COUNT] = {
 CLaz_PlayerLocalData::CLaz_PlayerLocalData()
 {
 	m_iNumLocatorContacts = 0;
-	m_flLocatorRange = 1200.f;
+	m_flLocatorRange = 0.f;
 	for (int i = 0; i < LOCATOR_MAX_CONTACTS; i++)
 	{
 		m_vLocatorPositions.Set(i, vec3_invalid);
@@ -224,11 +224,11 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 	if (g_pGameRules->IsMultiplayer())
 		return;
 
-	if (!pPlayer || pPlayer->GetHealth() <= 0 || !pPlayer->IsAlive())
+	if (LazuulRules()->IsSandBox())
 		return;
 
-
-
+	if (!pPlayer || pPlayer->GetHealth() <= 0 || !pPlayer->IsAlive())
+		return;
 
 	//pHands->NetworkStateChanged();
 
@@ -275,6 +275,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		pHLMS->m_nMovementCfg = UTIL_StringFieldToInt(pkvAbillites->GetString("movecfg"), g_pszMovementConfigs, NUM_MOVEMENT_CONFIGS);
 
 		pHLMS->m_flEyeHeightOverride = pkvAbillites->GetFloat("view_height", -1.f);
+		pHLMS->m_LazLocal.m_flLocatorRange = pkvAbillites->GetFloat("locator_range");
 	}
 	else
 	{
@@ -283,6 +284,7 @@ void UTIL_UpdatePlayerModel(CHL2_Player* pPlayer)
 		pHLMS->SetResponseClassname(DEFAULT_ABILITY);
 		pHLMS->m_nFlashlightType = FLASHLIGHT_SUIT;
 		pHLMS->m_nMovementCfg = MOVECFG_HL2;
+		pHLMS->m_LazLocal.m_flLocatorRange = 0.f;
 	}
 }
 
@@ -308,6 +310,7 @@ CLaz_Player::CLaz_Player()
 	m_nSpecialAttack = -1;
 	m_iPlayerSoundType = INVALID_STRING_INDEX;
 	m_nFlashlightType = FLASHLIGHT_SUIT;
+	m_nMovementCfg = MOVECFG_HL2;
 }
 
 void CLaz_Player::Precache(void)
@@ -380,8 +383,11 @@ void CLaz_Player::Spawn(void)
 {
 	m_iszVoiceType = gm_iszDefaultAbility;
 
-	if (!g_pGameRules->IsMultiplayer())
+	if (!g_pGameRules->IsMultiplayer() && GetTeamNumber() < TEAM_SPECTATOR)
 		ChangeTeam(GetAutoTeam());
+
+	if (LazuulRules()->IsSandBox())
+		SetPlayerModel();
 
 	BaseClass::Spawn();
 
@@ -448,6 +454,7 @@ void CLaz_Player::Spawn(void)
 			m_nMovementCfg = UTIL_StringFieldToInt(pkvAbillites->GetString("movecfg"), g_pszMovementConfigs, NUM_MOVEMENT_CONFIGS);
 
 			m_flEyeHeightOverride = pkvAbillites->GetFloat("view_height", -1.f);
+			m_LazLocal.m_flLocatorRange = pkvAbillites->GetFloat("locator_range");
 		}
 		else
 		{
@@ -458,6 +465,7 @@ void CLaz_Player::Spawn(void)
 			m_nFlashlightType = FLASHLIGHT_NONE;
 			m_flEyeHeightOverride = -1.f;
 			m_nMovementCfg = MOVECFG_HL2;
+			m_LazLocal.m_flLocatorRange = 0.f;
 		}
 	}
 	else
@@ -475,6 +483,11 @@ void CLaz_Player::Spawn(void)
 		RemoveEffects(EF_NODRAW);
 
 		SetViewOffset(GetPlayerEyeHeight());
+
+		if (!IsSuitEquipped())
+			StartWalking();
+		else
+			StopWalking();
 	}
 
 	m_flNextLocatorUpdateTime = gpGlobals->curtime - 1.0f;//TE120
@@ -484,7 +497,7 @@ void CLaz_Player::InitialSpawn(void)
 {
 	BaseClass::InitialSpawn();
 
-	if (gpGlobals->maxClients > 1)
+	if (gpGlobals->maxClients > 1 && !IsFakeClient())
 		State_Transition(STATE_WELCOME);
 	else
 		State_Transition(STATE_ACTIVE);
@@ -524,7 +537,7 @@ CBaseEntity * CLaz_Player::EntSelectSpawnPoint(void)
 
 	int iTeamSpawnTeam = RandomInt(TEAM_COMBINE, TEAM_REBELS);
 
-	if (!g_pGameRules->IsMultiplayer())
+	if (!g_pGameRules->IsMultiplayer() && !LazuulRules()->IsSandBox())
 	{
 		// If startspot is set, (re)spawn there.
 		if (!gpGlobals->startspot || !strlen(STRING(gpGlobals->startspot)))
@@ -668,7 +681,7 @@ SelectRandomSpot:
 		{
 			// if ent is a client, kill em (unless they are ourselves)
 			if (ent->IsPlayer() && !(ent->edict() == player) && !ent->IsInTeam(GetTeam()))
-				ent->TakeDamage(CTakeDamageInfo(GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC));
+				ent->TakeDamage(CTakeDamageInfo(GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC, TF_DMG_CUSTOM_TELEFRAG));
 		}
 		goto ReturnSpot;
 	}
@@ -1124,6 +1137,8 @@ void CLaz_Player::ForceChangeTeam(int iTeam)
 		return;
 
 	BaseClass::ChangeTeam(iTeam);
+
+	SetPlayerModel();
 }
 
 //-----------------------------------------------------------------------------
@@ -1131,30 +1146,19 @@ void CLaz_Player::ForceChangeTeam(int iTeam)
 //-----------------------------------------------------------------------------
 int CLaz_Player::GetAutoTeam(void)
 {
-	if (LazuulRules()->GetNumTeams() < 2)
+	if (LazuulRules()->GetNumTeams() < 2 || LazuulRules()->IsSandBox())
 		return LazuulRules()->GetProtaganistTeam();
 
 	int iTeam = TEAM_SPECTATOR;
 
-	CTeam *pBlue = GetGlobalTeam(TF_TEAM_BLUE);
-	CTeam *pRed = GetGlobalTeam(TF_TEAM_RED);
-
+	int iHeaviest, iLightest;
+	if (LazuulRules()->AreTeamsUnbalanced(iHeaviest, iLightest))
 	{
-		if (pBlue && pRed)
-		{
-			if (pBlue->GetNumPlayers() < pRed->GetNumPlayers())
-			{
-				iTeam = TF_TEAM_BLUE;
-			}
-			else if (pRed->GetNumPlayers() < pBlue->GetNumPlayers())
-			{
-				iTeam = TF_TEAM_RED;
-			}
-			else
-			{
-				iTeam = RandomInt(0, 1) ? TF_TEAM_RED : TF_TEAM_BLUE;
-			}
-		}
+		iTeam = iLightest;
+	}
+	else
+	{
+		iTeam = RandomInt(FIRST_GAME_TEAM, LAST_SHARED_TEAM + LazuulRules()->GetNumTeams());
 	}
 
 	return iTeam;
@@ -1162,7 +1166,7 @@ int CLaz_Player::GetAutoTeam(void)
 
 bool CLaz_Player::HandleCommand_JoinTeam(int team)
 {
-	if (!g_pGameRules->IsMultiplayer())
+	if (!g_pGameRules->IsMultiplayer() && !LazuulRules()->IsSandBox())
 		return false;
 
 	if (team == TF_TEAM_AUTOASSIGN)
@@ -1211,7 +1215,7 @@ bool CLaz_Player::HandleCommand_JoinTeam(int team)
 
 void CLaz_Player::SetPlayerModel(void)
 {
-	if (!g_pGameRules->IsMultiplayer())
+	if (!g_pGameRules->IsMultiplayer() && !LazuulRules()->IsSandBox())
 		return;
 
 	if (HasMPModel())
@@ -1227,7 +1231,7 @@ void CLaz_Player::SetPlayerModel(void)
 		V_SplitString(pszModel, ";", preferredModels);
 	}
 
-	if (preferredModels.Count() && (GetPlayerPermissions() & LAZ_PERM_FORCE_MODEL))
+	if (preferredModels.Count() && (LazuulRules()->IsSandBox() || (GetPlayerPermissions() & LAZ_PERM_FORCE_MODEL)))
 	{
 		const char* pszModel = preferredModels.Head();
 		PlayerModels::playerModel_t model = PlayerModelSystem()->FindPlayerModel(pszModel);
@@ -2744,7 +2748,7 @@ void CLaz_Player::StateThinkDYING(void)
 		if (gpGlobals->curtime < flFreezeEnd)
 			return;
 
-		if (gpGlobals->maxClients <= 1)
+		if (gpGlobals->maxClients <= 1 && !LazuulRules()->IsSandBox())
 		{
 			::respawn(this, false);
 			return;
@@ -2770,7 +2774,7 @@ void CLaz_Player::State_Enter_ACTIVE()
 	RemoveEffects(EF_NODRAW | EF_NOSHADOW);
 	RemoveSolidFlags(FSOLID_NOT_SOLID);
 	RemoveFlag(FL_NOTARGET);
-	m_Local.m_iHideHUD = 0;
+	//m_Local.m_iHideHUD = 0;
 	//PhysObjectWake();
 	if (GetPlayerSquad())
 	{

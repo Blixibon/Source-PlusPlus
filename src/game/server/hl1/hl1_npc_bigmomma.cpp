@@ -100,6 +100,20 @@ int gSpitSprite, gSpitDebrisSprite;
 
 Vector VecCheckSplatToss( CBaseEntity *pEntity, const Vector &vecSpot1, Vector vecSpot2, float maxHeight );
 void MortarSpray( const Vector &position, const Vector &direction, int spriteModel, int count );
+void UTIL_BigMomDecalTrace(trace_t* pTrace, int iDecalIndex)
+{
+	if (pTrace->fraction == 1.0)
+		return;
+
+	if (iDecalIndex < 0)
+		return;
+
+	Assert(pTrace->m_pEnt);
+
+	CBroadcastRecipientFilter filter;
+	te->Decal(filter, 0.0, &pTrace->endpos, &pTrace->startpos,
+		pTrace->GetEntityIndex(), pTrace->hitbox, iDecalIndex);
+}
 
 #define SF_INFOBM_RUN		0x0001
 #define SF_INFOBM_WAIT		0x0002
@@ -349,7 +363,7 @@ public:
 	CUSTOM_SCHEDULES;
 */
 
-private:
+protected:
 	float	m_nodeTime;
 	float	m_crabTime;
 	float	m_mortarTime;
@@ -365,7 +379,9 @@ private:
 
 	Vector m_vTossDir;
 
+	static int sm_nSplashDecal;
 
+	friend class CBMortar;
 };
 
 
@@ -387,6 +403,8 @@ END_DATADESC()
 
 
 LINK_ENTITY_TO_CLASS ( monster_bigmomma, CNPC_BigMomma );
+
+int CNPC_BigMomma::sm_nSplashDecal = 0;
 
 //=========================================================
 // Spawn
@@ -441,6 +459,7 @@ void CNPC_BigMomma::Precache()
 	PrecacheModel("models/big_mom.mdl");
 
 	UTIL_PrecacheOther( BIG_CHILDCLASS );
+	UTIL_PrecacheOther("bmortar");
 
 	// TEMP: Squid
 	PrecacheModel("sprites/mommaspit.vmt");// spit projectile.
@@ -459,6 +478,8 @@ void CNPC_BigMomma::Precache()
 	PrecacheScriptSound( "BigMomma.LayHeadcrab" );
 	PrecacheScriptSound( "BigMomma.ChildDie" );
 	PrecacheScriptSound( "BigMomma.LaunchMortar" );
+
+	sm_nSplashDecal = UTIL_PrecacheDecal("decals/{mommablob");
 }
 
 //=========================================================
@@ -987,7 +1008,7 @@ void CNPC_BigMomma::LayHeadcrab( void )
 
 	trace_t tr;
 	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector(0,0,100), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
-	UTIL_DecalTrace( &tr, "Splash" );
+	UTIL_BigMomDecalTrace(&tr, sm_nSplashDecal);
 
 	CPASAttenuationFilter filter( this );
 	EmitSound( filter, entindex(), "BigMomma.LayHeadcrab" );
@@ -1231,7 +1252,7 @@ void CBMortar::Touch( CBaseEntity *pOther )
 	{
 		// make a splat on the wall
 		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * 10, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
-		UTIL_DecalTrace( &tr, "Splash" );
+		UTIL_BigMomDecalTrace(&tr, CNPC_BigMomma::sm_nSplashDecal);
 	}
 	else
 	{

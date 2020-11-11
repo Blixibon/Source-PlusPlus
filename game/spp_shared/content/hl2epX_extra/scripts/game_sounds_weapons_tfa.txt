@@ -1,0 +1,550 @@
+// Channels
+//	CHAN_AUTO		= 0,
+//	CHAN_WEAPON		= 1,
+//	CHAN_VOICE		= 2,
+//	CHAN_ITEM		= 3,
+//	CHAN_BODY		= 4,
+//	CHAN_STREAM		= 5,		// allocate stream channel from the static or dynamic area
+//	CHAN_STATIC		= 6,		// allocate channel from the static area 
+// these can be set with "channel" "2" or "channel" "chan_voice"
+
+//-----------------------------------------------------------------------------
+// common attenuation values
+//-----------------------------------------------------------------------------
+
+// DON'T USE THESE - USE SNDLVL_ INSTEAD!!!
+//	ATTN_NONE		0.0f	
+//	ATTN_NORM		0.8f
+//	ATTN_IDLE		2.0f
+//	ATTN_STATIC		1.25f 
+//	ATTN_RICOCHET	1.5f
+//	ATTN_GUNFIRE	0.27f
+
+//	SNDLVL_NONE		= 0,
+//	SNDLVL_25dB		= 25,
+//	SNDLVL_30dB		= 30,
+//	SNDLVL_35dB		= 35,
+//	SNDLVL_40dB		= 40,
+//	SNDLVL_45dB		= 45,
+//	SNDLVL_50dB		= 50,	// 3.9
+//	SNDLVL_55dB		= 55,	// 3.0
+//	SNDLVL_IDLE		= 60,	// 2.0
+//	SNDLVL_TALKING	= 60,	// 2.0
+//	SNDLVL_60dB		= 60,	// 2.0
+//	SNDLVL_65dB		= 65,	// 1.5
+//	SNDLVL_STATIC	= 66,	// 1.25
+//	SNDLVL_70dB		= 70,	// 1.0
+//	SNDLVL_NORM		= 75,
+//	SNDLVL_75dB		= 75,	// 0.8
+//	SNDLVL_80dB		= 80,	// 0.7
+//	SNDLVL_85dB		= 85,	// 0.6
+//	SNDLVL_90dB		= 90,	// 0.5
+//	SNDLVL_95dB		= 95,
+//	SNDLVL_100dB	= 100,	// 0.4
+//	SNDLVL_105dB	= 105,
+//	SNDLVL_120dB	= 120,
+//	SNDLVL_130dB	= 130,
+//	SNDLVL_GUNFIRE	= 140,	// 0.27
+//	SNDLVL_140dB	= 140,	// 0.2
+//	SNDLVL_150dB	= 150,	// 0.2
+
+
+"Weapon_Bow.1"
+{
+	"rndwave"
+	{
+		"wave"	"weapons/tfbow/fire1.wav"
+		"wave"	"weapons/tfbow/fire2.wav"
+		"wave"	"weapons/tfbow/fire3.wav"
+	}
+	"volume"	"1"
+	"channel"	"6"
+}
+
+"Weapon_Bow.boltpull"
+{
+	"rndwave"
+	{
+		"wave"	"weapons/tfbow/pull1.wav"
+		"wave"	"weapons/tfbow/pull2.wav"
+		"wave"	"weapons/tfbow/pull3.wav"
+	}
+	"volume"	"1"
+	"channel"	"147"
+}
+
+"TFA.NearlyEmpty"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"65"
+	"wave"	"weapons/tfa/lowammo.wav"
+	"volume"	"1"
+}
+
+"TFA.Bash"
+{
+	"pitch"	"97,103"
+	"channel"	"150"
+	"rndwave"
+	{
+		"wave"	"weapons/tfa/bash1.wav"
+		"wave"	"weapons/tfa/bash2.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA.BashWall"
+{
+	"pitch"	"97,103"
+	"channel"	"150"
+	"wave"	"weapons/melee/rifle_swing_hit_world.wav"
+	"volume"	"1"
+}
+
+"TFA.BashFlesh"
+{
+	"pitch"	"97,103"
+	"channel"	"150"
+	"rndwave"
+	{
+		"wave"	"weapons/melee/rifle_swing_hit_infected7.wav"
+		"wave"	"weapons/melee/rifle_swing_hit_infected8.wav"
+		"wave"	"weapons/melee/rifle_swing_hit_infected9.wav"
+		"wave"	"weapons/melee/rifle_swing_hit_infected10.wav"
+		"wave"	"weapons/melee/rifle_swing_hit_infected11.wav"
+		"wave"	"weapons/melee/rifle_swing_hit_infected12.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA.IronIn"
+{
+	"pitch"	"97,103"
+	"channel"	"149"
+	"wave"	"weapons/tfa/ironin.wav"
+	"volume"	"1"
+}
+
+"TFA.IronOut"
+{
+	"pitch"	"97,103"
+	"channel"	"149"
+	"wave"	"weapons/tfa/ironout.wav"
+	"volume"	"1"
+}
+
+"Weapon_Pistol.Empty2"
+{
+	"pitch"	"97,103"
+	"channel"	"147"
+	"soundlevel"	"80"
+	"wave"	"weapons/pistol/pistol_empty.wav"
+	"volume"	"1"
+}
+
+"Weapon_AR2.Empty2"
+{
+	"pitch"	"97,103"
+	"channel"	"147"
+	"soundlevel"	"80"
+	"wave"	"weapons/ar2/ar2_empty.wav"
+	"volume"	"1"
+}
+
+"TFA.LowAmmo"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"75"
+	"wave"	")weapons/tfa/lowammo_indicator_automatic.wav"
+	"volume"	"1"
+}
+
+"TFA.LowAmmo.Handgun"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"75"
+	"wave"	")weapons/tfa/lowammo_indicator_handgun.wav"
+	"volume"	"1"
+}
+
+"TFA.LowAmmo.Shotgun"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"75"
+	"wave"	")weapons/tfa/lowammo_indicator_shotgun.wav"
+	"volume"	"1"
+}
+
+"TFA.LowAmmo_Dry"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"75"
+	"wave"	")weapons/tfa/lowammo_dry_automatic.wav"
+	"volume"	"1"
+}
+
+"TFA.LowAmmo_Dry.Handgun"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"75"
+	"wave"	")weapons/tfa/lowammo_dry_handgun.wav"
+	"volume"	"1"
+}
+
+"TFA.LowAmmo_Dry.Shotgun"
+{
+	"pitch"	"100"
+	"channel"	"151"
+	"soundlevel"	"75"
+	"wave"	")weapons/tfa/lowammo_dry_shotgun.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.PistolDraw"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/uni/uni_pistol_draw_01.wav"
+		"wave"	")weapons/ins2/uni/uni_pistol_draw_02.wav"
+		"wave"	")weapons/ins2/uni/uni_pistol_draw_03.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2.PistolHolster"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/uni/uni_pistol_holster.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.Draw"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/uni/uni_weapon_draw_01.wav"
+		"wave"	")weapons/ins2/uni/uni_weapon_draw_02.wav"
+		"wave"	")weapons/ins2/uni/uni_weapon_draw_03.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2.Holster"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/uni/uni_weapon_holster.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.IronIn"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/uni/uni_ads_in_01.wav"
+		"wave"	")weapons/ins2/uni/uni_ads_in_02.wav"
+		"wave"	")weapons/ins2/uni/uni_ads_in_03.wav"
+		"wave"	")weapons/ins2/uni/uni_ads_in_04.wav"
+		"wave"	")weapons/ins2/uni/uni_ads_in_05.wav"
+		"wave"	")weapons/ins2/uni/uni_ads_in_06.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2.IronOut"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/uni/uni_ads_out_01.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.LeanIn"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/uni/uni_lean_in_01.wav"
+		"wave"	")weapons/ins2/uni/uni_lean_in_02.wav"
+		"wave"	")weapons/ins2/uni/uni_lean_in_03.wav"
+		"wave"	")weapons/ins2/uni/uni_lean_in_04.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2.GLBeginReload"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/uni/uni_gl_beginreload_01.wav"
+		"wave"	")weapons/ins2/uni/uni_gl_beginreload_02.wav"
+		"wave"	")weapons/ins2/uni/uni_gl_beginreload_03.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2_GP30.1"
+{
+	"pitch"	"97,103"
+	"channel"	"6"
+	"soundlevel"	"120"
+	"wave"	")weapons/ins2/gp30/gp30_fp.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_GP30.Deselect"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/gp30/handling/gp30_deselect.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_GP30.Select"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/gp30/handling/gp30_select.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_GP30.GrenadeIn"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/gp30/handling/gp30_insertgrenade_01.wav"
+		"wave"	")weapons/ins2/gp30/handling/gp30_insertgrenade_02.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2_GP30.GrenadeInClick"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/gp30/handling/gp30_insertgrenade_click.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_GP30.Empty"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/gp30/handling/gp30_empty.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.1"
+{
+	"pitch"	"97,103"
+	"channel"	"6"
+	"soundlevel"	"120"
+	"wave"	")weapons/ins2/m203/m203_fp.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.Deselect"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/m203/handling/m203_deselect.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.Select"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/m203/handling/m203_select.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.Empty"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/m203/handling/m203_empty.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.GrenadeIn"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"rndwave"
+	{
+		"wave"	")weapons/ins2/m203/handling/m203_insertgrenade_01.wav"
+		"wave"	")weapons/ins2/m203/handling/m203_insertgrenade_02.wav"
+	}
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.CloseBarrel"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/m203/handling/m203_closebarrel.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2_M203.OpenBarrel"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/ins2/m203/handling/m203_openbarrel.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.FlashlightOn"
+{
+	"pitch"	"100"
+	"channel"	"3"
+	"soundlevel"	"75"
+	"wave"	"weapons/ins2/player/flashlight_on.wav"
+	"volume"	"0.2"
+}
+
+"TFA_INS2.FlashlightOff"
+{
+	"pitch"	"100"
+	"channel"	"3"
+	"soundlevel"	"75"
+	"wave"	"weapons/ins2/player/flashlight_off.wav"
+	"volume"	"0.2"
+}
+
+"TFA_INS2.MP5K.Single"
+{
+	"pitch"	"97,103"
+	"channel"	"1"
+	"soundlevel"	"120"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_fp.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Single_NPC"
+{
+	"pitch"	"97,103"
+	"channel"	"1"
+	"soundlevel"	"120"
+	"wave"	"^weapons/tfa_ins2/mp5k/mp5k_fp_npc.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.2"
+{
+	"pitch"	"97,103"
+	"channel"	"1"
+	"soundlevel"	"120"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_suppressed_fp.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Boltback"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_boltback.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Boltlock"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_boltlock.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Boltrelease"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_boltrelease.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Empty"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_empty.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Magrelease"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_magrelease.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Magout"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_magout.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.Magin"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_magin.wav"
+	"volume"	"1"
+}
+
+"TFA_INS2.MP5K.ROF"
+{
+	"pitch"	"97,103"
+	"channel"	"0"
+	"soundlevel"	"80"
+	"wave"	")weapons/tfa_ins2/mp5k/mp5k_fireselect.wav"
+	"volume"	"1"
+}

@@ -51,6 +51,8 @@ game_sounds_manifest
 	"precache_file"		"scripts/game_sounds_weapons_c17.txt"
 	"precache_file"		"scripts/game_sounds_weapons_bms.txt"
 	"precache_file"		"scripts/weapon_sounds_hl2beta.txt"
+	"precache_file"		"scripts/game_sounds_weapons_csgo_knives.txt"
+	"precache_file"		"scripts/game_sounds_weapons_tfa.txt"
 
 	// MIMP VA
 	"precache_file"		"scripts/game_sounds_mimp.txt"

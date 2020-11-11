@@ -15,6 +15,7 @@
 // NOTE: This has to be the last file included!
 #include "tier0/memdbgon.h"
 
+ConVar mat_lightshaft_depthblend_scale("mat_lightshaft_depthblend_scale", "50");
 
 void InitParamsLightShafts( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, LightShaftsVars_t &info )
 {
@@ -54,7 +55,7 @@ void DrawLightShafts( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 		{
 			// Set stream format (note that this shader supports compression)
 			unsigned int flags = VERTEX_POSITION;
-			pShaderShadow->VertexShaderVertexFormat(flags, 0, NULL, 0); // no texture coordinates needed
+			pShaderShadow->VertexShaderVertexFormat(flags, 1, NULL, 0); // no texture coordinates needed
 		}
 
 		pShader->Draw(false);
@@ -62,12 +63,13 @@ void DrawLightShafts( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 	}
 
 	bool bSM30 = (g_pHardwareConfig->SupportsShaderModel_3_0() && g_pHardwareConfig->GetDXSupportLevel() >= 95);
+	bool bDepthFeather = (mat_lightshaft_depthblend_scale.GetFloat() > 0.f);
 
 	SHADOW_STATE
 	{
 		// Set stream format (note that this shader supports compression)
 		unsigned int flags = VERTEX_POSITION;
-		pShaderShadow->VertexShaderVertexFormat( flags, 0, NULL, 0 ); // no texture coordinates needed
+		pShaderShadow->VertexShaderVertexFormat( flags, 1, NULL, 0 ); // no texture coordinates needed
 		
 		if (bSM30)
 		{
@@ -100,6 +102,9 @@ void DrawLightShafts( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		pShaderShadow->EnableTexture( SHADER_SAMPLER3, true );					// Projective noise map used for non-uniform atmospherics
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER3, false );
+
+		pShaderShadow->EnableTexture(SHADER_SAMPLER4, true);
+		pShaderShadow->EnableSRGBRead(SHADER_SAMPLER4, false);
 
 		pShaderShadow->EnableSRGBWrite( true );
 
@@ -313,15 +318,7 @@ void DrawLightShafts( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 				uberlightState.m_fRoundness = v[2];
 			}
 
-			static IShaderDynamicAPI* shaderAPI;
-			shaderAPI = pShaderAPI;
-
-			auto func = [](int var, const float* pVec, int nConsts) {
-				shaderAPI->SetPixelShaderConstant(var, pVec, nConsts);
-			};
-
-			SetupUberlightFromState(func, flashlightState, uberlightState);
-
+			pShader->SetupUberlightFromState(flashlightState, uberlightState);
 
 			QAngle angles;
 			QuaternionAngles( flashlightState.m_quatOrientation, angles );
@@ -352,17 +349,25 @@ void DrawLightShafts( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		pShaderAPI->SetPixelShaderConstant( PSREG_FLASHLIGHT_SCREEN_SCALE, vScreenScale, 1 );
 
+		if (bDepthFeather)
+		{
+			pShaderAPI->SetDepthFeatheringPixelShaderConstant(PSREG_CONSTANT_03, mat_lightshaft_depthblend_scale.GetFloat());
+			pShaderAPI->BindStandardTexture(SHADER_SAMPLER4, TEXTURE_FRAME_BUFFER_FULL_DEPTH);
+		}
+
 		if (bSM30)
 		{
 			DECLARE_DYNAMIC_PIXEL_SHADER(lightshafts_ps30);
 			SET_DYNAMIC_PIXEL_SHADER_COMBO(FLASHLIGHTSHADOWS, flashlightState.m_bEnableShadows && (pFlashlightDepthTexture != NULL));
 			SET_DYNAMIC_PIXEL_SHADER_COMBO(UBERLIGHT, uberlightState.m_bEnabled);
+			SET_DYNAMIC_PIXEL_SHADER_COMBO(DEPTHBLEND, bDepthFeather);
 			SET_DYNAMIC_PIXEL_SHADER(lightshafts_ps30);
 		}
 		else
 		{
 			DECLARE_DYNAMIC_PIXEL_SHADER(lightshafts_ps20b);
 			SET_DYNAMIC_PIXEL_SHADER_COMBO(FLASHLIGHTSHADOWS, flashlightState.m_bEnableShadows && (pFlashlightDepthTexture != NULL));
+			SET_DYNAMIC_PIXEL_SHADER_COMBO(DEPTHBLEND, bDepthFeather);
 			SET_DYNAMIC_PIXEL_SHADER(lightshafts_ps20b);
 		}
 	}

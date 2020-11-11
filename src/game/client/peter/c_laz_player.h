@@ -8,6 +8,7 @@
 #include "hl2_vehicle_radar.h"
 #include "iinput.h"
 #include "c_npc_manhack.h"
+#include "beamdraw.h"
 
 extern INetworkStringTable *g_pStringTablePlayerFootSteps;
 
@@ -45,6 +46,7 @@ public:
 	virtual void OnPreDataChanged(DataUpdateType_t updateType);
 	virtual void			OnDataChanged(DataUpdateType_t updateType);
 	virtual void			ClientThink();
+	virtual void			AddEntity();
 	virtual float GetFOV( void );
 	virtual const QAngle& GetRenderAngles();
 
@@ -165,6 +167,9 @@ protected:
 	int				m_iOldTeam;
 
 	EHANDLE			m_hCurrentManhack;
+
+	void ReleaseFlashlight(void);
+	Beam_t* m_pFlashlightBeam;
 };
 
 inline C_Laz_Player *ToLazuulPlayer(C_BaseEntity *pEntity)

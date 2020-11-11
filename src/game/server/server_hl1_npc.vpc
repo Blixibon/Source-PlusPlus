@@ -81,6 +81,7 @@ $Project
 			$File	"hl1\hl1_npc_talker.cpp"
 			$File	"hl1\hl1_npc_talker.h"
 			$File	"hl1\hl1_npc_tentacle.cpp"
+			$File	"hl1\hl1_npc_tor.cpp"
 			$File	"hl1\hl1_npc_turret.cpp"
 			$File	"hl1\hl1_npc_vortigaunt.cpp"
 			$File	"hl1\hl1_npc_vortigaunt.h"

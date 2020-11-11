@@ -979,17 +979,17 @@ void CLightShaftsProxy::OnBind(void* pProxyData)
 
 		m_pShadowJitterSeedVar->SetFloatValue(FlashlightState.m_flShadowJitterSeed);
 
-		m_pUberlightVar->SetIntValue(FlashlightState.m_UberlightState.m_bEnabled ? 1 : 0);
+		m_pUberlightVar->SetIntValue(FlashlightState.m_ExtData.uber.m_bEnabled ? 1 : 0);
 
 		m_pEnableShadowsVar->SetIntValue(FlashlightState.m_bEnableShadows ? 1 : 0);
 
-		m_pUberNearFarVar->SetVecValue(FlashlightState.m_UberlightState.m_fNearEdge, FlashlightState.m_UberlightState.m_fFarEdge,
-			FlashlightState.m_UberlightState.m_fCutOn, FlashlightState.m_UberlightState.m_fCutOff);
+		m_pUberNearFarVar->SetVecValue(FlashlightState.m_ExtData.uber.m_fNearEdge, FlashlightState.m_ExtData.uber.m_fFarEdge,
+			FlashlightState.m_ExtData.uber.m_fCutOn, FlashlightState.m_ExtData.uber.m_fCutOff);
 
-		m_pUberHeightWidthVar->SetVecValue(FlashlightState.m_UberlightState.m_fWidth, FlashlightState.m_UberlightState.m_fWedge,
-			FlashlightState.m_UberlightState.m_fHeight, FlashlightState.m_UberlightState.m_fHedge);
+		m_pUberHeightWidthVar->SetVecValue(FlashlightState.m_ExtData.uber.m_fWidth, FlashlightState.m_ExtData.uber.m_fWedge,
+			FlashlightState.m_ExtData.uber.m_fHeight, FlashlightState.m_ExtData.uber.m_fHedge);
 
-		m_pUberShearRoundnessVar->SetVecValue(FlashlightState.m_UberlightState.m_fShearx, FlashlightState.m_UberlightState.m_fSheary, FlashlightState.m_UberlightState.m_fRoundness);
+		m_pUberShearRoundnessVar->SetVecValue(FlashlightState.m_ExtData.uber.m_fShearx, FlashlightState.m_ExtData.uber.m_fSheary, FlashlightState.m_ExtData.uber.m_fRoundness);
 
 		m_pNoiseStrengthVar->SetFloatValue(FlashlightState.m_flNoiseStrength);
 
@@ -1108,7 +1108,7 @@ int CVolumetricLightRenderable::DrawModel(int flags)
 
 			if (pUberlightVar)
 			{
-				pUberlightVar->SetIntValue(m_FlashlightState.m_UberlightState.m_bEnabled ? 1 : 0);
+				pUberlightVar->SetIntValue(m_FlashlightState.m_ExtData.uber.m_bEnabled ? 1 : 0);
 			}
 
 			if (pEnableShadowsVar)
@@ -1118,19 +1118,19 @@ int CVolumetricLightRenderable::DrawModel(int flags)
 
 			if (pUberNearFarVar)
 			{
-				pUberNearFarVar->SetVecValue(m_FlashlightState.m_UberlightState.m_fNearEdge, m_FlashlightState.m_UberlightState.m_fFarEdge,
-					m_FlashlightState.m_UberlightState.m_fCutOn, m_FlashlightState.m_UberlightState.m_fCutOff);
+				pUberNearFarVar->SetVecValue(m_FlashlightState.m_ExtData.uber.m_fNearEdge, m_FlashlightState.m_ExtData.uber.m_fFarEdge,
+					m_FlashlightState.m_ExtData.uber.m_fCutOn, m_FlashlightState.m_ExtData.uber.m_fCutOff);
 			}
 
 			if (pUberHeightWidthVar)
 			{
-				pUberHeightWidthVar->SetVecValue(m_FlashlightState.m_UberlightState.m_fWidth, m_FlashlightState.m_UberlightState.m_fWedge,
-					m_FlashlightState.m_UberlightState.m_fHeight, m_FlashlightState.m_UberlightState.m_fHedge);
+				pUberHeightWidthVar->SetVecValue(m_FlashlightState.m_ExtData.uber.m_fWidth, m_FlashlightState.m_ExtData.uber.m_fWedge,
+					m_FlashlightState.m_ExtData.uber.m_fHeight, m_FlashlightState.m_ExtData.uber.m_fHedge);
 			}
 
 			if (pUberShearRoundnessVar)
 			{
-				pUberShearRoundnessVar->SetVecValue(m_FlashlightState.m_UberlightState.m_fShearx, m_FlashlightState.m_UberlightState.m_fSheary, m_FlashlightState.m_UberlightState.m_fRoundness);
+				pUberShearRoundnessVar->SetVecValue(m_FlashlightState.m_ExtData.uber.m_fShearx, m_FlashlightState.m_ExtData.uber.m_fSheary, m_FlashlightState.m_ExtData.uber.m_fRoundness);
 			}
 
 			if (pNoiseStrengthVar)
@@ -1298,10 +1298,10 @@ public:
 	void RemoveAllShadowsFromReceiver( IClientRenderable* pRenderable, ShadowReceiver_t type );
 
 	// Re-renders all shadow textures for shadow casters that lie in the leaf list
-	void ComputeShadowTextures( const CViewSetup &view, int leafCount, LeafIndex_t* pLeafList );
+	void ComputeShadowTextures( const CNewViewSetup&view, int leafCount, LeafIndex_t* pLeafList ) override;
 
 	// Kicks off rendering into shadow depth maps (if any)
-	void ComputeShadowDepthTextures( const CViewSetup &view );
+	void ComputeShadowDepthTextures( const CNewViewSetup&view ) override;
 
 	// Frees shadow depth textures for use in subsequent view/frame
 	void FreeShadowDepthTextures();
@@ -2685,19 +2685,19 @@ ClientShadowHandle_t CClientShadowMgr::CreateShadow( ClientEntityHandle_t entity
 
 inline bool StatesHaveDifferentSize(const ClientFlashlightState_t& state1, const ClientFlashlightState_t& state2)
 {
-	if (state1.m_bOrtho != state2.m_bOrtho)
+	if (state1.m_ExtData.m_bOrtho != state2.m_ExtData.m_bOrtho)
 		return true;
 
 	if (state1.m_NearZ != state2.m_NearZ ||
 		state1.m_FarZ != state2.m_FarZ)
 		return true;
 
-	if (state1.m_bOrtho)
+	if (state1.m_ExtData.m_bOrtho)
 	{
-		if (state1.m_fOrthoLeft != state2.m_fOrthoLeft ||
-			state1.m_fOrthoRight != state2.m_fOrthoRight ||
-			state1.m_fOrthoTop != state2.m_fOrthoTop ||
-			state1.m_fOrthoBottom != state2.m_fOrthoBottom)
+		if (state1.m_ExtData.m_fOrthoLeft != state2.m_ExtData.m_fOrthoLeft ||
+			state1.m_ExtData.m_fOrthoRight != state2.m_ExtData.m_fOrthoRight ||
+			state1.m_ExtData.m_fOrthoTop != state2.m_ExtData.m_fOrthoTop ||
+			state1.m_ExtData.m_fOrthoBottom != state2.m_ExtData.m_fOrthoBottom)
 			return true;
 	}
 	else
@@ -2729,7 +2729,7 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 	FlashlightState_t procState = flashlightState;
 	procState.m_nShadowQuality = oldState.m_nShadowQuality;
 
-	if (flashlightState.m_bOrtho)
+	if (flashlightState.m_ExtData.m_bOrtho)
 	{
 		BuildOrthoWorldToFlashlightMatrix(shadow.m_WorldToShadow, flashlightState);
 	}
@@ -2740,9 +2740,7 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 
 	int iStateIndex = GetIndexOfFlashlightState(procState);
 	shadowmgr->UpdateFlashlightState(shadow.m_ShadowHandle, procState);
-
-	g_pShaderExtension->SetUberlightParamsForFlashlightState(iStateIndex, flashlightState.m_UberlightState);
-	g_pShaderExtension->SetOrthoDataForFlashlight(iStateIndex, flashlightState.m_bOrtho, flashlightState.m_fOrthoLeft, flashlightState.m_fOrthoRight, flashlightState.m_fOrthoTop, flashlightState.m_fOrthoBottom);
+	g_pShaderExtension->SetFlashlightStateExtension(iStateIndex, flashlightState.m_ExtData);
 
 	CClientShadowMgr::InternalFlashlightState_t newState;
 	newState.clientState = flashlightState;
@@ -2784,7 +2782,7 @@ void CClientShadowMgr::UpdateFlashlightState( ClientShadowHandle_t shadowHandle,
 	{
 		auto& persistantState = m_ClientFlashlightStates.Element(IDX);
 		bool bHasVolumetric = (persistantState.pVolumetricRenderable != nullptr);
-		bool bWantsVolumetrics = (VolumetricsAvailable() && persistantState.clientState.m_bEnableShadows && persistantState.clientState.m_bVolumetric);
+		bool bWantsVolumetrics = (VolumetricsAvailable() /*&& persistantState.clientState.m_bEnableShadows*/ && persistantState.clientState.m_bVolumetric);
 		if (bHasVolumetric != bWantsVolumetrics)
 		{
 			if (bWantsVolumetrics)
@@ -2947,7 +2945,7 @@ void CClientShadowMgr::BuildOrthoWorldToFlashlightMatrix(VMatrix& matWorldToShad
 		flashlightState.m_quatOrientation);
 
 	MatrixBuildOrtho(matPerspective,
-		flashlightState.m_fOrthoLeft, flashlightState.m_fOrthoTop, flashlightState.m_fOrthoRight, flashlightState.m_fOrthoBottom,
+		flashlightState.m_ExtData.m_fOrthoLeft, flashlightState.m_ExtData.m_fOrthoTop, flashlightState.m_ExtData.m_fOrthoRight, flashlightState.m_ExtData.m_fOrthoBottom,
 		flashlightState.m_NearZ, flashlightState.m_FarZ);
 
 	// Shift it z/y to 0 to -2 space
@@ -3583,7 +3581,7 @@ void CClientShadowMgr::DrawUberlightRig(const Vector& vOrigin, const VMatrix& ma
 {
 	int i;
 	float fXNear, fXFar, fYNear, fYFar, fXNearEdge, fXFarEdge, fYNearEdge, fYFarEdge, m;
-	UberlightState_t uber = state.m_UberlightState;
+	UberlightState_t uber = state.m_ExtData.uber;
 	VMatrix viewMatrixInverse, viewMatrix;
 
 	// A set of scratch points on the +x +y quadrants of the near and far ends of the swept superellipse wireframe
@@ -5499,7 +5497,7 @@ void CClientShadowMgr::SetViewFlashlightState( int nActiveFlashlightCount, Clien
 //-----------------------------------------------------------------------------
 // Re-render shadow depth textures that lie in the leaf list
 //-----------------------------------------------------------------------------
-void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
+void CClientShadowMgr::ComputeShadowDepthTextures( const CNewViewSetup&viewSetup )
 {
 	VPROF_BUDGET( "CClientShadowMgr::ComputeShadowDepthTextures", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 
@@ -5554,20 +5552,21 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		shadowView.height = shadowDepthTexture->GetActualHeight();
 
 		// Copy flashlight parameters
-		if (!flashlightState.m_bOrtho)
+		if (!flashlightState.m_ExtData.m_bOrtho)
 		{
 			shadowView.m_bOrtho = false;
 		}
 		else
 		{
 			shadowView.m_bOrtho = true;
-			shadowView.m_OrthoLeft = flashlightState.m_fOrthoLeft;
-			shadowView.m_OrthoTop = flashlightState.m_fOrthoTop;
-			shadowView.m_OrthoRight = flashlightState.m_fOrthoRight;
-			shadowView.m_OrthoBottom = flashlightState.m_fOrthoBottom;
+			shadowView.m_OrthoLeft = flashlightState.m_ExtData.m_fOrthoLeft;
+			shadowView.m_OrthoTop = flashlightState.m_ExtData.m_fOrthoTop;
+			shadowView.m_OrthoRight = flashlightState.m_ExtData.m_fOrthoRight;
+			shadowView.m_OrthoBottom = flashlightState.m_ExtData.m_fOrthoBottom;
 		}
 
 		shadowView.m_bDoBloomAndToneMapping = false;
+		shadowView.m_bRenderFlashlightDepthTranslucents = flashlightState.m_bGlobalLight;
 
 		// Copy flashlight parameters
 		shadowView.fov = shadowView.fovViewmodel = flashlightState.m_fHorizontalFOVDegrees;
@@ -5581,7 +5580,7 @@ void CClientShadowMgr::ComputeShadowDepthTextures( const CViewSetup &viewSetup )
 		// Can turn on all light frustum overlays or per light with flashlightState parameter...
 		if ( bDebugFrustum || flashlightState.m_bDrawShadowFrustum )
 		{
-			if (flashlightState.m_UberlightState.m_bEnabled)
+			if (flashlightState.m_ExtData.uber.m_bEnabled)
 			{
 				DrawUberlightRig(shadowView.origin, shadow.m_WorldToShadow, flashlightState);
 			}
@@ -5620,7 +5619,7 @@ static void SetupBonesOnBaseAnimating( C_BaseAnimating *&pBaseAnimating )
 }
 
 
-void CClientShadowMgr::ComputeShadowTextures( const CViewSetup &view, int leafCount, LeafIndex_t* pLeafList )
+void CClientShadowMgr::ComputeShadowTextures( const CNewViewSetup&view, int leafCount, LeafIndex_t* pLeafList )
 {
 	VPROF_BUDGET( "CClientShadowMgr::ComputeShadowTextures", VPROF_BUDGETGROUP_SHADOW_RENDERING );
 

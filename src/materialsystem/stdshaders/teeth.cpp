@@ -440,14 +440,7 @@ BEGIN_VS_SHADER( PP_Teeth_DX9, "Help for Teeth_DX9" )
 			const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
 			SetFlashLightColorFromState( flashlightState, pShaderAPI, PSREG_FLASHLIGHT_COLOR );
 
-			static IShaderDynamicAPI* shaderAPI;
-			shaderAPI = pShaderAPI;
-
-			auto func = []( int var, const float* pVec, int nConsts ) {
-				shaderAPI->SetPixelShaderConstant( var, pVec, nConsts );
-			};
-
-			bool bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState( func, flashlightState );
+			bool bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState( flashlightState );
 
 			bool bFlashlightShadows = g_pHardwareConfig->SupportsPixelShaders_2_b() ? flashlightState.m_bEnableShadows && ( pFlashlightDepthTexture != NULL ) : false;
 			if( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows )

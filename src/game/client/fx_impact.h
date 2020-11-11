@@ -46,6 +46,8 @@ void PlayImpactSound( C_BaseEntity *pServerEntity, trace_t &tr, const Vector &ve
 typedef void (*ImpactSoundRouteFn)( const char *pSoundName, const Vector &vEndPos );
 void SetImpactSoundRoute( ImpactSoundRouteFn fn );
 
+void ImpactDecalOriented(const Vector& vecOrigin, const Vector& vecStart, int iMaterial, int iDamageType, int iHitbox, C_BaseEntity* pEntity, const trace_t& tr, QAngle angles);
+
 //-----------------------------------------------------------------------------
 // Purpose: Enumerator class for ragdolls being affected by bullet forces
 //-----------------------------------------------------------------------------

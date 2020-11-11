@@ -197,7 +197,7 @@ void CXenPortal::MakeNPC(void)
 
 	m_PortalData.StartPortal(this);
 
-	m_PortalData.StartPortal(this);
+	//m_PortalData.StartPortal(this);
 
 	CEffectData data;
 

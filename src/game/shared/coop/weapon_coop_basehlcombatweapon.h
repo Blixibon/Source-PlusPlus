@@ -47,6 +47,7 @@ public:
 
 	virtual Activity		ActivityOverride(Activity baseAct, bool *pRequired);
 	static acttable_t s_acttableLowered[];
+	static acttable_t s_acttableAimDownSights[];
 
 	virtual Activity		GetSprintActivity() 
 	{
@@ -61,6 +62,8 @@ protected:
 	CNetworkVar(float, m_flRaiseTime);		// If lowered, the time we should raise the viewmodel
 	CNetworkVar(float, m_flHolsterTime);	// When the weapon was holstered
 	CNetworkVar(float, m_flTimeLastAction);
+
+	void NotifyWeaponAction();
 
 private:
     CWeaponCoopBaseHLCombat( const CWeaponCoopBaseHLCombat & );

@@ -67,14 +67,7 @@ BEGIN_VS_SHADER( light_volumetrics, "" )
 			const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightStateEx(worldToTexture, &pFlashlightDepthTexture);
 			pShaderAPI->SetVertexShaderConstant(VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, worldToTexture.Base(), 4);
 
-			static IShaderDynamicAPI* shaderAPI;
-			shaderAPI = pShaderAPI;
-
-			auto func = [](int var, const float* pVec, int nConsts) {
-				shaderAPI->SetPixelShaderConstant(var, pVec, nConsts);
-			};
-
-			bool bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState(func, flashlightState);
+			bool bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState(flashlightState);
 
 			// Set Vertex Shader Combos
 			DECLARE_DYNAMIC_VERTEX_SHADER( light_volumetrics_vs30 );

@@ -876,6 +876,14 @@ void UTIL_BloodDecalTrace( trace_t *pTrace, int bloodColor )
 		{
 			UTIL_DecalTrace( pTrace, "Blood" );
 		}
+		else if (bloodColor == BLOOD_COLOR_GREEN
+#ifdef HL2_EPISODIC
+			|| bloodColor == BLOOD_COLOR_ANTLION_WORKER
+#endif
+			)
+		{
+			UTIL_DecalTrace(pTrace, "GreenBlood");
+		}
 		else
 		{
 			UTIL_DecalTrace( pTrace, "YellowBlood" );

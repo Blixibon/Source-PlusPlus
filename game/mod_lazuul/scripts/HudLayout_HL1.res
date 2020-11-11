@@ -70,4 +70,13 @@
 		"wide"	 "640"
 		"tall"	 "480"
 	}
+
+	HudTrainHL1
+	{
+		"fieldName" "HudTrainHL1"
+		"visible" "1"
+		"enabled" "1"
+		"wide"	 "640"
+		"tall"	 "480"
+	}
 }

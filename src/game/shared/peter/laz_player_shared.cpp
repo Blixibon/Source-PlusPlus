@@ -20,6 +20,7 @@
 #include "collisionutils.h"
 #include "bone_setup.h"
 #include "in_buttons.h"
+#include "decals.h"
 
 #define PLAYER_HULL_REDUCTION	0.70
 
@@ -327,7 +328,13 @@ void CLaz_Player::PlayStepSound(const Vector& vecOrigin, surfacedataall_t surfac
 			return;
 
 		int nSide = m_Local.m_nStepside;
-		const HL1Foot_t& effect = s_pHL1FootSounds[surface.pOld->game.material - 'A'];
+		const auto& iMaterial = surface.pOld->game.material;
+		HL1Foot_t effect;
+		if ((iMaterial >= FIRST_CHAR_TEX) && (iMaterial <= LAST_CHAR_TEX))
+			effect = s_pHL1FootSounds[iMaterial - 'A'];
+		else
+			effect = { "HL1.Default.StepLeft", "HL1.Default.StepRight" };
+
 		const char * pSoundName = nSide ? effect.m_pNameLeft : effect.m_pNameRight;
 		if (!pSoundName)
 			return;

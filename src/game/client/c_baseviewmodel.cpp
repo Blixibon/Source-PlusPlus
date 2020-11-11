@@ -108,8 +108,6 @@ public:
 	// Should this object cast shadows?
 	virtual ShadowType_t	ShadowCastType()
 	{
-		if (m_pViewModel)
-			return m_pViewModel->ShadowCastType();
 		return SHADOWS_NONE;
 	}
 
@@ -172,7 +170,7 @@ public:
 	}
 	
 	virtual void CalcBoneMerge(CStudioHdr *hdr, int boneMask, CBoneBitList &boneComputed);
-
+#if 0
 	void DrawHands(C_BaseViewModel *pModel, int iFlags)
 	{
 		if (!pModel || (iFlags & STUDIO_RENDER) == 0)
@@ -203,7 +201,7 @@ public:
 		//m_pViewModel = nullptr;
 		//AddEffects(EF_NODRAW);
 	}
-
+#endif
 	virtual bool			ShouldReceiveProjectedTextures(int flags)
 	{
 		if (m_pViewModel)
@@ -238,8 +236,7 @@ int C_ViewHands::DrawModel(int flags)
 	//if (view->GetCurrentlyDrawingEntity() != m_pViewModel)
 	//	return 0;
 
-	//return BaseClass::DrawModel(flags);
-	return 0;
+	return BaseClass::DrawModel(flags);
 }
 
 //-----------------------------------------------------------------------------
@@ -666,20 +663,26 @@ int C_BaseViewModel::DrawModel( int flags )
 	return ret;
 }
 
+void CBaseViewModel::CreateHandsModel()
+{
+	if (!m_pHands)
+	{
+		C_ViewHands* pHands = (C_ViewHands*)CreateEntityByName("viewhands");
+		pHands->InitializeAsClientEntityByIndex(m_iHandsModelIndex.Get(), RENDER_GROUP_VIEW_MODEL_OPAQUE);
+		pHands->SetOwnerEntity(this);
+		pHands->m_pViewModel = this;
+		pHands->FollowEntity(this, true);
+		m_pHands = pHands;
+	}
+}
+
 CStudioHdr* C_BaseViewModel::OnNewModel(void)
 {
 	CStudioHdr* hdr = BaseClass::OnNewModel();
 
-	if (hdr)
+	if (hdr && m_iHandsModelIndex.Get() > -1)
 	{
-		if (!m_pHands)
-		{
-			m_pHands = (C_ViewHands*)CreateEntityByName("viewhands");
-			m_pHands->InitializeAsClientEntity(NULL, RENDER_GROUP_VIEW_MODEL_OPAQUE);
-			m_pHands->SetOwnerEntity(this);
-			m_pHands->m_pViewModel = this;
-			m_pHands->FollowEntity(this, true);
-		}
+		CreateHandsModel();
 
 		/*if (LookupBone("ValveBiped.Bip01_R_Hand") < 0)
 		{
@@ -766,8 +769,8 @@ int C_BaseViewModel::InternalDrawModel( int flags )
 	pRenderContext->CullMode( MATERIAL_CULLMODE_CCW );
 
 	// Now draw the arms model
-	if (ret && m_pHands != nullptr)
-		m_pHands->DrawHands(this, flags);
+	//if (ret && m_pHands != nullptr)
+	//	m_pHands->DrawHands(this, flags);
 
 	return ret;
 }
@@ -875,13 +878,15 @@ void C_BaseViewModel::OnDataChanged( DataUpdateType_t updateType )
 	SetPredictionEligible( true );
 	BaseClass::OnDataChanged(updateType);
 
-	if (m_pHands && GetModelPtr())
+	if (GetModelPtr())
 	{
 		int iSkin, iBody;
 		int iIndex = GetHandModelData(iSkin, iBody);
 
 		if (iIndex != -1)
 		{
+			CreateHandsModel();
+
 			m_pHands->SetModelByIndex(iIndex);
 			m_pHands->m_nBody = iBody;
 			m_pHands->m_nSkin = iSkin;

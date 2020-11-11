@@ -245,6 +245,7 @@ void CWeaponSMG1::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector 
 		MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2, entindex(), 0 );
 
 	pOperator->DoMuzzleFlash();
+	EmitLowAmmoSound(1);
 	m_iClip1 = m_iClip1 - 1;
 }
 

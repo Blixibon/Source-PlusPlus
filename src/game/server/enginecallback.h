@@ -75,9 +75,12 @@ void PrecacheParticleSystem( const char *pParticleSystemName );
 int GetParticleSystemIndex( const char *pParticleSystemName );
 const char *GetParticleSystemNameFromIndex( int nIndex );
 
+// Adds a file to the server download table
+void AddFileToDownloadTable(const char* pszFile);
 
 class IRecipientFilter;
 void EntityMessageBegin( CBaseEntity * entity, bool reliable = false );
+void EntityMessageBegin(int ent_index, ServerClass* ent_class, bool reliable = false);
 void UserMessageBegin( IRecipientFilter& filter, const char *messagename );
 void MessageEnd( void );
 

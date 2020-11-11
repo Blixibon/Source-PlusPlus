@@ -28,7 +28,7 @@ public:
 	Color GetPlayerColor(int iIndex, int iColor);
 
 protected:
-	CNetworkArray(Vector, m_vPlayerColors, (MAX_PLAYERS)* NUM_PLAYER_COLORS);
+	CNetworkArray(Vector, m_vPlayerColors, (MAX_PLAYERS) * NUM_PLAYER_COLORS);
 };
 
 #endif // TF_PLAYER_RESOURCE_H

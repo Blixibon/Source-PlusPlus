@@ -643,14 +643,7 @@ void DrawSkin_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShad
 
 			SetFlashLightColorFromState( flashlightState, pShaderAPI, PSREG_FLASHLIGHT_COLOR );
 
-			static CCommandBufferBuilder<CFixedCommandStorageBuffer<2000>>* cmdsOut;
-			cmdsOut = &DynamicCmdsOut;
-
-			auto func = []( int var, const float* pVec, int nConsts ) {
-				cmdsOut->SetPixelShaderConstant( var, pVec, nConsts );
-			};
-
-			bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState( func, flashlightState );
+			bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && DynamicCmdsOut.SetupUberlightFromState(flashlightState);
 
 			if( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows )
 			{

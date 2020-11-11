@@ -303,6 +303,7 @@ static const char *s_PreserveEnts[] =
 	//"func_wall",
 	//"func_illusionary",
 	"info_node",
+	"info_ladder",
 	//"info_target",
 	"info_node_hint",
 	"point_commentary_node",

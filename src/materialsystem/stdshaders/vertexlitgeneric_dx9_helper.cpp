@@ -1251,14 +1251,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 			SetFlashLightColorFromState(state, pShaderAPI, 28, bFlashlightNoLambert);
 
-			static CCommandBufferBuilder<CFixedCommandStorageBuffer<1000>>* cmdsOut;
-			cmdsOut = &DynamicCmdsOut;
-
-			auto func = [](int var, const float* pVec, int nConsts) {
-				cmdsOut->SetPixelShaderConstant(var, pVec, nConsts);
-			};
-
-			bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && SetupUberlightFromState(func, state);
+			bUberlight = g_pHardwareConfig->SupportsShaderModel_3_0() && DynamicCmdsOut.SetupUberlightFromState(state);
 
 			Assert(info.m_nFlashlightTexture >= 0 && info.m_nFlashlightTextureFrame >= 0);
 			pShader->BindTexture(SHADER_SAMPLER7, state.m_pSpotlightTexture, state.m_nSpotlightTextureFrame);

@@ -958,7 +958,14 @@ bool CAI_BaseNPC::PassesDamageFilter( const CTakeDamageInfo &info )
 			}
 		}
 
-		if ( bHitByVehicle || (npcEnemy && npcEnemy->IRelationType( this ) == D_LI) )
+		bool bHitByAlly = (npcEnemy && npcEnemy->IRelationType(this) == D_LI);
+#ifdef HL2_LAZUL
+		// Players can damage all npcs in sandbox mode
+		if (npcEnemy && npcEnemy->IsPlayer() && g_pGameRules->IsSandBox())
+			bHitByAlly = false;
+#endif // HL2_LAZUL
+
+		if ( bHitByVehicle || bHitByAlly )
 		{
 			m_fNoDamageDecal = true;
 
@@ -12208,7 +12215,7 @@ void CAI_BaseNPC::Freeze(float flFreezeAmount, CBaseEntity* pFreezer, Ray_t* pFr
 			// Dude is frozen, so lets use a stiff server side statue
 			if (IsAlive())
 			{
-				CreateServerStatue(this, COLLISION_GROUP_NONE);
+				CreateServerStatue(this, COLLISION_GROUP_INTERACTIVE_DEBRIS);
 				Event_Killed(CTakeDamageInfo(pFreezer, pFreezer, 1000.0, DMG_FREEZE | DMG_REMOVENORAGDOLL | DMG_PREVENT_PHYSICS_FORCE));
 				RemoveDeferred();
 			}

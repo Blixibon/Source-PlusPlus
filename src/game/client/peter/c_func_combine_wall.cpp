@@ -8,7 +8,7 @@
 #include "c_team.h"
 #include "view.h"
 
-#define SHIELD_OVERLOAD_SUSTAIN_TIME 0.1f
+#define SHIELD_OVERLOAD_SUSTAIN_TIME 0.2f
 #define SHIELD_OVERLOAD_FADE_TIME 0.3f
 
 #define SHIELD_POWERUP_TIME 0.35f
@@ -247,7 +247,7 @@ float C_CombineShieldWall::GetOverloadPct()
 
 void C_CombineShieldWall::ReceiveMessage(int classID, bf_read& msg)
 {
-	if (classID != GetClientClass()->m_ClassID)
+	if (classID != ThisClass::GetClientClass()->m_ClassID)
 	{
 		BaseClass::ReceiveMessage(classID, msg);
 		return;

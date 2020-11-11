@@ -84,10 +84,26 @@ typedef struct NewGameDef_s
 
 typedef struct NewMapData_s
 {
+	enum ReservedChapterNumbers_e
+	{
+		CHAPTER_INDEX_INVALID = -1,
+		CHAPTER_INDEX_TRAINING = -2,
+		CHAPTER_INDEX_BONUS = -3,
+		CHAPTER_INDEX_MULIPLAYER = -4,
+	};
+
 	CGTSymbol m_GameDef;
 	CGTSymbol m_PopulationPath;
 	int	m_iChapterIndex; // Chapter index. -1 specifies invalid map. -2 specifies training room. -3 specifies bonus map.
 	KeyValues* m_pOptions;
+
+	inline bool IsValidMap(bool bSingleOnly = false) const
+	{
+		if (bSingleOnly && m_iChapterIndex == CHAPTER_INDEX_MULIPLAYER)
+			return false;
+
+		return m_iChapterIndex != CHAPTER_INDEX_INVALID;
+	}
 
 	KeyValues* GetOrCreateOptions()
 	{

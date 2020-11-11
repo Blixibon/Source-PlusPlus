@@ -419,14 +419,7 @@ void DrawLightmappedAdvFlashlight_DX9_Internal( CBaseVSShader *pShader, IMateria
 
 		if ( g_pHardwareConfig->SupportsShaderModel_3_0() )
 		{
-			static IShaderDynamicAPI* shaderAPI;
-			shaderAPI = pShaderAPI;
-
-			auto func = []( int var, const float* pVec, int nConsts ) {
-				shaderAPI->SetPixelShaderConstant( var, pVec, nConsts );
-			};
-
-			bool bUberlight = SetupUberlightFromState( func, flashlightState );
+			bool bUberlight = pShader->SetupUberlightFromState(flashlightState );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( pp_lightmappedadv_flashlight_ps30 );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
@@ -743,10 +736,57 @@ void DrawLightmappedGeneric_DX9_Internal(CBaseVSShader *pShader, IMaterialVar** 
 								 CBasePerMaterialContextData **pContextDataPtr
 								 )
 {
+
+	bool hasBaseTexture = params[info.m_nBaseTexture]->IsTexture();
+	bool hasBump = (params[info.m_nBumpmap]->IsTexture()) && (!g_pHardwareConfig->PreferReducedFillrate());
+	bool hasSSBump = hasBump && (info.m_nSelfShadowedBumpFlag != -1) && (params[info.m_nSelfShadowedBumpFlag]->GetIntValue());
+	bool hasBaseTexture2 = hasBaseTexture && params[info.m_nBaseTexture2]->IsTexture();
+
+	if (hasFlashlight && !IsX360())
+	{
+		// !!speed!! do this in the caller so we don't build struct every time
+		LightmappedAdvFlashlight_DX9_Vars_t vars;
+		vars.m_bBump = hasBump;
+		vars.m_nBumpmapVar = info.m_nBumpmap;
+		vars.m_nBumpmapFrame = info.m_nBumpFrame;
+		vars.m_nBumpTransform = info.m_nBumpTransform;
+		vars.m_nFlashlightTextureVar = info.m_nFlashlightTexture;
+		vars.m_nFlashlightTextureFrameVar = info.m_nFlashlightTextureFrame;
+		vars.m_bLightmappedGeneric = true;
+		vars.m_bWorldVertexTransition = hasBaseTexture2;
+		vars.m_nBaseTexture2Var = info.m_nBaseTexture2;
+		vars.m_nBaseTexture2FrameVar = info.m_nBaseTexture2Frame;
+		vars.m_nBumpmap2Var = info.m_nBumpmap2;
+		vars.m_nBumpmap2Frame = info.m_nBumpFrame2;
+		vars.m_nBump2Transform = info.m_nBumpTransform2;
+		vars.m_nAlphaTestReference = info.m_nAlphaTestReference;
+		vars.m_bSSBump = hasSSBump;
+		vars.m_nDetailVar = info.m_nDetail;
+		vars.m_nDetailScale = info.m_nDetailScale;
+		vars.m_nDetailTextureCombineMode = info.m_nDetailTextureCombineMode;
+		vars.m_nDetailTextureBlendFactor = info.m_nDetailTextureBlendFactor;
+		vars.m_nDetailTint = info.m_nDetailTint;
+
+		if ((info.m_nSeamlessMappingScale != -1))
+			vars.m_fSeamlessScale = params[info.m_nSeamlessMappingScale]->GetFloatValue();
+		else
+			vars.m_fSeamlessScale = 0.0;
+
+		vars.m_nPhong = info.m_nPhong;
+		vars.m_nPhongBoost = info.m_nPhongBoost;
+		vars.m_nPhongFresnelRanges = info.m_nPhongFresnelRanges;
+		vars.m_nPhongExponent = info.m_nPhongExponent;
+		vars.m_nPhongMask = info.m_nEnvmapMask;
+		vars.m_nPhongMaskFrame = info.m_nEnvmapMaskFrame;
+		vars.m_nPhongWarpTexture = info.m_nPhongWarpTexture;
+
+		DrawLightmappedAdvFlashlight_DX9_Internal(pShader, params, pShaderAPI, pShaderShadow, vars);
+		return;
+	}
+
 	CLightmappedGeneric_DX9_Context *pContextData = reinterpret_cast< CLightmappedGeneric_DX9_Context *> ( *pContextDataPtr );
 	if ( pShaderShadow || ( ! pContextData ) || pContextData->m_bMaterialVarsChanged  || hasFlashlight )
 	{
-		bool hasBaseTexture = params[info.m_nBaseTexture]->IsTexture();
 		int nAlphaChannelTextureVar = hasBaseTexture ? (int)info.m_nBaseTexture : (int)info.m_nEnvmapMask;
 		BlendType_t nBlendType = pShader->EvaluateBlendRequirements( nAlphaChannelTextureVar, hasBaseTexture );
 		bool bIsAlphaTested = IS_FLAG_SET( MATERIAL_VAR_ALPHATEST ) != 0;
@@ -760,9 +800,6 @@ void DrawLightmappedGeneric_DX9_Internal(CBaseVSShader *pShader, IMaterialVar** 
 			*pContextDataPtr = pContextData;
 		}
 
-		bool hasBump = ( params[info.m_nBumpmap]->IsTexture() ) && ( !g_pHardwareConfig->PreferReducedFillrate() );
-		bool hasSSBump = hasBump && (info.m_nSelfShadowedBumpFlag != -1) &&	( params[info.m_nSelfShadowedBumpFlag]->GetIntValue() );
-		bool hasBaseTexture2 = hasBaseTexture && params[info.m_nBaseTexture2]->IsTexture();
 		bool hasLightWarpTexture = params[info.m_nLightWarpTexture]->IsTexture();
 		bool hasBump2 = hasBump && params[info.m_nBumpmap2]->IsTexture();
 		bool hasDetailTexture = params[info.m_nDetail]->IsTexture();
@@ -774,48 +811,6 @@ void DrawLightmappedGeneric_DX9_Internal(CBaseVSShader *pShader, IMaterialVar** 
 			(params[info.m_nBlendModulateTexture]->IsTexture() );
 		bool hasNormalMapAlphaEnvmapMask = IS_FLAG_SET( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
 		bool hasParallaxCorrection = params[info.m_nEnvmap]->IsTexture() && info.m_nEnvmapParallax != -1 && !params[info.m_nEnvmapParallax]->MatrixIsIdentity();
-
-		if ( hasFlashlight && !IsX360() )				
-		{
-			// !!speed!! do this in the caller so we don't build struct every time
-			LightmappedAdvFlashlight_DX9_Vars_t vars;
-			vars.m_bBump = hasBump;
-			vars.m_nBumpmapVar = info.m_nBumpmap;
-			vars.m_nBumpmapFrame = info.m_nBumpFrame;
-			vars.m_nBumpTransform = info.m_nBumpTransform;
-			vars.m_nFlashlightTextureVar = info.m_nFlashlightTexture;
-			vars.m_nFlashlightTextureFrameVar = info.m_nFlashlightTextureFrame;
-			vars.m_bLightmappedGeneric = true;
-			vars.m_bWorldVertexTransition = hasBaseTexture2;
-			vars.m_nBaseTexture2Var = info.m_nBaseTexture2;
-			vars.m_nBaseTexture2FrameVar = info.m_nBaseTexture2Frame;
-			vars.m_nBumpmap2Var = info.m_nBumpmap2;
-			vars.m_nBumpmap2Frame = info.m_nBumpFrame2;
-			vars.m_nBump2Transform = info.m_nBumpTransform2;
-			vars.m_nAlphaTestReference = info.m_nAlphaTestReference;
-			vars.m_bSSBump = hasSSBump;
-			vars.m_nDetailVar = info.m_nDetail;
-			vars.m_nDetailScale = info.m_nDetailScale;
-			vars.m_nDetailTextureCombineMode = info.m_nDetailTextureCombineMode;
-			vars.m_nDetailTextureBlendFactor = info.m_nDetailTextureBlendFactor;
-			vars.m_nDetailTint = info.m_nDetailTint;
-
-			if ( ( info.m_nSeamlessMappingScale != -1 ) )
-				vars.m_fSeamlessScale = params[info.m_nSeamlessMappingScale]->GetFloatValue();
-			else
-				vars.m_fSeamlessScale = 0.0;
-
-			vars.m_nPhong = info.m_nPhong;
-			vars.m_nPhongBoost = info.m_nPhongBoost;
-			vars.m_nPhongFresnelRanges = info.m_nPhongFresnelRanges;
-			vars.m_nPhongExponent = info.m_nPhongExponent;
-			vars.m_nPhongMask = info.m_nEnvmapMask;
-			vars.m_nPhongMaskFrame = info.m_nEnvmapMaskFrame;
-			vars.m_nPhongWarpTexture = info.m_nPhongWarpTexture;
-
-			DrawLightmappedAdvFlashlight_DX9_Internal( pShader, params, pShaderAPI, pShaderShadow, vars );
-			return;
-		}
 
 		pContextData->m_bFullyOpaque = bFullyOpaque;
 		pContextData->m_bFullyOpaqueWithoutAlphaTest = bFullyOpaqueWithoutAlphaTest;

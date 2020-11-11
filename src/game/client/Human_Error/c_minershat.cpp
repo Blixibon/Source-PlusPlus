@@ -211,7 +211,7 @@ void C_MinersHat::ClientThink(void)
 
 	float flColor = 128.0f;
 
-	if (!bAttemptVolumetrics || !g_pClientShadowMgr->VolumetricsAvailable())
+	//if (!bAttemptVolumetrics || !g_pClientShadowMgr->VolumetricsAvailable())
 	{
 		if (!m_pBeam)
 		{
@@ -246,9 +246,9 @@ void C_MinersHat::ClientThink(void)
 			m_pBeam->RelinkBeam();
 		}
 	}
-	else if (m_pBeam)
+	/*else if (m_pBeam)
 	{
 		m_pBeam->Remove();
 		m_pBeam = NULL;
-	}
+	}*/
 }

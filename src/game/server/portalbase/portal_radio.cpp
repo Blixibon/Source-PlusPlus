@@ -9,6 +9,7 @@
 #include "achievementmgr.h"
 #include "hl2orange.spa.h"
 #include "eiface.h"
+#include "portal_gamerules.h"
 
 //extern CAchievementMgr g_AchievementMgrPortal;
 
@@ -497,20 +498,7 @@ void CSpawnDinosaurHack::LevelInitPostEntity()
 		return;
 	}
 
-	IAchievementMgr* pAchievementMgr = engine->GetAchievementMgr();
-	if (pAchievementMgr)
-	{
-		IAchievement* pHeartbreaker = pAchievementMgr->GetAchievementByID(ACHIEVEMENT_PORTAL_BEAT_GAME);
-		if (pHeartbreaker == NULL || pHeartbreaker->IsAchieved() == false)
-		{
-#if defined ( RADIO_DEBUG_SERVER )
-			Msg("Not spawning any Dinosaurs: Player has not beat the game, or failed to get heartbreaker achievement from mgr\n");
-#endif
-
-			return;
-		}
-	}
-	else
+	if (!PortalGameRules() || !PortalGameRules()->ShouldRemoveRadio())
 	{
 		return;
 	}

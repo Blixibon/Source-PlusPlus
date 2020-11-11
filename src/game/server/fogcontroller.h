@@ -14,6 +14,7 @@
 #include "igamesystem.h"
 #include "GameEventListener.h"
 #include "triggers.h"
+#include "utldict.h"
 
 // Spawn Flags
 #define SF_FOG_MASTER		0x0001
@@ -68,6 +69,7 @@ public:
 	CNetworkVarEmbedded( fogparams_t, m_fog );
 	bool					m_bUseAngles;
 	int						m_iChangedVariables;
+	string_t		m_iszFogSet;
 };
 #if 0
 class CFogTrigger : public CBaseTrigger
@@ -108,6 +110,9 @@ public:
 		m_hMasterController = NULL;
 	}
 
+	virtual bool Init();
+	fogparams_t* GetScriptFog(const char* pszFogname);
+
 	virtual void LevelInitPreEntity();
 	virtual void LevelInitPostEntity();
 	virtual void FireGameEvent( IGameEvent *pEvent ) { InitMasterController(); }
@@ -117,6 +122,7 @@ private:
 
 	void InitMasterController( void );
 	CHandle< CFogController > m_hMasterController;
+	CUtlDict<fogparams_t> m_ScriptedFog;
 };
 
 CFogSystem *FogSystem( void );

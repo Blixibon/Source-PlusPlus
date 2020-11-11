@@ -41,6 +41,7 @@ enum {
 	LAZ_GM_DEATHMATCH = 0,
 	LAZ_GM_CAMPAIGN,
 	LAZ_GM_BASE_DEFENSE,
+	LAZ_GM_SANDBOX,
 
 	LAZ_GM_COUNT
 };
@@ -124,6 +125,7 @@ public:
 	virtual void	ShutdownCustomResponseRulesDicts();
 
 	virtual float FlPlayerFallDamage(CBasePlayer* pPlayer);
+	virtual bool  FlPlayerFallDeathDoesScreenFade(CBasePlayer* pPlayer);
 
 	virtual int PlayerRelationship(CBaseEntity *pPlayer, CBaseEntity *pTarget);
 
@@ -179,24 +181,25 @@ public:
 	bool	IsCoop()
 	{
 		int iMode = GetGameMode();
-		return (iMode == LAZ_GM_CAMPAIGN /*|| iMode == LAZ_GM_VERSUS*/);
+		return (iMode == LAZ_GM_CAMPAIGN /*|| iMode == LAZ_GM_VERSUS*/ || iMode == LAZ_GM_SANDBOX);
 	}
 	bool	IsDeathmatch()
 	{
 		int iMode = GetGameMode();
 		return (iMode == LAZ_GM_DEATHMATCH || iMode == LAZ_GM_BASE_DEFENSE);
 	}
+	virtual bool IsSandBox() { return m_nGameMode.Get() == LAZ_GM_SANDBOX; }
 
 	int		GetGameMode()
 	{
-		if (!IsMultiplayer())
+		if (!IsMultiplayer() && !IsSandBox())
 			return LAZ_GM_SINGLEPLAYER;
 		return m_nGameMode;
 	}
 
 	int		GetGameModeSubType()
 	{
-		if (!IsMultiplayer())
+		if (!IsMultiplayer() && !IsSandBox())
 			return 0;
 		return m_nGameModeVariant;
 	}

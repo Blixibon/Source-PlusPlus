@@ -32,6 +32,8 @@ public:
 	virtual bool			CanBePickedUpByNPCs(void) { return false; }
 
 	CBasePlayer* GetPlayerOwner() const;
+
+	virtual bool GetLowAmmoSoundParameters(CSoundParameters& params, bool bLast) { return false; }
 public:
 // Server Only Methods
 #if !defined( CLIENT_DLL )

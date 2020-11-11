@@ -120,6 +120,7 @@ public:
 	virtual int				GetHandModelData(int& iSkin, int& iBody);
 
 	C_BaseAnimating* GetHandsModel();
+	void			CreateHandsModel();
 
 	virtual float	GetWetness();
 
@@ -224,7 +225,7 @@ private:
 #if defined( CLIENT_DLL )
 	int						m_nOldAnimationParity;
 
-	C_ViewHands* m_pHands;
+	C_BaseAnimating* m_pHands;
 #else
 	CStudioHdr			*m_pHandsStudioHdr;
 #endif

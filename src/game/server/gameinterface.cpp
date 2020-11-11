@@ -88,7 +88,7 @@
 #include "tier3/tier3.h"
 #include "serverbenchmark_base.h"
 #include "querycache.h"
-
+#include "language.h"
 
 #ifdef TF_DLL
 #include "gc_clientsystem.h"
@@ -239,6 +239,7 @@ INetworkStringTable *g_pStringTableMaterials = NULL;
 INetworkStringTable *g_pStringTableInfoPanel = NULL;
 INetworkStringTable *g_pStringTableClientSideChoreoScenes = NULL;
 INetworkStringTable *g_pStringTableServerMapCycle = NULL;
+INetworkStringTable* g_pDownloadableFileTable = NULL;
 
 #ifdef TF_DLL
 INetworkStringTable *g_pStringTableServerPopFiles = NULL;
@@ -1142,6 +1143,12 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	// load MOTD from file into stringtable
 	LoadMessageOfTheDay();
 
+	AddFileToDownloadTable(CFmtStr("maps/%s.txt", pMapName));
+	for (int eLang = (int)k_Lang_First; eLang < k_Lang_MAX; ++eLang)
+	{
+		AddFileToDownloadTable(CFmtStr("resource/maphtml/%s_%s.html", pMapName, GetLanguageShortName((ELanguage)eLang)));
+	}
+
 	// Sometimes an ent will Remove() itself during its precache, so RemoveImmediate won't happen.
 	// This makes sure those ents get cleaned up.
 	gEntList.CleanupDeleteList();
@@ -1523,6 +1530,7 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 	g_pStringTableInfoPanel = networkstringtable->CreateStringTable( "InfoPanel", MAX_INFOPANEL_STRINGS );
 	g_pStringTableClientSideChoreoScenes = networkstringtable->CreateStringTable( "Scenes", MAX_CHOREO_SCENES_STRINGS );
 	g_pStringTableServerMapCycle = networkstringtable->CreateStringTable( "ServerMapCycle", 128 );
+	g_pDownloadableFileTable = networkstringtable->FindTable(DOWNLOADABLE_FILE_TABLENAME);
 
 #ifdef DEFERRED
 	g_pStringTable_LightCookies = networkstringtable->CreateStringTable( COOKIE_STRINGTBL_NAME, MAX_COOKIE_TEXTURES );
@@ -1551,6 +1559,7 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 			g_pStringTableInfoPanel &&
 			g_pStringTableClientSideChoreoScenes &&
 			g_pStringTableServerMapCycle && 
+			g_pDownloadableFileTable &&
 			bPopFilesValid
 			);
 
@@ -1559,7 +1568,8 @@ void CServerGameDLL::CreateNetworkStringTables( void )
 #endif
 
 #ifdef HL2_LAZUL
-	Assert(g_pStringTablePlayerFootSteps);
+	Assert(g_pStringTablePlayerFootSteps &&
+		g_pStringTableHeadShapes);
 #endif
 			
 	// Need this so we have the error material always handy
@@ -2525,6 +2535,27 @@ const char *GetParticleSystemNameFromIndex( int nMaterialIndex )
 	return "error";
 }
 
+void AddFileToDownloadTable(const char* pszFile)
+{
+	if (IsX360())
+		return;
+
+	if (!pszFile || !pszFile[0])
+		return;
+
+	if (V_IsAbsolutePath(pszFile))
+		return;
+
+	if (!filesystem->FileExists(pszFile))
+		return;
+
+	size_t nLength = V_strlen(pszFile) + 1;
+	char* pszFilePath = (char*)stackalloc(nLength);
+	V_FixupPathName(pszFilePath, nLength, pszFile);
+
+	g_pDownloadableFileTable->AddString(true, pszFilePath);
+}
+
 //-----------------------------------------------------------------------------
 // Returns true if host_thread_mode is set to non-zero (and engine is running in threaded mode)
 //-----------------------------------------------------------------------------
@@ -3441,6 +3472,15 @@ void EntityMessageBegin( CBaseEntity * entity, bool reliable /*= false*/ )
 	Assert ( entity );
 
 	g_pMsgBuffer = engine->EntityMessageBegin( entity->entindex(), entity->GetServerClass(), reliable );
+}
+
+void EntityMessageBegin(int ent_index, ServerClass* ent_class, bool reliable)
+{
+	Assert(!g_pMsgBuffer);
+
+	Assert(ent_class);
+
+	g_pMsgBuffer = engine->EntityMessageBegin(ent_index, ent_class, reliable);
 }
 
 void UserMessageBegin( IRecipientFilter& filter, const char *messagename )

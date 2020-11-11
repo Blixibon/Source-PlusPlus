@@ -12,8 +12,9 @@
 
 static LightmappedGeneric_DX9_Vars_t s_info;
 
+DEFINE_FALLBACK_SHADER(PP_LightmappedGeneric, PP_LightmappedGeneric_DX9_HDR)
 
-BEGIN_VS_SHADER( PP_LightmappedGeneric,
+BEGIN_VS_SHADER( PP_LightmappedGeneric_DX9,
 				 "Help for LightmappedGeneric" )
 
 	BEGIN_SHADER_PARAMS
@@ -180,3 +181,19 @@ END_SHADER_PARAMS
 		DrawLightmappedGeneric_DX9( this, params, pShaderAPI, pShaderShadow, s_info, pContextDataPtr );
 	}
 END_SHADER
+
+//-----------------------------------------------------------------------------
+// This allows us to use a block labelled 'Water_DX9_HDR' in the water materials
+//-----------------------------------------------------------------------------
+BEGIN_INHERITED_SHADER(PP_LightmappedGeneric_DX9_HDR, PP_LightmappedGeneric_DX9,
+	"Help for PP_LightmappedGeneric_DX9_HDR")
+
+		SHADER_FALLBACK
+	{
+		if (g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE)
+		{
+			return "PP_LightmappedGeneric_DX9";
+		}
+		return 0;
+	}
+	END_INHERITED_SHADER

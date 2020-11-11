@@ -421,7 +421,7 @@ void CNPC_HL1Controller::HandleAnimEvent( animevent_t *pEvent )
 			CBroadcastRecipientFilter filter;
 			te->DynamicLight( filter, 0.0, &vecStart, 255, 192, 64, 0, 1 /*radius*/, 0.1, 32 );
 
-			CAI_BaseNPC *pBall = (CAI_BaseNPC*)Create( "controller_head_ball", vecStart, angleGun );
+			CAI_BaseNPC *pBall = (CAI_BaseNPC*)Create( "controller_head_ball", vecStart, angleGun, this );
 
 			pBall->SetAbsVelocity( Vector(0,0,32) );
 			pBall->SetEnemy( GetEnemy() );
@@ -1137,7 +1137,7 @@ void CNPC_ControllerHeadBall::HuntThink( void  )
 			ClearMultiDamage( );
 			Vector dir = GetAbsVelocity();
 			VectorNormalize( dir );
-			CTakeDamageInfo info( this, this, sk_controllerhl1_dmgball.GetFloat(), DMG_SHOCK );
+			CTakeDamageInfo info(this, m_hOwner.Get() ? m_hOwner.Get() : this, sk_controllerhl1_dmgball.GetFloat(), DMG_SHOCK);
 			CalculateMeleeDamageForce( &info, dir, tr.endpos );
 			pEntity->DispatchTraceAttack( info, dir, &tr );
 			ApplyMultiDamage();

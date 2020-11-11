@@ -105,6 +105,8 @@ BEGIN_DATADESC( CItem )
 
 	// Outputs
 	DEFINE_OUTPUT( m_OnPlayerTouch, "OnPlayerTouch" ),
+	DEFINE_OUTPUT( m_OnPlayerTouch, "OnPlayerPickup"),
+	DEFINE_OUTPUT( m_OnPlayerDenied, "OnPlayerDenied"),
 	DEFINE_OUTPUT( m_OnCacheInteraction, "OnCacheInteraction" ),
 
 END_DATADESC()
@@ -428,6 +430,7 @@ void CItem::ItemTouch( CBaseEntity *pOther )
 	// ok, a player is touching this item, but can he have it?
 	if ( !g_pGameRules->CanHaveItem( pPlayer, this ) )
 	{
+		m_OnPlayerDenied.FireOutput(pOther, this);
 		// no? Ignore the touch.
 		return;
 	}
@@ -457,6 +460,10 @@ void CItem::ItemTouch( CBaseEntity *pOther )
 	else if (gEvilImpulse101)
 	{
 		UTIL_Remove( this );
+	}
+	else
+	{
+		m_OnPlayerDenied.FireOutput(pOther, this);
 	}
 }
 

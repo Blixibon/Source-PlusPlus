@@ -84,6 +84,18 @@ CWeaponCoopBase::CWeaponCoopBase()
     AddSolidFlags( FSOLID_TRIGGER );
 }
 
+void CWeaponCoopBase::Precache(void)
+{
+	BaseClass::Precache();
+
+	PrecacheScriptSound("TFA.LowAmmo");
+	PrecacheScriptSound("TFA.LowAmmo.Handgun");
+	PrecacheScriptSound("TFA.LowAmmo.Shotgun");
+	PrecacheScriptSound("TFA.LowAmmo_Dry");
+	PrecacheScriptSound("TFA.LowAmmo_Dry.Handgun");
+	PrecacheScriptSound("TFA.LowAmmo_Dry.Shotgun");
+}
+
 #ifdef CLIENT_DLL
 //================================================================================
 //================================================================================
@@ -643,6 +655,7 @@ WeaponClass_t CWeaponCoopBase::WeaponClassify()
 	case HLSS_WEAPON_ID_CROWBAR:
 	case HLSS_WEAPON_ID_LEADPIPE:
 	case HLSS_WEAPON_ID_CROWBAR_BMS:
+	case HLSS_WEAPON_ID_KNIFE:
 		return WEPCLASS_MELEE;
 		break;
 	default:
@@ -700,6 +713,7 @@ void CWeaponCoopBase::PrimaryAttack()
 	if ( UsesClipsForAmmo1() )
 	{
 		info.m_iShots = MIN( info.m_iShots, m_iClip1.Get() );
+		EmitLowAmmoSound(info.m_iShots);
 		m_iClip1 -= info.m_iShots;
 	}
 	else
@@ -801,7 +815,8 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_MANHACK:
 		iWeaponRole = TF_WPN_TYPE_BUILDING;
 		break;
-	case HLSS_WEAPON_ID_PHYSGUN:
+	case HLSS_WEAPON_ID_PHYSCANNON:
+	case HLSS_WEAPON_ID_PHYSGUN_SBOX:
 	case HLSS_WEAPON_ID_HIVEHAND:
 	case HLSS_WEAPON_ID_PORTALGUN:
 		iWeaponRole = TF_WPN_TYPE_ITEM1;
@@ -824,6 +839,7 @@ int CWeaponCoopBase::GetActivityWeaponRole(void)
 	case HLSS_WEAPON_ID_STUNSTICK:
 	case HLSS_WEAPON_ID_LEADPIPE:
 	case HLSS_WEAPON_ID_CROWBAR_BMS:
+	case HLSS_WEAPON_ID_KNIFE:
 		iWeaponRole = TF_WPN_TYPE_MELEE;
 		break;
 	}
@@ -858,7 +874,8 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_CROWBAR:
 	case HLSS_WEAPON_ID_MEDKIT:
 	case HLSS_WEAPON_ID_SLAM:
-	case HLSS_WEAPON_ID_PHYSGUN:
+	case HLSS_WEAPON_ID_PHYSCANNON:
+	case HLSS_WEAPON_ID_PHYSGUN_SBOX:
 	case HLSS_WEAPON_ID_TURRET:
 	case HLSS_WEAPON_ID_BUGBAIT:
 	case HLSS_WEAPON_ID_FRAG:
@@ -877,6 +894,7 @@ int CWeaponCoopBase::GetActivityWeaponVariant(void)
 	case HLSS_WEAPON_ID_HIVEHAND:
 	case HLSS_WEAPON_ID_TRIPMINE:
 	case HLSS_WEAPON_ID_MANHACK:
+	case HLSS_WEAPON_ID_KNIFE:
 		iWeaponVariant = 1;
 		break;
 	case HLSS_WEAPON_ID_AR2:
@@ -1451,6 +1469,25 @@ acttable_t CWeaponCoopBase::s_acttableAR2[] =
 			{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_AR2,				false },
 		{ACT_HL2MP_RUN_FAST,				ACT_HL2MP_RUN_PASSIVE,					false},
 };
+acttable_t CWeaponCoopBase::s_acttableKnife[] =
+{
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
+
+	{ ACT_RANGE_ATTACK1,				ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_KNIFE,					false },
+	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_KNIFE,					false },
+	{ ACT_HL2MP_WALK,					ACT_HL2MP_WALK_KNIFE,					false },
+	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_KNIFE,			false },
+	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_KNIFE,			false },
+	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_KNIFE,	false },
+	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_KNIFE,			false },
+	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_KNIFE,					false },
+	{ACT_HL2MP_SWIM,					ACT_HL2MP_SWIM_KNIFE,					false },
+	{ACT_HL2MP_SIT,						ACT_HL2MP_SIT_KNIFE,					false },
+};
+
 // BMS
 acttable_t CWeaponCoopBase::s_acttableMP5[] =
 {
@@ -1877,6 +1914,10 @@ acttable_t *CWeaponCoopBase::ActivityList(int &iActivityCount)
 			pTable = s_acttableMelee;
 			iActivityCount = ARRAYSIZE(s_acttableMelee);
 			break;
+		case 1:
+			pTable = s_acttableKnife;
+			iActivityCount = ARRAYSIZE(s_acttableKnife);
+			break;
 		}
 		break;
 	case TF_WPN_TYPE_GRENADE:
@@ -2008,6 +2049,53 @@ void CWeaponCoopBase::Equip(CBaseCombatCharacter *pOwner)
 
 	// Add it to attribute providers list.
 	ReapplyProvision();
+}
+
+#define LOW_AMMO_SOUND_THRESHOLD 0.33f
+void CWeaponCoopBase::EmitLowAmmoSound(int iShots)
+{
+	const int AmmoConsumption = iShots;
+	const bool Akimbo = false;
+
+	if (GetMaxClip1() <= 4 || GetMaxClip1() >= 70 || Clip1() <= 0)
+		return;
+
+	float flAmmoPct = (float)Clip1() / (float)GetMaxClip1();
+	if (flAmmoPct >= LOW_AMMO_SOUND_THRESHOLD || flAmmoPct <= 0.f)
+		return;
+
+	bool bLast = (Clip1() - (AmmoConsumption * (Akimbo ? 2 : 1)) <= 0);
+
+	CSoundParameters params;
+	if (GetLowAmmoSoundParameters(params, bLast))
+	{
+		EmitSound_t ep(params);
+		ep.m_flVolume *= 1 - (flAmmoPct / Max(LOW_AMMO_SOUND_THRESHOLD, 0.01f));
+
+		CPASAttenuationFilter filter(this, params.soundlevel);
+		filter.UsePredictionRules();
+		EmitSound(filter, entindex(), ep);
+	}
+}
+
+bool CWeaponCoopBase::GetLowAmmoSoundParameters(CSoundParameters& params, bool bLast)
+{
+	switch (WeaponClassify())
+	{
+	case WEPCLASS_RIFLE:
+		return GetParametersForSound(bLast ? "TFA.LowAmmo_Dry" : "TFA.LowAmmo", params, NULL);
+		break;
+	case WEPCLASS_HANDGUN:
+		return GetParametersForSound(bLast ? "TFA.LowAmmo_Dry.Handgun" : "TFA.LowAmmo.Handgun", params, NULL);
+		break;
+	case WEPCLASS_SHOTGUN:
+		return GetParametersForSound(bLast ? "TFA.LowAmmo_Dry.Shotgun" : "TFA.LowAmmo.Shotgun", params, NULL);
+		break;
+	default:
+		break;
+	}
+
+	return false;
 }
 
 void CWeaponCoopBase::RumbleEffect(unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags)

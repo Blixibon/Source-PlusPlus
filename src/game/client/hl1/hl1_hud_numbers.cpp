@@ -61,6 +61,7 @@ int CHL1HudNumbers::GetNumberFontWidth( void )
 
 int CHL1HudNumbers::DrawHudNumber( int x, int y, int iNumber, Color &clrDraw )
 {
+	iNumber = Clamp(iNumber, 0, 999);
 	int iWidth = GetNumberFontWidth();
 	int k;
 	

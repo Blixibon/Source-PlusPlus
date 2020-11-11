@@ -358,6 +358,15 @@ FORCEINLINE void SetFlashLightColorFromState( FlashlightState_t const &state, IS
 		flFlashlightScale *= 2.5f; // Magic number that works well on the NVIDIA 8800
 	}
 
+	if (g_pShaderExtension)
+	{
+		const flashlightData_t* pData = g_pShaderExtension->GetState(state);
+		if (pData)
+		{
+			flFlashlightScale *= pData->m_fBrightnessScale;
+		}
+	}
+
 	// Generate pixel shader constant
 	float const *pFlashlightColor = state.m_Color;
 	float vPsConst[4] = { flFlashlightScale * pFlashlightColor[0], flFlashlightScale * pFlashlightColor[1], flFlashlightScale * pFlashlightColor[2], pFlashlightColor[3] };

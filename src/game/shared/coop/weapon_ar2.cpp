@@ -385,6 +385,7 @@ void CWeaponAR2::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUs
 	// NOTENOTE: This is overriden on the client-side
 	// pOperator->DoMuzzleFlash();
 
+	EmitLowAmmoSound(1);
 	m_iClip1 = m_iClip1 - 1;
 }
 

@@ -8,6 +8,7 @@
 #include "c_entitydissolve.h"
 #include "c_fire_smoke.h"
 #include "saverestore_utlvector.h"
+#include "peter/c_entityelectric.h"
 #include "vprof.h"
 
 
@@ -16,6 +17,7 @@ extern CStringTableSaveRestoreOps g_ParticleStringTableOPs;
 
 C_EntityDissolve* DissolveEffect(C_BaseEntity* pTarget, float flTime);
 C_EntityFlame* FireEffect(C_BaseAnimating* pTarget, C_BaseEntity* pServerFire, float* flScaleEnd, float* flTimeStart, float* flTimeEnd);
+C_EntityElectric* ShockEffect(C_BaseEntity* pTarget, float flTime, int iType);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -75,6 +77,9 @@ public:
 	virtual void	OnRestore();
 	virtual int ObjectCaps(void) { return BaseClass::ObjectCaps() | FCAP_SAVE_NON_NETWORKABLE; }
 	virtual IPVSNotify* GetPVSNotifyInterface() { return this; }
+
+	virtual void					TransferDissolveFrom(C_BaseAnimating* pSource);
+	virtual void					TransferElectricsFrom(C_BaseAnimating* pSource);
 
 	void	HandleAnimatedFriction(void);
 	virtual void SUB_Remove(void);
@@ -153,6 +158,77 @@ C_CollegueClientRagdoll::C_CollegueClientRagdoll(bool bRestoring)
 	if (bRestoring == true)
 	{
 		m_pRagdoll = new CRagdoll;
+	}
+}
+
+void C_CollegueClientRagdoll::TransferDissolveFrom(C_BaseAnimating* pSource)
+{
+	C_BaseEntity* pChild = pSource->GetEffectEntity(ENT_EFFECT_DISSOLVE);
+
+	if (pChild)
+	{
+		C_EntityDissolve* pDissolveChild = dynamic_cast<C_EntityDissolve*>(pChild);
+
+		if (pDissolveChild)
+		{
+			m_flEffectTime = pDissolveChild->m_flStartTime;
+
+			C_EntityDissolve* pDissolve = DissolveEffect(this, m_flEffectTime);
+
+			if (pDissolve)
+			{
+				pDissolve->SetRenderMode(pDissolveChild->GetRenderMode());
+				pDissolve->m_nRenderFX = pDissolveChild->m_nRenderFX;
+				pDissolve->SetRenderColor(255, 255, 255, 255);
+				pDissolveChild->SetRenderColorA(0);
+
+				pDissolve->m_vDissolverOrigin = pDissolveChild->m_vDissolverOrigin;
+				pDissolve->m_nDissolveType = pDissolveChild->m_nDissolveType;
+
+				if (pDissolve->m_nDissolveType == ENTITY_DISSOLVE_CORE)
+				{
+					pDissolve->m_nMagnitude = pDissolveChild->m_nMagnitude;
+					pDissolve->m_flFadeOutStart = CORE_DISSOLVE_FADE_START;
+					pDissolve->m_flFadeOutModelStart = CORE_DISSOLVE_MODEL_FADE_START;
+					pDissolve->m_flFadeOutModelLength = CORE_DISSOLVE_MODEL_FADE_LENGTH;
+					pDissolve->m_flFadeInLength = CORE_DISSOLVE_FADEIN_LENGTH;
+				}
+			}
+		}
+	}
+}
+
+void C_CollegueClientRagdoll::TransferElectricsFrom(C_BaseAnimating* pSource)
+{
+	C_BaseEntity* pChild = pSource->GetEffectEntity(ENT_EFFECT_SHOCK);
+
+	if (pChild)
+	{
+		C_EntityElectric* pDissolveChild = dynamic_cast<C_EntityElectric*>(pChild);
+
+		if (pDissolveChild)
+		{
+			m_flEffectTime = pDissolveChild->m_flStartTime;
+
+			C_EntityElectric* pDissolve = ShockEffect(this, m_flEffectTime, pDissolveChild->m_nShockType);
+
+			if (pDissolve)
+			{
+				pDissolve->SetRenderMode(pDissolveChild->GetRenderMode());
+				pDissolve->m_nRenderFX = pDissolveChild->m_nRenderFX;
+				pDissolve->SetRenderColor(255, 255, 255, 255);
+				if (pDissolveChild->IsEffectActive(EF_DIMLIGHT))
+				{
+					pDissolve->AddEffects(EF_DIMLIGHT);
+				}
+				if (pDissolveChild->IsEffectActive(EF_BRIGHTLIGHT))
+				{
+					pDissolve->AddEffects(EF_BRIGHTLIGHT);
+				}
+
+				pDissolveChild->SetRenderColorA(0);
+			}
+		}
 	}
 }
 

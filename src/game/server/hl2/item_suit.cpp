@@ -41,7 +41,7 @@ public:
 	}
 	bool MyTouch( CBasePlayer *pPlayer )
 	{
-		if ( pPlayer->IsSuitEquipped() )
+		if ( pPlayer->IsSuitEquipped() && !GameRules()->IsSandBox())
 			return FALSE;
 
 		if ( m_spawnflags & SF_SUIT_SHORTLOGON )

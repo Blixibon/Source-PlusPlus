@@ -1,5 +1,19 @@
 d1_trainstation_01
 {
+	"clearandreplace"
+	{
+		"lumpfile"	"maps/d1_trainstation_01_l_0.lmp"
+	}
+	
+	"edit"
+	{
+		"targetname" "sprp_intro"
+		"values"
+		{
+			"spawnflags" "3"
+		}
+	}
+
 	"edit"
 	{
 		"targetname"	"camera_tv_breen"

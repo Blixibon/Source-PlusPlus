@@ -126,8 +126,7 @@ $Project
 			$File	"hl2\vgui_rootpanel_hl2.cpp"
 			$File 	"episodic\c_vort_charge_token.cpp"
 			$File	"$SRCDIR\game\shared\hl2\survival_gamerules.cpp"
-
-			
+			$File	"cstrike\fx_cs_knifeslash.cpp"			
 		}
 	}
 }

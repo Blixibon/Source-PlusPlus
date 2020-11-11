@@ -65,6 +65,12 @@ CBaseViewModel::~CBaseViewModel()
 	UnlockHandHdr();
 	delete m_pHandsStudioHdr;
 	m_pHandsStudioHdr = NULL;
+#else
+	if (m_pHands)
+	{
+		m_pHands->SUB_Remove();
+		m_pHands = nullptr;
+	}
 #endif
 }
 

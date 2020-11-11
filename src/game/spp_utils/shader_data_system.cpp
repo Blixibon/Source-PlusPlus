@@ -81,14 +81,14 @@ const cubemapParallaxData_t* CShaderDataExtension::GetCubemapParallax(ITexture* 
 	return &m_ParallaxData[iIndex];
 }
 
-void CShaderDataExtension::SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t state)
-{
-	CMatRenderContextPtr pRenderContext(materials);
-	if (pRenderContext->GetCallQueue())
-		pRenderContext->GetCallQueue()->QueueCall(this, &CShaderDataExtension::InternalSetUberlightParamsForFlashlightState, iIndex, state);
-	else
-		InternalSetUberlightParamsForFlashlightState(iIndex, state);
-}
+//void CShaderDataExtension::SetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t state)
+//{
+//	CMatRenderContextPtr pRenderContext(materials);
+//	if (pRenderContext->GetCallQueue())
+//		pRenderContext->GetCallQueue()->QueueCall(this, &CShaderDataExtension::InternalSetUberlightParamsForFlashlightState, iIndex, state);
+//	else
+//		InternalSetUberlightParamsForFlashlightState(iIndex, state);
+//}
 
 void CShaderDataExtension::OnFlashlightStateDestroyed(int iIndex)
 {
@@ -108,13 +108,22 @@ void CShaderDataExtension::SetDepthTextureFallbackForFlashlightState(int iIndex,
 		InternalSetDepthTextureFallbackForFlashlightState(iIndex, pTex);
 }
 
-void CShaderDataExtension::SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom)
+//void CShaderDataExtension::SetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom)
+//{
+//	CMatRenderContextPtr pRenderContext(materials);
+//	if (pRenderContext->GetCallQueue())
+//		pRenderContext->GetCallQueue()->QueueCall(this, &CShaderDataExtension::InternalSetOrthoDataForFlashlight, iIndex, bOrtho, flOrthoLeft, flOrthoRight, flOrthoTop, flOrthoBottom);
+//	else
+//		InternalSetOrthoDataForFlashlight(iIndex, bOrtho, flOrthoLeft, flOrthoRight, flOrthoTop, flOrthoBottom);
+//}
+
+void CShaderDataExtension::SetFlashlightStateExtension(int iIndex, const flashlightDataExt_t &ext)
 {
 	CMatRenderContextPtr pRenderContext(materials);
 	if (pRenderContext->GetCallQueue())
-		pRenderContext->GetCallQueue()->QueueCall(this, &CShaderDataExtension::InternalSetOrthoDataForFlashlight, iIndex, bOrtho, flOrthoLeft, flOrthoRight, flOrthoTop, flOrthoBottom);
+		pRenderContext->GetCallQueue()->QueueCall(this, &CShaderDataExtension::InternalSetFlashlightStateExtension, iIndex, RefToVal(ext));
 	else
-		InternalSetOrthoDataForFlashlight(iIndex, bOrtho, flOrthoLeft, flOrthoRight, flOrthoTop, flOrthoBottom);
+		InternalSetFlashlightStateExtension(iIndex, ext);
 }
 
 const flashlightData_t* CShaderDataExtension::GetState(const FlashlightState_t& flashlightState) const
@@ -138,17 +147,20 @@ int CShaderDataExtension::GetFlashlightStateIndex(FlashlightState_t& flashlightS
 	return index;
 }
 
-void CShaderDataExtension::InternalSetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t uberlightState)
-{
-	m_dataTable[iIndex - 1].uber = uberlightState;
-	m_usedSlots.Set(iIndex - 1);
-}
+//void CShaderDataExtension::InternalSetUberlightParamsForFlashlightState(int iIndex, const UberlightState_t uberlightState)
+//{
+//	m_dataTable[iIndex - 1].uber = uberlightState;
+//	m_usedSlots.Set(iIndex - 1);
+//}
 
 void CShaderDataExtension::InternalOnFlashlightStateDestroyed(int iIndex)
 {
 	if (iIndex != 0)
 	{
 		m_usedSlots.Clear(iIndex - 1);
+		flashlightData_t& data = m_dataTable[iIndex - 1];
+		V_memset(&data, 0, sizeof(data));
+		Construct(&data);
 	}
 }
 
@@ -158,13 +170,21 @@ void CShaderDataExtension::InternalSetDepthTextureFallbackForFlashlightState(int
 	m_usedSlots.Set(iIndex - 1);
 }
 
-void CShaderDataExtension::InternalSetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom)
+void CShaderDataExtension::InternalSetFlashlightStateExtension(int iIndex, const flashlightDataExt_t &extData)
 {
 	m_usedSlots.Set(iIndex - 1);
-	flashlightData_t &data = m_dataTable[iIndex - 1];
-	data.m_bOrtho = bOrtho;
-	data.m_fOrthoLeft = flOrthoLeft;
-	data.m_fOrthoRight = flOrthoRight;
-	data.m_fOrthoTop = flOrthoTop;
-	data.m_fOrthoBottom = flOrthoBottom;
+	flashlightData_t& data = m_dataTable[iIndex - 1];
+
+	*static_cast<flashlightDataExt_t*> (&data) = extData;
 }
+
+//void CShaderDataExtension::InternalSetOrthoDataForFlashlight(int iIndex, bool bOrtho, float flOrthoLeft, float flOrthoRight, float flOrthoTop, float flOrthoBottom)
+//{
+//	m_usedSlots.Set(iIndex - 1);
+//	flashlightData_t &data = m_dataTable[iIndex - 1];
+//	data.m_bOrtho = bOrtho;
+//	data.m_fOrthoLeft = flOrthoLeft;
+//	data.m_fOrthoRight = flOrthoRight;
+//	data.m_fOrthoTop = flOrthoTop;
+//	data.m_fOrthoBottom = flOrthoBottom;
+//}

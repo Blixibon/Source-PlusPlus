@@ -27,4 +27,38 @@ WeaponData
 		single_shot_npc	"weapon_glock_bms.Single_NPC"
 		special1	"weapon_glock_bms.Single_Silent"
 	}
+	
+	TextureData
+	{
+		"weapon"
+		{
+				"font"		"CSWeaponIcons"
+				"character"	"c"
+		}
+		"weapon_s"
+		{	
+				"font"		"CSWeaponIconsSelected"
+				"character"	"c"
+		}
+		// "ammo"
+		// {
+				// "font"		"WeaponIcons"
+				// "character"	"r"
+		// }
+		// "ammo2"
+		// {
+				// "font"		"WeaponIcons"
+				// "character"	"t"
+		// }
+		"crosshair"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+		"autoaim"
+		{
+				"font"		"Crosshairs"
+				"character"	"Q"
+		}
+	}
 }

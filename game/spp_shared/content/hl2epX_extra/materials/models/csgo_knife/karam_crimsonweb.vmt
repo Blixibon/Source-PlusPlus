@@ -1,0 +1,11 @@
+//
+patch
+{
+include "materials/models/csgo_knife/knives_shared.vmt"
+insert
+{
+$basetexture "models/csgo_knife/karam_crimsonweb"
+$bumpmap "models/csgo_knife/karam_hy_normal"
+$phongexponenttexture "models/csgo_knife/karam_hy_exponent"
+}
+}

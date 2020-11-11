@@ -1,0 +1,528 @@
+// Channels
+//	CHAN_AUTO		= 0,
+//	CHAN_WEAPON		= 1,
+//	CHAN_VOICE		= 2,
+//	CHAN_ITEM		= 3,
+//	CHAN_BODY		= 4,
+//	CHAN_STREAM		= 5,		// allocate stream channel from the static or dynamic area
+//	CHAN_STATIC		= 6,		// allocate channel from the static area 
+// these can be set with "channel" "2" or "channel" "chan_voice"
+
+//-----------------------------------------------------------------------------
+// common attenuation values
+//-----------------------------------------------------------------------------
+
+// DON'T USE THESE - USE SNDLVL_ INSTEAD!!!
+//	ATTN_NONE		0.0f	
+//	ATTN_NORM		0.8f
+//	ATTN_IDLE		2.0f
+//	ATTN_STATIC		1.25f 
+//	ATTN_RICOCHET	1.5f
+//	ATTN_GUNFIRE	0.27f
+
+//	SNDLVL_NONE		= 0,
+//	SNDLVL_25dB		= 25,
+//	SNDLVL_30dB		= 30,
+//	SNDLVL_35dB		= 35,
+//	SNDLVL_40dB		= 40,
+//	SNDLVL_45dB		= 45,
+//	SNDLVL_50dB		= 50,	// 3.9
+//	SNDLVL_55dB		= 55,	// 3.0
+//	SNDLVL_IDLE		= 60,	// 2.0
+//	SNDLVL_TALKING	= 60,	// 2.0
+//	SNDLVL_60dB		= 60,	// 2.0
+//	SNDLVL_65dB		= 65,	// 1.5
+//	SNDLVL_STATIC	= 66,	// 1.25
+//	SNDLVL_70dB		= 70,	// 1.0
+//	SNDLVL_NORM		= 75,
+//	SNDLVL_75dB		= 75,	// 0.8
+//	SNDLVL_80dB		= 80,	// 0.7
+//	SNDLVL_85dB		= 85,	// 0.6
+//	SNDLVL_90dB		= 90,	// 0.5
+//	SNDLVL_95dB		= 95,
+//	SNDLVL_100dB	= 100,	// 0.4
+//	SNDLVL_105dB	= 105,
+//	SNDLVL_120dB	= 120,
+//	SNDLVL_130dB	= 130,
+//	SNDLVL_GUNFIRE	= 140,	// 0.27
+//	SNDLVL_140dB	= 140,	// 0.2
+//	SNDLVL_150dB	= 150,	// 0.2
+
+
+"csgo_knife.Deploy"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_deploy1.wav"
+	"volume"	"0.4"
+}
+
+"csgo_knife.Hit"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/knife_hit1.wav"
+		"wave"	"csgo_knife/knife_hit2.wav"
+		"wave"	"csgo_knife/knife_hit3.wav"
+		"wave"	"csgo_knife/knife_hit4.wav"
+	}
+	"volume"	"1"
+}
+
+"csgo_knife.HitWall"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/knife_hit_01.wav"
+		"wave"	"csgo_knife/knife_hit_02.wav"
+		"wave"	"csgo_knife/knife_hit_03.wav"
+		"wave"	"csgo_knife/knife_hit_04.wav"
+		"wave"	"csgo_knife/knife_hit_05.wav"
+	}
+	"volume"	"1"
+}
+
+"csgo_knife.HitWall_old"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/knife_hitwall1.wav"
+		"wave"	"csgo_knife/knife_hitwall2.wav"
+		"wave"	"csgo_knife/knife_hitwall3.wav"
+		"wave"	"csgo_knife/knife_hitwall4.wav"
+	}
+	"volume"	"1"
+}
+
+"csgo_knife.Slash"
+{
+	"pitch"	"97,105"
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/knife_slash1.wav"
+		"wave"	"csgo_knife/knife_slash2.wav"
+	}
+	"volume"	"0.5,1"
+}
+
+"csgo_knife.Slash_old"
+{
+	"pitch"	"97,105"
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/knife_slash1_old.wav"
+		"wave"	"csgo_knife/knife_slash2_old.wav"
+	}
+	"volume"	"0.5,1"
+}
+
+"csgo_knife.Stab"
+{
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_stab.wav"
+	"volume"	"1"
+}
+
+"csgo_ButterflyKnife.backstab01"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_backstab01.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.backstab02"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_backstab02.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.draw01"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_draw01.wav"
+	"volume"	"0.6"
+}
+
+"csgo_ButterflyKnife.draw02"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_draw02.wav"
+	"volume"	"0.6"
+}
+
+"csgo_ButterflyKnife.look01_a"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_look01_a.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.look01_b"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_look01_b.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.look02_a"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_look02_a.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.look02_b"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_look02_b.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.look03_a"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_look03_a.wav"
+	"volume"	"0.4"
+}
+
+"csgo_ButterflyKnife.look03_b"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/bknife_look03_b.wav"
+	"volume"	"0.4"
+}
+
+"csgo_KnifeFalchion.inspect"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_falchion_inspect.wav"
+	"volume"	"1"
+}
+
+"csgo_KnifeFalchion.draw"
+{
+	"pitch"	"97,105"
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_falchion_draw.wav"
+	"volume"	"0.4,0.9"
+}
+
+"csgo_KnifeFalchion.Catch"
+{
+	"pitch"	"97,105"
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_falchion_catch.wav"
+	"volume"	"0.3,0.7"
+}
+
+"csgo_KnifeFalchion.Idlev2"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_falchion_idle.wav"
+	"volume"	"1"
+}
+
+"csgo_Weapon.WeaponMove1"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/movement1.wav"
+	"volume"	"0.15"
+}
+
+"csgo_Weapon.WeaponMove3"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/movement3.wav"
+	"volume"	"0.15"
+}
+
+"csgo_Weapon.WeaponMove2"
+{
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/movement2.wav"
+	"volume"	"0.15"
+}
+
+"csgo_KnifePush.Attack1Heavy"
+{
+	"pitch"	"98,105"
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/knife_push_attack1_heavy_01.wav"
+		"wave"	"csgo_knife/knife_push_attack1_heavy_02.wav"
+		"wave"	"csgo_knife/knife_push_attack1_heavy_03.wav"
+		"wave"	"csgo_knife/knife_push_attack1_heavy_04.wav"
+	}
+	"volume"	"0.1,0.2"
+}
+
+"csgo_KnifePush.LookAtStart"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_push_lookat_start.wav"
+	"volume"	"0.2"
+}
+
+"csgo_KnifePush.LookAtEnd"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_push_lookat_end.wav"
+	"volume"	"0.2"
+}
+
+"csgo_KnifePush.Draw"
+{
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_push_draw.wav"
+	"volume"	"0.3"
+}
+
+"KnifeBowie.draw"
+{
+	"pitch"	"99,100"
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_bowie_draw.wav"
+	"volume"	"0.7,0.8"
+}
+
+"KnifeBowie.LookAtStart"
+{
+	"pitch"	"99,100"
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_bowie_inspect_start.wav"
+	"volume"	"0.2"
+}
+
+"KnifeBowie.LookAtEnd"
+{
+	"pitch"	"99,101"
+	"channel"	"CHAN_STATIC"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/knife_bowie_inspect_end.wav"
+	"volume"	"0.2,0.3"
+}
+
+"Knife.Ursus.Catch.01"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/ursus_catch_01.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Ursus.Flip.Loop"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/horizon/ursus_flip_01.wav"
+		"wave"	"csgo_knife/horizon/ursus_flip_02.wav"
+		"wave"	"csgo_knife/horizon/ursus_flip_03.wav"
+		"wave"	"csgo_knife/horizon/ursus_flip_04.wav"
+		"wave"	"csgo_knife/horizon/ursus_flip_04.wav"
+	}
+	"volume"	"0.3"
+}
+
+"Knife.Ursus.Flip.01"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/ursus_flip_01.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Ursus.Flip.02"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/ursus_flip_02.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Ursus.Flip.03"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/ursus_flip_03.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Ursus.Flip.04"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/ursus_flip_04.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Ursus.Flip.05"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/ursus_flip_05.wav"
+	"volume"	"0.3"
+}
+
+"csgo_knife.Widow.Deploy.01"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/widow_deploy_01.wav"
+	"volume"	"0.3"
+}
+
+"csgo_knife.Widow.LookAt2.Start"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/widow_lookat2_start.wav"
+	"volume"	"0.3"
+}
+
+"csgo_knife.Widow.LookAt2.Start_shorter"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/widow_lookat2_start_shorter.wav"
+	"volume"	"0.3"
+}
+
+"csgo_knife.Widow.LookAt2.End"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/widow_lookat2_end.wav"
+	"volume"	"0.3"
+}
+
+"csgo_knife.Widow.LookAt2.Loop"
+{
+	"pitch"	"99,101"
+	"channel"	"CHAN_WEAPON"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/horizon/widow_lookat2_loop_02.wav"
+		"wave"	"csgo_knife/horizon/widow_lookat2_loop_03.wav"
+		"wave"	"csgo_knife/horizon/widow_lookat2_loop_04.wav"
+		"wave"	"csgo_knife/horizon/widow_lookat2_loop_05.wav"
+	}
+	"volume"	"0.3"
+}
+
+"Knife.Stilleto.Draw.01"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/stilletto_draw_01.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Stilleto.Flip.Loop"
+{
+	"pitch"	"98,102"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"rndwave"
+	{
+		"wave"	"csgo_knife/horizon/stilletto_flip_02.wav"
+		"wave"	"csgo_knife/horizon/stilletto_flip_03.wav"
+		"wave"	"csgo_knife/horizon/stilletto_flip_04.wav"
+	}
+	"volume"	"0.3"
+}
+
+"Knife.Stilleto.Flip.01"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/stilletto_flip_01.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Stilleto.Flip.02"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/stilletto_flip_02.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Stilleto.Flip.03"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/stilletto_flip_03.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Stilleto.Flip.04"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/stilletto_flip_04.wav"
+	"volume"	"0.3"
+}
+
+"Knife.Gypsy.Draw.01"
+{
+	"pitch"	"100"
+	"channel"	"CHAN_ITEM"
+	"soundlevel"	"65"
+	"wave"	"csgo_knife/horizon/gypsy_draw_01.wav"
+	"volume"	"0.3"
+}

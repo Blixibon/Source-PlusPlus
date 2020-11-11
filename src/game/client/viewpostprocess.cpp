@@ -51,6 +51,8 @@ float g_flDOFFarBlurRadius = 5.0f;
 
 bool g_bFlashlightIsOn = false;
 
+extern bool g_bRenderingScreenshot;
+
 // hdr parameters
 ConVar mat_bloomscale( "mat_bloomscale", "1" );
 ConVar mat_hdr_level( "mat_hdr_level", "2", FCVAR_ARCHIVE );
@@ -1357,8 +1359,8 @@ void CEnginePostMaterialProxy::OnBind( C_BaseEntity *pEnt )
 {
 	bool bInGameMenuOpen = (engine->IsInGame() && !engine->IsLevelMainMenuBackground() && enginevgui->IsGameUIVisible());
 	static float s_flMenuEffectsPct = 0.f;
-	if (bInGameMenuOpen)
-		s_flMenuEffectsPct = Approach(1.f, s_flMenuEffectsPct, 2.f * gpGlobals->absoluteframetime);
+	if (bInGameMenuOpen && !g_bRenderingScreenshot)
+		s_flMenuEffectsPct = Approach(1.f, s_flMenuEffectsPct, 3.f * gpGlobals->absoluteframetime);
 	else
 		s_flMenuEffectsPct = 0.f;
 

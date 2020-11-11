@@ -72,26 +72,26 @@ public:
 
 	Ammo_t				m_AmmoType[MAX_AMMO_TYPES];
 
-	Ammo_t				*GetAmmoOfIndex(int nAmmoIndex);
-	int					Index(const char *psz);
-	int					PlrDamage(int nAmmoIndex);
-	int					NPCDamage(int nAmmoIndex);
-	int					MaxCarry(int nAmmoIndex);
-	int64				DamageType(int nAmmoIndex);
-	int					TracerType(int nAmmoIndex);
-	float				DamageForce(int nAmmoIndex);
-	int					MinSplashSize(int nAmmoIndex);
-	int					MaxSplashSize(int nAmmoIndex);
-	int					Flags(int nAmmoIndex);
+	virtual Ammo_t				*GetAmmoOfIndex(int nAmmoIndex);
+	virtual int					Index(const char *psz);
+	virtual int					PlrDamage(int nAmmoIndex);
+	virtual int					NPCDamage(int nAmmoIndex);
+	virtual int					MaxCarry(int nAmmoIndex);
+	virtual int64				DamageType(int nAmmoIndex);
+	virtual int					TracerType(int nAmmoIndex);
+	virtual float				DamageForce(int nAmmoIndex);
+	virtual int					MinSplashSize(int nAmmoIndex);
+	virtual int					MaxSplashSize(int nAmmoIndex);
+	virtual int					Flags(int nAmmoIndex);
 
-	void				AddAmmoType(char const* name, int64 damageType, int tracerType, int plr_dmg, int npc_dmg, int carry, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
-	void				AddAmmoType(char const* name, int64 damageType, int tracerType, char const* plr_cvar, char const* npc_var, char const* carry_cvar, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
+	virtual void				AddAmmoType(char const* name, int64 damageType, int tracerType, int plr_dmg, int npc_dmg, int carry, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
+	virtual void				AddAmmoType(char const* name, int64 damageType, int tracerType, char const* plr_cvar, char const* npc_var, char const* carry_cvar, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
 
 	CAmmoDef(void);
 	virtual ~CAmmoDef( void );
 
-private:
-	bool				AddAmmoType(char const* name, int64 damageType, int tracerType, int nFlags, int minSplashSize, int maxSplashSize );
+protected:
+	virtual bool		AddAmmoType(char const* name, int64 damageType, int tracerType, int nFlags, int minSplashSize, int maxSplashSize );
 };
 
 

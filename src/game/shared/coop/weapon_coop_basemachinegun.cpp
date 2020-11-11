@@ -7,6 +7,7 @@
 #include "takedamageinfo.h"
 #include "ammodef.h"
 #include "hl2_gamerules.h"
+#include "hl2_player_shared.h"
 
 #ifdef CLIENT_DLL
     #include "vgui/ISurface.h"
@@ -31,20 +32,39 @@
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCoopMachineGun, DT_WeaponCoopMachineGun );
 
-BEGIN_NETWORK_TABLE( CWeaponCoopMachineGun, DT_WeaponCoopMachineGun )
+BEGIN_NETWORK_TABLE_NOBASE(CWeaponCoopMachineGun, DT_WeaponCoopMachineGunLocalData)
+#ifndef CLIENT_DLL
+SendPropInt(SENDINFO(m_nShotsFired)),
+#else
+RecvPropInt(RECVINFO(m_nShotsFired)),
+#endif // !CLIENT_DLL
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponCoopMachineGun ) 
+BEGIN_NETWORK_TABLE(CWeaponCoopMachineGun, DT_WeaponCoopMachineGun)
+#ifndef CLIENT_DLL
+SendPropDataTable("CoopMachineGunLocalWeaponData", 0, &REFERENCE_SEND_TABLE(DT_WeaponCoopMachineGunLocalData), SendProxy_SendLocalWeaponDataTable),
+#else
+RecvPropDataTable("CoopMachineGunLocalWeaponData", 0, 0, &REFERENCE_RECV_TABLE(DT_WeaponCoopMachineGunLocalData)),
+#endif
+END_NETWORK_TABLE()
+
+BEGIN_PREDICTION_DATA(CWeaponCoopMachineGun)
+#ifdef CLIENT_DLL
+DEFINE_PRED_FIELD(m_nShotsFired, FIELD_INTEGER, FTYPEDESC_INSENDTABLE),
+#endif // CLIENT_DLL
 END_PREDICTION_DATA()
 
 #ifndef CLIENT_DLL
 #include "globalstate.h"
 #endif
 
-BEGIN_DATADESC( CWeaponCoopMachineGun )
-    DEFINE_FIELD( m_nShotsFired,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_flNextSoundTime, FIELD_TIME ),
-END_DATADESC()
+BEGIN_DATADESC(CWeaponCoopMachineGun)
+DEFINE_FIELD(m_nShotsFired, FIELD_INTEGER),
+DEFINE_FIELD(m_flNextSoundTime, FIELD_TIME),
+#ifndef CLIENT_DLL
+DEFINE_FIELD(m_flTimeLastNPCFired, FIELD_TIME),
+#endif // !CLIENT_DLL
+END_DATADESC();
 
 //================================================================================
 //================================================================================
@@ -114,6 +134,22 @@ int CWeaponCoopMachineGun::WeaponSoundRealtime( WeaponSound_t shoot_type )
 #endif
 }
 
+void CWeaponCoopMachineGun::UpdateNPCShotCounter()
+{
+#ifndef CLIENT_DLL
+	if (gpGlobals->curtime - m_flTimeLastNPCFired >= GetMinRestTime())
+	{
+		m_nShotsFired = 0;
+	}
+	else
+	{
+		m_nShotsFired++;
+	}
+
+	m_flTimeLastNPCFired = gpGlobals->curtime;
+#endif
+}
+
 extern void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip );
 
 //================================================================================
@@ -157,4 +193,92 @@ void CWeaponCoopMachineGun::DoMachineGunKick( CBasePlayer *pPlayer, float dampEa
 	//Add it to the view punch
 	// NOTE: 0.5 is just tuned to match the old effect before the punch became simulated
 	pPlayer->ViewPunch( vecScratch * 0.5 );
+}
+
+void CWeaponCoopMachineGun::PrimaryAttack(void)
+{
+	// If my clip is empty (and I use clips) start reload
+	if (UsesClipsForAmmo1() && !m_iClip1)
+	{
+		Reload();
+		return;
+	}
+
+	// Only the player fires this way so we can cast
+	CHL2_Player* pPlayer = ToHL2Player(GetOwner());
+
+	if (!pPlayer)
+	{
+		return;
+	}
+
+	m_nShotsFired++;
+
+	pPlayer->DoMuzzleFlash();
+
+	SendWeaponAnim(GetPrimaryAttackActivity());
+
+	// player "shoot" animation
+	pPlayer->DoAnimationEvent(PLAYERANIMEVENT_ATTACK_PRIMARY);
+
+	FireBulletsInfo_t info;
+	info.m_vecSrc = pPlayer->Weapon_ShootPosition();
+	info.m_vecDirShooting = static_cast<CBasePlayer*>(pPlayer)->GetAutoaimVector(AUTOAIM_SCALE_DEFAULT);
+
+	// To make the firing framerate independent, we may have to fire more than one bullet here on low-framerate systems, 
+	// especially if the weapon we're firing has a really fast rate of fire.
+	info.m_iShots = 0;
+	float fireRate = GetFireRate();
+
+	while (m_flNextPrimaryAttack <= gpGlobals->curtime)
+	{
+		// MUST call sound before removing a round from the clip of a CMachineGun
+		WeaponSound(SINGLE, m_flNextPrimaryAttack);
+		m_flNextPrimaryAttack = m_flNextPrimaryAttack + fireRate;
+		info.m_iShots++;
+		if (!fireRate)
+			break;
+	}
+
+	// Make sure we don't fire more than the amount in the clip
+	if (UsesClipsForAmmo1())
+	{
+		info.m_iShots = MIN(info.m_iShots, m_iClip1.Get());
+		EmitLowAmmoSound(info.m_iShots);
+		m_iClip1 -= info.m_iShots;
+	}
+	else
+	{
+		info.m_iShots = MIN(info.m_iShots, pPlayer->GetAmmoCount(m_iPrimaryAmmoType));
+		pPlayer->RemoveAmmo(info.m_iShots, m_iPrimaryAmmoType);
+	}
+
+	info.m_flDistance = MAX_TRACE_LENGTH;
+	info.m_iAmmoType = m_iPrimaryAmmoType;
+	info.m_iTracerFreq = 2;
+
+#if !defined( CLIENT_DLL )
+	// Fire the bullets
+	info.m_vecSpread = pPlayer->GetAttackSpread(this);
+#else
+	//!!!HACKHACK - what does the client want this function for? 
+	info.m_vecSpread = GetActiveWeapon()->GetBulletSpread();
+#endif // CLIENT_DLL
+
+	int iRumblue = GetRumbleEffect();
+	if (iRumblue > 0)
+		RumbleEffect(iRumblue, 0, RUMBLE_FLAGS_NONE);
+
+	pPlayer->FireBullets(info);
+
+	m_iPrimaryAttacks++;
+
+	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	{
+		// HEV suit - indicate out of ammo condition
+		pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+	}
+
+	//Add our view kick in
+	AddViewKick();
 }

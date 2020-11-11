@@ -142,6 +142,8 @@ static ConVar r_drawtranslucentrenderables( "r_drawtranslucentrenderables", "1",
 ConVar r_drawopaquerenderables( "r_drawopaquerenderables", "1", FCVAR_CHEAT );
 static ConVar r_threaded_renderables( "r_threaded_renderables", "0" );
 
+static ConVar r_flashlightdepth_drawtranslucents("r_flashlightdepth_drawtranslucents", "0", FCVAR_NONE);
+
 // FIXME: This is not static because we needed to turn it off for TF2 playtests
 ConVar r_DrawDetailProps( "r_DrawDetailProps", "1", FCVAR_NONE, "0=Off, 1=Normal, 2=Wireframe" );
 
@@ -3878,7 +3880,7 @@ void CRendering3dView::SetupRenderablesList( int viewID )
 		setupInfo.m_nDetailBuildFrame = m_pMainView->BuildWorldListsNumber();	//
 		setupInfo.m_pRenderList = m_pRenderablesList;
 		setupInfo.m_bDrawDetailObjects = g_pClientMode->ShouldDrawDetailObjects() && r_DrawDetailProps.GetInt();
-		setupInfo.m_bDrawTranslucentObjects = (viewID != VIEW_SHADOW_DEPTH_TEXTURE);
+		setupInfo.m_bDrawTranslucentObjects = (r_flashlightdepth_drawtranslucents.GetBool() || (viewID != VIEW_SHADOW_DEPTH_TEXTURE) || m_bRenderFlashlightDepthTranslucents);
 
 		setupInfo.m_vecRenderOrigin = origin;
 		setupInfo.m_vecRenderForward = CurrentViewForward();
@@ -4897,7 +4899,7 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 	const ClientWorldListInfo_t& info = *m_pWorldListInfo;
 
 #ifdef PORTAL //if we're in the portal mod, we need to make a detour so we can render portal views using stencil areas
-	if( ShouldDrawPortals() ) //no recursive stencil views during skybox rendering (although we might be drawing a skybox while already in a recursive stencil view)
+	if( ShouldDrawPortals() && !bShadowDepth) //no recursive stencil views during skybox rendering (although we might be drawing a skybox while already in a recursive stencil view)
 	{
 		int iDrawFlagsBackup = m_DrawFlags;
 
@@ -4927,15 +4929,15 @@ void CRendering3dView::DrawTranslucentRenderables( bool bInSkybox, bool bShadowD
 				CMatRenderContextPtr pRenderContext( materials );
 				ITexture *pDepthTex = GetFullFrameDepthTexture();
 
-				IMaterial *pMaterial = materials->FindMaterial( "debug/showz", TEXTURE_GROUP_OTHER, true );
+				IMaterial *pMaterial = materials->FindMaterial( "debug/c17_showz", TEXTURE_GROUP_OTHER, true );
 				pMaterial->IncrementReferenceCount();
 				IMaterialVar *BaseTextureVar = pMaterial->FindVar( "$basetexture", NULL, false );
-				IMaterialVar *pDepthInAlpha = NULL;
+				/*IMaterialVar *pDepthInAlpha = NULL;
 				if( IsPC() )
 				{
 					pDepthInAlpha = pMaterial->FindVar( "$ALPHADEPTH", NULL, false );
 					pDepthInAlpha->SetIntValue( 1 );
-				}
+				}*/
 
 				BaseTextureVar->SetTextureValue( pDepthTex );
 
@@ -5594,6 +5596,12 @@ void CShadowDepthView::Draw()
 	{
 		VPROF_BUDGET( "DrawOpaqueRenderables", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING );
 		DrawOpaqueRenderables( DEPTH_MODE_SHADOW );
+	}
+
+	if (m_bRenderFlashlightDepthTranslucents || r_flashlightdepth_drawtranslucents.GetBool())
+	{
+		VPROF_BUDGET("DrawTranslucentRenderables", VPROF_BUDGETGROUP_SHADOW_DEPTH_TEXTURING);
+		DrawTranslucentRenderables(false, true);
 	}
 
 	modelrender->ForcedMaterialOverride( 0 );

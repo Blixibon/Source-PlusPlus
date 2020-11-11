@@ -52,6 +52,9 @@ $Project
 				$File	"$SRCDIR\game\shared\coop\weapon_smg1.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_stunstick.cpp"
 				$File	"$SRCDIR\game\shared\coop\weapon_sniperrifle.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_physgun_sbox.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_knife.cpp"
+				$File	"$SRCDIR\game\shared\coop\weapon_mp5k.cpp"
 			}
 		}
 		

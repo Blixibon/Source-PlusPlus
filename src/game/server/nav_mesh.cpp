@@ -2755,6 +2755,21 @@ void CommandNavShowLadderBounds( void )
 	}
 }
 static ConCommand nav_show_ladder_bounds( "nav_show_ladder_bounds", CommandNavShowLadderBounds, "Draws the bounding boxes of all func_ladders in the map.", FCVAR_GAMEDLL | FCVAR_CHEAT );
+#else
+//--------------------------------------------------------------------------------------------------------------
+void CommandNavShowLadderBounds(void)
+{
+	if (!UTIL_IsCommandIssuedByServerAdmin())
+		return;
+
+	CInfoLadder* ladder = NULL;
+	while ((ladder = dynamic_cast<CInfoLadder*>(gEntList.FindEntityByClassname(ladder, "info_ladder"))) != NULL)
+	{
+		NDebugOverlay::Box(vec3_origin, ladder->mins, ladder->maxs, 0, 255, 0, 0, 600);
+		NDebugOverlay::Box(ladder->GetAbsOrigin(), ladder->mins, ladder->maxs, 0, 0, 255, 0, 600);
+	}
+}
+static ConCommand nav_show_ladder_bounds("nav_show_ladder_bounds", CommandNavShowLadderBounds, "Draws the bounding boxes of all func_ladders in the map.", FCVAR_GAMEDLL | FCVAR_CHEAT);
 #endif
 
 //--------------------------------------------------------------------------------------------------------------
